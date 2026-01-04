@@ -112,6 +112,11 @@
 /*    inner shadow*/
 }
 
+.gf-example_output {
+    max-height: 300px;
+    overflow: auto;
+}
+
 .vp-doc div[class*='language-'], .vp-block {
     /*background-color: black;*/
 }

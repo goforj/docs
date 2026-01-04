@@ -221,7 +221,7 @@ onMounted(() => {
         </button>
       </div>
       <div class="gf-example__panel" v-if="isRunning || runResult">
-        <pre class="gf-example__code" v-if="runResult && runResult.stdout"><code v-html="ansiToHtml(runResult.stdout)"></code></pre>
+        <pre class="gf-example__code gf-example_output" v-if="runResult && runResult.stdout"><code v-html="ansiToHtml(runResult.stdout)"></code></pre>
         <p v-else-if="isRunning" class="gf-example__placeholder">Running…</p>
         <p v-if="runResult" class="gf-example__meta-line">
           Exit {{ runResult.exitCode }} · {{ runResult.durationMs }}ms

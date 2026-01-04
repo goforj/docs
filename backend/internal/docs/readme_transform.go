@@ -10,9 +10,12 @@ var markdownImageRegex = regexp.MustCompile(`!\[[^\]]*\]\(([^)]+)\)`)
 var htmlImageRegex = regexp.MustCompile(`(?i)<img[^>]+src=["']([^"']+)["']`)
 var examplePathRegex = regexp.MustCompile(`examples/([a-zA-Z0-9_-]+)/main\.go`)
 var anchorRegex = regexp.MustCompile(`<a id="([^"]+)"></a>`)
+var headingAnchorRegex = regexp.MustCompile(`^(#{2,6}) <a id="([^"]+)"></a>\s*(.+)$`)
+var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
 
 func transformReadme(readme string, repoSlug string, rawBase string, examples []ExampleProgram) string {
 	updated := rewriteImageLinks(readme, rawBase)
+	updated = rewriteHeadingAnchors(updated)
 	updated = wrapExamples(updated, repoSlug, examples)
 	return withFrontmatter(repoSlug, updated)
 }
@@ -52,6 +55,21 @@ func rewriteImageURL(url string, rawBase string) string {
 	return rawBase + trimmed
 }
 
+func rewriteHeadingAnchors(content string) string {
+	lines := strings.Split(content, "\n")
+	for i, line := range lines {
+		matches := headingAnchorRegex.FindStringSubmatch(line)
+		if len(matches) != 4 {
+			continue
+		}
+		level := matches[1]
+		anchor := matches[2]
+		title := strings.TrimSpace(matches[3])
+		lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, anchor)
+	}
+	return strings.Join(lines, "\n")
+}
+
 func wrapExamples(content string, repoSlug string, examples []ExampleProgram) string {
 	lines := strings.Split(content, "\n")
 	var out strings.Builder
@@ -78,6 +96,8 @@ func wrapExamples(content string, repoSlug string, examples []ExampleProgram) st
 				inApiEmbed = false
 			}
 			if matches := anchorRegex.FindStringSubmatch(line); len(matches) == 2 {
+				currentAnchor = matches[1]
+			} else if matches := headingIDRegex.FindStringSubmatch(line); len(matches) == 2 {
 				currentAnchor = matches[1]
 			}
 			if matches := examplePathRegex.FindStringSubmatch(line); len(matches) == 2 {
