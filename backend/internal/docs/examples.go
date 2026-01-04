@@ -110,20 +110,24 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 	if tempPath != "" {
 		_ = os.Remove(tempPath)
 	}
+	out := stdout.String()
+	errOut := stderr.String()
+	if strings.TrimSpace(errOut) != "" {
+		if strings.TrimSpace(out) != "" && !strings.HasSuffix(out, "\n") {
+			out += "\n"
+		}
+		out += errOut
+		errOut = ""
+	}
+
 	if err != nil {
 		exitCode := 1
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			exitCode = exitErr.ExitCode()
 		}
-		return stdout.String(), stderr.String(), exitCode, duration, nil
+		return out, errOut, exitCode, duration, nil
 	}
 
-	out := stdout.String()
-	errOut := stderr.String()
-	if strings.TrimSpace(out) == "" && strings.TrimSpace(errOut) != "" {
-		out = errOut
-		errOut = ""
-	}
 	return out, errOut, 0, duration, nil
 }
 
