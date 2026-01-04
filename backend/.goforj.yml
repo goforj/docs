@@ -1,0 +1,24 @@
+project_name: GoForj Docs
+module_name: github.com/goforj/docs
+updated_at: 2026-01-03 19:49:25 CST
+pre_dev:
+  - name: Run Wire generate
+    cmd: go install github.com/google/wire/cmd/wire@latest && cd wire && wire
+  - name: Watcher Go Install
+    cmd: go install github.com/bokwoon95/wgo@latest
+dev_down: []
+dev_watches:
+  - name: App
+    watch: -verbose -file .env -file .go -xdir forj -xdir _data -xdir ./frontend/node_modules -file .html
+    exec: go run main.go http:serve
+  - name: Wire
+    watch: -file .go -cd ./wire -xfile ./wire/wire_gen.go -xdir forj -postpone
+    exec: wire
+components:
+  cli: true
+  web_api: true
+  web_ui: true
+  docker: false
+  database: false
+  scheduler: false
+  jobs: false

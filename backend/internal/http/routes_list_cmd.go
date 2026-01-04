@@ -1,0 +1,22 @@
+package http
+
+import (
+	"github.com/goforj/docs/internal/logger"
+)
+
+// RouteListCmd lists registered routes.
+type RouteListCmd struct {
+	logger *logger.AppLogger
+	server *Server
+}
+
+// NewRouteListCmd creates a new RouteListCmd instance.
+func NewRouteListCmd(logger *logger.AppLogger, server *Server) *RouteListCmd {
+	return &RouteListCmd{logger: logger, server: server}
+}
+
+// Run executes the command to list all registered routes.
+func (c *RouteListCmd) Run() error {
+	c.server.PrintRoutesList()
+	return nil
+}

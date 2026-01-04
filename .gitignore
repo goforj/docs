@@ -1,0 +1,11 @@
+# IDE
+.idea
+
+# Ignore all top-level markdown files
+/*.md
+
+# Except README.md
+!/README.md
+
+# Allow all markdown files in docs
+!/docs/**/*.md
