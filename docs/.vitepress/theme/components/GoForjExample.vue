@@ -199,16 +199,9 @@ onMounted(() => {
 
 <template>
   <section class="gf-example">
-    <header class="gf-example__header">
-      <div>
-        <p class="gf-example__title">{{ headerTitle }}</p>
-        <p class="gf-example__meta">{{ repo }} / {{ example }}</p>
-      </div>
-    </header>
 
     <div class="gf-example__body">
       <div class="gf-example__panel">
-        <p class="gf-example__label">Code</p>
         <div v-if="hasSlot" class="gf-example__slot">
           <slot />
         </div>
