@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 )
 
+const exampleManifestEnvVar = "GOFORJ_EXAMPLES_MANIFEST"
+
 type exampleManifestRecord struct {
 	Title      string `json:"title"`
 	Language   string `json:"language"`
@@ -19,8 +21,8 @@ type exampleManifestRecord struct {
 
 type exampleManifest map[string]map[string]exampleManifestRecord
 
-func writeExamplesManifest(docsRoot string, repo RepoConfig, examples []ExampleProgram) error {
-	storePath := manifestPath(docsRoot)
+func writeExamplesManifest(repo RepoConfig, examples []ExampleProgram) error {
+	storePath := manifestPath()
 	store := exampleManifest{}
 
 	if bytes, err := os.ReadFile(storePath); err == nil {
@@ -59,6 +61,9 @@ func writeExamplesManifest(docsRoot string, repo RepoConfig, examples []ExampleP
 	return nil
 }
 
-func manifestPath(docsRoot string) string {
-	return filepath.Join(docsRoot, "..", "backend", "internal", "examples", "examples.json")
+func manifestPath() string {
+	if override := os.Getenv(exampleManifestEnvVar); override != "" {
+		return override
+	}
+	return filepath.Join(os.TempDir(), "goforj-docs", "examples.json")
 }

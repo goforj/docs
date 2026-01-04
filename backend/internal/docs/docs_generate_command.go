@@ -111,7 +111,7 @@ func (c *DocsGenerateCommand) Run() error {
 		if err != nil {
 			return fmt.Errorf("load examples for %s: %w", repo.Slug, err)
 		}
-		if err := writeExamplesManifest(docsRoot, repo, examples); err != nil {
+		if err := writeExamplesManifest(repo, examples); err != nil {
 			return fmt.Errorf("write examples manifest for %s: %w", repo.Slug, err)
 		}
 

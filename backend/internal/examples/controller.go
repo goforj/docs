@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 
 	apphttp "github.com/goforj/docs/internal/http"
@@ -119,6 +120,8 @@ type exampleRecord struct {
 
 type exampleStore map[string]map[string]exampleRecord
 
+const exampleManifestEnvVar = "GOFORJ_EXAMPLES_MANIFEST"
+
 var (
 	storeOnce  sync.Once
 	storeData  exampleStore
@@ -166,18 +169,12 @@ func loadExampleStore() (exampleStore, error) {
 }
 
 func resolveManifestPath() (string, error) {
-	paths := []string{
-		"internal/examples/examples.json",
-		"backend/internal/examples/examples.json",
-		"../internal/examples/examples.json",
-		"../backend/internal/examples/examples.json",
+	path := os.Getenv(exampleManifestEnvVar)
+	if path == "" {
+		path = filepath.Join(os.TempDir(), "goforj-docs", "examples.json")
 	}
-
-	for _, path := range paths {
-		if _, err := os.Stat(path); err == nil {
-			return path, nil
-		}
+	if _, err := os.Stat(path); err != nil {
+		return "", fmt.Errorf("examples manifest not found at %s", path)
 	}
-
-	return "", fmt.Errorf("examples manifest not found")
+	return path, nil
 }
