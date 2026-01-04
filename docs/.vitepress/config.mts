@@ -78,7 +78,11 @@ export default defineConfig({
     'libraries/strings.md': 'strings.md',
     'libraries/httpx.md': 'httpx.md',
     'libraries/execx.md': 'execx.md',
-    'libraries/godump.md': 'godump.md'
+    'libraries/godump.md': 'godump.md',
+    'libraries/env.md': 'env.md',
+    'libraries/scheduler.md': 'scheduler.md',
+    'libraries/crypt.md': 'crypt.md',
+    'libraries/filesystem.md': 'filesystem.md'
   },
 
   head: [['link', { rel: 'icon', href: '../assets/goforj-hammer.png' }]],
@@ -122,6 +126,10 @@ export default defineConfig({
       { text: 'HTTPX', link: '/httpx' },
       { text: 'ExecX', link: '/execx' },
       { text: 'GoDump', link: '/godump' },
+      { text: 'Env', link: '/env' },
+      { text: 'Scheduler', link: '/scheduler' },
+      { text: 'Crypt', link: '/crypt' },
+      { text: 'Filesystem', link: '/filesystem' },
       { text: 'What is GoForj?', link: '/about' }
     ],
 
@@ -136,6 +144,10 @@ export default defineConfig({
           { text: 'HTTPX', link: '/httpx' },
           { text: 'ExecX', link: '/execx' },
           { text: 'GoDump', link: '/godump' },
+          { text: 'Env', link: '/env' },
+          { text: 'Scheduler', link: '/scheduler' },
+          { text: 'Crypt', link: '/crypt' },
+          { text: 'Filesystem', link: '/filesystem' },
           { text: 'About', link: '/about' },
         ]
       }
