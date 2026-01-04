@@ -22,8 +22,8 @@ import (
 func InitializeApplication() (App, error) {
 	appLogger := logger.ProvideAppLogger()
 	helloWorldCmd := cmd.NewHelloWorldCmd(appLogger)
-	docsGenerateCommand := docs.NewDocsGenerateCommand(appLogger)
-	appCommands := cmd.NewAppCommands(helloWorldCmd, docsGenerateCommand)
+	generateCommand := docs.NewDocsGenerateCommand(appLogger)
+	appCommands := cmd.NewAppCommands(helloWorldCmd, generateCommand)
 	controller := examples.NewController(appLogger)
 	helloController := hello.NewController(appLogger)
 	appRoutes := router.ProvideAppRoutes(controller, helloController)

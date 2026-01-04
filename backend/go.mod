@@ -5,6 +5,7 @@ go 1.24.4
 require (
 	github.com/alecthomas/kong v1.13.0
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/gammazero/workerpool v1.1.3
 	github.com/goforj/env v1.0.0
 	github.com/google/wire v0.7.0
 	github.com/labstack/echo/v4 v4.15.0
@@ -21,6 +22,7 @@ require (
 	github.com/charmbracelet/x/cellbuf v0.0.13-0.20250311204145-2c3ea96c31dd // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gammazero/deque v0.2.0 // indirect
 	github.com/goforj/godump v1.7.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect

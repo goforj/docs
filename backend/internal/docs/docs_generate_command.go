@@ -8,20 +8,20 @@ import (
 	"github.com/goforj/docs/internal/logger"
 )
 
-// DocsGenerateCommand pulls repo READMEs and generates docs pages.
-type DocsGenerateCommand struct {
+// GenerateCommand pulls repo READMEs and generates docs pages.
+type GenerateCommand struct {
 	logger *logger.AppLogger
 }
 
-// NewDocsGenerateCommand creates a new DocsGenerateCommand.
-func NewDocsGenerateCommand(logger *logger.AppLogger) *DocsGenerateCommand {
-	return &DocsGenerateCommand{
+// NewDocsGenerateCommand creates a new GenerateCommand.
+func NewDocsGenerateCommand(logger *logger.AppLogger) *GenerateCommand {
+	return &GenerateCommand{
 		logger: logger,
 	}
 }
 
 // Run executes the docs generator.
-func (c *DocsGenerateCommand) Run() error {
+func (c *GenerateCommand) Run() error {
 	repos := []RepoConfig{
 		{
 			Slug:       "collection",

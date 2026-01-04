@@ -7,8 +7,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/gammazero/workerpool"
 )
 
 // ExampleProgram represents a runnable example program.
@@ -32,6 +36,15 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 		return nil, err
 	}
 
+	type exampleJob struct {
+		path       string
+		exampleID  string
+		rawCode    string
+		normalized string
+	}
+
+	var jobs []exampleJob
+
 	err := filepath.WalkDir(examplesDir, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -48,19 +61,11 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 		exampleID := filepath.Base(filepath.Dir(path))
 		rawCode := string(codeBytes)
 		normalized := normalizeCode(rawCode)
-		stdout, stderr, exitCode, duration, err := runExample(path, rawCode)
-		if err != nil {
-			return fmt.Errorf("run example %s: %w", exampleID, err)
-		}
-
-		examples = append(examples, ExampleProgram{
-			ID:         exampleID,
-			Code:       rawCode,
-			Normalized: normalized,
-			Stdout:     stdout,
-			Stderr:     stderr,
-			ExitCode:   exitCode,
-			DurationMs: duration,
+		jobs = append(jobs, exampleJob{
+			path:       path,
+			exampleID:  exampleID,
+			rawCode:    rawCode,
+			normalized: normalized,
 		})
 
 		return nil
@@ -69,6 +74,48 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if len(jobs) == 0 {
+		return examples, nil
+	}
+
+	wp := workerpool.New(10)
+	var mu sync.Mutex
+	var firstErr error
+	var once sync.Once
+
+	for _, job := range jobs {
+		job := job
+		wp.Submit(func() {
+			stdout, stderr, exitCode, duration, err := runExample(job.path, job.rawCode)
+			if err != nil {
+				once.Do(func() {
+					firstErr = fmt.Errorf("run example %s: %w", job.exampleID, err)
+				})
+				return
+			}
+			mu.Lock()
+			examples = append(examples, ExampleProgram{
+				ID:         job.exampleID,
+				Code:       job.rawCode,
+				Normalized: job.normalized,
+				Stdout:     stdout,
+				Stderr:     stderr,
+				ExitCode:   exitCode,
+				DurationMs: duration,
+			})
+			mu.Unlock()
+		})
+	}
+
+	wp.StopWait()
+	if firstErr != nil {
+		return nil, firstErr
+	}
+
+	sort.Slice(examples, func(i, j int) bool {
+		return examples[i].ID < examples[j].ID
+	})
 
 	return examples, nil
 }
