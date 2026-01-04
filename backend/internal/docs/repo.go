@@ -5,6 +5,7 @@ import "strings"
 // RepoConfig describes a repo to pull docs from.
 type RepoConfig struct {
 	Slug       string
+	Title      string
 	CloneURL   string
 	Branch     string
 	OutputPath string

@@ -119,6 +119,8 @@
 
 .vp-doc div[class*='language-'], .vp-block {
     /*background-color: black;*/
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .gf-example__code {

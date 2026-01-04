@@ -65,7 +65,8 @@ export default defineConfig({
   description: "Build faster. Ship smarter. Go development tools forged for productivity.",
   appearance: 'force-dark',
   rewrites: {
-    'libraries/collection.md': 'collection.md'
+    'libraries/collection.md': 'collection.md',
+    'libraries/strings.md': 'strings.md'
   },
 
   head: [['link', { rel: 'icon', href: '../assets/goforj-hammer.png' }]],
@@ -105,6 +106,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Libraries', link: '/collection' },
+      { text: 'Strings', link: '/strings' },
       { text: 'What is GoForj?', link: '/about' }
     ],
 
@@ -114,7 +116,8 @@ export default defineConfig({
       {
         text: 'Docs',
         items: [
-          { text: 'collection', link: '/collection' },
+          { text: 'Collections', link: '/collection' },
+          { text: 'Strings', link: '/strings' },
           { text: 'About', link: '/about' },
         ]
       }

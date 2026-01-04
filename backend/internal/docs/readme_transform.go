@@ -12,12 +12,15 @@ var examplePathRegex = regexp.MustCompile(`examples/([a-zA-Z0-9_-]+)/main\.go`)
 var anchorRegex = regexp.MustCompile(`<a id="([^"]+)"></a>`)
 var headingAnchorRegex = regexp.MustCompile(`^(#{2,6}) <a id="([^"]+)"></a>\s*(.+)$`)
 var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
+var headingWithIDRegex = regexp.MustCompile(`^(#{2,6})\s+(.+?)\s+\{#([^}]+)\}\s*$`)
 
-func transformReadme(readme string, repoSlug string, rawBase string, examples []ExampleProgram) string {
+var markdownHeadingRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s*$`)
+
+func transformReadme(readme string, repo RepoConfig, rawBase string, examples []ExampleProgram) string {
 	updated := rewriteImageLinks(readme, rawBase)
+	updated = wrapExamples(updated, repo.Slug, examples)
 	updated = rewriteHeadingAnchors(updated)
-	updated = wrapExamples(updated, repoSlug, examples)
-	return withFrontmatter(repoSlug, updated)
+	return withFrontmatter(repo, updated)
 }
 
 func rewriteImageLinks(content string, rawBase string) string {
@@ -57,17 +60,58 @@ func rewriteImageURL(url string, rawBase string) string {
 
 func rewriteHeadingAnchors(content string) string {
 	lines := strings.Split(content, "\n")
+	used := map[string]int{}
 	for i, line := range lines {
-		matches := headingAnchorRegex.FindStringSubmatch(line)
-		if len(matches) != 4 {
+		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
+			level := matches[1]
+			anchor := matches[2]
+			title := strings.TrimSpace(matches[3])
+			unique := uniqueAnchor(anchor, used)
+			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
 			continue
 		}
-		level := matches[1]
-		anchor := matches[2]
-		title := strings.TrimSpace(matches[3])
-		lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, anchor)
+		if matches := headingWithIDRegex.FindStringSubmatch(line); len(matches) == 4 {
+			level := matches[1]
+			title := strings.TrimSpace(matches[2])
+			anchor := matches[3]
+			unique := uniqueAnchor(anchor, used)
+			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
+			continue
+		}
+		if matches := markdownHeadingRegex.FindStringSubmatch(line); len(matches) == 3 {
+			level := matches[1]
+			title := strings.TrimSpace(matches[2])
+			anchor := defaultAnchor(title)
+			unique := uniqueAnchor(anchor, used)
+			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
+		}
 	}
 	return strings.Join(lines, "\n")
+}
+
+func uniqueAnchor(anchor string, used map[string]int) string {
+	if anchor == "" {
+		return anchor
+	}
+	count := used[anchor]
+	if count == 0 {
+		used[anchor] = 1
+		return anchor
+	}
+	count++
+	used[anchor] = count
+	return fmt.Sprintf("%s-%d", anchor, count)
+}
+
+func defaultAnchor(title string) string {
+	lower := strings.ToLower(strings.TrimSpace(title))
+	lower = strings.ReplaceAll(lower, "·", "")
+	lower = strings.ReplaceAll(lower, "—", "")
+	lower = strings.ReplaceAll(lower, "–", "")
+	lower = strings.ReplaceAll(lower, " ", "-")
+	lower = strings.ReplaceAll(lower, "\t", "-")
+	lower = strings.ReplaceAll(lower, "--", "-")
+	return strings.Trim(lower, "-")
 }
 
 func wrapExamples(content string, repoSlug string, examples []ExampleProgram) string {
@@ -222,8 +266,12 @@ func hasExample(id string, examples []ExampleProgram) bool {
 	return false
 }
 
-func withFrontmatter(repoSlug string, content string) string {
-	frontmatter := fmt.Sprintf("---\ntitle: %s\n---\n\n", repoSlug)
+func withFrontmatter(repo RepoConfig, content string) string {
+	title := repo.Title
+	if title == "" {
+		title = repo.Slug
+	}
+	frontmatter := fmt.Sprintf("---\ntitle: %s\n---\n\n", title)
 	return frontmatter + content
 }
 

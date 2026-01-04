@@ -1,5 +1,5 @@
 ---
-title: collection
+title: Collections
 ---
 
 <p align="center">
@@ -28,7 +28,7 @@ title: collection
     Iterate, filter, transform, sort, reduce, group, and debug data with zero dependencies - familiar to Go developers, pleasant to use everywhere.
 </p>
 
-## Features
+## Features {#features}
 
 - **Fluent chaining** - pipeline your operations like Laravel Collections
 - **Fully generic** (`Collection[T]`) - no reflection, no `interface{}`
@@ -42,7 +42,7 @@ title: collection
 - **Developer-friendly debug helpers** (`Dump()`, `Dd()`, `DumpStr()`)
 - **Works with any Go type**, including structs, pointers, and deeply nested composites
 
-## Fluent Chaining
+## Fluent Chaining {#fluent-chaining}
 
 Many methods return the collection itself, allowing for fluent method chaining.
 
@@ -82,7 +82,7 @@ collection.
 
 </GoForjExample>
 
-### Performance Benchmarks
+### Performance Benchmarks {#performance-benchmarks}
 
 > **tl;dr**: *lo* is excellent. We solve a different problem - and in chained pipelines, that difference matters.
 
@@ -102,7 +102,7 @@ The below tables are automatically generated from [`./docs/bench/main.go`](./doc
 
 Full raw tables: see `BENCHMARKS.md`.
 
-#### Read-only scalar ops (wrapper overhead only)
+#### Read-only scalar ops (wrapper overhead only) {#read-only-scalar-ops-(wrapper-overhead-only)}
 
 | Op | Speed vs lo | Memory | Allocs |
 |---:|:-----------:|:------:|:------:|
@@ -120,7 +120,7 @@ Full raw tables: see `BENCHMARKS.md`.
 | **Max** | ≈ | +32B | +2 |
 | **Each** | ≈ | +24B | +1 |
 
-#### Transforming ops
+#### Transforming ops {#transforming-ops}
 
 | Op | Speed vs lo | Memory | Allocs |
 |---:|:-----------:|:------:|:------:|
@@ -140,13 +140,13 @@ Full raw tables: see `BENCHMARKS.md`.
 | **CountByValue** | ≈ | +24B | +1 |
 | **ToMap** | ≈ | -24B | ≈ |
 
-#### Pipelines
+#### Pipelines {#pipelines}
 
 | Op | Speed vs lo | Memory | Allocs |
 |---:|:-----------:|:------:|:------:|
 | **Pipeline F→M→T→R** | **1.79x** | -12.2KB | ≈ |
 
-#### Mutating ops
+#### Mutating ops {#mutating-ops}
 
 | Op | Speed vs lo | Memory | Allocs |
 |---:|:-----------:|:------:|:------:|
@@ -156,7 +156,7 @@ Full raw tables: see `BENCHMARKS.md`.
 | **Shuffle** | **1.57x** | +24B | +1 |
 <!-- bench:embed:end -->
 
-## How to read the benchmarks
+## How to read the benchmarks {#how-to-read-the-benchmarks}
 
 * **≈** means the two libraries are effectively equivalent
 * Explicit memory deltas show fixed wrapper overhead vs avoided allocations
@@ -167,7 +167,7 @@ If you prefer immutable, one-off helpers - `lo` is outstanding.
 If you write **expressive, chained data pipelines** and care about hot-path performance - `collection` is built for that job.
 
 
-## Why chaining changes the performance story
+## Why chaining changes the performance story {#why-chaining-changes-the-performance-story}
 
 Most functional helpers (including `lo`) operate like this:
 
@@ -201,7 +201,7 @@ That's why the biggest deltas appear in benchmarks like:
 
 In these cases, `collection` can be **2×–30× faster** and often reduce allocations to **zero**, not by doing "clever tricks", but by making mutation *explicit and opt-in*.
 
-## Explicit branching with `Clone`
+## Explicit branching with `Clone` {#explicit-branching-with-`clone`}
 
 Fluent pipelines don't mean you're locked into mutation.
 
@@ -245,7 +245,7 @@ This keeps the performance benefits of in-place operations **where they matter**
 
 No hidden copies. No surprises.
 
-## Design Principles
+## Design Principles {#design-principles}
 
 - **Type-safe**: no reflection
 - **Explicit semantics**: order, mutation, and allocation are documented
@@ -253,7 +253,7 @@ No hidden copies. No surprises.
 - **Eager evaluation**: no lazy pipelines or hidden concurrency
 - **Maps are boundaries**: unordered data is handled explicitly
 
-## What this library is not
+## What this library is not {#what-this-library-is-not}
 
 - Not a lazy or streaming library
 - Not concurrency-aware
@@ -261,7 +261,7 @@ No hidden copies. No surprises.
 - Not a replacement for idiomatic loops in simple cases
 - Not designed to hide allocation, mutation, or ordering semantics
 
-## Working with maps
+## Working with maps {#working-with-maps}
 
 Maps are unordered in Go. This library does not pretend otherwise.
 
@@ -273,7 +273,7 @@ Instead, map interaction is explicit and intentional:
 
 This makes transitions between unordered and ordered data visible and honest.
 
-## Behavior semantics
+## Behavior semantics {#behavior-semantics}
 
 Each method declares how it interacts with the collection:
 
@@ -293,7 +293,7 @@ Some readonly or immutable operations may allocate internally when required
 
 Borrowed slices, in-place mutation, and view semantics are intentional and visible.
 
-## Runnable examples
+## Runnable examples {#runnable-examples}
 
 Every function has a corresponding runnable example under [`./examples`](./examples).
 
@@ -303,7 +303,7 @@ An automated test executes **every example** to verify it builds and runs succes
 
 This guarantees all examples are valid, up-to-date, and remain functional as the API evolves.
 
-# Installation
+# Installation {#installation}
 
 ```bash
 go get github.com/goforj/collection
@@ -311,7 +311,7 @@ go get github.com/goforj/collection
 
 <!-- api:embed:start -->
 
-# API Index
+# API Index {#api-index}
 
 | Group | Functions |
 |------:|-----------|
@@ -329,7 +329,7 @@ go get github.com/goforj/collection
 | **Transformation** | [Append](#append) [Concat](#concat) [Each](#each) [Map](#map) [MapTo](#mapto) [Merge](#merge) [Multiply](#multiply) [Pipe](#pipe) [Prepend](#prepend) [Tap](#tap) [Times](#times) [Transform](#transform) [Zip](#zip) [ZipWith](#zipwith) |
 
 
-## Access
+## Access {#access}
 
 ### Items · readonly · terminal {#items}
 
@@ -411,7 +411,7 @@ collection.Dump(items)
 
 </GoForjExample>
 
-## Aggregation
+## Aggregation {#aggregation}
 
 ### Avg · readonly · terminal {#avg}
 
@@ -972,7 +972,7 @@ collection.Dump(total3)
 
 
 
-## Construction
+## Construction {#construction}
 
 ### Clone · immutable · chainable {#clone}
 
@@ -1050,7 +1050,7 @@ New creates a new Collection from the provided slice and borrows it.
 
 NewNumeric wraps a slice of numeric types in a NumericCollection and borrows it.
 
-## Debugging
+## Debugging {#debugging}
 
 ### Dd · terminal {#dd}
 
@@ -1121,7 +1121,7 @@ fmt.Println(s)
 
 </GoForjExample>
 
-## Grouping
+## Grouping {#grouping}
 
 ### GroupBy · readonly · terminal {#groupby}
 
@@ -1275,7 +1275,7 @@ collection.Dump(groups2["user"])
 
 
 
-## Maps
+## Maps {#maps}
 
 ### FromMap · immutable · chainable {#frommap}
 
@@ -1504,7 +1504,7 @@ collection.Dump(out2)
 
 
 
-## Ordering
+## Ordering {#ordering}
 
 ### After · immutable · chainable {#after}
 
@@ -1772,7 +1772,7 @@ collection.Dump(users.Items())
 
 
 
-## Querying
+## Querying {#querying}
 
 ### All · readonly · terminal {#all}
 
@@ -2307,7 +2307,7 @@ collection.Dump(none)
 
 
 
-## Serialization
+## Serialization {#serialization}
 
 ### ToJSON · readonly · terminal {#tojson}
 
@@ -2345,7 +2345,7 @@ fmt.Println(out1)
 
 </GoForjExample>
 
-## Set Operations
+## Set Operations {#set-operations}
 
 ### Difference · immutable · chainable {#difference}
 
@@ -2815,7 +2815,7 @@ collection.Dump(out2.Items())
 
 
 
-## Slicing
+## Slicing {#slicing}
 
 ### Chunk · readonly · terminal {#chunk}
 
@@ -3680,7 +3680,7 @@ collection.Dump(win3.Items())
 
 
 
-## Transformation
+## Transformation {#transformation}
 
 ### Append · immutable · chainable {#append}
 

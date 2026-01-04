@@ -7,7 +7,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 53
+      "durationMs": 50
     },
     "all": {
       "title": "all",
@@ -16,7 +16,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 54
     },
     "any": {
       "title": "any",
@@ -34,7 +34,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mDave\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 52
     },
     "at": {
       "title": "at",
@@ -43,7 +43,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 52
     },
     "avg": {
       "title": "avg",
@@ -52,7 +52,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m4.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2.333333\u001b[0m\u001b[90m #float64\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 54
     },
     "before": {
       "title": "before",
@@ -61,7 +61,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName  =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAdmin =\u003e \u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName  =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAdmin =\u003e \u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 53
     },
     "chaining": {
       "title": "chaining",
@@ -70,7 +70,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]main.DeviceEvent\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.DeviceEvent\u001b[0m {\n    \u001b[33m+\u001b[0mDevice =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrouter-3\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mRegion =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mus-west\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mErrors =\u003e \u001b[38;5;38m22\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 53
     },
     "chunk": {
       "title": "chunk",
@@ -88,7 +88,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 52
     },
     "concat": {
       "title": "concat",
@@ -97,7 +97,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mJohn Doe\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mJane Doe\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mJohnny Doe\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 56
     },
     "contains": {
       "title": "contains",
@@ -106,7 +106,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "count": {
       "title": "count",
@@ -115,7 +115,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 53
     },
     "countby": {
       "title": "countby",
@@ -124,16 +124,16 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mapple\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbanana\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mcherry\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170madmin\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170muser\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 53
     },
     "countbyvalue": {
       "title": "countbyvalue",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// CountByValue returns a map where each distinct item in the collection\n\t// is mapped to the number of times it appears.\n\n\t// Example: strings\n\tc1 := collection.New([]string{\"a\", \"b\", \"a\"})\n\tcounts1 := collection.CountByValue(c1)\n\tcollection.Dump(counts1)\n\t// #map[string]int {\n\t//  a =\u003e 2 #int\n\t//  b =\u003e 1 #int\n\t// }\n\n\t// Example: integers\n\tc2 := collection.New([]int{1, 2, 2, 3, 3, 3})\n\tcounts2 := collection.CountByValue(c2)\n\tcollection.Dump(counts2)\n\t// #map[int]int {\n\t//  1 =\u003e 1 #int\n\t//  2 =\u003e 2 #int\n\t//  3 =\u003e 3 #int\n\t// }\n\n\t// Example: structs (comparable)\n\ttype Point struct {\n\t\tX int\n\t\tY int\n\t}\n\n\tc3 := collection.New([]Point{\n\t\t{X: 1, Y: 1},\n\t\t{X: 2, Y: 2},\n\t\t{X: 1, Y: 1},\n\t})\n\n\tcounts3 := collection.CountByValue(c3)\n\tcollection.Dump(counts3)\n\t// #map[main.Point]int {\n\t//  {1 1} =\u003e 2 #int\n\t//  {2 2} =\u003e 1 #int\n\t// }\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[main.Point]int\u001b[0m {\n   \u001b[38;5;170m{1 1}\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m{2 2}\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[main.Point]int\u001b[0m {\n   \u001b[38;5;170m{1 1}\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m{2 2}\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 50
     },
     "dd": {
       "title": "dd",
@@ -142,7 +142,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:10\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "exit status 1\n",
       "exitCode": 1,
-      "durationMs": 50
+      "durationMs": 52
     },
     "difference": {
       "title": "difference",
@@ -151,7 +151,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mcherry\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 51
     },
     "dump": {
       "title": "dump",
@@ -160,7 +160,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 50
     },
     "dumpstr": {
       "title": "dumpstr",
@@ -169,7 +169,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:83\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n]\n\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 50
     },
     "each": {
       "title": "each",
@@ -178,7 +178,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAPPLE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBANANA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCHERRY\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCharlie\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 51
     },
     "filter": {
       "title": "filter",
@@ -187,7 +187,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mavocado\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAndrew\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 51
     },
     "first": {
       "title": "first",
@@ -196,7 +196,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113malpha\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 50
     },
     "firstwhere": {
       "title": "firstwhere",
@@ -205,7 +205,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 51
     },
     "frommap": {
       "title": "frommap",
@@ -214,7 +214,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Pair[string,int]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Pair[string,int]\u001b[0m {\n    \u001b[33m+\u001b[0mKey   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Pair[string,int]\u001b[0m {\n    \u001b[33m+\u001b[0mKey   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#collection.Pair[string,int]\u001b[0m {\n    \u001b[33m+\u001b[0mKey   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Pair[string,main.Config·1]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Pair[string,main.Config·1]\u001b[0m {\n    \u001b[33m+\u001b[0mKey       =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrouter-1\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue     =\u003e \u001b[90m#main.Config\u001b[0m {\n      \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n      \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Pair[string,main.Config·1]\u001b[0m {\n    \u001b[33m+\u001b[0mKey       =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrouter-3\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue     =\u003e \u001b[90m#main.Config\u001b[0m {\n      \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n      \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m45\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170malice\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbob\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 52
     },
     "groupby": {
       "title": "groupby",
@@ -232,7 +232,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113muser\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 52
     },
     "indexwhere": {
       "title": "indexwhere",
@@ -241,7 +241,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "intersect": {
       "title": "intersect",
@@ -250,7 +250,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mcherry\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 55
     },
     "isempty": {
       "title": "isempty",
@@ -259,7 +259,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 53
     },
     "items": {
       "title": "items",
@@ -268,7 +268,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 51
     },
     "itemscopy": {
       "title": "itemscopy",
@@ -277,7 +277,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 53
+      "durationMs": 51
     },
     "last": {
       "title": "last",
@@ -295,7 +295,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m40\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mgamma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlex\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 49
     },
     "map": {
       "title": "map",
@@ -304,7 +304,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAPPLE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBANANA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCHERRY\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mALICE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBOB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 53
     },
     "mapto": {
       "title": "mapto",
@@ -313,7 +313,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113modd\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113meven\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113modd\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113meven\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "max": {
       "title": "max",
@@ -322,7 +322,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m9.200000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 53
     },
     "maxby": {
       "title": "maxby",
@@ -340,7 +340,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m5.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m3.300000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 53
     },
     "merge": {
       "title": "merge",
@@ -358,7 +358,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m1.200000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 52
     },
     "minby": {
       "title": "minby",
@@ -367,7 +367,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m25\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mfig\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 49
     },
     "mode": {
       "title": "mode",
@@ -376,7 +376,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]float64\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1.100000\u001b[0m\u001b[90m #float64\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[1;38;5;113m[]int\u001b[0m\u001b[90m(nil)\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 50
     },
     "multiply": {
       "title": "multiply",
@@ -385,7 +385,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m5\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "none": {
       "title": "none",
@@ -394,7 +394,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 49
     },
     "partition": {
       "title": "partition",
@@ -403,7 +403,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mgo\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mgopher\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrust\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mruby\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mActive =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mActive =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n]\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mActive =\u003e \u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 45
+      "durationMs": 47
     },
     "pipe": {
       "title": "pipe",
@@ -412,7 +412,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mabc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 49
     },
     "pop": {
       "title": "pop",
@@ -430,7 +430,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[1;38;5;113m[]int\u001b[0m\u001b[90m(nil)\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mx\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113my\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m#[]string\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "prepend": {
       "title": "prepend",
@@ -439,7 +439,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m9\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m8\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 48
     },
     "reduce": {
       "title": "reduce",
@@ -448,7 +448,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mabc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.Stats\u001b[0m {\n  \u001b[33m+\u001b[0mCount =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mSum   =\u003e \u001b[38;5;38m60\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 48
     },
     "reverse": {
       "title": "reverse",
@@ -457,16 +457,16 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "shuffle": {
       "title": "shuffle",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// Shuffle shuffles the collection in place and returns the same collection.\n\n\t// Example: integers\n\tc := collection.New([]int{1, 2, 3, 4, 5})\n\tc.Shuffle()\n\tcollection.Dump(c.Items())\n\n\t// Example: strings – chaining\n\tout2 := collection.New([]string{\"a\", \"b\", \"c\"}).\n\t\tShuffle().\n\t\tAppend(\"d\").\n\t\tItems()\n\n\tcollection.Dump(out2)\n\n\t// Example: structs\n\ttype User struct {\n\t\tID int\n\t}\n\n\tusers := collection.New([]User{\n\t\t{ID: 1},\n\t\t{ID: 2},\n\t\t{ID: 3},\n\t\t{ID: 4},\n\t})\n\n\tusers.Shuffle()\n\tcollection.Dump(users.Items())\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 46
     },
     "skip": {
       "title": "skip",
@@ -475,7 +475,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "skiplast": {
       "title": "skiplast",
@@ -484,7 +484,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 48
     },
     "sort": {
       "title": "sort",
@@ -493,7 +493,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mcherry\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m25\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m40\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "sum": {
       "title": "sum",
@@ -511,7 +511,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mdate\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 48
     },
     "take": {
       "title": "take",
@@ -529,7 +529,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 49
     },
     "takeuntil": {
       "title": "takeuntil",
@@ -538,7 +538,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 59
+      "durationMs": 49
     },
     "takeuntilfn": {
       "title": "takeuntilfn",
@@ -547,7 +547,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 56
+      "durationMs": 46
     },
     "tap": {
       "title": "tap",
@@ -556,7 +556,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 47
     },
     "times": {
       "title": "times",
@@ -580,10 +580,10 @@
       "title": "tomap",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// ToMap reduces a collection into a map using the provided key and value\n\t// selector functions.\n\n\t// Example: basic usage\n\tusers := []string{\"alice\", \"bob\", \"carol\"}\n\n\tout := collection.ToMap(\n\t\tcollection.New(users),\n\t\tfunc(name string) string { return name },\n\t\tfunc(name string) int { return len(name) },\n\t)\n\n\tcollection.Dump(out)\n\t// #map[string]int {\n\t//  alice =\u003e 5 #int\n\t//  bob =\u003e 3 #int\n\t//  carol =\u003e 5 #int\n\t// }\n\n\t// Example: re-keying structs\n\ttype User struct {\n\t\tID   int\n\t\tName string\n\t}\n\n\tusers2 := []User{\n\t\t{ID: 1, Name: \"Alice\"},\n\t\t{ID: 2, Name: \"Bob\"},\n\t}\n\n\tbyID := collection.ToMap(\n\t\tcollection.New(users2),\n\t\tfunc(u User) int { return u.ID },\n\t\tfunc(u User) User { return u },\n\t)\n\n\tcollection.Dump(byID)\n\t// #map[int]main.User {\n\t//  1 =\u003e #main.User {\n\t//    +ID   =\u003e 1 #int\n\t//    +Name =\u003e \"Alice\" #string\n\t//  }\n\t//  2 =\u003e #main.User {\n\t//    +ID   =\u003e 2 #int\n\t//    +Name =\u003e \"Bob\" #string\n\t//  }\n\t// }\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170malice\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbob\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mcarol\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]main.User\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n}\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mcarol\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170malice\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbob\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]main.User\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 51
     },
     "tomapkv": {
       "title": "tomapkv",
@@ -592,7 +592,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mc\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]main.Config\u001b[0m {\n   \u001b[38;5;170mrouter-1\u001b[0m =\u003e \u001b[90m#main.Config\u001b[0m {\n    \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n    \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n  }\n   \u001b[38;5;170mrouter-3\u001b[0m =\u003e \u001b[90m#main.Config\u001b[0m {\n    \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n    \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m45\u001b[0m\u001b[90m #int\u001b[0m\n  }\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 48
     },
     "toprettyjson": {
       "title": "toprettyjson",
@@ -601,7 +601,7 @@
       "stdout": "[\n  \"a\",\n  \"b\"\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 49
     },
     "transform": {
       "title": "transform",
@@ -610,7 +610,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mC\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mALICE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBOB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 52
     },
     "union": {
       "title": "union",
@@ -619,7 +619,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mdate\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 51
     },
     "unique": {
       "title": "unique",
@@ -628,7 +628,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 50
     },
     "uniqueby": {
       "title": "uniqueby",
@@ -637,7 +637,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 50
     },
     "uniquecomparable": {
       "title": "uniquecomparable",
@@ -646,7 +646,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 49
     },
     "window": {
       "title": "window",
@@ -655,7 +655,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[][]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#[]int\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  ]\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#[]int\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  ]\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#[]int\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n  ]\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[][]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#[]string\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  ]\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#[]string\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  ]\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[][]main.Point\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#[]main.Point\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n    }\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  ]\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#[]main.Point\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    }\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  ]\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#[]main.Point\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    }\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m9\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  ]\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 50
     },
     "zip": {
       "title": "zip",
@@ -664,7 +664,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Tuple[int,string]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Tuple[int,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mone\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Tuple[int,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mtwo\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Tuple[main.User·1,string]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Tuple[main.User·1,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[90m#main.User\u001b[0m {\n      \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    }\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Tuple[main.User·1,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[90m#main.User\u001b[0m {\n      \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    }\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113muser\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 45
+      "durationMs": 48
     },
     "zipwith": {
       "title": "zipwith",
@@ -673,7 +673,918 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m11\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m22\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113malice:admin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbob:user\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice -\u003e admin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
+      "durationMs": 49
+    }
+  },
+  "str": {
+    "after": {
+      "title": "after",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// After returns the substring after the first occurrence of sep.\n\t// If sep is empty or not found, the original string is returned.\n\n\t// Example: slice after marker\n\tv := str.Of(\"gopher::go\").After(\"::\").String()\n\tprintln(v)\n\t// #string go\n}\n",
+      "stdout": "go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "afterlast": {
+      "title": "afterlast",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// AfterLast returns the substring after the last occurrence of sep.\n\t// If sep is empty or not found, the original string is returned.\n\n\t// Example: slice after last separator\n\tv := str.Of(\"pkg/path/file.txt\").AfterLast(\"/\").String()\n\tprintln(v)\n\t// #string file.txt\n}\n",
+      "stdout": "file.txt\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "append": {
+      "title": "append",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Append concatenates the provided parts to the end of the string.\n\n\t// Example: append text\n\tv := str.Of(\"Go\").Append(\"Forj\", \"!\").String()\n\tprintln(v)\n\t// #string GoForj!\n}\n",
+      "stdout": "GoForj!\n",
+      "stderr": "",
+      "exitCode": 0,
       "durationMs": 47
+    },
+    "before": {
+      "title": "before",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Before returns the substring before the first occurrence of sep.\n\t// If sep is empty or not found, the original string is returned.\n\n\t// Example: slice before marker\n\tv := str.Of(\"gopher::go\").Before(\"::\").String()\n\tprintln(v)\n\t// #string gopher\n}\n",
+      "stdout": "gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "beforelast": {
+      "title": "beforelast",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// BeforeLast returns the substring before the last occurrence of sep.\n\t// If sep is empty or not found, the original string is returned.\n\n\t// Example: slice before last separator\n\tv := str.Of(\"pkg/path/file.txt\").BeforeLast(\"/\").String()\n\tprintln(v)\n\t// #string pkg/path\n}\n",
+      "stdout": "pkg/path\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "between": {
+      "title": "between",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Between returns the substring between the first occurrence of start and the last occurrence of end.\n\t// Returns an empty string if either marker is missing or overlapping.\n\n\t// Example: between first and last\n\tv := str.Of(\"This is my name\").Between(\"This\", \"name\").String()\n\tprintln(v)\n\t// #string  is my\n}\n",
+      "stdout": " is my \n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "betweenfirst": {
+      "title": "betweenfirst",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// BetweenFirst returns the substring between the first occurrence of start and the first occurrence of end after it.\n\t// Returns an empty string if markers are missing.\n\n\t// Example: minimal span between markers\n\tv := str.Of(\"[a] bc [d]\").BetweenFirst(\"[\", \"]\").String()\n\tprintln(v)\n\t// #string a\n}\n",
+      "stdout": "a\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "camel": {
+      "title": "camel",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Camel converts the string to camelCase.\n\n\t// Example: camel case\n\tv := str.Of(\"foo_bar baz\").Camel().String()\n\tprintln(v)\n\t// #string fooBarBaz\n}\n",
+      "stdout": "fooBarBaz\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "charat": {
+      "title": "charat",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// CharAt returns the rune at the given index and true if within bounds.\n\n\t// Example: rune lookup\n\tv, ok := str.Of(\"gopher\").CharAt(2)\n\tprintln(string(v), ok)\n\t// #string p\n\t// #bool true\n}\n",
+      "stdout": "p true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "chopend": {
+      "title": "chopend",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ChopEnd removes the first matching suffix if present.\n\n\t// Example: chop end\n\tv := str.Of(\"file.txt\").ChopEnd(\".txt\", \".md\").String()\n\tprintln(v)\n\t// #string file\n}\n",
+      "stdout": "file\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "chopstart": {
+      "title": "chopstart",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ChopStart removes the first matching prefix if present.\n\n\t// Example: chop start\n\tv := str.Of(\"https://goforj.dev\").ChopStart(\"https://\", \"http://\").String()\n\tprintln(v)\n\t// #string goforj.dev\n}\n",
+      "stdout": "goforj.dev\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "contains": {
+      "title": "contains",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Contains reports whether the string contains any of the provided substrings (case-sensitive).\n\t// Empty substrings return true to match strings.Contains semantics.\n\n\t// Example: contains any\n\tv := str.Of(\"Go means gophers\").Contains(\"rust\", \"gopher\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "containsall": {
+      "title": "containsall",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ContainsAll reports whether the string contains all provided substrings (case-sensitive).\n\t// Empty substrings are ignored.\n\n\t// Example: contains all\n\tv := str.Of(\"Go means gophers\").ContainsAll(\"Go\", \"gopher\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "containsallfold": {
+      "title": "containsallfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ContainsAllFold reports whether the string contains all provided substrings, using Unicode\n\t// case folding for comparisons.\n\t// Empty substrings are ignored.\n\n\t// Example: contains all (case-insensitive)\n\tv := str.Of(\"Go means gophers\").ContainsAllFold(\"go\", \"GOPHER\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "containsfold": {
+      "title": "containsfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ContainsFold reports whether the string contains any of the provided substrings, using Unicode\n\t// case folding for comparisons.\n\t// Empty substrings return true.\n\n\t// Example: contains any (case-insensitive)\n\tv := str.Of(\"Go means gophers\").ContainsFold(\"GOPHER\", \"rust\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "count": {
+      "title": "count",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Count returns the number of non-overlapping occurrences of sub.\n\n\t// Example: count substring\n\tv := str.Of(\"gogophergo\").Count(\"go\")\n\tprintln(v)\n\t// #int 3\n}\n",
+      "stdout": "3\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "deduplicate": {
+      "title": "deduplicate",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Deduplicate collapses consecutive instances of char into a single instance.\n\t// If char is zero, space is used.\n\n\t// Example: collapse spaces\n\tv := str.Of(\"The   Go   Playground\").Deduplicate(' ').String()\n\tprintln(v)\n\t// #string The Go Playground\n}\n",
+      "stdout": "The Go Playground\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "endswith": {
+      "title": "endswith",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// EndsWith reports whether the string ends with any of the provided suffixes (case-sensitive).\n\n\t// Example: ends with any\n\tv := str.Of(\"gopher\").EndsWith(\"her\", \"cat\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "endswithfold": {
+      "title": "endswithfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// EndsWithFold reports whether the string ends with any of the provided suffixes using Unicode case folding.\n\n\t// Example: ends with (case-insensitive)\n\tv := str.Of(\"gopher\").EndsWithFold(\"HER\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "ensureprefix": {
+      "title": "ensureprefix",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// EnsurePrefix ensures the string starts with prefix, adding it if missing.\n\n\t// Example: ensure prefix\n\tv := str.Of(\"path/to\").EnsurePrefix(\"/\").String()\n\tprintln(v)\n\t// #string /path/to\n}\n",
+      "stdout": "/path/to\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "ensuresuffix": {
+      "title": "ensuresuffix",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// EnsureSuffix ensures the string ends with suffix, adding it if missing.\n\n\t// Example: ensure suffix\n\tv := str.Of(\"path/to\").EnsureSuffix(\"/\").String()\n\tprintln(v)\n\t// #string path/to/\n}\n",
+      "stdout": "path/to/\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "equals": {
+      "title": "equals",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Equals reports whether the string exactly matches other (case-sensitive).\n\n\t// Example: exact match\n\tv := str.Of(\"gopher\").Equals(\"gopher\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "equalsfold": {
+      "title": "equalsfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// EqualsFold reports whether the string matches other using Unicode case folding.\n\n\t// Example: case-insensitive match\n\tv := str.Of(\"gopher\").EqualsFold(\"GOPHER\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "excerpt": {
+      "title": "excerpt",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Excerpt returns a snippet around the first occurrence of needle with the given radius.\n\t// If needle is not found, an empty string is returned. If radius \u003c= 0, a default of 100 is used.\n\t// Omission is used at the start/end when text is trimmed (default \"...\").\n\n\t// Example: excerpt with radius\n\tv := str.Of(\"This is my name\").Excerpt(\"my\", 3, \"...\")\n\tprintln(v.String())\n\t// #string ...is my na...\n}\n",
+      "stdout": "...is my na...\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "firstword": {
+      "title": "firstword",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// FirstWord returns the first word token or empty string.\n\n\t// Example: first word\n\tv := str.Of(\"Hello world\")\n\tprintln(v.FirstWord().String())\n\t// #string Hello\n}\n",
+      "stdout": "Hello\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "frombase64": {
+      "title": "frombase64",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// FromBase64 decodes a standard Base64 string.\n\n\t// Example: base64 decode\n\tv, err := str.Of(\"Z29waGVy\").FromBase64()\n\tprintln(v.String(), err)\n\t// #string gopher\n\t// #error \u003cnil\u003e\n}\n",
+      "stdout": "gopher (0x0,0x0)\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "gostring": {
+      "title": "gostring",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"fmt\"\n\t\"github.com/goforj/str\"\n)\n\nfunc main() {\n\t// GoString allows %#v formatting to print the raw string.\n\n\t// Example: fmt %#v uses GoString\n\tv := str.Of(\"go\")\n\tprintln(fmt.Sprintf(\"%#v\", v))\n\t// #string go\n}\n",
+      "stdout": "go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 47
+    },
+    "headline": {
+      "title": "headline",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Headline converts the string into a human-friendly headline:\n\t// splits on case/underscores/dashes/whitespace, title-cases words, and lowercases small words (except the first).\n\n\t// Example: headline\n\tv := str.Of(\"emailNotification_sent\").Headline().String()\n\tprintln(v)\n\t// #string Email Notification Sent\n}\n",
+      "stdout": "Email Notification Sent\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "index": {
+      "title": "index",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Index returns the rune index of the first occurrence of sub, or -1 if not found.\n\n\t// Example: first rune index\n\tv := str.Of(\"héllo\").Index(\"llo\")\n\tprintln(v)\n\t// #int 2\n}\n",
+      "stdout": "2\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 49
+    },
+    "is": {
+      "title": "is",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Is reports whether the string matches any of the provided wildcard patterns.\n\t// Patterns use '*' as a wildcard. Case-sensitive.\n\n\t// Example: wildcard match\n\tv := str.Of(\"foo/bar\").Is(\"foo/*\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "isascii": {
+      "title": "isascii",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// IsASCII reports whether the string consists solely of 7-bit ASCII runes.\n\n\t// Example: ASCII check\n\tv := str.Of(\"gopher\").IsASCII()\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "isblank": {
+      "title": "isblank",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// IsBlank reports whether the string contains only Unicode whitespace.\n\n\t// Example: blank check\n\tv := str.Of(\"  \\\\t\\\\n\")\n\tprintln(v.IsBlank())\n\t// #bool true\n}\n",
+      "stdout": "false\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "isempty": {
+      "title": "isempty",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// IsEmpty reports whether the string has zero length.\n\n\t// Example: empty check\n\tv := str.Of(\"\").IsEmpty()\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "ismatch": {
+      "title": "ismatch",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"github.com/goforj/str\"\n\t\"regexp\"\n)\n\nfunc main() {\n\t// IsMatch reports whether the string matches the provided regular expression.\n\n\t// Example: regex match\n\tv := str.Of(\"abc123\").IsMatch(regexp.MustCompile(`\\d+`))\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "join": {
+      "title": "join",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Join joins the provided words with sep.\n\n\t// Example: join words\n\tv := str.Of(\"unused\").Join([]string{\"foo\", \"bar\"}, \"-\").String()\n\tprintln(v)\n\t// #string foo-bar\n}\n",
+      "stdout": "foo-bar\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "kebab": {
+      "title": "kebab",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Kebab converts the string to kebab-case.\n\n\t// Example: kebab case\n\tv := str.Of(\"fooBar baz\").Kebab().String()\n\tprintln(v)\n\t// #string foo-bar-baz\n}\n",
+      "stdout": "foo-bar-baz\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "lastindex": {
+      "title": "lastindex",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// LastIndex returns the rune index of the last occurrence of sub, or -1 if not found.\n\n\t// Example: last rune index\n\tv := str.Of(\"go gophers go\").LastIndex(\"go\")\n\tprintln(v)\n\t// #int 10\n}\n",
+      "stdout": "11\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 46
+    },
+    "lastword": {
+      "title": "lastword",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// LastWord returns the last word token or empty string.\n\n\t// Example: last word\n\tv := str.Of(\"Hello world\").LastWord().String()\n\tprintln(v)\n\t// #string world\n}\n",
+      "stdout": "world\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "lcfirst": {
+      "title": "lcfirst",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"fmt\"\n\t\"github.com/goforj/str\"\n)\n\nfunc main() {\n\t// LcFirst returns the string with the first rune lower-cased.\n\n\t// Example: lowercase first rune\n\tv := str.Of(\"Gopher\").LcFirst().String()\n\tfmt.Println(v)\n\t// #string gopher\n}\n",
+      "stdout": "gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 50
+    },
+    "len": {
+      "title": "len",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Len returns the number of runes in the string.\n\n\t// Example: count runes instead of bytes\n\tv := str.Of(\"gophers 🦫\").Len()\n\tprintln(v)\n\t// #int 9\n}\n",
+      "stdout": "9\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "limit": {
+      "title": "limit",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Limit truncates the string to length runes, appending suffix if truncation occurs.\n\n\t// Example: limit with suffix\n\tv := str.Of(\"Perfectly balanced, as all things should be.\").Limit(10, \"...\").String()\n\tprintln(v)\n\t// #string Perfectly...\n}\n",
+      "stdout": "Perfectly ...\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "lines": {
+      "title": "lines",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Lines splits the string into lines after normalizing newline variants.\n\n\t// Example: split lines\n\tv := str.Of(\"a\\\\r\\\\nb\\\\nc\").Lines()\n\tprintln(v)\n\t// #[]string [a b c]\n}\n",
+      "stdout": "[1/1]0x14000010050\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "mask": {
+      "title": "mask",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Mask replaces the middle of the string with the given rune, revealing revealLeft runes\n\t// at the start and revealRight runes at the end. Negative reveal values count from the end.\n\t// If the reveal counts cover the whole string, the original string is returned.\n\n\t// Example: mask email\n\tv := str.Of(\"gopher@example.com\").Mask('*', 3, 4).String()\n\tprintln(v)\n\t// #string gop***********.com\n}\n",
+      "stdout": "gop***********.com\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 45
+    },
+    "match": {
+      "title": "match",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"github.com/goforj/str\"\n\t\"regexp\"\n)\n\nfunc main() {\n\t// Match returns the first match and submatches for the pattern.\n\n\t// Example: regex match\n\tre := regexp.MustCompile(`g(o+)`)\n\tv := str.Of(\"gooo\").Match(re)\n\tprintln(v)\n\t// #[]string [gooo ooo]\n}\n",
+      "stdout": "[2/2]0x140000760c0\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 44
+    },
+    "matchall": {
+      "title": "matchall",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"github.com/goforj/str\"\n\t\"regexp\"\n)\n\nfunc main() {\n\t// MatchAll returns all matches and submatches for the pattern.\n\n\t// Example: regex match all\n\tre := regexp.MustCompile(`go+`)\n\tv := str.Of(\"go gopher gooo\").MatchAll(re)\n\tprintln(v)\n\t// #[][]string [[go] [gooo]]\n}\n",
+      "stdout": "[3/10]0x14000132000\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "newline": {
+      "title": "newline",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// NewLine appends a newline character to the string.\n\n\t// Example: append newline\n\tv := str.Of(\"hello\").NewLine().Append(\"world\").String()\n\tprintln(v)\n\t// #string hello\\nworld\n}\n",
+      "stdout": "hello\nworld\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "normalizenewlines": {
+      "title": "normalizenewlines",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// NormalizeNewlines replaces CRLF, CR, and Unicode separators with \\n.\n\n\t// Example: normalize newline variants\n\tv := str.Of(\"a\\\\r\\\\nb\\\\u2028c\").NormalizeNewlines().String()\n\tprintln(v)\n\t// #string a\\nb\\nc\n}\n",
+      "stdout": "a\\r\\nb\\u2028c\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 39
+    },
+    "normalizespace": {
+      "title": "normalizespace",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// NormalizeSpace collapses whitespace runs to single spaces without trimming ends.\n\n\t// Example: normalize interior space\n\tv := str.Of(\"  go   forj  \").NormalizeSpace().String()\n\tprintln(v)\n\t// #string  go forj \n}\n",
+      "stdout": " go forj \n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "of": {
+      "title": "of",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Of wraps a raw string with fluent helpers.\n\n\t// Example: wrap raw string\n\tv := str.Of(\"gopher\")\n\tprintln(v.String())\n\t// #string gopher\n}\n",
+      "stdout": "gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 39
+    },
+    "padboth": {
+      "title": "padboth",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// PadBoth pads the string on both sides to reach length runes using pad (defaults to space).\n\n\t// Example: pad both\n\tv := str.Of(\"go\").PadBoth(6, \"-\").String()\n\tprintln(v)\n\t// #string --go--\n}\n",
+      "stdout": "--go--\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "padleft": {
+      "title": "padleft",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// PadLeft pads the string on the left to reach length runes using pad (defaults to space).\n\n\t// Example: pad left\n\tv := str.Of(\"go\").PadLeft(5, \" \").String()\n\tprintln(v)\n\t// #string \\u00a0\\u00a0\\u00a0go\n}\n",
+      "stdout": "   go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "padright": {
+      "title": "padright",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// PadRight pads the string on the right to reach length runes using pad (defaults to space).\n\n\t// Example: pad right\n\tv := str.Of(\"go\").PadRight(5, \".\").String()\n\tprintln(v)\n\t// #string go...\n}\n",
+      "stdout": "go...\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "pascal": {
+      "title": "pascal",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"fmt\"\n\t\"github.com/goforj/str\"\n)\n\nfunc main() {\n\t// Pascal converts the string to PascalCase.\n\n\t// Example: pascal case\n\tv := str.Of(\"foo_bar baz\").Pascal().String()\n\tfmt.Println(v)\n\t// #string FooBarBaz\n}\n",
+      "stdout": "FooBarBaz\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 47
+    },
+    "plural": {
+      "title": "plural",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Plural returns a best-effort English plural form of the last word.\n\n\t// Example: pluralize word\n\tv := str.Of(\"city\").Plural().String()\n\tprintln(v)\n\t// #string cities\n}\n",
+      "stdout": "cities\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "prepend": {
+      "title": "prepend",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Prepend concatenates the provided parts to the beginning of the string.\n\n\t// Example: prepend text\n\tv := str.Of(\"World\").Prepend(\"Hello \", \"Go \").String()\n\tprintln(v)\n\t// #string Hello Go World\n}\n",
+      "stdout": "Hello Go World\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "remove": {
+      "title": "remove",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Remove deletes all occurrences of provided substrings.\n\n\t// Example: remove substrings\n\tv := str.Of(\"The Go Toolkit\").Remove(\"Go \").String()\n\tprintln(v)\n\t// #string The Toolkit\n}\n",
+      "stdout": "The Toolkit\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "repeat": {
+      "title": "repeat",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Repeat repeats the string count times (non-negative).\n\n\t// Example: repeat string\n\tv := str.Of(\"go\").Repeat(3).String()\n\tprintln(v)\n\t// #string gogogo\n}\n",
+      "stdout": "gogogo\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "replaceall": {
+      "title": "replaceall",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceAll replaces all occurrences of old with new in the string.\n\t// If old is empty, the original string is returned unchanged.\n\n\t// Example: replace all occurrences\n\tv := str.Of(\"go gopher go\").ReplaceAll(\"go\", \"Go\").String()\n\tprintln(v)\n\t// #string Go Gopher Go\n}\n",
+      "stdout": "Go Gopher Go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "replacearray": {
+      "title": "replacearray",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceArray replaces all occurrences of each old in olds with repl.\n\n\t// Example: replace many\n\tv := str.Of(\"The---Go---Toolkit\")\n\tprintln(v.ReplaceArray([]string{\"---\"}, \"-\").String())\n\t// #string The-Go-Toolkit\n}\n",
+      "stdout": "The-Go-Toolkit\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "replaceend": {
+      "title": "replaceend",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceEnd replaces old with repl at the end of the string, if present.\n\n\t// Example: replace suffix\n\tv := str.Of(\"file.old\").ReplaceEnd(\".old\", \".new\").String()\n\tprintln(v)\n\t// #string file.new\n}\n",
+      "stdout": "file.new\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "replacefirst": {
+      "title": "replacefirst",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceFirst replaces the first occurrence of old with repl.\n\n\t// Example: replace first\n\tv := str.Of(\"gopher gopher\").ReplaceFirst(\"gopher\", \"go\").String()\n\tprintln(v)\n\t// #string go gopher\n}\n",
+      "stdout": "go gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "replacefirstfold": {
+      "title": "replacefirstfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceFirstFold replaces the first occurrence of old with repl using Unicode case folding.\n\n\t// Example: replace first (case-insensitive)\n\tv := str.Of(\"go gopher GO\").ReplaceFirstFold(\"GO\", \"Go\").String()\n\tprintln(v)\n\t// #string Go gopher GO\n}\n",
+      "stdout": "Go gopher GO\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "replacefold": {
+      "title": "replacefold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceFold replaces all occurrences of old with repl using Unicode case folding.\n\n\t// Example: replace all (case-insensitive)\n\tv := str.Of(\"go gopher GO\").ReplaceFold(\"GO\", \"Go\").String()\n\tprintln(v)\n\t// #string Go Gopher Go\n}\n",
+      "stdout": "Go Gopher Go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "replacelast": {
+      "title": "replacelast",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceLast replaces the last occurrence of old with repl.\n\n\t// Example: replace last\n\tv := str.Of(\"gopher gopher\").ReplaceLast(\"gopher\", \"go\").String()\n\tprintln(v)\n\t// #string gopher go\n}\n",
+      "stdout": "gopher go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "replacelastfold": {
+      "title": "replacelastfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceLastFold replaces the last occurrence of old with repl using Unicode case folding.\n\n\t// Example: replace last (case-insensitive)\n\tv := str.Of(\"go gopher GO\").ReplaceLastFold(\"GO\", \"Go\").String()\n\tprintln(v)\n\t// #string go gopher Go\n}\n",
+      "stdout": "go gopher Go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "replacematches": {
+      "title": "replacematches",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"github.com/goforj/str\"\n\t\"regexp\"\n)\n\nfunc main() {\n\t// ReplaceMatches applies repl to each regex match and returns the result.\n\n\t// Example: regex replace with callback\n\tre := regexp.MustCompile(`\\d+`)\n\tv := str.Of(\"Hello 123 World\").ReplaceMatches(re, func(m string) string { return \"[\" + m + \"]\" }).String()\n\tprintln(v)\n\t// #string Hello [123] World\n}\n",
+      "stdout": "Hello [123] World\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "replacestart": {
+      "title": "replacestart",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ReplaceStart replaces old with repl at the start of the string, if present.\n\n\t// Example: replace prefix\n\tv := str.Of(\"prefix-value\").ReplaceStart(\"prefix-\", \"new-\").String()\n\tprintln(v)\n\t// #string new-value\n}\n",
+      "stdout": "new-value\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "reverse": {
+      "title": "reverse",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Reverse returns a rune-safe reversed string.\n\n\t// Example: reverse\n\tv := str.Of(\"naïve\").Reverse().String()\n\tprintln(v)\n\t// #string evïan\n}\n",
+      "stdout": "evïan\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "runecount": {
+      "title": "runecount",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// RuneCount is an alias for Len to make intent explicit in mixed codebases.\n\n\t// Example: alias for Len\n\tv := str.Of(\"naïve\").RuneCount()\n\tprintln(v)\n\t// #int 5\n}\n",
+      "stdout": "5\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "singular": {
+      "title": "singular",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Singular returns a best-effort English singular form of the last word.\n\n\t// Example: singularize word\n\tv := str.Of(\"people\").Singular().String()\n\tprintln(v)\n\t// #string person\n}\n",
+      "stdout": "person\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 39
+    },
+    "slice": {
+      "title": "slice",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Slice returns the substring between rune offsets [start:end).\n\t// Indices are clamped; if start \u003e= end the result is empty.\n\n\t// Example: rune-safe slice\n\tv := str.Of(\"naïve café\").Slice(3, 7).String()\n\tprintln(v)\n\t// #string e ca\n}\n",
+      "stdout": "ve c\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "slug": {
+      "title": "slug",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Slug produces an ASCII slug using the provided separator (default \"-\"), stripping accents where possible.\n\t// Not locale-aware; intended for identifiers/URLs.\n\n\t// Example: build slug\n\tv := str.Of(\"Go Forj Toolkit\").Slug(\"-\").String()\n\tprintln(v)\n\t// #string go-forj-toolkit\n}\n",
+      "stdout": "go-forj-toolkit\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "snake": {
+      "title": "snake",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Snake converts the string to snake_case using the provided separator (default \"_\").\n\n\t// Example: snake case\n\tv := str.Of(\"fooBar baz\").Snake(\"_\").String()\n\tprintln(v)\n\t// #string foo_bar_baz\n}\n",
+      "stdout": "foo_bar_baz\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "split": {
+      "title": "split",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Split splits the string by the given separator.\n\n\t// Example: split on comma\n\tv := str.Of(\"a,b,c\").Split(\",\")\n\tprintln(v)\n\t// #[]string [a b c]\n}\n",
+      "stdout": "[3/3]0x1400007e090\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "splitwords": {
+      "title": "splitwords",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// SplitWords splits the string into words (Unicode letters/digits runs).\n\n\t// Example: split words\n\tv := str.Of(\"one, two, three\").SplitWords()\n\tprintln(v)\n\t// #[]string [one two three]\n}\n",
+      "stdout": "[3/4]0x1400010c000\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "squish": {
+      "title": "squish",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Squish trims leading/trailing whitespace and collapses internal whitespace to single spaces.\n\n\t// Example: squish whitespace\n\tv := str.Of(\"   go   forj  \").Squish().String()\n\tprintln(v)\n\t// #string go forj\n}\n",
+      "stdout": "go forj\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "startswith": {
+      "title": "startswith",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// StartsWith reports whether the string starts with any of the provided prefixes (case-sensitive).\n\n\t// Example: starts with any\n\tv := str.Of(\"gopher\").StartsWith(\"go\", \"rust\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "startswithfold": {
+      "title": "startswithfold",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// StartsWithFold reports whether the string starts with any of the provided prefixes using Unicode case folding.\n\n\t// Example: starts with (case-insensitive)\n\tv := str.Of(\"gopher\").StartsWithFold(\"GO\")\n\tprintln(v)\n\t// #bool true\n}\n",
+      "stdout": "true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "string": {
+      "title": "string",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// String returns the underlying raw string value.\n\n\t// Example: unwrap to plain string\n\tv := str.Of(\"go\").String()\n\tprintln(v)\n\t// #string go\n}\n",
+      "stdout": "go\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "substrreplace": {
+      "title": "substrreplace",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// SubstrReplace replaces the rune slice in [start:end) with repl.\n\n\t// Example: replace range\n\tv := str.Of(\"naïve café\").SubstrReplace(\"i\", 2, 3).String()\n\tprintln(v)\n\t// #string naive café\n}\n",
+      "stdout": "naive café\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "swap": {
+      "title": "swap",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Swap replaces multiple values using strings.Replacer built from a map.\n\n\t// Example: swap map\n\tpairs := map[string]string{\"Gophers\": \"GoForj\", \"are\": \"is\", \"great\": \"fantastic\"}\n\tv := str.Of(\"Gophers are great!\").Swap(pairs).String()\n\tprintln(v)\n\t// #string GoForj is fantastic!\n}\n",
+      "stdout": "GoForj is fantastic!\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 43
+    },
+    "take": {
+      "title": "take",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Take returns the first length runes of the string (clamped).\n\n\t// Example: take head\n\tv := str.Of(\"gophers\").Take(3).String()\n\tprintln(v)\n\t// #string gop\n}\n",
+      "stdout": "gop\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "takelast": {
+      "title": "takelast",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// TakeLast returns the last length runes of the string (clamped).\n\n\t// Example: take tail\n\tv := str.Of(\"gophers\").TakeLast(4).String()\n\tprintln(v)\n\t// #string hers\n}\n",
+      "stdout": "hers\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "title": {
+      "title": "title",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Title converts the string to title case (first letter of each word upper, rest lower) using Unicode rules.\n\n\t// Example: title case words\n\tv := str.Of(\"a nice title uses the correct case\").Title().String()\n\tprintln(v)\n\t// #string A Nice Title Uses The Correct Case\n}\n",
+      "stdout": "A Nice Title Uses The Correct Case\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "tobase64": {
+      "title": "tobase64",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ToBase64 encodes the string using standard Base64.\n\n\t// Example: base64 encode\n\tv := str.Of(\"gopher\").ToBase64().String()\n\tprintln(v)\n\t// #string Z29waGVy\n}\n",
+      "stdout": "Z29waGVy\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "tolower": {
+      "title": "tolower",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ToLower returns a lowercase copy of the string using Unicode rules.\n\n\t// Example: lowercase text\n\tv := str.Of(\"GoLang\").ToLower().String()\n\tprintln(v)\n\t// #string golang\n}\n",
+      "stdout": "golang\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "totitle": {
+      "title": "totitle",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ToTitle returns a title-cased copy where all letters are mapped using Unicode title case.\n\n\t// Example: title map runes\n\tv := str.Of(\"ß\").ToTitle().String()\n\tprintln(v)\n\t// #string SS\n}\n",
+      "stdout": "SS\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "toupper": {
+      "title": "toupper",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// ToUpper returns an uppercase copy of the string using Unicode rules.\n\n\t// Example: uppercase text\n\tv := str.Of(\"GoLang\").ToUpper().String()\n\tprintln(v)\n\t// #string GOLANG\n}\n",
+      "stdout": "GOLANG\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "transliterate": {
+      "title": "transliterate",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Transliterate replaces a small set of accented runes with ASCII equivalents.\n\n\t// Example: strip accents\n\tv := str.Of(\"café déjà vu\").Transliterate().String()\n\tprintln(v)\n\t// #string cafe deja vu\n}\n",
+      "stdout": "cafe deja vu\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "trim": {
+      "title": "trim",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Trim trims leading and trailing characters. If cutset is the zero value (empty string), trims Unicode whitespace.\n\n\t// Example: trim whitespace\n\tv := str.Of(\"  GoForj  \").Trim(\"\").String()\n\tprintln(v)\n\t// #string GoForj\n}\n",
+      "stdout": "GoForj\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "trimleft": {
+      "title": "trimleft",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// TrimLeft trims leading characters. If cutset is the zero value (empty string), trims Unicode whitespace.\n\n\t// Example: trim left\n\tv := str.Of(\"  GoForj  \").TrimLeft(\"\").String()\n\tprintln(v)\n\t// #string GoForj\n}\n",
+      "stdout": "GoForj  \n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "trimright": {
+      "title": "trimright",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// TrimRight trims trailing characters. If cutset is the zero value (empty string), trims Unicode whitespace.\n\n\t// Example: trim right\n\tv := str.Of(\"  GoForj  \").TrimRight(\"\").String()\n\tprintln(v)\n\t// #string   GoForj\n}\n",
+      "stdout": "  GoForj\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "trimspace": {
+      "title": "trimspace",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// TrimSpace trims leading and trailing Unicode whitespace.\n\n\t// Example: trim space\n\tv := str.Of(\"  GoForj  \").TrimSpace().String()\n\tprintln(v)\n\t// #string GoForj\n}\n",
+      "stdout": "GoForj\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "ucfirst": {
+      "title": "ucfirst",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// UcFirst returns the string with the first rune upper-cased.\n\n\t// Example: uppercase first rune\n\tv := str.Of(\"gopher\").UcFirst().String()\n\tprintln(v)\n\t// #string Gopher\n}\n",
+      "stdout": "Gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "ucsplit": {
+      "title": "ucsplit",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// UcSplit splits the string on uppercase boundaries and delimiters, returning segments.\n\n\t// Example: split on upper-case boundaries\n\tv := str.Of(\"HTTPRequestID\").UcSplit()\n\tprintln(v)\n\t// #[]string [HTTP Request ID]\n}\n",
+      "stdout": "[3/4]0x140000ac000\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "ucwords": {
+      "title": "ucwords",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// UcWords uppercases the first rune of each word, leaving the rest unchanged.\n\t// Words are sequences of letters/digits.\n\n\t// Example: uppercase each word start\n\tv := str.Of(\"hello WORLD\").UcWords().String()\n\tprintln(v)\n\t// #string Hello WORLD\n}\n",
+      "stdout": "Hello WORLD\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 42
+    },
+    "unwrap": {
+      "title": "unwrap",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Unwrap removes matching before and after strings if present.\n\n\t// Example: unwrap string\n\tv := str.Of(`\"GoForj\"`).Unwrap(`\"`, `\"`).String()\n\tprintln(v)\n\t// #string GoForj\n}\n",
+      "stdout": "GoForj\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
+    },
+    "wordcount": {
+      "title": "wordcount",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// WordCount returns the number of word tokens (letters/digits runs).\n\n\t// Example: count words\n\tv := str.Of(\"Hello, world!\").WordCount()\n\tprintln(v)\n\t// #int 2\n}\n",
+      "stdout": "2\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "words": {
+      "title": "words",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Words limits the string to count words, appending suffix if truncated.\n\n\t// Example: limit words\n\tv := str.Of(\"Perfectly balanced, as all things should be.\").Words(3, \" \u003e\u003e\u003e\").String()\n\tprintln(v)\n\t// #string Perfectly balanced as \u003e\u003e\u003e\n}\n",
+      "stdout": "Perfectly balanced as \u003e\u003e\u003e\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "wrap": {
+      "title": "wrap",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// Wrap surrounds the string with before and after (after defaults to before).\n\n\t// Example: wrap string\n\tv := str.Of(\"GoForj\").Wrap(`\"`, \"\").String()\n\tprintln(v)\n\t// #string \"GoForj\"\n}\n",
+      "stdout": "\"GoForj\"\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 40
+    },
+    "wrapwords": {
+      "title": "wrapwords",
+      "language": "go",
+      "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/str\"\n\nfunc main() {\n\t// WrapWords wraps the string to the given width on word boundaries, using breakStr between lines.\n\n\t// Example: wrap words\n\tv := str.Of(\"The quick brown fox jumped over the lazy dog.\").WrapWords(20, \"\\n\").String()\n\tprintln(v)\n\t// #string The quick brown fox\\njumped over the lazy\\ndog.\n}\n",
+      "stdout": "The quick brown fox\njumped over the lazy\ndog\n",
+      "stderr": "",
+      "exitCode": 0,
+      "durationMs": 41
     }
   }
 }

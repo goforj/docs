@@ -25,9 +25,17 @@ func (c *DocsGenerateCommand) Run() error {
 	repos := []RepoConfig{
 		{
 			Slug:       "collection",
+			Title:      "Collections",
 			CloneURL:   "https://github.com/goforj/collection.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "collection.md"),
+		},
+		{
+			Slug:       "str",
+			Title:      "Strings",
+			CloneURL:   "https://github.com/goforj/str.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "strings.md"),
 		},
 	}
 
@@ -59,7 +67,7 @@ func (c *DocsGenerateCommand) Run() error {
 		}
 
 		rawBase := rawGithubBase(repo, repo.Branch)
-		transformed := transformReadme(string(readmeBytes), repo.Slug, rawBase, examples)
+		transformed := transformReadme(string(readmeBytes), repo, rawBase, examples)
 		outputPath := filepath.Join(docsRoot, repo.OutputPath)
 		if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
 			return fmt.Errorf("ensure output dir: %w", err)

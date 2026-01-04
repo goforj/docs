@@ -118,7 +118,13 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 		return stdout.String(), stderr.String(), exitCode, duration, nil
 	}
 
-	return stdout.String(), stderr.String(), 0, duration, nil
+	out := stdout.String()
+	errOut := stderr.String()
+	if strings.TrimSpace(out) == "" && strings.TrimSpace(errOut) != "" {
+		out = errOut
+		errOut = ""
+	}
+	return out, errOut, 0, duration, nil
 }
 
 func hasIgnoreBuildTag(code string) bool {
