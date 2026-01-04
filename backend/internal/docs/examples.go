@@ -166,6 +166,7 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 		out += errOut
 		errOut = ""
 	}
+	out = filterGoDownloadNoise(out)
 
 	if err != nil {
 		exitCode := 1
@@ -176,6 +177,25 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 	}
 
 	return out, errOut, 0, duration, nil
+}
+
+func filterGoDownloadNoise(output string) string {
+	if output == "" {
+		return output
+	}
+	lines := strings.Split(output, "\n")
+	filtered := make([]string, 0, len(lines))
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "go: downloading ") ||
+			strings.HasPrefix(trimmed, "go: extracting ") ||
+			strings.HasPrefix(trimmed, "go: finding ") ||
+			strings.HasPrefix(trimmed, "go: found ") {
+			continue
+		}
+		filtered = append(filtered, line)
+	}
+	return strings.TrimRight(strings.Join(filtered, "\n"), "\n")
 }
 
 func hasIgnoreBuildTag(code string) bool {

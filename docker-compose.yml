@@ -1,0 +1,40 @@
+services:
+  traefik:
+    image: traefik:v2.11
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: containers/web/Dockerfile
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.goforj.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.goforj.entrypoints=websecure
+      - traefik.http.routers.goforj.tls.certresolver=le
+      - traefik.http.routers.goforj-http.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.goforj-http.entrypoints=web
+      - traefik.http.routers.goforj-http.middlewares=redirect-to-https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.services.goforj.loadbalancer.server.port=3000
+    restart: unless-stopped
+    depends_on:
+      - traefik
+
+volumes:
+  traefik_letsencrypt:

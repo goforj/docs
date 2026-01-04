@@ -12,3 +12,6 @@
 
 backend/frontend/dist/
 bin/
+
+# Local env file
+.env
