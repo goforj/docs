@@ -35,8 +35,8 @@
     border: 1px solid rgba(130, 130, 150, 0.2);
     border-radius: 16px;
     background: rgba(15, 16, 22, 0.6);
-    padding: 20px;
-    margin: 28px 0;
+    padding: 14px;
+    margin: 18px 0;
 }
 
 .gf-example__header {
@@ -44,7 +44,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
 .gf-example__title {
@@ -86,7 +86,7 @@
 
 .gf-example__body {
     display: grid;
-    gap: 16px;
+    gap: 12px;
     grid-template-columns: 1fr;
 }
 
@@ -94,27 +94,35 @@
     border-radius: 12px;
     border: 1px solid rgba(130, 130, 150, 0.2);
     background: rgba(12, 12, 18, 0.6);
-    padding: 14px 16px;
+    padding: 10px 12px;
+    overflow: hidden;
 }
 
 .gf-example__label {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: rgba(180, 190, 220, 0.7);
 }
 
+.vp-code {
+    font-size: 0.90rem !important;
+}
+
 .gf-example__code {
     margin: 0;
-    font-size: 0.78rem;
+    font-size: 0.80rem;
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
     line-height: 1.5;
 }
 
 .gf-example__slot pre {
     margin: 0;
     font-size: 0.78rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .gf-example__slot pre code {
@@ -134,7 +142,7 @@
 }
 
 .gf-example__meta-line {
-    margin: 10px 0 0;
+    margin: 0px 0 0 !important;
     font-size: 0.75rem;
     color: rgba(170, 180, 210, 0.7);
 }
@@ -143,4 +151,29 @@
     margin-top: 12px;
     color: #ffb5b5;
     font-size: 0.85rem;
+}
+
+.vp-doc p[align="center"] {
+    text-align: center;
+}
+
+.vp-doc p[align="center"]:has(img) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    align-items: center;
+}
+
+.vp-doc p[align="center"]:has(img) img {
+    display: inline-block;
+}
+
+.vp-doc p[align="center"]:has(img) a {
+    display: inline-flex;
+}
+
+.vp-doc p[align="center"] code {
+    display: inline;
+    margin: 0;
 }
