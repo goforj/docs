@@ -83,6 +83,9 @@ func wrapExamples(content string, repoSlug string, examples []ExampleProgram) st
 			if matches := examplePathRegex.FindStringSubmatch(line); len(matches) == 2 {
 				currentHint = matches[1]
 			}
+			if inApiEmbed && strings.HasPrefix(strings.TrimSpace(line), "_Example:") {
+				continue
+			}
 		}
 
 		if strings.HasPrefix(line, "```") {
@@ -266,6 +269,9 @@ func dropLeadingDocBlock(lines []string) []string {
 		if trimmed == "" {
 			start++
 			continue
+		}
+		if strings.HasPrefix(trimmed, "// Example:") {
+			break
 		}
 		if strings.HasPrefix(trimmed, "//") {
 			start++

@@ -7,7 +7,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 53
     },
     "all": {
       "title": "all",
@@ -16,7 +16,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 49
     },
     "any": {
       "title": "any",
@@ -25,7 +25,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 50
     },
     "append": {
       "title": "append",
@@ -43,7 +43,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 50
     },
     "avg": {
       "title": "avg",
@@ -61,7 +61,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName  =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAdmin =\u003e \u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName  =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAdmin =\u003e \u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "chaining": {
       "title": "chaining",
@@ -70,7 +70,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]main.DeviceEvent\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.DeviceEvent\u001b[0m {\n    \u001b[33m+\u001b[0mDevice =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrouter-3\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mRegion =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mus-west\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mErrors =\u003e \u001b[38;5;38m22\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 53
     },
     "chunk": {
       "title": "chunk",
@@ -88,7 +88,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 53
     },
     "concat": {
       "title": "concat",
@@ -97,7 +97,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mJohn Doe\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mJane Doe\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mJohnny Doe\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "contains": {
       "title": "contains",
@@ -106,7 +106,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 50
     },
     "count": {
       "title": "count",
@@ -115,25 +115,25 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 50
     },
     "countby": {
       "title": "countby",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// CountBy returns a map of keys extracted by fn to their occurrence counts.\n\t// K must be comparable.\n\n\t// Example: integers\n\tc := collection.New([]int{1, 2, 2, 3, 3, 3})\n\tcounts := collection.CountBy(c, func(v int) int {\n\t\treturn v\n\t})\n\tcollection.Dump(counts)\n\t// #map[int]int {\n\t//   1 =\u003e 1 #int\n\t//   2 =\u003e 2 #int\n\t//   3 =\u003e 3 #int\n\t// }\n\n\t// Example: strings\n\tc2 := collection.New([]string{\"apple\", \"banana\", \"apple\", \"cherry\", \"banana\"})\n\tcounts2 := collection.CountBy(c2, func(v string) string {\n\t\treturn v\n\t})\n\tcollection.Dump(counts2)\n\t// #map[string]int {\n\t//   apple =\u003e 2 #int\n\t//   banana =\u003e 2 #int\n\t//   cherry =\u003e 1 #int\n\t// }\n\n\t// Example: structs\n\ttype User struct {\n\t\tName string\n\t\tRole string\n\t}\n\n\tusers := collection.New([]User{\n\t\t{Name: \"Alice\", Role: \"admin\"},\n\t\t{Name: \"Bob\", Role: \"user\"},\n\t\t{Name: \"Carol\", Role: \"admin\"},\n\t\t{Name: \"Dave\", Role: \"user\"},\n\t\t{Name: \"Eve\", Role: \"admin\"},\n\t})\n\n\troleCounts := collection.CountBy(users, func(u User) string {\n\t\treturn u.Role\n\t})\n\n\tcollection.Dump(roleCounts)\n\t// #map[string]int {\n\t//   admin =\u003e 3 #int\n\t//   user =\u003e 2 #int\n\t// }\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mcherry\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mapple\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbanana\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170muser\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170madmin\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mapple\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbanana\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mcherry\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170madmin\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170muser\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 51
     },
     "countbyvalue": {
       "title": "countbyvalue",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// CountByValue returns a map where each distinct item in the collection\n\t// is mapped to the number of times it appears.\n\n\t// Example: strings\n\tc1 := collection.New([]string{\"a\", \"b\", \"a\"})\n\tcounts1 := collection.CountByValue(c1)\n\tcollection.Dump(counts1)\n\t// #map[string]int {\n\t//  a =\u003e 2 #int\n\t//  b =\u003e 1 #int\n\t// }\n\n\t// Example: integers\n\tc2 := collection.New([]int{1, 2, 2, 3, 3, 3})\n\tcounts2 := collection.CountByValue(c2)\n\tcollection.Dump(counts2)\n\t// #map[int]int {\n\t//  1 =\u003e 1 #int\n\t//  2 =\u003e 2 #int\n\t//  3 =\u003e 3 #int\n\t// }\n\n\t// Example: structs (comparable)\n\ttype Point struct {\n\t\tX int\n\t\tY int\n\t}\n\n\tc3 := collection.New([]Point{\n\t\t{X: 1, Y: 1},\n\t\t{X: 2, Y: 2},\n\t\t{X: 1, Y: 1},\n\t})\n\n\tcounts3 := collection.CountByValue(c3)\n\tcollection.Dump(counts3)\n\t// #map[main.Point]int {\n\t//  {1 1} =\u003e 2 #int\n\t//  {2 2} =\u003e 1 #int\n\t// }\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[main.Point]int\u001b[0m {\n   \u001b[38;5;170m{2 2}\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m{1 1}\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]int\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[main.Point]int\u001b[0m {\n   \u001b[38;5;170m{1 1}\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170m{2 2}\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "dd": {
       "title": "dd",
@@ -142,7 +142,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:10\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "exit status 1\n",
       "exitCode": 1,
-      "durationMs": 52
+      "durationMs": 51
     },
     "difference": {
       "title": "difference",
@@ -151,7 +151,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mcherry\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 51
     },
     "dump": {
       "title": "dump",
@@ -160,7 +160,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "dumpstr": {
       "title": "dumpstr",
@@ -169,7 +169,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:83\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n]\n\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 49
     },
     "each": {
       "title": "each",
@@ -178,7 +178,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAPPLE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBANANA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCHERRY\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCharlie\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 53
+      "durationMs": 51
     },
     "filter": {
       "title": "filter",
@@ -196,7 +196,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113malpha\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 56
+      "durationMs": 54
     },
     "firstwhere": {
       "title": "firstwhere",
@@ -205,7 +205,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 66
+      "durationMs": 50
     },
     "frommap": {
       "title": "frommap",
@@ -214,7 +214,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Pair[string,int]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Pair[string,int]\u001b[0m {\n    \u001b[33m+\u001b[0mKey   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Pair[string,int]\u001b[0m {\n    \u001b[33m+\u001b[0mKey   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#collection.Pair[string,int]\u001b[0m {\n    \u001b[33m+\u001b[0mKey   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Pair[string,main.Config·1]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Pair[string,main.Config·1]\u001b[0m {\n    \u001b[33m+\u001b[0mKey       =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrouter-1\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue     =\u003e \u001b[90m#main.Config\u001b[0m {\n      \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n      \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Pair[string,main.Config·1]\u001b[0m {\n    \u001b[33m+\u001b[0mKey       =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrouter-3\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mValue     =\u003e \u001b[90m#main.Config\u001b[0m {\n      \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n      \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m45\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170malice\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbob\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 51
     },
     "groupby": {
       "title": "groupby",
@@ -223,7 +223,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113muser\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 55
+      "durationMs": 50
     },
     "groupbyslice": {
       "title": "groupbyslice",
@@ -232,7 +232,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mRole =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113muser\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 51
     },
     "indexwhere": {
       "title": "indexwhere",
@@ -241,7 +241,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 51
     },
     "intersect": {
       "title": "intersect",
@@ -259,7 +259,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 53
+      "durationMs": 52
     },
     "items": {
       "title": "items",
@@ -268,7 +268,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 51
+      "durationMs": 52
     },
     "itemscopy": {
       "title": "itemscopy",
@@ -295,7 +295,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m40\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mgamma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlex\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 53
+      "durationMs": 49
     },
     "map": {
       "title": "map",
@@ -304,7 +304,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAPPLE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBANANA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCHERRY\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mALICE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBOB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 50
     },
     "mapto": {
       "title": "mapto",
@@ -313,7 +313,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113modd\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113meven\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113modd\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113meven\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "max": {
       "title": "max",
@@ -322,7 +322,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m9.200000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 54
+      "durationMs": 52
     },
     "maxby": {
       "title": "maxby",
@@ -331,7 +331,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.Player\u001b[0m {\n  \u001b[33m+\u001b[0mName  =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[33m+\u001b[0mScore =\u003e \u001b[38;5;38m25\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mcollection\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 50
     },
     "median": {
       "title": "median",
@@ -340,7 +340,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m2.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m5.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m3.300000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 52
+      "durationMs": 51
     },
     "merge": {
       "title": "merge",
@@ -349,7 +349,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mDave\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 53
+      "durationMs": 52
     },
     "min": {
       "title": "min",
@@ -358,7 +358,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m1.200000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 51
     },
     "minby": {
       "title": "minby",
@@ -367,7 +367,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m25\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mfig\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 48
     },
     "mode": {
       "title": "mode",
@@ -376,7 +376,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]float64\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1.100000\u001b[0m\u001b[90m #float64\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[1;38;5;113m[]int\u001b[0m\u001b[90m(nil)\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 46
     },
     "multiply": {
       "title": "multiply",
@@ -394,7 +394,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 47
     },
     "partition": {
       "title": "partition",
@@ -403,7 +403,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mgo\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mgopher\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mrust\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mruby\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mActive =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mActive =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n]\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName   =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mActive =\u003e \u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "pipe": {
       "title": "pipe",
@@ -421,7 +421,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.User\u001b[0m {\n  \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n}\n\u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90mfalse\u001b[0m\u001b[90m #bool\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 47
     },
     "popn": {
       "title": "popn",
@@ -430,7 +430,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[1;38;5;113m[]int\u001b[0m\u001b[90m(nil)\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mx\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113my\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m#[]string\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 47
     },
     "prepend": {
       "title": "prepend",
@@ -439,7 +439,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m9\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m8\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 48
     },
     "reduce": {
       "title": "reduce",
@@ -448,7 +448,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[33m\"\u001b[0m\u001b[1;38;5;113mabc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#main.Stats\u001b[0m {\n  \u001b[33m+\u001b[0mCount =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[33m+\u001b[0mSum   =\u003e \u001b[38;5;38m60\u001b[0m\u001b[90m #int\u001b[0m\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "reverse": {
       "title": "reverse",
@@ -457,13 +457,13 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 45
     },
     "shuffle": {
       "title": "shuffle",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// Shuffle shuffles the collection in place and returns the same collection.\n\n\t// Example: integers\n\tc := collection.New([]int{1, 2, 3, 4, 5})\n\tc.Shuffle()\n\tcollection.Dump(c.Items())\n\n\t// Example: strings – chaining\n\tout2 := collection.New([]string{\"a\", \"b\", \"c\"}).\n\t\tShuffle().\n\t\tAppend(\"d\").\n\t\tItems()\n\n\tcollection.Dump(out2)\n\n\t// Example: structs\n\ttype User struct {\n\t\tID int\n\t}\n\n\tusers := collection.New([]User{\n\t\t{ID: 1},\n\t\t{ID: 2},\n\t\t{ID: 3},\n\t\t{ID: 4},\n\t})\n\n\tusers.Shuffle()\n\tcollection.Dump(users.Items())\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
       "durationMs": 48
@@ -475,7 +475,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 49
     },
     "skiplast": {
       "title": "skiplast",
@@ -484,7 +484,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 45
     },
     "sort": {
       "title": "sort",
@@ -493,7 +493,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mcherry\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbanana\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mapple\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m25\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mCarol\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[33m+\u001b[0mAge  =\u003e \u001b[38;5;38m40\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 48
     },
     "sum": {
       "title": "sum",
@@ -502,7 +502,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m4.000000\u001b[0m\u001b[90m #float64\u001b[0m\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 48
     },
     "symmetricdifference": {
       "title": "symmetricdifference",
@@ -520,7 +520,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 45
+      "durationMs": 48
     },
     "takelast": {
       "title": "takelast",
@@ -538,7 +538,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 47
     },
     "takeuntilfn": {
       "title": "takeuntilfn",
@@ -547,7 +547,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 46
     },
     "tap": {
       "title": "tap",
@@ -556,7 +556,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:39\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m20\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 48
     },
     "times": {
       "title": "times",
@@ -565,7 +565,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m8\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m10\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mitem-1\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mitem-2\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mitem-3\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.Point\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n    \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n    \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n    \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m9\u001b[0m\u001b[90m #int\u001b[0m\n  }\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n    \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m16\u001b[0m\u001b[90m #int\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 46
     },
     "tojson": {
       "title": "tojson",
@@ -574,13 +574,13 @@
       "stdout": "[\"a\",\"b\"]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 48
     },
     "tomap": {
       "title": "tomap",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// ToMap reduces a collection into a map using the provided key and value\n\t// selector functions.\n\n\t// Example: basic usage\n\tusers := []string{\"alice\", \"bob\", \"carol\"}\n\n\tout := collection.ToMap(\n\t\tcollection.New(users),\n\t\tfunc(name string) string { return name },\n\t\tfunc(name string) int { return len(name) },\n\t)\n\n\tcollection.Dump(out)\n\t// #map[string]int {\n\t//  alice =\u003e 5 #int\n\t//  bob =\u003e 3 #int\n\t//  carol =\u003e 5 #int\n\t// }\n\n\t// Example: re-keying structs\n\ttype User struct {\n\t\tID   int\n\t\tName string\n\t}\n\n\tusers2 := []User{\n\t\t{ID: 1, Name: \"Alice\"},\n\t\t{ID: 2, Name: \"Bob\"},\n\t}\n\n\tbyID := collection.ToMap(\n\t\tcollection.New(users2),\n\t\tfunc(u User) int { return u.ID },\n\t\tfunc(u User) User { return u },\n\t)\n\n\tcollection.Dump(byID)\n\t// #map[int]main.User {\n\t//  1 =\u003e #main.User {\n\t//    +ID   =\u003e 1 #int\n\t//    +Name =\u003e \"Alice\" #string\n\t//  }\n\t//  2 =\u003e #main.User {\n\t//    +ID   =\u003e 2 #int\n\t//    +Name =\u003e \"Bob\" #string\n\t//  }\n\t// }\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mbob\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mcarol\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170malice\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]main.User\u001b[0m {\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n}\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mcarol\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170malice\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mbob\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[int]main.User\u001b[0m {\n   \u001b[38;5;170m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n   \u001b[38;5;170m2\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n}\n",
       "stderr": "",
       "exitCode": 0,
       "durationMs": 48
@@ -589,10 +589,10 @@
       "title": "tomapkv",
       "language": "go",
       "code": "//go:build ignore\n// +build ignore\n\npackage main\n\nimport \"github.com/goforj/collection\"\n\nfunc main() {\n\t// ToMapKV converts a collection of key/value pairs into a map.\n\n\t// Example: basic usage\n\tm := map[string]int{\n\t\t\"a\": 1,\n\t\t\"b\": 2,\n\t\t\"c\": 3,\n\t}\n\n\tc := collection.FromMap(m)\n\tout := collection.ToMapKV(c)\n\n\tcollection.Dump(out)\n\n\t// #map[string]int {\n\t//  a =\u003e 1 #int\n\t//  b =\u003e 2 #int\n\t//  c =\u003e 3 #int\n\t// }\n\n\t// Example: filtering before conversion\n\ttype Config struct {\n\t\tEnabled bool\n\t\tTimeout int\n\t}\n\n\tconfigs := map[string]Config{\n\t\t\"router-1\": {Enabled: true,  Timeout: 30},\n\t\t\"router-2\": {Enabled: false, Timeout: 10},\n\t\t\"router-3\": {Enabled: true,  Timeout: 45},\n\t}\n\n\tc2 := collection.\n\t\tFromMap(configs).\n\t\tFilter(func(p collection.Pair[string, Config]) bool {\n\t\t\treturn p.Value.Enabled\n\t\t})\n\n\tout2 := collection.ToMapKV(c2)\n\n\tcollection.Dump(out2)\n\n\t// #map[string]main.Config {\n\t//  router-1 =\u003e #main.Config {\n\t//    +Enabled =\u003e true #bool\n\t//    +Timeout =\u003e 30 #int\n\t//  }\n\t//  router-3 =\u003e #main.Config {\n\t//    +Enabled =\u003e true #bool\n\t//    +Timeout =\u003e 45 #int\n\t//  }\n\t// }\n}\n",
-      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mc\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]main.Config\u001b[0m {\n   \u001b[38;5;170mrouter-1\u001b[0m =\u003e \u001b[90m#main.Config\u001b[0m {\n    \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n    \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n  }\n   \u001b[38;5;170mrouter-3\u001b[0m =\u003e \u001b[90m#main.Config\u001b[0m {\n    \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n    \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m45\u001b[0m\u001b[90m #int\u001b[0m\n  }\n}\n",
+      "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]int\u001b[0m {\n   \u001b[38;5;170mc\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170ma\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n   \u001b[38;5;170mb\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n}\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#map[string]main.Config\u001b[0m {\n   \u001b[38;5;170mrouter-1\u001b[0m =\u003e \u001b[90m#main.Config\u001b[0m {\n    \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n    \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m30\u001b[0m\u001b[90m #int\u001b[0m\n  }\n   \u001b[38;5;170mrouter-3\u001b[0m =\u003e \u001b[90m#main.Config\u001b[0m {\n    \u001b[33m+\u001b[0mEnabled =\u003e \u001b[33mtrue\u001b[0m\u001b[90m #bool\u001b[0m\n    \u001b[33m+\u001b[0mTimeout =\u003e \u001b[38;5;38m45\u001b[0m\u001b[90m #int\u001b[0m\n  }\n}\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 49
     },
     "toprettyjson": {
       "title": "toprettyjson",
@@ -601,7 +601,7 @@
       "stdout": "[\n  \"a\",\n  \"b\"\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 47
     },
     "transform": {
       "title": "transform",
@@ -610,7 +610,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m6\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mC\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mALICE\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBOB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 47
+      "durationMs": 46
     },
     "union": {
       "title": "union",
@@ -628,7 +628,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]main.User\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.User\u001b[0m {\n    \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 46
+      "durationMs": 45
     },
     "uniqueby": {
       "title": "uniqueby",
@@ -646,7 +646,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m3\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m4\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mA\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mB\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 48
     },
     "window": {
       "title": "window",
@@ -655,7 +655,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[][]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#[]int\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n  ]\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#[]int\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n  ]\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#[]int\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[38;5;38m2\u001b[0m =\u003e \u001b[38;5;38m5\u001b[0m\u001b[90m #int\u001b[0m\n  ]\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[][]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#[]string\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113ma\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mb\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  ]\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#[]string\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mc\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113md\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  ]\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[][]main.Point\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#[]main.Point\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m0\u001b[0m\u001b[90m #int\u001b[0m\n    }\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  ]\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#[]main.Point\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    }\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  ]\n  \u001b[38;5;38m2\u001b[0m =\u003e \u001b[90m#[]main.Point\u001b[0m [\n    \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m4\u001b[0m\u001b[90m #int\u001b[0m\n    }\n    \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#main.Point\u001b[0m {\n      \u001b[33m+\u001b[0mX =\u003e \u001b[38;5;38m3\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mY =\u003e \u001b[38;5;38m9\u001b[0m\u001b[90m #int\u001b[0m\n    }\n  ]\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 50
+      "durationMs": 47
     },
     "zip": {
       "title": "zip",
@@ -664,7 +664,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Tuple[int,string]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Tuple[int,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mone\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Tuple[int,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mtwo\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]collection.Tuple[main.User·1,string]\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[90m#collection.Tuple[main.User·1,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[90m#main.User\u001b[0m {\n      \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m1\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    }\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113madmin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[90m#collection.Tuple[main.User·1,string]\u001b[0m {\n    \u001b[33m+\u001b[0mFirst  =\u003e \u001b[90m#main.User\u001b[0m {\n      \u001b[33m+\u001b[0mID   =\u003e \u001b[38;5;38m2\u001b[0m\u001b[90m #int\u001b[0m\n      \u001b[33m+\u001b[0mName =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mBob\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n    }\n    \u001b[33m+\u001b[0mSecond =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113muser\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  }\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 48
+      "durationMs": 46
     },
     "zipwith": {
       "title": "zipwith",
@@ -673,7 +673,7 @@
       "stdout": "\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]int\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[38;5;38m11\u001b[0m\u001b[90m #int\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[38;5;38m22\u001b[0m\u001b[90m #int\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113malice:admin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n  \u001b[38;5;38m1\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mbob:user\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n\u001b[90m\u003c#dump // ../../dump.go:110\u001b[0m\n\u001b[90m#[]string\u001b[0m [\n  \u001b[38;5;38m0\u001b[0m =\u003e \u001b[33m\"\u001b[0m\u001b[1;38;5;113mAlice -\u003e admin\u001b[0m\u001b[33m\"\u001b[0m\u001b[90m #string\u001b[0m\n]\n",
       "stderr": "",
       "exitCode": 0,
-      "durationMs": 49
+      "durationMs": 47
     }
   }
 }

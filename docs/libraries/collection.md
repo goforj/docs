@@ -335,11 +335,11 @@ go get github.com/goforj/collection
 
 Items returns the backing slice of items.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="items">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3})
 items := c.Items()
 collection.Dump(items)
@@ -385,11 +385,9 @@ collection.Dump(out)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -400,6 +398,7 @@ ItemsCopy returns a copy of the collection's items.
 <GoForjExample repo="collection" example="itemscopy">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3})
 items := c.ItemsCopy()
 collection.Dump(items)
@@ -419,11 +418,11 @@ collection.Dump(items)
 Avg returns the average of the collection values as a float64.
 If the collection is empty, Avg returns 0.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="avg">
 
 ```go
+// Example: integers
 c := collection.NewNumeric([]int{2, 4, 6})
 collection.Dump(c.Avg())
 // 4.000000 #float64
@@ -436,7 +435,6 @@ collection.Dump(c2.Avg())
 
 </GoForjExample>
 
-_Example: float_
 
 
 
@@ -447,6 +445,7 @@ Count returns the total number of items in the collection.
 <GoForjExample repo="collection" example="count">
 
 ```go
+// Example: integers
 count := collection.New([]int{1, 2, 3, 4}).Count()
 collection.Dump(count)
 // 4 #int
@@ -459,11 +458,11 @@ collection.Dump(count)
 CountBy returns a map of keys extracted by fn to their occurrence counts.
 K must be comparable.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="countby">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 2, 3, 3, 3})
 counts := collection.CountBy(c, func(v int) int {
 	return v
@@ -514,11 +513,9 @@ collection.Dump(roleCounts)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -527,11 +524,11 @@ _Example: structs_
 CountByValue returns a map where each distinct item in the collection
 is mapped to the number of times it appears.
 
-_Example: strings_
 
 <GoForjExample repo="collection" example="countbyvalue">
 
 ```go
+// Example: strings
 c1 := collection.New([]string{"a", "b", "a"})
 counts1 := collection.CountByValue(c1)
 collection.Dump(counts1)
@@ -572,11 +569,9 @@ collection.Dump(counts3)
 
 </GoForjExample>
 
-_Example: integers_
 
 
 
-_Example: structs (comparable)_
 
 
 
@@ -585,11 +580,11 @@ _Example: structs (comparable)_
 Max returns the largest numeric item in the collection.
 The second return value is false if the collection is empty.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="max">
 
 ```go
+// Example: integers
 c := collection.NewNumeric([]int{3, 1, 2})
 
 max1, ok1 := c.Max()
@@ -616,11 +611,9 @@ collection.Dump(max3, ok3)
 
 </GoForjExample>
 
-_Example: floats_
 
 
 
-_Example: empty numeric collection_
 
 
 
@@ -629,11 +622,11 @@ _Example: empty numeric collection_
 MaxBy returns the item whose key (produced by keyFn) is the largest.
 The second return value is false if the collection is empty.
 
-_Example: structs - highest score_
 
 <GoForjExample repo="collection" example="maxby">
 
 ```go
+// Example: structs - highest score
 type Player struct {
 	Name  string
 	Score int
@@ -677,11 +670,9 @@ collection.Dump(maxVal, ok)
 
 </GoForjExample>
 
-_Example: strings - longest length_
 
 
 
-_Example: empty collection_
 
 
 
@@ -690,11 +681,11 @@ _Example: empty collection_
 Median returns the statistical median of the numeric collection as float64.
 Returns (0, false) if the collection is empty.
 
-_Example: integers - odd number of items_
 
 <GoForjExample repo="collection" example="median">
 
 ```go
+// Example: integers - odd number of items
 c := collection.NewNumeric([]int{3, 1, 2})
 
 median1, ok1 := c.Median()
@@ -729,15 +720,12 @@ collection.Dump(median4, ok4)
 
 </GoForjExample>
 
-_Example: integers - even number of items_
 
 
 
-_Example: floats_
 
 
 
-_Example: integers - empty numeric collection_
 
 
 
@@ -746,11 +734,11 @@ _Example: integers - empty numeric collection_
 Min returns the smallest numeric item in the collection.
 The second return value is false if the collection is empty.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="min">
 
 ```go
+// Example: integers
 c := collection.NewNumeric([]int{3, 1, 2})
 min, ok := c.Min()
 collection.Dump(min, ok)
@@ -774,11 +762,9 @@ collection.Dump(min3, ok3)
 
 </GoForjExample>
 
-_Example: floats_
 
 
 
-_Example: integers - empty collection_
 
 
 
@@ -787,11 +773,11 @@ _Example: integers - empty collection_
 MinBy returns the item whose key (produced by keyFn) is the smallest.
 The second return value is false if the collection is empty.
 
-_Example: structs - smallest age_
 
 <GoForjExample repo="collection" example="minby">
 
 ```go
+// Example: structs - smallest age
 type User struct {
 	Name string
 	Age  int
@@ -835,11 +821,9 @@ collection.Dump(minVal, ok)
 
 </GoForjExample>
 
-_Example: strings - shortest length_
 
 
 
-_Example: empty collection_
 
 
 
@@ -849,11 +833,11 @@ Mode returns the most frequent numeric value(s) in the collection.
 If multiple values tie for highest frequency, all are returned
 in first-seen order.
 
-_Example: integers – single mode_
 
 <GoForjExample repo="collection" example="mode">
 
 ```go
+// Example: integers – single mode
 c := collection.NewNumeric([]int{1, 2, 2, 3})
 mode := c.Mode()
 collection.Dump(mode)
@@ -887,15 +871,12 @@ collection.Dump(mode4)
 
 </GoForjExample>
 
-_Example: integers – tie for mode_
 
 
 
-_Example: floats_
 
 
 
-_Example: integers - empty collection_
 
 
 
@@ -904,11 +885,11 @@ _Example: integers - empty collection_
 Reduce collapses the collection into a single accumulated value.
 The accumulator has the same type T as the collection's elements.
 
-_Example: integers - sum_
 
 <GoForjExample repo="collection" example="reduce">
 
 ```go
+// Example: integers - sum
 sum := collection.New([]int{1, 2, 3}).Reduce(0, func(acc, n int) int {
 	return acc + n
 })
@@ -949,11 +930,9 @@ collection.Dump(total)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -962,11 +941,11 @@ _Example: structs_
 Sum returns the sum of all numeric items in the NumericCollection.
 If the collection is empty, Sum returns the zero value of T.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="sum">
 
 ```go
+// Example: integers
 c := collection.NewNumeric([]int{1, 2, 3})
 total := c.Sum()
 collection.Dump(total)
@@ -987,11 +966,9 @@ collection.Dump(total3)
 
 </GoForjExample>
 
-_Example: floats_
 
 
 
-_Example: integers - empty collection_
 
 
 
@@ -1001,11 +978,11 @@ _Example: integers - empty collection_
 
 Clone returns a copy of the collection.
 
-_Example: basic cloning_
 
 <GoForjExample repo="collection" example="clone">
 
 ```go
+// Example: basic cloning
 c := collection.New([]int{1, 2, 3})
 clone := c.Clone()
 
@@ -1062,7 +1039,6 @@ collection.Dump(odds.Items())
 
 </GoForjExample>
 
-_Example: branching pipelines_
 
 
 
@@ -1085,6 +1061,7 @@ should not be used in production control flow.
 <GoForjExample repo="collection" example="dd">
 
 ```go
+// Example: strings
 c := collection.New([]string{"a", "b"})
 c.Dd()
 // #[]string [
@@ -1101,11 +1078,11 @@ c.Dd()
 Dump prints items with godump and returns the same collection.
 This is a no-op on the collection itself and never panics.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="dump">
 
 ```go
+// Example: integers
 c2 := collection.New([]int{1, 2, 3})
 collection.Dump(c2.Items())
 // #[]int [
@@ -1117,11 +1094,9 @@ collection.Dump(c2.Items())
 
 </GoForjExample>
 
-_Example: integers - chaining_
 
 
 
-_Example: integers_
 
 
 
@@ -1134,6 +1109,7 @@ Useful for logging, snapshot testing, and non-interactive debugging.
 <GoForjExample repo="collection" example="dumpstr">
 
 ```go
+// Example: integers
 c := collection.New([]int{10, 20})
 s := c.DumpStr()
 fmt.Println(s)
@@ -1152,11 +1128,11 @@ fmt.Println(s)
 GroupBy partitions the collection into groups keyed by the value
 returned from keyFn.
 
-_Example: grouping integers by parity_
 
 <GoForjExample repo="collection" example="groupby">
 
 ```go
+// Example: grouping integers by parity
 values := []int{1, 2, 3, 4, 5}
 
 groups := collection.GroupBy(
@@ -1220,7 +1196,6 @@ collection.Dump(groups2["user"].Items())
 
 </GoForjExample>
 
-_Example: grouping structs by field_
 
 
 
@@ -1229,11 +1204,11 @@ _Example: grouping structs by field_
 GroupBySlice partitions the collection into groups keyed by the value
 returned from keyFn.
 
-_Example: grouping integers by parity_
 
 <GoForjExample repo="collection" example="groupbyslice">
 
 ```go
+// Example: grouping integers by parity
 values := []int{1, 2, 3, 4, 5}
 
 groups := collection.GroupBySlice(
@@ -1297,7 +1272,6 @@ collection.Dump(groups2["user"])
 
 </GoForjExample>
 
-_Example: grouping structs by field_
 
 
 
@@ -1307,11 +1281,11 @@ _Example: grouping structs by field_
 
 FromMap materializes a map into a collection of key/value pairs.
 
-_Example: basic usage_
 
 <GoForjExample repo="collection" example="frommap">
 
 ```go
+// Example: basic usage
 m := map[string]int{
 	"a": 1,
 	"b": 2,
@@ -1399,11 +1373,9 @@ collection.Dump(out2)
 
 </GoForjExample>
 
-_Example: filtering map entries_
 
 
 
-_Example: map → collection → map_
 
 
 
@@ -1412,11 +1384,11 @@ _Example: map → collection → map_
 ToMap reduces a collection into a map using the provided key and value
 selector functions.
 
-_Example: basic usage_
 
 <GoForjExample repo="collection" example="tomap">
 
 ```go
+// Example: basic usage
 users := []string{"alice", "bob", "carol"}
 
 out := collection.ToMap(
@@ -1464,7 +1436,6 @@ collection.Dump(byID)
 
 </GoForjExample>
 
-_Example: re-keying structs_
 
 
 
@@ -1472,11 +1443,11 @@ _Example: re-keying structs_
 
 ToMapKV converts a collection of key/value pairs into a map.
 
-_Example: basic usage_
 
 <GoForjExample repo="collection" example="tomapkv">
 
 ```go
+// Example: basic usage
 m := map[string]int{
 	"a": 1,
 	"b": 2,
@@ -1530,7 +1501,6 @@ collection.Dump(out2)
 
 </GoForjExample>
 
-_Example: filtering before conversion_
 
 
 
@@ -1544,6 +1514,7 @@ If no element matches, an empty collection is returned.
 <GoForjExample repo="collection" example="after">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5})
 c.After(func(v int) bool { return v == 3 }).Dump()
 // #[]int [
@@ -1559,11 +1530,11 @@ c.After(func(v int) bool { return v == 3 }).Dump()
 Before returns a new collection containing all items that appear
 *before* the first element for which pred returns true.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="before">
 
 ```go
+// Example: integers
 c1 := collection.New([]int{1, 2, 3, 4, 5})
 out1 := c1.Before(func(v int) bool { return v >= 3 })
 collection.Dump(out1.Items())
@@ -1611,11 +1582,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: predicate never matches → whole collection returned_
 
 
 
-_Example: structs: get all users before the first admin_
 
 
 
@@ -1624,11 +1593,11 @@ _Example: structs: get all users before the first admin_
 Reverse reverses the order of items in the collection in place
 and returns the same collection for chaining.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="reverse">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4})
 c.Reverse()
 collection.Dump(c.Items())
@@ -1681,11 +1650,9 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
-_Example: strings – chaining_
 
 
 
-_Example: structs_
 
 
 
@@ -1693,11 +1660,11 @@ _Example: structs_
 
 Shuffle shuffles the collection in place and returns the same collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="shuffle">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5})
 c.Shuffle()
 collection.Dump(c.Items())
@@ -1728,11 +1695,9 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
-_Example: strings – chaining_
 
 
 
-_Example: structs_
 
 
 
@@ -1741,11 +1706,11 @@ _Example: structs_
 Sort sorts the collection in place using the provided comparison function and
 returns the same collection for chaining.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="sort">
 
 ```go
+// Example: integers
 c := collection.New([]int{5, 1, 4, 2})
 c.Sort(func(a, b int) bool { return a < b })
 collection.Dump(c.Items())
@@ -1801,11 +1766,9 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
-_Example: strings (descending)_
 
 
 
-_Example: structs_
 
 
 
@@ -1816,11 +1779,11 @@ _Example: structs_
 All returns true if fn returns true for every item in the collection.
 If the collection is empty, All returns true (vacuously true).
 
-_Example: integers – all even_
 
 <GoForjExample repo="collection" example="all">
 
 ```go
+// Example: integers – all even
 c := collection.New([]int{2, 4, 6})
 allEven := c.All(func(v int) bool { return v%2 == 0 })
 collection.Dump(allEven)
@@ -1847,15 +1810,12 @@ collection.Dump(all)
 
 </GoForjExample>
 
-_Example: integers – not all even_
 
 
 
-_Example: strings – all non-empty_
 
 
 
-_Example: empty collection (vacuously true)_
 
 
 
@@ -1866,6 +1826,7 @@ Any returns true if at least one item satisfies fn.
 <GoForjExample repo="collection" example="any">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4})
 has := c.Any(func(v int) bool { return v%2 == 0 }) // true
 collection.Dump(has)
@@ -1879,11 +1840,11 @@ collection.Dump(has)
 At returns the item at the given index and a boolean indicating
 whether the index was within bounds.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="at">
 
 ```go
+// Example: integers
 c := collection.New([]int{10, 20, 30})
 v, ok := c.At(1)
 collection.Dump(v, ok)
@@ -1918,11 +1879,9 @@ collection.Dump(u, ok3)
 
 </GoForjExample>
 
-_Example: out of bounds_
 
 
 
-_Example: structs_
 
 
 
@@ -1930,11 +1889,11 @@ _Example: structs_
 
 Contains returns true if the collection contains the given value.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="contains">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5})
 hasTwo := collection.Contains(c, 2)
 collection.Dump(hasTwo)
@@ -1949,7 +1908,6 @@ collection.Dump(hasBanana)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
@@ -1958,11 +1916,11 @@ _Example: strings_
 First returns the first element in the collection.
 If the collection is empty, ok will be false.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="first">
 
 ```go
+// Example: integers
 c := collection.New([]int{10, 20, 30})
 
 v, ok := c.First()
@@ -2007,15 +1965,12 @@ collection.Dump(v3, ok4)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
-_Example: integers - empty collection_
 
 
 
@@ -2028,6 +1983,7 @@ along with the zero value of T.
 <GoForjExample repo="collection" example="firstwhere">
 
 ```go
+// Example: integers
 nums := collection.New([]int{1, 2, 3, 4, 5})
 v, ok := nums.FirstWhere(func(n int) bool {
 	return n%2 == 0
@@ -2052,11 +2008,11 @@ IndexWhere returns the index of the first item in the collection
 for which the provided predicate function returns true.
 If no item matches, it returns (0, false).
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="indexwhere">
 
 ```go
+// Example: integers
 c := collection.New([]int{10, 20, 30, 40})
 idx, ok := c.IndexWhere(func(v int) bool { return v == 30 })
 collection.Dump(idx, ok)
@@ -2092,11 +2048,9 @@ collection.Dump(idx3, ok3)
 
 </GoForjExample>
 
-_Example: not found_
 
 
 
-_Example: structs_
 
 
 
@@ -2104,11 +2058,11 @@ _Example: structs_
 
 IsEmpty returns true if the collection has no items.
 
-_Example: integers (non-empty)_
 
 <GoForjExample repo="collection" example="isempty">
 
 ```go
+// Example: integers (non-empty)
 c := collection.New([]int{1, 2, 3})
 
 empty := c.IsEmpty()
@@ -2146,15 +2100,12 @@ collection.Dump(empty4)
 
 </GoForjExample>
 
-_Example: strings (empty)_
 
 
 
-_Example: structs (non-empty)_
 
 
 
-_Example: structs (empty)_
 
 
 
@@ -2163,11 +2114,11 @@ _Example: structs (empty)_
 Last returns the last element in the collection.
 If the collection is empty, ok will be false.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="last">
 
 ```go
+// Example: integers
 c := collection.New([]int{10, 20, 30})
 
 v, ok := c.Last()
@@ -2214,15 +2165,12 @@ collection.Dump(v3, ok4)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
-_Example: empty collection_
 
 
 
@@ -2232,11 +2180,11 @@ LastWhere returns the last element in the collection that satisfies the predicat
 If fn is nil, LastWhere returns the final element in the underlying slice.
 If the collection is empty or no element matches, ok will be false.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="lastwhere">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4})
 
 v, ok := c.LastWhere(func(v int, i int) bool {
@@ -2308,23 +2256,18 @@ collection.Dump(v5, ok6)
 
 </GoForjExample>
 
-_Example: integers without predicate (equivalent to Last())_
 
 
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
-_Example: no matching element_
 
 
 
-_Example: empty collection_
 
 
 
@@ -2333,11 +2276,11 @@ _Example: empty collection_
 None returns true if fn returns false for every item in the collection.
 If the collection is empty, None returns true.
 
-_Example: integers – none even_
 
 <GoForjExample repo="collection" example="none">
 
 ```go
+// Example: integers – none even
 c := collection.New([]int{1, 3, 5})
 noneEven := c.None(func(v int) bool { return v%2 == 0 })
 collection.Dump(noneEven)
@@ -2358,11 +2301,9 @@ collection.Dump(none)
 
 </GoForjExample>
 
-_Example: integers – some even_
 
 
 
-_Example: empty collection_
 
 
 
@@ -2375,6 +2316,7 @@ ToJSON converts the collection's items into a compact JSON string.
 <GoForjExample repo="collection" example="tojson">
 
 ```go
+// Example: strings - pretty JSON
 pj1 := collection.New([]string{"a", "b"})
 out1, _ := pj1.ToJSON()
 fmt.Println(out1)
@@ -2391,6 +2333,7 @@ indented JSON string.
 <GoForjExample repo="collection" example="toprettyjson">
 
 ```go
+// Example: strings - pretty JSON
 pj1 := collection.New([]string{"a", "b"})
 out1, _ := pj1.ToPrettyJSON()
 fmt.Println(out1)
@@ -2410,11 +2353,11 @@ Difference returns a new collection containing elements from the first collectio
 that are not present in the second. Order follows the first collection, and
 duplicates are removed.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="difference">
 
 ```go
+// Example: integers
 a := collection.New([]int{1, 2, 2, 3, 4})
 b := collection.New([]int{2, 4})
 
@@ -2468,11 +2411,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -2481,11 +2422,11 @@ _Example: structs_
 Intersect returns a new collection containing elements from the second
 collection that are also present in the first.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="intersect">
 
 ```go
+// Example: integers
 a := collection.New([]int{1, 2, 2, 3, 4})
 b := collection.New([]int{2, 4, 4, 5})
 
@@ -2543,11 +2484,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -2557,11 +2496,11 @@ SymmetricDifference returns a new collection containing elements that appear
 in exactly one of the two collections. Order follows the first collection for
 its unique items, then the second for its unique items. Duplicates are removed.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="symmetricdifference">
 
 ```go
+// Example: integers
 a := collection.New([]int{1, 2, 3, 3})
 b := collection.New([]int{3, 4, 4, 5})
 
@@ -2617,11 +2556,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -2631,11 +2568,11 @@ Union returns a new collection containing the unique elements from both collecti
 Items from the first collection are kept in order, followed by items from the second
 that were not already present.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="union">
 
 ```go
+// Example: integers
 a := collection.New([]int{1, 2, 2, 3})
 b := collection.New([]int{3, 4, 4, 5})
 
@@ -2697,11 +2634,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -2711,11 +2646,11 @@ Unique returns a new collection with duplicate items removed, based on the
 equality function `eq`. The first occurrence of each unique value is kept,
 and order is preserved.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="unique">
 
 ```go
+// Example: integers
 c1 := collection.New([]int{1, 2, 2, 3, 4, 4, 5})
 out1 := c1.Unique(func(a, b int) bool { return a == b })
 collection.Dump(out1.Items())
@@ -2769,11 +2704,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: strings (case-insensitive uniqueness)_
 
 
 
-_Example: structs (unique by ID)_
 
 
 
@@ -2782,11 +2715,11 @@ _Example: structs (unique by ID)_
 UniqueBy returns a new collection containing only the first occurrence
 of each element as determined by keyFn.
 
-_Example: structs – unique by ID_
 
 <GoForjExample repo="collection" example="uniqueby">
 
 ```go
+// Example: structs – unique by ID
 type User struct {
 	ID   int
 	Name string
@@ -2838,11 +2771,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: strings – case-insensitive uniqueness_
 
 
 
-_Example: integers – identity key_
 
 
 
@@ -2852,11 +2783,11 @@ UniqueComparable returns a new collection with duplicate comparable items remove
 The first occurrence of each value is kept, and order is preserved.
 This is a faster, allocation-friendly path for comparable types.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="uniquecomparable">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 2, 3, 4, 4, 5})
 out := collection.UniqueComparable(c)
 collection.Dump(out.Items())
@@ -2881,7 +2812,6 @@ collection.Dump(out2.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
@@ -2892,11 +2822,11 @@ _Example: strings_
 Chunk splits the collection into chunks of the given size.
 The final chunk may be smaller if len(items) is not divisible by size.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="chunk">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5}).Chunk(2)
 collection.Dump(c)
 
@@ -2957,7 +2887,6 @@ collection.Dump(userChunks)
 
 </GoForjExample>
 
-_Example: structs_
 
 
 
@@ -2966,11 +2895,11 @@ _Example: structs_
 Filter keeps only the elements for which fn returns true.
 This method mutates the collection in place and returns the same instance.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="filter">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4})
 c.Filter(func(v int) bool {
 	return v%2 == 0
@@ -3024,11 +2953,9 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -3038,11 +2965,11 @@ Partition splits the collection into two new collections based on predicate fn.
 The first collection contains items where fn returns true; the second contains
 items where fn returns false. Order is preserved within each partition.
 
-_Example: integers - even/odd_
 
 <GoForjExample repo="collection" example="partition">
 
 ```go
+// Example: integers - even/odd
 nums := collection.New([]int{1, 2, 3, 4, 5})
 evens, odds := nums.Partition(func(n int) bool {
 	return n%2 == 0
@@ -3110,11 +3037,9 @@ collection.Dump(active.Items(), inactive.Items())
 
 </GoForjExample>
 
-_Example: strings - prefix match_
 
 
 
-_Example: structs - active vs inactive_
 
 
 
@@ -3122,11 +3047,11 @@ _Example: structs - active vs inactive_
 
 Pop removes and returns the last item in the collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="pop">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3})
 item, ok := c.Pop()
 collection.Dump(item, ok, c.Items())
@@ -3185,15 +3110,12 @@ collection.Dump(item4, ok4, empty.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
-_Example: empty collection_
 
 
 
@@ -3201,11 +3123,11 @@ _Example: empty collection_
 
 PopN removes and returns the last n items in original order.
 
-_Example: integers – pop 2_
 
 <GoForjExample repo="collection" example="popn">
 
 ```go
+// Example: integers – pop 2
 c := collection.New([]int{1, 2, 3, 4})
 popped := c.PopN(2)
 collection.Dump(popped, c.Items())
@@ -3286,19 +3208,15 @@ collection.Dump(popped5, c4.Items())
 
 </GoForjExample>
 
-_Example: strings – pop 1_
 
 
 
-_Example: structs – pop 2_
 
 
 
-_Example: integers - n <= 0 → returns nil, no change_
 
 
 
-_Example: strings - n exceeds length → all items popped, rest empty_
 
 
 
@@ -3309,11 +3227,11 @@ If n is less than or equal to zero, Skip returns the full collection.
 If n is greater than or equal to the collection length, Skip returns
 an empty collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="skip">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5})
 out := c.Skip(2)
 collection.Dump(out.Items())
@@ -3365,15 +3283,12 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
-_Example: skip none_
 
 
 
-_Example: skip all_
 
 
 
-_Example: structs_
 
 
 
@@ -3384,11 +3299,11 @@ If n is less than or equal to zero, SkipLast returns the full collection.
 If n is greater than or equal to the collection length, SkipLast returns
 an empty collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="skiplast">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5})
 out := c.SkipLast(2)
 collection.Dump(out.Items())
@@ -3440,15 +3355,12 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
-_Example: skip none_
 
 
 
-_Example: skip all_
 
 
 
-_Example: structs_
 
 
 
@@ -3457,11 +3369,11 @@ _Example: structs_
 Take returns a new collection containing the first `n` items when n > 0,
 or the last `|n|` items when n < 0.
 
-_Example: integers - take first 3_
 
 <GoForjExample repo="collection" example="take">
 
 ```go
+// Example: integers - take first 3
 c1 := collection.New([]int{0, 1, 2, 3, 4, 5})
 out1 := c1.Take(3)
 collection.Dump(out1.Items())
@@ -3499,15 +3411,12 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
-_Example: integers - take last 2 (negative n)_
 
 
 
-_Example: integers - n exceeds length → whole collection_
 
 
 
-_Example: integers - zero → empty_
 
 
 
@@ -3518,11 +3427,11 @@ If n is less than or equal to zero, TakeLast returns an empty collection.
 If n is greater than or equal to the collection length, TakeLast returns
 the full collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="takelast">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3, 4, 5})
 out := c.TakeLast(2)
 collection.Dump(out.Items())
@@ -3570,15 +3479,12 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
-_Example: take none_
 
 
 
-_Example: take all_
 
 
 
-_Example: structs_
 
 
 
@@ -3587,11 +3493,11 @@ _Example: structs_
 TakeUntil returns items until the first element equals `value`.
 The matching item is NOT included.
 
-_Example: integers - stop at value 3_
 
 <GoForjExample repo="collection" example="takeuntil">
 
 ```go
+// Example: integers - stop at value 3
 c4 := collection.New([]int{1, 2, 3, 4})
 out4 := collection.TakeUntil(c4, 3)
 collection.Dump(out4.Items())
@@ -3620,11 +3526,9 @@ collection.Dump(out6.Items())
 
 </GoForjExample>
 
-_Example: strings - value never appears → full slice_
 
 
 
-_Example: integers - match is first item → empty result_
 
 
 
@@ -3633,11 +3537,11 @@ _Example: integers - match is first item → empty result_
 TakeUntilFn returns items until the predicate function returns true.
 The matching item is NOT included.
 
-_Example: integers - stop when value >= 3_
 
 <GoForjExample repo="collection" example="takeuntilfn">
 
 ```go
+// Example: integers - stop when value >= 3
 c1 := collection.New([]int{1, 2, 3, 4})
 out1 := c1.TakeUntilFn(func(v int) bool { return v >= 3 })
 collection.Dump(out1.Items())
@@ -3666,11 +3570,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: integers - predicate immediately true → empty result_
 
 
 
-_Example: integers - no match → full list returned_
 
 
 
@@ -3680,11 +3582,11 @@ Window returns overlapping (or stepped) windows of the collection.
 Each window is a slice of length size; iteration advances by step (default 1 if step <= 0).
 Windows that are shorter than size are omitted.
 
-_Example: integers - step 1_
 
 <GoForjExample repo="collection" example="window">
 
 ```go
+// Example: integers - step 1
 nums := collection.New([]int{1, 2, 3, 4, 5})
 win := collection.Window(nums, 3, 1)
 collection.Dump(win.Items())
@@ -3772,11 +3674,9 @@ collection.Dump(win3.Items())
 
 </GoForjExample>
 
-_Example: strings - step 2_
 
 
 
-_Example: structs_
 
 
 
@@ -3786,11 +3686,11 @@ _Example: structs_
 
 Append returns a new collection with the given values appended.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="append">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2})
 c.Append(3, 4).Dump()
 // #[]int [
@@ -3838,7 +3738,6 @@ users.Append(
 
 </GoForjExample>
 
-_Example: structs_
 
 
 
@@ -3849,6 +3748,7 @@ Concat appends the values from the given slice onto the end of the collection,
 <GoForjExample repo="collection" example="concat">
 
 ```go
+// Example: strings
 c := collection.New([]string{"John Doe"})
 concatenated := c.
 	Concat([]string{"Jane Doe"}).
@@ -3870,11 +3770,11 @@ collection.Dump(concatenated)
 Each runs fn for every item in the collection and returns the same collection,
 so it can be used in chains for side effects (logging, debugging, etc.).
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="each">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3})
 
 sum := 0
@@ -3927,11 +3827,9 @@ collection.Dump(names)
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -3939,11 +3837,11 @@ _Example: structs_
 
 Map applies a same-type transformation in place and returns the same collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="map">
 
 ```go
+// Example: integers
 c := collection.New([]int{1, 2, 3})
 
 mapped := c.Map(func(v int) int {
@@ -4002,11 +3900,9 @@ collection.Dump(updated.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -4014,11 +3910,11 @@ _Example: structs_
 
 MapTo maps a Collection[T] to a Collection[R] using fn(T) R.
 
-_Example: integers - extract parity label_
 
 <GoForjExample repo="collection" example="mapto">
 
 ```go
+// Example: integers - extract parity label
 nums := collection.New([]int{1, 2, 3, 4})
 parity := collection.MapTo(nums, func(n int) string {
 	if n%2 == 0 {
@@ -4070,11 +3966,9 @@ collection.Dump(names.Items())
 
 </GoForjExample>
 
-_Example: strings - length of each value_
 
 
 
-_Example: structs - MapTo a field_
 
 
 
@@ -4082,11 +3976,11 @@ _Example: structs - MapTo a field_
 
 Merge merges the given data into a new collection.
 
-_Example: integers - merging slices_
 
 <GoForjExample repo="collection" example="merge">
 
 ```go
+// Example: integers - merging slices
 ints := collection.New([]int{1, 2})
 extra := []int{3, 4}
 // Merge the extra slice into the ints collection
@@ -4152,11 +4046,9 @@ collection.Dump(merged3.Items())
 
 </GoForjExample>
 
-_Example: strings - merging another collection_
 
 
 
-_Example: structs - merging struct slices_
 
 
 
@@ -4165,11 +4057,11 @@ _Example: structs - merging struct slices_
 Multiply creates `n` copies of all items in the collection
 and returns a new collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="multiply">
 
 ```go
+// Example: integers
 ints := collection.New([]int{1, 2})
 out := ints.Multiply(3)
 collection.Dump(out.Items())
@@ -4225,15 +4117,12 @@ collection.Dump(none.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
-_Example: multiplying by zero or negative returns empty_
 
 
 
@@ -4242,11 +4131,11 @@ _Example: multiplying by zero or negative returns empty_
 Pipe passes the entire collection into the given function
 and returns the function's result.
 
-_Example: integers – computing a sum_
 
 <GoForjExample repo="collection" example="pipe">
 
 ```go
+// Example: integers – computing a sum
 c := collection.New([]int{1, 2, 3})
 sum := collection.Pipe(c, func(col *collection.Collection[int]) int {
 	total := 0
@@ -4298,11 +4187,9 @@ collection.Dump(names)
 
 </GoForjExample>
 
-_Example: strings – joining values_
 
 
 
-_Example: structs – extracting just the names_
 
 
 
@@ -4310,11 +4197,11 @@ _Example: structs – extracting just the names_
 
 Prepend adds the given values to the beginning of the collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="prepend">
 
 ```go
+// Example: integers
 c := collection.New([]int{3, 4})
 c.Prepend(1, 2)
 collection.Dump(c.Items())
@@ -4380,19 +4267,15 @@ collection.Dump(c2.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
-_Example: integers - Prepending into an empty collection_
 
 
 
-_Example: integers - Prepending no values → no change_
 
 
 
@@ -4401,11 +4284,11 @@ _Example: integers - Prepending no values → no change_
 Tap invokes fn with the collection pointer for side effects (logging, debugging,
 inspection) and returns the same collection to allow chaining.
 
-_Example: integers - capture intermediate state during a chain_
 
 <GoForjExample repo="collection" example="tap">
 
 ```go
+// Example: integers - capture intermediate state during a chain
 captured1 := []int{}
 c1 := collection.New([]int{3, 1, 2}).
 	Sort(func(a, b int) bool { return a < b }). // → [1, 2, 3]
@@ -4490,11 +4373,9 @@ collection.Dump(users2.Items()) // ensures users2 is used
 
 </GoForjExample>
 
-_Example: integers - tap for debugging without changing flow_
 
 
 
-_Example: structs - Tap with struct collection_
 
 
 
@@ -4503,11 +4384,11 @@ _Example: structs - Tap with struct collection_
 Times creates a new collection by calling fn(i) for i = 1..count.
 This mirrors Laravel's Collection::times(), which is 1-indexed.
 
-_Example: integers - double each index_
 
 <GoForjExample repo="collection" example="times">
 
 ```go
+// Example: integers - double each index
 cTimes1 := collection.Times(5, func(i int) int {
 	return i * 2
 })
@@ -4563,11 +4444,9 @@ collection.Dump(cTimes3.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -4575,11 +4454,11 @@ _Example: structs_
 
 Transform applies fn to every item *in place*, mutating the collection.
 
-_Example: integers_
 
 <GoForjExample repo="collection" example="transform">
 
 ```go
+// Example: integers
 c1 := collection.New([]int{1, 2, 3})
 c1.Transform(func(v int) int { return v * 2 })
 collection.Dump(c1.Items())
@@ -4630,11 +4509,9 @@ collection.Dump(c3.Items())
 
 </GoForjExample>
 
-_Example: strings_
 
 
 
-_Example: structs_
 
 
 
@@ -4643,11 +4520,11 @@ _Example: structs_
 Zip combines two collections element-wise into a collection of tuples.
 The resulting length is the smaller of the two inputs.
 
-_Example: integers and strings_
 
 <GoForjExample repo="collection" example="zip">
 
 ```go
+// Example: integers and strings
 nums := collection.New([]int{1, 2, 3})
 words := collection.New([]string{"one", "two"})
 
@@ -4699,7 +4576,6 @@ collection.Dump(out2.Items())
 
 </GoForjExample>
 
-_Example: structs_
 
 
 
@@ -4708,11 +4584,11 @@ _Example: structs_
 ZipWith combines two collections element-wise using combiner fn.
 The resulting length is the smaller of the two inputs.
 
-_Example: sum ints_
 
 <GoForjExample repo="collection" example="zipwith">
 
 ```go
+// Example: sum ints
 a := collection.New([]int{1, 2, 3})
 b := collection.New([]int{10, 20})
 
@@ -4764,11 +4640,9 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
-_Example: format strings_
 
 
 
-_Example: structs_
 
 
 <!-- api:embed:end -->

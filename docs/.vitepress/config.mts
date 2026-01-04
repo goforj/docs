@@ -24,6 +24,8 @@ export default defineConfig({
       { text: 'What is GoForj?', link: '/about' }
     ],
 
+    outline: [2, 3],
+
     sidebar: [
       {
         text: 'Docs',
