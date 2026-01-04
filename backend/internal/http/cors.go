@@ -23,7 +23,10 @@ func (s *Server) registerCors(e *echo.Echo) {
 
 	if len(endpoints) == 0 && env.IsAppEnvDev() {
 		// If no endpoints are specified and the app is in dev mode, allow all origins
-		endpoints = []string{"http://localhost:8080"}
+		endpoints = []string{
+			"http://localhost:8080",
+			"http://localhost:5174",
+		}
 	}
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

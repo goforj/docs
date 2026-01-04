@@ -8,6 +8,8 @@ package wire
 
 import (
 	"github.com/goforj/docs/internal/cmd"
+	"github.com/goforj/docs/internal/docs"
+	"github.com/goforj/docs/internal/examples"
 	"github.com/goforj/docs/internal/hello"
 	"github.com/goforj/docs/internal/http"
 	"github.com/goforj/docs/internal/logger"
@@ -20,9 +22,11 @@ import (
 func InitializeApplication() (App, error) {
 	appLogger := logger.ProvideAppLogger()
 	helloWorldCmd := cmd.NewHelloWorldCmd(appLogger)
-	appCommands := cmd.NewAppCommands(helloWorldCmd)
-	controller := hello.NewController(appLogger)
-	appRoutes := router.ProvideAppRoutes(controller)
+	docsGenerateCommand := docs.NewDocsGenerateCommand(appLogger)
+	appCommands := cmd.NewAppCommands(helloWorldCmd, docsGenerateCommand)
+	controller := examples.NewController(appLogger)
+	helloController := hello.NewController(appLogger)
+	appRoutes := router.ProvideAppRoutes(controller, helloController)
 	v := router.ProvideRoutes(appRoutes)
 	server := http.NewServer(appLogger, v)
 	serveCmd := http.NewServeCmd(appLogger, server)

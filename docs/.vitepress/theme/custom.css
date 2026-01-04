@@ -30,3 +30,117 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
+
+.gf-example {
+    border: 1px solid rgba(130, 130, 150, 0.2);
+    border-radius: 16px;
+    background: rgba(15, 16, 22, 0.6);
+    padding: 20px;
+    margin: 28px 0;
+}
+
+.gf-example__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.gf-example__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.gf-example__meta {
+    margin: 0;
+    color: rgba(210, 214, 230, 0.65);
+    font-size: 0.85rem;
+}
+
+.gf-example__run {
+    border: 1px solid rgba(140, 140, 180, 0.35);
+    background: rgba(55, 70, 120, 0.4);
+    color: #dfe6ff;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.gf-example__run--inline {
+    margin-top: 14px;
+}
+
+.gf-example__run:hover:not(:disabled) {
+    border-color: rgba(160, 180, 230, 0.7);
+    background: rgba(70, 95, 150, 0.55);
+}
+
+.gf-example__run:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.gf-example__body {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+}
+
+.gf-example__panel {
+    border-radius: 12px;
+    border: 1px solid rgba(130, 130, 150, 0.2);
+    background: rgba(12, 12, 18, 0.6);
+    padding: 14px 16px;
+}
+
+.gf-example__label {
+    margin: 0 0 10px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(180, 190, 220, 0.7);
+}
+
+.gf-example__code {
+    margin: 0;
+    font-size: 0.78rem;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.gf-example__slot pre {
+    margin: 0;
+    font-size: 0.78rem;
+}
+
+.gf-example__slot pre code {
+    font-size: 0.78rem;
+}
+
+.gf-example__placeholder {
+    margin: 0;
+    color: rgba(200, 200, 220, 0.6);
+    font-size: 0.9rem;
+}
+
+.gf-example__note {
+    margin: 12px 0 0;
+    font-size: 0.75rem;
+    color: rgba(170, 180, 210, 0.6);
+}
+
+.gf-example__meta-line {
+    margin: 10px 0 0;
+    font-size: 0.75rem;
+    color: rgba(170, 180, 210, 0.7);
+}
+
+.gf-example__error {
+    margin-top: 12px;
+    color: #ffb5b5;
+    font-size: 0.85rem;
+}
