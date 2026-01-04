@@ -37,6 +37,27 @@ func (c *DocsGenerateCommand) Run() error {
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "strings.md"),
 		},
+		{
+			Slug:       "httpx",
+			Title:      "HTTPX",
+			CloneURL:   "https://github.com/goforj/httpx.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "httpx.md"),
+		},
+		{
+			Slug:       "execx",
+			Title:      "ExecX",
+			CloneURL:   "https://github.com/goforj/execx.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "execx.md"),
+		},
+		{
+			Slug:       "godump",
+			Title:      "GoDump",
+			CloneURL:   "https://github.com/goforj/godump.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "godump.md"),
+		},
 	}
 
 	docsRoot, err := findDocsRoot()

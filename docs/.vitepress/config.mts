@@ -4,7 +4,11 @@ const headingRegex = /<h(\d*).*?>(.*?<a.*? href="#.*?".*?>.*?<\/a>)<\/h\1>/gi
 const headingContentRegex = /(.*?)<a.*? href="#(.*?)".*?>.*?<\/a>/i
 const h1Regex = /<h1[^>]*>(.*?)<\/h1>/i
 
-const clearHtmlTags = (value: string) => value.replace(/<[^>]*>/g, '')
+const clearHtmlTags = (value: string) => value
+  .replace(/<[^>]*>/g, '')
+  .replace(/&ZeroWidthSpace;/gi, '')
+  .replace(/\u200b/g, '')
+const normalizeTitle = (value: string) => clearHtmlTags(value).trim().toLowerCase()
 
 const getPageTitle = (path: string, html: string) => {
   const h1Match = h1Regex.exec(html)
@@ -23,7 +27,6 @@ const splitIntoSections = (path: string, html: string) => {
   result.shift()
   let parentTitles: string[] = []
   const sections: { anchor: string; titles: string[]; text: string }[] = []
-
   for (let i = 0; i < result.length; i += 3) {
     const level = parseInt(result[i], 10) - 1
     const heading = result[i + 1]
@@ -36,10 +39,16 @@ const splitIntoSections = (path: string, html: string) => {
     let titles = parentTitles.slice(0, level)
     titles[level] = title
     titles = titles.filter(Boolean)
-    if (pageTitle && titles[0] !== pageTitle) {
+    if (pageTitle && normalizeTitle(titles[0] || '') !== normalizeTitle(pageTitle)) {
       titles = [pageTitle, ...titles]
     }
-
+    const seen = new Set<string>()
+    titles = titles.filter((value) => {
+      const key = normalizeTitle(value)
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
     sections.push({ anchor, titles, text: clearHtmlTags(content) })
     if (level === 0) {
       parentTitles = [title]
@@ -66,7 +75,10 @@ export default defineConfig({
   appearance: 'force-dark',
   rewrites: {
     'libraries/collection.md': 'collection.md',
-    'libraries/strings.md': 'strings.md'
+    'libraries/strings.md': 'strings.md',
+    'libraries/httpx.md': 'httpx.md',
+    'libraries/execx.md': 'execx.md',
+    'libraries/godump.md': 'godump.md'
   },
 
   head: [['link', { rel: 'icon', href: '../assets/goforj-hammer.png' }]],
@@ -107,6 +119,9 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Libraries', link: '/collection' },
       { text: 'Strings', link: '/strings' },
+      { text: 'HTTPX', link: '/httpx' },
+      { text: 'ExecX', link: '/execx' },
+      { text: 'GoDump', link: '/godump' },
       { text: 'What is GoForj?', link: '/about' }
     ],
 
@@ -118,6 +133,9 @@ export default defineConfig({
         items: [
           { text: 'Collections', link: '/collection' },
           { text: 'Strings', link: '/strings' },
+          { text: 'HTTPX', link: '/httpx' },
+          { text: 'ExecX', link: '/execx' },
+          { text: 'GoDump', link: '/godump' },
           { text: 'About', link: '/about' },
         ]
       }
