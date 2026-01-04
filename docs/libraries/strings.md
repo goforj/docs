@@ -32,7 +32,7 @@ go get github.com/goforj/str
 
 ## Runnable examples {#runnable-examples}
 
-Every function has a corresponding runnable example under [`./examples`](./examples).
+Every function has a corresponding runnable example under [`./examples`](https://github.com/goforj/str/tree/main/examples).
 
 These examples are **generated directly from the documentation blocks** of each function, ensuring the docs and code never drift. These are the same examples you see here in the README and GoDoc.
 

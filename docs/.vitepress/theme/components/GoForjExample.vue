@@ -26,7 +26,9 @@ const headerTitle = computed(() => {
   return 'Example'
 })
 
-const apiBase = (import.meta.env.VITE_GOFORJ_API_BASE || '').replace(/\/$/, '')
+const apiBaseEnv = import.meta.env.DEV ? (import.meta.env.VITE_GOFORJ_API_BASE || '') : ''
+const defaultApiBase = typeof window !== 'undefined' ? window.location.origin : ''
+const apiBase = (apiBaseEnv || defaultApiBase).replace(/\/$/, '')
 
 const buildUrl = (path) => `${apiBase}${path}`
 

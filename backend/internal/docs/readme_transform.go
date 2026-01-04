@@ -2,6 +2,7 @@ package docs
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 	"strings"
 )
@@ -18,6 +19,7 @@ var markdownHeadingRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s*$`)
 
 func transformReadme(readme string, repo RepoConfig, rawBase string, examples []ExampleProgram) string {
 	updated := rewriteImageLinks(readme, rawBase)
+	updated = rewriteMarkdownLinks(updated, repo)
 	updated = wrapExamples(updated, repo.Slug, examples)
 	updated = rewriteHeadingAnchors(updated)
 	return withFrontmatter(repo, updated)
@@ -56,6 +58,99 @@ func rewriteImageURL(url string, rawBase string) string {
 	trimmed = strings.TrimPrefix(trimmed, "./")
 	trimmed = strings.TrimPrefix(trimmed, "/")
 	return rawBase + trimmed
+}
+
+func rewriteMarkdownLinks(content string, repo RepoConfig) string {
+	base := webGithubBase(repo)
+	branch := repo.Branch
+	if branch == "" {
+		branch = "main"
+	}
+	lines := strings.Split(content, "\n")
+	inCode := false
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "```") {
+			inCode = !inCode
+			continue
+		}
+		if inCode {
+			continue
+		}
+		lines[i] = rewriteLineLinks(line, base, branch)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func rewriteLineLinks(line string, base string, branch string) string {
+	var out strings.Builder
+	start := 0
+	for {
+		open := strings.Index(line[start:], "[")
+		if open == -1 {
+			out.WriteString(line[start:])
+			break
+		}
+		open += start
+		if open > 0 && line[open-1] == '!' {
+			out.WriteString(line[start : open+1])
+			start = open + 1
+			continue
+		}
+		closeBracket := strings.Index(line[open:], "](")
+		if closeBracket == -1 {
+			out.WriteString(line[start:])
+			break
+		}
+		closeBracket += open
+		closeParen := strings.Index(line[closeBracket+2:], ")")
+		if closeParen == -1 {
+			out.WriteString(line[start:])
+			break
+		}
+		closeParen += closeBracket + 2
+		out.WriteString(line[start : closeBracket+2])
+		url := line[closeBracket+2 : closeParen]
+		out.WriteString(rewriteLinkURL(url, base, branch))
+		out.WriteString(")")
+		start = closeParen + 1
+	}
+	return out.String()
+}
+
+func rewriteLinkURL(url string, base string, branch string) string {
+	trimmed := strings.TrimSpace(url)
+	lower := strings.ToLower(trimmed)
+	if strings.HasPrefix(lower, "http://") ||
+		strings.HasPrefix(lower, "https://") ||
+		strings.HasPrefix(lower, "mailto:") {
+		return trimmed
+	}
+	if strings.HasPrefix(trimmed, "#") {
+		return trimmed
+	}
+
+	pathPart := trimmed
+	anchor := ""
+	if hashIndex := strings.Index(trimmed, "#"); hashIndex != -1 {
+		pathPart = trimmed[:hashIndex]
+		anchor = trimmed[hashIndex:]
+	}
+
+	pathPart = strings.TrimPrefix(pathPart, "./")
+	pathPart = strings.TrimPrefix(pathPart, "/")
+	if pathPart == "" {
+		return trimmed
+	}
+
+	leaf := path.Base(pathPart)
+	isFile := strings.Contains(leaf, ".") && !strings.HasSuffix(pathPart, "/")
+	mode := "tree"
+	if isFile {
+		mode = "blob"
+	}
+
+	return base + mode + "/" + branch + "/" + pathPart + anchor
 }
 
 func rewriteHeadingAnchors(content string) string {

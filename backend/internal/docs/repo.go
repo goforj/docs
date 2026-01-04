@@ -11,6 +11,11 @@ type RepoConfig struct {
 	OutputPath string
 }
 
+func webGithubBase(repo RepoConfig) string {
+	base := strings.TrimSuffix(repo.CloneURL, ".git")
+	return ensureTrailingSlash(base)
+}
+
 func rawGithubBase(repo RepoConfig, branch string) string {
 	base := "https://raw.githubusercontent.com/goforj/" + repo.Slug + "/" + branch + "/"
 	return ensureTrailingSlash(base)

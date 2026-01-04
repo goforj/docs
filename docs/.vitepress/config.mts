@@ -85,7 +85,7 @@ export default defineConfig({
     'libraries/filesystem.md': 'filesystem.md'
   },
 
-  head: [['link', { rel: 'icon', href: '../assets/goforj-hammer.png' }]],
+  head: [['link', { rel: 'icon', href: '/assets/goforj-hammer.png' }]],
 
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
@@ -117,7 +117,7 @@ export default defineConfig({
         }
       }
     },
-    logo: '../assets/goforj-letters.png',
+    logo: '/assets/goforj-letters.png',
 
     nav: [
       { text: 'Home', link: '/' },

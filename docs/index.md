@@ -6,7 +6,7 @@ hero:
   text: "High-trust Go libraries and tools, forged for developer productivity and performance"
   tagline: "Explicit, ergonomic tooling for Go - designed to be readable, auditable, and production-ready."
   image:
-    src: ./assets/goforj-full.png
+    src: /assets/goforj-full.png
     alt: GoForj
   actions:
     - theme: brand
@@ -51,4 +51,3 @@ A guided project creation experience - including `forj new` - is in active devel
 For now, explore the available libraries, run the examples, and use only the pieces you need.
 
 _Check back soon._
-

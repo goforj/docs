@@ -49,7 +49,7 @@ Many methods return the collection itself, allowing for fluent method chaining.
 Some methods may be limited due to Go's generic constraints.
 
 > **Fluent example:**  
-> [`examples/chaining/main.go`](./examples/chaining/main.go)
+> [`examples/chaining/main.go`](https://github.com/goforj/collection/blob/main/examples/chaining/main.go)
 
 <GoForjExample repo="collection" example="chaining">
 
@@ -96,7 +96,7 @@ That design choice doesn't matter much for some single operations. It matters a 
 
 Below - A fixed ~24B allocation is the cost of the Collection wrapper (one-time per pipeline), not additional work per operation
 
-The below tables are automatically generated from [`./docs/bench/main.go`](./docs/bench/main.go).
+The below tables are automatically generated from [`./docs/bench/main.go`](https://github.com/goforj/collection/blob/main/docs/bench/main.go).
 
 <!-- bench:embed:start -->
 
@@ -295,7 +295,7 @@ Borrowed slices, in-place mutation, and view semantics are intentional and visib
 
 ## Runnable examples {#runnable-examples}
 
-Every function has a corresponding runnable example under [`./examples`](./examples).
+Every function has a corresponding runnable example under [`./examples`](https://github.com/goforj/collection/tree/main/examples).
 
 These examples are **generated directly from the documentation blocks** of each function, ensuring the docs and code never drift. These are the same examples you see here in the README and GoDoc.
 

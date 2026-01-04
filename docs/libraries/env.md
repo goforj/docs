@@ -98,7 +98,7 @@ func main() {
 
 ### Full kitchen-sink example {#full-kitchen-sink-example}
 
-See [examples/kitchensink/main.go](examples/kitchensink/main.go) for a runnable program that exercises almost every helper (env loading, typed getters, must-getters, runtime + container detection, and the `env.Dump` wrapper) with deterministic godump output.
+See [examples/kitchensink/main.go](https://github.com/goforj/env/blob/main/examples/kitchensink/main.go) for a runnable program that exercises almost every helper (env loading, typed getters, must-getters, runtime + container detection, and the `env.Dump` wrapper) with deterministic godump output.
 
 ## Environment file loading {#environment-file-loading}
 
@@ -108,7 +108,7 @@ It is intentionally composed into the runtime detection and APP_ENV model rather
 
 ## Runnable examples {#runnable-examples}
 
-Every function has a corresponding runnable example under [`./examples`](./examples).
+Every function has a corresponding runnable example under [`./examples`](https://github.com/goforj/env/tree/main/examples).
 
 These examples are **generated directly from the documentation blocks** of each function, ensuring the docs and code never drift. These are the same examples you see here in the README and GoDoc.
 

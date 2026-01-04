@@ -286,7 +286,7 @@ Ensure all public functions have documentation blocks with examples, as these ar
 
 ## Runnable Examples Directory {#runnable-examples-directory}
 
-Every function has a corresponding runnable example under [`./examples`](./examples).
+Every function has a corresponding runnable example under [`./examples`](https://github.com/goforj/godump/tree/main/examples).
 
 These examples are **generated directly from the documentation blocks** of each function, ensuring the docs and code never drift. These are the same examples you see here in the README and GoDoc.
 

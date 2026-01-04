@@ -9,3 +9,6 @@
 
 # Allow all markdown files in docs
 !/docs/**/*.md
+
+backend/frontend/dist/
+bin/
