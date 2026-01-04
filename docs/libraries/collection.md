@@ -55,21 +55,21 @@ Some methods may be limited due to Go's generic constraints.
 
 ```go
 events := []DeviceEvent{
-    {Device: "router-1", Region: "us-east", Errors: 3},
-    {Device: "router-2", Region: "us-east", Errors: 15},
-    {Device: "router-3", Region: "us-west", Errors: 22},
+	{Device: "router-1", Region: "us-east", Errors: 3},
+	{Device: "router-2", Region: "us-east", Errors: 15},
+	{Device: "router-3", Region: "us-west", Errors: 22},
 }
 
 // Fluent slice pipeline
 collection.
-    New(events). // Construction
-    Shuffle(). // Ordering
-    Filter(func(e DeviceEvent) bool { return e.Errors > 5 }). // Slicing
-    Sort(func(a, b DeviceEvent) bool { return a.Errors > b.Errors }). // Ordering
-    Take(5). // Slicing
-    TakeUntilFn(func(e DeviceEvent) bool { return e.Errors < 10 }). // Slicing (stop when predicate becomes true)
-    SkipLast(1). // Slicing
-    Dump() // Debugging
+	New(events). // Construction
+	Shuffle(). // Ordering
+	Filter(func(e DeviceEvent) bool { return e.Errors > 5 }). // Slicing
+	Sort(func(a, b DeviceEvent) bool { return a.Errors > b.Errors }). // Ordering
+	Take(5). // Slicing
+	TakeUntilFn(func(e DeviceEvent) bool { return e.Errors < 10 }). // Slicing (stop when predicate becomes true)
+	SkipLast(1). // Slicing
+	Dump() // Debugging
 
 // #[]main.DeviceEvent [
 //  0 => #main.DeviceEvent {
@@ -210,21 +210,36 @@ Use `Clone()` or `ItemsCopy()` to explicitly copy.
 
 When you want to branch a pipeline or preserve the original data, `Clone()` creates a shallow copy of the collection so subsequent operations are isolated and predictable.
 
+<GoForjExample repo="collection" example="chaining">
+
 ```go
-events := collection.New(deviceEvents)
+events := []DeviceEvent{
+	{Device: "router-1", Region: "us-east", Errors: 3},
+	{Device: "router-2", Region: "us-east", Errors: 15},
+	{Device: "router-3", Region: "us-west", Errors: 22},
+}
 
-// Fast alerting path: cheap filters, early exit
-alerts := events.
-    Clone().
-    Filter(func(e DeviceEvent) bool { return e.Severity >= Critical }).
-    Take(10)
+// Fluent slice pipeline
+collection.
+	New(events). // Construction
+	Shuffle(). // Ordering
+	Filter(func(e DeviceEvent) bool { return e.Errors > 5 }). // Slicing
+	Sort(func(a, b DeviceEvent) bool { return a.Errors > b.Errors }). // Ordering
+	Take(5). // Slicing
+	TakeUntilFn(func(e DeviceEvent) bool { return e.Errors < 10 }). // Slicing (stop when predicate becomes true)
+	SkipLast(1). // Slicing
+	Dump() // Debugging
 
-// Deeper analysis path: heavier work, full ordering
-report := events.
-    Clone().
-    Filter(func(e DeviceEvent) bool { return e.Region == "us-east" }).
-    Sort(func(a, b DeviceEvent) bool { return a.Timestamp.Before(b.Timestamp) })
+// #[]main.DeviceEvent [
+//  0 => #main.DeviceEvent {
+//    +Device => "router-3" #string
+//    +Region => "us-west" #string
+//    +Errors => 22 #int
+//  }
+// ]
 ```
+
+</GoForjExample>
 
 This keeps the performance benefits of in-place operations **where they matter**, while making divergence points explicit and intentional.
 
@@ -333,15 +348,8 @@ collection.Dump(items)
 //   1 => 2 #int
 //   2 => 3 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="items">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"apple", "banana"})
 items2 := c2.Items()
 collection.Dump(items2)
@@ -349,15 +357,8 @@ collection.Dump(items2)
 //   0 => "apple" #string
 //   1 => "banana" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="items">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -383,6 +384,14 @@ collection.Dump(out)
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
 
 ### <a id="itemscopy"></a>ItemsCopy · readonly · terminal
 
@@ -418,21 +427,18 @@ _Example: integers_
 c := collection.NewNumeric([]int{2, 4, 6})
 collection.Dump(c.Avg())
 // 4.000000 #float64
-```
 
-</GoForjExample>
-
-_Example: float_
-
-<GoForjExample repo="collection" example="avg">
-
-```go
+// Example: float
 c2 := collection.NewNumeric([]float64{1.5, 2.5, 3.0})
 collection.Dump(c2.Avg())
 // 2.333333 #float64
 ```
 
 </GoForjExample>
+
+_Example: float_
+
+
 
 ### <a id="count"></a>Count · readonly · terminal
 
@@ -468,15 +474,8 @@ collection.Dump(counts)
 //   2 => 2 #int
 //   3 => 3 #int
 // }
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="countby">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"apple", "banana", "apple", "cherry", "banana"})
 counts2 := collection.CountBy(c2, func(v string) string {
 	return v
@@ -487,15 +486,8 @@ collection.Dump(counts2)
 //   banana => 2 #int
 //   cherry => 1 #int
 // }
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="countby">
-
-```go
+// Example: structs
 type User struct {
 	Name string
 	Role string
@@ -522,6 +514,14 @@ collection.Dump(roleCounts)
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="countbyvalue"></a>CountByValue · readonly · terminal
 
 CountByValue returns a map where each distinct item in the collection
@@ -539,15 +539,8 @@ collection.Dump(counts1)
 //  a => 2 #int
 //  b => 1 #int
 // }
-```
 
-</GoForjExample>
-
-_Example: integers_
-
-<GoForjExample repo="collection" example="countbyvalue">
-
-```go
+// Example: integers
 c2 := collection.New([]int{1, 2, 2, 3, 3, 3})
 counts2 := collection.CountByValue(c2)
 collection.Dump(counts2)
@@ -556,15 +549,8 @@ collection.Dump(counts2)
 //  2 => 2 #int
 //  3 => 3 #int
 // }
-```
 
-</GoForjExample>
-
-_Example: structs (comparable)_
-
-<GoForjExample repo="collection" example="countbyvalue">
-
-```go
+// Example: structs (comparable)
 type Point struct {
 	X int
 	Y int
@@ -586,6 +572,14 @@ collection.Dump(counts3)
 
 </GoForjExample>
 
+_Example: integers_
+
+
+
+_Example: structs (comparable)_
+
+
+
 ### <a id="max"></a>Max · readonly · terminal
 
 Max returns the largest numeric item in the collection.
@@ -602,30 +596,16 @@ max1, ok1 := c.Max()
 collection.Dump(max1, ok1)
 // 3 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: floats_
-
-<GoForjExample repo="collection" example="max">
-
-```go
+// Example: floats
 c2 := collection.NewNumeric([]float64{1.5, 9.2, 4.4})
 
 max2, ok2 := c2.Max()
 collection.Dump(max2, ok2)
 // 9.200000 #float64
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: empty numeric collection_
-
-<GoForjExample repo="collection" example="max">
-
-```go
+// Example: empty numeric collection
 c3 := collection.NewNumeric([]int{})
 
 max3, ok3 := c3.Max()
@@ -635,6 +615,14 @@ collection.Dump(max3, ok3)
 ```
 
 </GoForjExample>
+
+_Example: floats_
+
+
+
+_Example: empty numeric collection_
+
+
 
 ### <a id="maxby"></a>MaxBy · readonly · terminal
 
@@ -667,15 +655,8 @@ collection.Dump(top, ok)
 //   +Score => 25 #int
 // }
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: strings - longest length_
-
-<GoForjExample repo="collection" example="maxby">
-
-```go
+// Example: strings - longest length
 words := collection.New([]string{"go", "collection", "rocks"})
 
 longest, ok := collection.MaxBy(words, func(s string) int {
@@ -685,15 +666,8 @@ longest, ok := collection.MaxBy(words, func(s string) int {
 collection.Dump(longest, ok)
 // "collection" #string
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: empty collection_
-
-<GoForjExample repo="collection" example="maxby">
-
-```go
+// Example: empty collection
 empty := collection.New([]int{})
 maxVal, ok := collection.MaxBy(empty, func(v int) int { return v })
 collection.Dump(maxVal, ok)
@@ -702,6 +676,14 @@ collection.Dump(maxVal, ok)
 ```
 
 </GoForjExample>
+
+_Example: strings - longest length_
+
+
+
+_Example: empty collection_
+
+
 
 ### <a id="median"></a>Median · readonly · terminal
 
@@ -719,45 +701,24 @@ median1, ok1 := c.Median()
 collection.Dump(median1, ok1)
 // 2.000000 #float64
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers - even number of items_
-
-<GoForjExample repo="collection" example="median">
-
-```go
+// Example: integers - even number of items
 c2 := collection.NewNumeric([]int{10, 2, 4, 6})
 
 median2, ok2 := c2.Median()
 collection.Dump(median2, ok2)
 // 5.000000 #float64
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: floats_
-
-<GoForjExample repo="collection" example="median">
-
-```go
+// Example: floats
 c3 := collection.NewNumeric([]float64{1.1, 9.9, 3.3})
 
 median3, ok3 := c3.Median()
 collection.Dump(median3, ok3)
 // 3.300000 #float64
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers - empty numeric collection_
-
-<GoForjExample repo="collection" example="median">
-
-```go
+// Example: integers - empty numeric collection
 c4 := collection.NewNumeric([]int{})
 
 median4, ok4 := c4.Median()
@@ -767,6 +728,18 @@ collection.Dump(median4, ok4)
 ```
 
 </GoForjExample>
+
+_Example: integers - even number of items_
+
+
+
+_Example: floats_
+
+
+
+_Example: integers - empty numeric collection_
+
+
 
 ### <a id="min"></a>Min · readonly · terminal
 
@@ -783,29 +756,15 @@ min, ok := c.Min()
 collection.Dump(min, ok)
 // 1 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: floats_
-
-<GoForjExample repo="collection" example="min">
-
-```go
+// Example: floats
 c2 := collection.NewNumeric([]float64{2.5, 9.1, 1.2})
 min2, ok2 := c2.Min()
 collection.Dump(min2, ok2)
 // 1.200000 #float64
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers - empty collection_
-
-<GoForjExample repo="collection" example="min">
-
-```go
+// Example: integers - empty collection
 empty := collection.NewNumeric([]int{})
 min3, ok3 := empty.Min()
 collection.Dump(min3, ok3)
@@ -814,6 +773,14 @@ collection.Dump(min3, ok3)
 ```
 
 </GoForjExample>
+
+_Example: floats_
+
+
+
+_Example: integers - empty collection_
+
+
 
 ### <a id="minby"></a>MinBy · readonly · terminal
 
@@ -846,15 +813,8 @@ collection.Dump(minUser, ok)
 //   +Age  => 25 #int
 // }
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: strings - shortest length_
-
-<GoForjExample repo="collection" example="minby">
-
-```go
+// Example: strings - shortest length
 words := collection.New([]string{"apple", "fig", "banana"})
 
 shortest, ok := collection.MinBy(words, func(s string) int {
@@ -864,15 +824,8 @@ shortest, ok := collection.MinBy(words, func(s string) int {
 collection.Dump(shortest, ok)
 // "fig" #string
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: empty collection_
-
-<GoForjExample repo="collection" example="minby">
-
-```go
+// Example: empty collection
 empty := collection.New([]int{})
 minVal, ok := collection.MinBy(empty, func(v int) int { return v })
 collection.Dump(minVal, ok)
@@ -881,6 +834,14 @@ collection.Dump(minVal, ok)
 ```
 
 </GoForjExample>
+
+_Example: strings - shortest length_
+
+
+
+_Example: empty collection_
+
+
 
 ### <a id="mode"></a>Mode · readonly · terminal
 
@@ -899,15 +860,8 @@ collection.Dump(mode)
 // #[]int [
 //   0 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers – tie for mode_
-
-<GoForjExample repo="collection" example="mode">
-
-```go
+// Example: integers – tie for mode
 c2 := collection.NewNumeric([]int{1, 2, 1, 2})
 mode2 := c2.Mode()
 collection.Dump(mode2)
@@ -915,30 +869,16 @@ collection.Dump(mode2)
 //   0 => 1 #int
 //   1 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: floats_
-
-<GoForjExample repo="collection" example="mode">
-
-```go
+// Example: floats
 c3 := collection.NewNumeric([]float64{1.1, 2.2, 1.1, 3.3})
 mode3 := c3.Mode()
 collection.Dump(mode3)
 // #[]float64 [
 //   0 => 1.100000 #float64
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - empty collection_
-
-<GoForjExample repo="collection" example="mode">
-
-```go
+// Example: integers - empty collection
 empty := collection.NewNumeric([]int{})
 mode4 := empty.Mode()
 collection.Dump(mode4)
@@ -946,6 +886,18 @@ collection.Dump(mode4)
 ```
 
 </GoForjExample>
+
+_Example: integers – tie for mode_
+
+
+
+_Example: floats_
+
+
+
+_Example: integers - empty collection_
+
+
 
 ### <a id="reduce"></a>Reduce · readonly · terminal
 
@@ -962,29 +914,15 @@ sum := collection.New([]int{1, 2, 3}).Reduce(0, func(acc, n int) int {
 })
 collection.Dump(sum)
 // 6 #int
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="reduce">
-
-```go
+// Example: strings
 joined := collection.New([]string{"a", "b", "c"}).Reduce("", func(acc, s string) string {
 	return acc + s
 })
 collection.Dump(joined)
 // "abc" #string
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="reduce">
-
-```go
+// Example: structs
 type Stats struct {
 	Count int
 	Sum   int
@@ -1011,6 +949,14 @@ collection.Dump(total)
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="sum"></a>Sum · readonly · terminal
 
 Sum returns the sum of all numeric items in the NumericCollection.
@@ -1025,28 +971,14 @@ c := collection.NewNumeric([]int{1, 2, 3})
 total := c.Sum()
 collection.Dump(total)
 // 6 #int
-```
 
-</GoForjExample>
-
-_Example: floats_
-
-<GoForjExample repo="collection" example="sum">
-
-```go
+// Example: floats
 c2 := collection.NewNumeric([]float64{1.5, 2.5})
 total2 := c2.Sum()
 collection.Dump(total2)
 // 4.000000 #float64
-```
 
-</GoForjExample>
-
-_Example: integers - empty collection_
-
-<GoForjExample repo="collection" example="sum">
-
-```go
+// Example: integers - empty collection
 c3 := collection.NewNumeric([]int{})
 total3 := c3.Sum()
 collection.Dump(total3)
@@ -1054,6 +986,14 @@ collection.Dump(total3)
 ```
 
 </GoForjExample>
+
+_Example: floats_
+
+
+
+_Example: integers - empty collection_
+
+
 
 ## Construction
 
@@ -1085,15 +1025,8 @@ collection.Dump(clone.Items())
 //   2 => 3 #int
 //   3 => 4 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: branching pipelines_
-
-<GoForjExample repo="collection" example="clone">
-
-```go
+// Example: branching pipelines
 base := collection.New([]int{1, 2, 3, 4, 5})
 
 evens := base.Clone().Filter(func(v int) bool {
@@ -1128,6 +1061,10 @@ collection.Dump(odds.Items())
 ```
 
 </GoForjExample>
+
+_Example: branching pipelines_
+
+
 
 ### <a id="new"></a>New · immutable · chainable
 
@@ -1166,30 +1103,6 @@ This is a no-op on the collection itself and never panics.
 
 _Example: integers_
 
-```go
-c := collection.New([]int{1, 2, 3})
-c.Dump()
-// #[]int [
-//   0 => 1 #int
-//   1 => 2 #int
-//   2 => 3 #int
-// ]
-```
-
-_Example: integers - chaining_
-
-```go
-collection.New([]int{1, 2, 3}).
-	Filter(func(v int) bool { return v > 1 }).
-	Dump()
-// #[]int [
-//   0 => 2 #int
-//   1 => 3 #int
-// ]
-```
-
-_Example: integers_
-
 <GoForjExample repo="collection" example="dump">
 
 ```go
@@ -1203,6 +1116,14 @@ collection.Dump(c2.Items())
 ```
 
 </GoForjExample>
+
+_Example: integers - chaining_
+
+
+
+_Example: integers_
+
+
 
 ### <a id="dumpstr"></a>DumpStr · readonly · terminal
 
@@ -1259,16 +1180,9 @@ collection.Dump(groups["odd"].Items())
 //  1 => 3 #int
 //  2 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: grouping structs by field_
-
-<GoForjExample repo="collection" example="groupby">
-
-```go
-type User struct {
+// Example: grouping structs by field
+	type User struct {
 		ID   int
 		Role string
 	}
@@ -1306,6 +1220,10 @@ collection.Dump(groups2["user"].Items())
 
 </GoForjExample>
 
+_Example: grouping structs by field_
+
+
+
 ### <a id="groupbyslice"></a>GroupBySlice · readonly · terminal
 
 GroupBySlice partitions the collection into groups keyed by the value
@@ -1339,15 +1257,8 @@ collection.Dump(groups["odd"])
 //  1 => 3 #int
 //  2 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: grouping structs by field_
-
-<GoForjExample repo="collection" example="groupbyslice">
-
-```go
+// Example: grouping structs by field
 type User struct {
 	ID   int
 	Role string
@@ -1386,6 +1297,10 @@ collection.Dump(groups2["user"])
 
 </GoForjExample>
 
+_Example: grouping structs by field_
+
+
+
 ## Maps
 
 ### <a id="frommap"></a>FromMap · immutable · chainable
@@ -1423,15 +1338,8 @@ collection.Dump(c.Items())
 //     +Value => 3 #int
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: filtering map entries_
-
-<GoForjExample repo="collection" example="frommap">
-
-```go
+// Example: filtering map entries
 type Config struct {
 	Enabled bool
 	Timeout int
@@ -1471,15 +1379,8 @@ collection.Dump(out)
 //     }
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: map → collection → map_
-
-<GoForjExample repo="collection" example="frommap">
-
-```go
+// Example: map → collection → map
 users := map[string]int{
 	"alice": 1,
 	"bob":   2,
@@ -1497,6 +1398,14 @@ collection.Dump(out2)
 ```
 
 </GoForjExample>
+
+_Example: filtering map entries_
+
+
+
+_Example: map → collection → map_
+
+
 
 ### <a id="tomap"></a>ToMap · readonly · terminal
 
@@ -1522,15 +1431,8 @@ collection.Dump(out)
 //  bob => 3 #int
 //  carol => 5 #int
 // }
-```
 
-</GoForjExample>
-
-_Example: re-keying structs_
-
-<GoForjExample repo="collection" example="tomap">
-
-```go
+// Example: re-keying structs
 type User struct {
 	ID   int
 	Name string
@@ -1562,6 +1464,10 @@ collection.Dump(byID)
 
 </GoForjExample>
 
+_Example: re-keying structs_
+
+
+
 ### <a id="tomapkv"></a>ToMapKV · readonly · terminal
 
 ToMapKV converts a collection of key/value pairs into a map.
@@ -1587,15 +1493,8 @@ collection.Dump(out)
 //  b => 2 #int
 //  c => 3 #int
 // }
-```
 
-</GoForjExample>
-
-_Example: filtering before conversion_
-
-<GoForjExample repo="collection" example="tomapkv">
-
-```go
+// Example: filtering before conversion
 type Config struct {
 	Enabled bool
 	Timeout int
@@ -1630,6 +1529,10 @@ collection.Dump(out2)
 ```
 
 </GoForjExample>
+
+_Example: filtering before conversion_
+
+
 
 ## Ordering
 
@@ -1668,15 +1571,8 @@ collection.Dump(out1.Items())
 //  0 => 1 #int
 //  1 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: predicate never matches → whole collection returned_
-
-<GoForjExample repo="collection" example="before">
-
-```go
+// Example: predicate never matches → whole collection returned
 c2 := collection.New([]int{10, 20, 30})
 out2 := c2.Before(func(v int) bool { return v == 99 })
 collection.Dump(out2.Items())
@@ -1685,15 +1581,8 @@ collection.Dump(out2.Items())
 //  1 => 20 #int
 //  2 => 30 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs: get all users before the first admin_
-
-<GoForjExample repo="collection" example="before">
-
-```go
+// Example: structs: get all users before the first admin
 type User struct {
 	Name  string
 	Admin bool
@@ -1722,6 +1611,14 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
+_Example: predicate never matches → whole collection returned_
+
+
+
+_Example: structs: get all users before the first admin_
+
+
+
 ### <a id="reverse"></a>Reverse · mutable · chainable
 
 Reverse reverses the order of items in the collection in place
@@ -1741,15 +1638,8 @@ collection.Dump(c.Items())
 //   2 => 2 #int
 //   3 => 1 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings – chaining_
-
-<GoForjExample repo="collection" example="reverse">
-
-```go
+// Example: strings – chaining
 out := collection.New([]string{"a", "b", "c"}).
 	Reverse().
 	Append("d").
@@ -1762,15 +1652,8 @@ collection.Dump(out)
 //   2 => "a" #string
 //   3 => "d" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="reverse">
-
-```go
+// Example: structs
 type User struct {
 	ID int
 }
@@ -1798,6 +1681,14 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
+_Example: strings – chaining_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="shuffle"></a>Shuffle · mutable · chainable
 
 Shuffle shuffles the collection in place and returns the same collection.
@@ -1810,30 +1701,16 @@ _Example: integers_
 c := collection.New([]int{1, 2, 3, 4, 5})
 c.Shuffle()
 collection.Dump(c.Items())
-```
 
-</GoForjExample>
-
-_Example: strings – chaining_
-
-<GoForjExample repo="collection" example="shuffle">
-
-```go
+// Example: strings – chaining
 out2 := collection.New([]string{"a", "b", "c"}).
 	Shuffle().
 	Append("d").
 	Items()
 
 collection.Dump(out2)
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="shuffle">
-
-```go
+// Example: structs
 type User struct {
 	ID int
 }
@@ -1850,6 +1727,14 @@ collection.Dump(users.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings – chaining_
+
+
+
+_Example: structs_
+
+
 
 ### <a id="sort"></a>Sort · mutable · chainable
 
@@ -1870,15 +1755,8 @@ collection.Dump(c.Items())
 //   2 => 4 #int
 //   3 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings (descending)_
-
-<GoForjExample repo="collection" example="sort">
-
-```go
+// Example: strings (descending)
 c2 := collection.New([]string{"apple", "banana", "cherry"})
 c2.Sort(func(a, b string) bool { return a > b })
 collection.Dump(c2.Items())
@@ -1887,15 +1765,8 @@ collection.Dump(c2.Items())
 //   1 => "banana" #string
 //   2 => "apple" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="sort">
-
-```go
+// Example: structs
 type User struct {
 	Name string
 	Age  int
@@ -1930,6 +1801,14 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
+_Example: strings (descending)_
+
+
+
+_Example: structs_
+
+
+
 ## Querying
 
 ### <a id="all"></a>All · readonly · terminal
@@ -1946,41 +1825,20 @@ c := collection.New([]int{2, 4, 6})
 allEven := c.All(func(v int) bool { return v%2 == 0 })
 collection.Dump(allEven)
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers – not all even_
-
-<GoForjExample repo="collection" example="all">
-
-```go
+// Example: integers – not all even
 c2 := collection.New([]int{2, 3, 4})
 allEven2 := c2.All(func(v int) bool { return v%2 == 0 })
 collection.Dump(allEven2)
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: strings – all non-empty_
-
-<GoForjExample repo="collection" example="all">
-
-```go
+// Example: strings – all non-empty
 c3 := collection.New([]string{"a", "b", "c"})
 allNonEmpty := c3.All(func(s string) bool { return s != "" })
 collection.Dump(allNonEmpty)
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: empty collection (vacuously true)_
-
-<GoForjExample repo="collection" example="all">
-
-```go
+// Example: empty collection (vacuously true)
 empty := collection.New([]int{})
 all := empty.All(func(v int) bool { return v > 0 })
 collection.Dump(all)
@@ -1988,6 +1846,18 @@ collection.Dump(all)
 ```
 
 </GoForjExample>
+
+_Example: integers – not all even_
+
+
+
+_Example: strings – all non-empty_
+
+
+
+_Example: empty collection (vacuously true)_
+
+
 
 ### <a id="any"></a>Any · readonly · terminal
 
@@ -2019,28 +1889,14 @@ v, ok := c.At(1)
 collection.Dump(v, ok)
 // 20 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: out of bounds_
-
-<GoForjExample repo="collection" example="at">
-
-```go
+// Example: out of bounds
 v2, ok2 := c.At(10)
 collection.Dump(v2, ok2)
 // 0 #int
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="at">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2062,6 +1918,14 @@ collection.Dump(u, ok3)
 
 </GoForjExample>
 
+_Example: out of bounds_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="contains"></a>Contains · readonly · terminal
 
 Contains returns true if the collection contains the given value.
@@ -2075,15 +1939,8 @@ c := collection.New([]int{1, 2, 3, 4, 5})
 hasTwo := collection.Contains(c, 2)
 collection.Dump(hasTwo)
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="contains">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"apple", "banana", "cherry"})
 hasBanana := collection.Contains(c2, "banana")
 collection.Dump(hasBanana)
@@ -2091,6 +1948,10 @@ collection.Dump(hasBanana)
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
 
 ### <a id="first"></a>First · readonly · terminal
 
@@ -2108,30 +1969,16 @@ v, ok := c.First()
 collection.Dump(v, ok)
 // 10 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="first">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"alpha", "beta", "gamma"})
 
 v2, ok2 := c2.First()
 collection.Dump(v2, ok2)
 // "alpha" #string
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="first">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2149,15 +1996,8 @@ collection.Dump(u, ok3)
 //   +Name => "Alice" #string
 // }
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers - empty collection_
-
-<GoForjExample repo="collection" example="first">
-
-```go
+// Example: integers - empty collection
 c3 := collection.New([]int{})
 v3, ok4 := c3.First()
 collection.Dump(v3, ok4)
@@ -2166,6 +2006,18 @@ collection.Dump(v3, ok4)
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
+_Example: integers - empty collection_
+
+
 
 ### <a id="firstwhere"></a>FirstWhere · readonly · terminal
 
@@ -2210,28 +2062,14 @@ idx, ok := c.IndexWhere(func(v int) bool { return v == 30 })
 collection.Dump(idx, ok)
 // 2 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: not found_
-
-<GoForjExample repo="collection" example="indexwhere">
-
-```go
+// Example: not found
 idx2, ok2 := c.IndexWhere(func(v int) bool { return v == 99 })
 collection.Dump(idx2, ok2)
 // 0 #int
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="indexwhere">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2254,6 +2092,14 @@ collection.Dump(idx3, ok3)
 
 </GoForjExample>
 
+_Example: not found_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="isempty"></a>IsEmpty · readonly · terminal
 
 IsEmpty returns true if the collection has no items.
@@ -2268,29 +2114,15 @@ c := collection.New([]int{1, 2, 3})
 empty := c.IsEmpty()
 collection.Dump(empty)
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: strings (empty)_
-
-<GoForjExample repo="collection" example="isempty">
-
-```go
+// Example: strings (empty)
 c2 := collection.New([]string{})
 
 empty2 := c2.IsEmpty()
 collection.Dump(empty2)
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: structs (non-empty)_
-
-<GoForjExample repo="collection" example="isempty">
-
-```go
+// Example: structs (non-empty)
 type User struct {
 	ID   int
 	Name string
@@ -2303,15 +2135,8 @@ users := collection.New([]User{
 empty3 := users.IsEmpty()
 collection.Dump(empty3)
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: structs (empty)_
-
-<GoForjExample repo="collection" example="isempty">
-
-```go
+// Example: structs (empty)
 none := collection.New([]User{})
 
 empty4 := none.IsEmpty()
@@ -2320,6 +2145,18 @@ collection.Dump(empty4)
 ```
 
 </GoForjExample>
+
+_Example: strings (empty)_
+
+
+
+_Example: structs (non-empty)_
+
+
+
+_Example: structs (empty)_
+
+
 
 ### <a id="last"></a>Last · readonly · terminal
 
@@ -2337,30 +2174,16 @@ v, ok := c.Last()
 collection.Dump(v, ok)
 // 30 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="last">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"alpha", "beta", "gamma"})
 
 v2, ok2 := c2.Last()
 collection.Dump(v2, ok2)
 // "gamma" #string
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="last">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2379,15 +2202,8 @@ collection.Dump(u, ok3)
 //   +Name => "Charlie" #string
 // }
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: empty collection_
-
-<GoForjExample repo="collection" example="last">
-
-```go
+// Example: empty collection
 c3 := collection.New([]int{})
 
 v3, ok4 := c3.Last()
@@ -2397,6 +2213,18 @@ collection.Dump(v3, ok4)
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
+_Example: empty collection_
+
+
 
 ### <a id="lastwhere"></a>LastWhere · readonly · terminal
 
@@ -2417,30 +2245,16 @@ v, ok := c.LastWhere(func(v int, i int) bool {
 collection.Dump(v, ok)
 // 2 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers without predicate (equivalent to Last())_
-
-<GoForjExample repo="collection" example="lastwhere">
-
-```go
+// Example: integers without predicate (equivalent to Last())
 c2 := collection.New([]int{10, 20, 30, 40})
 
 v2, ok2 := c2.LastWhere(nil)
 collection.Dump(v2, ok2)
 // 40 #int
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="lastwhere">
-
-```go
+// Example: strings
 c3 := collection.New([]string{"alpha", "beta", "gamma", "delta"})
 
 v3, ok3 := c3.LastWhere(func(s string, i int) bool {
@@ -2449,15 +2263,8 @@ v3, ok3 := c3.LastWhere(func(s string, i int) bool {
 collection.Dump(v3, ok3)
 // "gamma" #string
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="lastwhere">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2479,15 +2286,8 @@ collection.Dump(u, ok4)
 //   +Name => "Alex" #string
 // }
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: no matching element_
-
-<GoForjExample repo="collection" example="lastwhere">
-
-```go
+// Example: no matching element
 c4 := collection.New([]int{5, 6, 7})
 
 v4, ok5 := c4.LastWhere(func(v int, i int) bool {
@@ -2496,15 +2296,8 @@ v4, ok5 := c4.LastWhere(func(v int, i int) bool {
 collection.Dump(v4, ok5)
 // 0 #int
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: empty collection_
-
-<GoForjExample repo="collection" example="lastwhere">
-
-```go
+// Example: empty collection
 c5 := collection.New([]int{})
 
 v5, ok6 := c5.LastWhere(nil)
@@ -2514,6 +2307,26 @@ collection.Dump(v5, ok6)
 ```
 
 </GoForjExample>
+
+_Example: integers without predicate (equivalent to Last())_
+
+
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
+_Example: no matching element_
+
+
+
+_Example: empty collection_
+
+
 
 ### <a id="none"></a>None · readonly · terminal
 
@@ -2529,28 +2342,14 @@ c := collection.New([]int{1, 3, 5})
 noneEven := c.None(func(v int) bool { return v%2 == 0 })
 collection.Dump(noneEven)
 // true #bool
-```
 
-</GoForjExample>
-
-_Example: integers – some even_
-
-<GoForjExample repo="collection" example="none">
-
-```go
+// Example: integers – some even
 c2 := collection.New([]int{1, 2, 3})
 noneEven2 := c2.None(func(v int) bool { return v%2 == 0 })
 collection.Dump(noneEven2)
 // false #bool
-```
 
-</GoForjExample>
-
-_Example: empty collection_
-
-<GoForjExample repo="collection" example="none">
-
-```go
+// Example: empty collection
 empty := collection.New([]int{})
 none := empty.None(func(v int) bool { return v > 0 })
 collection.Dump(none)
@@ -2558,6 +2357,14 @@ collection.Dump(none)
 ```
 
 </GoForjExample>
+
+_Example: integers – some even_
+
+
+
+_Example: empty collection_
+
+
 
 ## Serialization
 
@@ -2617,15 +2424,8 @@ collection.Dump(out.Items())
 //   0 => 1 #int
 //   1 => 3 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="difference">
-
-```go
+// Example: strings
 left := collection.New([]string{"apple", "banana", "cherry"})
 right := collection.New([]string{"banana"})
 
@@ -2635,15 +2435,8 @@ collection.Dump(out2.Items())
 //   0 => "apple" #string
 //   1 => "cherry" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="difference">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2675,6 +2468,14 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="intersect"></a>Intersect · immutable · chainable
 
 Intersect returns a new collection containing elements from the second
@@ -2695,15 +2496,8 @@ collection.Dump(out.Items())
 //   1 => 4 #int
 //   2 => 4 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="intersect">
-
-```go
+// Example: strings
 left := collection.New([]string{"apple", "banana", "cherry"})
 right := collection.New([]string{"banana", "date", "cherry", "banana"})
 
@@ -2714,15 +2508,8 @@ collection.Dump(out2.Items())
 //   1 => "cherry" #string
 //   2 => "banana" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="intersect">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2756,6 +2543,14 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="symmetricdifference"></a>SymmetricDifference · immutable · chainable
 
 SymmetricDifference returns a new collection containing elements that appear
@@ -2778,15 +2573,8 @@ collection.Dump(out.Items())
 //   2 => 4 #int
 //   3 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="symmetricdifference">
-
-```go
+// Example: strings
 left := collection.New([]string{"apple", "banana"})
 right := collection.New([]string{"banana", "date"})
 
@@ -2796,15 +2584,8 @@ collection.Dump(out2.Items())
 //   0 => "apple" #string
 //   1 => "date" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="symmetricdifference">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2836,6 +2617,14 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="union"></a>Union · immutable · chainable
 
 Union returns a new collection containing the unique elements from both collections.
@@ -2859,15 +2648,8 @@ collection.Dump(out.Items())
 //   3 => 4 #int
 //   4 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="union">
-
-```go
+// Example: strings
 left := collection.New([]string{"apple", "banana"})
 right := collection.New([]string{"banana", "date"})
 
@@ -2878,15 +2660,8 @@ collection.Dump(out2.Items())
 //   1 => "banana" #string
 //   2 => "date" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="union">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -2922,6 +2697,14 @@ collection.Dump(out3.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="unique"></a>Unique · immutable · chainable
 
 Unique returns a new collection with duplicate items removed, based on the
@@ -2943,15 +2726,8 @@ collection.Dump(out1.Items())
 //	3 => 4 #int
 //	4 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings (case-insensitive uniqueness)_
-
-<GoForjExample repo="collection" example="unique">
-
-```go
+// Example: strings (case-insensitive uniqueness)
 c2 := collection.New([]string{"A", "a", "B", "b", "A"})
 out2 := c2.Unique(func(a, b string) bool {
 	return strings.EqualFold(a, b)
@@ -2961,15 +2737,8 @@ collection.Dump(out2.Items())
 //	0 => "A" #string
 //	1 => "B" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs (unique by ID)_
-
-<GoForjExample repo="collection" example="unique">
-
-```go
+// Example: structs (unique by ID)
 type User struct {
 	ID   int
 	Name string
@@ -2999,6 +2768,14 @@ collection.Dump(out3.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings (case-insensitive uniqueness)_
+
+
+
+_Example: structs (unique by ID)_
+
+
 
 ### <a id="uniqueby"></a>UniqueBy · immutable · chainable
 
@@ -3033,15 +2810,8 @@ collection.Dump(out.Items())
 //    +Name => "Bob" #string
 //  }
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings – case-insensitive uniqueness_
-
-<GoForjExample repo="collection" example="uniqueby">
-
-```go
+// Example: strings – case-insensitive uniqueness
 values := collection.New([]string{"A", "a", "B", "b", "A"})
 
 out2 := collection.UniqueBy(values, func(s string) string {
@@ -3053,15 +2823,8 @@ collection.Dump(out2.Items())
 //   0 => "A" #string
 //   1 => "B" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers – identity key_
-
-<GoForjExample repo="collection" example="uniqueby">
-
-```go
+// Example: integers – identity key
 nums := collection.New([]int{3, 1, 2, 1, 3})
 
 out3 := collection.UniqueBy(nums, func(v int) int { return v })
@@ -3074,6 +2837,14 @@ collection.Dump(out3.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings – case-insensitive uniqueness_
+
+
+
+_Example: integers – identity key_
+
+
 
 ### <a id="uniquecomparable"></a>UniqueComparable · immutable · chainable
 
@@ -3096,15 +2867,8 @@ collection.Dump(out.Items())
 //   3 => 4 #int
 //   4 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="uniquecomparable">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"A", "a", "B", "B"})
 out2 := collection.UniqueComparable(c2)
 collection.Dump(out2.Items())
@@ -3116,6 +2880,10 @@ collection.Dump(out2.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
 
 ## Slicing
 
@@ -3145,15 +2913,8 @@ collection.Dump(c)
 //    0 => 5 #int
 //  ]
 //]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="chunk">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -3196,6 +2957,10 @@ collection.Dump(userChunks)
 
 </GoForjExample>
 
+_Example: structs_
+
+
+
 ### <a id="filter"></a>Filter · mutable · chainable
 
 Filter keeps only the elements for which fn returns true.
@@ -3215,15 +2980,8 @@ collection.Dump(c.Items())
 //   0 => 2 #int
 //   1 => 4 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="filter">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"apple", "banana", "cherry", "avocado"})
 c2.Filter(func(v string) bool {
 	return strings.HasPrefix(v, "a")
@@ -3233,15 +2991,8 @@ collection.Dump(c2.Items())
 //   0 => "apple" #string
 //   1 => "avocado" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="filter">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -3273,6 +3024,14 @@ collection.Dump(users.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="partition"></a>Partition · immutable · terminal
 
 Partition splits the collection into two new collections based on predicate fn.
@@ -3298,15 +3057,8 @@ collection.Dump(evens.Items(), odds.Items())
 //   1 => 3 #int
 //   2 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings - prefix match_
-
-<GoForjExample repo="collection" example="partition">
-
-```go
+// Example: strings - prefix match
 words := collection.New([]string{"go", "gopher", "rust", "ruby"})
 goWords, other := words.Partition(func(s string) bool {
 	return strings.HasPrefix(s, "go")
@@ -3320,15 +3072,8 @@ collection.Dump(goWords.Items(), other.Items())
 //   0 => "rust" #string
 //   1 => "ruby" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs - active vs inactive_
-
-<GoForjExample repo="collection" example="partition">
-
-```go
+// Example: structs - active vs inactive
 type User struct {
 	Name   string
 	Active bool
@@ -3365,6 +3110,14 @@ collection.Dump(active.Items(), inactive.Items())
 
 </GoForjExample>
 
+_Example: strings - prefix match_
+
+
+
+_Example: structs - active vs inactive_
+
+
+
 ### <a id="pop"></a>Pop · mutable · terminal
 
 Pop removes and returns the last item in the collection.
@@ -3383,15 +3136,8 @@ collection.Dump(item, ok, c.Items())
 //   0 => 1 #int
 //   1 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="pop">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"a", "b", "c"})
 item2, ok2 := c2.Pop()
 collection.Dump(item2, ok2, c2.Items())
@@ -3401,15 +3147,8 @@ collection.Dump(item2, ok2, c2.Items())
 //   0 => "a" #string
 //   1 => "b" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="pop">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -3433,15 +3172,8 @@ collection.Dump(item3, ok3, users.Items())
 //     +Name => "Alice" #string
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: empty collection_
-
-<GoForjExample repo="collection" example="pop">
-
-```go
+// Example: empty collection
 empty := collection.New([]int{})
 item4, ok4 := empty.Pop()
 collection.Dump(item4, ok4, empty.Items())
@@ -3452,6 +3184,18 @@ collection.Dump(item4, ok4, empty.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
+_Example: empty collection_
+
+
 
 ### <a id="popn"></a>PopN · mutable · terminal
 
@@ -3473,15 +3217,8 @@ collection.Dump(popped, c.Items())
 //   0 => 1 #int
 //   1 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings – pop 1_
-
-<GoForjExample repo="collection" example="popn">
-
-```go
+// Example: strings – pop 1
 c2 := collection.New([]string{"a", "b", "c"})
 popped2 := c2.PopN(1)
 collection.Dump(popped2, c2.Items())
@@ -3492,15 +3229,8 @@ collection.Dump(popped2, c2.Items())
 //   0 => "a" #string
 //   1 => "b" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs – pop 2_
-
-<GoForjExample repo="collection" example="popn">
-
-```go
+// Example: structs – pop 2
 type User struct {
 	ID   int
 	Name string
@@ -3530,15 +3260,8 @@ collection.Dump(popped3, users.Items())
 //     +Name => "Alice" #string
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - n <= 0 → returns nil, no change_
-
-<GoForjExample repo="collection" example="popn">
-
-```go
+// Example: integers - n <= 0 → returns nil, no change
 c3 := collection.New([]int{1, 2, 3})
 popped4 := c3.PopN(0)
 collection.Dump(popped4, c3.Items())
@@ -3548,15 +3271,8 @@ collection.Dump(popped4, c3.Items())
 //   1 => 2 #int
 //   2 => 3 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings - n exceeds length → all items popped, rest empty_
-
-<GoForjExample repo="collection" example="popn">
-
-```go
+// Example: strings - n exceeds length → all items popped, rest empty
 c4 := collection.New([]string{"x", "y"})
 popped5 := c4.PopN(10)
 collection.Dump(popped5, c4.Items())
@@ -3569,6 +3285,22 @@ collection.Dump(popped5, c4.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings – pop 1_
+
+
+
+_Example: structs – pop 2_
+
+
+
+_Example: integers - n <= 0 → returns nil, no change_
+
+
+
+_Example: strings - n exceeds length → all items popped, rest empty_
+
+
 
 ### <a id="skip"></a>Skip · immutable · chainable
 
@@ -3590,15 +3322,8 @@ collection.Dump(out.Items())
 //   1 => 4 #int
 //   2 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: skip none_
-
-<GoForjExample repo="collection" example="skip">
-
-```go
+// Example: skip none
 out2 := c.Skip(0)
 collection.Dump(out2.Items())
 // #[]int [
@@ -3608,28 +3333,14 @@ collection.Dump(out2.Items())
 //   3 => 4 #int
 //   4 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: skip all_
-
-<GoForjExample repo="collection" example="skip">
-
-```go
+// Example: skip all
 out3 := c.Skip(10)
 collection.Dump(out3.Items())
 // #[]int [
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="skip">
-
-```go
+// Example: structs
 type User struct {
 	ID int
 }
@@ -3654,6 +3365,18 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
+_Example: skip none_
+
+
+
+_Example: skip all_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="skiplast"></a>SkipLast · immutable · chainable
 
 SkipLast returns a new collection with the last n items skipped.
@@ -3674,15 +3397,8 @@ collection.Dump(out.Items())
 //   1 => 2 #int
 //   2 => 3 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: skip none_
-
-<GoForjExample repo="collection" example="skiplast">
-
-```go
+// Example: skip none
 out2 := c.SkipLast(0)
 collection.Dump(out2.Items())
 // #[]int [
@@ -3692,28 +3408,14 @@ collection.Dump(out2.Items())
 //   3 => 4 #int
 //   4 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: skip all_
-
-<GoForjExample repo="collection" example="skiplast">
-
-```go
+// Example: skip all
 out3 := c.SkipLast(10)
 collection.Dump(out3.Items())
 // #[]int [
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="skiplast">
-
-```go
+// Example: structs
 type User struct {
 	ID int
 }
@@ -3738,6 +3440,18 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
+_Example: skip none_
+
+
+
+_Example: skip all_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="take"></a>Take · immutable · chainable
 
 Take returns a new collection containing the first `n` items when n > 0,
@@ -3756,15 +3470,8 @@ collection.Dump(out1.Items())
 //	1 => 1 #int
 //	2 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - take last 2 (negative n)_
-
-<GoForjExample repo="collection" example="take">
-
-```go
+// Example: integers - take last 2 (negative n)
 c2 := collection.New([]int{0, 1, 2, 3, 4, 5})
 out2 := c2.Take(-2)
 collection.Dump(out2.Items())
@@ -3772,15 +3479,8 @@ collection.Dump(out2.Items())
 //	0 => 4 #int
 //	1 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - n exceeds length → whole collection_
-
-<GoForjExample repo="collection" example="take">
-
-```go
+// Example: integers - n exceeds length → whole collection
 c3 := collection.New([]int{10, 20})
 out3 := c3.Take(10)
 collection.Dump(out3.Items())
@@ -3788,15 +3488,8 @@ collection.Dump(out3.Items())
 //	0 => 10 #int
 //	1 => 20 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - zero → empty_
-
-<GoForjExample repo="collection" example="take">
-
-```go
+// Example: integers - zero → empty
 c4 := collection.New([]int{1, 2, 3})
 out4 := c4.Take(0)
 collection.Dump(out4.Items())
@@ -3805,6 +3498,18 @@ collection.Dump(out4.Items())
 ```
 
 </GoForjExample>
+
+_Example: integers - take last 2 (negative n)_
+
+
+
+_Example: integers - n exceeds length → whole collection_
+
+
+
+_Example: integers - zero → empty_
+
+
 
 ### <a id="takelast"></a>TakeLast · immutable · chainable
 
@@ -3825,28 +3530,14 @@ collection.Dump(out.Items())
 //   0 => 4 #int
 //   1 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: take none_
-
-<GoForjExample repo="collection" example="takelast">
-
-```go
+// Example: take none
 out2 := c.TakeLast(0)
 collection.Dump(out2.Items())
 // #[]int [
 // ]
-```
 
-</GoForjExample>
-
-_Example: take all_
-
-<GoForjExample repo="collection" example="takelast">
-
-```go
+// Example: take all
 out3 := c.TakeLast(10)
 collection.Dump(out3.Items())
 // #[]int [
@@ -3856,15 +3547,8 @@ collection.Dump(out3.Items())
 //   3 => 4 #int
 //   4 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="takelast">
-
-```go
+// Example: structs
 type User struct {
 	ID int
 }
@@ -3886,6 +3570,18 @@ collection.Dump(out4.Items())
 
 </GoForjExample>
 
+_Example: take none_
+
+
+
+_Example: take all_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="takeuntil"></a>TakeUntil · immutable · chainable
 
 TakeUntil returns items until the first element equals `value`.
@@ -3903,15 +3599,8 @@ collection.Dump(out4.Items())
 //	0 => 1 #int
 //	1 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings - value never appears → full slice_
-
-<GoForjExample repo="collection" example="takeuntil">
-
-```go
+// Example: strings - value never appears → full slice
 c5 := collection.New([]string{"a", "b", "c"})
 out5 := collection.TakeUntil(c5, "x")
 collection.Dump(out5.Items())
@@ -3920,15 +3609,8 @@ collection.Dump(out5.Items())
 //	1 => "b" #string
 //	2 => "c" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - match is first item → empty result_
-
-<GoForjExample repo="collection" example="takeuntil">
-
-```go
+// Example: integers - match is first item → empty result
 c6 := collection.New([]int{9, 10, 11})
 out6 := collection.TakeUntil(c6, 9)
 collection.Dump(out6.Items())
@@ -3937,6 +3619,14 @@ collection.Dump(out6.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings - value never appears → full slice_
+
+
+
+_Example: integers - match is first item → empty result_
+
+
 
 ### <a id="takeuntilfn"></a>TakeUntilFn · immutable · chainable
 
@@ -3955,29 +3645,15 @@ collection.Dump(out1.Items())
 //	0 => 1 #int
 //	1 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - predicate immediately true → empty result_
-
-<GoForjExample repo="collection" example="takeuntilfn">
-
-```go
+// Example: integers - predicate immediately true → empty result
 c2 := collection.New([]int{10, 20, 30})
 out2 := c2.TakeUntilFn(func(v int) bool { return v < 50 })
 collection.Dump(out2.Items())
 // #[]int [
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - no match → full list returned_
-
-<GoForjExample repo="collection" example="takeuntilfn">
-
-```go
+// Example: integers - no match → full list returned
 c3 := collection.New([]int{1, 2, 3})
 out3 := c3.TakeUntilFn(func(v int) bool { return v == 99 })
 collection.Dump(out3.Items())
@@ -3989,6 +3665,14 @@ collection.Dump(out3.Items())
 ```
 
 </GoForjExample>
+
+_Example: integers - predicate immediately true → empty result_
+
+
+
+_Example: integers - no match → full list returned_
+
+
 
 ### <a id="window"></a>Window · allocates · chainable
 
@@ -4021,15 +3705,8 @@ collection.Dump(win.Items())
 //     2 => 5 #int
 //   ]
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings - step 2_
-
-<GoForjExample repo="collection" example="window">
-
-```go
+// Example: strings - step 2
 words := collection.New([]string{"a", "b", "c", "d", "e"})
 win2 := collection.Window(words, 2, 2)
 collection.Dump(win2.Items())
@@ -4043,15 +3720,8 @@ collection.Dump(win2.Items())
 //     1 => "d" #string
 //   ]
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="window">
-
-```go
+// Example: structs
 type Point struct {
 	X int
 	Y int
@@ -4102,6 +3772,14 @@ collection.Dump(win3.Items())
 
 </GoForjExample>
 
+_Example: strings - step 2_
+
+
+
+_Example: structs_
+
+
+
 ## Transformation
 
 ### <a id="append"></a>Append · immutable · chainable
@@ -4121,15 +3799,8 @@ c.Append(3, 4).Dump()
 //  2 => 3 #int
 //  3 => 4 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="append">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -4166,6 +3837,10 @@ users.Append(
 ```
 
 </GoForjExample>
+
+_Example: structs_
+
+
 
 ### <a id="concat"></a>Concat · mutable · chainable
 
@@ -4209,15 +3884,8 @@ c.Each(func(v int) {
 
 collection.Dump(sum)
 // 6 #int
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="each">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"apple", "banana", "cherry"})
 
 var out []string
@@ -4231,15 +3899,8 @@ collection.Dump(out)
 //   1 => "BANANA" #string
 //   2 => "CHERRY" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="each">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -4266,6 +3927,14 @@ collection.Dump(names)
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="map"></a>Map · mutable · chainable
 
 Map applies a same-type transformation in place and returns the same collection.
@@ -4287,15 +3956,8 @@ collection.Dump(mapped.Items())
 //   1 => 20 #int
 //   2 => 30 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="map">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"apple", "banana", "cherry"})
 
 upper := c2.Map(func(s string) string {
@@ -4308,15 +3970,8 @@ collection.Dump(upper.Items())
 //   1 => "BANANA" #string
 //   2 => "CHERRY" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="map">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -4347,6 +4002,14 @@ collection.Dump(updated.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="mapto"></a>MapTo · immutable · chainable
 
 MapTo maps a Collection[T] to a Collection[R] using fn(T) R.
@@ -4370,15 +4033,8 @@ collection.Dump(parity.Items())
 //   2 => "odd" #string
 //   3 => "even" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings - length of each value_
-
-<GoForjExample repo="collection" example="mapto">
-
-```go
+// Example: strings - length of each value
 words := collection.New([]string{"go", "forj", "rocks"})
 lengths := collection.MapTo(words, func(s string) int {
 	return len(s)
@@ -4389,15 +4045,8 @@ collection.Dump(lengths.Items())
 //   1 => 4 #int
 //   2 => 5 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs - MapTo a field_
-
-<GoForjExample repo="collection" example="mapto">
-
-```go
+// Example: structs - MapTo a field
 type User struct {
 	ID   int
 	Name string
@@ -4421,6 +4070,14 @@ collection.Dump(names.Items())
 
 </GoForjExample>
 
+_Example: strings - length of each value_
+
+
+
+_Example: structs - MapTo a field_
+
+
+
 ### <a id="merge"></a>Merge · immutable · chainable
 
 Merge merges the given data into a new collection.
@@ -4441,15 +4098,8 @@ collection.Dump(merged1.Items())
 //   2 => 3 #int
 //   3 => 4 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings - merging another collection_
-
-<GoForjExample repo="collection" example="merge">
-
-```go
+// Example: strings - merging another collection
 strs := collection.New([]string{"a", "b"})
 more := collection.New([]string{"c", "d"})
 
@@ -4461,15 +4111,8 @@ collection.Dump(merged2.Items())
 //   2 => "c" #string
 //   3 => "d" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs - merging struct slices_
-
-<GoForjExample repo="collection" example="merge">
-
-```go
+// Example: structs - merging struct slices
 type User struct {
 	ID   int
 	Name string
@@ -4509,6 +4152,14 @@ collection.Dump(merged3.Items())
 
 </GoForjExample>
 
+_Example: strings - merging another collection_
+
+
+
+_Example: structs - merging struct slices_
+
+
+
 ### <a id="multiply"></a>Multiply · immutable · chainable
 
 Multiply creates `n` copies of all items in the collection
@@ -4530,15 +4181,8 @@ collection.Dump(out.Items())
 //   4 => 1 #int
 //   5 => 2 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="multiply">
-
-```go
+// Example: strings
 strs := collection.New([]string{"a", "b"})
 out2 := strs.Multiply(2)
 collection.Dump(out2.Items())
@@ -4548,15 +4192,8 @@ collection.Dump(out2.Items())
 //   2 => "a" #string
 //   3 => "b" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="multiply">
-
-```go
+// Example: structs
 type User struct {
 	Name string
 }
@@ -4578,15 +4215,8 @@ collection.Dump(out3.Items())
 //     +Name => "Bob" #string
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: multiplying by zero or negative returns empty_
-
-<GoForjExample repo="collection" example="multiply">
-
-```go
+// Example: multiplying by zero or negative returns empty
 none := ints.Multiply(0)
 collection.Dump(none.Items())
 // #[]int [
@@ -4594,6 +4224,18 @@ collection.Dump(none.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
+_Example: multiplying by zero or negative returns empty_
+
+
 
 ### <a id="pipe"></a>Pipe · readonly · terminal
 
@@ -4615,15 +4257,8 @@ sum := collection.Pipe(c, func(col *collection.Collection[int]) int {
 })
 collection.Dump(sum)
 // 6 #int
-```
 
-</GoForjExample>
-
-_Example: strings – joining values_
-
-<GoForjExample repo="collection" example="pipe">
-
-```go
+// Example: strings – joining values
 c2 := collection.New([]string{"a", "b", "c"})
 joined := collection.Pipe(c2, func(col *collection.Collection[string]) string {
 	out := ""
@@ -4634,15 +4269,8 @@ joined := collection.Pipe(c2, func(col *collection.Collection[string]) string {
 })
 collection.Dump(joined)
 // "abc" #string
-```
 
-</GoForjExample>
-
-_Example: structs – extracting just the names_
-
-<GoForjExample repo="collection" example="pipe">
-
-```go
+// Example: structs – extracting just the names
 type User struct {
 	ID   int
 	Name string
@@ -4670,6 +4298,14 @@ collection.Dump(names)
 
 </GoForjExample>
 
+_Example: strings – joining values_
+
+
+
+_Example: structs – extracting just the names_
+
+
+
 ### <a id="prepend"></a>Prepend · mutable · chainable
 
 Prepend adds the given values to the beginning of the collection.
@@ -4688,15 +4324,8 @@ collection.Dump(c.Items())
 //   2 => 3 #int
 //   3 => 4 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="prepend">
-
-```go
+// Example: strings
 letters := collection.New([]string{"c", "d"})
 letters.Prepend("a", "b")
 collection.Dump(letters.Items())
@@ -4706,15 +4335,8 @@ collection.Dump(letters.Items())
 //   2 => "c" #string
 //   3 => "d" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="prepend">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -4736,15 +4358,8 @@ collection.Dump(users.Items())
 //     +Name => "Bob" #string
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - Prepending into an empty collection_
-
-<GoForjExample repo="collection" example="prepend">
-
-```go
+// Example: integers - Prepending into an empty collection
 empty := collection.New([]int{})
 empty.Prepend(9, 8)
 collection.Dump(empty.Items())
@@ -4752,15 +4367,8 @@ collection.Dump(empty.Items())
 //   0 => 9 #int
 //   1 => 8 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - Prepending no values → no change_
-
-<GoForjExample repo="collection" example="prepend">
-
-```go
+// Example: integers - Prepending no values → no change
 c2 := collection.New([]int{1, 2})
 c2.Prepend()
 collection.Dump(c2.Items())
@@ -4771,6 +4379,22 @@ collection.Dump(c2.Items())
 ```
 
 </GoForjExample>
+
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
+_Example: integers - Prepending into an empty collection_
+
+
+
+_Example: integers - Prepending no values → no change_
+
+
 
 ### <a id="tap"></a>Tap · immutable · chainable
 
@@ -4807,15 +4431,8 @@ collection.Dump(captured1)
 //  1 => 2 #int
 //  2 => 3 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: integers - tap for debugging without changing flow_
-
-<GoForjExample repo="collection" example="tap">
-
-```go
+// Example: integers - tap for debugging without changing flow
 c2 := collection.New([]int{10, 20, 30}).
 	Tap(func(col *collection.Collection[int]) {
 		collection.Dump(col.Items())
@@ -4832,15 +4449,8 @@ collection.Dump(c2.Items()) // ensures c2 is used
 //  0 => 20 #int
 //  1 => 30 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs - Tap with struct collection_
-
-<GoForjExample repo="collection" example="tap">
-
-```go
+// Example: structs - Tap with struct collection
 type User struct {
 	ID   int
 	Name string
@@ -4880,6 +4490,14 @@ collection.Dump(users2.Items()) // ensures users2 is used
 
 </GoForjExample>
 
+_Example: integers - tap for debugging without changing flow_
+
+
+
+_Example: structs - Tap with struct collection_
+
+
+
 ### <a id="times"></a>Times · immutable · chainable
 
 Times creates a new collection by calling fn(i) for i = 1..count.
@@ -4901,15 +4519,8 @@ collection.Dump(cTimes1.Items())
 //	3 => 8 #int
 //	4 => 10 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="times">
-
-```go
+// Example: strings
 cTimes2 := collection.Times(3, func(i int) string {
 	return fmt.Sprintf("item-%d", i)
 })
@@ -4919,15 +4530,8 @@ collection.Dump(cTimes2.Items())
 //	1 => "item-2" #string
 //	2 => "item-3" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="times">
-
-```go
+// Example: structs
 type Point struct {
 	X int
 	Y int
@@ -4959,6 +4563,14 @@ collection.Dump(cTimes3.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="transform"></a>Transform · mutable · terminal
 
 Transform applies fn to every item *in place*, mutating the collection.
@@ -4976,15 +4588,8 @@ collection.Dump(c1.Items())
 //	1 => 4 #int
 //	2 => 6 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: strings_
-
-<GoForjExample repo="collection" example="transform">
-
-```go
+// Example: strings
 c2 := collection.New([]string{"a", "b", "c"})
 c2.Transform(func(s string) string { return strings.ToUpper(s) })
 collection.Dump(c2.Items())
@@ -4993,15 +4598,8 @@ collection.Dump(c2.Items())
 //	1 => "B" #string
 //	2 => "C" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="transform">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -5032,6 +4630,14 @@ collection.Dump(c3.Items())
 
 </GoForjExample>
 
+_Example: strings_
+
+
+
+_Example: structs_
+
+
+
 ### <a id="zip"></a>Zip · immutable · chainable
 
 Zip combines two collections element-wise into a collection of tuples.
@@ -5057,15 +4663,8 @@ collection.Dump(out.Items())
 //     +Second => "two" #string
 //   }
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="zip">
-
-```go
+// Example: structs
 type User struct {
 	ID   int
 	Name string
@@ -5100,6 +4699,10 @@ collection.Dump(out2.Items())
 
 </GoForjExample>
 
+_Example: structs_
+
+
+
 ### <a id="zipwith"></a>ZipWith · immutable · chainable
 
 ZipWith combines two collections element-wise using combiner fn.
@@ -5122,15 +4725,8 @@ collection.Dump(out.Items())
 //   0 => 11 #int
 //   1 => 22 #int
 // ]
-```
 
-</GoForjExample>
-
-_Example: format strings_
-
-<GoForjExample repo="collection" example="zipwith">
-
-```go
+// Example: format strings
 names := collection.New([]string{"alice", "bob"})
 roles := collection.New([]string{"admin", "user", "extra"})
 
@@ -5143,15 +4739,8 @@ collection.Dump(out2.Items())
 //   0 => "alice:admin" #string
 //   1 => "bob:user" #string
 // ]
-```
 
-</GoForjExample>
-
-_Example: structs_
-
-<GoForjExample repo="collection" example="zipwith">
-
-```go
+// Example: structs
 type User struct {
 	Name string
 }
@@ -5174,4 +4763,12 @@ collection.Dump(out3.Items())
 ```
 
 </GoForjExample>
+
+_Example: format strings_
+
+
+
+_Example: structs_
+
+
 <!-- api:embed:end -->

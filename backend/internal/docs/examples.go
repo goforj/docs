@@ -15,6 +15,7 @@ import (
 type ExampleProgram struct {
 	ID         string
 	Code       string
+	Normalized string
 	Stdout     string
 	Stderr     string
 	ExitCode   int
@@ -46,6 +47,7 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 
 		exampleID := filepath.Base(filepath.Dir(path))
 		rawCode := string(codeBytes)
+		normalized := normalizeCode(rawCode)
 		stdout, stderr, exitCode, duration, err := runExample(path, rawCode)
 		if err != nil {
 			return fmt.Errorf("run example %s: %w", exampleID, err)
@@ -53,7 +55,8 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 
 		examples = append(examples, ExampleProgram{
 			ID:         exampleID,
-			Code:       normalizeCode(rawCode),
+			Code:       rawCode,
+			Normalized: normalized,
 			Stdout:     stdout,
 			Stderr:     stderr,
 			ExitCode:   exitCode,
