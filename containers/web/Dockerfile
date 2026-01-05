@@ -13,12 +13,11 @@ RUN cd backend && go run . docs:generate
 FROM node:20-bookworm-slim AS docs-build
 ARG GA_MEASUREMENT_ID
 ENV GA_MEASUREMENT_ID=${GA_MEASUREMENT_ID}
-ENV NODE_ENV=production
 WORKDIR /app/docs
 COPY docs/package.json docs/package-lock.json ./
-RUN npm ci
+RUN npm ci --include=dev
 COPY --from=docs-generate /app/docs/ ./
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
 FROM golang:1.23-bookworm AS backend-build
 WORKDIR /app
