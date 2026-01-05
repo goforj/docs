@@ -7,6 +7,7 @@
 package wire
 
 import (
+	"github.com/goforj/docs/internal/analytics"
 	"github.com/goforj/docs/internal/cmd"
 	"github.com/goforj/docs/internal/docs"
 	"github.com/goforj/docs/internal/examples"
@@ -24,7 +25,8 @@ func InitializeApplication() (App, error) {
 	helloWorldCmd := cmd.NewHelloWorldCmd(appLogger)
 	generateCommand := docs.NewDocsGenerateCommand(appLogger)
 	appCommands := cmd.NewAppCommands(helloWorldCmd, generateCommand)
-	controller := examples.NewController(appLogger)
+	tracker := analytics.NewTracker(appLogger)
+	controller := examples.NewController(appLogger, tracker)
 	helloController := hello.NewController(appLogger)
 	appRoutes := router.ProvideAppRoutes(controller, helloController)
 	v := router.ProvideRoutes(appRoutes)

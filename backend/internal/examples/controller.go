@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/goforj/docs/internal/analytics"
 	apphttp "github.com/goforj/docs/internal/http"
 	"github.com/goforj/docs/internal/logger"
 	"github.com/labstack/echo/v4"
@@ -15,13 +17,15 @@ import (
 
 // Controller provides example lookup and execution endpoints.
 type Controller struct {
-	logger *logger.AppLogger
+	logger  *logger.AppLogger
+	tracker *analytics.Tracker
 }
 
 // NewController creates a new examples controller.
-func NewController(logger *logger.AppLogger) *Controller {
+func NewController(logger *logger.AppLogger, tracker *analytics.Tracker) *Controller {
 	return &Controller{
-		logger: logger,
+		logger:  logger,
+		tracker: tracker,
 	}
 }
 
@@ -82,6 +86,14 @@ func (c *Controller) Run(e echo.Context) error {
 		Any("repo", repo).
 		Any("example", exampleID).
 		Msg("Running example (recorded)")
+
+	if c.tracker != nil && c.tracker.Enabled() {
+		repoName := repo
+		exampleName := exampleID
+		clientIP := e.RealIP()
+		userAgent := e.Request().UserAgent()
+		go c.tracker.TrackExampleRun(context.Background(), repoName, exampleName, clientIP, userAgent)
+	}
 
 	return e.JSON(http.StatusOK, ExampleRunResponse{
 		Stdout:     example.Stdout,

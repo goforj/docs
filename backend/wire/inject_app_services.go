@@ -1,14 +1,17 @@
 package wire
 
 import (
+	"time"
+
+	"github.com/goforj/docs/internal/analytics"
 	"github.com/google/wire"
 	gocache "github.com/patrickmn/go-cache"
-	"time"
 )
 
 // appSet is a wire set that provides any application-level services and dependencies.
 // for more specific sets, you can create your own
 var appSet = wire.NewSet(
+	analytics.NewTracker,
 	provideLocalCache,
 )
 
