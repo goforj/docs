@@ -93,13 +93,14 @@ export default defineConfig({
       provider: 'local',
       options: {
         _render: (src, env, md) => {
-          const frontmatterMatch = src.match(/^---\n[\s\S]*?\n---\n/)
+          const frontmatterMatch = src.match(/^---\n[\s\S]*?\n---\n?/)
           let title = ''
           if (frontmatterMatch) {
             const titleMatch = frontmatterMatch[0].match(/^title:\s*(.+)$/m)
             if (titleMatch) {
               title = titleMatch[1].trim()
             }
+            src = src.slice(frontmatterMatch[0].length)
           }
           if (!title) {
             const file = (env?.relativePath || '').replace(/\\/g, '/').split('/').pop() || ''

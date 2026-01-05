@@ -25,6 +25,7 @@ func (s *Server) registerCors(e *echo.Echo) {
 		// If no endpoints are specified and the app is in dev mode, allow all origins
 		endpoints = []string{
 			"http://localhost:8080",
+			"http://localhost:5173",
 			"http://localhost:5174",
 		}
 	}
