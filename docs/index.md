@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: brand
       text: Explore Libraries
-      link: /libraries
+      link: /collection
     - theme: alt
       text: Design Philosophy
       link: /about
