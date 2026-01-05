@@ -22,6 +22,8 @@ services:
     build:
       context: .
       dockerfile: containers/web/Dockerfile
+      args:
+        GA_MEASUREMENT_ID: ${GA_MEASUREMENT_ID}
     labels:
       - traefik.enable=true
       - traefik.http.routers.goforj.rule=Host(`${DOMAIN}`)

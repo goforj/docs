@@ -68,6 +68,18 @@ const splitIntoSections = (path: string, html: string) => {
   return sections
 }
 
+const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '').trim()
+const isProd = process.env.NODE_ENV === 'production'
+const analyticsHead = (isProd && gaMeasurementId)
+  ? [
+      ['script', { async: '', src: `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}` }],
+      ['script', {}, `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaMeasurementId}');`]
+    ]
+  : []
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "GoForj",
@@ -85,7 +97,10 @@ export default defineConfig({
     'libraries/filesystem.md': 'filesystem.md'
   },
 
-  head: [['link', { rel: 'icon', href: '/assets/goforj-hammer.png' }]],
+  head: [
+    ['link', { rel: 'icon', href: '/assets/goforj-hammer.png' }],
+    ...analyticsHead
+  ],
 
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config

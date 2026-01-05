@@ -11,6 +11,9 @@ ENV GOFORJ_EXAMPLES_MANIFEST=/app/examples.json
 RUN cd backend && go run . docs:generate
 
 FROM node:20-bookworm-slim AS docs-build
+ARG GA_MEASUREMENT_ID
+ENV GA_MEASUREMENT_ID=${GA_MEASUREMENT_ID}
+ENV NODE_ENV=production
 WORKDIR /app/docs
 COPY docs/package.json docs/package-lock.json ./
 RUN npm ci
