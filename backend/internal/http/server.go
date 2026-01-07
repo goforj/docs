@@ -124,13 +124,21 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 					htmlPath := path.Join(spa.FileRoot(), cleanPath+".html")
 					if _, err := spa.Filesystem().Open(htmlPath); err == nil {
 						s.logger.Info().Str("path", requestPath).Str("rewrite", "/"+cleanPath+".html").Msg("SPA rewrite")
-						c.Request().URL.Path = "/" + cleanPath + ".html"
+						rewritten := "/" + cleanPath + ".html"
+						c.Request().URL.Path = rewritten
+						c.Request().URL.RawPath = rewritten
+						c.Request().RequestURI = rewritten
+						c.SetPath(rewritten)
 						return next(c)
 					}
 					indexPath := path.Join(spa.FileRoot(), cleanPath, "index.html")
 					if _, err := spa.Filesystem().Open(indexPath); err == nil {
-						s.logger.Info().Str("path", requestPath).Str("rewrite", path.Join(requestPath, "index.html")).Msg("SPA rewrite")
-						c.Request().URL.Path = path.Join(requestPath, "index.html")
+						rewritten := path.Join(requestPath, "index.html")
+						s.logger.Info().Str("path", requestPath).Str("rewrite", rewritten).Msg("SPA rewrite")
+						c.Request().URL.Path = rewritten
+						c.Request().URL.RawPath = rewritten
+						c.Request().RequestURI = rewritten
+						c.SetPath(rewritten)
 					}
 				}
 				return next(c)
