@@ -2,9 +2,9 @@ package http
 
 import (
 	"fmt"
+	"github.com/goforj/docs/internal/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/goforj/docs/internal/logger"
 	"net/http"
 	"path"
 	"strings"
@@ -39,7 +39,6 @@ func (s *Server) bootstrap() *echo.Echo {
 
 	// register routes
 	s.registerRoutes(e)
-
 
 	// hide banner / port from echo
 	e.HideBanner = true
@@ -118,6 +117,10 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 				requestPath := c.Request().URL.Path
 				if requestPath != "/" && path.Ext(requestPath) == "" {
 					cleanPath := strings.TrimPrefix(requestPath, "/")
+					cleanPath = strings.TrimSuffix(cleanPath, "/")
+					if cleanPath == "" {
+						return next(c)
+					}
 					htmlPath := path.Join(spa.FileRoot(), cleanPath+".html")
 					if _, err := spa.Filesystem().Open(htmlPath); err == nil {
 						c.Request().URL.Path = "/" + cleanPath + ".html"
