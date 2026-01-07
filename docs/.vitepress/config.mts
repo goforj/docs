@@ -84,6 +84,7 @@ gtag('config', '${gaMeasurementId}');`]
 export default defineConfig({
   title: "GoForj",
   description: "Build faster. Ship smarter. Go development tools forged for productivity.",
+  cleanUrls: true,
   appearance: 'force-dark',
   rewrites: {
     'libraries/collection.md': 'collection.md',

@@ -113,6 +113,19 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 	// register single page applications
 	for _, spa := range GetSpas() {
 		g := e.Group(spa.BaseUri())
+		g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+			return func(c echo.Context) error {
+				requestPath := c.Request().URL.Path
+				if requestPath != "/" && path.Ext(requestPath) == "" {
+					cleanPath := strings.TrimPrefix(requestPath, "/")
+					indexPath := path.Join(spa.FileRoot(), cleanPath, "index.html")
+					if _, err := spa.Filesystem().Open(indexPath); err == nil {
+						c.Request().URL.Path = path.Join(requestPath, "index.html")
+					}
+				}
+				return next(c)
+			}
+		})
 		g.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 			HTML5:      true,
 			Root:       spa.FileRoot(),
