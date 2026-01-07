@@ -118,6 +118,11 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 				requestPath := c.Request().URL.Path
 				if requestPath != "/" && path.Ext(requestPath) == "" {
 					cleanPath := strings.TrimPrefix(requestPath, "/")
+					htmlPath := path.Join(spa.FileRoot(), cleanPath+".html")
+					if _, err := spa.Filesystem().Open(htmlPath); err == nil {
+						c.Request().URL.Path = "/" + cleanPath + ".html"
+						return next(c)
+					}
 					indexPath := path.Join(spa.FileRoot(), cleanPath, "index.html")
 					if _, err := spa.Filesystem().Open(indexPath); err == nil {
 						c.Request().URL.Path = path.Join(requestPath, "index.html")
