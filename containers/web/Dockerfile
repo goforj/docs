@@ -8,7 +8,8 @@ RUN cd backend && go mod download
 COPY backend/ ./backend/
 COPY docs/ ./docs/
 ENV GOFORJ_EXAMPLES_MANIFEST=/app/examples.json
-RUN cd backend && go run . docs:generate
+RUN cd backend && go run . docs:generate \
+  && rm -rf /tmp/goforj-docs
 
 FROM node:20-bookworm-slim AS docs-build
 ARG GA_MEASUREMENT_ID
