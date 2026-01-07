@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM golang:1.23-bookworm AS docs-generate
 WORKDIR /app
 ENV GOTOOLCHAIN=auto
@@ -8,8 +9,8 @@ RUN cd backend && go mod download
 COPY backend/ ./backend/
 COPY docs/ ./docs/
 ENV GOFORJ_EXAMPLES_MANIFEST=/app/examples.json
-RUN cd backend && go run . docs:generate \
-  && rm -rf /tmp/goforj-docs
+RUN --mount=type=cache,target=/tmp/goforj-docs \
+  cd backend && go run . docs:generate
 
 FROM node:20-bookworm-slim AS docs-build
 ARG GA_MEASUREMENT_ID
