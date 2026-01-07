@@ -86,6 +86,13 @@ docs-package: ##@docs Generate + build docs and stage for backend
 	@$(MAKE) docs-embed
 
 #----------------------
+# docker
+#----------------------
+
+docker-build-prod: ##@docker Build production docker images
+	@DOCKER_BUILDKIT=1 docker compose build
+
+#----------------------
 # build
 #----------------------
 
