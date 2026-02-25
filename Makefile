@@ -112,6 +112,32 @@ docker-production: ##@docker Build production web image with buildx cache (set D
 
 docker-build-prod: docker-production ##@docker Alias: production build with buildx cache
 
+docker-build-prod-refresh-docs: ##@docker Rebuild production image but force rerun of docs-generate stage (refresh pulled repo READMEs)
+	@DRIVER="$$(docker buildx inspect --format '{{.Driver}}' 2>/dev/null || echo docker)"; \
+	CACHE_FLAGS=""; \
+	if [ "$$DRIVER" = "docker-container" ] || [ "$$DRIVER" = "kubernetes" ] || [ "$$DRIVER" = "remote" ]; then \
+		CACHE_FLAGS="--cache-from=$(DOCKER_PROD_CACHE_FROM) --cache-to=$(DOCKER_PROD_CACHE_TO)"; \
+	else \
+		echo "buildx driver '$$DRIVER' does not support cache export; building without explicit cache import/export"; \
+	fi; \
+	docker buildx build \
+		-f containers/web/Dockerfile \
+		--no-cache-filter docs-generate \
+		--build-arg GA_MEASUREMENT_ID=\"$(GA_MEASUREMENT_ID)\" \
+		$$CACHE_FLAGS \
+		-t $(DOCKER_PROD_IMAGE) \
+		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
+		.
+
+docker-build-prod-no-cache: ##@docker Rebuild production image with no Docker layer cache
+	@docker buildx build \
+		-f containers/web/Dockerfile \
+		--no-cache \
+		--build-arg GA_MEASUREMENT_ID="$(GA_MEASUREMENT_ID)" \
+		-t $(DOCKER_PROD_IMAGE) \
+		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
+		.
+
 #----------------------
 # build
 #----------------------
