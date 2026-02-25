@@ -29,9 +29,9 @@ func writeExamplesManifest(repo RepoConfig, examples []ExampleProgram) error {
 		_ = json.Unmarshal(bytes, &store)
 	}
 
-	if store[repo.Slug] == nil {
-		store[repo.Slug] = map[string]exampleManifestRecord{}
-	}
+	// Replace the repo's example set on each generation so removed examples
+	// are deleted from the manifest instead of lingering forever.
+	store[repo.Slug] = map[string]exampleManifestRecord{}
 
 	for _, example := range examples {
 		store[repo.Slug][example.ID] = exampleManifestRecord{
