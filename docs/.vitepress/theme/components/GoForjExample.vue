@@ -68,7 +68,7 @@ const reapplyHashScroll = async () => {
     state.key = key
     state.runs = 0
   }
-  if (state.runs >= 2) {
+  if (state.runs >= 1) {
     return
   }
   if (state.timer) {
@@ -82,8 +82,11 @@ const reapplyHashScroll = async () => {
     const target = document.getElementById(id) || document.querySelector(hash)
     if (target) {
       state.runs += 1
-      const top = window.scrollY + target.getBoundingClientRect().top - stickyOffset()
-      window.scrollTo({ top: Math.max(0, top), behavior: 'auto' })
+      const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
+      // Avoid visible "bounce" when the browser already landed close enough.
+      if (Math.abs(window.scrollY - top) > 24) {
+        window.scrollTo({ top, behavior: 'auto' })
+      }
     }
   }, 80)
 }
