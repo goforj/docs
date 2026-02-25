@@ -268,8 +268,7 @@ func wrapExamples(content string, repoSlug string, examples []ExampleProgram) st
 			wrapped := false
 			if strings.HasPrefix(strings.ToLower(lang), "go") {
 				if inApiEmbed {
-					exampleID := currentAnchor
-					if exampleID != "" && !usedExample[exampleID] && exampleMap[exampleID].Code != "" {
+					if exampleID, ok := resolveExampleID("", currentAnchor, code, examples, usedExample); ok && exampleMap[exampleID].Code != "" {
 						example := exampleMap[exampleID]
 						out.WriteString(fmt.Sprintf("<GoForjExample repo=\"%s\" example=\"%s\">\n\n", repoSlug, exampleID))
 						out.WriteString("```go\n")
@@ -280,8 +279,6 @@ func wrapExamples(content string, repoSlug string, examples []ExampleProgram) st
 						out.WriteString("```\n\n")
 						out.WriteString("</GoForjExample>")
 						usedExample[exampleID] = true
-						wrapped = true
-					} else if exampleID != "" && usedExample[exampleID] {
 						wrapped = true
 					}
 				} else if exampleID, ok := resolveExampleID(currentHint, currentAnchor, code, examples, usedExample); ok {
