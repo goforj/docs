@@ -1174,7 +1174,7 @@ fmt.Printf("ok=%v hour=%+v day=%+v week=%+v\n", ok, throughput.Hour, throughput.
 // Output: ok=true hour={Processed:1 Failed:0} day={Processed:1 Failed:0} week={Processed:1 Failed:0}
 ```
 
-#### Queue {#queue}
+#### Queue {#queue-2}
 
 #### Batch {#queue-queue-batch}
 

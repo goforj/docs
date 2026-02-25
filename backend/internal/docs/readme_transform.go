@@ -21,7 +21,7 @@ func transformReadme(readme string, repo RepoConfig, rawBase string, examples []
 	updated := rewriteImageLinks(readme, rawBase)
 	updated = rewriteMarkdownLinks(updated, repo)
 	updated = wrapExamples(updated, repo.Slug, examples)
-	updated = rewriteHeadingAnchors(updated)
+	updated = rewriteHeadingAnchors(updated, repo.Title)
 	return withFrontmatter(repo, updated)
 }
 
@@ -153,9 +153,13 @@ func rewriteLinkURL(url string, base string, branch string) string {
 	return base + mode + "/" + branch + "/" + pathPart + anchor
 }
 
-func rewriteHeadingAnchors(content string) string {
+func rewriteHeadingAnchors(content string, pageTitle string) string {
 	lines := strings.Split(content, "\n")
 	used := map[string]int{}
+	if anchor := defaultAnchor(pageTitle); anchor != "" {
+		// VitePress generates an implicit anchor for the page title/frontmatter H1.
+		used[anchor] = 1
+	}
 	for i, line := range lines {
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
 			level := matches[1]
