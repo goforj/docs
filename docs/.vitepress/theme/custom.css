@@ -197,3 +197,73 @@
     display: inline;
     margin: 0;
 }
+
+.gf-lightboxable {
+    cursor: zoom-in;
+}
+
+html.gf-lightbox-open,
+html.gf-lightbox-open body {
+    overflow: hidden;
+}
+
+.gf-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(5, 10, 18, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease;
+}
+
+.gf-lightbox-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.gf-lightbox-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(20, 24, 34, 0.8);
+    color: #f4f7ff;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.gf-lightbox-figure {
+    margin: 0;
+    max-width: min(92vw, 1400px);
+    max-height: 92vh;
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+}
+
+.gf-lightbox-image {
+    display: block;
+    max-width: 100%;
+    max-height: calc(92vh - 48px);
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    background: rgba(10, 12, 18, 0.8);
+}
+
+.gf-lightbox-caption {
+    min-height: 1em;
+    font-size: 0.9rem;
+    color: rgba(235, 240, 255, 0.85);
+    text-align: center;
+}
