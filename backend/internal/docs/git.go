@@ -8,16 +8,16 @@ import (
 	"path/filepath"
 )
 
-func cloneRepo(url string, dest string, branch string) error {
+func cloneRepo(url string, dest string, branch string) (string, error) {
 	if isGitRepo(dest) {
 		if err := updateRepo(dest, branch); err != nil {
-			return fmt.Errorf("update repo: %w", err)
+			return "", fmt.Errorf("update repo: %w", err)
 		}
-		return nil
+		return "updated", nil
 	}
 
 	if err := os.RemoveAll(dest); err != nil {
-		return fmt.Errorf("clean repo dir: %w", err)
+		return "", fmt.Errorf("clean repo dir: %w", err)
 	}
 
 	var stderr bytes.Buffer
@@ -29,9 +29,9 @@ func cloneRepo(url string, dest string, branch string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("%w: %s", err, stderr.String())
+		return "", fmt.Errorf("%w: %s", err, stderr.String())
 	}
-	return nil
+	return "cloned", nil
 }
 
 func isGitRepo(path string) bool {

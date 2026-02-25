@@ -103,10 +103,12 @@ func (c *GenerateCommand) Run() error {
 	tempRoot := filepath.Join(os.TempDir(), "goforj-docs")
 	for _, repo := range repos {
 		repoDir := filepath.Join(tempRoot, repo.Slug)
-		c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Cloning repo")
-		if err := cloneRepo(repo.CloneURL, repoDir, repo.Branch); err != nil {
+		c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Syncing repo")
+		action, err := cloneRepo(repo.CloneURL, repoDir, repo.Branch)
+		if err != nil {
 			return fmt.Errorf("clone %s: %w", repo.Slug, err)
 		}
+		c.logger.Info().Any("repo", repo.Slug).Any("action", action).Msg("Repo synced")
 
 		readmePath := filepath.Join(repoDir, "README.md")
 		readmeBytes, err := os.ReadFile(readmePath)
