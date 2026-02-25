@@ -11,13 +11,13 @@ title: Env
 </p>
 
 <p align="center">
-    <a href="https://pkg.go.dev/github.com/goforj/env"><img src="https://pkg.go.dev/badge/github.com/goforj/env.svg" alt="Go Reference"></a>
+    <a href="https://pkg.go.dev/github.com/goforj/env/v2"><img src="https://pkg.go.dev/badge/github.com/goforj/env/v2.svg" alt="Go Reference"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/env/actions"><img src="https://github.com/goforj/env/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
     <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.18+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/env?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/env" ><img src="https://codecov.io/github/goforj/env/graph/badge.svg?token=M7EFUVV1XW"/></a>
-    <a href="https://goreportcard.com/report/github.com/goforj/env"><img src="https://goreportcard.com/badge/github.com/goforj/env" alt="Go Report Card"></a>
+    <a href="https://goreportcard.com/report/github.com/goforj/env/v2"><img src="https://goreportcard.com/badge/github.com/goforj/env/v2" alt="Go Report Card"></a>
 </p>
 
 <p align="center">
@@ -28,14 +28,14 @@ title: Env
 
 # Features {#features}
 
-- 🔐 **Strongly typed getters** - `int`, `bool`, `float`, `duration`, slices, maps
-- 🧯 **Safe fallbacks** - never panic, never accidentally empty
-- 🌎 **Application environment helpers** - `dev`, `local`, `prod`
-- 🧩 **Minimal dependencies** - Pure Go, lightweight, minimal surface area
-- 🧭 **Framework-agnostic** - works with any Go app
-- 📐 **Enum validation** - constrain values with allowed sets
-- 🧼 **Predictable behavior** - no magic, no global state surprises
-- 🧱 **Composable building block** - ideal for config structs and startup wiring
+- **Strongly typed getters** - `int`, `bool`, `float`, `duration`, slices, maps
+- **Safe fallbacks** - never panic, never accidentally empty
+- **Application environment helpers** - `local`, `staging`, `production`
+- **Minimal dependencies** - Pure Go, lightweight, minimal surface area
+- **Framework-agnostic** - works with any Go app
+- **Enum validation** - constrain values with allowed sets
+- **Predictable behavior** - no magic, no global state surprises
+- **Composable building block** - ideal for config structs and startup wiring
 
 ## Why env? {#why-env?}
 
@@ -52,14 +52,14 @@ Accessing environment variables in Go often leads to:
 
 - Strongly typed getters (`int`, `bool`, `duration`, slices, maps)
 - Safe fallbacks (never panic, never empty by accident)
-- App environment helpers (`dev`, `local`, `prod`)
+- App environment helpers (`local`, `staging`, `production`)
 - Zero dependencies
 - Framework-agnostic
 
 ## Installation {#installation}
 
 ```bash
-go get github.com/goforj/env
+go get github.com/goforj/env/v2
 ```
 
 ## Quickstart {#quickstart}
@@ -71,7 +71,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/goforj/env"
+	"github.com/goforj/env/v2"
 )
 
 func init() {
@@ -126,13 +126,24 @@ This guarantees all examples are valid, up-to-date, and remain functional as the
 | `IsContainer` | Any common container signals (Docker, containerd, kube env/cgroup) | General container detection |
 | `IsKubernetes` | `KUBERNETES_SERVICE_HOST` or kubepods cgroup | Inside a Kubernetes pod |
 
+## Environment loading overview {#environment-loading-overview}
+
+LoadEnvFileIfExists layers env files in a predictable order:
+
+- `.env` is loaded first.
+- `.env.local`, `.env.staging`, or `.env.production` overlays based on `APP_ENV` (defaults to `local` when unset).
+- `.env.testing` overlays when running under tests (APP_ENV=testing or Go test markers).
+- `.env.host` overlays when running on the host or DinD to support host-to-container networking.
+
+Later files override earlier values. Subsequent calls are no-ops.
+
 <!-- api:embed:start -->
 
 ### Index {#index}
 
 | Group | Functions |
 |------:|-----------|
-| **Application environment** | [GetAppEnv](#getappenv) [IsAppEnv](#isappenv) [IsAppEnvDev](#isappenvdev) [IsAppEnvLocal](#isappenvlocal) [IsAppEnvLocalOrStaging](#isappenvlocalorstaging) [IsAppEnvProduction](#isappenvproduction) [IsAppEnvStaging](#isappenvstaging) [IsAppEnvTesting](#isappenvtesting) [IsAppEnvTestingOrLocal](#isappenvtestingorlocal) |
+| **Application environment** | [GetAppEnv](#getappenv) [IsAppEnv](#isappenv) [IsAppEnvLocal](#isappenvlocal) [IsAppEnvLocalOrStaging](#isappenvlocalorstaging) [IsAppEnvProduction](#isappenvproduction) [IsAppEnvStaging](#isappenvstaging) [IsAppEnvTesting](#isappenvtesting) [IsAppEnvTestingOrLocal](#isappenvtestingorlocal) [SetAppEnv](#setappenv) [SetAppEnvLocal](#setappenvlocal) [SetAppEnvProduction](#setappenvproduction) [SetAppEnvStaging](#setappenvstaging) [SetAppEnvTesting](#setappenvtesting) |
 | **Container detection** | [IsContainer](#iscontainer) [IsDocker](#isdocker) [IsDockerHost](#isdockerhost) [IsDockerInDocker](#isdockerindocker) [IsHostEnvironment](#ishostenvironment) [IsKubernetes](#iskubernetes) |
 | **Debugging** | [Dump](#dump) |
 | **Environment loading** | [IsEnvLoaded](#isenvloaded) [LoadEnvFileIfExists](#loadenvfileifexists) |
@@ -184,21 +195,6 @@ env.Dump(env.IsAppEnv(env.Production, env.Staging))
 
 
 
-
-### IsAppEnvDev · readonly {#isappenvdev}
-
-IsAppEnvDev checks if APP_ENV is "dev".
-
-<GoForjExample repo="env" example="isappenvdev">
-
-```go
-_ = os.Setenv("APP_ENV", env.Dev)
-env.Dump(env.IsAppEnvDev())
-
-// #bool true
-```
-
-</GoForjExample>
 
 ### IsAppEnvLocal · readonly {#isappenvlocal}
 
@@ -297,6 +293,83 @@ _ = os.Setenv("APP_ENV", env.Testing)
 env.Dump(env.IsAppEnvTestingOrLocal())
 
 // #bool true
+```
+
+</GoForjExample>
+
+### SetAppEnv · mutates-process-env {#setappenv}
+
+SetAppEnv sets APP_ENV to a supported value.
+
+
+<GoForjExample repo="env" example="setappenv">
+
+```go
+// Example: set a supported environment
+_ = env.SetAppEnv(env.Staging)
+env.Dump(env.GetAppEnv())
+
+// #string "staging"
+```
+
+</GoForjExample>
+
+### SetAppEnvLocal · mutates-process-env {#setappenvlocal}
+
+SetAppEnvLocal sets APP_ENV to "local".
+
+<GoForjExample repo="env" example="setappenvlocal">
+
+```go
+_ = env.SetAppEnvLocal()
+env.Dump(env.GetAppEnv())
+
+// #string "local"
+```
+
+</GoForjExample>
+
+### SetAppEnvProduction · mutates-process-env {#setappenvproduction}
+
+SetAppEnvProduction sets APP_ENV to "production".
+
+<GoForjExample repo="env" example="setappenvproduction">
+
+```go
+_ = env.SetAppEnvProduction()
+env.Dump(env.GetAppEnv())
+
+// #string "production"
+```
+
+</GoForjExample>
+
+### SetAppEnvStaging · mutates-process-env {#setappenvstaging}
+
+SetAppEnvStaging sets APP_ENV to "staging".
+
+<GoForjExample repo="env" example="setappenvstaging">
+
+```go
+_ = env.SetAppEnvStaging()
+env.Dump(env.GetAppEnv())
+
+// #string "staging"
+```
+
+</GoForjExample>
+
+### SetAppEnvTesting · mutates-process-env {#setappenvtesting}
+
+SetAppEnvTesting sets APP_ENV to "testing".
+
+<GoForjExample repo="env" example="setappenvtesting">
+
+```go
+_ = env.SetAppEnvTesting()
+env.Dump(env.GetAppEnv())
+
+// #string "testing"
 ```
 
 </GoForjExample>
@@ -451,7 +524,8 @@ env.Dump(env.IsEnvLoaded())
 
 ### LoadEnvFileIfExists · mutates-process-env {#loadenvfileifexists}
 
-LoadEnvFileIfExists loads .env/.env.testing/.env.host when present.
+LoadEnvFileIfExists loads .env with optional layering for .env.local/.env.staging/.env.production,
+plus .env.testing/.env.host when present.
 
 
 <GoForjExample repo="env" example="loadenvfileifexists">
@@ -459,7 +533,7 @@ LoadEnvFileIfExists loads .env/.env.testing/.env.host when present.
 ```go
 // Example: test-specific env file
 tmp, _ := os.MkdirTemp("", "envdoc")
-_ = os.WriteFile(filepath.Join(tmp, ".env.testing"), []byte("PORT=9090\nAPP_DEBUG=0"), 0o644)
+_ = os.WriteFile(filepath.Join(tmp, ".env.testing"), []byte("PORT=9090\nENV_DEBUG=0"), 0o644)
 _ = os.Chdir(tmp)
 _ = os.Setenv("APP_ENV", env.Testing)
 
@@ -469,7 +543,7 @@ env.Dump(os.Getenv("PORT"))
 // #string "9090"
 
 // Example: default .env on a host
-_ = os.WriteFile(".env", []byte("SERVICE=api\nAPP_DEBUG=3"), 0o644)
+_ = os.WriteFile(".env", []byte("SERVICE=api\nENV_DEBUG=3"), 0o644)
 _ = env.LoadEnvFileIfExists()
 env.Dump(os.Getenv("SERVICE"))
 
@@ -703,18 +777,18 @@ GetEnum ensures the environment variable's value is in the allowed list.
 
 ```go
 // Example: accept only staged environments
-_ = os.Setenv("APP_ENV", "prod")
-appEnv := env.GetEnum("APP_ENV", "dev", []string{"dev", "staging", "prod"})
+_ = os.Setenv("APP_ENV", "production")
+appEnv := env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
 env.Dump(appEnv)
 
-// #string "prod"
+// #string "production"
 
 // Example: fallback when unset
 os.Unsetenv("APP_ENV")
-appEnv = env.GetEnum("APP_ENV", "dev", []string{"dev", "staging", "prod"})
+appEnv = env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
 env.Dump(appEnv)
 
-// #string "dev"
+// #string "local"
 ```
 
 </GoForjExample>

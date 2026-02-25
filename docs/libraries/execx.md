@@ -233,14 +233,14 @@ All public APIs are covered by runnable examples under `./examples`, and the tes
 | **Decoding** | [Decode](#decode) [DecodeJSON](#decodejson) [DecodeWith](#decodewith) [DecodeYAML](#decodeyaml) [FromCombined](#fromcombined) [FromStderr](#fromstderr) [FromStdout](#fromstdout) [Into](#into) [Trim](#trim) |
 | **Environment** | [Env](#env) [EnvAppend](#envappend) [EnvInherit](#envinherit) [EnvList](#envlist) [EnvOnly](#envonly) |
 | **Errors** | [Error](#error) [Unwrap](#unwrap) |
-| **Execution** | [CombinedOutput](#combinedoutput) [Output](#output) [OutputBytes](#outputbytes) [OutputTrimmed](#outputtrimmed) [Run](#run) [Start](#start) |
+| **Execution** | [CombinedOutput](#combinedoutput) [Output](#output) [OutputBytes](#outputbytes) [OutputTrimmed](#outputtrimmed) [Run](#run) [Start](#start) [OnExecCmd](#onexeccmd) |
 | **Input** | [StdinBytes](#stdinbytes) [StdinFile](#stdinfile) [StdinReader](#stdinreader) [StdinString](#stdinstring) |
 | **OS Controls** | [CreationFlags](#creationflags) [HideWindow](#hidewindow) [Pdeathsig](#pdeathsig) [Setpgid](#setpgid) [Setsid](#setsid) |
 | **Pipelining** | [Pipe](#pipe) [PipeBestEffort](#pipebesteffort) [PipeStrict](#pipestrict) [PipelineResults](#pipelineresults) |
 | **Process** | [GracefulShutdown](#gracefulshutdown) [Interrupt](#interrupt) [KillAfter](#killafter) [Send](#send) [Terminate](#terminate) [Wait](#wait) |
 | **Results** | [IsExitCode](#isexitcode) [IsSignal](#issignal) [OK](#ok) |
 | **Shadow Print** | [ShadowOff](#shadowoff) [ShadowOn](#shadowon) [ShadowPrint](#shadowprint) [WithFormatter](#withformatter) [WithMask](#withmask) [WithPrefix](#withprefix) |
-| **Streaming** | [OnStderr](#onstderr) [OnStdout](#onstdout) [StderrWriter](#stderrwriter) [StdoutWriter](#stdoutwriter) |
+| **Streaming** | [OnStderr](#onstderr) [OnStdout](#onstdout) [StderrWriter](#stderrwriter) [StdoutWriter](#stdoutwriter) [WithPTY](#withpty) |
 | **WorkingDir** | [Dir](#dir) |
 
 
@@ -769,6 +769,23 @@ fmt.Println(res.ExitCode == 0)
 Start executes the command asynchronously.
 
 
+
+### OnExecCmd {#onexeccmd}
+
+OnExecCmd registers a callback to mutate the underlying exec.Cmd before start.
+
+<GoForjExample repo="execx" example="onexeccmd">
+
+```go
+// Example: exec cmd
+_, _ = execx.Command("printf", "hi").
+	OnExecCmd(func(cmd *exec.Cmd) {
+		cmd.Env = append(cmd.Env, "EXAMPLE=1")
+	}).
+	Run()
+```
+
+</GoForjExample>
 
 ## Input {#input}
 
@@ -1307,6 +1324,8 @@ _, _ = execx.Command("printf", "hi\n").
 
 StderrWriter sets a raw writer for stderr.
 
+When the writer is a terminal and no line callbacks or combined output are enabled, execx passes stderr through directly and does not buffer it for results.
+
 <GoForjExample repo="execx" example="stderrwriter">
 
 ```go
@@ -1329,6 +1348,8 @@ fmt.Println(err == nil)
 
 StdoutWriter sets a raw writer for stdout.
 
+When the writer is a terminal and no line callbacks or combined output are enabled, execx passes stdout through directly and does not buffer it for results.
+
 <GoForjExample repo="execx" example="stdoutwriter">
 
 ```go
@@ -1339,6 +1360,26 @@ _, _ = execx.Command("printf", "hello").
 	Run()
 fmt.Print(out.String())
 // hello
+```
+
+</GoForjExample>
+
+### WithPTY {#withpty}
+
+WithPTY attaches stdout/stderr to a pseudo-terminal.
+
+Output is combined; OnStdout and OnStderr receive the same lines, and Result.Stderr remains empty.
+Platforms without PTY support return an error when the command runs.
+
+<GoForjExample repo="execx" example="withpty">
+
+```go
+// Example: with pty
+_, _ = execx.Command("printf", "hi\n").
+	WithPTY().
+	OnStdout(func(line string) { fmt.Println(line) }).
+	Run()
+// hi
 ```
 
 </GoForjExample>
