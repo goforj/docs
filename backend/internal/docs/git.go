@@ -42,7 +42,7 @@ func isGitRepo(path string) bool {
 func updateRepo(dest string, branch string) error {
 	var stderr bytes.Buffer
 	if branch != "" {
-		fetch := exec.Command("git", "-C", dest, "fetch", "--depth", "1", "origin", branch)
+		fetch := exec.Command("git", "-C", dest, "fetch", "--prune", "--depth", "1", "origin", branch)
 		fetch.Stderr = &stderr
 		if err := fetch.Run(); err != nil {
 			return fmt.Errorf("%w: %s", err, stderr.String())
@@ -57,12 +57,22 @@ func updateRepo(dest string, branch string) error {
 		if err := reset.Run(); err != nil {
 			return fmt.Errorf("%w: %s", err, stderr.String())
 		}
+		clean := exec.Command("git", "-C", dest, "clean", "-fdx")
+		clean.Stderr = &stderr
+		if err := clean.Run(); err != nil {
+			return fmt.Errorf("%w: %s", err, stderr.String())
+		}
 		return nil
 	}
 
 	pull := exec.Command("git", "-C", dest, "pull", "--ff-only")
 	pull.Stderr = &stderr
 	if err := pull.Run(); err != nil {
+		return fmt.Errorf("%w: %s", err, stderr.String())
+	}
+	clean := exec.Command("git", "-C", dest, "clean", "-fdx")
+	clean.Stderr = &stderr
+	if err := clean.Run(); err != nil {
 		return fmt.Errorf("%w: %s", err, stderr.String())
 	}
 	return nil

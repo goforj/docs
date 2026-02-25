@@ -171,6 +171,7 @@ func writeCachedExamplePrograms(examplesDir string, jobs []exampleJob, examples 
 func exampleProgramsCachePath(examplesDir string, jobs []exampleJob) (string, error) {
 	hasher := sha256.New()
 	_, _ = hasher.Write([]byte("examples-cache:content-hash\n"))
+	hashRunnerSource(hasher)
 
 	if err := hashDirectoryContents(hasher, examplesDir); err != nil {
 		return "", err
@@ -223,6 +224,25 @@ func hashDirectoryContents(hasher hash.Hash, dir string) error {
 		_, _ = hasher.Write([]byte{0})
 		return nil
 	})
+}
+
+func hashRunnerSource(hasher hash.Hash) {
+	for _, p := range []string{
+		filepath.Join("internal", "docs", "examples.go"),
+		filepath.Join("backend", "internal", "docs", "examples.go"),
+	} {
+		b, err := os.ReadFile(p)
+		if err != nil {
+			continue
+		}
+		_, _ = hasher.Write([]byte("runner-source"))
+		_, _ = hasher.Write([]byte{0})
+		_, _ = hasher.Write([]byte(p))
+		_, _ = hasher.Write([]byte{0})
+		_, _ = hasher.Write(b)
+		_, _ = hasher.Write([]byte{0})
+		return
+	}
 }
 
 func normalizeCode(code string) string {
@@ -301,9 +321,15 @@ func writeTempExampleWorkspace(startDir string) (string, func(), error) {
 	if len(modRoots) < 2 {
 		return "", nil, nil
 	}
+	goVersion := maxGoVersionFromModules(modRoots)
+	if goVersion == "" {
+		goVersion = "1.23"
+	}
 
 	var b strings.Builder
-	b.WriteString("go 1.23\n\nuse (\n")
+	b.WriteString("go ")
+	b.WriteString(goVersion)
+	b.WriteString("\n\nuse (\n")
 	for i := len(modRoots) - 1; i >= 0; i-- {
 		b.WriteString("\t")
 		b.WriteString(modRoots[i])
@@ -341,6 +367,63 @@ func findAncestorModuleRoots(startDir string) ([]string, error) {
 		dir = parent
 	}
 	return roots, nil
+}
+
+func maxGoVersionFromModules(modRoots []string) string {
+	best := ""
+	for _, root := range modRoots {
+		v := readGoDirectiveVersion(filepath.Join(root, "go.mod"))
+		if compareGoVersions(v, best) > 0 {
+			best = v
+		}
+	}
+	return best
+}
+
+func readGoDirectiveVersion(goModPath string) string {
+	b, err := os.ReadFile(goModPath)
+	if err != nil {
+		return ""
+	}
+	for _, line := range strings.Split(string(b), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "go ") {
+			return strings.TrimSpace(strings.TrimPrefix(line, "go "))
+		}
+	}
+	return ""
+}
+
+func compareGoVersions(a string, b string) int {
+	if a == b {
+		return 0
+	}
+	parse := func(v string) [3]int {
+		var out [3]int
+		parts := strings.Split(strings.TrimSpace(v), ".")
+		for i := 0; i < len(parts) && i < 3; i++ {
+			n := 0
+			for _, r := range parts[i] {
+				if r < '0' || r > '9' {
+					break
+				}
+				n = n*10 + int(r-'0')
+			}
+			out[i] = n
+		}
+		return out
+	}
+	av := parse(a)
+	bv := parse(b)
+	for i := 0; i < 3; i++ {
+		if av[i] > bv[i] {
+			return 1
+		}
+		if av[i] < bv[i] {
+			return -1
+		}
+	}
+	return 0
 }
 
 func filterGoDownloadNoise(output string) string {
