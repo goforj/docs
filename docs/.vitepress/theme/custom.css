@@ -117,6 +117,13 @@
     overflow: auto;
 }
 
+.gf-example_output,
+.gf-example_output code {
+    white-space: pre !important;
+    overflow-wrap: normal !important;
+    word-break: normal;
+}
+
 .vp-doc div[class*='language-'], .vp-block {
     /*background-color: black;*/
     margin-top: 0;
@@ -190,4 +197,3 @@
     display: inline;
     margin: 0;
 }
-
