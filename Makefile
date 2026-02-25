@@ -95,11 +95,17 @@ DOCKER_PROD_CACHE_FROM ?= type=local,src=.cache/buildx-docs-web
 DOCKER_PROD_CACHE_TO ?= type=local,dest=.cache/buildx-docs-web,mode=max
 
 docker-production: ##@docker Build production web image with buildx cache (set DOCKER_PROD_IMAGE / DOCKER_PROD_CACHE_FROM / DOCKER_PROD_CACHE_TO / DOCKER_PROD_PUSH=1)
-	@docker buildx build \
+	@DRIVER="$$(docker buildx inspect --format '{{.Driver}}' 2>/dev/null || echo docker)"; \
+	CACHE_FLAGS=""; \
+	if [ "$$DRIVER" = "docker-container" ] || [ "$$DRIVER" = "kubernetes" ] || [ "$$DRIVER" = "remote" ]; then \
+		CACHE_FLAGS="--cache-from=$(DOCKER_PROD_CACHE_FROM) --cache-to=$(DOCKER_PROD_CACHE_TO)"; \
+	else \
+		echo "buildx driver '$$DRIVER' does not support cache export; building without explicit cache import/export"; \
+	fi; \
+	docker buildx build \
 		-f containers/web/Dockerfile \
-		--build-arg GA_MEASUREMENT_ID="$(GA_MEASUREMENT_ID)" \
-		--cache-from=$(DOCKER_PROD_CACHE_FROM) \
-		--cache-to=$(DOCKER_PROD_CACHE_TO) \
+		--build-arg GA_MEASUREMENT_ID=\"$(GA_MEASUREMENT_ID)\" \
+		$$CACHE_FLAGS \
 		-t $(DOCKER_PROD_IMAGE) \
 		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
 		.
