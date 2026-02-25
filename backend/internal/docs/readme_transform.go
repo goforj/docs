@@ -348,14 +348,21 @@ func matchExample(code string, examples []ExampleProgram, used map[string]bool) 
 	if needle == "" {
 		return "", false
 	}
+	var usedMatches []string
 	for _, example := range examples {
-		if used[example.ID] {
-			continue
-		}
 		if example.Normalized != "" && strings.Contains(example.Normalized, needle) {
+			if used[example.ID] {
+				usedMatches = append(usedMatches, example.ID)
+				continue
+			}
 			used[example.ID] = true
 			return example.ID, true
 		}
+	}
+	// If truncation made a snippet match an example already used earlier on the page,
+	// allow reuse when the match is unique so API sections can still render runnable examples.
+	if len(usedMatches) == 1 {
+		return usedMatches[0], true
 	}
 	return "", false
 }

@@ -95,7 +95,6 @@ const runExample = async () => {
     errorMessage.value = error instanceof Error ? error.message : 'Failed to run example.'
   } finally {
     isRunning.value = false
-    reapplyHashScroll()
   }
 }
 
