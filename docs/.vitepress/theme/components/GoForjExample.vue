@@ -32,6 +32,22 @@ const apiBase = (apiBaseEnv || defaultApiBase).replace(/\/$/, '')
 
 const buildUrl = (path) => `${apiBase}${path}`
 
+const stickyOffset = () => {
+  if (typeof window === 'undefined') {
+    return 0
+  }
+  const nav = document.querySelector('.VPNav')
+  const localNav = document.querySelector('.VPLocalNav')
+  let offset = 0
+  if (nav) {
+    offset += nav.getBoundingClientRect().height
+  }
+  if (localNav) {
+    offset += localNav.getBoundingClientRect().height
+  }
+  return Math.ceil(offset) + 8
+}
+
 const reapplyHashScroll = async () => {
   if (typeof window === 'undefined') {
     return
@@ -51,22 +67,23 @@ const reapplyHashScroll = async () => {
   if (state.key !== key) {
     state.key = key
     state.runs = 0
-    if (state.timer) {
-      window.clearTimeout(state.timer)
-      state.timer = null
-    }
   }
-  if (state.runs >= 2 || state.timer) {
+  if (state.runs >= 2) {
     return
+  }
+  if (state.timer) {
+    window.clearTimeout(state.timer)
+    state.timer = null
   }
 
   state.timer = window.setTimeout(() => {
     state.timer = null
     const id = decodeURIComponent(hash.slice(1))
     const target = document.getElementById(id) || document.querySelector(hash)
-    if (target && typeof target.scrollIntoView === 'function') {
+    if (target) {
       state.runs += 1
-      target.scrollIntoView({ block: 'start' })
+      const top = window.scrollY + target.getBoundingClientRect().top - stickyOffset()
+      window.scrollTo({ top: Math.max(0, top), behavior: 'auto' })
     }
   }, 80)
 }
