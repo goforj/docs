@@ -42,24 +42,33 @@ const reapplyHashScroll = async () => {
   }
 
   await nextTick()
-
-  let attempts = 0
-  const maxAttempts = 6
-  const tick = () => {
-    attempts += 1
-    const id = decodeURIComponent(hash.slice(1))
-    const target =
-      document.getElementById(id) ||
-      document.querySelector(hash)
-    if (target && typeof target.scrollIntoView === 'function') {
-      target.scrollIntoView({ block: 'start' })
-    }
-    if (attempts < maxAttempts) {
-      window.requestAnimationFrame(tick)
+  const key = `${window.location.pathname}${window.location.hash}`
+  const state = (window.__goforjHashScrollState ||= {
+    key: '',
+    runs: 0,
+    timer: null
+  })
+  if (state.key !== key) {
+    state.key = key
+    state.runs = 0
+    if (state.timer) {
+      window.clearTimeout(state.timer)
+      state.timer = null
     }
   }
+  if (state.runs >= 2 || state.timer) {
+    return
+  }
 
-  window.requestAnimationFrame(tick)
+  state.timer = window.setTimeout(() => {
+    state.timer = null
+    const id = decodeURIComponent(hash.slice(1))
+    const target = document.getElementById(id) || document.querySelector(hash)
+    if (target && typeof target.scrollIntoView === 'function') {
+      state.runs += 1
+      target.scrollIntoView({ block: 'start' })
+    }
+  }, 80)
 }
 
 const fetchDetails = async () => {
