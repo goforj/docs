@@ -94,8 +94,7 @@ export default defineConfig({
     'libraries/godump.md': 'godump.md',
     'libraries/env.md': 'env.md',
     'libraries/scheduler.md': 'scheduler.md',
-    'libraries/crypt.md': 'crypt.md',
-    'libraries/filesystem.md': 'filesystem.md'
+    'libraries/crypt.md': 'crypt.md'
   },
 
   head: [
@@ -146,7 +145,6 @@ export default defineConfig({
       { text: 'Env', link: '/env' },
       { text: 'Scheduler', link: '/scheduler' },
       { text: 'Crypt', link: '/crypt' },
-      { text: 'Filesystem', link: '/filesystem' },
       { text: 'What is GoForj?', link: '/about' }
     ],
 
@@ -164,7 +162,6 @@ export default defineConfig({
           { text: 'Env', link: '/env' },
           { text: 'Scheduler', link: '/scheduler' },
           { text: 'Crypt', link: '/crypt' },
-          { text: 'Filesystem', link: '/filesystem' },
           { text: 'About', link: '/about' },
         ]
       }

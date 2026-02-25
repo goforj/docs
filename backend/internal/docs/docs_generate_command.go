@@ -93,13 +93,6 @@ func (c *GenerateCommand) Run() error {
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "crypt.md"),
 		},
-		{
-			Slug:       "filesystem",
-			Title:      "Filesystem",
-			CloneURL:   "https://github.com/goforj/filesystem.git",
-			Branch:     "main",
-			OutputPath: filepath.Join("libraries", "filesystem.md"),
-		},
 	}
 
 	docsRoot, err := findDocsRoot()
