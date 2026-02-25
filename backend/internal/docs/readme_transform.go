@@ -334,19 +334,25 @@ func resolveExampleID(hint string, anchor string, code string, examples []Exampl
 	if anchor != "" && hasExample(anchor, examples) {
 		return anchor, true
 	}
+	if exampleID, ok := matchExample(code, examples, used); ok {
+		return exampleID, true
+	}
 	if anchor != "" {
 		if exampleID, ok := matchExampleIDByAnchor(anchor, examples, used); ok {
 			return exampleID, true
 		}
 	}
-	if exampleID, ok := matchExample(code, examples, used); ok {
-		return exampleID, true
-	}
 	return "", false
 }
 
 func matchExampleIDByAnchor(anchor string, examples []ExampleProgram, used map[string]bool) (string, bool) {
+	// Only allow suffix matching for namespaced anchors like "cache-lockhandle-get".
+	// Plain anchors like "get" are too ambiguous and should rely on content matching.
+	if !strings.Contains(anchor, "-") {
+		return "", false
+	}
 	var usedMatches []string
+	var unusedMatches []string
 	for _, example := range examples {
 		if example.ID == "" {
 			continue
@@ -358,8 +364,11 @@ func matchExampleIDByAnchor(anchor string, examples []ExampleProgram, used map[s
 			usedMatches = append(usedMatches, example.ID)
 			continue
 		}
-		used[example.ID] = true
-		return example.ID, true
+		unusedMatches = append(unusedMatches, example.ID)
+	}
+	if len(unusedMatches) == 1 {
+		used[unusedMatches[0]] = true
+		return unusedMatches[0], true
 	}
 	if len(usedMatches) == 1 {
 		return usedMatches[0], true
