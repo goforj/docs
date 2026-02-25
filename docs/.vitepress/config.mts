@@ -94,6 +94,8 @@ export default defineConfig({
     'libraries/godump.md': 'godump.md',
     'libraries/env.md': 'env.md',
     'libraries/scheduler.md': 'scheduler.md',
+    'libraries/queue.md': 'queue.md',
+    'libraries/cache.md': 'cache.md',
     'libraries/crypt.md': 'crypt.md'
   },
 
@@ -144,6 +146,8 @@ export default defineConfig({
       { text: 'GoDump', link: '/godump' },
       { text: 'Env', link: '/env' },
       { text: 'Scheduler', link: '/scheduler' },
+      { text: 'Queue', link: '/queue' },
+      { text: 'Cache', link: '/cache' },
       { text: 'Crypt', link: '/crypt' },
       { text: 'What is GoForj?', link: '/about' }
     ],
@@ -161,6 +165,8 @@ export default defineConfig({
           { text: 'GoDump', link: '/godump' },
           { text: 'Env', link: '/env' },
           { text: 'Scheduler', link: '/scheduler' },
+          { text: 'Queue', link: '/queue' },
+          { text: 'Cache', link: '/cache' },
           { text: 'Crypt', link: '/crypt' },
           { text: 'About', link: '/about' },
         ]

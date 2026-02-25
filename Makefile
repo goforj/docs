@@ -89,8 +89,22 @@ docs-package: ##@docs Generate + build docs and stage for backend
 # docker
 #----------------------
 
-docker-build-prod: ##@docker Build production docker images
-	@DOCKER_BUILDKIT=1 docker compose build
+DOCKER_PROD_IMAGE ?= docs-web:latest
+DOCKER_PROD_PUSH ?= 0
+DOCKER_PROD_CACHE_FROM ?= type=local,src=.cache/buildx-docs-web
+DOCKER_PROD_CACHE_TO ?= type=local,dest=.cache/buildx-docs-web,mode=max
+
+docker-production: ##@docker Build production web image with buildx cache (set DOCKER_PROD_IMAGE / DOCKER_PROD_CACHE_FROM / DOCKER_PROD_CACHE_TO / DOCKER_PROD_PUSH=1)
+	@docker buildx build \
+		-f containers/web/Dockerfile \
+		--build-arg GA_MEASUREMENT_ID="$(GA_MEASUREMENT_ID)" \
+		--cache-from=$(DOCKER_PROD_CACHE_FROM) \
+		--cache-to=$(DOCKER_PROD_CACHE_TO) \
+		-t $(DOCKER_PROD_IMAGE) \
+		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
+		.
+
+docker-build-prod: docker-production ##@docker Alias: production build with buildx cache
 
 #----------------------
 # build

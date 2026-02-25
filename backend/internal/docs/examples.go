@@ -2,6 +2,9 @@ package docs
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
@@ -26,6 +29,13 @@ type ExampleProgram struct {
 	DurationMs int
 }
 
+type exampleJob struct {
+	path       string
+	exampleID  string
+	rawCode    string
+	normalized string
+}
+
 func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 	var examples []ExampleProgram
 
@@ -34,13 +44,6 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 			return examples, nil
 		}
 		return nil, err
-	}
-
-	type exampleJob struct {
-		path       string
-		exampleID  string
-		rawCode    string
-		normalized string
 	}
 
 	var jobs []exampleJob
@@ -77,6 +80,12 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 
 	if len(jobs) == 0 {
 		return examples, nil
+	}
+
+	if cached, ok, err := loadCachedExamplePrograms(examplesDir, jobs); err != nil {
+		return nil, err
+	} else if ok {
+		return cached, nil
 	}
 
 	wp := workerpool.New(10)
@@ -117,7 +126,82 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 		return examples[i].ID < examples[j].ID
 	})
 
+	if err := writeCachedExamplePrograms(examplesDir, jobs, examples); err != nil {
+		return nil, err
+	}
+
 	return examples, nil
+}
+
+func loadCachedExamplePrograms(examplesDir string, jobs []exampleJob) ([]ExampleProgram, bool, error) {
+	cachePath, err := exampleProgramsCachePath(examplesDir, jobs)
+	if err != nil {
+		return nil, false, err
+	}
+	b, err := os.ReadFile(cachePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, false, nil
+		}
+		return nil, false, err
+	}
+	var examples []ExampleProgram
+	if err := json.Unmarshal(b, &examples); err != nil {
+		return nil, false, nil
+	}
+	return examples, true, nil
+}
+
+func writeCachedExamplePrograms(examplesDir string, jobs []exampleJob, examples []ExampleProgram) error {
+	cachePath, err := exampleProgramsCachePath(examplesDir, jobs)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(cachePath), 0o755); err != nil {
+		return err
+	}
+	b, err := json.Marshal(examples)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(cachePath, b, 0o644)
+}
+
+func exampleProgramsCachePath(examplesDir string, jobs []exampleJob) (string, error) {
+	hasher := sha256.New()
+	_, _ = hasher.Write([]byte("examples-cache:v1\n"))
+
+	sortedJobs := append([]exampleJob(nil), jobs...)
+	sort.Slice(sortedJobs, func(i, j int) bool {
+		return sortedJobs[i].path < sortedJobs[j].path
+	})
+	for _, job := range sortedJobs {
+		rel, err := filepath.Rel(examplesDir, job.path)
+		if err != nil {
+			rel = job.path
+		}
+		_, _ = hasher.Write([]byte(rel))
+		_, _ = hasher.Write([]byte{0})
+		_, _ = hasher.Write([]byte(job.rawCode))
+		_, _ = hasher.Write([]byte{0})
+	}
+
+	// Include module manifests so dependency changes invalidate cached example output.
+	repoRoot := filepath.Dir(examplesDir)
+	for _, name := range []string{"go.mod", "go.sum", "go.work", "go.work.sum"} {
+		b, err := os.ReadFile(filepath.Join(repoRoot, name))
+		if err != nil {
+			continue
+		}
+		_, _ = hasher.Write([]byte(name))
+		_, _ = hasher.Write([]byte{0})
+		_, _ = hasher.Write(b)
+		_, _ = hasher.Write([]byte{0})
+	}
+
+	sum := hex.EncodeToString(hasher.Sum(nil))
+	repoSlug := filepath.Base(repoRoot)
+	return filepath.Join(os.TempDir(), "goforj-docs", "examples-cache", repoSlug+"-"+sum+".json"), nil
 }
 
 func normalizeCode(code string) string {
@@ -133,18 +217,17 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 	start := time.Now()
 	dir := filepath.Dir(mainPath)
 
-	runPath := mainPath
 	tempPath := ""
+	runTarget := "."
 	if hasIgnoreBuildTag(rawCode) {
 		var err error
 		tempPath, err = writeTempExample(dir, rawCode)
 		if err != nil {
 			return "", "", 1, 0, err
 		}
-		runPath = tempPath
 	}
 
-	cmd := exec.Command("go", "run", runPath)
+	cmd := exec.Command("go", "run", runTarget)
 	cmd.Dir = dir
 
 	var stdout bytes.Buffer

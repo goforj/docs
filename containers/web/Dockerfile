@@ -5,13 +5,15 @@ ENV GOTOOLCHAIN=auto
 RUN apt-get update && apt-get install -y --no-install-recommends git \
   && rm -rf /var/lib/apt/lists/*
 COPY backend/go.mod backend/go.sum ./backend/
-RUN --mount=type=cache,target=/go/pkg/mod \
-  --mount=type=cache,target=/root/.cache/go-build \
+RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
+  --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
   cd backend && go mod download
 COPY backend/ ./backend/
 COPY docs/ ./docs/
 ENV GOFORJ_EXAMPLES_MANIFEST=/app/examples.json
-RUN --mount=type=cache,target=/tmp/goforj-docs \
+RUN --mount=type=cache,id=goforj-docs-temp,target=/tmp/goforj-docs \
+  --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
+  --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
   cd backend && go run . docs:generate
 
 FROM node:20-bookworm-slim AS docs-build
@@ -19,7 +21,7 @@ ARG GA_MEASUREMENT_ID
 ENV GA_MEASUREMENT_ID=${GA_MEASUREMENT_ID}
 WORKDIR /app/docs
 COPY docs/package.json docs/package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,id=goforj-npm-cache,target=/root/.npm \
   npm ci --include=dev
 COPY --from=docs-generate /app/docs/ ./
 RUN NODE_ENV=production npm run build
@@ -28,12 +30,14 @@ FROM golang:1.23-bookworm AS backend-build
 WORKDIR /app
 ENV GOTOOLCHAIN=auto
 COPY backend/go.mod backend/go.sum ./backend/
-RUN --mount=type=cache,target=/go/pkg/mod \
-  --mount=type=cache,target=/root/.cache/go-build \
+RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
+  --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
   cd backend && go mod download
 COPY backend/ ./backend/
 COPY --from=docs-build /app/docs/.vitepress/dist ./backend/frontend/dist
-RUN cd backend && CGO_ENABLED=0 go build -o /app/bin/docs .
+RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
+  --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
+  cd backend && CGO_ENABLED=0 go build -o /app/bin/docs .
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
