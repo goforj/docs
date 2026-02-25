@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"hash"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -169,21 +170,10 @@ func writeCachedExamplePrograms(examplesDir string, jobs []exampleJob, examples 
 
 func exampleProgramsCachePath(examplesDir string, jobs []exampleJob) (string, error) {
 	hasher := sha256.New()
-	_, _ = hasher.Write([]byte("examples-cache:v1\n"))
+	_, _ = hasher.Write([]byte("examples-cache:content-hash\n"))
 
-	sortedJobs := append([]exampleJob(nil), jobs...)
-	sort.Slice(sortedJobs, func(i, j int) bool {
-		return sortedJobs[i].path < sortedJobs[j].path
-	})
-	for _, job := range sortedJobs {
-		rel, err := filepath.Rel(examplesDir, job.path)
-		if err != nil {
-			rel = job.path
-		}
-		_, _ = hasher.Write([]byte(rel))
-		_, _ = hasher.Write([]byte{0})
-		_, _ = hasher.Write([]byte(job.rawCode))
-		_, _ = hasher.Write([]byte{0})
+	if err := hashDirectoryContents(hasher, examplesDir); err != nil {
+		return "", err
 	}
 
 	// Include module manifests so dependency changes invalidate cached example output.
@@ -202,6 +192,37 @@ func exampleProgramsCachePath(examplesDir string, jobs []exampleJob) (string, er
 	sum := hex.EncodeToString(hasher.Sum(nil))
 	repoSlug := filepath.Base(repoRoot)
 	return filepath.Join(os.TempDir(), "goforj-docs", "examples-cache", repoSlug+"-"+sum+".json"), nil
+}
+
+func hashDirectoryContents(hasher hash.Hash, dir string) error {
+	return filepath.WalkDir(dir, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return nil
+		}
+
+		name := entry.Name()
+		// Ignore temporary files created by the docs runner if a previous run was interrupted.
+		if name == "goforj_example.go" || name == "goforj_examples.work" {
+			return nil
+		}
+
+		rel, relErr := filepath.Rel(dir, path)
+		if relErr != nil {
+			rel = path
+		}
+		b, readErr := os.ReadFile(path)
+		if readErr != nil {
+			return readErr
+		}
+		_, _ = hasher.Write([]byte(rel))
+		_, _ = hasher.Write([]byte{0})
+		_, _ = hasher.Write(b)
+		_, _ = hasher.Write([]byte{0})
+		return nil
+	})
 }
 
 func normalizeCode(code string) string {

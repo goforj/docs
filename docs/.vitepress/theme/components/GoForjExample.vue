@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, useSlots } from 'vue'
+import { computed, nextTick, onMounted, ref, useSlots } from 'vue'
 
 const props = defineProps({
   repo: { type: String, required: true },
@@ -32,6 +32,36 @@ const apiBase = (apiBaseEnv || defaultApiBase).replace(/\/$/, '')
 
 const buildUrl = (path) => `${apiBase}${path}`
 
+const reapplyHashScroll = async () => {
+  if (typeof window === 'undefined') {
+    return
+  }
+  const hash = window.location.hash
+  if (!hash) {
+    return
+  }
+
+  await nextTick()
+
+  let attempts = 0
+  const maxAttempts = 6
+  const tick = () => {
+    attempts += 1
+    const id = decodeURIComponent(hash.slice(1))
+    const target =
+      document.getElementById(id) ||
+      document.querySelector(hash)
+    if (target && typeof target.scrollIntoView === 'function') {
+      target.scrollIntoView({ block: 'start' })
+    }
+    if (attempts < maxAttempts) {
+      window.requestAnimationFrame(tick)
+    }
+  }
+
+  window.requestAnimationFrame(tick)
+}
+
 const fetchDetails = async () => {
   isLoading.value = true
   errorMessage.value = ''
@@ -45,6 +75,7 @@ const fetchDetails = async () => {
     errorMessage.value = error instanceof Error ? error.message : 'Failed to load example.'
   } finally {
     isLoading.value = false
+    reapplyHashScroll()
   }
 }
 
@@ -64,6 +95,7 @@ const runExample = async () => {
     errorMessage.value = error instanceof Error ? error.message : 'Failed to run example.'
   } finally {
     isRunning.value = false
+    reapplyHashScroll()
   }
 }
 
@@ -191,6 +223,7 @@ const ansiToHtml = (input) => {
 }
 
 onMounted(() => {
+  reapplyHashScroll()
   if (hasSlot.value) {
     isLoading.value = false
     return
