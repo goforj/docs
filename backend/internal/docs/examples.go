@@ -229,6 +229,16 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 
 	cmd := exec.Command("go", "run", runTarget)
 	cmd.Dir = dir
+	if goworkPath, cleanup, err := writeTempExampleWorkspace(dir); err != nil {
+		return "", "", 1, 0, err
+	} else {
+		if cleanup != nil {
+			defer cleanup()
+		}
+		if goworkPath != "" {
+			cmd.Env = append(os.Environ(), "GOWORK="+goworkPath)
+		}
+	}
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -260,6 +270,56 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 	}
 
 	return out, errOut, 0, duration, nil
+}
+
+func writeTempExampleWorkspace(startDir string) (string, func(), error) {
+	modRoots, err := findAncestorModuleRoots(startDir)
+	if err != nil {
+		return "", nil, err
+	}
+	if len(modRoots) < 2 {
+		return "", nil, nil
+	}
+
+	var b strings.Builder
+	b.WriteString("go 1.23\n\nuse (\n")
+	for i := len(modRoots) - 1; i >= 0; i-- {
+		b.WriteString("\t")
+		b.WriteString(modRoots[i])
+		b.WriteString("\n")
+	}
+	b.WriteString(")\n")
+
+	workPath := filepath.Join(startDir, "goforj_examples.work")
+	if err := os.WriteFile(workPath, []byte(b.String()), 0o644); err != nil {
+		return "", nil, err
+	}
+	cleanup := func() { _ = os.Remove(workPath) }
+	return workPath, cleanup, nil
+}
+
+func findAncestorModuleRoots(startDir string) ([]string, error) {
+	var roots []string
+	seen := map[string]bool{}
+	dir, err := filepath.Abs(startDir)
+	if err != nil {
+		return nil, err
+	}
+	for {
+		goModPath := filepath.Join(dir, "go.mod")
+		if stat, err := os.Stat(goModPath); err == nil && !stat.IsDir() {
+			if !seen[dir] {
+				roots = append(roots, dir)
+				seen[dir] = true
+			}
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return roots, nil
 }
 
 func filterGoDownloadNoise(output string) string {

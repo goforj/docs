@@ -10,6 +10,7 @@ import (
 var markdownImageRegex = regexp.MustCompile(`!\[[^\]]*\]\(([^)]+)\)`)
 var htmlImageRegex = regexp.MustCompile(`(?i)<img[^>]+src=["']([^"']+)["']`)
 var examplePathRegex = regexp.MustCompile(`examples/([a-zA-Z0-9_-]+)/main\.go`)
+var exampleHintCommentRegex = regexp.MustCompile(`<!--\s*goforj:example\s*=\s*([^\s]+)\s*-->`)
 var anchorRegex = regexp.MustCompile(`<a id="([^"]+)"></a>`)
 var headingAnchorRegex = regexp.MustCompile(`^(#{2,6}) <a id="([^"]+)"></a>\s*(.+)$`)
 var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
@@ -246,6 +247,9 @@ func wrapExamples(content string, repoSlug string, examples []ExampleProgram) st
 			if matches := examplePathRegex.FindStringSubmatch(line); len(matches) == 2 {
 				currentHint = matches[1]
 			}
+			if matches := exampleHintCommentRegex.FindStringSubmatch(line); len(matches) == 2 {
+				currentHint = normalizeExampleHint(matches[1])
+			}
 			if inApiEmbed && strings.HasPrefix(strings.TrimSpace(line), "_Example:") {
 				continue
 			}
@@ -363,6 +367,17 @@ func hasExample(id string, examples []ExampleProgram) bool {
 		}
 	}
 	return false
+}
+
+func normalizeExampleHint(hint string) string {
+	hint = strings.TrimSpace(hint)
+	if hint == "" {
+		return ""
+	}
+	if matches := examplePathRegex.FindStringSubmatch(hint); len(matches) == 2 {
+		return matches[1]
+	}
+	return hint
 }
 
 func withFrontmatter(repo RepoConfig, content string) string {
