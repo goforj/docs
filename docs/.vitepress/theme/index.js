@@ -2,10 +2,12 @@ import DefaultTheme from 'vitepress/theme'
 import { useRoute } from 'vitepress'
 import { h, nextTick, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
+import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
 const HASH_NAV_KEY = '__goforjHashNavState'
+const CODE_VARIANT_KEY = 'goforjCodeVariant'
 
 function getLightboxState() {
   if (typeof window === 'undefined') return null
@@ -217,11 +219,43 @@ function initHashNavigationControl() {
   })
 }
 
+function applyCodeVariantPreference() {
+  if (typeof window === 'undefined') return
+  const allowed = new Set([
+    'halo',
+    'glass',
+    'ink',
+    'electric',
+    'amber',
+    'forest',
+    'terminal',
+    'plasma',
+    'sunset',
+    'paper',
+    'chrome',
+    'obsidian',
+    'frost',
+    'midnight-gold',
+    'desert-dusk',
+    'retro-amber-crt',
+    'aurora',
+    'rose-metal',
+    'cobalt-luxe',
+    'mono-slate',
+    'mint-neon',
+    'sepia-noir'
+  ])
+  let variant = window.localStorage.getItem(CODE_VARIANT_KEY) || 'ink'
+  if (!allowed.has(variant)) variant = 'ink'
+  document.documentElement.dataset.gfCodeVariant = variant
+}
+
 export default {
   ...DefaultTheme,
   Layout: () =>
     h(DefaultTheme.Layout, null, {
-      'doc-before': () => h(LibraryRepoHeader)
+      'doc-before': () => h(LibraryRepoHeader),
+      'layout-bottom': () => h(CodeVariantPicker)
     }),
   setup() {
     const route = useRoute()
@@ -233,6 +267,7 @@ export default {
     }
 
     onMounted(() => {
+      applyCodeVariantPreference()
       initLightbox()
       initHashNavigationControl()
       refreshSoon()
@@ -242,6 +277,7 @@ export default {
     })
 
     watch(() => route.path, () => {
+      applyCodeVariantPreference()
       refreshSoon()
       if (window.location.hash) {
         scheduleHashScroll(window.location.hash, 300)
