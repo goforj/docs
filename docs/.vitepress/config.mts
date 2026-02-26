@@ -89,7 +89,7 @@ export default defineConfig({
   cleanUrls: true,
   appearance: 'force-dark',
   scrollOffset: {
-    selector: ['.VPLocalNav', '.VPNav'],
+    selector: '.VPNav',
     padding: 8
   },
   rewrites: {

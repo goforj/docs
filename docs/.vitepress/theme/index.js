@@ -8,6 +8,7 @@ import './custom.css'
 const LIGHTBOX_KEY = '__goforjLightboxState'
 const CODE_VARIANT_KEY = 'goforjCodeVariant'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
+const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
 
 function getLightboxState() {
   if (typeof window === 'undefined') return null
@@ -21,6 +22,19 @@ function getLightboxState() {
     }
   }
   return window[LIGHTBOX_KEY]
+}
+
+function getOutlineScrollState() {
+  if (typeof window === 'undefined') return null
+  if (!window[OUTLINE_SCROLL_KEY]) {
+    window[OUTLINE_SCROLL_KEY] = {
+      initialized: false,
+      observer: null,
+      container: null,
+      rafId: 0
+    }
+  }
+  return window[OUTLINE_SCROLL_KEY]
 }
 
 function isBadgeImage(img) {
@@ -149,14 +163,113 @@ function initLightbox() {
   state.caption = overlay.querySelector('.gf-lightbox-caption')
 }
 
+function scrollActiveOutlineLinkIntoView() {
+  if (typeof document === 'undefined') return
+  const outline = document.querySelector('.VPDocAsideOutline')
+  if (!(outline instanceof HTMLElement)) return
+  const scroller = outline.closest('.aside-container')
+  if (!(scroller instanceof HTMLElement)) {
+    const active = outline.querySelector('.outline-link.active')
+    if (!(active instanceof HTMLElement)) return
+    active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' })
+    return
+  }
+
+  const marker = outline.querySelector('.outline-marker')
+  const active = outline.querySelector('.outline-link.active')
+  const targetEl =
+    marker instanceof HTMLElement && marker.style.opacity !== '0'
+      ? marker
+      : (active instanceof HTMLElement ? active : null)
+  if (!targetEl) return
+
+  const activeRect = targetEl.getBoundingClientRect()
+  const scrollerRect = scroller.getBoundingClientRect()
+  const scrollerStyles = getComputedStyle(scroller)
+  const scrollerContentTopInset = parseFloat(scrollerStyles.paddingTop || '0') || 0
+  const topPadding = 12
+  const bottomPadding = 24
+  const visibleTop = scrollerRect.top + scrollerContentTopInset + topPadding
+  const visibleBottom = scrollerRect.bottom - bottomPadding
+  const overTop = activeRect.top - visibleTop
+  const overBottom = activeRect.bottom - visibleBottom
+
+  if (overTop < 0) {
+    scroller.scrollTop += overTop
+    return
+  }
+  if (overBottom > 0) {
+    scroller.scrollTop += overBottom
+  }
+}
+
+function refreshOutlineAutoScroll() {
+  const state = getOutlineScrollState()
+  if (!state) return
+
+  const container = document.querySelector('.VPDocAsideOutline')
+  if (!(container instanceof HTMLElement)) {
+    if (state.observer) {
+      state.observer.disconnect()
+      state.observer = null
+    }
+    state.container = null
+    return
+  }
+
+  if (state.container !== container) {
+    if (state.observer) {
+      state.observer.disconnect()
+      state.observer = null
+    }
+    state.container = container
+
+    state.observer = new MutationObserver(() => {
+      if (state.rafId) {
+        cancelAnimationFrame(state.rafId)
+        state.rafId = 0
+      }
+      state.rafId = requestAnimationFrame(() => {
+        state.rafId = 0
+        scrollActiveOutlineLinkIntoView()
+      })
+    })
+
+    state.observer.observe(container, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'style']
+    })
+  }
+
+  // Initial alignment when the page/route first renders.
+  requestAnimationFrame(scrollActiveOutlineLinkIntoView)
+}
+
+function resetOutlineScrollerPosition() {
+  if (typeof document === 'undefined') return
+  const scroller = document.querySelector('.VPDoc .aside-container')
+  if (scroller instanceof HTMLElement) {
+    scroller.scrollTop = 0
+  }
+}
+
 function stickyOffset(extraPadding = 0) {
   if (typeof document === 'undefined') return 0
   const nav = document.querySelector('.VPNav')
+  const navBar = document.querySelector('.VPNavBar')
   const localNav = document.querySelector('.VPLocalNav')
   const navBottom = nav ? nav.getBoundingClientRect().bottom : 0
+  const navBarHeight = navBar ? navBar.getBoundingClientRect().height : 0
   const localNavBottom = localNav ? localNav.getBoundingClientRect().bottom : 0
-  const offset = Math.max(navBottom > 0 ? navBottom : 0, localNavBottom > 0 ? localNavBottom : 0)
-  return Math.ceil(offset) + 8 + extraPadding
+  const cssNavHeight = parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue('--vp-nav-height') || '',
+    10
+  ) || 64
+  const navFloor = Math.max(cssNavHeight, Math.ceil(navBarHeight))
+  const navOffset = Math.max(navBottom > 0 ? navBottom : 0, navFloor)
+  const offset = Math.max(navOffset, localNavBottom > 0 ? localNavBottom : 0)
+  return Math.ceil(offset) + 16 + extraPadding
 }
 
 function getHashTarget(hash) {
@@ -274,7 +387,9 @@ export default {
     const refreshSoon = async () => {
       await nextTick()
       refreshZoomableImages()
+      refreshOutlineAutoScroll()
       window.setTimeout(refreshZoomableImages, 120)
+      window.setTimeout(refreshOutlineAutoScroll, 120)
     }
 
     const scheduleCrossPageHashCorrection = () => {
@@ -312,6 +427,7 @@ export default {
 
     watch(() => route.path, () => {
       applyCodeVariantPreference()
+      resetOutlineScrollerPosition()
       refreshSoon()
       scheduleCrossPageHashCorrection()
     })
@@ -321,6 +437,15 @@ export default {
       routeHashTimers = []
       if (onHashChange) {
         window.removeEventListener('hashchange', onHashChange)
+      }
+      const outlineState = getOutlineScrollState()
+      if (outlineState?.observer) {
+        outlineState.observer.disconnect()
+        outlineState.observer = null
+      }
+      if (outlineState?.rafId) {
+        cancelAnimationFrame(outlineState.rafId)
+        outlineState.rafId = 0
       }
     })
   }
