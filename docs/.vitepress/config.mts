@@ -80,12 +80,18 @@ gtag('config', '${gaMeasurementId}');`]
     ]
   : []
 
+const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "GoForj",
   description: "Build faster. Ship smarter. Go development tools forged for productivity.",
   cleanUrls: true,
   appearance: 'force-dark',
+  scrollOffset: {
+    selector: ['.VPLocalNav', '.VPNav'],
+    padding: 8
+  },
   rewrites: {
     'libraries/collection.md': 'collection.md',
     'libraries/strings.md': 'strings.md',
@@ -100,6 +106,7 @@ export default defineConfig({
   },
 
   head: [
+    deferredHashHead,
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png?v=2' }],
     ['link', { rel: 'shortcut icon', href: '/favicon.png?v=2' }],
     ...analyticsHead

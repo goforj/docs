@@ -1,13 +1,13 @@
 import DefaultTheme from 'vitepress/theme'
 import { useRoute } from 'vitepress'
-import { h, nextTick, onMounted, watch } from 'vue'
+import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
-const HASH_NAV_KEY = '__goforjHashNavState'
 const CODE_VARIANT_KEY = 'goforjCodeVariant'
+const DEFERRED_HASH_KEY = '__goforjDeferredHash'
 
 function getLightboxState() {
   if (typeof window === 'undefined') return null
@@ -149,74 +149,81 @@ function initLightbox() {
   state.caption = overlay.querySelector('.gf-lightbox-caption')
 }
 
-function getHashNavState() {
-  if (typeof window === 'undefined') return null
-  if (!window[HASH_NAV_KEY]) {
-    window[HASH_NAV_KEY] = {
-      initialized: false,
-      timer: null,
-      key: ''
-    }
-  }
-  return window[HASH_NAV_KEY]
-}
-
 function stickyOffset() {
   if (typeof document === 'undefined') return 0
   const nav = document.querySelector('.VPNav')
   const localNav = document.querySelector('.VPLocalNav')
-  let offset = 0
-  if (nav) offset += nav.getBoundingClientRect().height
-  if (localNav) offset += localNav.getBoundingClientRect().height
+  const navBottom = nav ? nav.getBoundingClientRect().bottom : 0
+  const localNavBottom = localNav ? localNav.getBoundingClientRect().bottom : 0
+  const offset = Math.max(navBottom > 0 ? navBottom : 0, localNavBottom > 0 ? localNavBottom : 0)
   return Math.ceil(offset) + 8
 }
 
-function scrollToHashWithOffset(hash) {
-  if (typeof window === 'undefined' || !hash) return
-  let target = null
+function getHashTarget(hash) {
+  if (typeof document === 'undefined' || !hash) return null
   const id = decodeURIComponent(hash.replace(/^#/, ''))
-  if (id) {
-    target = document.getElementById(id)
-  }
-  if (!target) {
-    try {
-      target = document.querySelector(hash)
-    } catch {
-      target = null
-    }
-  }
-  if (!target) return
-  const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
-  if (Math.abs(window.scrollY - top) < 20) return
-  window.scrollTo({ top, behavior: 'auto' })
+  if (!id) return null
+  return document.getElementById(id)
 }
 
-function scheduleHashScroll(hash = window.location.hash, delay = 300) {
+function desiredHashTop(target) {
+  return Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
+}
+
+function scrollToHashWithOffset(hash, behavior = 'auto') {
   if (typeof window === 'undefined' || !hash) return
-  const state = getHashNavState()
-  if (!state) return
-  const key = `${window.location.pathname}${hash}`
-  state.key = key
-  if (state.timer) {
-    window.clearTimeout(state.timer)
-    state.timer = null
-  }
-  state.timer = window.setTimeout(() => {
-    state.timer = null
-    // Only run if we're still on the same path+hash that scheduled this.
-    if (`${window.location.pathname}${window.location.hash}` !== key) return
-    scrollToHashWithOffset(hash)
-  }, delay)
+  const target = getHashTarget(hash)
+  if (!target) return
+  const top = desiredHashTop(target)
+  if (Math.abs(window.scrollY - top) < 18) return
+  window.scrollTo({ left: 0, top, behavior })
 }
 
-function initHashNavigationControl() {
-  const state = getHashNavState()
-  if (!state || state.initialized) return
-  state.initialized = true
+function isHashTargetMisaligned(hash) {
+  if (typeof window === 'undefined' || !hash) return false
+  const target = getHashTarget(hash)
+  if (!target) return false
+  const desiredTop = desiredHashTop(target)
+  const distance = Math.abs(window.scrollY - desiredTop)
+  const rectTop = target.getBoundingClientRect().top
+  const hiddenBehindNav = rectTop < (stickyOffset() - 4)
+  return hiddenBehindNav || distance >= 18
+}
 
-  window.addEventListener('hashchange', () => {
-    scheduleHashScroll(window.location.hash, 300)
+function scheduleHashSettlePasses(hash, timers) {
+  if (typeof window === 'undefined' || !hash) return
+  const delays = [
+    { ms: 140, behavior: 'smooth', always: true },
+    { ms: 320, behavior: 'auto', always: false },
+    { ms: 560, behavior: 'auto', always: false },
+    { ms: 840, behavior: 'auto', always: false }
+  ]
+
+  delays.forEach(({ ms, behavior, always }) => {
+    const timer = window.setTimeout(() => {
+      if (window.location.hash !== hash) return
+      if (!always && !isHashTargetMisaligned(hash)) return
+      scrollToHashWithOffset(hash, behavior)
+    }, ms)
+    timers.push(timer)
   })
+}
+
+function restoreDeferredInitialHash() {
+  if (typeof window === 'undefined') return
+  try {
+    const raw = window.sessionStorage.getItem(DEFERRED_HASH_KEY)
+    if (!raw) return
+    window.sessionStorage.removeItem(DEFERRED_HASH_KEY)
+    const payload = JSON.parse(raw)
+    const currentPath = `${window.location.pathname}${window.location.search}`
+    if (!payload || payload.path !== currentPath || !payload.hash) return
+    history.replaceState(history.state || {}, '', `${currentPath}${payload.hash}`)
+    const timers = []
+    scheduleHashSettlePasses(payload.hash, timers)
+  } catch {
+    // no-op
+  }
 }
 
 function applyCodeVariantPreference() {
@@ -260,6 +267,8 @@ export default {
     }),
   setup() {
     const route = useRoute()
+    let routeHashTimers = []
+    let onHashChange = null
 
     const refreshSoon = async () => {
       await nextTick()
@@ -267,21 +276,43 @@ export default {
       window.setTimeout(refreshZoomableImages, 120)
     }
 
+    const scheduleCrossPageHashCorrection = () => {
+      if (typeof window === 'undefined' || !window.location.hash) return
+      routeHashTimers.forEach((id) => window.clearTimeout(id))
+      routeHashTimers = []
+
+      // VitePress does the initial hash scroll first. Do one smooth settle pass,
+      // then guarded verification passes only if still misaligned.
+      const hash = window.location.hash
+      scheduleHashSettlePasses(hash, routeHashTimers)
+    }
+
     onMounted(() => {
       applyCodeVariantPreference()
       initLightbox()
-      initHashNavigationControl()
       refreshSoon()
-      if (window.location.hash) {
-        scheduleHashScroll(window.location.hash, 300)
+      restoreDeferredInitialHash()
+
+      onHashChange = () => {
+        if (typeof window === 'undefined' || !window.location.hash) return
+        routeHashTimers.forEach((id) => window.clearTimeout(id))
+        routeHashTimers = []
+        scheduleHashSettlePasses(window.location.hash, routeHashTimers)
       }
+      window.addEventListener('hashchange', onHashChange)
     })
 
     watch(() => route.path, () => {
       applyCodeVariantPreference()
       refreshSoon()
-      if (window.location.hash) {
-        scheduleHashScroll(window.location.hash, 300)
+      scheduleCrossPageHashCorrection()
+    })
+
+    onBeforeUnmount(() => {
+      routeHashTimers.forEach((id) => window.clearTimeout(id))
+      routeHashTimers = []
+      if (onHashChange) {
+        window.removeEventListener('hashchange', onHashChange)
       }
     })
   }
