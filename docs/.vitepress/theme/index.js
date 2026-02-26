@@ -186,6 +186,7 @@ function scrollToHashWithOffset(hash) {
   }
   if (!target) return
   const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
+  if (Math.abs(window.scrollY - top) < 20) return
   window.scrollTo({ top, behavior: 'auto' })
 }
 
@@ -211,19 +212,6 @@ function initHashNavigationControl() {
   const state = getHashNavState()
   if (!state || state.initialized) return
   state.initialized = true
-
-  document.addEventListener('click', (event) => {
-    const anchor = event.target instanceof Element ? event.target.closest('a[href]') : null
-    if (!(anchor instanceof HTMLAnchorElement)) return
-    const href = anchor.getAttribute('href') || ''
-    if (!href || !href.startsWith('#')) return
-    if (href === '#') return
-    event.preventDefault()
-    if (window.location.hash !== href) {
-      history.pushState(null, '', href)
-    }
-    scheduleHashScroll(href, 300)
-  }, true)
 
   window.addEventListener('hashchange', () => {
     scheduleHashScroll(window.location.hash, 300)
