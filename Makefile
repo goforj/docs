@@ -91,52 +91,24 @@ docs-package: ##@docs Generate + build docs and stage for backend
 
 DOCKER_PROD_IMAGE ?= docs-web:latest
 DOCKER_PROD_PUSH ?= 0
-DOCKER_PROD_CACHE_FROM ?= type=local,src=.cache/buildx-docs-web
-DOCKER_PROD_CACHE_TO ?= type=local,dest=.cache/buildx-docs-web,mode=max
 
-docker-production: ##@docker Build production web image with buildx cache (set DOCKER_PROD_IMAGE / DOCKER_PROD_CACHE_FROM / DOCKER_PROD_CACHE_TO / DOCKER_PROD_PUSH=1)
-	@DRIVER="$$(docker buildx inspect --format '{{.Driver}}' 2>/dev/null || echo docker)"; \
-	CACHE_FLAGS=""; \
-	if [ "$$DRIVER" = "docker-container" ] || [ "$$DRIVER" = "kubernetes" ] || [ "$$DRIVER" = "remote" ]; then \
-		CACHE_FLAGS="--cache-from=$(DOCKER_PROD_CACHE_FROM) --cache-to=$(DOCKER_PROD_CACHE_TO)"; \
-	else \
-		echo "buildx driver '$$DRIVER' does not support cache export; building without explicit cache import/export"; \
-	fi; \
-	docker buildx build \
-		-f containers/web/Dockerfile \
-		--build-arg GA_MEASUREMENT_ID=\"$(GA_MEASUREMENT_ID)\" \
-		$$CACHE_FLAGS \
-		-t $(DOCKER_PROD_IMAGE) \
-		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
-		.
-
-docker-build-prod: docker-production ##@docker Alias: production build with buildx cache
-
-docker-build-prod-refresh-docs: ##@docker Rebuild production image but force rerun of docs-generate stage (refresh pulled repo READMEs)
-	@DRIVER="$$(docker buildx inspect --format '{{.Driver}}' 2>/dev/null || echo docker)"; \
-	CACHE_FLAGS=""; \
-	if [ "$$DRIVER" = "docker-container" ] || [ "$$DRIVER" = "kubernetes" ] || [ "$$DRIVER" = "remote" ]; then \
-		CACHE_FLAGS="--cache-from=$(DOCKER_PROD_CACHE_FROM) --cache-to=$(DOCKER_PROD_CACHE_TO)"; \
-	else \
-		echo "buildx driver '$$DRIVER' does not support cache export; building without explicit cache import/export"; \
-	fi; \
-	docker buildx build \
-		-f containers/web/Dockerfile \
-		--no-cache-filter docs-generate \
-		--build-arg GA_MEASUREMENT_ID=\"$(GA_MEASUREMENT_ID)\" \
-		$$CACHE_FLAGS \
-		-t $(DOCKER_PROD_IMAGE) \
-		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
-		.
-
-docker-build-prod-no-cache: ##@docker Rebuild production image with no Docker layer cache
+docker-production: ##@docker Build production web image (set DOCKER_PROD_IMAGE / DOCKER_PROD_PUSH=1)
 	@docker buildx build \
 		-f containers/web/Dockerfile \
-		--no-cache \
-		--build-arg GA_MEASUREMENT_ID="$(GA_MEASUREMENT_ID)" \
+		--build-arg GA_MEASUREMENT_ID=\"$(GA_MEASUREMENT_ID)\" \
 		-t $(DOCKER_PROD_IMAGE) \
 		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
 		.
+
+docker-build-prod: docker-production ##@docker Alias: production image build
+
+docker-generate-docs-prod: ##@docker Generate docs from upstream repos in a one-off container (updates docs/libraries/*.md)
+	@$(COMPOSE_COMMAND) run --rm --build docs-generate
+
+docker-deploy-prod: ##@docker Generate docs, build prod image, and roll web container
+	@$(MAKE) docker-generate-docs-prod
+	@$(MAKE) docker-build-prod
+	@$(COMPOSE_COMMAND) up -d --force-recreate web
 
 #----------------------
 # build

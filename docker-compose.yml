@@ -1,4 +1,18 @@
 services:
+  docs-generate:
+    build:
+      context: .
+      dockerfile: containers/web/Dockerfile
+      target: docs-generate
+    working_dir: /app
+    command: ["sh", "-lc", "cd backend && go run . docs:generate"]
+    volumes:
+      - ./backend:/app/backend
+      - ./docs:/app/docs
+      - docs_generate_cache:/tmp/goforj-docs
+      - go_mod_cache:/go/pkg/mod
+      - go_build_cache:/root/.cache/go-build
+
   traefik:
     image: traefik:v2.11
     command:
@@ -43,3 +57,6 @@ services:
 
 volumes:
   traefik_letsencrypt:
+  docs_generate_cache:
+  go_mod_cache:
+  go_build_cache:

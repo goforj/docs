@@ -6,6 +6,7 @@ const { frontmatter } = useData()
 const route = useRoute()
 
 const visible = ref(false)
+const mode = ref('back')
 
 const isLibraryPage = computed(() => Boolean(String(frontmatter.value?.repoSlug || '').trim()))
 
@@ -40,21 +41,40 @@ function getFirstHeadingAfterApiIndexTop() {
 function refreshVisibility() {
   if (typeof window === 'undefined' || !isLibraryPage.value) {
     visible.value = false
+    mode.value = 'back'
     return
   }
   const apiTop = getApiIndexTop()
   if (apiTop == null) {
     visible.value = false
+    mode.value = 'back'
     return
   }
   const nextHeadingTop = getFirstHeadingAfterApiIndexTop()
   const probeY = window.scrollY + 120
-  // Prefer showing once the API Index table/section is out of view (next heading reached).
-  if (nextHeadingTop != null) {
-    visible.value = probeY >= (nextHeadingTop - 12)
+
+  // Before API Index: allow quick jump straight to it.
+  if (probeY < (apiTop - 12)) {
+    visible.value = true
+    mode.value = 'go'
     return
   }
+
+  // While API Index table/section is on screen: hide the button.
+  if (nextHeadingTop != null) {
+    if (probeY < (nextHeadingTop - 12)) {
+      visible.value = false
+      mode.value = 'back'
+      return
+    }
+    visible.value = true
+    mode.value = 'back'
+    return
+  }
+
+  // No following heading found: once we've reached the API section, show "Back".
   visible.value = probeY >= (apiTop + 24)
+  mode.value = visible.value ? 'back' : 'go'
 }
 
 function goToApiIndex(event) {
@@ -135,7 +155,7 @@ onBeforeUnmount(() => {
   <div v-if="visible" class="gf-api-index-jump">
     <a href="#api-index" class="gf-api-index-jump__link" @click="goToApiIndex">
       <span class="gf-api-index-jump__label">API</span>
-      <span>Back to API Index</span>
+      <span>{{ mode === 'go' ? 'Go to API Index' : 'Back to API Index' }}</span>
       <span class="gf-api-index-jump__kbd" aria-hidden="true">
         <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
           <path fill="currentColor" d="M2.5 3A1.5 1.5 0 0 0 1 4.5v7A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 3h-11Zm0 1h11a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5Zm1 1.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm2 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm2 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm2 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm2 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM3.5 8.75a.75.75 0 1 0 0 1.5h6a.75.75 0 1 0 0-1.5h-6Zm7.75 0a.75.75 0 1 0 0 1.5h1.25a.75.75 0 1 0 0-1.5h-1.25Z"/>
