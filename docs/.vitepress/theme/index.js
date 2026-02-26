@@ -226,6 +226,7 @@ function applyCodeVariantPreference() {
     'glass',
     'ink',
     'electric',
+    'uv-glow',
     'amber',
     'forest',
     'terminal',

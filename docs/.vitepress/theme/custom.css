@@ -83,7 +83,7 @@
         0 0 0 1px rgba(38, 78, 165, 0.10),
         0 10px 34px rgba(0, 0, 0, 0.22),
         0 0 28px rgba(33, 86, 210, 0.10);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 18%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 16%);
     --gf-code-lang: rgba(224, 231, 248, 0.62);
     --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
     --gf-code-line-gutter-border: rgba(255, 255, 255, 0.05);
@@ -99,7 +99,7 @@ html[data-gf-code-variant='glass'] {
         inset 0 1px 0 rgba(255, 255, 255, 0.12),
         inset 0 0 0 1px rgba(255, 255, 255, 0.03),
         0 14px 36px rgba(0, 0, 0, 0.20);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 24%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.028), transparent 20%);
     --gf-code-lang: rgba(228, 235, 250, 0.68);
 }
 
@@ -107,11 +107,11 @@ html[data-gf-code-variant='ink'] {
     --gf-code-radius: 10px;
     --gf-code-border: rgba(138, 149, 177, 0.18);
     --gf-code-bg:
-        linear-gradient(180deg, rgba(18, 20, 27, 0.99), rgba(11, 13, 18, 0.99));
+        linear-gradient(180deg, rgba(12, 13, 17, 0.994), rgba(8, 9, 12, 0.997));
     --gf-code-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.006),
         0 8px 24px rgba(0, 0, 0, 0.18);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 16%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.001), transparent 10%);
     --gf-code-lang: rgba(214, 220, 236, 0.58);
     --gf-code-line-gutter-bg: rgba(255,255,255,0.01);
 }
@@ -120,8 +120,8 @@ html[data-gf-code-variant='electric'] {
     --gf-code-radius: 12px;
     --gf-code-border: rgba(116, 211, 255, 0.26);
     --gf-code-bg:
-        radial-gradient(1100px 260px at 8% 0%, rgba(0, 153, 255, 0.14), transparent 56%),
-        radial-gradient(800px 240px at 92% 5%, rgba(0, 255, 224, 0.10), transparent 62%),
+        radial-gradient(1100px 240px at 8% 0%, rgba(0, 153, 255, 0.09), transparent 52%),
+        radial-gradient(800px 220px at 92% 5%, rgba(0, 255, 224, 0.06), transparent 58%),
         linear-gradient(180deg, rgba(10, 16, 25, 0.99), rgba(8, 11, 18, 0.99));
     --gf-code-shadow:
         inset 0 1px 0 rgba(255,255,255,0.07),
@@ -129,9 +129,27 @@ html[data-gf-code-variant='electric'] {
         0 0 0 1px rgba(0, 186, 255, 0.10),
         0 12px 34px rgba(0, 0, 0, 0.24),
         0 0 34px rgba(0, 153, 255, 0.12);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 20%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.018), transparent 16%);
     --gf-code-lang: rgba(196, 240, 255, 0.70);
     --gf-code-line-gutter-border: rgba(116, 211, 255, 0.10);
+}
+
+html[data-gf-code-variant='uv-glow'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(140, 80, 255, 0.22);
+    --gf-code-bg:
+        radial-gradient(1100px 240px at 10% 0%, rgba(140, 80, 255, 0.10), transparent 52%),
+        radial-gradient(900px 220px at 92% 6%, rgba(90, 0, 180, 0.08), transparent 58%),
+        linear-gradient(180deg, rgba(17, 16, 28, 0.992), rgba(10, 10, 17, 0.996));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        inset 0 0 0 1px rgba(255,255,255,0.018),
+        0 0 0 1px rgba(140, 80, 255, 0.08),
+        0 10px 34px rgba(0, 0, 0, 0.22);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.012), transparent 14%);
+    --gf-code-lang: rgba(224, 210, 255, 0.74);
+    --gf-code-line-gutter-border: rgba(140, 80, 255, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(140, 80, 255, 0.02), rgba(90, 0, 180, 0.01));
 }
 
 html[data-gf-code-variant='amber'] {
@@ -188,8 +206,8 @@ html[data-gf-code-variant='plasma'] {
     --gf-code-radius: 14px;
     --gf-code-border: rgba(198, 128, 255, 0.22);
     --gf-code-bg:
-        radial-gradient(900px 230px at 6% -2%, rgba(174, 82, 255, 0.14), transparent 54%),
-        radial-gradient(900px 240px at 96% 8%, rgba(255, 74, 216, 0.10), transparent 60%),
+        radial-gradient(900px 210px at 6% -2%, rgba(174, 82, 255, 0.10), transparent 50%),
+        radial-gradient(900px 220px at 96% 8%, rgba(255, 74, 216, 0.06), transparent 56%),
         linear-gradient(180deg, rgba(20, 13, 28, 0.99), rgba(11, 8, 18, 0.99));
     --gf-code-shadow:
         inset 0 1px 0 rgba(255, 235, 255, 0.06),
@@ -197,7 +215,7 @@ html[data-gf-code-variant='plasma'] {
         0 0 0 1px rgba(170, 74, 255, 0.08),
         0 12px 34px rgba(0, 0, 0, 0.24),
         0 0 30px rgba(208, 86, 255, 0.11);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255, 220, 255, 0.04), transparent 20%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 220, 255, 0.014), transparent 16%);
     --gf-code-lang: rgba(240, 206, 255, 0.72);
     --gf-code-line-gutter-border: rgba(198, 128, 255, 0.08);
     --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(198, 128, 255, 0.02), rgba(198, 128, 255, 0.01));
@@ -207,14 +225,14 @@ html[data-gf-code-variant='sunset'] {
     --gf-code-radius: 14px;
     --gf-code-border: rgba(255, 154, 102, 0.20);
     --gf-code-bg:
-        radial-gradient(1000px 240px at 5% -4%, rgba(255, 99, 132, 0.14), transparent 54%),
-        radial-gradient(900px 220px at 95% 6%, rgba(255, 186, 86, 0.12), transparent 60%),
+        radial-gradient(1000px 220px at 5% -4%, rgba(255, 99, 132, 0.09), transparent 50%),
+        radial-gradient(900px 200px at 95% 6%, rgba(255, 186, 86, 0.07), transparent 56%),
         linear-gradient(180deg, rgba(25, 14, 22, 0.99), rgba(12, 10, 18, 0.99));
     --gf-code-shadow:
         inset 0 1px 0 rgba(255, 231, 223, 0.05),
         0 12px 30px rgba(0, 0, 0, 0.24),
         0 0 26px rgba(255, 126, 96, 0.10);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255, 214, 201, 0.04), transparent 20%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 214, 201, 0.014), transparent 16%);
     --gf-code-lang: rgba(255, 214, 194, 0.70);
     --gf-code-line-gutter-border: rgba(255, 154, 102, 0.08);
     --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(255, 154, 102, 0.025), rgba(255, 154, 102, 0.01));
@@ -272,15 +290,15 @@ html[data-gf-code-variant='frost'] {
     --gf-code-radius: 14px;
     --gf-code-border: rgba(186, 228, 255, 0.20);
     --gf-code-bg:
-        radial-gradient(1100px 260px at 8% -8%, rgba(120, 214, 255, 0.14), transparent 56%),
-        radial-gradient(900px 220px at 94% 8%, rgba(168, 233, 255, 0.10), transparent 62%),
+        radial-gradient(1100px 230px at 8% -8%, rgba(120, 214, 255, 0.09), transparent 52%),
+        radial-gradient(900px 200px at 94% 8%, rgba(168, 233, 255, 0.06), transparent 58%),
         linear-gradient(180deg, rgba(16, 22, 34, 0.985), rgba(10, 14, 22, 0.99));
     --gf-code-shadow:
         inset 0 1px 0 rgba(241, 252, 255, 0.08),
         inset 0 0 0 1px rgba(255,255,255,0.018),
         0 12px 30px rgba(0, 0, 0, 0.22),
         0 0 30px rgba(94, 205, 255, 0.10);
-    --gf-code-overlay: linear-gradient(180deg, rgba(244, 251, 255, 0.05), transparent 20%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(244, 251, 255, 0.018), transparent 16%);
     --gf-code-lang: rgba(212, 238, 250, 0.76);
     --gf-code-line-gutter-border: rgba(186, 228, 255, 0.09);
     --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(186, 228, 255, 0.03), rgba(186, 228, 255, 0.01));
@@ -349,16 +367,16 @@ html[data-gf-code-variant='aurora'] {
     --gf-code-radius: 14px;
     --gf-code-border: rgba(118, 240, 214, 0.20);
     --gf-code-bg:
-        radial-gradient(1000px 240px at 4% -6%, rgba(70, 255, 196, 0.11), transparent 54%),
-        radial-gradient(1000px 260px at 100% 8%, rgba(96, 112, 255, 0.11), transparent 60%),
-        radial-gradient(700px 180px at 42% 0%, rgba(152, 255, 208, 0.06), transparent 56%),
+        radial-gradient(1000px 220px at 4% -6%, rgba(70, 255, 196, 0.07), transparent 50%),
+        radial-gradient(1000px 220px at 100% 8%, rgba(96, 112, 255, 0.07), transparent 56%),
+        radial-gradient(700px 160px at 42% 0%, rgba(152, 255, 208, 0.03), transparent 52%),
         linear-gradient(180deg, rgba(11, 18, 25, 0.99), rgba(8, 12, 18, 0.995));
     --gf-code-shadow:
         inset 0 1px 0 rgba(231, 255, 250, 0.06),
         inset 0 0 0 1px rgba(255,255,255,0.015),
         0 12px 30px rgba(0, 0, 0, 0.22),
         0 0 30px rgba(88, 208, 255, 0.07);
-    --gf-code-overlay: linear-gradient(180deg, rgba(236, 255, 250, 0.035), transparent 20%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(236, 255, 250, 0.012), transparent 16%);
     --gf-code-lang: rgba(209, 244, 238, 0.72);
     --gf-code-line-gutter-border: rgba(118, 240, 214, 0.07);
     --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(118, 240, 214, 0.018), rgba(96, 112, 255, 0.014));
@@ -385,15 +403,15 @@ html[data-gf-code-variant='cobalt-luxe'] {
     --gf-code-radius: 13px;
     --gf-code-border: rgba(116, 152, 246, 0.22);
     --gf-code-bg:
-        radial-gradient(1000px 240px at 8% -4%, rgba(88, 126, 255, 0.14), transparent 56%),
-        radial-gradient(900px 220px at 96% 8%, rgba(74, 204, 255, 0.08), transparent 62%),
+        radial-gradient(1000px 220px at 8% -4%, rgba(88, 126, 255, 0.09), transparent 52%),
+        radial-gradient(900px 200px at 96% 8%, rgba(74, 204, 255, 0.05), transparent 58%),
         linear-gradient(180deg, rgba(16, 20, 34, 0.992), rgba(10, 12, 20, 0.995));
     --gf-code-shadow:
         inset 0 1px 0 rgba(236, 243, 255, 0.08),
         inset 0 0 0 1px rgba(255,255,255,0.016),
         0 12px 30px rgba(0, 0, 0, 0.24),
         0 0 28px rgba(88, 126, 255, 0.09);
-    --gf-code-overlay: linear-gradient(180deg, rgba(240, 246, 255, 0.045), transparent 20%);
+    --gf-code-overlay: linear-gradient(180deg, rgba(240, 246, 255, 0.014), transparent 16%);
     --gf-code-lang: rgba(216, 226, 249, 0.74);
     --gf-code-line-gutter-border: rgba(116, 152, 246, 0.08);
     --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(116, 152, 246, 0.02), rgba(74, 204, 255, 0.01));
@@ -465,7 +483,7 @@ html[data-gf-code-variant='sepia-noir'] {
     border-radius: inherit;
     pointer-events: none;
     background: var(--gf-code-overlay);
-    opacity: 0.9;
+    opacity: 0.6;
 }
 
 .vp-doc div[class*='language-'] .lang {
@@ -740,6 +758,11 @@ html[data-gf-code-variant='sepia-noir'] {
 .gf-code-variant-picker__item.is-active {
     background: rgba(90, 126, 255, 0.08);
     border-color: rgba(121, 156, 255, 0.18);
+}
+
+.gf-code-variant-picker__item.is-preview:not(.is-active) {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(164, 180, 226, 0.16);
 }
 
 .gf-code-variant-picker__item-name {

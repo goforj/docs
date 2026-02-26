@@ -6,6 +6,7 @@ const variants = [
   ['glass', 'Glass'],
   ['ink', 'Ink'],
   ['electric', 'Electric'],
+  ['uv-glow', 'UV Glow'],
   ['amber', 'Amber'],
   ['forest', 'Forest'],
   ['terminal', 'Terminal'],
@@ -42,6 +43,10 @@ const previewStyles = {
   electric: {
     borderColor: 'rgba(116,211,255,.28)',
     background: 'radial-gradient(80px 22px at 8% 0%, rgba(0,153,255,.22), transparent 60%), radial-gradient(70px 20px at 90% 0%, rgba(0,255,224,.12), transparent 60%), linear-gradient(180deg, #0d1420, #090d14)'
+  },
+  'uv-glow': {
+    borderColor: 'rgba(140,80,255,.24)',
+    background: 'radial-gradient(80px 22px at 10% 0%, rgba(140,80,255,.20), transparent 60%), radial-gradient(80px 22px at 88% 0%, rgba(90,0,180,.14), transparent 62%), linear-gradient(180deg, #151523, #0d0d16)'
   },
   amber: {
     borderColor: 'rgba(255,196,96,.24)',
@@ -120,6 +125,7 @@ const previewStyles = {
 const open = ref(false)
 const current = ref('ink')
 const rootEl = ref(null)
+const previewing = ref(null)
 
 function readCurrent() {
   if (typeof window === 'undefined') return
@@ -129,6 +135,7 @@ function readCurrent() {
 function setVariant(value) {
   if (typeof window === 'undefined') return
   current.value = value
+  previewing.value = null
   document.documentElement.dataset.gfCodeVariant = value
   window.localStorage.setItem('goforjCodeVariant', value)
   open.value = false
@@ -138,17 +145,34 @@ const currentLabel = computed(() => variants.find(([id]) => id === current.value
 
 function toggleOpen() {
   open.value = !open.value
+  if (!open.value) {
+    clearPreview()
+  }
+}
+
+function applyPreview(value) {
+  if (typeof window === 'undefined') return
+  previewing.value = value
+  document.documentElement.dataset.gfCodeVariant = value
+}
+
+function clearPreview() {
+  if (typeof window === 'undefined') return
+  previewing.value = null
+  document.documentElement.dataset.gfCodeVariant = current.value
 }
 
 function onDocumentClick(event) {
   const root = rootEl.value
   if (!root || !(root instanceof Element)) return
   if (root.contains(event.target)) return
+  clearPreview()
   open.value = false
 }
 
 function onDocumentKeydown(event) {
   if (event.key === 'Escape') {
+    clearPreview()
     open.value = false
   }
 }
@@ -185,15 +209,19 @@ onBeforeUnmount(() => {
       class="gf-code-variant-picker__panel"
       :class="{ 'is-open': open }"
       role="menu"
+      @mouseleave="clearPreview"
     >
       <button
         v-for="[id, label] in variants"
         :key="id"
         type="button"
         class="gf-code-variant-picker__item"
-        :class="{ 'is-active': current === id }"
+        :class="{ 'is-active': current === id, 'is-preview': previewing === id && current !== id }"
         role="menuitemradio"
         :aria-checked="current === id ? 'true' : 'false'"
+        @mouseenter="applyPreview(id)"
+        @focus="applyPreview(id)"
+        @blur="clearPreview"
         @click="setVariant(id)"
       >
         <span
