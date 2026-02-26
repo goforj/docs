@@ -1,6 +1,8 @@
 package docs
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -119,6 +121,7 @@ func (c *GenerateCommand) Run() error {
 	}
 
 	tempRoot := filepath.Join(os.TempDir(), "goforj-docs")
+	fingerprintRoot := filepath.Join(tempRoot, ".docs-generate-fingerprints")
 	wp := workerpool.New(4)
 	var errMu sync.Mutex
 	var firstErr error
@@ -168,6 +171,18 @@ func (c *GenerateCommand) Run() error {
 			}
 
 			rawBase := rawGithubBase(repo, repo.Branch)
+			fingerprint := fingerprintRepoReadme(repo, rawBase, readmeBytes)
+			fingerprintPath := filepath.Join(fingerprintRoot, repo.Slug+".sha256")
+			if !c.Fresh {
+				prev, err := os.ReadFile(fingerprintPath)
+				if err == nil && string(prev) == fingerprint {
+					c.logger.Info().
+						Any("repo", repo.Slug).
+						Msg("Skipped docs page (README unchanged)")
+					return
+				}
+			}
+
 			transformed := transformReadme(string(readmeBytes), repo, rawBase)
 			outputPath := filepath.Join(docsRoot, repo.OutputPath)
 			if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
@@ -176,6 +191,14 @@ func (c *GenerateCommand) Run() error {
 			}
 			if err := os.WriteFile(outputPath, []byte(transformed), 0o644); err != nil {
 				setErr(fmt.Errorf("write docs output for %s: %w", repo.Slug, err))
+				return
+			}
+			if err := os.MkdirAll(fingerprintRoot, 0o755); err != nil {
+				setErr(fmt.Errorf("ensure fingerprint dir for %s: %w", repo.Slug, err))
+				return
+			}
+			if err := os.WriteFile(fingerprintPath, []byte(fingerprint), 0o644); err != nil {
+				setErr(fmt.Errorf("write fingerprint for %s: %w", repo.Slug, err))
 				return
 			}
 
@@ -191,4 +214,17 @@ func (c *GenerateCommand) Run() error {
 	}
 
 	return nil
+}
+
+func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
+	sum := sha256.New()
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v1\n"))
+	_, _ = sum.Write([]byte(repo.Slug))
+	_, _ = sum.Write([]byte{'\n'})
+	_, _ = sum.Write([]byte(repo.Branch))
+	_, _ = sum.Write([]byte{'\n'})
+	_, _ = sum.Write([]byte(rawBase))
+	_, _ = sum.Write([]byte{'\n'})
+	_, _ = sum.Write(readme)
+	return hex.EncodeToString(sum.Sum(nil))
 }
