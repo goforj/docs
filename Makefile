@@ -100,13 +100,12 @@ docker-production: ##@docker Build production web image (set DOCKER_PROD_IMAGE /
 		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
 		.
 
-docker-build-prod: docker-production ##@docker Alias: production image build
+docker-build-prod: docker-generate-docs-prod docker-production ##@docker Generate docs and build production image
 
 docker-generate-docs-prod: ##@docker Generate docs from upstream repos in a one-off container (updates docs/libraries/*.md)
 	@$(COMPOSE_COMMAND) run --rm --build docs-generate
 
 docker-deploy-prod: ##@docker Generate docs, build prod image, and roll web container
-	@$(MAKE) docker-generate-docs-prod
 	@$(MAKE) docker-build-prod
 	@$(COMPOSE_COMMAND) up -d --force-recreate web
 
