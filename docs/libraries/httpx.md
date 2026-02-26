@@ -1,5 +1,7 @@
 ---
 title: HTTPX
+repoSlug: httpx
+repoUrl: https://github.com/goforj/httpx
 ---
 
 <p align="center">

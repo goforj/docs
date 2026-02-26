@@ -1,5 +1,7 @@
 ---
 title: ExecX
+repoSlug: execx
+repoUrl: https://github.com/goforj/execx
 ---
 
 <p align="center">

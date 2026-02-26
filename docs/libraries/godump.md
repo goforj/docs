@@ -1,5 +1,7 @@
 ---
 title: GoDump
+repoSlug: godump
+repoUrl: https://github.com/goforj/godump
 ---
 
 <p align="center">

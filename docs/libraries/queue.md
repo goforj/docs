@@ -1,5 +1,7 @@
 ---
 title: Queue
+repoSlug: queue
+repoUrl: https://github.com/goforj/queue
 ---
 
 <p align="center">

@@ -1,5 +1,7 @@
 ---
 title: Strings
+repoSlug: str
+repoUrl: https://github.com/goforj/str
 ---
 
 <p align="center">

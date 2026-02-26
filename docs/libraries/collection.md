@@ -1,5 +1,7 @@
 ---
 title: Collections
+repoSlug: collection
+repoUrl: https://github.com/goforj/collection
 ---
 
 <p align="center">

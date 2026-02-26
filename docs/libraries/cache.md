@@ -1,5 +1,7 @@
 ---
 title: Cache
+repoSlug: cache
+repoUrl: https://github.com/goforj/cache
 ---
 
 <p align="center">

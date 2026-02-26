@@ -1,5 +1,7 @@
 ---
 title: Env
+repoSlug: env
+repoUrl: https://github.com/goforj/env
 ---
 
 <p align="center">

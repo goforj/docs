@@ -1,5 +1,7 @@
 ---
 title: Scheduler
+repoSlug: scheduler
+repoUrl: https://github.com/goforj/scheduler
 ---
 
 <p align="center">

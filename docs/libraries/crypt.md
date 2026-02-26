@@ -1,5 +1,7 @@
 ---
 title: Crypt
+repoSlug: crypt
+repoUrl: https://github.com/goforj/crypt
 ---
 
 <p align="center">

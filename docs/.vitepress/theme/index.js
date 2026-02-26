@@ -1,6 +1,7 @@
 import DefaultTheme from 'vitepress/theme'
 import { useRoute } from 'vitepress'
-import { nextTick, onMounted, watch } from 'vue'
+import { h, nextTick, onMounted, watch } from 'vue'
+import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -218,6 +219,10 @@ function initHashNavigationControl() {
 
 export default {
   ...DefaultTheme,
+  Layout: () =>
+    h(DefaultTheme.Layout, null, {
+      'doc-before': () => h(LibraryRepoHeader)
+    }),
   setup() {
     const route = useRoute()
 

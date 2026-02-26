@@ -215,6 +215,12 @@ func withFrontmatter(repo RepoConfig, content string) string {
 	if title == "" {
 		title = repo.Slug
 	}
-	frontmatter := fmt.Sprintf("---\ntitle: %s\n---\n\n", title)
+	repoURL := strings.TrimSuffix(repo.CloneURL, ".git")
+	frontmatter := fmt.Sprintf(
+		"---\ntitle: %s\nrepoSlug: %s\nrepoUrl: %s\n---\n\n",
+		title,
+		repo.Slug,
+		repoURL,
+	)
 	return frontmatter + content
 }
