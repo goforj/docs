@@ -10,7 +10,6 @@ RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   cd backend && go mod download
 COPY backend/ ./backend/
 COPY docs/ ./docs/
-ENV GOFORJ_EXAMPLES_MANIFEST=/app/examples.json
 RUN --mount=type=cache,id=goforj-docs-temp,target=/tmp/goforj-docs \
   --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
@@ -42,9 +41,7 @@ RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
   && rm -rf /var/lib/apt/lists/*
-ENV GOFORJ_EXAMPLES_MANIFEST=/app/examples.json
 WORKDIR /app
 COPY --from=backend-build /app/bin/docs /app/docs
-COPY --from=docs-generate /app/examples.json /app/examples.json
 EXPOSE 3000
 ENTRYPOINT ["/app/docs", "http:serve", "--port", "3000"]
