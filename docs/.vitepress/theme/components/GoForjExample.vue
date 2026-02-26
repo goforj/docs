@@ -71,6 +71,10 @@ const ansiToHtml = (input) => {
   if (!input) {
     return ''
   }
+  // Strip non-SGR ANSI CSI sequences (e.g. ESC[K erase-to-EOL) that the
+  // lightweight renderer does not implement and would otherwise leak as "[K".
+  input = input.replace(/\u001b\[[0-9;?]*[A-LO-Zcf-nqrysu=><]/g, '')
+
   const escapeHtml = (value) =>
     value
       .replace(/&/g, '&amp;')
