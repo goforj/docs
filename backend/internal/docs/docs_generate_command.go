@@ -178,6 +178,7 @@ func (c *GenerateCommand) Run() error {
 				if err == nil && string(prev) == fingerprint {
 					c.logger.Info().
 						Any("repo", repo.Slug).
+						Any("fingerprint", shortFingerprint(fingerprint)).
 						Msg("Skipped docs page (README unchanged)")
 					return
 				}
@@ -204,6 +205,7 @@ func (c *GenerateCommand) Run() error {
 
 			c.logger.Info().
 				Any("repo", repo.Slug).
+				Any("fingerprint", shortFingerprint(fingerprint)).
 				Any("output", outputPath).
 				Msg("Generated docs page")
 		})
@@ -227,4 +229,11 @@ func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) strin
 	_, _ = sum.Write([]byte{'\n'})
 	_, _ = sum.Write(readme)
 	return hex.EncodeToString(sum.Sum(nil))
+}
+
+func shortFingerprint(value string) string {
+	if len(value) <= 12 {
+		return value
+	}
+	return value[:12]
 }
