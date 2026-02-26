@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: containers/web/Dockerfile
       target: docs-generate
-    working_dir: /app
-    command: ["sh", "-lc", "cd backend && go run . docs:generate"]
+    working_dir: /app/backend
+    command: ["/usr/local/go/bin/go", "run", ".", "docs:generate"]
     volumes:
       - ./backend:/app/backend
       - ./docs:/app/docs
