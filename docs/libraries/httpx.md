@@ -1088,7 +1088,30 @@ println(resString) // dumps string
 </GoForjExample>
 
 
+<GoForjExample repo="httpx" example="get">
 
+```go
+// Example: bind to a struct
+type GetResponse struct {
+	URL string `json:"url"`
+}
+
+c := httpx.New()
+res, _ := httpx.Get[GetResponse](c, "https://httpbin.org/get")
+httpx.Dump(res)
+// #GetResponse {
+//   URL => "https://httpbin.org/get" #string
+// }
+
+// Example: bind to a string body
+resString, _ := httpx.Get[string](c, "https://httpbin.org/uuid")
+println(resString) // dumps string
+// {
+//   "uuid": "becbda6d-9950-4966-ae23-0369617ba065"
+// }
+```
+
+</GoForjExample>
 
 ### Head {#head}
 

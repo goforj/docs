@@ -1083,10 +1083,44 @@ d.Dump(v)
 Diff prints a diff between two values to stdout.
 
 
+<GoForjExample repo="godump" example="diff">
+
+```go
+// Example: print diff with a custom dumper
+d := godump.NewDumper()
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+d.Diff(a, b)
+// <#diff // path:line
+// - #map[string]int {
+// -   a => 1 #int
+// - }
+// + #map[string]int {
+// +   a => 2 #int
+// + }
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="godump" example="diff">
 
+```go
+// Example: print diff with a custom dumper
+d := godump.NewDumper()
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+d.Diff(a, b)
+// <#diff // path:line
+// - #map[string]int {
+// -   a => 1 #int
+// - }
+// + #map[string]int {
+// +   a => 2 #int
+// + }
+```
 
+</GoForjExample>
 
 ### DiffHTML {#diffhtml}
 
@@ -1108,7 +1142,19 @@ _ = html
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="diffhtml">
 
+```go
+// Example: HTML diff with a custom dumper
+d := godump.NewDumper()
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+html := d.DiffHTML(a, b)
+_ = html
+// (html diff)
+```
+
+</GoForjExample>
 
 ### DiffStr {#diffstr}
 
@@ -1136,7 +1182,25 @@ _ = out
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="diffstr">
 
+```go
+// Example: diff string with a custom dumper
+d := godump.NewDumper()
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+out := d.DiffStr(a, b)
+_ = out
+// <#diff // path:line
+// - #map[string]int {
+// -   a => 1 #int
+// - }
+// + #map[string]int {
+// +   a => 2 #int
+// + }
+```
+
+</GoForjExample>
 
 ## Dump {#dump}
 
@@ -1160,7 +1224,19 @@ d.Dd(v)
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="dd">
 
+```go
+// Example: dump and exit with a custom dumper
+d := godump.NewDumper()
+v := map[string]int{"a": 1}
+d.Dd(v)
+// #map[string]int {
+//   a => 1 #int
+// }
+```
+
+</GoForjExample>
 
 ### Dump {#dump-2}
 
@@ -1182,7 +1258,19 @@ d.Dump(v)
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="dump">
 
+```go
+// Example: print with a custom dumper
+d := godump.NewDumper()
+v := map[string]int{"a": 1}
+d.Dump(v)
+// #map[string]int {
+//   a => 1 #int
+// }
+```
+
+</GoForjExample>
 
 ### DumpStr {#dumpstr}
 
@@ -1203,7 +1291,18 @@ _ = out
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="dumpstr">
 
+```go
+// Example: get a string dump with a custom dumper
+d := godump.NewDumper()
+v := map[string]int{"a": 1}
+out := d.DumpStr(v)
+_ = out
+// "#map[string]int {\n  a => 1 #int\n}" #string
+```
+
+</GoForjExample>
 
 ### Fdump {#fdump}
 
@@ -1243,7 +1342,19 @@ fmt.Println(html)
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="dumphtml">
 
+```go
+// Example: dump HTML with a custom dumper
+d := godump.NewDumper()
+v := map[string]int{"a": 1}
+html := d.DumpHTML(v)
+_ = html
+fmt.Println(html)
+// (html output)
+```
+
+</GoForjExample>
 
 ## JSON {#json}
 
@@ -1266,7 +1377,18 @@ godump.DumpJSON(v)
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="dumpjson">
 
+```go
+// Example: print JSON
+v := map[string]int{"a": 1}
+godump.DumpJSON(v)
+// {
+//   "a": 1
+// }
+```
+
+</GoForjExample>
 
 ### DumpJSONStr {#dumpjsonstr}
 
@@ -1286,7 +1408,17 @@ _ = out
 </GoForjExample>
 
 
+<GoForjExample repo="godump" example="dumpjsonstr">
 
+```go
+// Example: JSON string
+v := map[string]int{"a": 1}
+out := godump.DumpJSONStr(v)
+_ = out
+// {"a":1}
+```
+
+</GoForjExample>
 
 ## Options {#options}
 

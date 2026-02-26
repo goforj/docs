@@ -37,7 +37,7 @@ type exampleJob struct {
 	normalized string
 }
 
-func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
+func loadExamplePrograms(examplesDir string, bypassCache bool) ([]ExampleProgram, error) {
 	var examples []ExampleProgram
 
 	if _, err := os.Stat(examplesDir); err != nil {
@@ -83,10 +83,12 @@ func loadExamplePrograms(examplesDir string) ([]ExampleProgram, error) {
 		return examples, nil
 	}
 
-	if cached, ok, err := loadCachedExamplePrograms(examplesDir, jobs); err != nil {
-		return nil, err
-	} else if ok {
-		return cached, nil
+	if !bypassCache {
+		if cached, ok, err := loadCachedExamplePrograms(examplesDir, jobs); err != nil {
+			return nil, err
+		} else if ok {
+			return cached, nil
+		}
 	}
 
 	wp := workerpool.New(10)
@@ -268,31 +270,30 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 		}
 	}
 
-	cmd := exec.Command("go", "run", runTarget)
-	cmd.Dir = dir
-	if goworkPath, cleanup, err := writeTempExampleWorkspace(dir); err != nil {
-		return "", "", 1, 0, err
-	} else {
-		if cleanup != nil {
-			defer cleanup()
-		}
-		if goworkPath != "" {
-			cmd.Env = append(os.Environ(), "GOWORK="+goworkPath)
-		}
-	}
+	baseEnv := envWithoutVars(os.Environ(), "GOWORK", "GOFLAGS")
 
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	runWithEnv := func(env []string) error {
+		stdout.Reset()
+		stderr.Reset()
+		cmd := exec.Command("go", "run", runTarget)
+		cmd.Dir = dir
+		cmd.Env = env
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		return cmd.Run()
+	}
 
-	err := cmd.Run()
+	// Run with workspace mode disabled so local/parent go.work files do not affect docs generation.
+	env := append(append([]string{}, baseEnv...), "GOWORK=off")
+	err := runWithEnv(env)
+	errOut := stderr.String()
 	duration := int(time.Since(start).Milliseconds())
 	if tempPath != "" {
 		_ = os.Remove(tempPath)
 	}
 	out := stdout.String()
-	errOut := stderr.String()
 	if strings.TrimSpace(errOut) != "" {
 		if strings.TrimSpace(out) != "" && !strings.HasSuffix(out, "\n") {
 			out += "\n"
@@ -313,119 +314,6 @@ func runExample(mainPath string, rawCode string) (string, string, int, int, erro
 	return out, errOut, 0, duration, nil
 }
 
-func writeTempExampleWorkspace(startDir string) (string, func(), error) {
-	modRoots, err := findAncestorModuleRoots(startDir)
-	if err != nil {
-		return "", nil, err
-	}
-	if len(modRoots) < 2 {
-		return "", nil, nil
-	}
-	goVersion := maxGoVersionFromModules(modRoots)
-	if goVersion == "" {
-		goVersion = "1.23"
-	}
-
-	var b strings.Builder
-	b.WriteString("go ")
-	b.WriteString(goVersion)
-	b.WriteString("\n\nuse (\n")
-	for i := len(modRoots) - 1; i >= 0; i-- {
-		b.WriteString("\t")
-		b.WriteString(modRoots[i])
-		b.WriteString("\n")
-	}
-	b.WriteString(")\n")
-
-	workPath := filepath.Join(startDir, "goforj_examples.work")
-	if err := os.WriteFile(workPath, []byte(b.String()), 0o644); err != nil {
-		return "", nil, err
-	}
-	cleanup := func() { _ = os.Remove(workPath) }
-	return workPath, cleanup, nil
-}
-
-func findAncestorModuleRoots(startDir string) ([]string, error) {
-	var roots []string
-	seen := map[string]bool{}
-	dir, err := filepath.Abs(startDir)
-	if err != nil {
-		return nil, err
-	}
-	for {
-		goModPath := filepath.Join(dir, "go.mod")
-		if stat, err := os.Stat(goModPath); err == nil && !stat.IsDir() {
-			if !seen[dir] {
-				roots = append(roots, dir)
-				seen[dir] = true
-			}
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	return roots, nil
-}
-
-func maxGoVersionFromModules(modRoots []string) string {
-	best := ""
-	for _, root := range modRoots {
-		v := readGoDirectiveVersion(filepath.Join(root, "go.mod"))
-		if compareGoVersions(v, best) > 0 {
-			best = v
-		}
-	}
-	return best
-}
-
-func readGoDirectiveVersion(goModPath string) string {
-	b, err := os.ReadFile(goModPath)
-	if err != nil {
-		return ""
-	}
-	for _, line := range strings.Split(string(b), "\n") {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "go ") {
-			return strings.TrimSpace(strings.TrimPrefix(line, "go "))
-		}
-	}
-	return ""
-}
-
-func compareGoVersions(a string, b string) int {
-	if a == b {
-		return 0
-	}
-	parse := func(v string) [3]int {
-		var out [3]int
-		parts := strings.Split(strings.TrimSpace(v), ".")
-		for i := 0; i < len(parts) && i < 3; i++ {
-			n := 0
-			for _, r := range parts[i] {
-				if r < '0' || r > '9' {
-					break
-				}
-				n = n*10 + int(r-'0')
-			}
-			out[i] = n
-		}
-		return out
-	}
-	av := parse(a)
-	bv := parse(b)
-	for i := 0; i < 3; i++ {
-		if av[i] > bv[i] {
-			return 1
-		}
-		if av[i] < bv[i] {
-			return -1
-		}
-	}
-	return 0
-}
-
 func filterGoDownloadNoise(output string) string {
 	if output == "" {
 		return output
@@ -443,6 +331,28 @@ func filterGoDownloadNoise(output string) string {
 		filtered = append(filtered, line)
 	}
 	return strings.TrimRight(strings.Join(filtered, "\n"), "\n")
+}
+
+func envWithoutVars(env []string, names ...string) []string {
+	if len(names) == 0 {
+		return env
+	}
+	skip := map[string]struct{}{}
+	for _, name := range names {
+		skip[name] = struct{}{}
+	}
+	out := make([]string, 0, len(env))
+	for _, kv := range env {
+		name := kv
+		if i := strings.IndexByte(kv, '='); i >= 0 {
+			name = kv[:i]
+		}
+		if _, ok := skip[name]; ok {
+			continue
+		}
+		out = append(out, kv)
+	}
+	return out
 }
 
 func hasIgnoreBuildTag(code string) bool {

@@ -386,10 +386,104 @@ collection.Dump(out)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="items">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+items := c.Items()
+collection.Dump(items)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana"})
+items2 := c2.Items()
+collection.Dump(items2)
+// #[]string [
+//   0 => "apple" #string
+//   1 => "banana" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+out := users.Items()
+collection.Dump(out)
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="items">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+items := c.Items()
+collection.Dump(items)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
 
+// Example: strings
+c2 := collection.New([]string{"apple", "banana"})
+items2 := c2.Items()
+collection.Dump(items2)
+// #[]string [
+//   0 => "apple" #string
+//   1 => "banana" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+out := users.Items()
+collection.Dump(out)
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### ItemsCopy · readonly · terminal {#itemscopy}
 
@@ -436,7 +530,21 @@ collection.Dump(c2.Avg())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="avg">
 
+```go
+// Example: integers
+c := collection.NewNumeric([]int{2, 4, 6})
+collection.Dump(c.Avg())
+// 4.000000 #float64
+
+// Example: float
+c2 := collection.NewNumeric([]float64{1.5, 2.5, 3.0})
+collection.Dump(c2.Avg())
+// 2.333333 #float64
+```
+
+</GoForjExample>
 
 ### Count · readonly · terminal {#count}
 
@@ -514,10 +622,114 @@ collection.Dump(roleCounts)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="countby">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 2, 3, 3, 3})
+counts := collection.CountBy(c, func(v int) int {
+	return v
+})
+collection.Dump(counts)
+// #map[int]int {
+//   1 => 1 #int
+//   2 => 2 #int
+//   3 => 3 #int
+// }
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "apple", "cherry", "banana"})
+counts2 := collection.CountBy(c2, func(v string) string {
+	return v
+})
+collection.Dump(counts2)
+// #map[string]int {
+//   apple => 2 #int
+//   banana => 2 #int
+//   cherry => 1 #int
+// }
+
+// Example: structs
+type User struct {
+	Name string
+	Role string
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Role: "admin"},
+	{Name: "Bob", Role: "user"},
+	{Name: "Carol", Role: "admin"},
+	{Name: "Dave", Role: "user"},
+	{Name: "Eve", Role: "admin"},
+})
+
+roleCounts := collection.CountBy(users, func(u User) string {
+	return u.Role
+})
+
+collection.Dump(roleCounts)
+// #map[string]int {
+//   admin => 3 #int
+//   user => 2 #int
+// }
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="countby">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 2, 3, 3, 3})
+counts := collection.CountBy(c, func(v int) int {
+	return v
+})
+collection.Dump(counts)
+// #map[int]int {
+//   1 => 1 #int
+//   2 => 2 #int
+//   3 => 3 #int
+// }
 
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "apple", "cherry", "banana"})
+counts2 := collection.CountBy(c2, func(v string) string {
+	return v
+})
+collection.Dump(counts2)
+// #map[string]int {
+//   apple => 2 #int
+//   banana => 2 #int
+//   cherry => 1 #int
+// }
+
+// Example: structs
+type User struct {
+	Name string
+	Role string
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Role: "admin"},
+	{Name: "Bob", Role: "user"},
+	{Name: "Carol", Role: "admin"},
+	{Name: "Dave", Role: "user"},
+	{Name: "Eve", Role: "admin"},
+})
+
+roleCounts := collection.CountBy(users, func(u User) string {
+	return u.Role
+})
+
+collection.Dump(roleCounts)
+// #map[string]int {
+//   admin => 3 #int
+//   user => 2 #int
+// }
+```
+
+</GoForjExample>
 
 ### CountByValue · readonly · terminal {#countbyvalue}
 
@@ -570,10 +782,94 @@ collection.Dump(counts3)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="countbyvalue">
+
+```go
+// Example: strings
+c1 := collection.New([]string{"a", "b", "a"})
+counts1 := collection.CountByValue(c1)
+collection.Dump(counts1)
+// #map[string]int {
+//  a => 2 #int
+//  b => 1 #int
+// }
+
+// Example: integers
+c2 := collection.New([]int{1, 2, 2, 3, 3, 3})
+counts2 := collection.CountByValue(c2)
+collection.Dump(counts2)
+// #map[int]int {
+//  1 => 1 #int
+//  2 => 2 #int
+//  3 => 3 #int
+// }
+
+// Example: structs (comparable)
+type Point struct {
+	X int
+	Y int
+}
+
+c3 := collection.New([]Point{
+	{X: 1, Y: 1},
+	{X: 2, Y: 2},
+	{X: 1, Y: 1},
+})
+
+counts3 := collection.CountByValue(c3)
+collection.Dump(counts3)
+// #map[main.Point]int {
+//  {1 1} => 2 #int
+//  {2 2} => 1 #int
+// }
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="countbyvalue">
 
+```go
+// Example: strings
+c1 := collection.New([]string{"a", "b", "a"})
+counts1 := collection.CountByValue(c1)
+collection.Dump(counts1)
+// #map[string]int {
+//  a => 2 #int
+//  b => 1 #int
+// }
 
+// Example: integers
+c2 := collection.New([]int{1, 2, 2, 3, 3, 3})
+counts2 := collection.CountByValue(c2)
+collection.Dump(counts2)
+// #map[int]int {
+//  1 => 1 #int
+//  2 => 2 #int
+//  3 => 3 #int
+// }
+
+// Example: structs (comparable)
+type Point struct {
+	X int
+	Y int
+}
+
+c3 := collection.New([]Point{
+	{X: 1, Y: 1},
+	{X: 2, Y: 2},
+	{X: 1, Y: 1},
+})
+
+counts3 := collection.CountByValue(c3)
+collection.Dump(counts3)
+// #map[main.Point]int {
+//  {1 1} => 2 #int
+//  {2 2} => 1 #int
+// }
+```
+
+</GoForjExample>
 
 ### Max · readonly · terminal {#max}
 
@@ -612,10 +908,66 @@ collection.Dump(max3, ok3)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="max">
+
+```go
+// Example: integers
+c := collection.NewNumeric([]int{3, 1, 2})
+
+max1, ok1 := c.Max()
+collection.Dump(max1, ok1)
+// 3 #int
+// true #bool
+
+// Example: floats
+c2 := collection.NewNumeric([]float64{1.5, 9.2, 4.4})
+
+max2, ok2 := c2.Max()
+collection.Dump(max2, ok2)
+// 9.200000 #float64
+// true #bool
+
+// Example: empty numeric collection
+c3 := collection.NewNumeric([]int{})
+
+max3, ok3 := c3.Max()
+collection.Dump(max3, ok3)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="max">
 
+```go
+// Example: integers
+c := collection.NewNumeric([]int{3, 1, 2})
 
+max1, ok1 := c.Max()
+collection.Dump(max1, ok1)
+// 3 #int
+// true #bool
+
+// Example: floats
+c2 := collection.NewNumeric([]float64{1.5, 9.2, 4.4})
+
+max2, ok2 := c2.Max()
+collection.Dump(max2, ok2)
+// 9.200000 #float64
+// true #bool
+
+// Example: empty numeric collection
+c3 := collection.NewNumeric([]int{})
+
+max3, ok3 := c3.Max()
+collection.Dump(max3, ok3)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### MaxBy · readonly · terminal {#maxby}
 
@@ -671,10 +1023,100 @@ collection.Dump(maxVal, ok)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="maxby">
+
+```go
+// Example: structs - highest score
+type Player struct {
+	Name  string
+	Score int
+}
+
+players := collection.New([]Player{
+	{Name: "Alice", Score: 10},
+	{Name: "Bob", Score: 25},
+	{Name: "Carol", Score: 18},
+})
+
+top, ok := collection.MaxBy(players, func(p Player) int {
+	return p.Score
+})
+
+collection.Dump(top, ok)
+// #main.Player {
+//   +Name  => "Bob" #string
+//   +Score => 25 #int
+// }
+// true #bool
+
+// Example: strings - longest length
+words := collection.New([]string{"go", "collection", "rocks"})
+
+longest, ok := collection.MaxBy(words, func(s string) int {
+	return len(s)
+})
+
+collection.Dump(longest, ok)
+// "collection" #string
+// true #bool
+
+// Example: empty collection
+empty := collection.New([]int{})
+maxVal, ok := collection.MaxBy(empty, func(v int) int { return v })
+collection.Dump(maxVal, ok)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="maxby">
 
+```go
+// Example: structs - highest score
+type Player struct {
+	Name  string
+	Score int
+}
 
+players := collection.New([]Player{
+	{Name: "Alice", Score: 10},
+	{Name: "Bob", Score: 25},
+	{Name: "Carol", Score: 18},
+})
+
+top, ok := collection.MaxBy(players, func(p Player) int {
+	return p.Score
+})
+
+collection.Dump(top, ok)
+// #main.Player {
+//   +Name  => "Bob" #string
+//   +Score => 25 #int
+// }
+// true #bool
+
+// Example: strings - longest length
+words := collection.New([]string{"go", "collection", "rocks"})
+
+longest, ok := collection.MaxBy(words, func(s string) int {
+	return len(s)
+})
+
+collection.Dump(longest, ok)
+// "collection" #string
+// true #bool
+
+// Example: empty collection
+empty := collection.New([]int{})
+maxVal, ok := collection.MaxBy(empty, func(v int) int { return v })
+collection.Dump(maxVal, ok)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### Median · readonly · terminal {#median}
 
@@ -721,13 +1163,121 @@ collection.Dump(median4, ok4)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="median">
+
+```go
+// Example: integers - odd number of items
+c := collection.NewNumeric([]int{3, 1, 2})
+
+median1, ok1 := c.Median()
+collection.Dump(median1, ok1)
+// 2.000000 #float64
+// true #bool
+
+// Example: integers - even number of items
+c2 := collection.NewNumeric([]int{10, 2, 4, 6})
+
+median2, ok2 := c2.Median()
+collection.Dump(median2, ok2)
+// 5.000000 #float64
+// true #bool
+
+// Example: floats
+c3 := collection.NewNumeric([]float64{1.1, 9.9, 3.3})
+
+median3, ok3 := c3.Median()
+collection.Dump(median3, ok3)
+// 3.300000 #float64
+// true #bool
+
+// Example: integers - empty numeric collection
+c4 := collection.NewNumeric([]int{})
+
+median4, ok4 := c4.Median()
+collection.Dump(median4, ok4)
+// 0.000000 #float64
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="median">
+
+```go
+// Example: integers - odd number of items
+c := collection.NewNumeric([]int{3, 1, 2})
+
+median1, ok1 := c.Median()
+collection.Dump(median1, ok1)
+// 2.000000 #float64
+// true #bool
+
+// Example: integers - even number of items
+c2 := collection.NewNumeric([]int{10, 2, 4, 6})
+
+median2, ok2 := c2.Median()
+collection.Dump(median2, ok2)
+// 5.000000 #float64
+// true #bool
+
+// Example: floats
+c3 := collection.NewNumeric([]float64{1.1, 9.9, 3.3})
+
+median3, ok3 := c3.Median()
+collection.Dump(median3, ok3)
+// 3.300000 #float64
+// true #bool
+
+// Example: integers - empty numeric collection
+c4 := collection.NewNumeric([]int{})
+
+median4, ok4 := c4.Median()
+collection.Dump(median4, ok4)
+// 0.000000 #float64
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="median">
 
+```go
+// Example: integers - odd number of items
+c := collection.NewNumeric([]int{3, 1, 2})
 
+median1, ok1 := c.Median()
+collection.Dump(median1, ok1)
+// 2.000000 #float64
+// true #bool
 
+// Example: integers - even number of items
+c2 := collection.NewNumeric([]int{10, 2, 4, 6})
+
+median2, ok2 := c2.Median()
+collection.Dump(median2, ok2)
+// 5.000000 #float64
+// true #bool
+
+// Example: floats
+c3 := collection.NewNumeric([]float64{1.1, 9.9, 3.3})
+
+median3, ok3 := c3.Median()
+collection.Dump(median3, ok3)
+// 3.300000 #float64
+// true #bool
+
+// Example: integers - empty numeric collection
+c4 := collection.NewNumeric([]int{})
+
+median4, ok4 := c4.Median()
+collection.Dump(median4, ok4)
+// 0.000000 #float64
+// false #bool
+```
+
+</GoForjExample>
 
 ### Min · readonly · terminal {#min}
 
@@ -763,10 +1313,60 @@ collection.Dump(min3, ok3)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="min">
+
+```go
+// Example: integers
+c := collection.NewNumeric([]int{3, 1, 2})
+min, ok := c.Min()
+collection.Dump(min, ok)
+// 1 #int
+// true #bool
+
+// Example: floats
+c2 := collection.NewNumeric([]float64{2.5, 9.1, 1.2})
+min2, ok2 := c2.Min()
+collection.Dump(min2, ok2)
+// 1.200000 #float64
+// true #bool
+
+// Example: integers - empty collection
+empty := collection.NewNumeric([]int{})
+min3, ok3 := empty.Min()
+collection.Dump(min3, ok3)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="min">
 
+```go
+// Example: integers
+c := collection.NewNumeric([]int{3, 1, 2})
+min, ok := c.Min()
+collection.Dump(min, ok)
+// 1 #int
+// true #bool
 
+// Example: floats
+c2 := collection.NewNumeric([]float64{2.5, 9.1, 1.2})
+min2, ok2 := c2.Min()
+collection.Dump(min2, ok2)
+// 1.200000 #float64
+// true #bool
+
+// Example: integers - empty collection
+empty := collection.NewNumeric([]int{})
+min3, ok3 := empty.Min()
+collection.Dump(min3, ok3)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### MinBy · readonly · terminal {#minby}
 
@@ -822,10 +1422,100 @@ collection.Dump(minVal, ok)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="minby">
+
+```go
+// Example: structs - smallest age
+type User struct {
+	Name string
+	Age  int
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Age: 30},
+	{Name: "Bob", Age: 25},
+	{Name: "Carol", Age: 40},
+})
+
+minUser, ok := collection.MinBy(users, func(u User) int {
+	return u.Age
+})
+
+collection.Dump(minUser, ok)
+// #main.User {
+//   +Name => "Bob" #string
+//   +Age  => 25 #int
+// }
+// true #bool
+
+// Example: strings - shortest length
+words := collection.New([]string{"apple", "fig", "banana"})
+
+shortest, ok := collection.MinBy(words, func(s string) int {
+	return len(s)
+})
+
+collection.Dump(shortest, ok)
+// "fig" #string
+// true #bool
+
+// Example: empty collection
+empty := collection.New([]int{})
+minVal, ok := collection.MinBy(empty, func(v int) int { return v })
+collection.Dump(minVal, ok)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="minby">
 
+```go
+// Example: structs - smallest age
+type User struct {
+	Name string
+	Age  int
+}
 
+users := collection.New([]User{
+	{Name: "Alice", Age: 30},
+	{Name: "Bob", Age: 25},
+	{Name: "Carol", Age: 40},
+})
+
+minUser, ok := collection.MinBy(users, func(u User) int {
+	return u.Age
+})
+
+collection.Dump(minUser, ok)
+// #main.User {
+//   +Name => "Bob" #string
+//   +Age  => 25 #int
+// }
+// true #bool
+
+// Example: strings - shortest length
+words := collection.New([]string{"apple", "fig", "banana"})
+
+shortest, ok := collection.MinBy(words, func(s string) int {
+	return len(s)
+})
+
+collection.Dump(shortest, ok)
+// "fig" #string
+// true #bool
+
+// Example: empty collection
+empty := collection.New([]int{})
+minVal, ok := collection.MinBy(empty, func(v int) int { return v })
+collection.Dump(minVal, ok)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### Mode · readonly · terminal {#mode}
 
@@ -872,13 +1562,118 @@ collection.Dump(mode4)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="mode">
+
+```go
+// Example: integers – single mode
+c := collection.NewNumeric([]int{1, 2, 2, 3})
+mode := c.Mode()
+collection.Dump(mode)
+// #[]int [
+//   0 => 2 #int
+// ]
+
+// Example: integers – tie for mode
+c2 := collection.NewNumeric([]int{1, 2, 1, 2})
+mode2 := c2.Mode()
+collection.Dump(mode2)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: floats
+c3 := collection.NewNumeric([]float64{1.1, 2.2, 1.1, 3.3})
+mode3 := c3.Mode()
+collection.Dump(mode3)
+// #[]float64 [
+//   0 => 1.100000 #float64
+// ]
+
+// Example: integers - empty collection
+empty := collection.NewNumeric([]int{})
+mode4 := empty.Mode()
+collection.Dump(mode4)
+// []int(nil)
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="mode">
+
+```go
+// Example: integers – single mode
+c := collection.NewNumeric([]int{1, 2, 2, 3})
+mode := c.Mode()
+collection.Dump(mode)
+// #[]int [
+//   0 => 2 #int
+// ]
+
+// Example: integers – tie for mode
+c2 := collection.NewNumeric([]int{1, 2, 1, 2})
+mode2 := c2.Mode()
+collection.Dump(mode2)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: floats
+c3 := collection.NewNumeric([]float64{1.1, 2.2, 1.1, 3.3})
+mode3 := c3.Mode()
+collection.Dump(mode3)
+// #[]float64 [
+//   0 => 1.100000 #float64
+// ]
+
+// Example: integers - empty collection
+empty := collection.NewNumeric([]int{})
+mode4 := empty.Mode()
+collection.Dump(mode4)
+// []int(nil)
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="mode">
 
+```go
+// Example: integers – single mode
+c := collection.NewNumeric([]int{1, 2, 2, 3})
+mode := c.Mode()
+collection.Dump(mode)
+// #[]int [
+//   0 => 2 #int
+// ]
 
+// Example: integers – tie for mode
+c2 := collection.NewNumeric([]int{1, 2, 1, 2})
+mode2 := c2.Mode()
+collection.Dump(mode2)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
 
+// Example: floats
+c3 := collection.NewNumeric([]float64{1.1, 2.2, 1.1, 3.3})
+mode3 := c3.Mode()
+collection.Dump(mode3)
+// #[]float64 [
+//   0 => 1.100000 #float64
+// ]
+
+// Example: integers - empty collection
+empty := collection.NewNumeric([]int{})
+mode4 := empty.Mode()
+collection.Dump(mode4)
+// []int(nil)
+```
+
+</GoForjExample>
 
 ### Reduce · readonly · terminal {#reduce}
 
@@ -931,10 +1726,94 @@ collection.Dump(total)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="reduce">
+
+```go
+// Example: integers - sum
+sum := collection.New([]int{1, 2, 3}).Reduce(0, func(acc, n int) int {
+	return acc + n
+})
+collection.Dump(sum)
+// 6 #int
+
+// Example: strings
+joined := collection.New([]string{"a", "b", "c"}).Reduce("", func(acc, s string) string {
+	return acc + s
+})
+collection.Dump(joined)
+// "abc" #string
+
+// Example: structs
+type Stats struct {
+	Count int
+	Sum   int
+}
+
+stats := collection.New([]Stats{
+	{Count: 1, Sum: 10},
+	{Count: 1, Sum: 20},
+	{Count: 1, Sum: 30},
+})
+
+total := stats.Reduce(Stats{}, func(acc, s Stats) Stats {
+	acc.Count += s.Count
+	acc.Sum += s.Sum
+	return acc
+})
+
+collection.Dump(total)
+// #main.Stats {
+//   +Count => 3 #int
+//   +Sum   => 60 #int
+// }
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="reduce">
 
+```go
+// Example: integers - sum
+sum := collection.New([]int{1, 2, 3}).Reduce(0, func(acc, n int) int {
+	return acc + n
+})
+collection.Dump(sum)
+// 6 #int
 
+// Example: strings
+joined := collection.New([]string{"a", "b", "c"}).Reduce("", func(acc, s string) string {
+	return acc + s
+})
+collection.Dump(joined)
+// "abc" #string
+
+// Example: structs
+type Stats struct {
+	Count int
+	Sum   int
+}
+
+stats := collection.New([]Stats{
+	{Count: 1, Sum: 10},
+	{Count: 1, Sum: 20},
+	{Count: 1, Sum: 30},
+})
+
+total := stats.Reduce(Stats{}, func(acc, s Stats) Stats {
+	acc.Count += s.Count
+	acc.Sum += s.Sum
+	return acc
+})
+
+collection.Dump(total)
+// #main.Stats {
+//   +Count => 3 #int
+//   +Sum   => 60 #int
+// }
+```
+
+</GoForjExample>
 
 ### Sum · readonly · terminal {#sum}
 
@@ -967,10 +1846,54 @@ collection.Dump(total3)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="sum">
+
+```go
+// Example: integers
+c := collection.NewNumeric([]int{1, 2, 3})
+total := c.Sum()
+collection.Dump(total)
+// 6 #int
+
+// Example: floats
+c2 := collection.NewNumeric([]float64{1.5, 2.5})
+total2 := c2.Sum()
+collection.Dump(total2)
+// 4.000000 #float64
+
+// Example: integers - empty collection
+c3 := collection.NewNumeric([]int{})
+total3 := c3.Sum()
+collection.Dump(total3)
+// 0 #int
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="sum">
 
+```go
+// Example: integers
+c := collection.NewNumeric([]int{1, 2, 3})
+total := c.Sum()
+collection.Dump(total)
+// 6 #int
 
+// Example: floats
+c2 := collection.NewNumeric([]float64{1.5, 2.5})
+total2 := c2.Sum()
+collection.Dump(total2)
+// 4.000000 #float64
+
+// Example: integers - empty collection
+c3 := collection.NewNumeric([]int{})
+total3 := c3.Sum()
+collection.Dump(total3)
+// 0 #int
+```
+
+</GoForjExample>
 
 ## Construction {#construction}
 
@@ -1040,7 +1963,65 @@ collection.Dump(odds.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="clone">
 
+```go
+// Example: basic cloning
+c := collection.New([]int{1, 2, 3})
+clone := c.Clone()
+
+clone = clone.Append(4)
+
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+collection.Dump(clone.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
+
+// Example: branching pipelines
+base := collection.New([]int{1, 2, 3, 4, 5})
+
+evens := base.Clone().Filter(func(v int) bool {
+	return v%2 == 0
+})
+
+odds := base.Clone().Filter(func(v int) bool {
+	return v%2 != 0
+})
+
+collection.Dump(base.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+collection.Dump(evens.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+// ]
+
+collection.Dump(odds.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 3 #int
+//   2 => 5 #int
+// ]
+```
+
+</GoForjExample>
 
 ### New · immutable · chainable {#new}
 
@@ -1095,10 +2076,36 @@ collection.Dump(c2.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="dump">
+
+```go
+// Example: integers
+c2 := collection.New([]int{1, 2, 3})
+collection.Dump(c2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="dump">
 
+```go
+// Example: integers
+c2 := collection.New([]int{1, 2, 3})
+collection.Dump(c2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+```
 
+</GoForjExample>
 
 ### DumpStr · readonly · terminal {#dumpstr}
 
@@ -1197,7 +2204,72 @@ collection.Dump(groups2["user"].Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="groupby">
 
+```go
+// Example: grouping integers by parity
+values := []int{1, 2, 3, 4, 5}
+
+groups := collection.GroupBy(
+	collection.New(values),
+	func(v int) string {
+		if v%2 == 0 {
+			return "even"
+		}
+		return "odd"
+	},
+)
+
+collection.Dump(groups["even"].Items())
+// #[]int [
+//  0 => 2 #int
+//  1 => 4 #int
+// ]
+collection.Dump(groups["odd"].Items())
+// #[]int [
+//  0 => 1 #int
+//  1 => 3 #int
+//  2 => 5 #int
+// ]
+
+// Example: grouping structs by field
+	type User struct {
+		ID   int
+		Role string
+	}
+
+	users := []User{
+		{ID: 1, Role: "admin"},
+		{ID: 2, Role: "user"},
+		{ID: 3, Role: "admin"},
+	}
+
+	groups2 := collection.GroupBy(
+		collection.New(users),
+		func(u User) string { return u.Role },
+	)
+
+collection.Dump(groups2["admin"].Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Role => "admin" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 3 #int
+//    +Role => "admin" #string
+//  }
+// ]
+collection.Dump(groups2["user"].Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 2 #int
+//    +Role => "user" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### GroupBySlice · readonly · terminal {#groupbyslice}
 
@@ -1273,7 +2345,72 @@ collection.Dump(groups2["user"])
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="groupbyslice">
 
+```go
+// Example: grouping integers by parity
+values := []int{1, 2, 3, 4, 5}
+
+groups := collection.GroupBySlice(
+	collection.New(values),
+	func(v int) string {
+		if v%2 == 0 {
+			return "even"
+		}
+		return "odd"
+	},
+)
+
+collection.Dump(groups["even"])
+// #[]int [
+//  0 => 2 #int
+//  1 => 4 #int
+// ]
+collection.Dump(groups["odd"])
+// #[]int [
+//  0 => 1 #int
+//  1 => 3 #int
+//  2 => 5 #int
+// ]
+
+// Example: grouping structs by field
+type User struct {
+	ID   int
+	Role string
+}
+
+users := []User{
+	{ID: 1, Role: "admin"},
+	{ID: 2, Role: "user"},
+	{ID: 3, Role: "admin"},
+}
+
+groups2 := collection.GroupBySlice(
+	collection.New(users),
+	func(u User) string { return u.Role },
+)
+
+collection.Dump(groups2["admin"])
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Role => "admin" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 3 #int
+//    +Role => "admin" #string
+//  }
+// ]
+collection.Dump(groups2["user"])
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 2 #int
+//    +Role => "user" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ## Maps {#maps}
 
@@ -1374,10 +2511,188 @@ collection.Dump(out2)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="frommap">
+
+```go
+// Example: basic usage
+m := map[string]int{
+	"a": 1,
+	"b": 2,
+	"c": 3,
+}
+
+c := collection.FromMap(m)
+c.Sort(func(a, b collection.Pair[string, int]) bool {
+	return a.Key < b.Key
+})
+collection.Dump(c.Items())
+
+// #[]collection.Pair[string,int] [
+//   0 => #collection.Pair[string,int] {
+//     +Key   => "a" #string
+//     +Value => 1 #int
+//   }
+//   1 => #collection.Pair[string,int] {
+//     +Key   => "b" #string
+//     +Value => 2 #int
+//   }
+//   2 => #collection.Pair[string,int] {
+//     +Key   => "c" #string
+//     +Value => 3 #int
+//   }
+// ]
+
+// Example: filtering map entries
+type Config struct {
+	Enabled bool
+	Timeout int
+}
+
+configs := map[string]Config{
+	"router-1": {Enabled: true,  Timeout: 30},
+	"router-2": {Enabled: false, Timeout: 10},
+	"router-3": {Enabled: true,  Timeout: 45},
+}
+
+out := collection.
+	FromMap(configs).
+	Filter(func(p collection.Pair[string, Config]) bool {
+		return p.Value.Enabled
+	}).
+	Sort(func(a, b collection.Pair[string, Config]) bool {
+		return a.Key < b.Key
+	}).
+	Items()
+
+collection.Dump(out)
+
+// #[]collection.Pair[string,main.Config·1] [
+//   0 => #collection.Pair[string,main.Config·1] {
+//     +Key       => "router-1" #string
+//     +Value     => #main.Config {
+//       +Enabled => true #bool
+//       +Timeout => 30 #int
+//     }
+//   }
+//   1 => #collection.Pair[string,main.Config·1] {
+//     +Key       => "router-3" #string
+//     +Value     => #main.Config {
+//       +Enabled => true #bool
+//       +Timeout => 45 #int
+//     }
+//   }
+// ]
+
+// Example: map → collection → map
+users := map[string]int{
+	"alice": 1,
+	"bob":   2,
+}
+
+c2 := collection.FromMap(users)
+out2 := collection.ToMapKV(c2)
+
+collection.Dump(out2)
+
+// #map[string]int {
+//   alice => 1 #int
+//   bob => 2 #int
+// }
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="frommap">
 
+```go
+// Example: basic usage
+m := map[string]int{
+	"a": 1,
+	"b": 2,
+	"c": 3,
+}
 
+c := collection.FromMap(m)
+c.Sort(func(a, b collection.Pair[string, int]) bool {
+	return a.Key < b.Key
+})
+collection.Dump(c.Items())
+
+// #[]collection.Pair[string,int] [
+//   0 => #collection.Pair[string,int] {
+//     +Key   => "a" #string
+//     +Value => 1 #int
+//   }
+//   1 => #collection.Pair[string,int] {
+//     +Key   => "b" #string
+//     +Value => 2 #int
+//   }
+//   2 => #collection.Pair[string,int] {
+//     +Key   => "c" #string
+//     +Value => 3 #int
+//   }
+// ]
+
+// Example: filtering map entries
+type Config struct {
+	Enabled bool
+	Timeout int
+}
+
+configs := map[string]Config{
+	"router-1": {Enabled: true,  Timeout: 30},
+	"router-2": {Enabled: false, Timeout: 10},
+	"router-3": {Enabled: true,  Timeout: 45},
+}
+
+out := collection.
+	FromMap(configs).
+	Filter(func(p collection.Pair[string, Config]) bool {
+		return p.Value.Enabled
+	}).
+	Sort(func(a, b collection.Pair[string, Config]) bool {
+		return a.Key < b.Key
+	}).
+	Items()
+
+collection.Dump(out)
+
+// #[]collection.Pair[string,main.Config·1] [
+//   0 => #collection.Pair[string,main.Config·1] {
+//     +Key       => "router-1" #string
+//     +Value     => #main.Config {
+//       +Enabled => true #bool
+//       +Timeout => 30 #int
+//     }
+//   }
+//   1 => #collection.Pair[string,main.Config·1] {
+//     +Key       => "router-3" #string
+//     +Value     => #main.Config {
+//       +Enabled => true #bool
+//       +Timeout => 45 #int
+//     }
+//   }
+// ]
+
+// Example: map → collection → map
+users := map[string]int{
+	"alice": 1,
+	"bob":   2,
+}
+
+c2 := collection.FromMap(users)
+out2 := collection.ToMapKV(c2)
+
+collection.Dump(out2)
+
+// #map[string]int {
+//   alice => 1 #int
+//   bob => 2 #int
+// }
+```
+
+</GoForjExample>
 
 ### ToMap · readonly · terminal {#tomap}
 
@@ -1437,7 +2752,56 @@ collection.Dump(byID)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="tomap">
 
+```go
+// Example: basic usage
+users := []string{"alice", "bob", "carol"}
+
+out := collection.ToMap(
+	collection.New(users),
+	func(name string) string { return name },
+	func(name string) int { return len(name) },
+)
+
+collection.Dump(out)
+// #map[string]int {
+//  alice => 5 #int
+//  bob => 3 #int
+//  carol => 5 #int
+// }
+
+// Example: re-keying structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users2 := []User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+}
+
+byID := collection.ToMap(
+	collection.New(users2),
+	func(u User) int { return u.ID },
+	func(u User) User { return u },
+)
+
+collection.Dump(byID)
+// #map[int]main.User {
+//  1 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  2 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// }
+```
+
+</GoForjExample>
 
 ### ToMapKV · readonly · terminal {#tomapkv}
 
@@ -1502,7 +2866,62 @@ collection.Dump(out2)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="tomapkv">
 
+```go
+// Example: basic usage
+m := map[string]int{
+	"a": 1,
+	"b": 2,
+	"c": 3,
+}
+
+c := collection.FromMap(m)
+out := collection.ToMapKV(c)
+
+collection.Dump(out)
+
+// #map[string]int {
+//  a => 1 #int
+//  b => 2 #int
+//  c => 3 #int
+// }
+
+// Example: filtering before conversion
+type Config struct {
+	Enabled bool
+	Timeout int
+}
+
+configs := map[string]Config{
+	"router-1": {Enabled: true,  Timeout: 30},
+	"router-2": {Enabled: false, Timeout: 10},
+	"router-3": {Enabled: true,  Timeout: 45},
+}
+
+c2 := collection.
+	FromMap(configs).
+	Filter(func(p collection.Pair[string, Config]) bool {
+		return p.Value.Enabled
+	})
+
+out2 := collection.ToMapKV(c2)
+
+collection.Dump(out2)
+
+// #map[string]main.Config {
+//  router-1 => #main.Config {
+//    +Enabled => true #bool
+//    +Timeout => 30 #int
+//  }
+//  router-3 => #main.Config {
+//    +Enabled => true #bool
+//    +Timeout => 45 #int
+//  }
+// }
+```
+
+</GoForjExample>
 
 ## Ordering {#ordering}
 
@@ -1583,10 +3002,108 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="before">
+
+```go
+// Example: integers
+c1 := collection.New([]int{1, 2, 3, 4, 5})
+out1 := c1.Before(func(v int) bool { return v >= 3 })
+collection.Dump(out1.Items())
+// #[]int [
+//  0 => 1 #int
+//  1 => 2 #int
+// ]
+
+// Example: predicate never matches → whole collection returned
+c2 := collection.New([]int{10, 20, 30})
+out2 := c2.Before(func(v int) bool { return v == 99 })
+collection.Dump(out2.Items())
+// #[]int [
+//  0 => 10 #int
+//  1 => 20 #int
+//  2 => 30 #int
+// ]
+
+// Example: structs: get all users before the first admin
+type User struct {
+	Name  string
+	Admin bool
+}
+
+c3 := collection.New([]User{
+	{Name: "Alice", Admin: false},
+	{Name: "Bob", Admin: false},
+	{Name: "Eve", Admin: true},
+	{Name: "Mallory", Admin: false},
+})
+
+out3 := c3.Before(func(u User) bool { return u.Admin })
+collection.Dump(out3.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +Name  => "Alice" #string
+//    +Admin => false #bool
+//  }
+//  1 => #main.User {
+//    +Name  => "Bob" #string
+//    +Admin => false #bool
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="before">
 
+```go
+// Example: integers
+c1 := collection.New([]int{1, 2, 3, 4, 5})
+out1 := c1.Before(func(v int) bool { return v >= 3 })
+collection.Dump(out1.Items())
+// #[]int [
+//  0 => 1 #int
+//  1 => 2 #int
+// ]
 
+// Example: predicate never matches → whole collection returned
+c2 := collection.New([]int{10, 20, 30})
+out2 := c2.Before(func(v int) bool { return v == 99 })
+collection.Dump(out2.Items())
+// #[]int [
+//  0 => 10 #int
+//  1 => 20 #int
+//  2 => 30 #int
+// ]
+
+// Example: structs: get all users before the first admin
+type User struct {
+	Name  string
+	Admin bool
+}
+
+c3 := collection.New([]User{
+	{Name: "Alice", Admin: false},
+	{Name: "Bob", Admin: false},
+	{Name: "Eve", Admin: true},
+	{Name: "Mallory", Admin: false},
+})
+
+out3 := c3.Before(func(u User) bool { return u.Admin })
+collection.Dump(out3.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +Name  => "Alice" #string
+//    +Admin => false #bool
+//  }
+//  1 => #main.User {
+//    +Name  => "Bob" #string
+//    +Admin => false #bool
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### Reverse · mutable · chainable {#reverse}
 
@@ -1651,10 +3168,118 @@ collection.Dump(users.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="reverse">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+c.Reverse()
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 4 #int
+//   1 => 3 #int
+//   2 => 2 #int
+//   3 => 1 #int
+// ]
+
+// Example: strings – chaining
+out := collection.New([]string{"a", "b", "c"}).
+	Reverse().
+	Append("d").
+	Items()
+
+collection.Dump(out)
+// #[]string [
+//   0 => "c" #string
+//   1 => "b" #string
+//   2 => "a" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+users.Reverse()
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID => 3 #int
+//   }
+//   1 => #main.User {
+//     +ID => 2 #int
+//   }
+//   2 => #main.User {
+//     +ID => 1 #int
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="reverse">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+c.Reverse()
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 4 #int
+//   1 => 3 #int
+//   2 => 2 #int
+//   3 => 1 #int
+// ]
 
+// Example: strings – chaining
+out := collection.New([]string{"a", "b", "c"}).
+	Reverse().
+	Append("d").
+	Items()
+
+collection.Dump(out)
+// #[]string [
+//   0 => "c" #string
+//   1 => "b" #string
+//   2 => "a" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+users.Reverse()
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID => 3 #int
+//   }
+//   1 => #main.User {
+//     +ID => 2 #int
+//   }
+//   2 => #main.User {
+//     +ID => 1 #int
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Shuffle · mutable · chainable {#shuffle}
 
@@ -1696,10 +3321,74 @@ collection.Dump(users.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="shuffle">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+c.Shuffle()
+collection.Dump(c.Items())
+
+// Example: strings – chaining
+out2 := collection.New([]string{"a", "b", "c"}).
+	Shuffle().
+	Append("d").
+	Items()
+
+collection.Dump(out2)
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+	{ID: 4},
+})
+
+users.Shuffle()
+collection.Dump(users.Items())
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="shuffle">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+c.Shuffle()
+collection.Dump(c.Items())
 
+// Example: strings – chaining
+out2 := collection.New([]string{"a", "b", "c"}).
+	Shuffle().
+	Append("d").
+	Items()
+
+collection.Dump(out2)
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+	{ID: 4},
+})
+
+users.Shuffle()
+collection.Dump(users.Items())
+```
+
+</GoForjExample>
 
 ### Sort · mutable · chainable {#sort}
 
@@ -1767,10 +3456,124 @@ collection.Dump(users.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="sort">
+
+```go
+// Example: integers
+c := collection.New([]int{5, 1, 4, 2})
+c.Sort(func(a, b int) bool { return a < b })
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 4 #int
+//   3 => 5 #int
+// ]
+
+// Example: strings (descending)
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+c2.Sort(func(a, b string) bool { return a > b })
+collection.Dump(c2.Items())
+// #[]string [
+//   0 => "cherry" #string
+//   1 => "banana" #string
+//   2 => "apple" #string
+// ]
+
+// Example: structs
+type User struct {
+	Name string
+	Age  int
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Age: 30},
+	{Name: "Bob", Age: 25},
+	{Name: "Carol", Age: 40},
+})
+
+// Sort by age ascending
+users.Sort(func(a, b User) bool {
+	return a.Age < b.Age
+})
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name => "Bob" #string
+//     +Age  => 25 #int
+//   }
+//   1 => #main.User {
+//     +Name => "Alice" #string
+//     +Age  => 30 #int
+//   }
+//   2 => #main.User {
+//     +Name => "Carol" #string
+//     +Age  => 40 #int
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="sort">
 
+```go
+// Example: integers
+c := collection.New([]int{5, 1, 4, 2})
+c.Sort(func(a, b int) bool { return a < b })
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 4 #int
+//   3 => 5 #int
+// ]
 
+// Example: strings (descending)
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+c2.Sort(func(a, b string) bool { return a > b })
+collection.Dump(c2.Items())
+// #[]string [
+//   0 => "cherry" #string
+//   1 => "banana" #string
+//   2 => "apple" #string
+// ]
+
+// Example: structs
+type User struct {
+	Name string
+	Age  int
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Age: 30},
+	{Name: "Bob", Age: 25},
+	{Name: "Carol", Age: 40},
+})
+
+// Sort by age ascending
+users.Sort(func(a, b User) bool {
+	return a.Age < b.Age
+})
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name => "Bob" #string
+//     +Age  => 25 #int
+//   }
+//   1 => #main.User {
+//     +Name => "Alice" #string
+//     +Age  => 30 #int
+//   }
+//   2 => #main.User {
+//     +Name => "Carol" #string
+//     +Age  => 40 #int
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ## Querying {#querying}
 
@@ -1811,13 +3614,97 @@ collection.Dump(all)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="all">
+
+```go
+// Example: integers – all even
+c := collection.New([]int{2, 4, 6})
+allEven := c.All(func(v int) bool { return v%2 == 0 })
+collection.Dump(allEven)
+// true #bool
+
+// Example: integers – not all even
+c2 := collection.New([]int{2, 3, 4})
+allEven2 := c2.All(func(v int) bool { return v%2 == 0 })
+collection.Dump(allEven2)
+// false #bool
+
+// Example: strings – all non-empty
+c3 := collection.New([]string{"a", "b", "c"})
+allNonEmpty := c3.All(func(s string) bool { return s != "" })
+collection.Dump(allNonEmpty)
+// true #bool
+
+// Example: empty collection (vacuously true)
+empty := collection.New([]int{})
+all := empty.All(func(v int) bool { return v > 0 })
+collection.Dump(all)
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="all">
+
+```go
+// Example: integers – all even
+c := collection.New([]int{2, 4, 6})
+allEven := c.All(func(v int) bool { return v%2 == 0 })
+collection.Dump(allEven)
+// true #bool
+
+// Example: integers – not all even
+c2 := collection.New([]int{2, 3, 4})
+allEven2 := c2.All(func(v int) bool { return v%2 == 0 })
+collection.Dump(allEven2)
+// false #bool
+
+// Example: strings – all non-empty
+c3 := collection.New([]string{"a", "b", "c"})
+allNonEmpty := c3.All(func(s string) bool { return s != "" })
+collection.Dump(allNonEmpty)
+// true #bool
+
+// Example: empty collection (vacuously true)
+empty := collection.New([]int{})
+all := empty.All(func(v int) bool { return v > 0 })
+collection.Dump(all)
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="all">
 
+```go
+// Example: integers – all even
+c := collection.New([]int{2, 4, 6})
+allEven := c.All(func(v int) bool { return v%2 == 0 })
+collection.Dump(allEven)
+// true #bool
 
+// Example: integers – not all even
+c2 := collection.New([]int{2, 3, 4})
+allEven2 := c2.All(func(v int) bool { return v%2 == 0 })
+collection.Dump(allEven2)
+// false #bool
 
+// Example: strings – all non-empty
+c3 := collection.New([]string{"a", "b", "c"})
+allNonEmpty := c3.All(func(s string) bool { return s != "" })
+collection.Dump(allNonEmpty)
+// true #bool
+
+// Example: empty collection (vacuously true)
+empty := collection.New([]int{})
+all := empty.All(func(v int) bool { return v > 0 })
+collection.Dump(all)
+// true #bool
+```
+
+</GoForjExample>
 
 ### Any · readonly · terminal {#any}
 
@@ -1880,10 +3767,82 @@ collection.Dump(u, ok3)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="at">
+
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
+v, ok := c.At(1)
+collection.Dump(v, ok)
+// 20 #int
+// true #bool
+
+// Example: out of bounds
+v2, ok2 := c.At(10)
+collection.Dump(v2, ok2)
+// 0 #int
+// false #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+u, ok3 := users.At(0)
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 1 #int
+//   +Name => "Alice" #string
+// }
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="at">
 
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
+v, ok := c.At(1)
+collection.Dump(v, ok)
+// 20 #int
+// true #bool
 
+// Example: out of bounds
+v2, ok2 := c.At(10)
+collection.Dump(v2, ok2)
+// 0 #int
+// false #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+u, ok3 := users.At(0)
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 1 #int
+//   +Name => "Alice" #string
+// }
+// true #bool
+```
+
+</GoForjExample>
 
 ### Contains · readonly · terminal {#contains}
 
@@ -1909,7 +3868,23 @@ collection.Dump(hasBanana)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="contains">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+hasTwo := collection.Contains(c, 2)
+collection.Dump(hasTwo)
+// true #bool
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+hasBanana := collection.Contains(c2, "banana")
+collection.Dump(hasBanana)
+// true #bool
+```
+
+</GoForjExample>
 
 ### First · readonly · terminal {#first}
 
@@ -1966,13 +3941,151 @@ collection.Dump(v3, ok4)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="first">
+
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
+
+v, ok := c.First()
+collection.Dump(v, ok)
+// 10 #int
+// true #bool
+
+// Example: strings
+c2 := collection.New([]string{"alpha", "beta", "gamma"})
+
+v2, ok2 := c2.First()
+collection.Dump(v2, ok2)
+// "alpha" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+u, ok3 := users.First()
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 1 #int
+//   +Name => "Alice" #string
+// }
+// true #bool
+
+// Example: integers - empty collection
+c3 := collection.New([]int{})
+v3, ok4 := c3.First()
+collection.Dump(v3, ok4)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="first">
+
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
+
+v, ok := c.First()
+collection.Dump(v, ok)
+// 10 #int
+// true #bool
+
+// Example: strings
+c2 := collection.New([]string{"alpha", "beta", "gamma"})
+
+v2, ok2 := c2.First()
+collection.Dump(v2, ok2)
+// "alpha" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+u, ok3 := users.First()
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 1 #int
+//   +Name => "Alice" #string
+// }
+// true #bool
+
+// Example: integers - empty collection
+c3 := collection.New([]int{})
+v3, ok4 := c3.First()
+collection.Dump(v3, ok4)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="first">
 
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
 
+v, ok := c.First()
+collection.Dump(v, ok)
+// 10 #int
+// true #bool
 
+// Example: strings
+c2 := collection.New([]string{"alpha", "beta", "gamma"})
+
+v2, ok2 := c2.First()
+collection.Dump(v2, ok2)
+// "alpha" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+u, ok3 := users.First()
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 1 #int
+//   +Name => "Alice" #string
+// }
+// true #bool
+
+// Example: integers - empty collection
+c3 := collection.New([]int{})
+v3, ok4 := c3.First()
+collection.Dump(v3, ok4)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### FirstWhere · readonly · terminal {#firstwhere}
 
@@ -2049,10 +4162,84 @@ collection.Dump(idx3, ok3)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="indexwhere">
+
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30, 40})
+idx, ok := c.IndexWhere(func(v int) bool { return v == 30 })
+collection.Dump(idx, ok)
+// 2 #int
+// true #bool
+
+// Example: not found
+idx2, ok2 := c.IndexWhere(func(v int) bool { return v == 99 })
+collection.Dump(idx2, ok2)
+// 0 #int
+// false #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+idx3, ok3 := users.IndexWhere(func(u User) bool {
+	return u.Name == "Bob"
+})
+
+collection.Dump(idx3, ok3)
+// 1 #int
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="indexwhere">
 
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30, 40})
+idx, ok := c.IndexWhere(func(v int) bool { return v == 30 })
+collection.Dump(idx, ok)
+// 2 #int
+// true #bool
 
+// Example: not found
+idx2, ok2 := c.IndexWhere(func(v int) bool { return v == 99 })
+collection.Dump(idx2, ok2)
+// 0 #int
+// false #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+idx3, ok3 := users.IndexWhere(func(u User) bool {
+	return u.Name == "Bob"
+})
+
+collection.Dump(idx3, ok3)
+// 1 #int
+// true #bool
+```
+
+</GoForjExample>
 
 ### IsEmpty · readonly · terminal {#isempty}
 
@@ -2101,13 +4288,130 @@ collection.Dump(empty4)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="isempty">
+
+```go
+// Example: integers (non-empty)
+c := collection.New([]int{1, 2, 3})
+
+empty := c.IsEmpty()
+collection.Dump(empty)
+// false #bool
+
+// Example: strings (empty)
+c2 := collection.New([]string{})
+
+empty2 := c2.IsEmpty()
+collection.Dump(empty2)
+// true #bool
+
+// Example: structs (non-empty)
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+})
+
+empty3 := users.IsEmpty()
+collection.Dump(empty3)
+// false #bool
+
+// Example: structs (empty)
+none := collection.New([]User{})
+
+empty4 := none.IsEmpty()
+collection.Dump(empty4)
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="isempty">
+
+```go
+// Example: integers (non-empty)
+c := collection.New([]int{1, 2, 3})
+
+empty := c.IsEmpty()
+collection.Dump(empty)
+// false #bool
+
+// Example: strings (empty)
+c2 := collection.New([]string{})
+
+empty2 := c2.IsEmpty()
+collection.Dump(empty2)
+// true #bool
+
+// Example: structs (non-empty)
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+})
+
+empty3 := users.IsEmpty()
+collection.Dump(empty3)
+// false #bool
+
+// Example: structs (empty)
+none := collection.New([]User{})
+
+empty4 := none.IsEmpty()
+collection.Dump(empty4)
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="isempty">
 
+```go
+// Example: integers (non-empty)
+c := collection.New([]int{1, 2, 3})
 
+empty := c.IsEmpty()
+collection.Dump(empty)
+// false #bool
 
+// Example: strings (empty)
+c2 := collection.New([]string{})
+
+empty2 := c2.IsEmpty()
+collection.Dump(empty2)
+// true #bool
+
+// Example: structs (non-empty)
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+})
+
+empty3 := users.IsEmpty()
+collection.Dump(empty3)
+// false #bool
+
+// Example: structs (empty)
+none := collection.New([]User{})
+
+empty4 := none.IsEmpty()
+collection.Dump(empty4)
+// true #bool
+```
+
+</GoForjExample>
 
 ### Last · readonly · terminal {#last}
 
@@ -2166,13 +4470,157 @@ collection.Dump(v3, ok4)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="last">
+
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
+
+v, ok := c.Last()
+collection.Dump(v, ok)
+// 30 #int
+// true #bool
+
+// Example: strings
+c2 := collection.New([]string{"alpha", "beta", "gamma"})
+
+v2, ok2 := c2.Last()
+collection.Dump(v2, ok2)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Charlie"},
+})
+
+u, ok3 := users.Last()
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Charlie" #string
+// }
+// true #bool
+
+// Example: empty collection
+c3 := collection.New([]int{})
+
+v3, ok4 := c3.Last()
+collection.Dump(v3, ok4)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="last">
+
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
+
+v, ok := c.Last()
+collection.Dump(v, ok)
+// 30 #int
+// true #bool
+
+// Example: strings
+c2 := collection.New([]string{"alpha", "beta", "gamma"})
+
+v2, ok2 := c2.Last()
+collection.Dump(v2, ok2)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Charlie"},
+})
+
+u, ok3 := users.Last()
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Charlie" #string
+// }
+// true #bool
+
+// Example: empty collection
+c3 := collection.New([]int{})
+
+v3, ok4 := c3.Last()
+collection.Dump(v3, ok4)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="last">
 
+```go
+// Example: integers
+c := collection.New([]int{10, 20, 30})
 
+v, ok := c.Last()
+collection.Dump(v, ok)
+// 30 #int
+// true #bool
 
+// Example: strings
+c2 := collection.New([]string{"alpha", "beta", "gamma"})
+
+v2, ok2 := c2.Last()
+collection.Dump(v2, ok2)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Charlie"},
+})
+
+u, ok3 := users.Last()
+collection.Dump(u, ok3)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Charlie" #string
+// }
+// true #bool
+
+// Example: empty collection
+c3 := collection.New([]int{})
+
+v3, ok4 := c3.Last()
+collection.Dump(v3, ok4)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### LastWhere · readonly · terminal {#lastwhere}
 
@@ -2257,19 +4705,384 @@ collection.Dump(v5, ok6)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="lastwhere">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+
+v, ok := c.LastWhere(func(v int, i int) bool {
+	return v < 3
+})
+collection.Dump(v, ok)
+// 2 #int
+// true #bool
+
+// Example: integers without predicate (equivalent to Last())
+c2 := collection.New([]int{10, 20, 30, 40})
+
+v2, ok2 := c2.LastWhere(nil)
+collection.Dump(v2, ok2)
+// 40 #int
+// true #bool
+
+// Example: strings
+c3 := collection.New([]string{"alpha", "beta", "gamma", "delta"})
+
+v3, ok3 := c3.LastWhere(func(s string, i int) bool {
+	return strings.HasPrefix(s, "g")
+})
+collection.Dump(v3, ok3)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Alex"},
+	{ID: 4, Name: "Brian"},
+})
+
+u, ok4 := users.LastWhere(func(u User, i int) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+collection.Dump(u, ok4)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Alex" #string
+// }
+// true #bool
+
+// Example: no matching element
+c4 := collection.New([]int{5, 6, 7})
+
+v4, ok5 := c4.LastWhere(func(v int, i int) bool {
+	return v > 10
+})
+collection.Dump(v4, ok5)
+// 0 #int
+// false #bool
+
+// Example: empty collection
+c5 := collection.New([]int{})
+
+v5, ok6 := c5.LastWhere(nil)
+collection.Dump(v5, ok6)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="lastwhere">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+
+v, ok := c.LastWhere(func(v int, i int) bool {
+	return v < 3
+})
+collection.Dump(v, ok)
+// 2 #int
+// true #bool
+
+// Example: integers without predicate (equivalent to Last())
+c2 := collection.New([]int{10, 20, 30, 40})
+
+v2, ok2 := c2.LastWhere(nil)
+collection.Dump(v2, ok2)
+// 40 #int
+// true #bool
+
+// Example: strings
+c3 := collection.New([]string{"alpha", "beta", "gamma", "delta"})
+
+v3, ok3 := c3.LastWhere(func(s string, i int) bool {
+	return strings.HasPrefix(s, "g")
+})
+collection.Dump(v3, ok3)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Alex"},
+	{ID: 4, Name: "Brian"},
+})
+
+u, ok4 := users.LastWhere(func(u User, i int) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+collection.Dump(u, ok4)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Alex" #string
+// }
+// true #bool
+
+// Example: no matching element
+c4 := collection.New([]int{5, 6, 7})
+
+v4, ok5 := c4.LastWhere(func(v int, i int) bool {
+	return v > 10
+})
+collection.Dump(v4, ok5)
+// 0 #int
+// false #bool
+
+// Example: empty collection
+c5 := collection.New([]int{})
+
+v5, ok6 := c5.LastWhere(nil)
+collection.Dump(v5, ok6)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="lastwhere">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+
+v, ok := c.LastWhere(func(v int, i int) bool {
+	return v < 3
+})
+collection.Dump(v, ok)
+// 2 #int
+// true #bool
+
+// Example: integers without predicate (equivalent to Last())
+c2 := collection.New([]int{10, 20, 30, 40})
+
+v2, ok2 := c2.LastWhere(nil)
+collection.Dump(v2, ok2)
+// 40 #int
+// true #bool
+
+// Example: strings
+c3 := collection.New([]string{"alpha", "beta", "gamma", "delta"})
+
+v3, ok3 := c3.LastWhere(func(s string, i int) bool {
+	return strings.HasPrefix(s, "g")
+})
+collection.Dump(v3, ok3)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Alex"},
+	{ID: 4, Name: "Brian"},
+})
+
+u, ok4 := users.LastWhere(func(u User, i int) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+collection.Dump(u, ok4)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Alex" #string
+// }
+// true #bool
+
+// Example: no matching element
+c4 := collection.New([]int{5, 6, 7})
+
+v4, ok5 := c4.LastWhere(func(v int, i int) bool {
+	return v > 10
+})
+collection.Dump(v4, ok5)
+// 0 #int
+// false #bool
+
+// Example: empty collection
+c5 := collection.New([]int{})
+
+v5, ok6 := c5.LastWhere(nil)
+collection.Dump(v5, ok6)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="lastwhere">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+
+v, ok := c.LastWhere(func(v int, i int) bool {
+	return v < 3
+})
+collection.Dump(v, ok)
+// 2 #int
+// true #bool
+
+// Example: integers without predicate (equivalent to Last())
+c2 := collection.New([]int{10, 20, 30, 40})
+
+v2, ok2 := c2.LastWhere(nil)
+collection.Dump(v2, ok2)
+// 40 #int
+// true #bool
+
+// Example: strings
+c3 := collection.New([]string{"alpha", "beta", "gamma", "delta"})
+
+v3, ok3 := c3.LastWhere(func(s string, i int) bool {
+	return strings.HasPrefix(s, "g")
+})
+collection.Dump(v3, ok3)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Alex"},
+	{ID: 4, Name: "Brian"},
+})
+
+u, ok4 := users.LastWhere(func(u User, i int) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+collection.Dump(u, ok4)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Alex" #string
+// }
+// true #bool
+
+// Example: no matching element
+c4 := collection.New([]int{5, 6, 7})
+
+v4, ok5 := c4.LastWhere(func(v int, i int) bool {
+	return v > 10
+})
+collection.Dump(v4, ok5)
+// 0 #int
+// false #bool
+
+// Example: empty collection
+c5 := collection.New([]int{})
+
+v5, ok6 := c5.LastWhere(nil)
+collection.Dump(v5, ok6)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="lastwhere">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
 
+v, ok := c.LastWhere(func(v int, i int) bool {
+	return v < 3
+})
+collection.Dump(v, ok)
+// 2 #int
+// true #bool
 
+// Example: integers without predicate (equivalent to Last())
+c2 := collection.New([]int{10, 20, 30, 40})
 
+v2, ok2 := c2.LastWhere(nil)
+collection.Dump(v2, ok2)
+// 40 #int
+// true #bool
 
+// Example: strings
+c3 := collection.New([]string{"alpha", "beta", "gamma", "delta"})
+
+v3, ok3 := c3.LastWhere(func(s string, i int) bool {
+	return strings.HasPrefix(s, "g")
+})
+collection.Dump(v3, ok3)
+// "gamma" #string
+// true #bool
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Alex"},
+	{ID: 4, Name: "Brian"},
+})
+
+u, ok4 := users.LastWhere(func(u User, i int) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+collection.Dump(u, ok4)
+// #main.User {
+//   +ID   => 3 #int
+//   +Name => "Alex" #string
+// }
+// true #bool
+
+// Example: no matching element
+c4 := collection.New([]int{5, 6, 7})
+
+v4, ok5 := c4.LastWhere(func(v int, i int) bool {
+	return v > 10
+})
+collection.Dump(v4, ok5)
+// 0 #int
+// false #bool
+
+// Example: empty collection
+c5 := collection.New([]int{})
+
+v5, ok6 := c5.LastWhere(nil)
+collection.Dump(v5, ok6)
+// 0 #int
+// false #bool
+```
+
+</GoForjExample>
 
 ### None · readonly · terminal {#none}
 
@@ -2302,10 +5115,54 @@ collection.Dump(none)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="none">
+
+```go
+// Example: integers – none even
+c := collection.New([]int{1, 3, 5})
+noneEven := c.None(func(v int) bool { return v%2 == 0 })
+collection.Dump(noneEven)
+// true #bool
+
+// Example: integers – some even
+c2 := collection.New([]int{1, 2, 3})
+noneEven2 := c2.None(func(v int) bool { return v%2 == 0 })
+collection.Dump(noneEven2)
+// false #bool
+
+// Example: empty collection
+empty := collection.New([]int{})
+none := empty.None(func(v int) bool { return v > 0 })
+collection.Dump(none)
+// true #bool
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="none">
 
+```go
+// Example: integers – none even
+c := collection.New([]int{1, 3, 5})
+noneEven := c.None(func(v int) bool { return v%2 == 0 })
+collection.Dump(noneEven)
+// true #bool
 
+// Example: integers – some even
+c2 := collection.New([]int{1, 2, 3})
+noneEven2 := c2.None(func(v int) bool { return v%2 == 0 })
+collection.Dump(noneEven2)
+// false #bool
+
+// Example: empty collection
+empty := collection.New([]int{})
+none := empty.None(func(v int) bool { return v > 0 })
+collection.Dump(none)
+// true #bool
+```
+
+</GoForjExample>
 
 ## Serialization {#serialization}
 
@@ -2412,10 +5269,120 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="difference">
+
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 2, 3, 4})
+b := collection.New([]int{2, 4})
+
+out := collection.Difference(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 3 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana", "cherry"})
+right := collection.New([]string{"banana"})
+
+out2 := collection.Difference(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "cherry" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+})
+
+out3 := collection.Difference(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="difference">
 
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 2, 3, 4})
+b := collection.New([]int{2, 4})
 
+out := collection.Difference(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 3 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana", "cherry"})
+right := collection.New([]string{"banana"})
+
+out2 := collection.Difference(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "cherry" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+})
+
+out3 := collection.Difference(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Intersect · immutable · chainable {#intersect}
 
@@ -2485,10 +5452,128 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="intersect">
+
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 2, 3, 4})
+b := collection.New([]int{2, 4, 4, 5})
+
+out := collection.Intersect(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+//   2 => 4 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana", "cherry"})
+right := collection.New([]string{"banana", "date", "cherry", "banana"})
+
+out2 := collection.Intersect(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "banana" #string
+//   1 => "cherry" #string
+//   2 => "banana" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+	{ID: 4, Name: "Dave"},
+})
+
+out3 := collection.Intersect(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="intersect">
 
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 2, 3, 4})
+b := collection.New([]int{2, 4, 4, 5})
 
+out := collection.Intersect(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+//   2 => 4 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana", "cherry"})
+right := collection.New([]string{"banana", "date", "cherry", "banana"})
+
+out2 := collection.Intersect(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "banana" #string
+//   1 => "cherry" #string
+//   2 => "banana" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+	{ID: 4, Name: "Dave"},
+})
+
+out3 := collection.Intersect(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### SymmetricDifference · immutable · chainable {#symmetricdifference}
 
@@ -2557,10 +5642,124 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="symmetricdifference">
+
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 3, 3})
+b := collection.New([]int{3, 4, 4, 5})
+
+out := collection.SymmetricDifference(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 4 #int
+//   3 => 5 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana"})
+right := collection.New([]string{"banana", "date"})
+
+out2 := collection.SymmetricDifference(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "date" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+out3 := collection.SymmetricDifference(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="symmetricdifference">
 
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 3, 3})
+b := collection.New([]int{3, 4, 4, 5})
 
+out := collection.SymmetricDifference(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 4 #int
+//   3 => 5 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana"})
+right := collection.New([]string{"banana", "date"})
+
+out2 := collection.SymmetricDifference(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "date" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+out3 := collection.SymmetricDifference(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Union · immutable · chainable {#union}
 
@@ -2635,10 +5834,136 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="union">
+
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 2, 3})
+b := collection.New([]int{3, 4, 4, 5})
+
+out := collection.Union(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana"})
+right := collection.New([]string{"banana", "date"})
+
+out2 := collection.Union(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "banana" #string
+//   2 => "date" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+out3 := collection.Union(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="union">
 
+```go
+// Example: integers
+a := collection.New([]int{1, 2, 2, 3})
+b := collection.New([]int{3, 4, 4, 5})
 
+out := collection.Union(a, b)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: strings
+left := collection.New([]string{"apple", "banana"})
+right := collection.New([]string{"banana", "date"})
+
+out2 := collection.Union(left, right)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "banana" #string
+//   2 => "date" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+groupA := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+groupB := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+out3 := collection.Union(groupA, groupB)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Unique · immutable · chainable {#unique}
 
@@ -2705,10 +6030,120 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="unique">
+
+```go
+// Example: integers
+c1 := collection.New([]int{1, 2, 2, 3, 4, 4, 5})
+out1 := c1.Unique(func(a, b int) bool { return a == b })
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+//	2 => 3 #int
+//	3 => 4 #int
+//	4 => 5 #int
+// ]
+
+// Example: strings (case-insensitive uniqueness)
+c2 := collection.New([]string{"A", "a", "B", "b", "A"})
+out2 := c2.Unique(func(a, b string) bool {
+	return strings.EqualFold(a, b)
+})
+collection.Dump(out2.Items())
+// #[]string [
+//	0 => "A" #string
+//	1 => "B" #string
+// ]
+
+// Example: structs (unique by ID)
+type User struct {
+	ID   int
+	Name string
+}
+
+c3 := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 1, Name: "Alice Duplicate"},
+})
+
+out3 := c3.Unique(func(a, b User) bool {
+	return a.ID == b.ID
+})
+
+collection.Dump(out3.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="unique">
 
+```go
+// Example: integers
+c1 := collection.New([]int{1, 2, 2, 3, 4, 4, 5})
+out1 := c1.Unique(func(a, b int) bool { return a == b })
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+//	2 => 3 #int
+//	3 => 4 #int
+//	4 => 5 #int
+// ]
 
+// Example: strings (case-insensitive uniqueness)
+c2 := collection.New([]string{"A", "a", "B", "b", "A"})
+out2 := c2.Unique(func(a, b string) bool {
+	return strings.EqualFold(a, b)
+})
+collection.Dump(out2.Items())
+// #[]string [
+//	0 => "A" #string
+//	1 => "B" #string
+// ]
+
+// Example: structs (unique by ID)
+type User struct {
+	ID   int
+	Name string
+}
+
+c3 := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 1, Name: "Alice Duplicate"},
+})
+
+out3 := c3.Unique(func(a, b User) bool {
+	return a.ID == b.ID
+})
+
+collection.Dump(out3.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### UniqueBy · immutable · chainable {#uniqueby}
 
@@ -2772,10 +6207,116 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="uniqueby">
+
+```go
+// Example: structs – unique by ID
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 1, Name: "Alice Duplicate"},
+})
+
+out := collection.UniqueBy(users, func(u User) int { return u.ID })
+collection.Dump(out.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// ]
+
+// Example: strings – case-insensitive uniqueness
+values := collection.New([]string{"A", "a", "B", "b", "A"})
+
+out2 := collection.UniqueBy(values, func(s string) string {
+	return strings.ToLower(s)
+})
+
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "A" #string
+//   1 => "B" #string
+// ]
+
+// Example: integers – identity key
+nums := collection.New([]int{3, 1, 2, 1, 3})
+
+out3 := collection.UniqueBy(nums, func(v int) int { return v })
+collection.Dump(out3.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 1 #int
+//   2 => 2 #int
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="uniqueby">
 
+```go
+// Example: structs – unique by ID
+type User struct {
+	ID   int
+	Name string
+}
 
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 1, Name: "Alice Duplicate"},
+})
+
+out := collection.UniqueBy(users, func(u User) int { return u.ID })
+collection.Dump(out.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// ]
+
+// Example: strings – case-insensitive uniqueness
+values := collection.New([]string{"A", "a", "B", "b", "A"})
+
+out2 := collection.UniqueBy(values, func(s string) string {
+	return strings.ToLower(s)
+})
+
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "A" #string
+//   1 => "B" #string
+// ]
+
+// Example: integers – identity key
+nums := collection.New([]int{3, 1, 2, 1, 3})
+
+out3 := collection.UniqueBy(nums, func(v int) int { return v })
+collection.Dump(out3.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 1 #int
+//   2 => 2 #int
+// ]
+```
+
+</GoForjExample>
 
 ### UniqueComparable · immutable · chainable {#uniquecomparable}
 
@@ -2813,7 +6354,33 @@ collection.Dump(out2.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="uniquecomparable">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 2, 3, 4, 4, 5})
+out := collection.UniqueComparable(c)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"A", "a", "B", "B"})
+out2 := collection.UniqueComparable(c2)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "A" #string
+//   1 => "a" #string
+//   2 => "B" #string
+// ]
+```
+
+</GoForjExample>
 
 ## Slicing {#slicing}
 
@@ -2888,7 +6455,69 @@ collection.Dump(userChunks)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="chunk">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5}).Chunk(2)
+collection.Dump(c)
+
+// #[][]int [
+//  0 => #[]int [
+//    0 => 1 #int
+//    1 => 2 #int
+//  ]
+//  1 => #[]int [
+//    0 => 3 #int
+//    1 => 4 #int
+//  ]
+//  2 => #[]int [
+//    0 => 5 #int
+//  ]
+//]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := []User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+	{ID: 4, Name: "Dave"},
+}
+
+userChunks := collection.New(users).Chunk(2)
+collection.Dump(userChunks)
+
+// Dump output will show [][]User grouped in size-2 chunks, e.g.:
+// #[][]main.User [
+//  0 => #[]main.User [
+//    0 => #main.User {
+//      +ID   => 1 #int
+//      +Name => "Alice" #string
+//    }
+//    1 => #main.User {
+//      +ID   => 2 #int
+//      +Name => "Bob" #string
+//    }
+//  ]
+//  1 => #[]main.User [
+//    0 => #main.User {
+//      +ID   => 3 #int
+//      +Name => "Carol" #string
+//    }
+//    1 => #main.User {
+//      +ID   => 4 #int
+//      +Name => "Dave" #string
+//    }
+//  ]
+//]
+```
+
+</GoForjExample>
 
 ### Filter · mutable · chainable {#filter}
 
@@ -2954,10 +6583,120 @@ collection.Dump(users.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="filter">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+c.Filter(func(v int) bool {
+	return v%2 == 0
+})
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry", "avocado"})
+c2.Filter(func(v string) bool {
+	return strings.HasPrefix(v, "a")
+})
+collection.Dump(c2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "avocado" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Andrew"},
+	{ID: 4, Name: "Carol"},
+})
+
+users.Filter(func(u User) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Andrew" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="filter">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4})
+c.Filter(func(v int) bool {
+	return v%2 == 0
+})
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+// ]
 
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry", "avocado"})
+c2.Filter(func(v string) bool {
+	return strings.HasPrefix(v, "a")
+})
+collection.Dump(c2.Items())
+// #[]string [
+//   0 => "apple" #string
+//   1 => "avocado" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Andrew"},
+	{ID: 4, Name: "Carol"},
+})
+
+users.Filter(func(u User) bool {
+	return strings.HasPrefix(u.Name, "A")
+})
+
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Andrew" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Partition · immutable · terminal {#partition}
 
@@ -3038,10 +6777,148 @@ collection.Dump(active.Items(), inactive.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="partition">
+
+```go
+// Example: integers - even/odd
+nums := collection.New([]int{1, 2, 3, 4, 5})
+evens, odds := nums.Partition(func(n int) bool {
+	return n%2 == 0
+})
+collection.Dump(evens.Items(), odds.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+// ]
+// #[]int [
+//   0 => 1 #int
+//   1 => 3 #int
+//   2 => 5 #int
+// ]
+
+// Example: strings - prefix match
+words := collection.New([]string{"go", "gopher", "rust", "ruby"})
+goWords, other := words.Partition(func(s string) bool {
+	return strings.HasPrefix(s, "go")
+})
+collection.Dump(goWords.Items(), other.Items())
+// #[]string [
+//   0 => "go" #string
+//   1 => "gopher" #string
+// ]
+// #[]string [
+//   0 => "rust" #string
+//   1 => "ruby" #string
+// ]
+
+// Example: structs - active vs inactive
+type User struct {
+	Name   string
+	Active bool
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Active: true},
+	{Name: "Bob", Active: false},
+	{Name: "Carol", Active: true},
+})
+
+active, inactive := users.Partition(func(u User) bool {
+	return u.Active
+})
+
+collection.Dump(active.Items(), inactive.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name   => "Alice" #string
+//     +Active => true #bool
+//   }
+//   1 => #main.User {
+//     +Name   => "Carol" #string
+//     +Active => true #bool
+//   }
+// ]
+// #[]main.User [
+//   0 => #main.User {
+//     +Name   => "Bob" #string
+//     +Active => false #bool
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="partition">
 
+```go
+// Example: integers - even/odd
+nums := collection.New([]int{1, 2, 3, 4, 5})
+evens, odds := nums.Partition(func(n int) bool {
+	return n%2 == 0
+})
+collection.Dump(evens.Items(), odds.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+// ]
+// #[]int [
+//   0 => 1 #int
+//   1 => 3 #int
+//   2 => 5 #int
+// ]
 
+// Example: strings - prefix match
+words := collection.New([]string{"go", "gopher", "rust", "ruby"})
+goWords, other := words.Partition(func(s string) bool {
+	return strings.HasPrefix(s, "go")
+})
+collection.Dump(goWords.Items(), other.Items())
+// #[]string [
+//   0 => "go" #string
+//   1 => "gopher" #string
+// ]
+// #[]string [
+//   0 => "rust" #string
+//   1 => "ruby" #string
+// ]
+
+// Example: structs - active vs inactive
+type User struct {
+	Name   string
+	Active bool
+}
+
+users := collection.New([]User{
+	{Name: "Alice", Active: true},
+	{Name: "Bob", Active: false},
+	{Name: "Carol", Active: true},
+})
+
+active, inactive := users.Partition(func(u User) bool {
+	return u.Active
+})
+
+collection.Dump(active.Items(), inactive.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name   => "Alice" #string
+//     +Active => true #bool
+//   }
+//   1 => #main.User {
+//     +Name   => "Carol" #string
+//     +Active => true #bool
+//   }
+// ]
+// #[]main.User [
+//   0 => #main.User {
+//     +Name   => "Bob" #string
+//     +Active => false #bool
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Pop · mutable · terminal {#pop}
 
@@ -3111,13 +6988,193 @@ collection.Dump(item4, ok4, empty.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="pop">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+item, ok := c.Pop()
+collection.Dump(item, ok, c.Items())
+// 3 #int
+// true #bool
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"a", "b", "c"})
+item2, ok2 := c2.Pop()
+collection.Dump(item2, ok2, c2.Items())
+// "c" #string
+// true #bool
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+item3, ok3 := users.Pop()
+collection.Dump(item3, ok3, users.Items())
+// #main.User {
+//   +ID   => 2 #int
+//   +Name => "Bob" #string
+// }
+// true #bool
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: empty collection
+empty := collection.New([]int{})
+item4, ok4 := empty.Pop()
+collection.Dump(item4, ok4, empty.Items())
+// 0 #int
+// false #bool
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="pop">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+item, ok := c.Pop()
+collection.Dump(item, ok, c.Items())
+// 3 #int
+// true #bool
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"a", "b", "c"})
+item2, ok2 := c2.Pop()
+collection.Dump(item2, ok2, c2.Items())
+// "c" #string
+// true #bool
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+item3, ok3 := users.Pop()
+collection.Dump(item3, ok3, users.Items())
+// #main.User {
+//   +ID   => 2 #int
+//   +Name => "Bob" #string
+// }
+// true #bool
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: empty collection
+empty := collection.New([]int{})
+item4, ok4 := empty.Pop()
+collection.Dump(item4, ok4, empty.Items())
+// 0 #int
+// false #bool
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="pop">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+item, ok := c.Pop()
+collection.Dump(item, ok, c.Items())
+// 3 #int
+// true #bool
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
 
+// Example: strings
+c2 := collection.New([]string{"a", "b", "c"})
+item2, ok2 := c2.Pop()
+collection.Dump(item2, ok2, c2.Items())
+// "c" #string
+// true #bool
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
 
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+item3, ok3 := users.Pop()
+collection.Dump(item3, ok3, users.Items())
+// #main.User {
+//   +ID   => 2 #int
+//   +Name => "Bob" #string
+// }
+// true #bool
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: empty collection
+empty := collection.New([]int{})
+item4, ok4 := empty.Pop()
+collection.Dump(item4, ok4, empty.Items())
+// 0 #int
+// false #bool
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 ### PopN · mutable · terminal {#popn}
 
@@ -3209,16 +7266,344 @@ collection.Dump(popped5, c4.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="popn">
+
+```go
+// Example: integers – pop 2
+c := collection.New([]int{1, 2, 3, 4})
+popped := c.PopN(2)
+collection.Dump(popped, c.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+// ]
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: strings – pop 1
+c2 := collection.New([]string{"a", "b", "c"})
+popped2 := c2.PopN(1)
+collection.Dump(popped2, c2.Items())
+// #[]string [
+//   0 => "c" #string
+// ]
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
+
+// Example: structs – pop 2
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+popped3 := users.PopN(2)
+collection.Dump(popped3, users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: integers - n <= 0 → returns nil, no change
+c3 := collection.New([]int{1, 2, 3})
+popped4 := c3.PopN(0)
+collection.Dump(popped4, c3.Items())
+// []int(nil)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: strings - n exceeds length → all items popped, rest empty
+c4 := collection.New([]string{"x", "y"})
+popped5 := c4.PopN(10)
+collection.Dump(popped5, c4.Items())
+// #[]string [
+//   0 => "x" #string
+//   1 => "y" #string
+// ]
+// #[]string [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="popn">
+
+```go
+// Example: integers – pop 2
+c := collection.New([]int{1, 2, 3, 4})
+popped := c.PopN(2)
+collection.Dump(popped, c.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+// ]
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: strings – pop 1
+c2 := collection.New([]string{"a", "b", "c"})
+popped2 := c2.PopN(1)
+collection.Dump(popped2, c2.Items())
+// #[]string [
+//   0 => "c" #string
+// ]
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
+
+// Example: structs – pop 2
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+popped3 := users.PopN(2)
+collection.Dump(popped3, users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: integers - n <= 0 → returns nil, no change
+c3 := collection.New([]int{1, 2, 3})
+popped4 := c3.PopN(0)
+collection.Dump(popped4, c3.Items())
+// []int(nil)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: strings - n exceeds length → all items popped, rest empty
+c4 := collection.New([]string{"x", "y"})
+popped5 := c4.PopN(10)
+collection.Dump(popped5, c4.Items())
+// #[]string [
+//   0 => "x" #string
+//   1 => "y" #string
+// ]
+// #[]string [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="popn">
+
+```go
+// Example: integers – pop 2
+c := collection.New([]int{1, 2, 3, 4})
+popped := c.PopN(2)
+collection.Dump(popped, c.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+// ]
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+
+// Example: strings – pop 1
+c2 := collection.New([]string{"a", "b", "c"})
+popped2 := c2.PopN(1)
+collection.Dump(popped2, c2.Items())
+// #[]string [
+//   0 => "c" #string
+// ]
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
+
+// Example: structs – pop 2
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+popped3 := users.PopN(2)
+collection.Dump(popped3, users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: integers - n <= 0 → returns nil, no change
+c3 := collection.New([]int{1, 2, 3})
+popped4 := c3.PopN(0)
+collection.Dump(popped4, c3.Items())
+// []int(nil)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: strings - n exceeds length → all items popped, rest empty
+c4 := collection.New([]string{"x", "y"})
+popped5 := c4.PopN(10)
+collection.Dump(popped5, c4.Items())
+// #[]string [
+//   0 => "x" #string
+//   1 => "y" #string
+// ]
+// #[]string [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="popn">
 
+```go
+// Example: integers – pop 2
+c := collection.New([]int{1, 2, 3, 4})
+popped := c.PopN(2)
+collection.Dump(popped, c.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+// ]
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
 
+// Example: strings – pop 1
+c2 := collection.New([]string{"a", "b", "c"})
+popped2 := c2.PopN(1)
+collection.Dump(popped2, c2.Items())
+// #[]string [
+//   0 => "c" #string
+// ]
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+// ]
 
+// Example: structs – pop 2
+type User struct {
+	ID   int
+	Name string
+}
 
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Carol"},
+})
+
+popped3 := users.PopN(2)
+collection.Dump(popped3, users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+// ]
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+// ]
+
+// Example: integers - n <= 0 → returns nil, no change
+c3 := collection.New([]int{1, 2, 3})
+popped4 := c3.PopN(0)
+collection.Dump(popped4, c3.Items())
+// []int(nil)
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: strings - n exceeds length → all items popped, rest empty
+c4 := collection.New([]string{"x", "y"})
+popped5 := c4.PopN(10)
+collection.Dump(popped5, c4.Items())
+// #[]string [
+//   0 => "x" #string
+//   1 => "y" #string
+// ]
+// #[]string [
+// ]
+```
+
+</GoForjExample>
 
 ### Skip · immutable · chainable {#skip}
 
@@ -3284,13 +7669,172 @@ collection.Dump(out4.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="skip">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.Skip(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+//   2 => 5 #int
+// ]
+
+// Example: skip none
+out2 := c.Skip(0)
+collection.Dump(out2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: skip all
+out3 := c.Skip(10)
+collection.Dump(out3.Items())
+// #[]int [
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.Skip(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 2 #int
+//  }
+//  1 => #main.User {
+//    +ID => 3 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="skip">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.Skip(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+//   2 => 5 #int
+// ]
+
+// Example: skip none
+out2 := c.Skip(0)
+collection.Dump(out2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: skip all
+out3 := c.Skip(10)
+collection.Dump(out3.Items())
+// #[]int [
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.Skip(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 2 #int
+//  }
+//  1 => #main.User {
+//    +ID => 3 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="skip">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.Skip(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 3 #int
+//   1 => 4 #int
+//   2 => 5 #int
+// ]
 
+// Example: skip none
+out2 := c.Skip(0)
+collection.Dump(out2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
 
+// Example: skip all
+out3 := c.Skip(10)
+collection.Dump(out3.Items())
+// #[]int [
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.Skip(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 2 #int
+//  }
+//  1 => #main.User {
+//    +ID => 3 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### SkipLast · immutable · chainable {#skiplast}
 
@@ -3356,13 +7900,172 @@ collection.Dump(out4.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="skiplast">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.SkipLast(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: skip none
+out2 := c.SkipLast(0)
+collection.Dump(out2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: skip all
+out3 := c.SkipLast(10)
+collection.Dump(out3.Items())
+// #[]int [
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.SkipLast(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 1 #int
+//  }
+//  1 => #main.User {
+//    +ID => 2 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="skiplast">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.SkipLast(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: skip none
+out2 := c.SkipLast(0)
+collection.Dump(out2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: skip all
+out3 := c.SkipLast(10)
+collection.Dump(out3.Items())
+// #[]int [
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.SkipLast(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 1 #int
+//  }
+//  1 => #main.User {
+//    +ID => 2 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="skiplast">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.SkipLast(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
 
+// Example: skip none
+out2 := c.SkipLast(0)
+collection.Dump(out2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
 
+// Example: skip all
+out3 := c.SkipLast(10)
+collection.Dump(out3.Items())
+// #[]int [
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.SkipLast(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 1 #int
+//  }
+//  1 => #main.User {
+//    +ID => 2 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### Take · immutable · chainable {#take}
 
@@ -3412,13 +8115,130 @@ collection.Dump(out4.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="take">
+
+```go
+// Example: integers - take first 3
+c1 := collection.New([]int{0, 1, 2, 3, 4, 5})
+out1 := c1.Take(3)
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 0 #int
+//	1 => 1 #int
+//	2 => 2 #int
+// ]
+
+// Example: integers - take last 2 (negative n)
+c2 := collection.New([]int{0, 1, 2, 3, 4, 5})
+out2 := c2.Take(-2)
+collection.Dump(out2.Items())
+// #[]int [
+//	0 => 4 #int
+//	1 => 5 #int
+// ]
+
+// Example: integers - n exceeds length → whole collection
+c3 := collection.New([]int{10, 20})
+out3 := c3.Take(10)
+collection.Dump(out3.Items())
+// #[]int [
+//	0 => 10 #int
+//	1 => 20 #int
+// ]
+
+// Example: integers - zero → empty
+c4 := collection.New([]int{1, 2, 3})
+out4 := c4.Take(0)
+collection.Dump(out4.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="take">
+
+```go
+// Example: integers - take first 3
+c1 := collection.New([]int{0, 1, 2, 3, 4, 5})
+out1 := c1.Take(3)
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 0 #int
+//	1 => 1 #int
+//	2 => 2 #int
+// ]
+
+// Example: integers - take last 2 (negative n)
+c2 := collection.New([]int{0, 1, 2, 3, 4, 5})
+out2 := c2.Take(-2)
+collection.Dump(out2.Items())
+// #[]int [
+//	0 => 4 #int
+//	1 => 5 #int
+// ]
+
+// Example: integers - n exceeds length → whole collection
+c3 := collection.New([]int{10, 20})
+out3 := c3.Take(10)
+collection.Dump(out3.Items())
+// #[]int [
+//	0 => 10 #int
+//	1 => 20 #int
+// ]
+
+// Example: integers - zero → empty
+c4 := collection.New([]int{1, 2, 3})
+out4 := c4.Take(0)
+collection.Dump(out4.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="take">
 
+```go
+// Example: integers - take first 3
+c1 := collection.New([]int{0, 1, 2, 3, 4, 5})
+out1 := c1.Take(3)
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 0 #int
+//	1 => 1 #int
+//	2 => 2 #int
+// ]
 
+// Example: integers - take last 2 (negative n)
+c2 := collection.New([]int{0, 1, 2, 3, 4, 5})
+out2 := c2.Take(-2)
+collection.Dump(out2.Items())
+// #[]int [
+//	0 => 4 #int
+//	1 => 5 #int
+// ]
 
+// Example: integers - n exceeds length → whole collection
+c3 := collection.New([]int{10, 20})
+out3 := c3.Take(10)
+collection.Dump(out3.Items())
+// #[]int [
+//	0 => 10 #int
+//	1 => 20 #int
+// ]
+
+// Example: integers - zero → empty
+c4 := collection.New([]int{1, 2, 3})
+out4 := c4.Take(0)
+collection.Dump(out4.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 ### TakeLast · immutable · chainable {#takelast}
 
@@ -3480,13 +8300,160 @@ collection.Dump(out4.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="takelast">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.TakeLast(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 4 #int
+//   1 => 5 #int
+// ]
+
+// Example: take none
+out2 := c.TakeLast(0)
+collection.Dump(out2.Items())
+// #[]int [
+// ]
+
+// Example: take all
+out3 := c.TakeLast(10)
+collection.Dump(out3.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.TakeLast(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 3 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="takelast">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.TakeLast(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 4 #int
+//   1 => 5 #int
+// ]
+
+// Example: take none
+out2 := c.TakeLast(0)
+collection.Dump(out2.Items())
+// #[]int [
+// ]
+
+// Example: take all
+out3 := c.TakeLast(10)
+collection.Dump(out3.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.TakeLast(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 3 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="takelast">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3, 4, 5})
+out := c.TakeLast(2)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 4 #int
+//   1 => 5 #int
+// ]
 
+// Example: take none
+out2 := c.TakeLast(0)
+collection.Dump(out2.Items())
+// #[]int [
+// ]
 
+// Example: take all
+out3 := c.TakeLast(10)
+collection.Dump(out3.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+//   4 => 5 #int
+// ]
+
+// Example: structs
+type User struct {
+	ID int
+}
+
+users := collection.New([]User{
+	{ID: 1},
+	{ID: 2},
+	{ID: 3},
+})
+
+out4 := users.TakeLast(1)
+collection.Dump(out4.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID => 3 #int
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### TakeUntil · immutable · chainable {#takeuntil}
 
@@ -3527,10 +8494,70 @@ collection.Dump(out6.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="takeuntil">
+
+```go
+// Example: integers - stop at value 3
+c4 := collection.New([]int{1, 2, 3, 4})
+out4 := collection.TakeUntil(c4, 3)
+collection.Dump(out4.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+// ]
+
+// Example: strings - value never appears → full slice
+c5 := collection.New([]string{"a", "b", "c"})
+out5 := collection.TakeUntil(c5, "x")
+collection.Dump(out5.Items())
+// #[]string [
+//	0 => "a" #string
+//	1 => "b" #string
+//	2 => "c" #string
+// ]
+
+// Example: integers - match is first item → empty result
+c6 := collection.New([]int{9, 10, 11})
+out6 := collection.TakeUntil(c6, 9)
+collection.Dump(out6.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="takeuntil">
 
+```go
+// Example: integers - stop at value 3
+c4 := collection.New([]int{1, 2, 3, 4})
+out4 := collection.TakeUntil(c4, 3)
+collection.Dump(out4.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+// ]
 
+// Example: strings - value never appears → full slice
+c5 := collection.New([]string{"a", "b", "c"})
+out5 := collection.TakeUntil(c5, "x")
+collection.Dump(out5.Items())
+// #[]string [
+//	0 => "a" #string
+//	1 => "b" #string
+//	2 => "c" #string
+// ]
+
+// Example: integers - match is first item → empty result
+c6 := collection.New([]int{9, 10, 11})
+out6 := collection.TakeUntil(c6, 9)
+collection.Dump(out6.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 ### TakeUntilFn · immutable · chainable {#takeuntilfn}
 
@@ -3571,10 +8598,70 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="takeuntilfn">
+
+```go
+// Example: integers - stop when value >= 3
+c1 := collection.New([]int{1, 2, 3, 4})
+out1 := c1.TakeUntilFn(func(v int) bool { return v >= 3 })
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+// ]
+
+// Example: integers - predicate immediately true → empty result
+c2 := collection.New([]int{10, 20, 30})
+out2 := c2.TakeUntilFn(func(v int) bool { return v < 50 })
+collection.Dump(out2.Items())
+// #[]int [
+// ]
+
+// Example: integers - no match → full list returned
+c3 := collection.New([]int{1, 2, 3})
+out3 := c3.TakeUntilFn(func(v int) bool { return v == 99 })
+collection.Dump(out3.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+//	2 => 3 #int
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="takeuntilfn">
 
+```go
+// Example: integers - stop when value >= 3
+c1 := collection.New([]int{1, 2, 3, 4})
+out1 := c1.TakeUntilFn(func(v int) bool { return v >= 3 })
+collection.Dump(out1.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+// ]
 
+// Example: integers - predicate immediately true → empty result
+c2 := collection.New([]int{10, 20, 30})
+out2 := c2.TakeUntilFn(func(v int) bool { return v < 50 })
+collection.Dump(out2.Items())
+// #[]int [
+// ]
+
+// Example: integers - no match → full list returned
+c3 := collection.New([]int{1, 2, 3})
+out3 := c3.TakeUntilFn(func(v int) bool { return v == 99 })
+collection.Dump(out3.Items())
+// #[]int [
+//	0 => 1 #int
+//	1 => 2 #int
+//	2 => 3 #int
+// ]
+```
+
+</GoForjExample>
 
 ### Window · allocates · chainable {#window}
 
@@ -3675,10 +8762,188 @@ collection.Dump(win3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="window">
+
+```go
+// Example: integers - step 1
+nums := collection.New([]int{1, 2, 3, 4, 5})
+win := collection.Window(nums, 3, 1)
+collection.Dump(win.Items())
+// #[][]int [
+//   0 => #[]int [
+//     0 => 1 #int
+//     1 => 2 #int
+//     2 => 3 #int
+//   ]
+//   1 => #[]int [
+//     0 => 2 #int
+//     1 => 3 #int
+//     2 => 4 #int
+//   ]
+//   2 => #[]int [
+//     0 => 3 #int
+//     1 => 4 #int
+//     2 => 5 #int
+//   ]
+// ]
+
+// Example: strings - step 2
+words := collection.New([]string{"a", "b", "c", "d", "e"})
+win2 := collection.Window(words, 2, 2)
+collection.Dump(win2.Items())
+// #[][]string [
+//   0 => #[]string [
+//     0 => "a" #string
+//     1 => "b" #string
+//   ]
+//   1 => #[]string [
+//     0 => "c" #string
+//     1 => "d" #string
+//   ]
+// ]
+
+// Example: structs
+type Point struct {
+	X int
+	Y int
+}
+
+points := collection.New([]Point{
+	{X: 0, Y: 0},
+	{X: 1, Y: 1},
+	{X: 2, Y: 4},
+	{X: 3, Y: 9},
+})
+
+win3 := collection.Window(points, 2, 1)
+collection.Dump(win3.Items())
+// #[][]main.Point [
+//   0 => #[]main.Point [
+//     0 => #main.Point {
+//       +X => 0 #int
+//       +Y => 0 #int
+//     }
+//     1 => #main.Point {
+//       +X => 1 #int
+//       +Y => 1 #int
+//     }
+//   ]
+//   1 => #[]main.Point [
+//     0 => #main.Point {
+//       +X => 1 #int
+//       +Y => 1 #int
+//     }
+//     1 => #main.Point {
+//       +X => 2 #int
+//       +Y => 4 #int
+//     }
+//   ]
+//   2 => #[]main.Point [
+//     0 => #main.Point {
+//       +X => 2 #int
+//       +Y => 4 #int
+//     }
+//     1 => #main.Point {
+//       +X => 3 #int
+//       +Y => 9 #int
+//     }
+//   ]
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="window">
 
+```go
+// Example: integers - step 1
+nums := collection.New([]int{1, 2, 3, 4, 5})
+win := collection.Window(nums, 3, 1)
+collection.Dump(win.Items())
+// #[][]int [
+//   0 => #[]int [
+//     0 => 1 #int
+//     1 => 2 #int
+//     2 => 3 #int
+//   ]
+//   1 => #[]int [
+//     0 => 2 #int
+//     1 => 3 #int
+//     2 => 4 #int
+//   ]
+//   2 => #[]int [
+//     0 => 3 #int
+//     1 => 4 #int
+//     2 => 5 #int
+//   ]
+// ]
 
+// Example: strings - step 2
+words := collection.New([]string{"a", "b", "c", "d", "e"})
+win2 := collection.Window(words, 2, 2)
+collection.Dump(win2.Items())
+// #[][]string [
+//   0 => #[]string [
+//     0 => "a" #string
+//     1 => "b" #string
+//   ]
+//   1 => #[]string [
+//     0 => "c" #string
+//     1 => "d" #string
+//   ]
+// ]
+
+// Example: structs
+type Point struct {
+	X int
+	Y int
+}
+
+points := collection.New([]Point{
+	{X: 0, Y: 0},
+	{X: 1, Y: 1},
+	{X: 2, Y: 4},
+	{X: 3, Y: 9},
+})
+
+win3 := collection.Window(points, 2, 1)
+collection.Dump(win3.Items())
+// #[][]main.Point [
+//   0 => #[]main.Point [
+//     0 => #main.Point {
+//       +X => 0 #int
+//       +Y => 0 #int
+//     }
+//     1 => #main.Point {
+//       +X => 1 #int
+//       +Y => 1 #int
+//     }
+//   ]
+//   1 => #[]main.Point [
+//     0 => #main.Point {
+//       +X => 1 #int
+//       +Y => 1 #int
+//     }
+//     1 => #main.Point {
+//       +X => 2 #int
+//       +Y => 4 #int
+//     }
+//   ]
+//   2 => #[]main.Point [
+//     0 => #main.Point {
+//       +X => 2 #int
+//       +Y => 4 #int
+//     }
+//     1 => #main.Point {
+//       +X => 3 #int
+//       +Y => 9 #int
+//     }
+//   ]
+// ]
+```
+
+</GoForjExample>
 
 ## Transformation {#transformation}
 
@@ -3739,7 +9004,56 @@ users.Append(
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="append">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2})
+c.Append(3, 4).Dump()
+// #[]int [
+//  0 => 1 #int
+//  1 => 2 #int
+//  2 => 3 #int
+//  3 => 4 #int
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+users.Append(
+	User{ID: 3, Name: "Carol"},
+	User{ID: 4, Name: "Dave"},
+).Dump()
+
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+//  2 => #main.User {
+//    +ID   => 3 #int
+//    +Name => "Carol" #string
+//  }
+//  3 => #main.User {
+//    +ID   => 4 #int
+//    +Name => "Dave" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### Concat · mutable · chainable {#concat}
 
@@ -3828,10 +9142,118 @@ collection.Dump(names)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="each">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+
+sum := 0
+c.Each(func(v int) {
+	sum += v
+})
+
+collection.Dump(sum)
+// 6 #int
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+
+var out []string
+c2.Each(func(s string) {
+	out = append(out, strings.ToUpper(s))
+})
+
+collection.Dump(out)
+// #[]string [
+//   0 => "APPLE" #string
+//   1 => "BANANA" #string
+//   2 => "CHERRY" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Charlie"},
+})
+
+var names []string
+users.Each(func(u User) {
+	names = append(names, u.Name)
+})
+
+collection.Dump(names)
+// #[]string [
+//   0 => "Alice" #string
+//   1 => "Bob" #string
+//   2 => "Charlie" #string
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="each">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
 
+sum := 0
+c.Each(func(v int) {
+	sum += v
+})
+
+collection.Dump(sum)
+// 6 #int
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+
+var out []string
+c2.Each(func(s string) {
+	out = append(out, strings.ToUpper(s))
+})
+
+collection.Dump(out)
+// #[]string [
+//   0 => "APPLE" #string
+//   1 => "BANANA" #string
+//   2 => "CHERRY" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+	{ID: 3, Name: "Charlie"},
+})
+
+var names []string
+users.Each(func(u User) {
+	names = append(names, u.Name)
+})
+
+collection.Dump(names)
+// #[]string [
+//   0 => "Alice" #string
+//   1 => "Bob" #string
+//   2 => "Charlie" #string
+// ]
+```
+
+</GoForjExample>
 
 ### Map · mutable · chainable {#map}
 
@@ -3901,10 +9323,130 @@ collection.Dump(updated.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="map">
+
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
+
+mapped := c.Map(func(v int) int {
+	return v * 10
+})
+
+collection.Dump(mapped.Items())
+// #[]int [
+//   0 => 10 #int
+//   1 => 20 #int
+//   2 => 30 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+
+upper := c2.Map(func(s string) string {
+	return strings.ToUpper(s)
+})
+
+collection.Dump(upper.Items())
+// #[]string [
+//   0 => "APPLE" #string
+//   1 => "BANANA" #string
+//   2 => "CHERRY" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+updated := users.Map(func(u User) User {
+	u.Name = strings.ToUpper(u.Name)
+	return u
+})
+
+collection.Dump(updated.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "ALICE" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "BOB" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="map">
 
+```go
+// Example: integers
+c := collection.New([]int{1, 2, 3})
 
+mapped := c.Map(func(v int) int {
+	return v * 10
+})
+
+collection.Dump(mapped.Items())
+// #[]int [
+//   0 => 10 #int
+//   1 => 20 #int
+//   2 => 30 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"apple", "banana", "cherry"})
+
+upper := c2.Map(func(s string) string {
+	return strings.ToUpper(s)
+})
+
+collection.Dump(upper.Items())
+// #[]string [
+//   0 => "APPLE" #string
+//   1 => "BANANA" #string
+//   2 => "CHERRY" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+updated := users.Map(func(u User) User {
+	u.Name = strings.ToUpper(u.Name)
+	return u
+})
+
+collection.Dump(updated.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "ALICE" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "BOB" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### MapTo · immutable · chainable {#mapto}
 
@@ -3967,10 +9509,116 @@ collection.Dump(names.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="mapto">
+
+```go
+// Example: integers - extract parity label
+nums := collection.New([]int{1, 2, 3, 4})
+parity := collection.MapTo(nums, func(n int) string {
+	if n%2 == 0 {
+		return "even"
+	}
+	return "odd"
+})
+collection.Dump(parity.Items())
+// #[]string [
+//   0 => "odd" #string
+//   1 => "even" #string
+//   2 => "odd" #string
+//   3 => "even" #string
+// ]
+
+// Example: strings - length of each value
+words := collection.New([]string{"go", "forj", "rocks"})
+lengths := collection.MapTo(words, func(s string) int {
+	return len(s)
+})
+collection.Dump(lengths.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+//   2 => 5 #int
+// ]
+
+// Example: structs - MapTo a field
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+names := collection.MapTo(users, func(u User) string {
+	return u.Name
+})
+
+collection.Dump(names.Items())
+// #[]string [
+//   0 => "Alice" #string
+//   1 => "Bob" #string
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="mapto">
 
+```go
+// Example: integers - extract parity label
+nums := collection.New([]int{1, 2, 3, 4})
+parity := collection.MapTo(nums, func(n int) string {
+	if n%2 == 0 {
+		return "even"
+	}
+	return "odd"
+})
+collection.Dump(parity.Items())
+// #[]string [
+//   0 => "odd" #string
+//   1 => "even" #string
+//   2 => "odd" #string
+//   3 => "even" #string
+// ]
 
+// Example: strings - length of each value
+words := collection.New([]string{"go", "forj", "rocks"})
+lengths := collection.MapTo(words, func(s string) int {
+	return len(s)
+})
+collection.Dump(lengths.Items())
+// #[]int [
+//   0 => 2 #int
+//   1 => 4 #int
+//   2 => 5 #int
+// ]
+
+// Example: structs - MapTo a field
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+names := collection.MapTo(users, func(u User) string {
+	return u.Name
+})
+
+collection.Dump(names.Items())
+// #[]string [
+//   0 => "Alice" #string
+//   1 => "Bob" #string
+// ]
+```
+
+</GoForjExample>
 
 ### Merge · immutable · chainable {#merge}
 
@@ -4047,10 +9695,144 @@ collection.Dump(merged3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="merge">
+
+```go
+// Example: integers - merging slices
+ints := collection.New([]int{1, 2})
+extra := []int{3, 4}
+// Merge the extra slice into the ints collection
+merged1 := ints.Merge(extra)
+collection.Dump(merged1.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
+
+// Example: strings - merging another collection
+strs := collection.New([]string{"a", "b"})
+more := collection.New([]string{"c", "d"})
+
+merged2 := strs.Merge(more)
+collection.Dump(merged2.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "c" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs - merging struct slices
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+moreUsers := []User{
+	{ID: 3, Name: "Carol"},
+	{ID: 4, Name: "Dave"},
+}
+
+merged3 := users.Merge(moreUsers)
+collection.Dump(merged3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+//   3 => #main.User {
+//     +ID   => 4 #int
+//     +Name => "Dave" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="merge">
 
+```go
+// Example: integers - merging slices
+ints := collection.New([]int{1, 2})
+extra := []int{3, 4}
+// Merge the extra slice into the ints collection
+merged1 := ints.Merge(extra)
+collection.Dump(merged1.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
 
+// Example: strings - merging another collection
+strs := collection.New([]string{"a", "b"})
+more := collection.New([]string{"c", "d"})
+
+merged2 := strs.Merge(more)
+collection.Dump(merged2.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "c" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs - merging struct slices
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+moreUsers := []User{
+	{ID: 3, Name: "Carol"},
+	{ID: 4, Name: "Dave"},
+}
+
+merged3 := users.Merge(moreUsers)
+collection.Dump(merged3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +ID   => 3 #int
+//     +Name => "Carol" #string
+//   }
+//   3 => #main.User {
+//     +ID   => 4 #int
+//     +Name => "Dave" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### Multiply · immutable · chainable {#multiply}
 
@@ -4118,13 +9900,184 @@ collection.Dump(none.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="multiply">
+
+```go
+// Example: integers
+ints := collection.New([]int{1, 2})
+out := ints.Multiply(3)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 1 #int
+//   3 => 2 #int
+//   4 => 1 #int
+//   5 => 2 #int
+// ]
+
+// Example: strings
+strs := collection.New([]string{"a", "b"})
+out2 := strs.Multiply(2)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "a" #string
+//   3 => "b" #string
+// ]
+
+// Example: structs
+type User struct {
+	Name string
+}
+
+users := collection.New([]User{{Name: "Alice"}, {Name: "Bob"}})
+out3 := users.Multiply(2)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +Name => "Alice" #string
+//   }
+//   3 => #main.User {
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: multiplying by zero or negative returns empty
+none := ints.Multiply(0)
+collection.Dump(none.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="multiply">
+
+```go
+// Example: integers
+ints := collection.New([]int{1, 2})
+out := ints.Multiply(3)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 1 #int
+//   3 => 2 #int
+//   4 => 1 #int
+//   5 => 2 #int
+// ]
+
+// Example: strings
+strs := collection.New([]string{"a", "b"})
+out2 := strs.Multiply(2)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "a" #string
+//   3 => "b" #string
+// ]
+
+// Example: structs
+type User struct {
+	Name string
+}
+
+users := collection.New([]User{{Name: "Alice"}, {Name: "Bob"}})
+out3 := users.Multiply(2)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +Name => "Alice" #string
+//   }
+//   3 => #main.User {
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: multiplying by zero or negative returns empty
+none := ints.Multiply(0)
+collection.Dump(none.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="multiply">
 
+```go
+// Example: integers
+ints := collection.New([]int{1, 2})
+out := ints.Multiply(3)
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 1 #int
+//   3 => 2 #int
+//   4 => 1 #int
+//   5 => 2 #int
+// ]
 
+// Example: strings
+strs := collection.New([]string{"a", "b"})
+out2 := strs.Multiply(2)
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "a" #string
+//   3 => "b" #string
+// ]
 
+// Example: structs
+type User struct {
+	Name string
+}
+
+users := collection.New([]User{{Name: "Alice"}, {Name: "Bob"}})
+out3 := users.Multiply(2)
+collection.Dump(out3.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +Name => "Bob" #string
+//   }
+//   2 => #main.User {
+//     +Name => "Alice" #string
+//   }
+//   3 => #main.User {
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: multiplying by zero or negative returns empty
+none := ints.Multiply(0)
+collection.Dump(none.Items())
+// #[]int [
+// ]
+```
+
+</GoForjExample>
 
 ### Pipe · readonly · terminal {#pipe}
 
@@ -4188,10 +10141,116 @@ collection.Dump(names)
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="pipe">
+
+```go
+// Example: integers – computing a sum
+c := collection.New([]int{1, 2, 3})
+sum := collection.Pipe(c, func(col *collection.Collection[int]) int {
+	total := 0
+	for _, v := range col.Items() {
+		total += v
+	}
+	return total
+})
+collection.Dump(sum)
+// 6 #int
+
+// Example: strings – joining values
+c2 := collection.New([]string{"a", "b", "c"})
+joined := collection.Pipe(c2, func(col *collection.Collection[string]) string {
+	out := ""
+	for _, v := range col.Items() {
+		out += v
+	}
+	return out
+})
+collection.Dump(joined)
+// "abc" #string
+
+// Example: structs – extracting just the names
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+names := collection.Pipe(users, func(col *collection.Collection[User]) []string {
+	result := make([]string, 0, len(col.Items()))
+	for _, u := range col.Items() {
+		result = append(result, u.Name)
+	}
+	return result
+})
+
+collection.Dump(names)
+// #[]string [
+//   0 => "Alice" #string
+//   1 => "Bob" #string
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="pipe">
 
+```go
+// Example: integers – computing a sum
+c := collection.New([]int{1, 2, 3})
+sum := collection.Pipe(c, func(col *collection.Collection[int]) int {
+	total := 0
+	for _, v := range col.Items() {
+		total += v
+	}
+	return total
+})
+collection.Dump(sum)
+// 6 #int
 
+// Example: strings – joining values
+c2 := collection.New([]string{"a", "b", "c"})
+joined := collection.Pipe(c2, func(col *collection.Collection[string]) string {
+	out := ""
+	for _, v := range col.Items() {
+		out += v
+	}
+	return out
+})
+collection.Dump(joined)
+// "abc" #string
+
+// Example: structs – extracting just the names
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+names := collection.Pipe(users, func(col *collection.Collection[User]) []string {
+	result := make([]string, 0, len(col.Items()))
+	for _, u := range col.Items() {
+		result = append(result, u.Name)
+	}
+	return result
+})
+
+collection.Dump(names)
+// #[]string [
+//   0 => "Alice" #string
+//   1 => "Bob" #string
+// ]
+```
+
+</GoForjExample>
 
 ### Prepend · mutable · chainable {#prepend}
 
@@ -4268,16 +10327,284 @@ collection.Dump(c2.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="prepend">
+
+```go
+// Example: integers
+c := collection.New([]int{3, 4})
+c.Prepend(1, 2)
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
+
+// Example: strings
+letters := collection.New([]string{"c", "d"})
+letters.Prepend("a", "b")
+collection.Dump(letters.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "c" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+})
+
+users.Prepend(User{ID: 1, Name: "Alice"})
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: integers - Prepending into an empty collection
+empty := collection.New([]int{})
+empty.Prepend(9, 8)
+collection.Dump(empty.Items())
+// #[]int [
+//   0 => 9 #int
+//   1 => 8 #int
+// ]
+
+// Example: integers - Prepending no values → no change
+c2 := collection.New([]int{1, 2})
+c2.Prepend()
+collection.Dump(c2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="prepend">
+
+```go
+// Example: integers
+c := collection.New([]int{3, 4})
+c.Prepend(1, 2)
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
+
+// Example: strings
+letters := collection.New([]string{"c", "d"})
+letters.Prepend("a", "b")
+collection.Dump(letters.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "c" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+})
+
+users.Prepend(User{ID: 1, Name: "Alice"})
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: integers - Prepending into an empty collection
+empty := collection.New([]int{})
+empty.Prepend(9, 8)
+collection.Dump(empty.Items())
+// #[]int [
+//   0 => 9 #int
+//   1 => 8 #int
+// ]
+
+// Example: integers - Prepending no values → no change
+c2 := collection.New([]int{1, 2})
+c2.Prepend()
+collection.Dump(c2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="prepend">
+
+```go
+// Example: integers
+c := collection.New([]int{3, 4})
+c.Prepend(1, 2)
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
+
+// Example: strings
+letters := collection.New([]string{"c", "d"})
+letters.Prepend("a", "b")
+collection.Dump(letters.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "c" #string
+//   3 => "d" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+})
+
+users.Prepend(User{ID: 1, Name: "Alice"})
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: integers - Prepending into an empty collection
+empty := collection.New([]int{})
+empty.Prepend(9, 8)
+collection.Dump(empty.Items())
+// #[]int [
+//   0 => 9 #int
+//   1 => 8 #int
+// ]
+
+// Example: integers - Prepending no values → no change
+c2 := collection.New([]int{1, 2})
+c2.Prepend()
+collection.Dump(c2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="prepend">
 
+```go
+// Example: integers
+c := collection.New([]int{3, 4})
+c.Prepend(1, 2)
+collection.Dump(c.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+//   3 => 4 #int
+// ]
 
+// Example: strings
+letters := collection.New([]string{"c", "d"})
+letters.Prepend("a", "b")
+collection.Dump(letters.Items())
+// #[]string [
+//   0 => "a" #string
+//   1 => "b" #string
+//   2 => "c" #string
+//   3 => "d" #string
+// ]
 
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
 
+users := collection.New([]User{
+	{ID: 2, Name: "Bob"},
+})
+
+users.Prepend(User{ID: 1, Name: "Alice"})
+collection.Dump(users.Items())
+// #[]main.User [
+//   0 => #main.User {
+//     +ID   => 1 #int
+//     +Name => "Alice" #string
+//   }
+//   1 => #main.User {
+//     +ID   => 2 #int
+//     +Name => "Bob" #string
+//   }
+// ]
+
+// Example: integers - Prepending into an empty collection
+empty := collection.New([]int{})
+empty.Prepend(9, 8)
+collection.Dump(empty.Items())
+// #[]int [
+//   0 => 9 #int
+//   1 => 8 #int
+// ]
+
+// Example: integers - Prepending no values → no change
+c2 := collection.New([]int{1, 2})
+c2.Prepend()
+collection.Dump(c2.Items())
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+// ]
+```
+
+</GoForjExample>
 
 ### Tap · immutable · chainable {#tap}
 
@@ -4374,10 +10701,182 @@ collection.Dump(users2.Items()) // ensures users2 is used
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="tap">
+
+```go
+// Example: integers - capture intermediate state during a chain
+captured1 := []int{}
+c1 := collection.New([]int{3, 1, 2}).
+	Sort(func(a, b int) bool { return a < b }). // → [1, 2, 3]
+	Tap(func(col *collection.Collection[int]) {
+		captured1 = append([]int(nil), col.Items()...) // snapshot copy
+	}).
+	Filter(func(v int) bool { return v >= 2 }).
+	Dump()
+	// #[]int [
+	//  0 => 2 #int
+	//  1 => 3 #int
+	// ]
+
+// Use BOTH variables so nothing is "declared and not used"
+collection.Dump(c1.Items())
+collection.Dump(captured1)
+// #[]int [
+//  0 => 2 #int
+//  1 => 3 #int
+// ]
+// #[]int [
+//  0 => 1 #int
+//  1 => 2 #int
+//  2 => 3 #int
+// ]
+
+// Example: integers - tap for debugging without changing flow
+c2 := collection.New([]int{10, 20, 30}).
+	Tap(func(col *collection.Collection[int]) {
+		collection.Dump(col.Items())
+		// #[]int [
+		//  0 => 10 #int
+		//  1 => 20 #int
+		//  2 => 30 #int
+		// ]
+	}).
+	Filter(func(v int) bool { return v > 10 })
+
+collection.Dump(c2.Items()) // ensures c2 is used
+// #[]int [
+//  0 => 20 #int
+//  1 => 30 #int
+// ]
+
+// Example: structs - Tap with struct collection
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+users2 := users.Tap(func(col *collection.Collection[User]) {
+	collection.Dump(col.Items())
+	// #[]main.User [
+	//  0 => #main.User {
+	//    +ID   => 1 #int
+	//    +Name => "Alice" #string
+	//  }
+	//  1 => #main.User {
+	//    +ID   => 2 #int
+	//    +Name => "Bob" #string
+	//  }
+	// ]
+})
+
+collection.Dump(users2.Items()) // ensures users2 is used
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="tap">
 
+```go
+// Example: integers - capture intermediate state during a chain
+captured1 := []int{}
+c1 := collection.New([]int{3, 1, 2}).
+	Sort(func(a, b int) bool { return a < b }). // → [1, 2, 3]
+	Tap(func(col *collection.Collection[int]) {
+		captured1 = append([]int(nil), col.Items()...) // snapshot copy
+	}).
+	Filter(func(v int) bool { return v >= 2 }).
+	Dump()
+	// #[]int [
+	//  0 => 2 #int
+	//  1 => 3 #int
+	// ]
 
+// Use BOTH variables so nothing is "declared and not used"
+collection.Dump(c1.Items())
+collection.Dump(captured1)
+// #[]int [
+//  0 => 2 #int
+//  1 => 3 #int
+// ]
+// #[]int [
+//  0 => 1 #int
+//  1 => 2 #int
+//  2 => 3 #int
+// ]
+
+// Example: integers - tap for debugging without changing flow
+c2 := collection.New([]int{10, 20, 30}).
+	Tap(func(col *collection.Collection[int]) {
+		collection.Dump(col.Items())
+		// #[]int [
+		//  0 => 10 #int
+		//  1 => 20 #int
+		//  2 => 30 #int
+		// ]
+	}).
+	Filter(func(v int) bool { return v > 10 })
+
+collection.Dump(c2.Items()) // ensures c2 is used
+// #[]int [
+//  0 => 20 #int
+//  1 => 30 #int
+// ]
+
+// Example: structs - Tap with struct collection
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+users2 := users.Tap(func(col *collection.Collection[User]) {
+	collection.Dump(col.Items())
+	// #[]main.User [
+	//  0 => #main.User {
+	//    +ID   => 1 #int
+	//    +Name => "Alice" #string
+	//  }
+	//  1 => #main.User {
+	//    +ID   => 2 #int
+	//    +Name => "Bob" #string
+	//  }
+	// ]
+})
+
+collection.Dump(users2.Items()) // ensures users2 is used
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "Alice" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "Bob" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### Times · immutable · chainable {#times}
 
@@ -4445,10 +10944,124 @@ collection.Dump(cTimes3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="times">
+
+```go
+// Example: integers - double each index
+cTimes1 := collection.Times(5, func(i int) int {
+	return i * 2
+})
+collection.Dump(cTimes1.Items())
+// #[]int [
+//	0 => 2 #int
+//	1 => 4 #int
+//	2 => 6 #int
+//	3 => 8 #int
+//	4 => 10 #int
+// ]
+
+// Example: strings
+cTimes2 := collection.Times(3, func(i int) string {
+	return fmt.Sprintf("item-%d", i)
+})
+collection.Dump(cTimes2.Items())
+// #[]string [
+//	0 => "item-1" #string
+//	1 => "item-2" #string
+//	2 => "item-3" #string
+// ]
+
+// Example: structs
+type Point struct {
+	X int
+	Y int
+}
+
+cTimes3 := collection.Times(4, func(i int) Point {
+	return Point{X: i, Y: i * i}
+})
+collection.Dump(cTimes3.Items())
+// #[]main.Point [
+//	0 => #main.Point {
+//		+X => 1 #int
+//		+Y => 1 #int
+//	}
+//	1 => #main.Point {
+//		+X => 2 #int
+//		+Y => 4 #int
+//	}
+//	2 => #main.Point {
+//		+X => 3 #int
+//		+Y => 9 #int
+//	}
+//	3 => #main.Point {
+//		+X => 4 #int
+//		+Y => 16 #int
+//	}
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="times">
 
+```go
+// Example: integers - double each index
+cTimes1 := collection.Times(5, func(i int) int {
+	return i * 2
+})
+collection.Dump(cTimes1.Items())
+// #[]int [
+//	0 => 2 #int
+//	1 => 4 #int
+//	2 => 6 #int
+//	3 => 8 #int
+//	4 => 10 #int
+// ]
 
+// Example: strings
+cTimes2 := collection.Times(3, func(i int) string {
+	return fmt.Sprintf("item-%d", i)
+})
+collection.Dump(cTimes2.Items())
+// #[]string [
+//	0 => "item-1" #string
+//	1 => "item-2" #string
+//	2 => "item-3" #string
+// ]
+
+// Example: structs
+type Point struct {
+	X int
+	Y int
+}
+
+cTimes3 := collection.Times(4, func(i int) Point {
+	return Point{X: i, Y: i * i}
+})
+collection.Dump(cTimes3.Items())
+// #[]main.Point [
+//	0 => #main.Point {
+//		+X => 1 #int
+//		+Y => 1 #int
+//	}
+//	1 => #main.Point {
+//		+X => 2 #int
+//		+Y => 4 #int
+//	}
+//	2 => #main.Point {
+//		+X => 3 #int
+//		+Y => 9 #int
+//	}
+//	3 => #main.Point {
+//		+X => 4 #int
+//		+Y => 16 #int
+//	}
+// ]
+```
+
+</GoForjExample>
 
 ### Transform · mutable · terminal {#transform}
 
@@ -4510,10 +11123,114 @@ collection.Dump(c3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="transform">
+
+```go
+// Example: integers
+c1 := collection.New([]int{1, 2, 3})
+c1.Transform(func(v int) int { return v * 2 })
+collection.Dump(c1.Items())
+// #[]int [
+//	0 => 2 #int
+//	1 => 4 #int
+//	2 => 6 #int
+// ]
+
+// Example: strings
+c2 := collection.New([]string{"a", "b", "c"})
+c2.Transform(func(s string) string { return strings.ToUpper(s) })
+collection.Dump(c2.Items())
+// #[]string [
+//	0 => "A" #string
+//	1 => "B" #string
+//	2 => "C" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+c3 := collection.New([]User{
+	{ID: 1, Name: "alice"},
+	{ID: 2, Name: "bob"},
+})
+
+c3.Transform(func(u User) User {
+	u.Name = strings.ToUpper(u.Name)
+	return u
+})
+
+collection.Dump(c3.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "ALICE" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "BOB" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="transform">
 
+```go
+// Example: integers
+c1 := collection.New([]int{1, 2, 3})
+c1.Transform(func(v int) int { return v * 2 })
+collection.Dump(c1.Items())
+// #[]int [
+//	0 => 2 #int
+//	1 => 4 #int
+//	2 => 6 #int
+// ]
 
+// Example: strings
+c2 := collection.New([]string{"a", "b", "c"})
+c2.Transform(func(s string) string { return strings.ToUpper(s) })
+collection.Dump(c2.Items())
+// #[]string [
+//	0 => "A" #string
+//	1 => "B" #string
+//	2 => "C" #string
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+c3 := collection.New([]User{
+	{ID: 1, Name: "alice"},
+	{ID: 2, Name: "bob"},
+})
+
+c3.Transform(func(u User) User {
+	u.Name = strings.ToUpper(u.Name)
+	return u
+})
+
+collection.Dump(c3.Items())
+// #[]main.User [
+//  0 => #main.User {
+//    +ID   => 1 #int
+//    +Name => "ALICE" #string
+//  }
+//  1 => #main.User {
+//    +ID   => 2 #int
+//    +Name => "BOB" #string
+//  }
+// ]
+```
+
+</GoForjExample>
 
 ### Zip · immutable · chainable {#zip}
 
@@ -4577,7 +11294,60 @@ collection.Dump(out2.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="zip">
 
+```go
+// Example: integers and strings
+nums := collection.New([]int{1, 2, 3})
+words := collection.New([]string{"one", "two"})
+
+out := collection.Zip(nums, words)
+collection.Dump(out.Items())
+// #[]collection.Tuple[int,string] [
+//   0 => #collection.Tuple[int,string] {
+//     +First  => 1 #int
+//     +Second => "one" #string
+//   }
+//   1 => #collection.Tuple[int,string] {
+//     +First  => 2 #int
+//     +Second => "two" #string
+//   }
+// ]
+
+// Example: structs
+type User struct {
+	ID   int
+	Name string
+}
+
+users := collection.New([]User{
+	{ID: 1, Name: "Alice"},
+	{ID: 2, Name: "Bob"},
+})
+
+roles := collection.New([]string{"admin", "user", "extra"})
+
+out2 := collection.Zip(users, roles)
+collection.Dump(out2.Items())
+// #[]collection.Tuple[main.User·1,string] [
+//   0 => #collection.Tuple[main.User·1,string] {
+//     +First  => #main.User {
+//       +ID   => 1 #int
+//       +Name => "Alice" #string
+//     }
+//     +Second => "admin" #string
+//   }
+//   1 => #collection.Tuple[main.User·1,string] {
+//     +First  => #main.User {
+//       +ID   => 2 #int
+//       +Name => "Bob" #string
+//     }
+//     +Second => "user" #string
+//   }
+// ]
+```
+
+</GoForjExample>
 
 ### ZipWith · immutable · chainable {#zipwith}
 
@@ -4641,8 +11411,114 @@ collection.Dump(out3.Items())
 </GoForjExample>
 
 
+<GoForjExample repo="collection" example="zipwith">
+
+```go
+// Example: sum ints
+a := collection.New([]int{1, 2, 3})
+b := collection.New([]int{10, 20})
+
+out := collection.ZipWith(a, b, func(x, y int) int {
+	return x + y
+})
+
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 11 #int
+//   1 => 22 #int
+// ]
+
+// Example: format strings
+names := collection.New([]string{"alice", "bob"})
+roles := collection.New([]string{"admin", "user", "extra"})
+
+out2 := collection.ZipWith(names, roles, func(name, role string) string {
+	return name + ":" + role
+})
+
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "alice:admin" #string
+//   1 => "bob:user" #string
+// ]
+
+// Example: structs
+type User struct {
+	Name string
+}
+
+type Role struct {
+	Title string
+}
+
+users := collection.New([]User{{Name: "Alice"}, {Name: "Bob"}})
+roles2 := collection.New([]Role{{Title: "admin"}})
+
+out3 := collection.ZipWith(users, roles2, func(u User, r Role) string {
+	return u.Name + " -> " + r.Title
+})
+
+collection.Dump(out3.Items())
+// #[]string [
+//   0 => "Alice -> admin" #string
+// ]
+```
+
+</GoForjExample>
 
 
+<GoForjExample repo="collection" example="zipwith">
 
+```go
+// Example: sum ints
+a := collection.New([]int{1, 2, 3})
+b := collection.New([]int{10, 20})
 
+out := collection.ZipWith(a, b, func(x, y int) int {
+	return x + y
+})
+
+collection.Dump(out.Items())
+// #[]int [
+//   0 => 11 #int
+//   1 => 22 #int
+// ]
+
+// Example: format strings
+names := collection.New([]string{"alice", "bob"})
+roles := collection.New([]string{"admin", "user", "extra"})
+
+out2 := collection.ZipWith(names, roles, func(name, role string) string {
+	return name + ":" + role
+})
+
+collection.Dump(out2.Items())
+// #[]string [
+//   0 => "alice:admin" #string
+//   1 => "bob:user" #string
+// ]
+
+// Example: structs
+type User struct {
+	Name string
+}
+
+type Role struct {
+	Title string
+}
+
+users := collection.New([]User{{Name: "Alice"}, {Name: "Bob"}})
+roles2 := collection.New([]Role{{Title: "admin"}})
+
+out3 := collection.ZipWith(users, roles2, func(u User, r Role) string {
+	return u.Name + " -> " + r.Title
+})
+
+collection.Dump(out3.Items())
+// #[]string [
+//   0 => "Alice -> admin" #string
+// ]
+```
+
+</GoForjExample>
 <!-- api:embed:end -->

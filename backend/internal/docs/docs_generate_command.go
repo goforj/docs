@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
+	"github.com/gammazero/workerpool"
 	"github.com/goforj/docs/internal/logger"
 )
 
 // GenerateCommand pulls repo READMEs and generates docs pages.
 type GenerateCommand struct {
+	Repo   string `name:"repo" help:"Only generate docs for a single repo slug (e.g. cache, queue, str)"`
+	Fresh  bool   `name:"fresh" help:"Force fresh repo checkout and recompute examples (bypass example cache)"`
 	logger *logger.AppLogger
 }
 
@@ -94,6 +98,20 @@ func (c *GenerateCommand) Run() error {
 			OutputPath: filepath.Join("libraries", "crypt.md"),
 		},
 	}
+	if c.Repo != "" {
+		filtered := make([]RepoConfig, 0, 1)
+		for _, repo := range repos {
+			if repo.Slug == c.Repo {
+				filtered = append(filtered, repo)
+				break
+			}
+		}
+		if len(filtered) == 0 {
+			return fmt.Errorf("unknown repo %q", c.Repo)
+		}
+		repos = filtered
+		c.logger.Info().Any("repo", c.Repo).Msg("Generating docs for filtered repo")
+	}
 
 	docsRoot, err := findDocsRoot()
 	if err != nil {
@@ -101,43 +119,90 @@ func (c *GenerateCommand) Run() error {
 	}
 
 	tempRoot := filepath.Join(os.TempDir(), "goforj-docs")
+	wp := workerpool.New(4)
+	var manifestMu sync.Mutex
+	var errMu sync.Mutex
+	var firstErr error
+
+	setErr := func(err error) {
+		if err == nil {
+			return
+		}
+		errMu.Lock()
+		if firstErr == nil {
+			firstErr = err
+		}
+		errMu.Unlock()
+	}
+
 	for _, repo := range repos {
-		repoDir := filepath.Join(tempRoot, repo.Slug)
-		c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Syncing repo")
-		action, err := cloneRepo(repo.CloneURL, repoDir, repo.Branch)
-		if err != nil {
-			return fmt.Errorf("clone %s: %w", repo.Slug, err)
-		}
-		c.logger.Info().Any("repo", repo.Slug).Any("action", action).Msg("Repo synced")
+		repo := repo
+		wp.Submit(func() {
+			errMu.Lock()
+			if firstErr != nil {
+				errMu.Unlock()
+				return
+			}
+			errMu.Unlock()
 
-		readmePath := filepath.Join(repoDir, "README.md")
-		readmeBytes, err := os.ReadFile(readmePath)
-		if err != nil {
-			return fmt.Errorf("read README for %s: %w", repo.Slug, err)
-		}
+			repoDir := filepath.Join(tempRoot, repo.Slug)
+			if c.Fresh {
+				c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Removing cached repo for fresh run")
+				if err := os.RemoveAll(repoDir); err != nil {
+					setErr(fmt.Errorf("remove cached repo %s: %w", repo.Slug, err))
+					return
+				}
+			}
+			c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Syncing repo")
+			action, err := cloneRepo(repo.CloneURL, repoDir, repo.Branch)
+			if err != nil {
+				setErr(fmt.Errorf("clone %s: %w", repo.Slug, err))
+				return
+			}
+			c.logger.Info().Any("repo", repo.Slug).Any("action", action).Msg("Repo synced")
 
-		examples, err := loadExamplePrograms(filepath.Join(repoDir, "examples"))
-		if err != nil {
-			return fmt.Errorf("load examples for %s: %w", repo.Slug, err)
-		}
-		if err := writeExamplesManifest(repo, examples); err != nil {
-			return fmt.Errorf("write examples manifest for %s: %w", repo.Slug, err)
-		}
+			readmePath := filepath.Join(repoDir, "README.md")
+			readmeBytes, err := os.ReadFile(readmePath)
+			if err != nil {
+				setErr(fmt.Errorf("read README for %s: %w", repo.Slug, err))
+				return
+			}
 
-		rawBase := rawGithubBase(repo, repo.Branch)
-		transformed := transformReadme(string(readmeBytes), repo, rawBase, examples)
-		outputPath := filepath.Join(docsRoot, repo.OutputPath)
-		if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
-			return fmt.Errorf("ensure output dir: %w", err)
-		}
-		if err := os.WriteFile(outputPath, []byte(transformed), 0o644); err != nil {
-			return fmt.Errorf("write docs output: %w", err)
-		}
+			examples, err := loadExamplePrograms(filepath.Join(repoDir, "examples"), c.Fresh)
+			if err != nil {
+				setErr(fmt.Errorf("load examples for %s: %w", repo.Slug, err))
+				return
+			}
 
-		c.logger.Info().
-			Any("repo", repo.Slug).
-			Any("output", outputPath).
-			Msg("Generated docs page")
+			manifestMu.Lock()
+			err = writeExamplesManifest(repo, examples)
+			manifestMu.Unlock()
+			if err != nil {
+				setErr(fmt.Errorf("write examples manifest for %s: %w", repo.Slug, err))
+				return
+			}
+
+			rawBase := rawGithubBase(repo, repo.Branch)
+			transformed := transformReadme(string(readmeBytes), repo, rawBase, examples)
+			outputPath := filepath.Join(docsRoot, repo.OutputPath)
+			if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
+				setErr(fmt.Errorf("ensure output dir for %s: %w", repo.Slug, err))
+				return
+			}
+			if err := os.WriteFile(outputPath, []byte(transformed), 0o644); err != nil {
+				setErr(fmt.Errorf("write docs output for %s: %w", repo.Slug, err))
+				return
+			}
+
+			c.logger.Info().
+				Any("repo", repo.Slug).
+				Any("output", outputPath).
+				Msg("Generated docs page")
+		})
+	}
+	wp.StopWait()
+	if firstErr != nil {
+		return firstErr
 	}
 
 	return nil

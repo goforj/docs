@@ -286,7 +286,18 @@ fmt.Print(out)
 
 WithContext binds the command to a context.
 
+<GoForjExample repo="execx" example="withcontext">
 
+```go
+// Example: with context
+ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+defer cancel()
+res, _ := execx.Command("go", "env", "GOOS").WithContext(ctx).Run()
+fmt.Println(res.ExitCode == 0)
+// #bool true
+```
+
+</GoForjExample>
 
 ### WithDeadline {#withdeadline}
 
@@ -768,7 +779,17 @@ fmt.Println(res.ExitCode == 0)
 
 Start executes the command asynchronously.
 
+<GoForjExample repo="execx" example="start">
 
+```go
+// Example: start
+proc := execx.Command("go", "env", "GOOS").Start()
+res, _ := proc.Wait()
+fmt.Println(res.ExitCode == 0)
+// #bool true
+```
+
+</GoForjExample>
 
 ### OnExecCmd {#onexeccmd}
 
@@ -943,7 +964,18 @@ fmt.Print(out)
 
 Pipe appends a new command to the pipeline. Pipelines run on all platforms.
 
+<GoForjExample repo="execx" example="pipe">
 
+```go
+// Example: pipe
+out, _ := execx.Command("printf", "go").
+	Pipe("tr", "a-z", "A-Z").
+	OutputTrimmed()
+fmt.Println(out)
+// #string GO
+```
+
+</GoForjExample>
 
 ### PipeBestEffort {#pipebesteffort}
 
@@ -1227,7 +1259,41 @@ _, _ = execx.Command("bash", "-c", `echo "hello world"`).
 </GoForjExample>
 
 
+<GoForjExample repo="execx" example="shadowprint">
 
+```go
+// Example: shadow print
+_, _ = execx.Command("bash", "-c", `echo "hello world"`).
+	ShadowPrint().
+	OnStdout(func(line string) { fmt.Println(line) }).
+	Run()
+// execx > bash -c 'echo "hello world"'
+//
+// hello world
+//
+// execx > bash -c 'echo "hello world"' (1ms)
+
+// Example: shadow print options
+mask := func(cmd string) string {
+	return strings.ReplaceAll(cmd, "token", "***")
+}
+formatter := func(ev execx.ShadowEvent) string {
+	return fmt.Sprintf("shadow: %s %s", ev.Phase, ev.Command)
+}
+_, _ = execx.Command("bash", "-c", `echo "hello world"`).
+	ShadowPrint(
+		execx.WithPrefix("execx"),
+		execx.WithMask(mask),
+		execx.WithFormatter(formatter),
+	).
+	OnStdout(func(line string) { fmt.Println(line) }).
+	Run()
+// shadow: before bash -c 'echo "hello world"'
+// hello world
+// shadow: after bash -c 'echo "hello world"'
+```
+
+</GoForjExample>
 
 ### WithFormatter {#withformatter}
 

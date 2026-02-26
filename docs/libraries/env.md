@@ -194,7 +194,23 @@ env.Dump(env.IsAppEnv(env.Production, env.Staging))
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="isappenv">
 
+```go
+// Example: match any allowed environment
+_ = os.Setenv("APP_ENV", "staging")
+env.Dump(env.IsAppEnv(env.Production, env.Staging))
+
+// #bool true
+
+// Example: unmatched environment
+_ = os.Setenv("APP_ENV", "local")
+env.Dump(env.IsAppEnv(env.Production, env.Staging))
+
+// #bool false
+```
+
+</GoForjExample>
 
 ### IsAppEnvLocal · readonly {#isappenvlocal}
 
@@ -280,7 +296,23 @@ env.Dump(env.IsAppEnvTesting())
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="isappenvtesting">
 
+```go
+// Example: APP_ENV explicitly testing
+_ = os.Setenv("APP_ENV", env.Testing)
+env.Dump(env.IsAppEnvTesting())
+
+// #bool true
+
+// Example: no test markers
+_ = os.Unsetenv("APP_ENV")
+env.Dump(env.IsAppEnvTesting())
+
+// #bool false (outside of test binaries)
+```
+
+</GoForjExample>
 
 ### IsAppEnvTestingOrLocal · readonly {#isappenvtestingorlocal}
 
@@ -503,7 +535,30 @@ env.Dump("status", map[string]int{"ok": 1, "fail": 0})
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="dump">
 
+```go
+// Example: integers
+nums := []int{1, 2, 3}
+env.Dump(nums)
+
+// #[]int [
+//   0 => 1 #int
+//   1 => 2 #int
+//   2 => 3 #int
+// ]
+
+// Example: multiple values
+env.Dump("status", map[string]int{"ok": 1, "fail": 0})
+
+// #string "status"
+// #map[string]int [
+//   "fail" => 0 #int
+//   "ok"   => 1 #int
+// ]
+```
+
+</GoForjExample>
 
 ## Environment loading {#environment-loading}
 
@@ -553,7 +608,29 @@ env.Dump(os.Getenv("SERVICE"))
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="loadenvfileifexists">
 
+```go
+// Example: test-specific env file
+tmp, _ := os.MkdirTemp("", "envdoc")
+_ = os.WriteFile(filepath.Join(tmp, ".env.testing"), []byte("PORT=9090\nENV_DEBUG=0"), 0o644)
+_ = os.Chdir(tmp)
+_ = os.Setenv("APP_ENV", env.Testing)
+
+_ = env.LoadEnvFileIfExists()
+env.Dump(os.Getenv("PORT"))
+
+// #string "9090"
+
+// Example: default .env on a host
+_ = os.WriteFile(".env", []byte("SERVICE=api\nENV_DEBUG=3"), 0o644)
+_ = env.LoadEnvFileIfExists()
+env.Dump(os.Getenv("SERVICE"))
+
+// #string "api"
+```
+
+</GoForjExample>
 
 ## Runtime {#runtime}
 
@@ -710,7 +787,25 @@ env.Dump(host)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="get">
 
+```go
+// Example: fallback when unset
+os.Unsetenv("DB_HOST")
+host := env.Get("DB_HOST", "localhost")
+env.Dump(host)
+
+// #string "localhost"
+
+// Example: prefer existing value
+_ = os.Setenv("DB_HOST", "db.internal")
+host = env.Get("DB_HOST", "localhost")
+env.Dump(host)
+
+// #string "db.internal"
+```
+
+</GoForjExample>
 
 ### GetBool · readonly {#getbool}
 
@@ -738,7 +833,25 @@ env.Dump(debug)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getbool">
 
+```go
+// Example: numeric truthy
+_ = os.Setenv("DEBUG", "1")
+debug := env.GetBool("DEBUG", "false")
+env.Dump(debug)
+
+// #bool true
+
+// Example: fallback string
+os.Unsetenv("DEBUG")
+debug = env.GetBool("DEBUG", "false")
+env.Dump(debug)
+
+// #bool false
+```
+
+</GoForjExample>
 
 ### GetDuration · readonly {#getduration}
 
@@ -766,7 +879,25 @@ env.Dump(timeout)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getduration">
 
+```go
+// Example: override request timeout
+_ = os.Setenv("HTTP_TIMEOUT", "30s")
+timeout := env.GetDuration("HTTP_TIMEOUT", "5s")
+env.Dump(timeout)
+
+// #time.Duration 30s
+
+// Example: fallback when unset
+os.Unsetenv("HTTP_TIMEOUT")
+timeout = env.GetDuration("HTTP_TIMEOUT", "5s")
+env.Dump(timeout)
+
+// #time.Duration 5s
+```
+
+</GoForjExample>
 
 ### GetEnum · readonly {#getenum}
 
@@ -794,7 +925,25 @@ env.Dump(appEnv)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getenum">
 
+```go
+// Example: accept only staged environments
+_ = os.Setenv("APP_ENV", "production")
+appEnv := env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
+env.Dump(appEnv)
+
+// #string "production"
+
+// Example: fallback when unset
+os.Unsetenv("APP_ENV")
+appEnv = env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
+env.Dump(appEnv)
+
+// #string "local"
+```
+
+</GoForjExample>
 
 ### GetFloat · readonly {#getfloat}
 
@@ -822,7 +971,25 @@ env.Dump(threshold)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getfloat">
 
+```go
+// Example: override threshold
+_ = os.Setenv("THRESHOLD", "0.82")
+threshold := env.GetFloat("THRESHOLD", "0.75")
+env.Dump(threshold)
+
+// #float64 0.82
+
+// Example: fallback with decimal string
+os.Unsetenv("THRESHOLD")
+threshold = env.GetFloat("THRESHOLD", "0.75")
+env.Dump(threshold)
+
+// #float64 0.75
+```
+
+</GoForjExample>
 
 ### GetInt · readonly {#getint}
 
@@ -850,7 +1017,25 @@ env.Dump(port)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getint">
 
+```go
+// Example: fallback used
+os.Unsetenv("PORT")
+port := env.GetInt("PORT", "3000")
+env.Dump(port)
+
+// #int 3000
+
+// Example: env overrides fallback
+_ = os.Setenv("PORT", "8080")
+port = env.GetInt("PORT", "3000")
+env.Dump(port)
+
+// #int 8080
+```
+
+</GoForjExample>
 
 ### GetInt64 · readonly {#getint64}
 
@@ -878,7 +1063,25 @@ env.Dump(size)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getint64">
 
+```go
+// Example: parse large numbers safely
+_ = os.Setenv("MAX_SIZE", "1048576")
+size := env.GetInt64("MAX_SIZE", "512")
+env.Dump(size)
+
+// #int64 1048576
+
+// Example: fallback when unset
+os.Unsetenv("MAX_SIZE")
+size = env.GetInt64("MAX_SIZE", "512")
+env.Dump(size)
+
+// #int64 512
+```
+
+</GoForjExample>
 
 ### GetMap · readonly {#getmap}
 
@@ -910,7 +1113,29 @@ env.Dump(limits)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getmap">
 
+```go
+// Example: parse throttling config
+_ = os.Setenv("LIMITS", "read=10, write=5, burst=20")
+limits := env.GetMap("LIMITS", "")
+env.Dump(limits)
+
+// #map[string]string [
+//  "burst" => "20" #string
+//  "read"  => "10" #string
+//  "write" => "5" #string
+// ]
+
+// Example: returns empty map when unset or blank
+os.Unsetenv("LIMITS")
+limits = env.GetMap("LIMITS", "")
+env.Dump(limits)
+
+// #map[string]string []
+```
+
+</GoForjExample>
 
 ### GetSlice · readonly {#getslice}
 
@@ -941,7 +1166,28 @@ env.Dump(peers)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getslice">
 
+```go
+// Example: trimmed addresses
+_ = os.Setenv("PEERS", "10.0.0.1, 10.0.0.2")
+peers := env.GetSlice("PEERS", "")
+env.Dump(peers)
+
+// #[]string [
+//  0 => "10.0.0.1" #string
+//  1 => "10.0.0.2" #string
+// ]
+
+// Example: empty becomes empty slice
+os.Unsetenv("PEERS")
+peers = env.GetSlice("PEERS", "")
+env.Dump(peers)
+
+// #[]string []
+```
+
+</GoForjExample>
 
 ### GetUint · readonly {#getuint}
 
@@ -969,7 +1215,25 @@ env.Dump(workers)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getuint">
 
+```go
+// Example: defaults to fallback when missing
+os.Unsetenv("WORKERS")
+workers := env.GetUint("WORKERS", "4")
+env.Dump(workers)
+
+// #uint 4
+
+// Example: uses provided unsigned value
+_ = os.Setenv("WORKERS", "16")
+workers = env.GetUint("WORKERS", "4")
+env.Dump(workers)
+
+// #uint 16
+```
+
+</GoForjExample>
 
 ### GetUint64 · readonly {#getuint64}
 
@@ -997,7 +1261,25 @@ env.Dump(maxItems)
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="getuint64">
 
+```go
+// Example: high range values
+_ = os.Setenv("MAX_ITEMS", "5000")
+maxItems := env.GetUint64("MAX_ITEMS", "100")
+env.Dump(maxItems)
+
+// #uint64 5000
+
+// Example: fallback when unset
+os.Unsetenv("MAX_ITEMS")
+maxItems = env.GetUint64("MAX_ITEMS", "100")
+env.Dump(maxItems)
+
+// #uint64 100
+```
+
+</GoForjExample>
 
 ### MustGet · panic {#mustget}
 
@@ -1022,7 +1304,22 @@ secret = env.MustGet("API_SECRET") // panics: env variable missing: API_SECRET
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="mustget">
 
+```go
+// Example: required secret
+_ = os.Setenv("API_SECRET", "s3cr3t")
+secret := env.MustGet("API_SECRET")
+env.Dump(secret)
+
+// #string "s3cr3t"
+
+// Example: panic on missing value
+os.Unsetenv("API_SECRET")
+secret = env.MustGet("API_SECRET") // panics: env variable missing: API_SECRET
+```
+
+</GoForjExample>
 
 ### MustGetBool · panic {#mustgetbool}
 
@@ -1047,7 +1344,22 @@ _ = env.MustGetBool("FEATURE_ENABLED") // panics when parsing
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="mustgetbool">
 
+```go
+// Example: gate features explicitly
+_ = os.Setenv("FEATURE_ENABLED", "true")
+enabled := env.MustGetBool("FEATURE_ENABLED")
+env.Dump(enabled)
+
+// #bool true
+
+// Example: panic on invalid value
+_ = os.Setenv("FEATURE_ENABLED", "maybe")
+_ = env.MustGetBool("FEATURE_ENABLED") // panics when parsing
+```
+
+</GoForjExample>
 
 ### MustGetInt · panic {#mustgetint}
 
@@ -1072,7 +1384,22 @@ _ = env.MustGetInt("PORT") // panics when parsing
 </GoForjExample>
 
 
+<GoForjExample repo="env" example="mustgetint">
 
+```go
+// Example: ensure numeric port
+_ = os.Setenv("PORT", "8080")
+port := env.MustGetInt("PORT")
+env.Dump(port)
+
+// #int 8080
+
+// Example: panic on bad value
+_ = os.Setenv("PORT", "not-a-number")
+_ = env.MustGetInt("PORT") // panics when parsing
+```
+
+</GoForjExample>
 <!-- api:embed:end -->
 
 ## Philosophy {#philosophy}

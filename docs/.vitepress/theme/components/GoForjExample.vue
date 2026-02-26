@@ -32,6 +32,14 @@ const apiBase = (apiBaseEnv || defaultApiBase).replace(/\/$/, '')
 
 const buildUrl = (path) => `${apiBase}${path}`
 
+const combinedRunOutput = computed(() => {
+  if (!runResult.value) return ''
+  const out = runResult.value.stdout || ''
+  const err = runResult.value.stderr || ''
+  if (out && err) return `${out}\n${err}`
+  return out || err
+})
+
 const fetchDetails = async () => {
   isLoading.value = true
   errorMessage.value = ''
@@ -51,7 +59,7 @@ const fetchDetails = async () => {
 const runExample = async () => {
   isRunning.value = true
   errorMessage.value = ''
-  runResult.value = ''
+  runResult.value = null
   try {
     const response = await fetch(buildUrl(`/api/v1/examples/${props.repo}/${props.example}/run`), {
       method: 'POST'
@@ -73,7 +81,7 @@ const ansiToHtml = (input) => {
   }
   // Strip non-SGR ANSI CSI sequences (e.g. ESC[K erase-to-EOL) that the
   // lightweight renderer does not implement and would otherwise leak as "[K".
-  input = input.replace(/\u001b\[[0-9;?]*[A-LO-Zcf-nqrysu=><]/g, '')
+  input = input.replace(/\u001b\[[0-9;?]*[A-LO-Zcf-lnqrysu=><]/g, '')
 
   const escapeHtml = (value) =>
     value
@@ -218,6 +226,7 @@ onMounted(() => {
           {{ isLoading ? 'Loading example…' : 'Code unavailable.' }}
         </p>
         <button
+          v-if="!runResult"
           class="gf-example__run gf-example__run--inline"
           type="button"
           :disabled="isLoading || isRunning"
@@ -227,11 +236,15 @@ onMounted(() => {
         </button>
       </div>
       <div class="gf-example__panel" v-if="isRunning || runResult">
-        <pre class="gf-example__code gf-example_output" v-if="runResult && runResult.stdout"><code v-html="ansiToHtml(runResult.stdout)"></code></pre>
+        <div class="gf-example__output-wrap" v-if="runResult">
+          <div class="gf-example__output-label">Output</div>
+          <div class="gf-example__output-meta">
+            Exit {{ runResult.exitCode }} · {{ runResult.durationMs }}ms
+          </div>
+          <pre class="gf-example__code gf-example_output" v-if="combinedRunOutput"><code v-html="ansiToHtml(combinedRunOutput)"></code></pre>
+          <pre class="gf-example__code gf-example_output gf-example__no-output" v-else><code>No output from example.</code></pre>
+        </div>
         <p v-else-if="isRunning" class="gf-example__placeholder">Running…</p>
-        <p v-if="runResult" class="gf-example__meta-line">
-          Exit {{ runResult.exitCode }} · {{ runResult.durationMs }}ms
-        </p>
       </div>
     </div>
 
