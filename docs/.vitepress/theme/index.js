@@ -149,14 +149,14 @@ function initLightbox() {
   state.caption = overlay.querySelector('.gf-lightbox-caption')
 }
 
-function stickyOffset() {
+function stickyOffset(extraPadding = 0) {
   if (typeof document === 'undefined') return 0
   const nav = document.querySelector('.VPNav')
   const localNav = document.querySelector('.VPLocalNav')
   const navBottom = nav ? nav.getBoundingClientRect().bottom : 0
   const localNavBottom = localNav ? localNav.getBoundingClientRect().bottom : 0
   const offset = Math.max(navBottom > 0 ? navBottom : 0, localNavBottom > 0 ? localNavBottom : 0)
-  return Math.ceil(offset) + 8
+  return Math.ceil(offset) + 8 + extraPadding
 }
 
 function getHashTarget(hash) {
@@ -166,44 +166,48 @@ function getHashTarget(hash) {
   return document.getElementById(id)
 }
 
-function desiredHashTop(target) {
-  return Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
+function desiredHashTop(target, extraPadding = 0) {
+  return Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset(extraPadding))
 }
 
-function scrollToHashWithOffset(hash, behavior = 'auto') {
+function scrollToHashWithOffset(hash, behavior = 'auto', extraPadding = 0) {
   if (typeof window === 'undefined' || !hash) return
   const target = getHashTarget(hash)
   if (!target) return
-  const top = desiredHashTop(target)
+  const top = desiredHashTop(target, extraPadding)
   if (Math.abs(window.scrollY - top) < 18) return
   window.scrollTo({ left: 0, top, behavior })
 }
 
-function isHashTargetMisaligned(hash) {
+function isHashTargetMisaligned(hash, extraPadding = 0) {
   if (typeof window === 'undefined' || !hash) return false
   const target = getHashTarget(hash)
   if (!target) return false
-  const desiredTop = desiredHashTop(target)
+  const desiredTop = desiredHashTop(target, extraPadding)
   const distance = Math.abs(window.scrollY - desiredTop)
   const rectTop = target.getBoundingClientRect().top
-  const hiddenBehindNav = rectTop < (stickyOffset() - 4)
+  const hiddenBehindNav = rectTop < (stickyOffset(extraPadding) - 4)
   return hiddenBehindNav || distance >= 18
 }
 
-function scheduleHashSettlePasses(hash, timers) {
+function scheduleHashSettlePasses(hash, timers, options = {}) {
   if (typeof window === 'undefined' || !hash) return
+  const {
+    smoothFirst = true,
+    verifyDelays = [320, 560, 840],
+    extraPadding = 0
+  } = options
   const delays = [
-    { ms: 140, behavior: 'smooth', always: true },
-    { ms: 320, behavior: 'auto', always: false },
-    { ms: 560, behavior: 'auto', always: false },
-    { ms: 840, behavior: 'auto', always: false }
+    ...(smoothFirst ? [{ ms: 140, behavior: 'smooth', always: true }] : []),
+    ...(smoothFirst ? [] : [{ ms: 140, behavior: 'auto', always: false }]),
+    ...verifyDelays.map((ms) => ({ ms, behavior: 'auto', always: false }))
   ]
 
   delays.forEach(({ ms, behavior, always }) => {
     const timer = window.setTimeout(() => {
       if (window.location.hash !== hash) return
-      if (!always && !isHashTargetMisaligned(hash)) return
-      scrollToHashWithOffset(hash, behavior)
+      if (!always && !isHashTargetMisaligned(hash, extraPadding)) return
+      scrollToHashWithOffset(hash, behavior, extraPadding)
     }, ms)
     timers.push(timer)
   })
@@ -220,7 +224,11 @@ function restoreDeferredInitialHash() {
     if (!payload || payload.path !== currentPath || !payload.hash) return
     history.replaceState(history.state || {}, '', `${currentPath}${payload.hash}`)
     const timers = []
-    scheduleHashSettlePasses(payload.hash, timers)
+    scheduleHashSettlePasses(payload.hash, timers, {
+      smoothFirst: false,
+      verifyDelays: [320, 560, 840, 1200],
+      extraPadding: 6
+    })
   } catch {
     // no-op
   }
@@ -284,7 +292,10 @@ export default {
       // VitePress does the initial hash scroll first. Do one smooth settle pass,
       // then guarded verification passes only if still misaligned.
       const hash = window.location.hash
-      scheduleHashSettlePasses(hash, routeHashTimers)
+      scheduleHashSettlePasses(hash, routeHashTimers, {
+        smoothFirst: true,
+        verifyDelays: [320, 560, 840, 1200]
+      })
     }
 
     onMounted(() => {
@@ -297,7 +308,11 @@ export default {
         if (typeof window === 'undefined' || !window.location.hash) return
         routeHashTimers.forEach((id) => window.clearTimeout(id))
         routeHashTimers = []
-        scheduleHashSettlePasses(window.location.hash, routeHashTimers)
+        // Same-page hash clicks/TOC jumps: avoid adding another smooth jump.
+        scheduleHashSettlePasses(window.location.hash, routeHashTimers, {
+          smoothFirst: false,
+          verifyDelays: [320, 560, 840]
+        })
       }
       window.addEventListener('hashchange', onHashChange)
     })
