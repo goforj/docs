@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted, ref, useSlots } from 'vue'
+import { computed, onMounted, ref, useSlots } from 'vue'
 
 const props = defineProps({
   repo: { type: String, required: true },
@@ -32,65 +32,6 @@ const apiBase = (apiBaseEnv || defaultApiBase).replace(/\/$/, '')
 
 const buildUrl = (path) => `${apiBase}${path}`
 
-const stickyOffset = () => {
-  if (typeof window === 'undefined') {
-    return 0
-  }
-  const nav = document.querySelector('.VPNav')
-  const localNav = document.querySelector('.VPLocalNav')
-  let offset = 0
-  if (nav) {
-    offset += nav.getBoundingClientRect().height
-  }
-  if (localNav) {
-    offset += localNav.getBoundingClientRect().height
-  }
-  return Math.ceil(offset) + 8
-}
-
-const reapplyHashScroll = async () => {
-  if (typeof window === 'undefined') {
-    return
-  }
-  const hash = window.location.hash
-  if (!hash) {
-    return
-  }
-
-  await nextTick()
-  const key = `${window.location.pathname}${window.location.hash}`
-  const state = (window.__goforjHashScrollState ||= {
-    key: '',
-    runs: 0,
-    timer: null
-  })
-  if (state.key !== key) {
-    state.key = key
-    state.runs = 0
-  }
-  if (state.runs >= 1) {
-    return
-  }
-  if (state.timer) {
-    window.clearTimeout(state.timer)
-    state.timer = null
-  }
-
-  state.timer = window.setTimeout(() => {
-    state.timer = null
-    const id = decodeURIComponent(hash.slice(1))
-    const target = document.getElementById(id) || document.querySelector(hash)
-    if (target) {
-      state.runs += 1
-      const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
-      // Avoid visible "bounce" when the browser already landed close enough.
-      if (Math.abs(window.scrollY - top) > 24) {
-        window.scrollTo({ top, behavior: 'auto' })
-      }
-    }
-  }, 80)
-}
-
 const fetchDetails = async () => {
   isLoading.value = true
   errorMessage.value = ''
@@ -104,7 +45,6 @@ const fetchDetails = async () => {
     errorMessage.value = error instanceof Error ? error.message : 'Failed to load example.'
   } finally {
     isLoading.value = false
-    reapplyHashScroll()
   }
 }
 
@@ -251,7 +191,6 @@ const ansiToHtml = (input) => {
 }
 
 onMounted(() => {
-  reapplyHashScroll()
   if (hasSlot.value) {
     isLoading.value = false
     return

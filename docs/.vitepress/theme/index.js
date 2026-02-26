@@ -5,6 +5,7 @@ import GoForjExample from './components/GoForjExample.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
+const HASH_NAV_KEY = '__goforjHashNavState'
 
 function getLightboxState() {
   if (typeof window === 'undefined') return null
@@ -147,6 +148,88 @@ function initLightbox() {
   state.caption = overlay.querySelector('.gf-lightbox-caption')
 }
 
+function getHashNavState() {
+  if (typeof window === 'undefined') return null
+  if (!window[HASH_NAV_KEY]) {
+    window[HASH_NAV_KEY] = {
+      initialized: false,
+      timer: null,
+      key: ''
+    }
+  }
+  return window[HASH_NAV_KEY]
+}
+
+function stickyOffset() {
+  if (typeof document === 'undefined') return 0
+  const nav = document.querySelector('.VPNav')
+  const localNav = document.querySelector('.VPLocalNav')
+  let offset = 0
+  if (nav) offset += nav.getBoundingClientRect().height
+  if (localNav) offset += localNav.getBoundingClientRect().height
+  return Math.ceil(offset) + 8
+}
+
+function scrollToHashWithOffset(hash) {
+  if (typeof window === 'undefined' || !hash) return
+  let target = null
+  const id = decodeURIComponent(hash.replace(/^#/, ''))
+  if (id) {
+    target = document.getElementById(id)
+  }
+  if (!target) {
+    try {
+      target = document.querySelector(hash)
+    } catch {
+      target = null
+    }
+  }
+  if (!target) return
+  const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - stickyOffset())
+  window.scrollTo({ top, behavior: 'auto' })
+}
+
+function scheduleHashScroll(hash = window.location.hash, delay = 300) {
+  if (typeof window === 'undefined' || !hash) return
+  const state = getHashNavState()
+  if (!state) return
+  const key = `${window.location.pathname}${hash}`
+  state.key = key
+  if (state.timer) {
+    window.clearTimeout(state.timer)
+    state.timer = null
+  }
+  state.timer = window.setTimeout(() => {
+    state.timer = null
+    // Only run if we're still on the same path+hash that scheduled this.
+    if (`${window.location.pathname}${window.location.hash}` !== key) return
+    scrollToHashWithOffset(hash)
+  }, delay)
+}
+
+function initHashNavigationControl() {
+  const state = getHashNavState()
+  if (!state || state.initialized) return
+  state.initialized = true
+
+  document.addEventListener('click', (event) => {
+    const anchor = event.target instanceof Element ? event.target.closest('a[href]') : null
+    if (!(anchor instanceof HTMLAnchorElement)) return
+    const href = anchor.getAttribute('href') || ''
+    if (!href || !href.startsWith('#')) return
+    if (href === '#') return
+    event.preventDefault()
+    if (window.location.hash !== href) {
+      history.pushState(null, '', href)
+    }
+    scheduleHashScroll(href, 300)
+  }, true)
+
+  window.addEventListener('hashchange', () => {
+    scheduleHashScroll(window.location.hash, 300)
+  })
+}
+
 export default {
   ...DefaultTheme,
   setup() {
@@ -160,11 +243,18 @@ export default {
 
     onMounted(() => {
       initLightbox()
+      initHashNavigationControl()
       refreshSoon()
+      if (window.location.hash) {
+        scheduleHashScroll(window.location.hash, 300)
+      }
     })
 
     watch(() => route.path, () => {
       refreshSoon()
+      if (window.location.hash) {
+        scheduleHashScroll(window.location.hash, 300)
+      }
     })
   },
   enhanceApp({ app }) {
