@@ -74,18 +74,13 @@ fmt.Println(out)
 
 Pipelines run on all platforms; command availability is OS-specific.
 
-<GoForjExample repo="execx" example="pipe">
-
 ```go
-// Example: pipe
 out, _ := execx.Command("printf", "go").
 	Pipe("tr", "a-z", "A-Z").
 	OutputTrimmed()
 fmt.Println(out)
 // #string GO
 ```
-
-</GoForjExample>
 
 On Windows, use `cmd /c` or `powershell -Command` for shell built-ins.
 
@@ -94,18 +89,13 @@ On Windows, use `cmd /c` or `powershell -Command` for shell built-ins.
 
 ## Context & cancellation {#context-&-cancellation}
 
-<GoForjExample repo="execx" example="withcontext">
-
 ```go
-// Example: with context
 ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 defer cancel()
 res, _ := execx.Command("go", "env", "GOOS").WithContext(ctx).Run()
 fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
-
-</GoForjExample>
 
 ## Environment & I/O control {#environment-&-i/o-control}
 
@@ -131,17 +121,12 @@ fmt.Println(out)
 
 For process control, use `Start` with the `Process` helpers:
 
-<GoForjExample repo="execx" example="start">
-
 ```go
-// Example: start
 proc := execx.Command("go", "env", "GOOS").Start()
 res, _ := proc.Wait()
 fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
-
-</GoForjExample>
 
 Signals, timeouts, and OS controls are documented in the API section below.
 
@@ -149,44 +134,42 @@ ShadowPrint is available for emitting the command line before and after executio
 
 ## Kitchen Sink Chaining Example {#kitchen-sink-chaining-example}
 
-<GoForjExample repo="execx" example="kitchensink">
-
 ```go
+// Run executes the command and returns the result and any error.
+
 ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 defer cancel()
 
 res, err := execx.
-	Command("printf", "hello\nworld\n").
-	Pipe("tr", "a-z", "A-Z").
-	Env("MODE=demo").
-	WithContext(ctx).
-	OnStdout(func(line string) {
-		fmt.Println("OUT:", line)
-	}).
-	OnStderr(func(line string) {
-		fmt.Println("ERR:", line)
-	}).
-	Run()
+    Command("printf", "hello\nworld\n").
+    Pipe("tr", "a-z", "A-Z").
+    Env("MODE=demo").
+    WithContext(ctx).
+    OnStdout(func(line string) {
+        fmt.Println("OUT:", line)
+    }).
+    OnStderr(func(line string) {
+        fmt.Println("ERR:", line)
+    }).
+    Run()
 
-if !res.OK() {
-	log.Fatalf("command failed: %v", err)
-}
+    if !res.OK() {
+        log.Fatalf("command failed: %v", err)
+    }
 
-fmt.Printf("Stdout: %q\n", res.Stdout)
-fmt.Printf("Stderr: %q\n", res.Stderr)
-fmt.Printf("ExitCode: %d\n", res.ExitCode)
-fmt.Printf("Error: %v\n", res.Err)
-fmt.Printf("Duration: %v\n", res.Duration)
-// OUT: HELLO
-// OUT: WORLD
-// Stdout: "HELLO\nWORLD\n"
-// Stderr: ""
-// ExitCode: 0
-// Error: <nil>
-// Duration: 10.123456ms
+    fmt.Printf("Stdout: %q\n", res.Stdout)
+    fmt.Printf("Stderr: %q\n", res.Stderr)
+    fmt.Printf("ExitCode: %d\n", res.ExitCode)
+    fmt.Printf("Error: %v\n", res.Err)
+    fmt.Printf("Duration: %v\n", res.Duration)
+    // OUT: HELLO
+    // OUT: WORLD
+    // Stdout: "HELLO\nWORLD\n"
+    // Stderr: ""
+    // ExitCode: 0
+    // Error: <nil>
+    // Duration: 10.123456ms
 ```
-
-</GoForjExample>
 
 ## Error handling model {#error-handling-model}
 
@@ -250,17 +233,12 @@ All public APIs are covered by runnable examples under `./examples`, and the tes
 
 Arg appends arguments to the command.
 
-<GoForjExample repo="execx" example="arg">
-
 ```go
-// Example: add args
 cmd := execx.Command("printf").Arg("hello")
 out, _ := cmd.Output()
 fmt.Print(out)
 // hello
 ```
-
-</GoForjExample>
 
 ## Construction {#construction}
 
@@ -268,17 +246,12 @@ fmt.Print(out)
 
 Command constructs a new command without executing it.
 
-<GoForjExample repo="execx" example="command">
-
 ```go
-// Example: command
 cmd := execx.Command("printf", "hello")
 out, _ := cmd.Output()
 fmt.Print(out)
 // hello
 ```
-
-</GoForjExample>
 
 ## Context {#context}
 
@@ -286,10 +259,7 @@ fmt.Print(out)
 
 WithContext binds the command to a context.
 
-<GoForjExample repo="execx" example="withcontext">
-
 ```go
-// Example: with context
 ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 defer cancel()
 res, _ := execx.Command("go", "env", "GOOS").WithContext(ctx).Run()
@@ -297,37 +267,25 @@ fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
 
-</GoForjExample>
-
 ### WithDeadline {#withdeadline}
 
 WithDeadline binds the command to a deadline.
 
-<GoForjExample repo="execx" example="withdeadline">
-
 ```go
-// Example: with deadline
 res, _ := execx.Command("go", "env", "GOOS").WithDeadline(time.Now().Add(2 * time.Second)).Run()
 fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
 
-</GoForjExample>
-
 ### WithTimeout {#withtimeout}
 
 WithTimeout binds the command to a timeout.
 
-<GoForjExample repo="execx" example="withtimeout">
-
 ```go
-// Example: with timeout
 res, _ := execx.Command("go", "env", "GOOS").WithTimeout(2 * time.Second).Run()
 fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
-
-</GoForjExample>
 
 ## Debugging {#debugging}
 
@@ -335,46 +293,31 @@ fmt.Println(res.ExitCode == 0)
 
 Args returns the argv slice used for execution.
 
-<GoForjExample repo="execx" example="args">
-
 ```go
-// Example: args
 cmd := execx.Command("go", "env", "GOOS")
 fmt.Println(strings.Join(cmd.Args(), " "))
 // #string go env GOOS
 ```
 
-</GoForjExample>
-
 ### ShellEscaped {#shellescaped}
 
 ShellEscaped returns a shell-escaped string for logging only.
 
-<GoForjExample repo="execx" example="shellescaped">
-
 ```go
-// Example: shell escaped
 cmd := execx.Command("echo", "hello world", "it's")
 fmt.Println(cmd.ShellEscaped())
 // #string echo 'hello world' "it's"
 ```
 
-</GoForjExample>
-
 ### String {#string}
 
 String returns a human-readable representation of the command.
 
-<GoForjExample repo="execx" example="string">
-
 ```go
-// Example: string
 cmd := execx.Command("echo", "hello world", "it's")
 fmt.Println(cmd.String())
 // #string echo "hello world" it's
 ```
-
-</GoForjExample>
 
 ## Decoding {#decoding}
 
@@ -383,10 +326,7 @@ fmt.Println(cmd.String())
 Decode configures a custom decoder for this command.
 Decoding reads from stdout by default; use FromStdout, FromStderr, or FromCombined to select a source.
 
-<GoForjExample repo="execx" example="decode">
-
 ```go
-// Example: decode custom
 type payload struct {
 	Name string
 }
@@ -410,17 +350,12 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### DecodeJSON {#decodejson}
 
 DecodeJSON configures JSON decoding for this command.
 Decoding reads from stdout by default; use FromStdout, FromStderr, or FromCombined to select a source.
 
-<GoForjExample repo="execx" example="decodejson">
-
 ```go
-// Example: decode json
 type payload struct {
 	Name string `json:"name"`
 }
@@ -432,16 +367,11 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### DecodeWith {#decodewith}
 
 DecodeWith executes the command and decodes stdout into dst.
 
-<GoForjExample repo="execx" example="decodewith">
-
 ```go
-// Example: decode with
 type payload struct {
 	Name string `json:"name"`
 }
@@ -452,17 +382,12 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### DecodeYAML {#decodeyaml}
 
 DecodeYAML configures YAML decoding for this command.
 Decoding reads from stdout by default; use FromStdout, FromStderr, or FromCombined to select a source.
 
-<GoForjExample repo="execx" example="decodeyaml">
-
 ```go
-// Example: decode yaml
 type payload struct {
 	Name string `yaml:"name"`
 }
@@ -474,16 +399,11 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### FromCombined {#fromcombined}
 
 FromCombined decodes from combined stdout+stderr.
 
-<GoForjExample repo="execx" example="fromcombined">
-
 ```go
-// Example: decode combined
 type payload struct {
 	Name string `json:"name"`
 }
@@ -496,16 +416,11 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### FromStderr {#fromstderr}
 
 FromStderr decodes from stderr.
 
-<GoForjExample repo="execx" example="fromstderr">
-
 ```go
-// Example: decode from stderr
 type payload struct {
 	Name string `json:"name"`
 }
@@ -518,16 +433,11 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### FromStdout {#fromstdout}
 
 FromStdout decodes from stdout (default).
 
-<GoForjExample repo="execx" example="fromstdout">
-
 ```go
-// Example: decode from stdout
 type payload struct {
 	Name string `json:"name"`
 }
@@ -540,16 +450,11 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### Into {#into}
 
 Into executes the command and decodes into dst.
 
-<GoForjExample repo="execx" example="into">
-
 ```go
-// Example: decode into
 type payload struct {
 	Name string `json:"name"`
 }
@@ -561,16 +466,11 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ### Trim {#trim}
 
 Trim trims whitespace before decoding.
 
-<GoForjExample repo="execx" example="trim">
-
 ```go
-// Example: decode trim
 type payload struct {
 	Name string `json:"name"`
 }
@@ -583,84 +483,57 @@ fmt.Println(out.Name)
 // #string gopher
 ```
 
-</GoForjExample>
-
 ## Environment {#environment}
 
 ### Env {#env}
 
 Env adds environment variables to the command.
 
-<GoForjExample repo="execx" example="env">
-
 ```go
-// Example: set env
 cmd := execx.Command("go", "env", "GOOS").Env("MODE=prod")
 fmt.Println(strings.Contains(strings.Join(cmd.EnvList(), ","), "MODE=prod"))
 // #bool true
 ```
 
-</GoForjExample>
-
 ### EnvAppend {#envappend}
 
 EnvAppend merges variables into the inherited environment.
 
-<GoForjExample repo="execx" example="envappend">
-
 ```go
-// Example: append env
 cmd := execx.Command("go", "env", "GOOS").EnvAppend(map[string]string{"A": "1"})
 fmt.Println(strings.Contains(strings.Join(cmd.EnvList(), ","), "A=1"))
 // #bool true
 ```
 
-</GoForjExample>
-
 ### EnvInherit {#envinherit}
 
 EnvInherit restores default environment inheritance.
 
-<GoForjExample repo="execx" example="envinherit">
-
 ```go
-// Example: inherit env
 cmd := execx.Command("go", "env", "GOOS").EnvInherit()
 fmt.Println(len(cmd.EnvList()) > 0)
 // #bool true
 ```
 
-</GoForjExample>
-
 ### EnvList {#envlist}
 
 EnvList returns the environment list for execution.
 
-<GoForjExample repo="execx" example="envlist">
-
 ```go
-// Example: env list
 cmd := execx.Command("go", "env", "GOOS").EnvOnly(map[string]string{"A": "1"})
 fmt.Println(strings.Join(cmd.EnvList(), ","))
 // #string A=1
 ```
-
-</GoForjExample>
 
 ### EnvOnly {#envonly}
 
 EnvOnly ignores the parent environment.
 
-<GoForjExample repo="execx" example="envonly">
-
 ```go
-// Example: replace env
 cmd := execx.Command("go", "env", "GOOS").EnvOnly(map[string]string{"A": "1"})
 fmt.Println(strings.Join(cmd.EnvList(), ","))
 // #string A=1
 ```
-
-</GoForjExample>
 
 ## Errors {#errors}
 
@@ -668,31 +541,21 @@ fmt.Println(strings.Join(cmd.EnvList(), ","))
 
 Error returns the wrapped error message when available.
 
-<GoForjExample repo="execx" example="error">
-
 ```go
-// Example: error string
 err := execx.ErrExec{Err: fmt.Errorf("boom")}
 fmt.Println(err.Error())
 // #string boom
 ```
 
-</GoForjExample>
-
 ### Unwrap {#unwrap}
 
 Unwrap exposes the underlying error.
 
-<GoForjExample repo="execx" example="unwrap">
-
 ```go
-// Example: unwrap
 err := execx.ErrExec{Err: fmt.Errorf("boom")}
 fmt.Println(err.Unwrap() != nil)
 // #bool true
 ```
-
-</GoForjExample>
 
 ## Execution {#execution}
 
@@ -700,10 +563,7 @@ fmt.Println(err.Unwrap() != nil)
 
 CombinedOutput executes the command and returns stdout+stderr and any error.
 
-<GoForjExample repo="execx" example="combinedoutput">
-
 ```go
-// Example: combined output
 out, err := execx.Command("go", "env", "-badflag").CombinedOutput()
 fmt.Print(out)
 fmt.Println(err == nil)
@@ -713,92 +573,62 @@ fmt.Println(err == nil)
 // false
 ```
 
-</GoForjExample>
-
 ### Output {#output}
 
 Output executes the command and returns stdout and any error.
 
-<GoForjExample repo="execx" example="output">
-
 ```go
-// Example: output
 out, _ := execx.Command("printf", "hello").Output()
 fmt.Print(out)
 // hello
 ```
 
-</GoForjExample>
-
 ### OutputBytes {#outputbytes}
 
 OutputBytes executes the command and returns stdout bytes and any error.
 
-<GoForjExample repo="execx" example="outputbytes">
-
 ```go
-// Example: output bytes
 out, _ := execx.Command("printf", "hello").OutputBytes()
 fmt.Println(string(out))
 // #string hello
 ```
 
-</GoForjExample>
-
 ### OutputTrimmed {#outputtrimmed}
 
 OutputTrimmed executes the command and returns trimmed stdout and any error.
 
-<GoForjExample repo="execx" example="outputtrimmed">
-
 ```go
-// Example: output trimmed
 out, _ := execx.Command("printf", "hello\n").OutputTrimmed()
 fmt.Println(out)
 // #string hello
 ```
 
-</GoForjExample>
-
 ### Run {#run}
 
 Run executes the command and returns the result and any error.
 
-<GoForjExample repo="execx" example="run">
-
 ```go
-// Example: run
 res, _ := execx.Command("go", "env", "GOOS").Run()
 fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
 
-</GoForjExample>
-
 ### Start {#start}
 
 Start executes the command asynchronously.
 
-<GoForjExample repo="execx" example="start">
-
 ```go
-// Example: start
 proc := execx.Command("go", "env", "GOOS").Start()
 res, _ := proc.Wait()
 fmt.Println(res.ExitCode == 0)
 // #bool true
 ```
 
-</GoForjExample>
-
 ### OnExecCmd {#onexeccmd}
 
 OnExecCmd registers a callback to mutate the underlying exec.Cmd before start.
 
-<GoForjExample repo="execx" example="onexeccmd">
-
 ```go
-// Example: exec cmd
 _, _ = execx.Command("printf", "hi").
 	OnExecCmd(func(cmd *exec.Cmd) {
 		cmd.Env = append(cmd.Env, "EXAMPLE=1")
@@ -806,18 +636,13 @@ _, _ = execx.Command("printf", "hi").
 	Run()
 ```
 
-</GoForjExample>
-
 ## Input {#input}
 
 ### StdinBytes {#stdinbytes}
 
 StdinBytes sets stdin from bytes.
 
-<GoForjExample repo="execx" example="stdinbytes">
-
 ```go
-// Example: stdin bytes
 out, _ := execx.Command("cat").
 	StdinBytes([]byte("hi")).
 	Output()
@@ -825,16 +650,11 @@ fmt.Println(out)
 // #string hi
 ```
 
-</GoForjExample>
-
 ### StdinFile {#stdinfile}
 
 StdinFile sets stdin from a file.
 
-<GoForjExample repo="execx" example="stdinfile">
-
 ```go
-// Example: stdin file
 file, _ := os.CreateTemp("", "execx-stdin")
 _, _ = file.WriteString("hi")
 _, _ = file.Seek(0, 0)
@@ -845,16 +665,11 @@ fmt.Println(out)
 // #string hi
 ```
 
-</GoForjExample>
-
 ### StdinReader {#stdinreader}
 
 StdinReader sets stdin from an io.Reader.
 
-<GoForjExample repo="execx" example="stdinreader">
-
 ```go
-// Example: stdin reader
 out, _ := execx.Command("cat").
 	StdinReader(strings.NewReader("hi")).
 	Output()
@@ -862,16 +677,11 @@ fmt.Println(out)
 // #string hi
 ```
 
-</GoForjExample>
-
 ### StdinString {#stdinstring}
 
 StdinString sets stdin from a string.
 
-<GoForjExample repo="execx" example="stdinstring">
-
 ```go
-// Example: stdin string
 out, _ := execx.Command("cat").
 	StdinString("hi").
 	Output()
@@ -879,84 +689,57 @@ fmt.Println(out)
 // #string hi
 ```
 
-</GoForjExample>
-
 ## OS Controls {#os-controls}
 
 ### CreationFlags {#creationflags}
 
 CreationFlags is a no-op on non-Windows platforms; on Windows it sets process creation flags.
 
-<GoForjExample repo="execx" example="creationflags">
-
 ```go
-// Example: creation flags
 out, _ := execx.Command("printf", "ok").CreationFlags(execx.CreateNewProcessGroup).Output()
 fmt.Print(out)
 // ok
 ```
 
-</GoForjExample>
-
 ### HideWindow {#hidewindow}
 
 HideWindow is a no-op on non-Windows platforms; on Windows it hides console windows.
 
-<GoForjExample repo="execx" example="hidewindow">
-
 ```go
-// Example: hide window
 out, _ := execx.Command("printf", "ok").HideWindow(true).Output()
 fmt.Print(out)
 // ok
 ```
 
-</GoForjExample>
-
 ### Pdeathsig {#pdeathsig}
 
 Pdeathsig is a no-op on non-Linux platforms; on Linux it signals the child when the parent exits.
 
-<GoForjExample repo="execx" example="pdeathsig">
-
 ```go
-// Example: pdeathsig
 out, _ := execx.Command("printf", "ok").Pdeathsig(syscall.SIGTERM).Output()
 fmt.Print(out)
 // ok
 ```
 
-</GoForjExample>
-
 ### Setpgid {#setpgid}
 
 Setpgid places the child in a new process group for group signals.
 
-<GoForjExample repo="execx" example="setpgid">
-
 ```go
-// Example: setpgid
 out, _ := execx.Command("printf", "ok").Setpgid(true).Output()
 fmt.Print(out)
 // ok
 ```
 
-</GoForjExample>
-
 ### Setsid {#setsid}
 
 Setsid starts the child in a new session, detaching it from the terminal.
 
-<GoForjExample repo="execx" example="setsid">
-
 ```go
-// Example: setsid
 out, _ := execx.Command("printf", "ok").Setsid(true).Output()
 fmt.Print(out)
 // ok
 ```
-
-</GoForjExample>
 
 ## Pipelining {#pipelining-2}
 
@@ -964,10 +747,7 @@ fmt.Print(out)
 
 Pipe appends a new command to the pipeline. Pipelines run on all platforms.
 
-<GoForjExample repo="execx" example="pipe">
-
 ```go
-// Example: pipe
 out, _ := execx.Command("printf", "go").
 	Pipe("tr", "a-z", "A-Z").
 	OutputTrimmed()
@@ -975,16 +755,11 @@ fmt.Println(out)
 // #string GO
 ```
 
-</GoForjExample>
-
 ### PipeBestEffort {#pipebesteffort}
 
 PipeBestEffort sets best-effort pipeline semantics (run all stages, surface the first error).
 
-<GoForjExample repo="execx" example="pipebesteffort">
-
 ```go
-// Example: best effort
 res, _ := execx.Command("false").
 	Pipe("printf", "ok").
 	PipeBestEffort().
@@ -993,16 +768,11 @@ fmt.Print(res.Stdout)
 // ok
 ```
 
-</GoForjExample>
-
 ### PipeStrict {#pipestrict}
 
 PipeStrict sets strict pipeline semantics (stop on first failure).
 
-<GoForjExample repo="execx" example="pipestrict">
-
 ```go
-// Example: strict
 res, _ := execx.Command("false").
 	Pipe("printf", "ok").
 	PipeStrict().
@@ -1011,16 +781,11 @@ fmt.Println(res.ExitCode != 0)
 // #bool true
 ```
 
-</GoForjExample>
-
 ### PipelineResults {#pipelineresults}
 
 PipelineResults executes the command and returns per-stage results and any error.
 
-<GoForjExample repo="execx" example="pipelineresults">
-
 ```go
-// Example: pipeline results
 results, _ := execx.Command("printf", "go").
 	Pipe("tr", "a-z", "A-Z").
 	PipelineResults()
@@ -1031,18 +796,13 @@ fmt.Printf("%+v", results)
 // ]
 ```
 
-</GoForjExample>
-
 ## Process {#process}
 
 ### GracefulShutdown {#gracefulshutdown}
 
 GracefulShutdown sends a signal and escalates to kill after the timeout.
 
-<GoForjExample repo="execx" example="gracefulshutdown">
-
 ```go
-// Example: graceful shutdown
 proc := execx.Command("sleep", "2").Start()
 _ = proc.GracefulShutdown(os.Interrupt, 100*time.Millisecond)
 res, _ := proc.Wait()
@@ -1050,16 +810,11 @@ fmt.Println(res.IsSignal(os.Interrupt))
 // #bool true
 ```
 
-</GoForjExample>
-
 ### Interrupt {#interrupt}
 
 Interrupt sends an interrupt signal to the process.
 
-<GoForjExample repo="execx" example="interrupt">
-
 ```go
-// Example: interrupt
 proc := execx.Command("sleep", "2").Start()
 _ = proc.Interrupt()
 res, _ := proc.Wait()
@@ -1067,16 +822,11 @@ fmt.Printf("%+v", res)
 // {Stdout: Stderr: ExitCode:-1 Err:<nil> Duration:75.987ms signal:interrupt}
 ```
 
-</GoForjExample>
-
 ### KillAfter {#killafter}
 
 KillAfter terminates the process after the given duration.
 
-<GoForjExample repo="execx" example="killafter">
-
 ```go
-// Example: kill after
 proc := execx.Command("sleep", "2").Start()
 proc.KillAfter(100 * time.Millisecond)
 res, _ := proc.Wait()
@@ -1084,16 +834,11 @@ fmt.Printf("%+v", res)
 // {Stdout: Stderr: ExitCode:-1 Err:<nil> Duration:100.456ms signal:killed}
 ```
 
-</GoForjExample>
-
 ### Send {#send}
 
 Send sends a signal to the process.
 
-<GoForjExample repo="execx" example="send">
-
 ```go
-// Example: send signal
 proc := execx.Command("sleep", "2").Start()
 _ = proc.Send(os.Interrupt)
 res, _ := proc.Wait()
@@ -1101,16 +846,11 @@ fmt.Printf("%+v", res)
 // {Stdout: Stderr: ExitCode:-1 Err:<nil> Duration:80.123ms signal:interrupt}
 ```
 
-</GoForjExample>
-
 ### Terminate {#terminate}
 
 Terminate kills the process immediately.
 
-<GoForjExample repo="execx" example="terminate">
-
 ```go
-// Example: terminate
 proc := execx.Command("sleep", "2").Start()
 _ = proc.Terminate()
 res, _ := proc.Wait()
@@ -1118,16 +858,11 @@ fmt.Printf("%+v", res)
 // {Stdout: Stderr: ExitCode:-1 Err:<nil> Duration:70.654ms signal:killed}
 ```
 
-</GoForjExample>
-
 ### Wait {#wait}
 
 Wait waits for the command to complete and returns the result and any error.
 
-<GoForjExample repo="execx" example="wait">
-
 ```go
-// Example: wait
 proc := execx.Command("go", "env", "GOOS").Start()
 res, _ := proc.Wait()
 fmt.Printf("%+v", res)
@@ -1135,54 +870,37 @@ fmt.Printf("%+v", res)
 // Stderr: ExitCode:0 Err:<nil> Duration:1.234ms signal:<nil>}
 ```
 
-</GoForjExample>
-
 ## Results {#results}
 
 ### IsExitCode {#isexitcode}
 
 IsExitCode reports whether the exit code matches.
 
-<GoForjExample repo="execx" example="isexitcode">
-
 ```go
-// Example: exit code
 res, _ := execx.Command("go", "env", "GOOS").Run()
 fmt.Println(res.IsExitCode(0))
 // #bool true
 ```
 
-</GoForjExample>
-
 ### IsSignal {#issignal}
 
 IsSignal reports whether the command terminated due to a signal.
 
-<GoForjExample repo="execx" example="issignal">
-
 ```go
-// Example: signal
 res, _ := execx.Command("go", "env", "GOOS").Run()
 fmt.Println(res.IsSignal(os.Interrupt))
 // false
 ```
 
-</GoForjExample>
-
 ### OK {#ok}
 
 OK reports whether the command exited cleanly without errors.
 
-<GoForjExample repo="execx" example="ok">
-
 ```go
-// Example: ok
 res, _ := execx.Command("go", "env", "GOOS").Run()
 fmt.Println(res.OK())
 // #bool true
 ```
-
-</GoForjExample>
 
 ## Shadow Print {#shadow-print}
 
@@ -1190,23 +908,15 @@ fmt.Println(res.OK())
 
 ShadowOff disables shadow printing for this command chain, preserving configuration.
 
-<GoForjExample repo="execx" example="shadowoff">
-
 ```go
-// Example: shadow off
 _, _ = execx.Command("printf", "hi").ShadowPrint().ShadowOff().Run()
 ```
-
-</GoForjExample>
 
 ### ShadowOn {#shadowon}
 
 ShadowOn enables shadow printing using the previously configured options.
 
-<GoForjExample repo="execx" example="shadowon">
-
 ```go
-// Example: shadow on
 cmd := execx.Command("printf", "hi").
 	ShadowPrint(execx.WithPrefix("run"))
 cmd.ShadowOff()
@@ -1215,17 +925,13 @@ _, _ = cmd.ShadowOn().Run()
 // run > printf hi (1ms)
 ```
 
-</GoForjExample>
-
 ### ShadowPrint {#shadowprint}
 
 ShadowPrint configures shadow printing for this command chain.
 
-
-<GoForjExample repo="execx" example="shadowprint">
+_Example: shadow print_
 
 ```go
-// Example: shadow print
 _, _ = execx.Command("bash", "-c", `echo "hello world"`).
 	ShadowPrint().
 	OnStdout(func(line string) { fmt.Println(line) }).
@@ -1235,8 +941,11 @@ _, _ = execx.Command("bash", "-c", `echo "hello world"`).
 // hello world
 //
 // execx > bash -c 'echo "hello world"' (1ms)
+```
 
-// Example: shadow print options
+_Example: shadow print options_
+
+```go
 mask := func(cmd string) string {
 	return strings.ReplaceAll(cmd, "token", "***")
 }
@@ -1255,54 +964,12 @@ _, _ = execx.Command("bash", "-c", `echo "hello world"`).
 // hello world
 // shadow: after bash -c 'echo "hello world"'
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="execx" example="shadowprint">
-
-```go
-// Example: shadow print
-_, _ = execx.Command("bash", "-c", `echo "hello world"`).
-	ShadowPrint().
-	OnStdout(func(line string) { fmt.Println(line) }).
-	Run()
-// execx > bash -c 'echo "hello world"'
-//
-// hello world
-//
-// execx > bash -c 'echo "hello world"' (1ms)
-
-// Example: shadow print options
-mask := func(cmd string) string {
-	return strings.ReplaceAll(cmd, "token", "***")
-}
-formatter := func(ev execx.ShadowEvent) string {
-	return fmt.Sprintf("shadow: %s %s", ev.Phase, ev.Command)
-}
-_, _ = execx.Command("bash", "-c", `echo "hello world"`).
-	ShadowPrint(
-		execx.WithPrefix("execx"),
-		execx.WithMask(mask),
-		execx.WithFormatter(formatter),
-	).
-	OnStdout(func(line string) { fmt.Println(line) }).
-	Run()
-// shadow: before bash -c 'echo "hello world"'
-// hello world
-// shadow: after bash -c 'echo "hello world"'
-```
-
-</GoForjExample>
 
 ### WithFormatter {#withformatter}
 
 WithFormatter sets a formatter for ShadowPrint output.
 
-<GoForjExample repo="execx" example="withformatter">
-
 ```go
-// Example: shadow formatter
 formatter := func(ev execx.ShadowEvent) string {
 	return fmt.Sprintf("shadow: %s %s", ev.Phase, ev.Command)
 }
@@ -1311,16 +978,11 @@ _, _ = execx.Command("printf", "hi").ShadowPrint(execx.WithFormatter(formatter))
 // shadow: after printf hi
 ```
 
-</GoForjExample>
-
 ### WithMask {#withmask}
 
 WithMask applies a masker to the shadow-printed command string.
 
-<GoForjExample repo="execx" example="withmask">
-
 ```go
-// Example: shadow mask
 mask := func(cmd string) string {
 	return strings.ReplaceAll(cmd, "secret", "***")
 }
@@ -1329,22 +991,15 @@ _, _ = execx.Command("printf", "secret").ShadowPrint(execx.WithMask(mask)).Run()
 // execx > printf *** (1ms)
 ```
 
-</GoForjExample>
-
 ### WithPrefix {#withprefix}
 
 WithPrefix sets the shadow print prefix.
 
-<GoForjExample repo="execx" example="withprefix">
-
 ```go
-// Example: shadow prefix
 _, _ = execx.Command("printf", "hi").ShadowPrint(execx.WithPrefix("run")).Run()
 // run > printf hi
 // run > printf hi (1ms)
 ```
-
-</GoForjExample>
 
 ## Streaming {#streaming}
 
@@ -1352,10 +1007,7 @@ _, _ = execx.Command("printf", "hi").ShadowPrint(execx.WithPrefix("run")).Run()
 
 OnStderr registers a line callback for stderr.
 
-<GoForjExample repo="execx" example="onstderr">
-
 ```go
-// Example: stderr lines
 _, err := execx.Command("go", "env", "-badflag").
 	OnStderr(func(line string) {
 		fmt.Println(line)
@@ -1368,23 +1020,16 @@ fmt.Println(err == nil)
 // false
 ```
 
-</GoForjExample>
-
 ### OnStdout {#onstdout}
 
 OnStdout registers a line callback for stdout.
 
-<GoForjExample repo="execx" example="onstdout">
-
 ```go
-// Example: stdout lines
 _, _ = execx.Command("printf", "hi\n").
 	OnStdout(func(line string) { fmt.Println(line) }).
 	Run()
 // hi
 ```
-
-</GoForjExample>
 
 ### StderrWriter {#stderrwriter}
 
@@ -1392,10 +1037,7 @@ StderrWriter sets a raw writer for stderr.
 
 When the writer is a terminal and no line callbacks or combined output are enabled, execx passes stderr through directly and does not buffer it for results.
 
-<GoForjExample repo="execx" example="stderrwriter">
-
 ```go
-// Example: stderr writer
 var out strings.Builder
 _, err := execx.Command("go", "env", "-badflag").
 	StderrWriter(&out).
@@ -1408,18 +1050,13 @@ fmt.Println(err == nil)
 // false
 ```
 
-</GoForjExample>
-
 ### StdoutWriter {#stdoutwriter}
 
 StdoutWriter sets a raw writer for stdout.
 
 When the writer is a terminal and no line callbacks or combined output are enabled, execx passes stdout through directly and does not buffer it for results.
 
-<GoForjExample repo="execx" example="stdoutwriter">
-
 ```go
-// Example: stdout writer
 var out strings.Builder
 _, _ = execx.Command("printf", "hello").
 	StdoutWriter(&out).
@@ -1428,8 +1065,6 @@ fmt.Print(out.String())
 // hello
 ```
 
-</GoForjExample>
-
 ### WithPTY {#withpty}
 
 WithPTY attaches stdout/stderr to a pseudo-terminal.
@@ -1437,18 +1072,13 @@ WithPTY attaches stdout/stderr to a pseudo-terminal.
 Output is combined; OnStdout and OnStderr receive the same lines, and Result.Stderr remains empty.
 Platforms without PTY support return an error when the command runs.
 
-<GoForjExample repo="execx" example="withpty">
-
 ```go
-// Example: with pty
-_, _ = execx.Command("printf", "hi\n").
+_, _ = execx.Command("printf", "hi").
 	WithPTY().
 	OnStdout(func(line string) { fmt.Println(line) }).
 	Run()
 // hi
 ```
-
-</GoForjExample>
 
 ## WorkingDir {#workingdir}
 
@@ -1456,10 +1086,7 @@ _, _ = execx.Command("printf", "hi\n").
 
 Dir sets the working directory.
 
-<GoForjExample repo="execx" example="dir">
-
 ```go
-// Example: change dir
 dir := os.TempDir()
 out, _ := execx.Command("pwd").
 	Dir(dir).
@@ -1467,6 +1094,4 @@ out, _ := execx.Command("pwd").
 fmt.Println(out == dir)
 // #bool true
 ```
-
-</GoForjExample>
 <!-- api:embed:end -->

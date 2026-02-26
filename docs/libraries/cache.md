@@ -92,19 +92,23 @@ func main() {
 	cache.NewFileStore(ctx, "./cache-data") // local file-backed
 	cache.NewNullStore(ctx)                 // disabled / drop-only
 
+	// Redis (driver-owned connection config; no direct redis client required)
 	redisStore := rediscache.New(rediscache.Config{BaseConfig: base, Addr: "127.0.0.1:6379"})
 	_ = redisStore
 
+	// Memcached (one or more server addresses)
 	memcachedStore := memcachedcache.New(memcachedcache.Config{
 		BaseConfig: base,
 		Addresses:  []string{"127.0.0.1:11211"},
 	})
 	_ = memcachedStore
 
+	// NATS JetStream KV (inject a bucket from your NATS setup)
 	var kv natscache.KeyValue // create via your NATS JetStream setup
 	natsStore := natscache.New(natscache.Config{BaseConfig: base, KeyValue: kv})
 	_ = natsStore
 
+	// DynamoDB (auto-creates client when Client is nil)
 	dynamoStore, err := dynamocache.New(ctx, dynamocache.Config{
 		BaseConfig: base,
 		Region:     "us-east-1",
@@ -112,6 +116,7 @@ func main() {
 	})
 	fmt.Println(dynamoStore, err)
 
+	// SQLite (via sqlcore)
 	sqliteStore, err := sqlitecache.New(sqlitecache.Config{
 		BaseConfig: base,
 		DSN:        "file::memory:?cache=shared",
@@ -119,6 +124,7 @@ func main() {
 	})
 	fmt.Println(sqliteStore, err)
 
+	// Postgres (via sqlcore)
 	postgresStore, err := postgrescache.New(postgrescache.Config{
 		BaseConfig: base,
 		DSN:        "postgres://user:pass@127.0.0.1:5432/app?sslmode=disable",
@@ -126,6 +132,7 @@ func main() {
 	})
 	fmt.Println(postgresStore, err)
 
+	// MySQL (via sqlcore)
 	mysqlStore, err := mysqlcache.New(mysqlcache.Config{
 		BaseConfig: base,
 		DSN:        "user:pass@tcp(127.0.0.1:3306)/app?parseTime=true",
@@ -375,26 +382,16 @@ _Examples assume `ctx := context.Background()` and `c := cache.NewCache(cache.Ne
 
 NewFileStore is a convenience for a filesystem-backed store.
 
-<GoForjExample repo="cache" example="newfilestore">
-
 ```go
-// Example: file helper
-ctx := context.Background()
 store := cache.NewFileStore(ctx, "/tmp/my-cache")
 fmt.Println(store.Driver()) // file
 ```
-
-</GoForjExample>
 
 ### NewFileStoreWithConfig {#newfilestorewithconfig}
 
 NewFileStoreWithConfig builds a filesystem-backed store using explicit root config.
 
-<GoForjExample repo="cache" example="newfilestorewithconfig">
-
 ```go
-// Example: file helper with root config
-ctx := context.Background()
 store := cache.NewFileStoreWithConfig(ctx, cache.StoreConfig{
 	BaseConfig: cachecore.BaseConfig{
 		EncryptionKey: []byte("01234567890123456789012345678901"),
@@ -406,32 +403,20 @@ store := cache.NewFileStoreWithConfig(ctx, cache.StoreConfig{
 fmt.Println(store.Driver()) // file
 ```
 
-</GoForjExample>
-
 ### NewMemoryStore {#newmemorystore}
 
 NewMemoryStore is a convenience for an in-process store using defaults.
 
-<GoForjExample repo="cache" example="newmemorystore">
-
 ```go
-// Example: memory helper
-ctx := context.Background()
 store := cache.NewMemoryStore(ctx)
 fmt.Println(store.Driver()) // memory
 ```
-
-</GoForjExample>
 
 ### NewMemoryStoreWithConfig {#newmemorystorewithconfig}
 
 NewMemoryStoreWithConfig builds an in-process store using explicit root config.
 
-<GoForjExample repo="cache" example="newmemorystorewithconfig">
-
 ```go
-// Example: memory helper with root config
-ctx := context.Background()
 store := cache.NewMemoryStoreWithConfig(ctx, cache.StoreConfig{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL:  30 * time.Second,
@@ -442,32 +427,20 @@ store := cache.NewMemoryStoreWithConfig(ctx, cache.StoreConfig{
 fmt.Println(store.Driver()) // memory
 ```
 
-</GoForjExample>
-
 ### NewNullStore {#newnullstore}
 
 NewNullStore is a no-op store useful for tests where caching should be disabled.
 
-<GoForjExample repo="cache" example="newnullstore">
-
 ```go
-// Example: null helper
-ctx := context.Background()
 store := cache.NewNullStore(ctx)
 fmt.Println(store.Driver()) // null
 ```
-
-</GoForjExample>
 
 ### NewNullStoreWithConfig {#newnullstorewithconfig}
 
 NewNullStoreWithConfig builds a null store with shared wrappers (compression/encryption/limits).
 
-<GoForjExample repo="cache" example="newnullstorewithconfig">
-
 ```go
-// Example: null helper with shared wrappers enabled
-ctx := context.Background()
 store := cache.NewNullStoreWithConfig(ctx, cache.StoreConfig{
 	BaseConfig: cachecore.BaseConfig{
 		Compression:   cache.CompressionGzip,
@@ -476,8 +449,6 @@ store := cache.NewNullStoreWithConfig(ctx, cache.StoreConfig{
 })
 fmt.Println(store.Driver()) // null
 ```
-
-</GoForjExample>
 
 ## Core {#core}
 
@@ -489,48 +460,29 @@ Driver reports the underlying store driver.
 
 NewCache creates a cache facade bound to a concrete store.
 
-<GoForjExample repo="cache" example="newcache">
-
 ```go
-// Example: cache from store
-ctx := context.Background()
 s := cache.NewMemoryStore(ctx)
 c := cache.NewCache(s)
 fmt.Println(c.Driver()) // memory
 ```
 
-</GoForjExample>
-
 ### NewCacheWithTTL {#newcachewithttl}
 
 NewCacheWithTTL lets callers override the default TTL applied when ttl <= 0.
 
-<GoForjExample repo="cache" example="newcachewithttl">
-
 ```go
-// Example: cache with custom default TTL
-ctx := context.Background()
 s := cache.NewMemoryStore(ctx)
 c := cache.NewCacheWithTTL(s, 2*time.Minute)
 fmt.Println(c.Driver(), c != nil) // memory true
 ```
 
-</GoForjExample>
-
 ### Store {#cache-store}
 
 Store returns the underlying store implementation.
 
-<GoForjExample repo="cache" example="cache_store">
-
 ```go
-// Example: access store
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 fmt.Println(c.Store().Driver()) // memory
 ```
-
-</GoForjExample>
 
 ## Driver Configs {#driver-configs}
 
@@ -556,10 +508,7 @@ Defaults:
 - Client: auto-created when nil (uses Region and optional Endpoint)
 - Endpoint: empty by default (normal AWS endpoint resolution)
 
-<GoForjExample repo="cache" example="dynamocache_new">
-
 ```go
-// Example: custom dynamo table via explicit driver config
 ctx := context.Background()
 store, err := dynamocache.New(ctx, dynamocache.Config{
 	BaseConfig: cachecore.BaseConfig{
@@ -575,8 +524,6 @@ if err != nil {
 fmt.Println(store.Driver()) // dynamo
 ```
 
-</GoForjExample>
-
 ### Memcached {#driver-config-memcachedcache}
 
 Defaults:
@@ -584,10 +531,7 @@ Defaults:
 - DefaultTTL: 5*time.Minute when zero
 - Prefix: "app" when empty
 
-<GoForjExample repo="cache" example="memcachedcache_new">
-
 ```go
-// Example: memcached cluster via explicit driver config
 store := memcachedcache.New(memcachedcache.Config{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL: 5 * time.Minute,
@@ -598,8 +542,6 @@ store := memcachedcache.New(memcachedcache.Config{
 fmt.Println(store.Driver()) // memcached
 ```
 
-</GoForjExample>
-
 ### MySQL {#driver-config-mysqlcache}
 
 Defaults:
@@ -608,10 +550,7 @@ Defaults:
 - Table: "cache_entries" when empty
 - DSN: required
 
-<GoForjExample repo="cache" example="mysqlcache_new">
-
 ```go
-// Example: mysql via explicit driver config
 store, err := mysqlcache.New(mysqlcache.Config{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL: 5 * time.Minute,
@@ -626,8 +565,6 @@ if err != nil {
 fmt.Println(store.Driver()) // sql
 ```
 
-</GoForjExample>
-
 ### NATS {#driver-config-natscache}
 
 Defaults:
@@ -636,10 +573,7 @@ Defaults:
 - BucketTTL: false (TTL enforced in value envelope metadata)
 - KeyValue: required for real operations (nil allowed, operations return errors)
 
-<GoForjExample repo="cache" example="natscache_new">
-
 ```go
-// Example: inject NATS key-value bucket via explicit driver config
 var kv natscache.KeyValue // provided by your NATS setup
 store := natscache.New(natscache.Config{
 	BaseConfig: cachecore.BaseConfig{
@@ -652,8 +586,6 @@ store := natscache.New(natscache.Config{
 fmt.Println(store.Driver()) // nats
 ```
 
-</GoForjExample>
-
 ### Postgres {#driver-config-postgrescache}
 
 Defaults:
@@ -662,10 +594,7 @@ Defaults:
 - Table: "cache_entries" when empty
 - DSN: required
 
-<GoForjExample repo="cache" example="postgrescache_new">
-
 ```go
-// Example: postgres via explicit driver config
 store, err := postgrescache.New(postgrescache.Config{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL: 5 * time.Minute,
@@ -680,8 +609,6 @@ if err != nil {
 fmt.Println(store.Driver()) // sql
 ```
 
-</GoForjExample>
-
 ### Redis {#driver-config-rediscache}
 
 Defaults:
@@ -691,10 +618,7 @@ Defaults:
 - Client: optional advanced override (takes precedence when set)
 - If neither Client nor Addr is set, operations return errors until a client is provided
 
-<GoForjExample repo="cache" example="rediscache_new">
-
 ```go
-// Example: explicit Redis driver config
 store := rediscache.New(rediscache.Config{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL: 5 * time.Minute,
@@ -705,8 +629,6 @@ store := rediscache.New(rediscache.Config{
 fmt.Println(store.Driver()) // redis
 ```
 
-</GoForjExample>
-
 ### SQL Core (advanced/shared implementation) {#driver-config-sqlcore}
 
 Defaults:
@@ -716,10 +638,7 @@ Defaults:
 - DriverName: required
 - DSN: required
 
-<GoForjExample repo="cache" example="sqlcore_new">
-
 ```go
-// Example: advanced shared SQL core config
 store, err := sqlcore.New(sqlcore.Config{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL: 5 * time.Minute,
@@ -735,8 +654,6 @@ if err != nil {
 fmt.Println(store.Driver()) // sql
 ```
 
-</GoForjExample>
-
 ### SQLite {#driver-config-sqlitecache}
 
 Defaults:
@@ -745,10 +662,7 @@ Defaults:
 - Table: "cache_entries" when empty
 - DSN: required
 
-<GoForjExample repo="cache" example="sqlitecache_new">
-
 ```go
-// Example: sqlite via explicit driver config
 store, err := sqlitecache.New(sqlitecache.Config{
 	BaseConfig: cachecore.BaseConfig{
 		DefaultTTL: 5 * time.Minute,
@@ -763,8 +677,6 @@ if err != nil {
 fmt.Println(store.Driver()) // sql
 ```
 
-</GoForjExample>
-
 
 ## Invalidation {#invalidation}
 
@@ -772,57 +684,33 @@ fmt.Println(store.Driver()) // sql
 
 Delete removes a single key.
 
-<GoForjExample repo="cache" example="cache_delete">
-
 ```go
-// Example: delete key
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 _ = c.SetBytes("a", []byte("1"), time.Minute)
 fmt.Println(c.Delete("a") == nil) // true
 ```
-
-</GoForjExample>
 
 ### DeleteMany (+Ctx) {#cache-deletemany}
 
 DeleteMany removes multiple keys.
 
-<GoForjExample repo="cache" example="cache_deletemany">
-
 ```go
-// Example: delete many keys
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 fmt.Println(c.DeleteMany("a", "b") == nil) // true
 ```
-
-</GoForjExample>
 
 ### Flush (+Ctx) {#cache-flush}
 
 Flush clears all keys for this store scope.
 
-<GoForjExample repo="cache" example="cache_flush">
-
 ```go
-// Example: flush all keys
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 _ = c.SetBytes("a", []byte("1"), time.Minute)
 fmt.Println(c.Flush() == nil) // true
 ```
-
-</GoForjExample>
 
 ### Pull (+Ctx) {#pull}
 
 Pull returns a typed value for key and removes it, using the default codec (JSON).
 
-<GoForjExample repo="cache" example="pull">
-
 ```go
-// Example: pull typed value
 type Token struct { Value string `json:"value"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -831,24 +719,15 @@ tok, ok, err := cache.Pull[Token](c, "reset:token:42")
 fmt.Println(err == nil, ok, tok.Value) // true true abc
 ```
 
-</GoForjExample>
-
 ### PullBytes (+Ctx) {#cache-pullbytes}
 
 PullBytes returns value and removes it from cache.
 
-<GoForjExample repo="cache" example="cache_pull">
-
 ```go
-// Example: pull and delete
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 _ = c.SetString("reset:token:42", "abc", time.Minute)
 body, ok, _ := c.PullBytes("reset:token:42")
 fmt.Println(ok, string(body)) // true abc
 ```
-
-</GoForjExample>
 
 ## Locking {#locking}
 
@@ -856,18 +735,11 @@ fmt.Println(ok, string(body)) // true abc
 
 Acquire attempts to acquire the lock once (non-blocking).
 
-<GoForjExample repo="cache" example="acquire">
-
 ```go
-// Example: single acquire attempt
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 lock := c.NewLockHandle("job:sync", 10*time.Second)
 locked, err := lock.Acquire()
 fmt.Println(err == nil, locked) // true true
 ```
-
-</GoForjExample>
 
 ### Block (+Ctx) {#lockhandle-block}
 
@@ -875,12 +747,7 @@ Block waits up to timeout to acquire the lock, runs fn if acquired, then release
 
 retryInterval <= 0 falls back to the cache default lock retry interval.
 
-<GoForjExample repo="cache" example="block">
-
 ```go
-// Example: wait for lock, then auto-release
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 lock := c.NewLockHandle("job:sync", 10*time.Second)
 locked, err := lock.Block(500*time.Millisecond, 25*time.Millisecond, func() error {
 	// do protected work
@@ -889,23 +756,14 @@ locked, err := lock.Block(500*time.Millisecond, 25*time.Millisecond, func() erro
 fmt.Println(err == nil, locked) // true true
 ```
 
-</GoForjExample>
-
 ### Lock {#cache-lock}
 
 Lock waits until the lock is acquired or timeout elapses.
 
-<GoForjExample repo="cache" example="cache_lock">
-
 ```go
-// Example: lock with timeout
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 locked, err := c.Lock("job:sync", 10*time.Second, time.Second)
 fmt.Println(err == nil, locked) // true true
 ```
-
-</GoForjExample>
 
 ### LockCtx {#cache-lockctx}
 
@@ -915,12 +773,7 @@ LockCtx retries lock acquisition until success or context cancellation.
 
 Get acquires the lock once, runs fn if acquired, then releases automatically.
 
-<GoForjExample repo="cache" example="lockhandle_get">
-
 ```go
-// Example: acquire once and auto-release
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 lock := c.NewLockHandle("job:sync", 10*time.Second)
 locked, err := lock.Get(func() error {
 	// do protected work
@@ -929,18 +782,11 @@ locked, err := lock.Get(func() error {
 fmt.Println(err == nil, locked) // true true
 ```
 
-</GoForjExample>
-
 ### NewLockHandle {#cache-newlockhandle}
 
 NewLockHandle creates a reusable lock handle for a key/ttl pair.
 
-<GoForjExample repo="cache" example="cache_newlockhandle">
-
 ```go
-// Example: lock handle acquire/release
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 lock := c.NewLockHandle("job:sync", 10*time.Second)
 locked, err := lock.Acquire()
 fmt.Println(err == nil, locked) // true true
@@ -949,8 +795,6 @@ if locked {
 }
 ```
 
-</GoForjExample>
-
 ### Release (+Ctx) {#lockhandle-release}
 
 Release unlocks the key if this handle previously acquired it.
@@ -958,12 +802,7 @@ Release unlocks the key if this handle previously acquired it.
 It is safe to call multiple times; repeated calls become no-ops after the first
 successful release.
 
-<GoForjExample repo="cache" example="lockhandle_release">
-
 ```go
-// Example: release a held lock
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 lock := c.NewLockHandle("job:sync", 10*time.Second)
 locked, _ := lock.Acquire()
 if locked {
@@ -971,41 +810,25 @@ if locked {
 }
 ```
 
-</GoForjExample>
-
 ### TryLock (+Ctx) {#cache-trylock}
 
 TryLock acquires a short-lived lock key when not already held.
 
-<GoForjExample repo="cache" example="cache_trylock">
-
 ```go
-// Example: try lock
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 locked, _ := c.TryLock("job:sync", 10*time.Second)
 fmt.Println(locked) // true
 ```
-
-</GoForjExample>
 
 ### Unlock (+Ctx) {#cache-unlock}
 
 Unlock releases a previously acquired lock key.
 
-<GoForjExample repo="cache" example="cache_unlock">
-
 ```go
-// Example: unlock key
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 locked, _ := c.TryLock("job:sync", 10*time.Second)
 if locked {
 	_ = c.Unlock("job:sync")
 }
 ```
-
-</GoForjExample>
 
 ## Memoization {#memoization}
 
@@ -1021,18 +844,12 @@ with changes made through this process.
 - Memo data is per-process only; other processes or external writers will not
 invalidate it. Use only when that staleness window is acceptable.
 
-<GoForjExample repo="cache" example="newmemostore">
-
 ```go
-// Example: memoize a backing store
-ctx := context.Background()
 base := cache.NewMemoryStore(ctx)
 memo := cache.NewMemoStore(base)
 c := cache.NewCache(memo)
 fmt.Println(c.Driver()) // memory
 ```
-
-</GoForjExample>
 
 ## Observability {#observability}
 
@@ -1040,10 +857,7 @@ fmt.Println(c.Driver()) // memory
 
 OnCacheOp implements Observer.
 
-<GoForjExample repo="cache" example="observerfunc_oncacheop">
-
 ```go
-// Example: observer func callback
 obs := cache.ObserverFunc(func(ctx context.Context, op, key string, hit bool, err error, dur time.Duration, driver cachecore.Driver) {
 	fmt.Println(op, key, hit, err == nil, driver)
 	_ = ctx
@@ -1052,18 +866,11 @@ obs := cache.ObserverFunc(func(ctx context.Context, op, key string, hit bool, er
 obs.OnCacheOp(context.Background(), "get", "user:42", true, nil, time.Millisecond, cachecore.DriverMemory)
 ```
 
-</GoForjExample>
-
 ### WithObserver {#cache-withobserver}
 
 WithObserver attaches an observer to receive operation events.
 
-<GoForjExample repo="cache" example="cache_withobserver">
-
 ```go
-// Example: attach observer
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 c = c.WithObserver(cache.ObserverFunc(func(ctx context.Context, op, key string, hit bool, err error, dur time.Duration, driver cachecore.Driver) {
 	// See docs/production-guide.md for a real metrics recipe.
 	fmt.Println(op, driver, hit, err == nil)
@@ -1074,26 +881,17 @@ c = c.WithObserver(cache.ObserverFunc(func(ctx context.Context, op, key string, 
 _, _, _ = c.GetBytes("profile:42")
 ```
 
-</GoForjExample>
-
 ## Rate Limiting {#rate-limiting}
 
 ### RateLimit (+Ctx) {#cache-ratelimit}
 
 RateLimit increments a fixed-window counter and returns allowance metadata.
 
-<GoForjExample repo="cache" example="cache_ratelimit">
-
 ```go
-// Example: fixed-window rate limit metadata
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 res, err := c.RateLimit("rl:api:ip:1.2.3.4", 100, time.Minute)
 fmt.Println(err == nil, res.Allowed, res.Count, res.Remaining, !res.ResetAt.IsZero())
 // Output: true true 1 99 true
 ```
-
-</GoForjExample>
 
 ## Read Through {#read-through}
 
@@ -1101,10 +899,7 @@ fmt.Println(err == nil, res.Allowed, res.Count, res.Remaining, !res.ResetAt.IsZe
 
 Remember is the ergonomic, typed remember helper using JSON encoding by default.
 
-<GoForjExample repo="cache" example="remember">
-
 ```go
-// Example: remember typed value
 type Profile struct { Name string `json:"name"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1114,34 +909,22 @@ profile, err := cache.Remember[Profile](c, "profile:42", time.Minute, func() (Pr
 fmt.Println(err == nil, profile.Name) // true Ada
 ```
 
-</GoForjExample>
-
 ### RememberBytes (+Ctx) {#cache-rememberbytes}
 
 RememberBytes returns key value or computes/stores it when missing.
 
-<GoForjExample repo="cache" example="cache_rememberbytes">
-
 ```go
-// Example: remember bytes
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 data, err := c.RememberBytes("dashboard:summary", time.Minute, func() ([]byte, error) {
 	return []byte("payload"), nil
 })
 fmt.Println(err == nil, string(data)) // true payload
 ```
 
-</GoForjExample>
-
 ### RememberStale {#rememberstale}
 
 RememberStale returns a typed value with stale fallback semantics using JSON encoding by default.
 
-<GoForjExample repo="cache" example="rememberstale">
-
 ```go
-// Example: remember stale typed
 type Profile struct { Name string `json:"name"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1151,36 +934,24 @@ profile, usedStale, err := cache.RememberStale[Profile](c, "profile:42", time.Mi
 fmt.Println(err == nil, usedStale, profile.Name) // true false Ada
 ```
 
-</GoForjExample>
-
 ### RememberStaleBytes (+Ctx) {#cache-rememberstalebytes}
 
 RememberStaleBytes returns a fresh value when available, otherwise computes and caches it.
 If computing fails and a stale value exists, it returns the stale value.
 The returned bool is true when a stale fallback was used.
 
-<GoForjExample repo="cache" example="cache_rememberstalebytes">
-
 ```go
-// Example: stale fallback on upstream failure
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 body, usedStale, err := c.RememberStaleBytes("profile:42", time.Minute, 10*time.Minute, func() ([]byte, error) {
 	return []byte(`{"name":"Ada"}`), nil
 })
 fmt.Println(err == nil, usedStale, len(body) > 0)
 ```
 
-</GoForjExample>
-
 ### RememberStaleCtx {#rememberstalectx}
 
 RememberStaleCtx returns a typed value with stale fallback semantics using JSON encoding by default.
 
-<GoForjExample repo="cache" example="rememberstalectx">
-
 ```go
-// Example: remember stale typed with context
 type Profile struct { Name string `json:"name"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1190,8 +961,6 @@ profile, usedStale, err := cache.RememberStaleCtx[Profile](ctx, c, "profile:42",
 fmt.Println(err == nil, usedStale, profile.Name) // true false Ada
 ```
 
-</GoForjExample>
-
 ## Reads {#reads}
 
 ### BatchGetBytes (+Ctx) {#cache-batchgetbytes}
@@ -1199,28 +968,18 @@ fmt.Println(err == nil, usedStale, profile.Name) // true false Ada
 BatchGetBytes returns all found values for the provided keys.
 Missing keys are omitted from the returned map.
 
-<GoForjExample repo="cache" example="batchget">
-
 ```go
-// Example: batch get keys
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 _ = c.SetBytes("a", []byte("1"), time.Minute)
 _ = c.SetBytes("b", []byte("2"), time.Minute)
 values, err := c.BatchGetBytes("a", "b", "missing")
 fmt.Println(err == nil, string(values["a"]), string(values["b"])) // true 1 2
 ```
 
-</GoForjExample>
-
 ### Get (+Ctx) {#get}
 
 Get returns a typed value for key using the default codec (JSON) when present.
 
-<GoForjExample repo="cache" example="get">
-
 ```go
-// Example: get typed values (struct + string)
 type Profile struct { Name string `json:"name"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1231,17 +990,11 @@ mode, ok2, err2 := cache.Get[string](c, "settings:mode")
 fmt.Println(err == nil, ok, profile.Name, err2 == nil, ok2, mode) // true true Ada true true dark
 ```
 
-</GoForjExample>
-
 ### GetBytes (+Ctx) {#cache-getbytes}
 
 GetBytes returns raw bytes for key when present.
 
-<GoForjExample repo="cache" example="cache_get">
-
 ```go
-// Example: get bytes
-ctx := context.Background()
 s := cache.NewMemoryStore(ctx)
 c := cache.NewCache(s)
 _ = c.SetBytes("user:42", []byte("Ada"), 0)
@@ -1249,16 +1002,11 @@ value, ok, _ := c.GetBytes("user:42")
 fmt.Println(ok, string(value)) // true Ada
 ```
 
-</GoForjExample>
-
 ### GetJSON (+Ctx) {#getjson}
 
 GetJSON decodes a JSON value into T when key exists, using background context.
 
-<GoForjExample repo="cache" example="getjson">
-
 ```go
-// Example: get typed JSON
 type Profile struct { Name string `json:"name"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1267,24 +1015,15 @@ profile, ok, err := cache.GetJSON[Profile](c, "profile:42")
 fmt.Println(err == nil, ok, profile.Name) // true true Ada
 ```
 
-</GoForjExample>
-
 ### GetString (+Ctx) {#cache-getstring}
 
 GetString returns a UTF-8 string value for key when present.
 
-<GoForjExample repo="cache" example="cache_getstring">
-
 ```go
-// Example: get string
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 _ = c.SetString("user:42:name", "Ada", 0)
 name, ok, _ := c.GetString("user:42:name")
 fmt.Println(ok, name) // true Ada
 ```
-
-</GoForjExample>
 
 ## Refresh Ahead {#refresh-ahead}
 
@@ -1292,10 +1031,7 @@ fmt.Println(ok, name) // true Ada
 
 RefreshAhead returns a typed value and refreshes asynchronously when near expiry.
 
-<GoForjExample repo="cache" example="refreshahead">
-
 ```go
-// Example: refresh ahead typed
 type Summary struct { Text string `json:"text"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1305,26 +1041,17 @@ s, err := cache.RefreshAhead[Summary](c, "dashboard:summary", time.Minute, 10*ti
 fmt.Println(err == nil, s.Text) // true ok
 ```
 
-</GoForjExample>
-
 ### RefreshAheadBytes (+Ctx) {#cache-refreshaheadbytes}
 
 RefreshAheadBytes returns cached value immediately and refreshes asynchronously when near expiry.
 On miss, it computes and stores synchronously.
 
-<GoForjExample repo="cache" example="cache_refreshaheadbytes">
-
 ```go
-// Example: refresh ahead
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 body, err := c.RefreshAheadBytes("dashboard:summary", time.Minute, 10*time.Second, func() ([]byte, error) {
 	return []byte("payload"), nil
 })
 fmt.Println(err == nil, len(body) > 0) // true true
 ```
-
-</GoForjExample>
 
 ### RefreshAheadValueWithCodec {#refreshaheadvaluewithcodec}
 
@@ -1336,8 +1063,6 @@ RefreshAheadValueWithCodec allows custom encoding/decoding for typed refresh-ahe
 
 AssertCalled verifies key was touched by op the expected number of times.
 
-<GoForjExample repo="cache" example="cachefake_fake_assertcalled">
-
 ```go
 f := cachefake.New()
 c := f.Cache()
@@ -1346,13 +1071,9 @@ t := &testing.T{}
 f.AssertCalled(t, cachefake.OpSet, "settings:mode", 1)
 ```
 
-</GoForjExample>
-
 ### AssertNotCalled {#fake-assertnotcalled}
 
 AssertNotCalled ensures key was never touched by op.
-
-<GoForjExample repo="cache" example="cachefake_fake_assertnotcalled">
 
 ```go
 f := cachefake.New()
@@ -1360,13 +1081,9 @@ t := &testing.T{}
 f.AssertNotCalled(t, cachefake.OpDelete, "settings:mode")
 ```
 
-</GoForjExample>
-
 ### AssertTotal {#fake-asserttotal}
 
 AssertTotal ensures the total call count for an op matches times.
-
-<GoForjExample repo="cache" example="cachefake_fake_asserttotal">
 
 ```go
 f := cachefake.New()
@@ -1377,13 +1094,9 @@ t := &testing.T{}
 f.AssertTotal(t, cachefake.OpDelete, 2)
 ```
 
-</GoForjExample>
-
 ### Cache {#fake-cache}
 
 Cache returns the cache facade to inject into code under test.
-
-<GoForjExample repo="cache" example="cachefake_fake_cache">
 
 ```go
 f := cachefake.New()
@@ -1391,13 +1104,9 @@ c := f.Cache()
 _, _, _ = c.GetBytes("settings:mode")
 ```
 
-</GoForjExample>
-
 ### Count {#fake-count}
 
 Count returns calls for op+key.
-
-<GoForjExample repo="cache" example="cachefake_fake_count">
 
 ```go
 f := cachefake.New()
@@ -1407,13 +1116,9 @@ n := f.Count(cachefake.OpSet, "settings:mode")
 _ = n
 ```
 
-</GoForjExample>
-
 ### New {#new}
 
 New creates a Fake using an in-memory store.
-
-<GoForjExample repo="cache" example="cachefake_new">
 
 ```go
 f := cachefake.New()
@@ -1421,13 +1126,9 @@ c := f.Cache()
 _ = c.SetString("settings:mode", "dark", 0)
 ```
 
-</GoForjExample>
-
 ### Reset {#fake-reset}
 
 Reset clears recorded counts.
-
-<GoForjExample repo="cache" example="cachefake_fake_reset">
 
 ```go
 f := cachefake.New()
@@ -1435,13 +1136,9 @@ _ = f.Cache().SetString("settings:mode", "dark", 0)
 f.Reset()
 ```
 
-</GoForjExample>
-
 ### Total {#fake-total}
 
 Total returns total calls for an op across keys.
-
-<GoForjExample repo="cache" example="cachefake_fake_total">
 
 ```go
 f := cachefake.New()
@@ -1452,36 +1149,22 @@ n := f.Total(cachefake.OpDelete)
 _ = n
 ```
 
-</GoForjExample>
-
 ## Writes {#writes}
 
 ### Add (+Ctx) {#cache-add}
 
 Add writes value only when key is not already present.
 
-<GoForjExample repo="cache" example="add">
-
 ```go
-// Example: add once
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 created, _ := c.Add("boot:seeded", []byte("1"), time.Hour)
 fmt.Println(created) // true
 ```
-
-</GoForjExample>
 
 ### BatchSetBytes (+Ctx) {#cache-batchsetbytes}
 
 BatchSetBytes writes many key/value pairs using a shared ttl.
 
-<GoForjExample repo="cache" example="batchset">
-
 ```go
-// Example: batch set keys
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 err := c.BatchSetBytes(map[string][]byte{
 	"a": []byte("1"),
 	"b": []byte("2"),
@@ -1489,48 +1172,29 @@ err := c.BatchSetBytes(map[string][]byte{
 fmt.Println(err == nil) // true
 ```
 
-</GoForjExample>
-
 ### Decrement (+Ctx) {#cache-decrement}
 
 Decrement decrements a numeric value and returns the result.
 
-<GoForjExample repo="cache" example="cache_decrement">
-
 ```go
-// Example: decrement counter
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 val, _ := c.Decrement("rate:login:42", 1, time.Minute)
 fmt.Println(val) // -1
 ```
-
-</GoForjExample>
 
 ### Increment (+Ctx) {#cache-increment}
 
 Increment increments a numeric value and returns the result.
 
-<GoForjExample repo="cache" example="cache_increment">
-
 ```go
-// Example: increment counter
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 val, _ := c.Increment("rate:login:42", 1, time.Minute)
 fmt.Println(val) // 1
 ```
-
-</GoForjExample>
 
 ### Set (+Ctx) {#set}
 
 Set encodes value with the default codec (JSON) and writes it to key.
 
-<GoForjExample repo="cache" example="set">
-
 ```go
-// Example: set typed values (struct + string)
 type Settings struct { Enabled bool `json:"enabled"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1539,31 +1203,19 @@ err2 := cache.Set(c, "settings:mode", "dark", time.Minute)
 fmt.Println(err == nil, err2 == nil) // true true
 ```
 
-</GoForjExample>
-
 ### SetBytes (+Ctx) {#cache-setbytes}
 
 SetBytes writes raw bytes to key.
 
-<GoForjExample repo="cache" example="cache_set">
-
 ```go
-// Example: set bytes with ttl
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 fmt.Println(c.SetBytes("token", []byte("abc"), time.Minute) == nil) // true
 ```
-
-</GoForjExample>
 
 ### SetJSON (+Ctx) {#setjson}
 
 SetJSON encodes value as JSON and writes it to key using background context.
 
-<GoForjExample repo="cache" example="setjson">
-
 ```go
-// Example: set typed JSON
 type Settings struct { Enabled bool `json:"enabled"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
@@ -1571,22 +1223,13 @@ err := cache.SetJSON(c, "settings:alerts", Settings{Enabled: true}, time.Minute)
 fmt.Println(err == nil) // true
 ```
 
-</GoForjExample>
-
 ### SetString (+Ctx) {#cache-setstring}
 
 SetString writes a string value to key.
 
-<GoForjExample repo="cache" example="cache_setstring">
-
 ```go
-// Example: set string
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
 fmt.Println(c.SetString("user:42:name", "Ada", time.Minute) == nil) // true
 ```
-
-</GoForjExample>
 <!-- api:embed:end -->
 
 ### Payload size caps (effective bytes written) {#payload-size-caps-(effective-bytes-written)}

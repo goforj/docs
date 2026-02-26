@@ -1,7 +1,6 @@
 package router
 
 import (
-	"github.com/goforj/docs/internal/examples"
 	"github.com/goforj/docs/internal/hello"
 	"github.com/goforj/docs/internal/http"
 )
@@ -20,12 +19,10 @@ type AppRoutes struct {
 
 // ProvideAppRoutes is a function that returns a slice of Route.
 func ProvideAppRoutes(
-	examplesController *examples.Controller,
 	helloController *hello.Controller,
 ) *AppRoutes {
 	// append all routes from controllers
 	var routes []http.Route
-	routes = append(routes, examplesController.Routes()...)
 	routes = append(routes, helloController.Routes()...)
 	return &AppRoutes{
 		app: routes,

@@ -53,7 +53,7 @@ if err != nil {
 }
 
 fmt.Println(res.URL)
-```
+````
 
 ## Design Principles {#design-principles}
 
@@ -133,10 +133,7 @@ httpx v1 has been tagged and is now frozen. The `main` branch is v2, which inclu
 
 Auth sets the Authorization header using a scheme and token.
 
-<GoForjExample repo="httpx" example="auth">
-
 ```go
-// Example: custom auth scheme
 // Apply to all requests
 c := httpx.New(httpx.Auth("Token", "abc123"))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/headers")
@@ -157,16 +154,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Basic {#basic}
 
 Basic sets HTTP basic authentication headers.
 
-<GoForjExample repo="httpx" example="basic">
-
 ```go
-// Example: basic auth
 // Apply to all requests
 c := httpx.New(httpx.Basic("user", "pass"))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/headers")
@@ -187,16 +179,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Bearer {#bearer}
 
 Bearer sets the Authorization header with a bearer token.
 
-<GoForjExample repo="httpx" example="bearer">
-
 ```go
-// Example: bearer auth
 // Apply to all requests
 c := httpx.New(httpx.Bearer("token"))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/headers")
@@ -217,31 +204,21 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ## Browser Profiles {#browser-profiles}
 
 ### AsChrome {#aschrome}
 
 AsChrome applies the Chrome browser profile (headers including User-Agent, TLS, and HTTP/2 behavior).
 
-<GoForjExample repo="httpx" example="aschrome">
-
 ```go
-// Example: use a Chrome profile
 _ = httpx.New(httpx.AsChrome())
 ```
-
-</GoForjExample>
 
 ### AsFirefox {#asfirefox}
 
 AsFirefox applies the Firefox browser profile (headers including User-Agent, TLS, and HTTP/2 behavior).
 
-<GoForjExample repo="httpx" example="asfirefox">
-
 ```go
-// Example: use a Firefox profile
 c := httpx.New(httpx.AsFirefox())
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/headers")
 httpx.Dump(res) // dumps map[string]any
@@ -252,33 +229,21 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### AsMobile {#asmobile}
 
 AsMobile applies a mobile Chrome-like profile (headers including User-Agent, TLS, and HTTP/2 behavior).
 
-<GoForjExample repo="httpx" example="asmobile">
-
 ```go
-// Example: use a mobile profile
 _ = httpx.New(httpx.AsMobile())
 ```
-
-</GoForjExample>
 
 ### AsSafari {#assafari}
 
 AsSafari applies the Safari browser profile (headers including User-Agent, TLS, and HTTP/2 behavior).
 
-<GoForjExample repo="httpx" example="assafari">
-
 ```go
-// Example: use a Safari profile
 _ = httpx.New(httpx.AsSafari())
 ```
-
-</GoForjExample>
 
 ## Client {#client}
 
@@ -290,10 +255,7 @@ Default returns the shared default client.
 
 New creates a client with opinionated defaults and optional overrides.
 
-<GoForjExample repo="httpx" example="new">
-
 ```go
-// Example: configure all client options
 var buf bytes.Buffer
 _ = httpx.New(httpx.
 	BaseURL("https://httpbin.org").
@@ -327,8 +289,6 @@ _ = httpx.New(httpx.
 )
 ```
 
-</GoForjExample>
-
 ### Raw {#raw}
 
 Raw returns the underlying req client for chaining raw requests.
@@ -343,10 +303,7 @@ Req returns the underlying req client for advanced usage.
 
 BaseURL sets a base URL on the client.
 
-<GoForjExample repo="httpx" example="baseurl">
-
 ```go
-// Example: client base URL
 c := httpx.New(httpx.BaseURL("https://httpbin.org"))
 res, _ := httpx.Get[map[string]any](c, "/uuid")
 httpx.Dump(res) // dumps map[string]any
@@ -355,16 +312,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### CookieJar {#cookiejar}
 
 CookieJar sets the cookie jar for the client.
 
-<GoForjExample repo="httpx" example="cookiejar">
-
 ```go
-// Example: set cookie jar and seed cookies
 jar, _ := cookiejar.New(nil)
 u, _ := url.Parse("https://httpbin.org")
 jar.SetCookies(u, []*http.Cookie{
@@ -380,16 +332,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### ErrorMapper {#errormapper}
 
 ErrorMapper sets a custom error mapper for non-2xx responses.
 
-<GoForjExample repo="httpx" example="errormapper">
-
 ```go
-// Example: map error responses
 c := httpx.New(httpx.ErrorMapper(func(resp *req.Response) error {
 	return fmt.Errorf("status %d", resp.StatusCode)
 }))
@@ -398,16 +345,11 @@ httpx.Dump(res) // dumps map[string]any
 // map[string]interface {}(nil)
 ```
 
-</GoForjExample>
-
 ### Middleware {#middleware}
 
 Middleware adds request middleware to the client.
 
-<GoForjExample repo="httpx" example="middleware">
-
 ```go
-// Example: add request middleware
 c := httpx.New(httpx.Middleware(func(_ *req.Client, r *req.Request) error {
 	r.SetHeader("X-Trace", "1")
 	return nil
@@ -421,32 +363,22 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Proxy {#proxy}
 
 Proxy sets a proxy URL for the client.
 
-<GoForjExample repo="httpx" example="proxy">
-
 ```go
-// Example: set proxy URL
 c := httpx.New(httpx.Proxy("http://localhost:8080"))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/get")
 httpx.Dump(res) // dumps map[string]any
 // map[string]interface {}(nil)
 ```
 
-</GoForjExample>
-
 ### ProxyFunc {#proxyfunc}
 
 ProxyFunc sets a proxy function for the client.
 
-<GoForjExample repo="httpx" example="proxyfunc">
-
 ```go
-// Example: set proxy function
 c := httpx.New(httpx.ProxyFunc(http.ProxyFromEnvironment))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
 httpx.Dump(res) // dumps map[string]any
@@ -455,32 +387,22 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Redirect {#redirect}
 
 Redirect sets the redirect policy for the client.
 
-<GoForjExample repo="httpx" example="redirect">
-
 ```go
-// Example: disable redirects
 c := httpx.New(httpx.Redirect(req.NoRedirectPolicy()))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/redirect/1")
 httpx.Dump(res) // dumps map[string]any
 // map[string]interface {}(nil)
 ```
 
-</GoForjExample>
-
 ### Transport {#transport}
 
 Transport wraps the underlying transport with a custom RoundTripper.
 
-<GoForjExample repo="httpx" example="transport">
-
 ```go
-// Example: wrap transport
 c := httpx.New(httpx.Transport(http.RoundTripper(http.DefaultTransport)))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
 httpx.Dump(res) // dumps map[string]any
@@ -489,18 +411,13 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ## Debugging {#debugging}
 
 ### Dump {#dump}
 
 Dump prints values using the bundled godump formatter.
 
-<GoForjExample repo="httpx" example="dump">
-
 ```go
-// Example: dump a response
 res, _ := httpx.Get[map[string]any](httpx.Default(), "https://httpbin.org/uuid")
 httpx.Dump(res)
 // #map[string]interface {} {
@@ -508,16 +425,11 @@ httpx.Dump(res)
 // }
 ```
 
-</GoForjExample>
-
 ### DumpAll {#dumpall}
 
 DumpAll enables req's client-level dump output for all requests.
 
-<GoForjExample repo="httpx" example="dumpall">
-
 ```go
-// Example: dump every request and response
 c := httpx.New(httpx.DumpAll())
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
 httpx.Dump(res) // dumps map[string]any
@@ -526,16 +438,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### DumpEachRequest {#dumpeachrequest}
 
 DumpEachRequest enables request-level dumps for each request on the client.
 
-<GoForjExample repo="httpx" example="dumpeachrequest">
-
 ```go
-// Example: dump each request as it is sent
 c := httpx.New(httpx.DumpEachRequest())
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
 httpx.Dump(res) // dumps map[string]any
@@ -544,16 +451,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### DumpEachRequestTo {#dumpeachrequestto}
 
 DumpEachRequestTo enables request-level dumps for each request and writes them to the provided output.
 
-<GoForjExample repo="httpx" example="dumpeachrequestto">
-
 ```go
-// Example: dump each request to a buffer
 var buf bytes.Buffer
 c := httpx.New(httpx.DumpEachRequestTo(&buf))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
@@ -564,16 +466,11 @@ httpx.Dump(res) // dumps map[string]any
 _ = buf.String()
 ```
 
-</GoForjExample>
-
 ### DumpTo {#dumpto}
 
 DumpTo enables req's request-level dump output to a writer.
 
-<GoForjExample repo="httpx" example="dumpto">
-
 ```go
-// Example: dump to a buffer
 var buf bytes.Buffer
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid", httpx.DumpTo(&buf))
@@ -583,16 +480,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### DumpToFile {#dumptofile}
 
 DumpToFile enables req's request-level dump output to a file path.
 
-<GoForjExample repo="httpx" example="dumptofile">
-
 ```go
-// Example: dump to a file
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid", httpx.DumpToFile("httpx.dump"))
 httpx.Dump(res) // dumps map[string]any
@@ -601,16 +493,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### EnableDump {#enabledump}
 
 EnableDump enables req's request-level dump output.
 
-<GoForjExample repo="httpx" example="enabledump">
-
 ```go
-// Example: dump a single request
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid", httpx.EnableDump())
 httpx.Dump(res) // dumps map[string]any
@@ -619,16 +506,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Trace {#trace}
 
 Trace enables req's request-level trace output.
 
-<GoForjExample repo="httpx" example="trace">
-
 ```go
-// Example: trace a single request
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid", httpx.Trace())
 httpx.Dump(res) // dumps map[string]any
@@ -637,16 +519,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### TraceAll {#traceall}
 
 TraceAll enables req's client-level trace output for all requests.
 
-<GoForjExample repo="httpx" example="traceall">
-
 ```go
-// Example: trace all requests
 c := httpx.New(httpx.TraceAll())
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
 httpx.Dump(res) // dumps map[string]any
@@ -655,25 +532,18 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ## Download Options {#download-options}
 
 ### OutputFile {#outputfile}
 
 OutputFile streams the response body to a file path.
 
-<GoForjExample repo="httpx" example="outputfile">
-
 ```go
-// Example: download to file
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/bytes/1024", httpx.OutputFile("/tmp/file.bin"))
 httpx.Dump(res) // dumps map[string]any
 // map[string]interface {}(nil)
 ```
-
-</GoForjExample>
 
 ## Errors {#errors}
 
@@ -681,10 +551,7 @@ httpx.Dump(res) // dumps map[string]any
 
 Error returns a short, human-friendly summary of the HTTP error.
 
-<GoForjExample repo="httpx" example="error">
-
 ```go
-// Example: check for HTTP errors
 type User struct {
 	Name string `json:"name"`
 }
@@ -699,18 +566,13 @@ if errors.As(err, &httpErr) {
 }
 ```
 
-</GoForjExample>
-
 ## Request Composition {#request-composition}
 
 ### Body {#body}
 
 Body sets the request body and infers JSON for structs and maps.
 
-<GoForjExample repo="httpx" example="body">
-
 ```go
-// Example: send JSON body with inference
 type Payload struct {
 	Name string `json:"name"`
 }
@@ -725,16 +587,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Form {#form}
 
 Form sets form data for the request.
 
-<GoForjExample repo="httpx" example="form">
-
 ```go
-// Example: submit a form
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil, httpx.Form(map[string]string{
 	"name": "alice",
@@ -747,16 +604,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Header {#header}
 
 Header sets a header on a request or client.
 
-<GoForjExample repo="httpx" example="header">
-
 ```go
-// Example: apply a header
 // Apply to all requests
 c := httpx.New(httpx.Header("X-Trace", "1"))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/headers")
@@ -777,16 +629,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Headers {#headers}
 
 Headers sets multiple headers on a request or client.
 
-<GoForjExample repo="httpx" example="headers">
-
 ```go
-// Example: apply headers
 // Apply to all requests
 c := httpx.New(httpx.Headers(map[string]string{
 	"X-Trace": "1",
@@ -815,16 +662,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### JSON {#json}
 
 JSON forces JSON encoding for the request body (even when inference might choose differently).
 
-<GoForjExample repo="httpx" example="json">
-
 ```go
-// Example: force JSON body
 type Payload struct {
 	Name string `json:"name"`
 }
@@ -839,16 +681,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Path {#path}
 
 Path sets a path parameter by name.
 
-<GoForjExample repo="httpx" example="path">
-
 ```go
-// Example: path parameter
 type User struct {
 	Name string `json:"name"`
 }
@@ -861,16 +698,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Paths {#paths}
 
 Paths sets multiple path parameters from a map.
 
-<GoForjExample repo="httpx" example="paths">
-
 ```go
-// Example: path parameters
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/anything/{org}/users/{id}", httpx.Paths(map[string]any{
 	"org": "goforj",
@@ -882,16 +714,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Queries {#queries}
 
 Queries sets query parameters from a map.
 
-<GoForjExample repo="httpx" example="queries">
-
 ```go
-// Example: add query params
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/get", httpx.Queries(map[string]string{
 	"q":  "search",
@@ -906,16 +733,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Query {#query}
 
 Query adds query parameters as key/value pairs.
 
-<GoForjExample repo="httpx" example="query">
-
 ```go
-// Example: add query params
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/get", httpx.Query("q", "search"))
 httpx.Dump(res) // dumps map[string]any
@@ -926,16 +748,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### UserAgent {#useragent}
 
 UserAgent sets the User-Agent header on a request or client.
 
-<GoForjExample repo="httpx" example="useragent">
-
 ```go
-// Example: set a User-Agent
 // Apply to all requests
 c := httpx.New(httpx.UserAgent("my-app/1.0"))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/headers")
@@ -956,18 +773,13 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ## Request Control {#request-control}
 
 ### Before {#before}
 
 Before runs a hook before the request is sent.
 
-<GoForjExample repo="httpx" example="before">
-
 ```go
-// Example: mutate req.Request
 c := httpx.New()
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/get", httpx.Before(func(r *req.Request) {
 	r.EnableDump()
@@ -978,16 +790,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Timeout {#timeout}
 
 Timeout sets a per-request timeout using context cancellation.
 
-<GoForjExample repo="httpx" example="timeout">
-
 ```go
-// Example: timeout
 // Apply to all requests
 c := httpx.New(httpx.Timeout(2 * time.Second))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/delay/2")
@@ -1000,18 +807,13 @@ httpx.Dump(res) // dumps map[string]any
 // map[string]interface {}(nil)
 ```
 
-</GoForjExample>
-
 ## Requests {#requests}
 
 ### Delete {#delete}
 
 Delete issues a DELETE request using the provided client.
 
-<GoForjExample repo="httpx" example="delete">
-
 ```go
-// Example: typed DELETE
 type DeleteResponse struct {
 	URL string `json:"url"`
 }
@@ -1027,17 +829,12 @@ httpx.Dump(res) // dumps DeleteResponse
 // }
 ```
 
-</GoForjExample>
-
 ### Do {#do}
 
 Do executes a pre-configured req request and returns the decoded body and response.
 This is the low-level escape hatch when you need full req control.
 
-<GoForjExample repo="httpx" example="do">
-
 ```go
-// Example: advanced request with response access
 r := req.C().R().SetHeader("X-Trace", "1")
 r.SetURL("https://httpbin.org/headers")
 r.Method = http.MethodGet
@@ -1055,17 +852,13 @@ httpx.Dump(res) // dumps map[string]any
 println(rawResp.StatusCode)
 ```
 
-</GoForjExample>
-
 ### Get {#get}
 
 Get issues a GET request using the provided client.
 
-
-<GoForjExample repo="httpx" example="get">
+_Example: bind to a struct_
 
 ```go
-// Example: bind to a struct
 type GetResponse struct {
 	URL string `json:"url"`
 }
@@ -1076,51 +869,23 @@ httpx.Dump(res)
 // #GetResponse {
 //   URL => "https://httpbin.org/get" #string
 // }
-
-// Example: bind to a string body
-resString, _ := httpx.Get[string](c, "https://httpbin.org/uuid")
-println(resString) // dumps string
-// {
-//   "uuid": "becbda6d-9950-4966-ae23-0369617ba065"
-// }
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="httpx" example="get">
+_Example: bind to a string body_
 
 ```go
-// Example: bind to a struct
-type GetResponse struct {
-	URL string `json:"url"`
-}
-
-c := httpx.New()
-res, _ := httpx.Get[GetResponse](c, "https://httpbin.org/get")
-httpx.Dump(res)
-// #GetResponse {
-//   URL => "https://httpbin.org/get" #string
-// }
-
-// Example: bind to a string body
 resString, _ := httpx.Get[string](c, "https://httpbin.org/uuid")
 println(resString) // dumps string
 // {
 //   "uuid": "becbda6d-9950-4966-ae23-0369617ba065"
 // }
 ```
-
-</GoForjExample>
 
 ### Head {#head}
 
 Head issues a HEAD request using the provided client.
 
-<GoForjExample repo="httpx" example="head">
-
 ```go
-// Example: HEAD request
 c := httpx.New()
 _, err := httpx.Head[string](c, "https://httpbin.org/get")
 if err != nil {
@@ -1128,16 +893,11 @@ if err != nil {
 }
 ```
 
-</GoForjExample>
-
 ### Options {#options}
 
 Options issues an OPTIONS request using the provided client.
 
-<GoForjExample repo="httpx" example="options">
-
 ```go
-// Example: OPTIONS request
 c := httpx.New()
 _, err := httpx.Options[string](c, "https://httpbin.org/get")
 if err != nil {
@@ -1145,16 +905,11 @@ if err != nil {
 }
 ```
 
-</GoForjExample>
-
 ### Patch {#patch}
 
 Patch issues a PATCH request using the provided client.
 
-<GoForjExample repo="httpx" example="patch">
-
 ```go
-// Example: typed PATCH
 type UpdateUser struct {
 	Name string `json:"name"`
 }
@@ -1175,16 +930,11 @@ httpx.Dump(res) // dumps UpdateUserResponse
 // }
 ```
 
-</GoForjExample>
-
 ### Post {#post}
 
 Post issues a POST request using the provided client.
 
-<GoForjExample repo="httpx" example="post">
-
 ```go
-// Example: typed POST
 type CreateUser struct {
 	Name string `json:"name"`
 }
@@ -1205,16 +955,11 @@ httpx.Dump(res) // dumps CreateUserResponse
 // }
 ```
 
-</GoForjExample>
-
 ### Put {#put}
 
 Put issues a PUT request using the provided client.
 
-<GoForjExample repo="httpx" example="put">
-
 ```go
-// Example: typed PUT
 type UpdateUser struct {
 	Name string `json:"name"`
 }
@@ -1235,18 +980,13 @@ httpx.Dump(res) // dumps UpdateUserResponse
 // }
 ```
 
-</GoForjExample>
-
 ## Requests (Context) {#requests-(context)}
 
 ### DeleteCtx {#deletectx}
 
 DeleteCtx issues a DELETE request using the provided client and context.
 
-<GoForjExample repo="httpx" example="deletectx">
-
 ```go
-// Example: context-aware DELETE
 type DeleteResponse struct {
 	URL string `json:"url"`
 }
@@ -1263,16 +1003,11 @@ httpx.Dump(res) // dumps DeleteResponse
 // }
 ```
 
-</GoForjExample>
-
 ### GetCtx {#getctx}
 
 GetCtx issues a GET request using the provided client and context.
 
-<GoForjExample repo="httpx" example="getctx">
-
 ```go
-// Example: context-aware GET
 type GetResponse struct {
 	URL string `json:"url"`
 }
@@ -1289,16 +1024,11 @@ httpx.Dump(res) // dumps GetResponse
 // }
 ```
 
-</GoForjExample>
-
 ### HeadCtx {#headctx}
 
 HeadCtx issues a HEAD request using the provided client and context.
 
-<GoForjExample repo="httpx" example="headctx">
-
 ```go
-// Example: context-aware HEAD
 ctx := context.Background()
 c := httpx.New()
 _, err := httpx.HeadCtx[string](c, ctx, "https://httpbin.org/get")
@@ -1307,16 +1037,11 @@ if err != nil {
 }
 ```
 
-</GoForjExample>
-
 ### OptionsCtx {#optionsctx}
 
 OptionsCtx issues an OPTIONS request using the provided client and context.
 
-<GoForjExample repo="httpx" example="optionsctx">
-
 ```go
-// Example: context-aware OPTIONS
 ctx := context.Background()
 c := httpx.New()
 _, err := httpx.OptionsCtx[string](c, ctx, "https://httpbin.org/get")
@@ -1325,16 +1050,11 @@ if err != nil {
 }
 ```
 
-</GoForjExample>
-
 ### PatchCtx {#patchctx}
 
 PatchCtx issues a PATCH request using the provided client and context.
 
-<GoForjExample repo="httpx" example="patchctx">
-
 ```go
-// Example: context-aware PATCH
 type UpdateUser struct {
 	Name string `json:"name"`
 }
@@ -1356,16 +1076,11 @@ httpx.Dump(res) // dumps UpdateUserResponse
 // }
 ```
 
-</GoForjExample>
-
 ### PostCtx {#postctx}
 
 PostCtx issues a POST request using the provided client and context.
 
-<GoForjExample repo="httpx" example="postctx">
-
 ```go
-// Example: context-aware POST
 type CreateUser struct {
 	Name string `json:"name"`
 }
@@ -1387,16 +1102,11 @@ httpx.Dump(res) // dumps CreateUserResponse
 // }
 ```
 
-</GoForjExample>
-
 ### PutCtx {#putctx}
 
 PutCtx issues a PUT request using the provided client and context.
 
-<GoForjExample repo="httpx" example="putctx">
-
 ```go
-// Example: context-aware PUT
 type UpdateUser struct {
 	Name string `json:"name"`
 }
@@ -1418,8 +1128,6 @@ httpx.Dump(res) // dumps UpdateUserResponse
 // }
 ```
 
-</GoForjExample>
-
 ## Retry {#retry}
 
 ### RetryBackoff {#retrybackoff}
@@ -1427,10 +1135,7 @@ httpx.Dump(res) // dumps UpdateUserResponse
 RetryBackoff sets a capped exponential backoff retry interval for a request.
 Overrides the req default interval (fixed 100ms) with jittered backoff.
 
-<GoForjExample repo="httpx" example="retrybackoff">
-
 ```go
-// Example: retry backoff
 // Apply to all requests
 c := httpx.New(httpx.RetryBackoff(100*time.Millisecond, 2*time.Second))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
@@ -1447,17 +1152,12 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### RetryCondition {#retrycondition}
 
 RetryCondition sets the retry condition for a request.
 Overrides the default behavior (retry only when a request error occurs).
 
-<GoForjExample repo="httpx" example="retrycondition">
-
 ```go
-// Example: retry on 503
 // Apply to all requests
 c := httpx.New(httpx.RetryCondition(func(resp *req.Response, _ error) bool {
 	return resp != nil && resp.StatusCode == 503
@@ -1474,8 +1174,6 @@ httpx.Dump(res) // dumps map[string]any
 // map[string]interface {}(nil)
 ```
 
-</GoForjExample>
-
 ### RetryCount {#retrycount}
 
 RetryCount enables retry for a request and sets the maximum retry count.
@@ -1483,10 +1181,7 @@ Default behavior from req: retries are disabled (count = 0). When enabled,
 retries happen only on request errors unless RetryCondition is set, and the
 default interval is a fixed 100ms between attempts.
 
-<GoForjExample repo="httpx" example="retrycount">
-
 ```go
-// Example: retry count
 // Apply to all requests
 c := httpx.New(httpx.RetryCount(2))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
@@ -1503,17 +1198,12 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### RetryFixedInterval {#retryfixedinterval}
 
 RetryFixedInterval sets a fixed retry interval for a request.
 Overrides the req default interval (fixed 100ms).
 
-<GoForjExample repo="httpx" example="retryfixedinterval">
-
 ```go
-// Example: retry interval
 // Apply to all requests
 c := httpx.New(httpx.RetryFixedInterval(200 * time.Millisecond))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
@@ -1530,17 +1220,12 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### RetryHook {#retryhook}
 
 RetryHook registers a retry hook for a request.
 Runs before each retry attempt; no hooks are configured by default.
 
-<GoForjExample repo="httpx" example="retryhook">
-
 ```go
-// Example: hook on retry
 // Apply to all requests
 c := httpx.New(httpx.RetryHook(func(_ *req.Response, _ error) {}))
 res, _ := httpx.Get[map[string]any](c, "https://httpbin.org/uuid")
@@ -1557,17 +1242,12 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### RetryInterval {#retryinterval}
 
 RetryInterval sets a custom retry interval function for a request.
 Overrides the req default interval (fixed 100ms).
 
-<GoForjExample repo="httpx" example="retryinterval">
-
 ```go
-// Example: custom retry interval
 // Apply to all requests
 c := httpx.New(httpx.RetryInterval(func(_ *req.Response, attempt int) time.Duration {
 	return time.Duration(attempt) * 100 * time.Millisecond
@@ -1588,8 +1268,6 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ## Retry (Client) {#retry-(client)}
 
 ### Retry {#retry-2}
@@ -1597,16 +1275,11 @@ httpx.Dump(res) // dumps map[string]any
 Retry applies a custom retry configuration to the client.
 Defaults remain in effect unless the callback modifies them.
 
-<GoForjExample repo="httpx" example="retry">
-
 ```go
-// Example: configure client retry
 _ = httpx.New(httpx.Retry(func(rc *req.Client) {
 	rc.SetCommonRetryCount(2)
 }))
 ```
-
-</GoForjExample>
 
 ## Upload Options {#upload-options}
 
@@ -1614,10 +1287,7 @@ _ = httpx.New(httpx.Retry(func(rc *req.Client) {
 
 File attaches a file from disk as multipart form data.
 
-<GoForjExample repo="httpx" example="file">
-
 ```go
-// Example: upload a file
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil, httpx.File("file", "/tmp/report.txt"))
 httpx.Dump(res) // dumps map[string]any
@@ -1628,16 +1298,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### FileBytes {#filebytes}
 
 FileBytes attaches a file from bytes as multipart form data.
 
-<GoForjExample repo="httpx" example="filebytes">
-
 ```go
-// Example: upload bytes as a file
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil, httpx.FileBytes("file", "report.txt", []byte("hello")))
 httpx.Dump(res) // dumps map[string]any
@@ -1648,16 +1313,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### FileReader {#filereader}
 
 FileReader attaches a file from a reader as multipart form data.
 
-<GoForjExample repo="httpx" example="filereader">
-
 ```go
-// Example: upload from reader
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil, httpx.FileReader("file", "report.txt", strings.NewReader("hello")))
 httpx.Dump(res) // dumps map[string]any
@@ -1668,16 +1328,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### Files {#files}
 
 Files attaches multiple files from disk as multipart form data.
 
-<GoForjExample repo="httpx" example="files">
-
 ```go
-// Example: upload multiple files
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil, httpx.Files(map[string]string{
 	"fileA": "/tmp/a.txt",
@@ -1692,16 +1347,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### UploadCallback {#uploadcallback}
 
 UploadCallback registers a callback for upload progress.
 
-<GoForjExample repo="httpx" example="uploadcallback">
-
 ```go
-// Example: track upload progress
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil,
 	httpx.File("file", "/tmp/report.bin"),
@@ -1721,16 +1371,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### UploadCallbackWithInterval {#uploadcallbackwithinterval}
 
 UploadCallbackWithInterval registers a callback for upload progress with a minimum interval.
 
-<GoForjExample repo="httpx" example="uploadcallbackwithinterval">
-
 ```go
-// Example: throttle upload progress updates
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil,
 	httpx.File("file", "/tmp/report.bin"),
@@ -1750,16 +1395,11 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ### UploadProgress {#uploadprogress}
 
 UploadProgress enables a default progress spinner and bar for uploads.
 
-<GoForjExample repo="httpx" example="uploadprogress">
-
 ```go
-// Example: upload with automatic progress
 c := httpx.New()
 res, _ := httpx.Post[any, map[string]any](c, "https://httpbin.org/post", nil,
 	httpx.File("file", "/tmp/report.bin"),
@@ -1773,111 +1413,69 @@ httpx.Dump(res) // dumps map[string]any
 // }
 ```
 
-</GoForjExample>
-
 ## Advanced {#advanced}
 
 ### TLSFingerprint {#tlsfingerprint}
 
 TLSFingerprint applies a TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprint">
-
 ```go
-// Example: apply a TLS fingerprint preset
 _ = httpx.New(httpx.TLSFingerprint(httpx.TLSFingerprintChromeKind))
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintAndroid {#tlsfingerprintandroid}
 
 TLSFingerprintAndroid applies the Android TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintandroid">
-
 ```go
-// Example: apply Android TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintAndroid())
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintChrome {#tlsfingerprintchrome}
 
 TLSFingerprintChrome applies the Chrome TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintchrome">
-
 ```go
-// Example: apply Chrome TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintChrome())
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintEdge {#tlsfingerprintedge}
 
 TLSFingerprintEdge applies the Edge TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintedge">
-
 ```go
-// Example: apply Edge TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintEdge())
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintFirefox {#tlsfingerprintfirefox}
 
 TLSFingerprintFirefox applies the Firefox TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintfirefox">
-
 ```go
-// Example: apply Firefox TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintFirefox())
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintIOS {#tlsfingerprintios}
 
 TLSFingerprintIOS applies the iOS TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintios">
-
 ```go
-// Example: apply iOS TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintIOS())
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintRandomized {#tlsfingerprintrandomized}
 
 TLSFingerprintRandomized applies a randomized TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintrandomized">
-
 ```go
-// Example: apply randomized TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintRandomized())
 ```
-
-</GoForjExample>
 
 ### TLSFingerprintSafari {#tlsfingerprintsafari}
 
 TLSFingerprintSafari applies the Safari TLS fingerprint preset.
 
-<GoForjExample repo="httpx" example="tlsfingerprintsafari">
-
 ```go
-// Example: apply Safari TLS fingerprint
 _ = httpx.New(httpx.TLSFingerprintSafari())
 ```
-
-</GoForjExample>
 <!-- api:embed:end -->

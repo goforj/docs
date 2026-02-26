@@ -1,7 +1,6 @@
 import DefaultTheme from 'vitepress/theme'
 import { useRoute } from 'vitepress'
 import { nextTick, onMounted, watch } from 'vue'
-import GoForjExample from './components/GoForjExample.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -35,7 +34,6 @@ function isBadgeImage(img) {
 function isZoomableDocImage(img) {
   if (!(img instanceof HTMLImageElement)) return false
   if (!img.closest('.vp-doc')) return false
-  if (img.closest('.gf-example')) return false
   if (img.closest('.gf-lightbox-overlay')) return false
   if (img.closest('a[href^="#"]')) return false
   if (img.dataset.noLightbox === 'true') return false
@@ -244,8 +242,5 @@ export default {
         scheduleHashScroll(window.location.hash, 300)
       }
     })
-  },
-  enhanceApp({ app }) {
-    app.component('GoForjExample', GoForjExample)
   }
 }

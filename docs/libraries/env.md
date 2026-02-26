@@ -60,7 +60,7 @@ Accessing environment variables in Go often leads to:
 
 ```bash
 go get github.com/goforj/env/v2
-```
+````
 
 ## Quickstart {#quickstart}
 
@@ -157,66 +157,40 @@ Later files override earlier values. Subsequent calls are no-ops.
 
 GetAppEnv returns the current APP_ENV (empty string if unset).
 
-
-<GoForjExample repo="env" example="getappenv">
+_Example: simple retrieval_
 
 ```go
-// Example: simple retrieval
 _ = os.Setenv("APP_ENV", "staging")
 env.Dump(env.GetAppEnv())
 
 // #string "staging"
 ```
 
-</GoForjExample>
-
 ### IsAppEnv · readonly {#isappenv}
 
 IsAppEnv checks if APP_ENV matches any of the provided environments.
 
-
-<GoForjExample repo="env" example="isappenv">
+_Example: match any allowed environment_
 
 ```go
-// Example: match any allowed environment
 _ = os.Setenv("APP_ENV", "staging")
 env.Dump(env.IsAppEnv(env.Production, env.Staging))
 
 // #bool true
+```
 
-// Example: unmatched environment
+_Example: unmatched environment_
+
+```go
 _ = os.Setenv("APP_ENV", "local")
 env.Dump(env.IsAppEnv(env.Production, env.Staging))
 
 // #bool false
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="isappenv">
-
-```go
-// Example: match any allowed environment
-_ = os.Setenv("APP_ENV", "staging")
-env.Dump(env.IsAppEnv(env.Production, env.Staging))
-
-// #bool true
-
-// Example: unmatched environment
-_ = os.Setenv("APP_ENV", "local")
-env.Dump(env.IsAppEnv(env.Production, env.Staging))
-
-// #bool false
-```
-
-</GoForjExample>
 
 ### IsAppEnvLocal · readonly {#isappenvlocal}
 
 IsAppEnvLocal checks if APP_ENV is "local".
-
-<GoForjExample repo="env" example="isappenvlocal">
 
 ```go
 _ = os.Setenv("APP_ENV", env.Local)
@@ -225,13 +199,9 @@ env.Dump(env.IsAppEnvLocal())
 // #bool true
 ```
 
-</GoForjExample>
-
 ### IsAppEnvLocalOrStaging · readonly {#isappenvlocalorstaging}
 
 IsAppEnvLocalOrStaging checks if APP_ENV is either "local" or "staging".
-
-<GoForjExample repo="env" example="isappenvlocalorstaging">
 
 ```go
 _ = os.Setenv("APP_ENV", env.Local)
@@ -240,13 +210,9 @@ env.Dump(env.IsAppEnvLocalOrStaging())
 // #bool true
 ```
 
-</GoForjExample>
-
 ### IsAppEnvProduction · readonly {#isappenvproduction}
 
 IsAppEnvProduction checks if APP_ENV is "production".
-
-<GoForjExample repo="env" example="isappenvproduction">
 
 ```go
 _ = os.Setenv("APP_ENV", env.Production)
@@ -255,13 +221,9 @@ env.Dump(env.IsAppEnvProduction())
 // #bool true
 ```
 
-</GoForjExample>
-
 ### IsAppEnvStaging · readonly {#isappenvstaging}
 
 IsAppEnvStaging checks if APP_ENV is "staging".
-
-<GoForjExample repo="env" example="isappenvstaging">
 
 ```go
 _ = os.Setenv("APP_ENV", env.Staging)
@@ -270,55 +232,31 @@ env.Dump(env.IsAppEnvStaging())
 // #bool true
 ```
 
-</GoForjExample>
-
 ### IsAppEnvTesting · readonly {#isappenvtesting}
 
 IsAppEnvTesting reports whether APP_ENV is "testing" or the process looks like `go test`.
 
-
-<GoForjExample repo="env" example="isappenvtesting">
+_Example: APP_ENV explicitly testing_
 
 ```go
-// Example: APP_ENV explicitly testing
 _ = os.Setenv("APP_ENV", env.Testing)
 env.Dump(env.IsAppEnvTesting())
 
 // #bool true
+```
 
-// Example: no test markers
+_Example: no test markers_
+
+```go
 _ = os.Unsetenv("APP_ENV")
 env.Dump(env.IsAppEnvTesting())
 
 // #bool false (outside of test binaries)
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="isappenvtesting">
-
-```go
-// Example: APP_ENV explicitly testing
-_ = os.Setenv("APP_ENV", env.Testing)
-env.Dump(env.IsAppEnvTesting())
-
-// #bool true
-
-// Example: no test markers
-_ = os.Unsetenv("APP_ENV")
-env.Dump(env.IsAppEnvTesting())
-
-// #bool false (outside of test binaries)
-```
-
-</GoForjExample>
 
 ### IsAppEnvTestingOrLocal · readonly {#isappenvtestingorlocal}
 
 IsAppEnvTestingOrLocal checks if APP_ENV is "testing" or "local".
-
-<GoForjExample repo="env" example="isappenvtestingorlocal">
 
 ```go
 _ = os.Setenv("APP_ENV", env.Testing)
@@ -327,30 +265,22 @@ env.Dump(env.IsAppEnvTestingOrLocal())
 // #bool true
 ```
 
-</GoForjExample>
-
 ### SetAppEnv · mutates-process-env {#setappenv}
 
 SetAppEnv sets APP_ENV to a supported value.
 
-
-<GoForjExample repo="env" example="setappenv">
+_Example: set a supported environment_
 
 ```go
-// Example: set a supported environment
 _ = env.SetAppEnv(env.Staging)
 env.Dump(env.GetAppEnv())
 
 // #string "staging"
 ```
 
-</GoForjExample>
-
 ### SetAppEnvLocal · mutates-process-env {#setappenvlocal}
 
 SetAppEnvLocal sets APP_ENV to "local".
-
-<GoForjExample repo="env" example="setappenvlocal">
 
 ```go
 _ = env.SetAppEnvLocal()
@@ -359,13 +289,9 @@ env.Dump(env.GetAppEnv())
 // #string "local"
 ```
 
-</GoForjExample>
-
 ### SetAppEnvProduction · mutates-process-env {#setappenvproduction}
 
 SetAppEnvProduction sets APP_ENV to "production".
-
-<GoForjExample repo="env" example="setappenvproduction">
 
 ```go
 _ = env.SetAppEnvProduction()
@@ -374,13 +300,9 @@ env.Dump(env.GetAppEnv())
 // #string "production"
 ```
 
-</GoForjExample>
-
 ### SetAppEnvStaging · mutates-process-env {#setappenvstaging}
 
 SetAppEnvStaging sets APP_ENV to "staging".
-
-<GoForjExample repo="env" example="setappenvstaging">
 
 ```go
 _ = env.SetAppEnvStaging()
@@ -389,13 +311,9 @@ env.Dump(env.GetAppEnv())
 // #string "staging"
 ```
 
-</GoForjExample>
-
 ### SetAppEnvTesting · mutates-process-env {#setappenvtesting}
 
 SetAppEnvTesting sets APP_ENV to "testing".
-
-<GoForjExample repo="env" example="setappenvtesting">
 
 ```go
 _ = env.SetAppEnvTesting()
@@ -404,48 +322,36 @@ env.Dump(env.GetAppEnv())
 // #string "testing"
 ```
 
-</GoForjExample>
-
 ## Container detection {#container-detection}
 
 ### IsContainer · readonly {#iscontainer}
 
 IsContainer detects common container runtimes (Docker, containerd, Kubernetes, Podman).
 
-
-<GoForjExample repo="env" example="iscontainer">
+_Example: host vs container_
 
 ```go
-// Example: host vs container
 env.Dump(env.IsContainer())
 
 // #bool true  (inside most containers)
 // #bool false (on bare-metal/VM hosts)
 ```
 
-</GoForjExample>
-
 ### IsDocker · readonly {#isdocker}
 
 IsDocker reports whether the current process is running in a Docker container.
 
-
-<GoForjExample repo="env" example="isdocker">
+_Example: typical host_
 
 ```go
-// Example: typical host
 env.Dump(env.IsDocker())
 
 // #bool false (unless inside Docker)
 ```
 
-</GoForjExample>
-
 ### IsDockerHost · readonly {#isdockerhost}
 
 IsDockerHost reports whether this container behaves like a Docker host.
-
-<GoForjExample repo="env" example="isdockerhost">
 
 ```go
 env.Dump(env.IsDockerHost())
@@ -454,13 +360,9 @@ env.Dump(env.IsDockerHost())
 // #bool false (for normal containers/hosts)
 ```
 
-</GoForjExample>
-
 ### IsDockerInDocker · readonly {#isdockerindocker}
 
 IsDockerInDocker reports whether we are inside a Docker-in-Docker environment.
-
-<GoForjExample repo="env" example="isdockerindocker">
 
 ```go
 env.Dump(env.IsDockerInDocker())
@@ -469,14 +371,10 @@ env.Dump(env.IsDockerInDocker())
 // #bool false (on hosts or non-DinD containers)
 ```
 
-</GoForjExample>
-
 ### IsHostEnvironment · readonly {#ishostenvironment}
 
 IsHostEnvironment reports whether the process is running *outside* any
 container or orchestrated runtime.
-
-<GoForjExample repo="env" example="ishostenvironment">
 
 ```go
 env.Dump(env.IsHostEnvironment())
@@ -485,13 +383,9 @@ env.Dump(env.IsHostEnvironment())
 // #bool false (inside containers)
 ```
 
-</GoForjExample>
-
 ### IsKubernetes · readonly {#iskubernetes}
 
 IsKubernetes reports whether the process is running inside Kubernetes.
-
-<GoForjExample repo="env" example="iskubernetes">
 
 ```go
 env.Dump(env.IsKubernetes())
@@ -500,19 +394,15 @@ env.Dump(env.IsKubernetes())
 // #bool false (elsewhere)
 ```
 
-</GoForjExample>
-
 ## Debugging {#debugging}
 
 ### Dump · readonly {#dump}
 
 Dump is a convenience function that calls godump.Dump.
 
-
-<GoForjExample repo="env" example="dump">
+_Example: integers_
 
 ```go
-// Example: integers
 nums := []int{1, 2, 3}
 env.Dump(nums)
 
@@ -521,34 +411,11 @@ env.Dump(nums)
 //   1 => 2 #int
 //   2 => 3 #int
 // ]
-
-// Example: multiple values
-env.Dump("status", map[string]int{"ok": 1, "fail": 0})
-
-// #string "status"
-// #map[string]int [
-//   "fail" => 0 #int
-//   "ok"   => 1 #int
-// ]
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="dump">
+_Example: multiple values_
 
 ```go
-// Example: integers
-nums := []int{1, 2, 3}
-env.Dump(nums)
-
-// #[]int [
-//   0 => 1 #int
-//   1 => 2 #int
-//   2 => 3 #int
-// ]
-
-// Example: multiple values
 env.Dump("status", map[string]int{"ok": 1, "fail": 0})
 
 // #string "status"
@@ -557,16 +424,12 @@ env.Dump("status", map[string]int{"ok": 1, "fail": 0})
 //   "ok"   => 1 #int
 // ]
 ```
-
-</GoForjExample>
 
 ## Environment loading {#environment-loading}
 
 ### IsEnvLoaded · readonly {#isenvloaded}
 
 IsEnvLoaded reports whether LoadEnvFileIfExists was executed in this process.
-
-<GoForjExample repo="env" example="isenvloaded">
 
 ```go
 env.Dump(env.IsEnvLoaded())
@@ -575,18 +438,14 @@ env.Dump(env.IsEnvLoaded())
 // #bool false (otherwise)
 ```
 
-</GoForjExample>
-
 ### LoadEnvFileIfExists · mutates-process-env {#loadenvfileifexists}
 
 LoadEnvFileIfExists loads .env with optional layering for .env.local/.env.staging/.env.production,
 plus .env.testing/.env.host when present.
 
-
-<GoForjExample repo="env" example="loadenvfileifexists">
+_Example: test-specific env file_
 
 ```go
-// Example: test-specific env file
 tmp, _ := os.MkdirTemp("", "envdoc")
 _ = os.WriteFile(filepath.Join(tmp, ".env.testing"), []byte("PORT=9090\nENV_DEBUG=0"), 0o644)
 _ = os.Chdir(tmp)
@@ -596,41 +455,17 @@ _ = env.LoadEnvFileIfExists()
 env.Dump(os.Getenv("PORT"))
 
 // #string "9090"
-
-// Example: default .env on a host
-_ = os.WriteFile(".env", []byte("SERVICE=api\nENV_DEBUG=3"), 0o644)
-_ = env.LoadEnvFileIfExists()
-env.Dump(os.Getenv("SERVICE"))
-
-// #string "api"
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="loadenvfileifexists">
+_Example: default .env on a host_
 
 ```go
-// Example: test-specific env file
-tmp, _ := os.MkdirTemp("", "envdoc")
-_ = os.WriteFile(filepath.Join(tmp, ".env.testing"), []byte("PORT=9090\nENV_DEBUG=0"), 0o644)
-_ = os.Chdir(tmp)
-_ = os.Setenv("APP_ENV", env.Testing)
-
-_ = env.LoadEnvFileIfExists()
-env.Dump(os.Getenv("PORT"))
-
-// #string "9090"
-
-// Example: default .env on a host
 _ = os.WriteFile(".env", []byte("SERVICE=api\nENV_DEBUG=3"), 0o644)
 _ = env.LoadEnvFileIfExists()
 env.Dump(os.Getenv("SERVICE"))
 
 // #string "api"
 ```
-
-</GoForjExample>
 
 ## Runtime {#runtime}
 
@@ -638,24 +473,18 @@ env.Dump(os.Getenv("SERVICE"))
 
 Arch returns the CPU architecture the binary is running on.
 
-
-<GoForjExample repo="env" example="arch">
+_Example: print GOARCH_
 
 ```go
-// Example: print GOARCH
 env.Dump(env.Arch())
 
 // #string "amd64"
 // #string "arm64"
 ```
 
-</GoForjExample>
-
 ### IsBSD · readonly {#isbsd}
 
 IsBSD reports whether the runtime OS is any BSD variant.
-
-<GoForjExample repo="env" example="isbsd">
 
 ```go
 env.Dump(env.IsBSD())
@@ -664,13 +493,9 @@ env.Dump(env.IsBSD())
 // #bool false (elsewhere)
 ```
 
-</GoForjExample>
-
 ### IsContainerOS · readonly {#iscontaineros}
 
 IsContainerOS reports whether this OS is *typically* used as a container base.
-
-<GoForjExample repo="env" example="iscontaineros">
 
 ```go
 env.Dump(env.IsContainerOS())
@@ -679,13 +504,9 @@ env.Dump(env.IsContainerOS())
 // #bool false (on macOS/Windows)
 ```
 
-</GoForjExample>
-
 ### IsLinux · readonly {#islinux}
 
 IsLinux reports whether the runtime OS is Linux.
-
-<GoForjExample repo="env" example="islinux">
 
 ```go
 env.Dump(env.IsLinux())
@@ -694,13 +515,9 @@ env.Dump(env.IsLinux())
 // #bool false (on other OSes)
 ```
 
-</GoForjExample>
-
 ### IsMac · readonly {#ismac}
 
 IsMac reports whether the runtime OS is macOS (Darwin).
-
-<GoForjExample repo="env" example="ismac">
 
 ```go
 env.Dump(env.IsMac())
@@ -709,13 +526,9 @@ env.Dump(env.IsMac())
 // #bool false (elsewhere)
 ```
 
-</GoForjExample>
-
 ### IsUnix · readonly {#isunix}
 
 IsUnix reports whether the OS is Unix-like.
-
-<GoForjExample repo="env" example="isunix">
 
 ```go
 env.Dump(env.IsUnix())
@@ -724,13 +537,9 @@ env.Dump(env.IsUnix())
 // #bool false (e.g., on Windows or Plan 9)
 ```
 
-</GoForjExample>
-
 ### IsWindows · readonly {#iswindows}
 
 IsWindows reports whether the runtime OS is Windows.
-
-<GoForjExample repo="env" example="iswindows">
 
 ```go
 env.Dump(env.IsWindows())
@@ -739,17 +548,13 @@ env.Dump(env.IsWindows())
 // #bool false (elsewhere)
 ```
 
-</GoForjExample>
-
 ### OS · readonly {#os}
 
 OS returns the current operating system identifier.
 
-
-<GoForjExample repo="env" example="os">
+_Example: inspect GOOS_
 
 ```go
-// Example: inspect GOOS
 env.Dump(env.OS())
 
 // #string "linux"   (on Linux)
@@ -757,341 +562,183 @@ env.Dump(env.OS())
 // #string "windows" (on Windows)
 ```
 
-</GoForjExample>
-
 ## Typed getters {#typed-getters}
 
 ### Get · readonly {#get}
 
 Get returns the environment variable for key or fallback when empty.
 
-
-<GoForjExample repo="env" example="get">
+_Example: fallback when unset_
 
 ```go
-// Example: fallback when unset
 os.Unsetenv("DB_HOST")
 host := env.Get("DB_HOST", "localhost")
 env.Dump(host)
 
 // #string "localhost"
+```
 
-// Example: prefer existing value
+_Example: prefer existing value_
+
+```go
 _ = os.Setenv("DB_HOST", "db.internal")
 host = env.Get("DB_HOST", "localhost")
 env.Dump(host)
 
 // #string "db.internal"
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="get">
-
-```go
-// Example: fallback when unset
-os.Unsetenv("DB_HOST")
-host := env.Get("DB_HOST", "localhost")
-env.Dump(host)
-
-// #string "localhost"
-
-// Example: prefer existing value
-_ = os.Setenv("DB_HOST", "db.internal")
-host = env.Get("DB_HOST", "localhost")
-env.Dump(host)
-
-// #string "db.internal"
-```
-
-</GoForjExample>
 
 ### GetBool · readonly {#getbool}
 
 GetBool parses a boolean from an environment variable or fallback string.
 
-
-<GoForjExample repo="env" example="getbool">
+_Example: numeric truthy_
 
 ```go
-// Example: numeric truthy
 _ = os.Setenv("DEBUG", "1")
 debug := env.GetBool("DEBUG", "false")
 env.Dump(debug)
 
 // #bool true
+```
 
-// Example: fallback string
+_Example: fallback string_
+
+```go
 os.Unsetenv("DEBUG")
 debug = env.GetBool("DEBUG", "false")
 env.Dump(debug)
 
 // #bool false
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getbool">
-
-```go
-// Example: numeric truthy
-_ = os.Setenv("DEBUG", "1")
-debug := env.GetBool("DEBUG", "false")
-env.Dump(debug)
-
-// #bool true
-
-// Example: fallback string
-os.Unsetenv("DEBUG")
-debug = env.GetBool("DEBUG", "false")
-env.Dump(debug)
-
-// #bool false
-```
-
-</GoForjExample>
 
 ### GetDuration · readonly {#getduration}
 
 GetDuration parses a Go duration string (e.g. "5s", "10m", "1h").
 
-
-<GoForjExample repo="env" example="getduration">
+_Example: override request timeout_
 
 ```go
-// Example: override request timeout
 _ = os.Setenv("HTTP_TIMEOUT", "30s")
 timeout := env.GetDuration("HTTP_TIMEOUT", "5s")
 env.Dump(timeout)
 
 // #time.Duration 30s
+```
 
-// Example: fallback when unset
+_Example: fallback when unset_
+
+```go
 os.Unsetenv("HTTP_TIMEOUT")
 timeout = env.GetDuration("HTTP_TIMEOUT", "5s")
 env.Dump(timeout)
 
 // #time.Duration 5s
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getduration">
-
-```go
-// Example: override request timeout
-_ = os.Setenv("HTTP_TIMEOUT", "30s")
-timeout := env.GetDuration("HTTP_TIMEOUT", "5s")
-env.Dump(timeout)
-
-// #time.Duration 30s
-
-// Example: fallback when unset
-os.Unsetenv("HTTP_TIMEOUT")
-timeout = env.GetDuration("HTTP_TIMEOUT", "5s")
-env.Dump(timeout)
-
-// #time.Duration 5s
-```
-
-</GoForjExample>
 
 ### GetEnum · readonly {#getenum}
 
 GetEnum ensures the environment variable's value is in the allowed list.
 
-
-<GoForjExample repo="env" example="getenum">
+_Example: accept only staged environments_
 
 ```go
-// Example: accept only staged environments
 _ = os.Setenv("APP_ENV", "production")
 appEnv := env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
 env.Dump(appEnv)
 
 // #string "production"
+```
 
-// Example: fallback when unset
+_Example: fallback when unset_
+
+```go
 os.Unsetenv("APP_ENV")
 appEnv = env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
 env.Dump(appEnv)
 
 // #string "local"
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getenum">
-
-```go
-// Example: accept only staged environments
-_ = os.Setenv("APP_ENV", "production")
-appEnv := env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
-env.Dump(appEnv)
-
-// #string "production"
-
-// Example: fallback when unset
-os.Unsetenv("APP_ENV")
-appEnv = env.GetEnum("APP_ENV", "local", []string{"local", "staging", "production"})
-env.Dump(appEnv)
-
-// #string "local"
-```
-
-</GoForjExample>
 
 ### GetFloat · readonly {#getfloat}
 
 GetFloat parses a float64 from an environment variable or fallback string.
 
-
-<GoForjExample repo="env" example="getfloat">
+_Example: override threshold_
 
 ```go
-// Example: override threshold
 _ = os.Setenv("THRESHOLD", "0.82")
 threshold := env.GetFloat("THRESHOLD", "0.75")
 env.Dump(threshold)
 
 // #float64 0.82
+```
 
-// Example: fallback with decimal string
+_Example: fallback with decimal string_
+
+```go
 os.Unsetenv("THRESHOLD")
 threshold = env.GetFloat("THRESHOLD", "0.75")
 env.Dump(threshold)
 
 // #float64 0.75
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getfloat">
-
-```go
-// Example: override threshold
-_ = os.Setenv("THRESHOLD", "0.82")
-threshold := env.GetFloat("THRESHOLD", "0.75")
-env.Dump(threshold)
-
-// #float64 0.82
-
-// Example: fallback with decimal string
-os.Unsetenv("THRESHOLD")
-threshold = env.GetFloat("THRESHOLD", "0.75")
-env.Dump(threshold)
-
-// #float64 0.75
-```
-
-</GoForjExample>
 
 ### GetInt · readonly {#getint}
 
 GetInt parses an int from an environment variable or fallback string.
 
-
-<GoForjExample repo="env" example="getint">
+_Example: fallback used_
 
 ```go
-// Example: fallback used
 os.Unsetenv("PORT")
 port := env.GetInt("PORT", "3000")
 env.Dump(port)
 
 // #int 3000
+```
 
-// Example: env overrides fallback
+_Example: env overrides fallback_
+
+```go
 _ = os.Setenv("PORT", "8080")
 port = env.GetInt("PORT", "3000")
 env.Dump(port)
 
 // #int 8080
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getint">
-
-```go
-// Example: fallback used
-os.Unsetenv("PORT")
-port := env.GetInt("PORT", "3000")
-env.Dump(port)
-
-// #int 3000
-
-// Example: env overrides fallback
-_ = os.Setenv("PORT", "8080")
-port = env.GetInt("PORT", "3000")
-env.Dump(port)
-
-// #int 8080
-```
-
-</GoForjExample>
 
 ### GetInt64 · readonly {#getint64}
 
 GetInt64 parses an int64 from an environment variable or fallback string.
 
-
-<GoForjExample repo="env" example="getint64">
+_Example: parse large numbers safely_
 
 ```go
-// Example: parse large numbers safely
 _ = os.Setenv("MAX_SIZE", "1048576")
 size := env.GetInt64("MAX_SIZE", "512")
 env.Dump(size)
 
 // #int64 1048576
+```
 
-// Example: fallback when unset
+_Example: fallback when unset_
+
+```go
 os.Unsetenv("MAX_SIZE")
 size = env.GetInt64("MAX_SIZE", "512")
 env.Dump(size)
 
 // #int64 512
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getint64">
-
-```go
-// Example: parse large numbers safely
-_ = os.Setenv("MAX_SIZE", "1048576")
-size := env.GetInt64("MAX_SIZE", "512")
-env.Dump(size)
-
-// #int64 1048576
-
-// Example: fallback when unset
-os.Unsetenv("MAX_SIZE")
-size = env.GetInt64("MAX_SIZE", "512")
-env.Dump(size)
-
-// #int64 512
-```
-
-</GoForjExample>
 
 ### GetMap · readonly {#getmap}
 
 GetMap parses key=value pairs separated by commas into a map.
 
-
-<GoForjExample repo="env" example="getmap">
+_Example: parse throttling config_
 
 ```go
-// Example: parse throttling config
 _ = os.Setenv("LIMITS", "read=10, write=5, burst=20")
 limits := env.GetMap("LIMITS", "")
 env.Dump(limits)
@@ -1101,51 +748,25 @@ env.Dump(limits)
 //  "read"  => "10" #string
 //  "write" => "5" #string
 // ]
-
-// Example: returns empty map when unset or blank
-os.Unsetenv("LIMITS")
-limits = env.GetMap("LIMITS", "")
-env.Dump(limits)
-
-// #map[string]string []
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getmap">
+_Example: returns empty map when unset or blank_
 
 ```go
-// Example: parse throttling config
-_ = os.Setenv("LIMITS", "read=10, write=5, burst=20")
-limits := env.GetMap("LIMITS", "")
-env.Dump(limits)
-
-// #map[string]string [
-//  "burst" => "20" #string
-//  "read"  => "10" #string
-//  "write" => "5" #string
-// ]
-
-// Example: returns empty map when unset or blank
 os.Unsetenv("LIMITS")
 limits = env.GetMap("LIMITS", "")
 env.Dump(limits)
 
 // #map[string]string []
 ```
-
-</GoForjExample>
 
 ### GetSlice · readonly {#getslice}
 
 GetSlice splits a comma-separated string into a []string with trimming.
 
-
-<GoForjExample repo="env" example="getslice">
+_Example: trimmed addresses_
 
 ```go
-// Example: trimmed addresses
 _ = os.Setenv("PEERS", "10.0.0.1, 10.0.0.2")
 peers := env.GetSlice("PEERS", "")
 env.Dump(peers)
@@ -1154,252 +775,128 @@ env.Dump(peers)
 //  0 => "10.0.0.1" #string
 //  1 => "10.0.0.2" #string
 // ]
-
-// Example: empty becomes empty slice
-os.Unsetenv("PEERS")
-peers = env.GetSlice("PEERS", "")
-env.Dump(peers)
-
-// #[]string []
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getslice">
+_Example: empty becomes empty slice_
 
 ```go
-// Example: trimmed addresses
-_ = os.Setenv("PEERS", "10.0.0.1, 10.0.0.2")
-peers := env.GetSlice("PEERS", "")
-env.Dump(peers)
-
-// #[]string [
-//  0 => "10.0.0.1" #string
-//  1 => "10.0.0.2" #string
-// ]
-
-// Example: empty becomes empty slice
 os.Unsetenv("PEERS")
 peers = env.GetSlice("PEERS", "")
 env.Dump(peers)
 
 // #[]string []
 ```
-
-</GoForjExample>
 
 ### GetUint · readonly {#getuint}
 
 GetUint parses a uint from an environment variable or fallback string.
 
-
-<GoForjExample repo="env" example="getuint">
+_Example: defaults to fallback when missing_
 
 ```go
-// Example: defaults to fallback when missing
 os.Unsetenv("WORKERS")
 workers := env.GetUint("WORKERS", "4")
 env.Dump(workers)
 
 // #uint 4
+```
 
-// Example: uses provided unsigned value
+_Example: uses provided unsigned value_
+
+```go
 _ = os.Setenv("WORKERS", "16")
 workers = env.GetUint("WORKERS", "4")
 env.Dump(workers)
 
 // #uint 16
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getuint">
-
-```go
-// Example: defaults to fallback when missing
-os.Unsetenv("WORKERS")
-workers := env.GetUint("WORKERS", "4")
-env.Dump(workers)
-
-// #uint 4
-
-// Example: uses provided unsigned value
-_ = os.Setenv("WORKERS", "16")
-workers = env.GetUint("WORKERS", "4")
-env.Dump(workers)
-
-// #uint 16
-```
-
-</GoForjExample>
 
 ### GetUint64 · readonly {#getuint64}
 
 GetUint64 parses a uint64 from an environment variable or fallback string.
 
-
-<GoForjExample repo="env" example="getuint64">
+_Example: high range values_
 
 ```go
-// Example: high range values
 _ = os.Setenv("MAX_ITEMS", "5000")
 maxItems := env.GetUint64("MAX_ITEMS", "100")
 env.Dump(maxItems)
 
 // #uint64 5000
+```
 
-// Example: fallback when unset
+_Example: fallback when unset_
+
+```go
 os.Unsetenv("MAX_ITEMS")
 maxItems = env.GetUint64("MAX_ITEMS", "100")
 env.Dump(maxItems)
 
 // #uint64 100
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="getuint64">
-
-```go
-// Example: high range values
-_ = os.Setenv("MAX_ITEMS", "5000")
-maxItems := env.GetUint64("MAX_ITEMS", "100")
-env.Dump(maxItems)
-
-// #uint64 5000
-
-// Example: fallback when unset
-os.Unsetenv("MAX_ITEMS")
-maxItems = env.GetUint64("MAX_ITEMS", "100")
-env.Dump(maxItems)
-
-// #uint64 100
-```
-
-</GoForjExample>
 
 ### MustGet · panic {#mustget}
 
 MustGet returns the value of key or panics if missing/empty.
 
-
-<GoForjExample repo="env" example="mustget">
+_Example: required secret_
 
 ```go
-// Example: required secret
 _ = os.Setenv("API_SECRET", "s3cr3t")
 secret := env.MustGet("API_SECRET")
 env.Dump(secret)
 
 // #string "s3cr3t"
-
-// Example: panic on missing value
-os.Unsetenv("API_SECRET")
-secret = env.MustGet("API_SECRET") // panics: env variable missing: API_SECRET
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="mustget">
+_Example: panic on missing value_
 
 ```go
-// Example: required secret
-_ = os.Setenv("API_SECRET", "s3cr3t")
-secret := env.MustGet("API_SECRET")
-env.Dump(secret)
-
-// #string "s3cr3t"
-
-// Example: panic on missing value
 os.Unsetenv("API_SECRET")
 secret = env.MustGet("API_SECRET") // panics: env variable missing: API_SECRET
 ```
-
-</GoForjExample>
 
 ### MustGetBool · panic {#mustgetbool}
 
 MustGetBool panics if missing or invalid.
 
-
-<GoForjExample repo="env" example="mustgetbool">
+_Example: gate features explicitly_
 
 ```go
-// Example: gate features explicitly
 _ = os.Setenv("FEATURE_ENABLED", "true")
 enabled := env.MustGetBool("FEATURE_ENABLED")
 env.Dump(enabled)
 
 // #bool true
-
-// Example: panic on invalid value
-_ = os.Setenv("FEATURE_ENABLED", "maybe")
-_ = env.MustGetBool("FEATURE_ENABLED") // panics when parsing
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="mustgetbool">
+_Example: panic on invalid value_
 
 ```go
-// Example: gate features explicitly
-_ = os.Setenv("FEATURE_ENABLED", "true")
-enabled := env.MustGetBool("FEATURE_ENABLED")
-env.Dump(enabled)
-
-// #bool true
-
-// Example: panic on invalid value
 _ = os.Setenv("FEATURE_ENABLED", "maybe")
 _ = env.MustGetBool("FEATURE_ENABLED") // panics when parsing
 ```
-
-</GoForjExample>
 
 ### MustGetInt · panic {#mustgetint}
 
 MustGetInt panics if the value is missing or not an int.
 
-
-<GoForjExample repo="env" example="mustgetint">
+_Example: ensure numeric port_
 
 ```go
-// Example: ensure numeric port
 _ = os.Setenv("PORT", "8080")
 port := env.MustGetInt("PORT")
 env.Dump(port)
 
 // #int 8080
-
-// Example: panic on bad value
-_ = os.Setenv("PORT", "not-a-number")
-_ = env.MustGetInt("PORT") // panics when parsing
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="env" example="mustgetint">
+_Example: panic on bad value_
 
 ```go
-// Example: ensure numeric port
-_ = os.Setenv("PORT", "8080")
-port := env.MustGetInt("PORT")
-env.Dump(port)
-
-// #int 8080
-
-// Example: panic on bad value
 _ = os.Setenv("PORT", "not-a-number")
 _ = env.MustGetInt("PORT") // panics when parsing
 ```
-
-</GoForjExample>
 <!-- api:embed:end -->
 
 ## Philosophy {#philosophy}

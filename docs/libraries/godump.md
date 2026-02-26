@@ -73,84 +73,49 @@ If you'd like to suggest improvements or additional comparisons, feel free to op
 
 ```bash
 go get github.com/goforj/godump
-```
+````
 
 ## Basic Usage {#basic-usage}
 
 <p> <a href="./examples/basic/main.go"><strong>View Full Runnable Example →</strong></a> </p>
 
-<GoForjExample repo="godump" example="basic">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Pretty-print to stdout
-godump.Dump(user)
+type User struct { Name string }
+godump.Dump(User{Name: "Alice"})
 // #main.User {
-//  +Name    => "Alice" #string
-//  +Profile => #main.Profile {
-//    +Age   => 30 #int
-//    +Email => "alice@example.com" #string
-//  }
-// }
+//    +Name => "Alice" #string
+// }	
 ```
-
-</GoForjExample>
 
 ## Extended Usage (Snippets) {#extended-usage-(snippets)}
 
-<GoForjExample repo="godump" example="basic">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Pretty-print to stdout
-godump.Dump(user)
-// #main.User {
-//  +Name    => "Alice" #string
-//  +Profile => #main.Profile {
-//    +Age   => 30 #int
-//    +Email => "alice@example.com" #string
-//  }
-// }
-```
-
-</GoForjExample>
+godump.DumpStr(v)     // return as string
+godump.DumpHTML(v)    // return HTML output
+godump.DumpJSON(v)    // print JSON directly
+godump.Fdump(w, v)    // write to io.Writer
+godump.Dd(v)          // dump + exit
+godump.Diff(a, b)     // diff two values
+godump.DiffStr(a, b)  // diff two values as string
+godump.DiffHTML(a, b) // diff two values as HTML
+````
 
 ## Diff Usage {#diff-usage}
 
 <p> <a href="./examples/diff/main.go"><strong>View Diff Example →</strong></a> </p>
 
-<GoForjExample repo="godump" example="diff">
-
 ```go
-// Example: print diff with a custom dumper
-d := godump.NewDumper()
-a := map[string]int{"a": 1}
-b := map[string]int{"a": 2}
-d.Diff(a, b)
-// <#diff // path:line
-// - #map[string]int {
-// -   a => 1 #int
-// - }
-// + #map[string]int {
-// +   a => 2 #int
-// + }
+type User struct {
+    Name string
+}
+before := User{Name: "Alice"}
+after := User{Name: "Bob"}
+godump.Diff(before, after)
+//   #main.User {
+// -   +Name => "Alice" #string
+// +   +Name => "Bob" #string
+//   }
 ```
-
-</GoForjExample>
 
 <p> <a href="./examples/diffextended/main.go"><strong>View Diff Extended Example →</strong></a> </p>
 
@@ -162,121 +127,17 @@ If you want to heavily customize the dumper behavior, you can create a `Dumper` 
 
 <p> <a href="./examples/builder/main.go"><strong>View Full Runnable Example →</strong></a> </p>
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
+godump.NewDumper(
+    godump.WithMaxDepth(15),           // default: 15
+    godump.WithMaxItems(100),          // default: 100
+    godump.WithMaxStringLen(100000),   // default: 100000
+    godump.WithWriter(os.Stdout),      // default: os.Stdout
+    godump.WithSkipStackFrames(10),    // default: 10
+    godump.WithDisableStringer(false), // default: false
+    godump.WithoutColor(),             // default: false
+).Dump(v)
 ```
-
-</GoForjExample>
 
 ## Contributing {#contributing}
 
@@ -303,362 +164,27 @@ This guarantees all examples are valid, up-to-date, and remain functional as the
 
 ### Location Header {#location-header}
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-```
-
-</GoForjExample>
+<#dump // main.go:26
+````
 
 * The first line shows the **file and line number** where `godump.Dump()` was invoked.
 * Helpful for finding where the dump happened during debugging.
 
 ### Type Names {#type-names}
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
+#main.User
 ```
-
-</GoForjExample>
 
 * Fully qualified struct name with its package path.
 
 ### Visibility Markers {#visibility-markers}
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
+  +Name => "Alice"
+  -secret  => "..."
 ```
-
-</GoForjExample>
 
 * `+` → Exported (public) field
 * `-` → Unexported (private) field (accessed reflectively)
@@ -667,363 +193,28 @@ fmt.Println("Dump to strings.Builder:\n", sb.String())
 
 If a pointer has already been printed:
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
+↩︎ &1
 ```
-
-</GoForjExample>
 
 * Prevents infinite loops in circular structures
 * References point back to earlier object instances
 
 ### Slices and Maps {#slices-and-maps}
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
+  0 => "value"
+  a => 1
 ```
-
-</GoForjExample>
 
 * Array/slice indices and map keys are shown with `=>` formatting and indentation
 * Slices and maps are truncated if `maxItems` is exceeded
 
 ### Escaped Characters {#escaped-characters}
 
-<GoForjExample repo="godump" example="builder">
-
 ```go
-user := User{
-	Name: "Alice",
-	Profile: Profile{
-		Age:   30,
-		Email: "alice@example.com",
-	},
-}
-
-// Basic pretty-print
-godump.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as string
-strOut := godump.DumpStr(user)
-fmt.Println("DumpStr:", strOut)
-// DumpStr output:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump as HTML
-htmlOut := godump.DumpHTML(user)
-fmt.Println("DumpHTML:", htmlOut)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// Dump JSON
-godump.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to any io.Writer
-godump.Fdump(os.Stderr, user)
-// (same output as Dump but written to stderr)
-
-// Dump and exit
-// godump.Dd(user)
-// (prints formatted dump then immediately exits)
-
-// -------------------------------------------------
-// Custom Dumper (Builder API)
-// -------------------------------------------------
-
-d := godump.NewDumper(
-	godump.WithMaxDepth(15),
-	godump.WithMaxItems(100),
-	godump.WithMaxStringLen(100000),
-	godump.WithWriter(os.Stdout),
-	godump.WithSkipStackFrames(10),
-	godump.WithDisableStringer(false),
-	godump.WithoutColor(),
-)
-
-// Using the custom dumper
-d.Dump(user)
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to string using custom dumper
-out := d.DumpStr(user)
-fmt.Println("Custom DumpStr:\n", out)
-// Custom DumpStr:
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
-
-// Dump to HTML
-html := d.DumpHTML(user)
-fmt.Println("Custom DumpHTML:\n", html)
-// <pre class="godump">…formatted HTML output…</pre>
-
-// JSON as string
-jsonStr := d.DumpJSONStr(user)
-fmt.Println("Custom JSON:\n", jsonStr)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Print JSON directly
-d.DumpJSON(user)
-// {"Name":"Alice","Profile":{"Age":30,"Email":"alice@example.com"}}
-
-// Dump to a strings.Builder
-var sb strings.Builder
-custom := godump.NewDumper(godump.WithWriter(&sb))
-custom.Dump(user)
-fmt.Println("Dump to strings.Builder:\n", sb.String())
-// #main.User {
-//   +Name    => "Alice" #string
-//   +Profile => #main.Profile {
-//     +Age   => 30 #int
-//     +Email => "alice@example.com" #string
-//   }
-// }
+"Line1\nLine2\tDone"
 ```
-
-</GoForjExample>
 
 * Control characters like `\n`, `\t`, `\r`, etc. are safely escaped
 * Strings are truncated after `maxStringLen` runes
@@ -1059,10 +250,7 @@ fmt.Println("Dump to strings.Builder:\n", sb.String())
 NewDumper creates a new Dumper with the given options applied.
 Defaults are used for any setting not overridden.
 
-<GoForjExample repo="godump" example="newdumper">
-
 ```go
-// Example: build a custom dumper
 v := map[string]int{"a": 1}
 d := godump.NewDumper(
 	godump.WithMaxDepth(10),
@@ -1074,19 +262,30 @@ d.Dump(v)
 // }
 ```
 
-</GoForjExample>
-
 ## Diff {#diff}
 
 ### Diff {#diff-2}
 
 Diff prints a diff between two values to stdout.
 
-
-<GoForjExample repo="godump" example="diff">
+_Example: print diff_
 
 ```go
-// Example: print diff with a custom dumper
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+godump.Diff(a, b)
+// <#diff // path:line
+// - #map[string]int {
+// -   a => 1 #int
+// - }
+// + #map[string]int {
+// +   a => 2 #int
+// + }
+```
+
+_Example: print diff with a custom dumper_
+
+```go
 d := godump.NewDumper()
 a := map[string]int{"a": 1}
 b := map[string]int{"a": 2}
@@ -1099,38 +298,24 @@ d.Diff(a, b)
 // +   a => 2 #int
 // + }
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="diff">
-
-```go
-// Example: print diff with a custom dumper
-d := godump.NewDumper()
-a := map[string]int{"a": 1}
-b := map[string]int{"a": 2}
-d.Diff(a, b)
-// <#diff // path:line
-// - #map[string]int {
-// -   a => 1 #int
-// - }
-// + #map[string]int {
-// +   a => 2 #int
-// + }
-```
-
-</GoForjExample>
 
 ### DiffHTML {#diffhtml}
 
 DiffHTML returns an HTML diff between two values.
 
-
-<GoForjExample repo="godump" example="diffhtml">
+_Example: HTML diff_
 
 ```go
-// Example: HTML diff with a custom dumper
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+html := godump.DiffHTML(a, b)
+_ = html
+// (html diff)
+```
+
+_Example: HTML diff with a custom dumper_
+
+```go
 d := godump.NewDumper()
 a := map[string]int{"a": 1}
 b := map[string]int{"a": 2}
@@ -1138,33 +323,30 @@ html := d.DiffHTML(a, b)
 _ = html
 // (html diff)
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="diffhtml">
-
-```go
-// Example: HTML diff with a custom dumper
-d := godump.NewDumper()
-a := map[string]int{"a": 1}
-b := map[string]int{"a": 2}
-html := d.DiffHTML(a, b)
-_ = html
-// (html diff)
-```
-
-</GoForjExample>
 
 ### DiffStr {#diffstr}
 
 DiffStr returns a string diff between two values.
 
-
-<GoForjExample repo="godump" example="diffstr">
+_Example: diff string_
 
 ```go
-// Example: diff string with a custom dumper
+a := map[string]int{"a": 1}
+b := map[string]int{"a": 2}
+out := godump.DiffStr(a, b)
+_ = out
+// <#diff // path:line
+// - #map[string]int {
+// -   a => 1 #int
+// - }
+// + #map[string]int {
+// +   a => 2 #int
+// + }
+```
+
+_Example: diff string with a custom dumper_
+
+```go
 d := godump.NewDumper()
 a := map[string]int{"a": 1}
 b := map[string]int{"a": 2}
@@ -1178,29 +360,6 @@ _ = out
 // +   a => 2 #int
 // + }
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="diffstr">
-
-```go
-// Example: diff string with a custom dumper
-d := godump.NewDumper()
-a := map[string]int{"a": 1}
-b := map[string]int{"a": 2}
-out := d.DiffStr(a, b)
-_ = out
-// <#diff // path:line
-// - #map[string]int {
-// -   a => 1 #int
-// - }
-// + #map[string]int {
-// +   a => 2 #int
-// + }
-```
-
-</GoForjExample>
 
 ## Dump {#dump}
 
@@ -1208,11 +367,19 @@ _ = out
 
 Dd is a debug function that prints the values and exits the program.
 
-
-<GoForjExample repo="godump" example="dd">
+_Example: dump and exit_
 
 ```go
-// Example: dump and exit with a custom dumper
+v := map[string]int{"a": 1}
+godump.Dd(v)
+// #map[string]int {
+//   a => 1 #int
+// }
+```
+
+_Example: dump and exit with a custom dumper_
+
+```go
 d := godump.NewDumper()
 v := map[string]int{"a": 1}
 d.Dd(v)
@@ -1220,33 +387,24 @@ d.Dd(v)
 //   a => 1 #int
 // }
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="dd">
-
-```go
-// Example: dump and exit with a custom dumper
-d := godump.NewDumper()
-v := map[string]int{"a": 1}
-d.Dd(v)
-// #map[string]int {
-//   a => 1 #int
-// }
-```
-
-</GoForjExample>
 
 ### Dump {#dump-2}
 
 Dump prints the values to stdout with colorized output.
 
-
-<GoForjExample repo="godump" example="dump">
+_Example: print to stdout_
 
 ```go
-// Example: print with a custom dumper
+v := map[string]int{"a": 1}
+godump.Dump(v)
+// #map[string]int {
+//   a => 1 #int
+// }
+```
+
+_Example: print with a custom dumper_
+
+```go
 d := godump.NewDumper()
 v := map[string]int{"a": 1}
 d.Dump(v)
@@ -1254,71 +412,40 @@ d.Dump(v)
 //   a => 1 #int
 // }
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="dump">
-
-```go
-// Example: print with a custom dumper
-d := godump.NewDumper()
-v := map[string]int{"a": 1}
-d.Dump(v)
-// #map[string]int {
-//   a => 1 #int
-// }
-```
-
-</GoForjExample>
 
 ### DumpStr {#dumpstr}
 
 DumpStr returns a string representation of the values with colorized output.
 
-
-<GoForjExample repo="godump" example="dumpstr">
+_Example: get a string dump_
 
 ```go
-// Example: get a string dump with a custom dumper
+v := map[string]int{"a": 1}
+out := godump.DumpStr(v)
+godump.Dump(out)
+// "#map[string]int {\n  a => 1 #int\n}" #string
+```
+
+_Example: get a string dump with a custom dumper_
+
+```go
 d := godump.NewDumper()
 v := map[string]int{"a": 1}
 out := d.DumpStr(v)
 _ = out
 // "#map[string]int {\n  a => 1 #int\n}" #string
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="dumpstr">
-
-```go
-// Example: get a string dump with a custom dumper
-d := godump.NewDumper()
-v := map[string]int{"a": 1}
-out := d.DumpStr(v)
-_ = out
-// "#map[string]int {\n  a => 1 #int\n}" #string
-```
-
-</GoForjExample>
 
 ### Fdump {#fdump}
 
 Fdump writes the formatted dump of values to the given io.Writer.
 
-<GoForjExample repo="godump" example="fdump">
-
 ```go
-// Example: dump to writer
 var b strings.Builder
 v := map[string]int{"a": 1}
 godump.Fdump(&b, v)
 // outputs to strings builder
 ```
-
-</GoForjExample>
 
 ## HTML {#html}
 
@@ -1326,11 +453,18 @@ godump.Fdump(&b, v)
 
 DumpHTML dumps the values as HTML with colorized output.
 
-
-<GoForjExample repo="godump" example="dumphtml">
+_Example: dump HTML_
 
 ```go
-// Example: dump HTML with a custom dumper
+v := map[string]int{"a": 1}
+html := godump.DumpHTML(v)
+_ = html
+// (html output)
+```
+
+_Example: dump HTML with a custom dumper_
+
+```go
 d := godump.NewDumper()
 v := map[string]int{"a": 1}
 html := d.DumpHTML(v)
@@ -1338,23 +472,6 @@ _ = html
 fmt.Println(html)
 // (html output)
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="dumphtml">
-
-```go
-// Example: dump HTML with a custom dumper
-d := godump.NewDumper()
-v := map[string]int{"a": 1}
-html := d.DumpHTML(v)
-_ = html
-fmt.Println(html)
-// (html output)
-```
-
-</GoForjExample>
 
 ## JSON {#json}
 
@@ -1362,63 +479,49 @@ fmt.Println(html)
 
 DumpJSON prints a pretty-printed JSON string to the configured writer.
 
-
-<GoForjExample repo="godump" example="dumpjson">
+_Example: print JSON_
 
 ```go
-// Example: print JSON
+v := map[string]int{"a": 1}
+d := godump.NewDumper()
+d.DumpJSON(v)
+// {
+//   "a": 1
+// }
+```
+
+_Example: print JSON_
+
+```go
 v := map[string]int{"a": 1}
 godump.DumpJSON(v)
 // {
 //   "a": 1
 // }
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="dumpjson">
-
-```go
-// Example: print JSON
-v := map[string]int{"a": 1}
-godump.DumpJSON(v)
-// {
-//   "a": 1
-// }
-```
-
-</GoForjExample>
 
 ### DumpJSONStr {#dumpjsonstr}
 
 DumpJSONStr pretty-prints values as JSON and returns it as a string.
 
-
-<GoForjExample repo="godump" example="dumpjsonstr">
+_Example: dump JSON string_
 
 ```go
-// Example: JSON string
+v := map[string]int{"a": 1}
+d := godump.NewDumper()
+out := d.DumpJSONStr(v)
+_ = out
+// {"a":1}
+```
+
+_Example: JSON string_
+
+```go
 v := map[string]int{"a": 1}
 out := godump.DumpJSONStr(v)
 _ = out
 // {"a":1}
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="godump" example="dumpjsonstr">
-
-```go
-// Example: JSON string
-v := map[string]int{"a": 1}
-out := godump.DumpJSONStr(v)
-_ = out
-// {"a":1}
-```
-
-</GoForjExample>
 
 ## Options {#options}
 
@@ -1427,10 +530,7 @@ _ = out
 WithDisableStringer disables using the fmt.Stringer output.
 When enabled, the underlying type is rendered instead of String().
 
-<GoForjExample repo="godump" example="withdisablestringer">
-
 ```go
-// Example: show raw types
 // Default: false
 v := time.Duration(3)
 d := godump.NewDumper(godump.WithDisableStringer(true))
@@ -1438,16 +538,11 @@ d.Dump(v)
 // 3 #time.Duration
 ```
 
-</GoForjExample>
-
 ### WithExcludeFields {#withexcludefields}
 
 WithExcludeFields omits struct fields that match the provided names.
 
-<GoForjExample repo="godump" example="withexcludefields">
-
 ```go
-// Example: exclude fields
 // Default: none
 type User struct {
 	ID       int
@@ -1464,16 +559,11 @@ d.Dump(User{ID: 1, Email: "user@example.com", Password: "secret"})
 // }
 ```
 
-</GoForjExample>
-
 ### WithFieldMatchMode {#withfieldmatchmode}
 
 WithFieldMatchMode sets how field names are matched for WithExcludeFields.
 
-<GoForjExample repo="godump" example="withfieldmatchmode">
-
 ```go
-// Example: use substring matching
 // Default: FieldMatchExact
 type User struct {
 	UserID int
@@ -1487,17 +577,12 @@ d.Dump(User{UserID: 10})
 // }
 ```
 
-</GoForjExample>
-
 ### WithMaxDepth {#withmaxdepth}
 
 WithMaxDepth limits how deep the structure will be dumped.
 Param n must be 0 or greater or this will be ignored, and default MaxDepth will be 15.
 
-<GoForjExample repo="godump" example="withmaxdepth">
-
 ```go
-// Example: limit depth
 // Default: 15
 v := map[string]map[string]int{"a": {"b": 1}}
 d := godump.NewDumper(godump.WithMaxDepth(1))
@@ -1509,17 +594,12 @@ d.Dump(v)
 // }
 ```
 
-</GoForjExample>
-
 ### WithMaxItems {#withmaxitems}
 
 WithMaxItems limits how many items from an array, slice, or map can be printed.
 Param n must be 0 or greater or this will be ignored, and default MaxItems will be 100.
 
-<GoForjExample repo="godump" example="withmaxitems">
-
 ```go
-// Example: limit items
 // Default: 100
 v := []int{1, 2, 3}
 d := godump.NewDumper(godump.WithMaxItems(2))
@@ -1531,17 +611,12 @@ d.Dump(v)
 // ]
 ```
 
-</GoForjExample>
-
 ### WithMaxStringLen {#withmaxstringlen}
 
 WithMaxStringLen limits how long printed strings can be.
 Param n must be 0 or greater or this will be ignored, and default MaxStringLen will be 100000.
 
-<GoForjExample repo="godump" example="withmaxstringlen">
-
 ```go
-// Example: limit string length
 // Default: 100000
 v := "hello world"
 d := godump.NewDumper(godump.WithMaxStringLen(5))
@@ -1549,16 +624,11 @@ d.Dump(v)
 // "hello…" #string
 ```
 
-</GoForjExample>
-
 ### WithOnlyFields {#withonlyfields}
 
 WithOnlyFields limits struct output to fields that match the provided names.
 
-<GoForjExample repo="godump" example="withonlyfields">
-
 ```go
-// Example: include-only fields
 // Default: none
 type User struct {
 	ID       int
@@ -1575,16 +645,11 @@ d.Dump(User{ID: 1, Email: "user@example.com", Password: "secret"})
 // }
 ```
 
-</GoForjExample>
-
 ### WithRedactFields {#withredactfields}
 
 WithRedactFields replaces matching struct fields with a redacted placeholder.
 
-<GoForjExample repo="godump" example="withredactfields">
-
 ```go
-// Example: redact fields
 // Default: none
 type User struct {
 	ID       int
@@ -1600,16 +665,11 @@ d.Dump(User{ID: 1, Password: "secret"})
 // }
 ```
 
-</GoForjExample>
-
 ### WithRedactMatchMode {#withredactmatchmode}
 
 WithRedactMatchMode sets how field names are matched for WithRedactFields.
 
-<GoForjExample repo="godump" example="withredactmatchmode">
-
 ```go
-// Example: use substring matching
 // Default: FieldMatchExact
 type User struct {
 	APIKey string
@@ -1624,16 +684,11 @@ d.Dump(User{APIKey: "abc"})
 // }
 ```
 
-</GoForjExample>
-
 ### WithRedactSensitive {#withredactsensitive}
 
 WithRedactSensitive enables default redaction for common sensitive fields.
 
-<GoForjExample repo="godump" example="withredactsensitive">
-
 ```go
-// Example: redact common sensitive fields
 // Default: disabled
 type User struct {
 	Password string
@@ -1649,17 +704,12 @@ d.Dump(User{Password: "secret", Token: "abc"})
 // }
 ```
 
-</GoForjExample>
-
 ### WithSkipStackFrames {#withskipstackframes}
 
 WithSkipStackFrames skips additional stack frames for header reporting.
 This is useful when godump is wrapped and the actual call site is deeper.
 
-<GoForjExample repo="godump" example="withskipstackframes">
-
 ```go
-// Example: skip wrapper frames
 // Default: 0
 v := map[string]int{"a": 1}
 d := godump.NewDumper(godump.WithSkipStackFrames(2))
@@ -1670,16 +720,11 @@ d.Dump(v)
 // }
 ```
 
-</GoForjExample>
-
 ### WithWriter {#withwriter}
 
 WithWriter routes output to the provided writer.
 
-<GoForjExample repo="godump" example="withwriter">
-
 ```go
-// Example: write to buffer
 // Default: stdout
 var b strings.Builder
 v := map[string]int{"a": 1}
@@ -1690,16 +735,11 @@ d.Dump(v)
 // }
 ```
 
-</GoForjExample>
-
 ### WithoutColor {#withoutcolor}
 
 WithoutColor disables colorized output for the dumper.
 
-<GoForjExample repo="godump" example="withoutcolor">
-
 ```go
-// Example: disable colors
 // Default: false
 v := map[string]int{"a": 1}
 d := godump.NewDumper(godump.WithoutColor())
@@ -1710,21 +750,14 @@ d.Dump(v)
 // }
 ```
 
-</GoForjExample>
-
 ### WithoutHeader {#withoutheader}
 
 WithoutHeader disables printing the source location header.
 
-<GoForjExample repo="godump" example="withoutheader">
-
 ```go
-// Example: disable header
 // Default: false
 d := godump.NewDumper(godump.WithoutHeader())
 d.Dump("hello")
 // "hello" #string
 ```
-
-</GoForjExample>
 <!-- api:embed:end -->

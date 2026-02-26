@@ -120,7 +120,6 @@ func (c *GenerateCommand) Run() error {
 
 	tempRoot := filepath.Join(os.TempDir(), "goforj-docs")
 	wp := workerpool.New(4)
-	var manifestMu sync.Mutex
 	var errMu sync.Mutex
 	var firstErr error
 
@@ -168,22 +167,8 @@ func (c *GenerateCommand) Run() error {
 				return
 			}
 
-			examples, err := loadExamplePrograms(filepath.Join(repoDir, "examples"), c.Fresh)
-			if err != nil {
-				setErr(fmt.Errorf("load examples for %s: %w", repo.Slug, err))
-				return
-			}
-
-			manifestMu.Lock()
-			err = writeExamplesManifest(repo, examples)
-			manifestMu.Unlock()
-			if err != nil {
-				setErr(fmt.Errorf("write examples manifest for %s: %w", repo.Slug, err))
-				return
-			}
-
 			rawBase := rawGithubBase(repo, repo.Branch)
-			transformed := transformReadme(string(readmeBytes), repo, rawBase, examples)
+			transformed := transformReadme(string(readmeBytes), repo, rawBase)
 			outputPath := filepath.Join(docsRoot, repo.OutputPath)
 			if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
 				setErr(fmt.Errorf("ensure output dir for %s: %w", repo.Slug, err))

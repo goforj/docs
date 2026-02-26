@@ -435,26 +435,39 @@ _ = q
 
 Runnable example: `examples/observeall/main.go`
 
-<GoForjExample repo="queue" example="observeall">
-
 ```go
-logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-var flakyAttempts atomic.Int32
-ctx := context.Background()
-
+logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 runtimeObserver := queue.ObserverFunc(func(event queue.Event) {
-	logger.Info("runtime event",
-		"kind", event.Kind,
-		"driver", event.Driver,
-		"queue", event.Queue,
-		"job_type", event.JobType,
-		"attempt", event.Attempt,
-		"max_retry", event.MaxRetry,
-		"duration", event.Duration,
-		"err", event.Err,
-	)
-})
+	attemptInfo := fmt.Sprintf("attempt=%d/%d", event.Attempt, event.MaxRetry+1)
+	jobInfo := fmt.Sprintf("job=%s key=%s queue=%s driver=%s", event.JobType, event.JobKey, event.Queue, event.Driver)
 
+	switch event.Kind {
+	case queue.EventEnqueueAccepted:
+		logger.Info("Accepted dispatch", "msg", fmt.Sprintf("Accepted %s", jobInfo), "scheduled", event.Scheduled, "at", event.Time.Format(time.RFC3339Nano))
+	case queue.EventEnqueueRejected:
+		logger.Error("Dispatch failed", "msg", fmt.Sprintf("Rejected %s", jobInfo), "error", event.Err)
+	case queue.EventEnqueueDuplicate:
+		logger.Warn("Skipped duplicate job", "msg", fmt.Sprintf("Duplicate %s", jobInfo))
+	case queue.EventEnqueueCanceled:
+		logger.Warn("Canceled dispatch", "msg", fmt.Sprintf("Canceled %s", jobInfo), "error", event.Err)
+	case queue.EventProcessStarted:
+		logger.Info("Started processing job", "msg", fmt.Sprintf("Started %s (%s)", jobInfo, attemptInfo), "at", event.Time.Format(time.RFC3339Nano))
+	case queue.EventProcessSucceeded:
+		logger.Info("Processed job", "msg", fmt.Sprintf("Processed %s in %s (%s)", jobInfo, event.Duration, attemptInfo))
+	case queue.EventProcessFailed:
+		logger.Error("Processing failed", "msg", fmt.Sprintf("Failed %s after %s (%s)", jobInfo, event.Duration, attemptInfo), "error", event.Err)
+	case queue.EventProcessRetried:
+		logger.Warn("Retrying job", "msg", fmt.Sprintf("Retry scheduled for %s (%s)", jobInfo, attemptInfo), "error", event.Err)
+	case queue.EventProcessArchived:
+		logger.Error("Archived failed job", "msg", fmt.Sprintf("Archived %s after final failure (%s)", jobInfo, attemptInfo), "error", event.Err)
+	case queue.EventQueuePaused:
+		logger.Info("Paused queue", "msg", fmt.Sprintf("Paused queue=%s driver=%s", event.Queue, event.Driver))
+	case queue.EventQueueResumed:
+		logger.Info("Resumed queue", "msg", fmt.Sprintf("Resumed queue=%s driver=%s", event.Queue, event.Driver))
+	default:
+		logger.Info("Queue event", "msg", fmt.Sprintf("kind=%s %s", event.Kind, jobInfo))
+	}
+})
 workflowObserver := queue.WorkflowObserverFunc(func(event queue.WorkflowEvent) {
 	logger.Info("workflow event",
 		"kind", event.Kind,
@@ -470,82 +483,15 @@ workflowObserver := queue.WorkflowObserverFunc(func(event queue.WorkflowEvent) {
 	)
 })
 
-q, err := queue.New(
+q, _ := queue.New(
 	queue.Config{
-		Driver:   queue.DriverWorkerpool,
+		Driver:   queue.DriverSync,
 		Observer: runtimeObserver,
 	},
 	queue.WithObserver(workflowObserver),
 )
-if err != nil {
-	panic(err)
-}
-
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload struct {
-		To string `json:"to"`
-	}
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	fmt.Println("sending", payload.To)
-	return nil
-})
-q.Register("emails:flaky", func(ctx context.Context, m queue.Message) error {
-	if flakyAttempts.Add(1) == 1 {
-		return errors.New("transient smtp error")
-	}
-	return nil
-})
-q.Register("emails:fail", func(ctx context.Context, m queue.Message) error {
-	return errors.New("terminal failure")
-})
-
-_ = q.StartWorkers(ctx)
-defer q.Shutdown(ctx)
-
-_, _ = q.DispatchCtx(
-	ctx,
-	queue.NewJob("emails:send").
-		Payload(map[string]any{"to": "user@example.com"}).
-		OnQueue("default").
-		Timeout(2*time.Second),
-)
-
-dup := queue.NewJob("emails:send").
-	Payload(map[string]any{"to": "dupe@example.com"}).
-	OnQueue("default").
-	UniqueFor(5 * time.Second)
-_, _ = q.DispatchCtx(ctx, dup)
-_, _ = q.DispatchCtx(ctx, dup)
-
-cancelCtx, cancel := context.WithCancel(ctx)
-cancel()
-_, _ = q.DispatchCtx(cancelCtx, queue.NewJob("emails:send").OnQueue("default"))
-
-_, _ = q.DispatchCtx(ctx, queue.NewJob("emails:flaky").OnQueue("default").Retry(1))
-_, _ = q.DispatchCtx(ctx, queue.NewJob("emails:fail").OnQueue("default").Retry(0))
-
-_, _ = q.Chain(
-	queue.NewJob("emails:send").Payload(map[string]any{"to": "chain1@example.com"}).OnQueue("default"),
-	queue.NewJob("emails:send").Payload(map[string]any{"to": "chain2@example.com"}).OnQueue("default"),
-).Finally(func(ctx context.Context, st queue.ChainState) error {
-	return nil
-}).Dispatch(ctx)
-
-_, _ = q.Batch(
-	queue.NewJob("emails:send").Payload(map[string]any{"to": "batch1@example.com"}).OnQueue("default"),
-	queue.NewJob("emails:send").Payload(map[string]any{"to": "batch2@example.com"}).OnQueue("default"),
-).Progress(func(ctx context.Context, st queue.BatchState) error {
-	return nil
-}).Finally(func(ctx context.Context, st queue.BatchState) error {
-	return nil
-}).Dispatch(ctx)
-
-time.Sleep(500 * time.Millisecond)
+_ = q
 ```
-
-</GoForjExample>
 
 ### Events reference {#events-reference}
 
@@ -613,10 +559,7 @@ The API section below is autogenerated; do not edit between the markers.
 
 New creates the high-level Queue API based on Config.Driver.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
 q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
 if err != nil {
 	return
@@ -641,72 +584,46 @@ _, _ = q.Dispatch(
 )
 ```
 
-</GoForjExample>
-
 #### NewNull {#queue-newnull}
 
 NewNull creates a Queue on the null backend.
 
-<GoForjExample repo="queue" example="newnull">
-
 ```go
-// Example: null backend
 q, err := queue.NewNull()
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### NewStatsCollector {#queue-newstatscollector}
 
 NewStatsCollector creates an event collector for queue counters.
 
-<GoForjExample repo="queue" example="newstatscollector">
-
 ```go
-// Example: new stats collector
 collector := queue.NewStatsCollector()
-_ = collector
 ```
-
-</GoForjExample>
 
 #### NewSync {#queue-newsync}
 
 NewSync creates a Queue on the synchronous in-process backend.
 
-<GoForjExample repo="queue" example="newsync">
-
 ```go
-// Example: sync backend
 q, err := queue.NewSync()
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### NewWorkerpool {#queue-newworkerpool}
 
 NewWorkerpool creates a Queue on the in-process workerpool backend.
 
-<GoForjExample repo="queue" example="newworkerpool">
-
 ```go
-// Example: workerpool backend
 q, err := queue.NewWorkerpool()
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### Job {#job}
 
@@ -714,24 +631,15 @@ _ = q
 
 Backoff sets delay between retries.
 
-<GoForjExample repo="queue" example="job-backoff">
-
 ```go
-// Example: backoff
 job := queue.NewJob("emails:send").Backoff(500 * time.Millisecond)
-_ = job
 ```
-
-</GoForjExample>
 
 #### Bind {#queue-job-bind}
 
 Bind unmarshals job payload JSON into dst.
 
-<GoForjExample repo="queue" example="job-bind">
-
 ```go
-// Example: bind payload
 type EmailPayload struct {
 	ID int    `json:"id"`
 	To string `json:"to"`
@@ -747,253 +655,108 @@ if err := job.Bind(&payload); err != nil {
 _ = payload.To
 ```
 
-</GoForjExample>
-
 #### Delay {#queue-job-delay}
 
 Delay defers execution by duration.
 
-<GoForjExample repo="queue" example="job-delay">
-
 ```go
-// Example: delay
 job := queue.NewJob("emails:send").Delay(300 * time.Millisecond)
-_ = job
 ```
-
-</GoForjExample>
 
 #### NewJob {#queue-newjob}
 
 NewJob creates a job value with a required job type.
 
-<GoForjExample repo="queue" example="job-onqueue">
-
 ```go
-// Example: on queue
-job := queue.NewJob("emails:send").OnQueue("critical")
-_ = job
+job := queue.NewJob("emails:send")
 ```
-
-</GoForjExample>
 
 #### OnQueue {#queue-job-onqueue}
 
 OnQueue sets the target queue name.
 
-<GoForjExample repo="queue" example="job-onqueue">
-
 ```go
-// Example: on queue
 job := queue.NewJob("emails:send").OnQueue("critical")
-_ = job
 ```
-
-</GoForjExample>
 
 #### Payload {#queue-job-payload}
 
 Payload sets job payload from common value types.
 
-
-<GoForjExample repo="queue" example="job-payload">
-
-```go
-// Example: payload bytes
-func() {
-	jobBytes := queue.NewJob("emails:send").Payload([]byte(`{"id":1}`))
-	_ = jobBytes
-
-}()
-
-// Example: payload struct
-func() {
-	type Meta struct {
-		Nested bool `json:"nested"`
-	}
-	type EmailPayload struct {
-		ID   int    `json:"id"`
-		To   string `json:"to"`
-		Meta Meta   `json:"meta"`
-	}
-	jobStruct := queue.NewJob("emails:send").Payload(EmailPayload{
-		ID:   1,
-		To:   "user@example.com",
-		Meta: Meta{Nested: true},
-	})
-	_ = jobStruct
-
-}()
-
-// Example: payload map
-func() {
-	jobMap := queue.NewJob("emails:send").Payload(map[string]any{
-		"id":  1,
-		"to":  "user@example.com",
-		"meta": map[string]any{"nested": true},
-	})
-	_ = jobMap
-}()
-```
-
-</GoForjExample>
-
-
-<GoForjExample repo="queue" example="job-payload">
+_Example: payload bytes_
 
 ```go
-// Example: payload bytes
-func() {
-	jobBytes := queue.NewJob("emails:send").Payload([]byte(`{"id":1}`))
-	_ = jobBytes
-
-}()
-
-// Example: payload struct
-func() {
-	type Meta struct {
-		Nested bool `json:"nested"`
-	}
-	type EmailPayload struct {
-		ID   int    `json:"id"`
-		To   string `json:"to"`
-		Meta Meta   `json:"meta"`
-	}
-	jobStruct := queue.NewJob("emails:send").Payload(EmailPayload{
-		ID:   1,
-		To:   "user@example.com",
-		Meta: Meta{Nested: true},
-	})
-	_ = jobStruct
-
-}()
-
-// Example: payload map
-func() {
-	jobMap := queue.NewJob("emails:send").Payload(map[string]any{
-		"id":  1,
-		"to":  "user@example.com",
-		"meta": map[string]any{"nested": true},
-	})
-	_ = jobMap
-}()
+jobBytes := queue.NewJob("emails:send").Payload([]byte(`{"id":1}`))
 ```
 
-</GoForjExample>
-
-
-<GoForjExample repo="queue" example="job-payload">
+_Example: payload struct_
 
 ```go
-// Example: payload bytes
-func() {
-	jobBytes := queue.NewJob("emails:send").Payload([]byte(`{"id":1}`))
-	_ = jobBytes
-
-}()
-
-// Example: payload struct
-func() {
-	type Meta struct {
-		Nested bool `json:"nested"`
-	}
-	type EmailPayload struct {
-		ID   int    `json:"id"`
-		To   string `json:"to"`
-		Meta Meta   `json:"meta"`
-	}
-	jobStruct := queue.NewJob("emails:send").Payload(EmailPayload{
-		ID:   1,
-		To:   "user@example.com",
-		Meta: Meta{Nested: true},
-	})
-	_ = jobStruct
-
-}()
-
-// Example: payload map
-func() {
-	jobMap := queue.NewJob("emails:send").Payload(map[string]any{
-		"id":  1,
-		"to":  "user@example.com",
-		"meta": map[string]any{"nested": true},
-	})
-	_ = jobMap
-}()
+type Meta struct {
+	Nested bool `json:"nested"`
+}
+type EmailPayload struct {
+	ID   int    `json:"id"`
+	To   string `json:"to"`
+	Meta Meta   `json:"meta"`
+}
+jobStruct := queue.NewJob("emails:send").Payload(EmailPayload{
+	ID:   1,
+	To:   "user@example.com",
+	Meta: Meta{Nested: true},
+})
 ```
 
-</GoForjExample>
+_Example: payload map_
+
+```go
+jobMap := queue.NewJob("emails:send").Payload(map[string]any{
+	"id":  1,
+	"to":  "user@example.com",
+	"meta": map[string]any{"nested": true},
+})
+```
 
 #### PayloadBytes {#queue-job-payloadbytes}
 
 PayloadBytes returns a copy of job payload bytes.
 
-<GoForjExample repo="queue" example="job-payloadbytes">
-
 ```go
-// Example: payload bytes read
 job := queue.NewJob("emails:send").Payload([]byte(`{"id":1}`))
 payload := job.PayloadBytes()
-_ = payload
 ```
-
-</GoForjExample>
 
 #### PayloadJSON {#queue-job-payloadjson}
 
 PayloadJSON marshals payload as JSON.
 
-<GoForjExample repo="queue" example="job-payloadjson">
-
 ```go
-// Example: payload json
 job := queue.NewJob("emails:send").PayloadJSON(map[string]int{"id": 1})
-_ = job
 ```
-
-</GoForjExample>
 
 #### Retry {#queue-job-retry}
 
 Retry sets max retry attempts.
 
-<GoForjExample repo="queue" example="job-retry">
-
 ```go
-// Example: retry
 job := queue.NewJob("emails:send").Retry(4)
-_ = job
 ```
-
-</GoForjExample>
 
 #### Timeout {#queue-job-timeout}
 
 Timeout sets per-job execution timeout.
 
-<GoForjExample repo="queue" example="job-timeout">
-
 ```go
-// Example: timeout
 job := queue.NewJob("emails:send").Timeout(10 * time.Second)
-_ = job
 ```
-
-</GoForjExample>
 
 #### UniqueFor {#queue-job-uniquefor}
 
 UniqueFor enables uniqueness dedupe within the given TTL.
 
-<GoForjExample repo="queue" example="job-uniquefor">
-
 ```go
-// Example: unique for
 job := queue.NewJob("emails:send").UniqueFor(45 * time.Second)
-_ = job
 ```
-
-</GoForjExample>
 
 #### Observability {#observability-2}
 
@@ -1001,10 +764,7 @@ _ = job
 
 Active returns active count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-active">
-
 ```go
-// Example: active count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Active: 2},
@@ -1014,16 +774,11 @@ fmt.Println(snapshot.Active("default"))
 // Output: 2
 ```
 
-</GoForjExample>
-
 #### Archived {#queue-statssnapshot-archived}
 
 Archived returns archived count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-archived">
-
 ```go
-// Example: archived count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Archived: 7},
@@ -1033,16 +788,11 @@ fmt.Println(snapshot.Archived("default"))
 // Output: 7
 ```
 
-</GoForjExample>
-
 #### Failed {#queue-statssnapshot-failed}
 
 Failed returns failed count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-failed">
-
 ```go
-// Example: failed count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Failed: 2},
@@ -1052,16 +802,11 @@ fmt.Println(snapshot.Failed("default"))
 // Output: 2
 ```
 
-</GoForjExample>
-
 #### MultiObserver {#queue-multiobserver}
 
 MultiObserver fans out events to multiple observers.
 
-<GoForjExample repo="queue" example="multiobserver">
-
 ```go
-// Example: fan out to multiple observers
 events := make(chan queue.Event, 2)
 observer := queue.MultiObserver(
 	queue.ChannelObserver{Events: events},
@@ -1072,33 +817,22 @@ fmt.Println(len(events))
 // Output: 1
 ```
 
-</GoForjExample>
-
 #### ChannelObserver.Observe {#queue-channelobserver-observe}
 
 Observe forwards an event to the configured channel.
 
-<GoForjExample repo="queue" example="channelobserver-observe">
-
 ```go
-// Example: channel observer
 ch := make(chan queue.Event, 1)
 observer := queue.ChannelObserver{Events: ch}
 observer.Observe(queue.Event{Kind: queue.EventProcessStarted, Queue: "default"})
 event := <-ch
-_ = event
 ```
-
-</GoForjExample>
 
 #### Observer.Observe {#queue-observer-observe}
 
 Observe handles a queue runtime event.
 
-<GoForjExample repo="queue" example="observer-observe">
-
 ```go
-// Example: observe runtime event
 var observer queue.Observer
 observer.Observe(queue.Event{
 	Kind:   queue.EventEnqueueAccepted,
@@ -1107,16 +841,11 @@ observer.Observe(queue.Event{
 })
 ```
 
-</GoForjExample>
-
 #### ObserverFunc.Observe {#queue-observerfunc-observe}
 
 Observe calls the wrapped function.
 
-<GoForjExample repo="queue" example="observerfunc-observe">
-
 ```go
-// Example: observer func logging hook
 logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 observer := queue.ObserverFunc(func(event queue.Event) {
 	logger.Info("queue event",
@@ -1138,16 +867,11 @@ observer.Observe(queue.Event{
 })
 ```
 
-</GoForjExample>
-
 #### StatsCollector.Observe {#queue-statscollector-observe}
 
 Observe records an event and updates normalized counters.
 
-<GoForjExample repo="queue" example="statscollector-observe">
-
 ```go
-// Example: observe event
 collector := queue.NewStatsCollector()
 collector.Observe(queue.Event{
 	Kind:   queue.EventEnqueueAccepted,
@@ -1157,35 +881,23 @@ collector.Observe(queue.Event{
 })
 ```
 
-</GoForjExample>
-
 #### Pause {#queue-pause}
 
 Pause pauses queue consumption for drivers that support it.
 
-<GoForjExample repo="queue" example="queue-pause">
-
 ```go
-// Example: pause queue
-q, err := queue.NewSync()
-if err != nil {
-	return
-}
-if queue.SupportsPause(q) {
-	_ = q.Pause(context.Background(), "default")
-}
+q, _ := queue.NewSync()
+_ = queue.Pause(context.Background(), q, "default")
+snapshot, _ := queue.Snapshot(context.Background(), q, nil)
+fmt.Println(snapshot.Paused("default"))
+// Output: 1
 ```
-
-</GoForjExample>
 
 #### Paused {#queue-statssnapshot-paused}
 
 Paused returns paused count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-paused">
-
 ```go
-// Example: paused count getter
 collector := queue.NewStatsCollector()
 collector.Observe(queue.Event{
 	Kind:   queue.EventQueuePaused,
@@ -1198,16 +910,11 @@ fmt.Println(snapshot.Paused("default"))
 // Output: 1
 ```
 
-</GoForjExample>
-
 #### Pending {#queue-statssnapshot-pending}
 
 Pending returns pending count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-pending">
-
 ```go
-// Example: pending count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Pending: 3},
@@ -1217,16 +924,11 @@ fmt.Println(snapshot.Pending("default"))
 // Output: 3
 ```
 
-</GoForjExample>
-
 #### Processed {#queue-statssnapshot-processed}
 
 Processed returns processed count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-processed">
-
 ```go
-// Example: processed count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Processed: 11},
@@ -1236,16 +938,11 @@ fmt.Println(snapshot.Processed("default"))
 // Output: 11
 ```
 
-</GoForjExample>
-
 #### StatsSnapshot.Queue {#queue-statssnapshot-queue}
 
 Queue returns queue counters for a queue name.
 
-<GoForjExample repo="queue" example="statssnapshot-queue">
-
 ```go
-// Example: queue counters getter
 collector := queue.NewStatsCollector()
 collector.Observe(queue.Event{
 	Kind:   queue.EventEnqueueAccepted,
@@ -1259,16 +956,11 @@ fmt.Println(ok, counters.Pending)
 // Output: true 1
 ```
 
-</GoForjExample>
-
 #### Queues {#queue-statssnapshot-queues}
 
 Queues returns sorted queue names present in the snapshot.
 
-<GoForjExample repo="queue" example="statssnapshot-queues">
-
 ```go
-// Example: list queues
 collector := queue.NewStatsCollector()
 collector.Observe(queue.Event{
 	Kind:   queue.EventEnqueueAccepted,
@@ -1282,35 +974,24 @@ fmt.Println(len(names), names[0])
 // Output: 1 critical
 ```
 
-</GoForjExample>
-
 #### Resume {#queue-resume}
 
 Resume resumes queue consumption for drivers that support it.
 
-<GoForjExample repo="queue" example="queue-resume">
-
 ```go
-// Example: resume queue
-q, err := queue.NewSync()
-if err != nil {
-	return
-}
-if queue.SupportsPause(q) {
-	_ = q.Resume(context.Background(), "default")
-}
+q, _ := queue.NewSync()
+_ = queue.Pause(context.Background(), q, "default")
+_ = queue.Resume(context.Background(), q, "default")
+snapshot, _ := queue.Snapshot(context.Background(), q, nil)
+fmt.Println(snapshot.Paused("default"))
+// Output: 0
 ```
-
-</GoForjExample>
 
 #### RetryCount {#queue-statssnapshot-retrycount}
 
 RetryCount returns retry count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-retrycount">
-
 ```go
-// Example: retry count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Retry: 1},
@@ -1319,8 +1000,6 @@ snapshot := queue.StatsSnapshot{
 fmt.Println(snapshot.RetryCount("default"))
 // Output: 1
 ```
-
-</GoForjExample>
 
 #### SafeObserve {#queue-safeobserve}
 
@@ -1332,10 +1011,7 @@ This is an advanced helper intended for driver-module implementations.
 
 Scheduled returns scheduled count for a queue.
 
-<GoForjExample repo="queue" example="statssnapshot-scheduled">
-
 ```go
-// Example: scheduled count getter
 snapshot := queue.StatsSnapshot{
 	ByQueue: map[string]queue.QueueCounters{
 		"default": {Scheduled: 4},
@@ -1345,16 +1021,11 @@ fmt.Println(snapshot.Scheduled("default"))
 // Output: 4
 ```
 
-</GoForjExample>
-
 #### Snapshot {#queue-snapshot}
 
 Snapshot returns driver-native stats, falling back to collector data.
 
-<GoForjExample repo="queue" example="snapshot">
-
 ```go
-// Example: snapshot from queue runtime
 q, _ := queue.NewSync()
 snapshot, _ := q.Stats(context.Background())
 _, ok := snapshot.Queue("default")
@@ -1362,16 +1033,11 @@ fmt.Println(ok)
 // Output: true
 ```
 
-</GoForjExample>
-
 #### StatsCollector.Snapshot {#queue-statscollector-snapshot}
 
 Snapshot returns a copy of collected counters.
 
-<GoForjExample repo="queue" example="statscollector-snapshot">
-
 ```go
-// Example: snapshot print
 collector := queue.NewStatsCollector()
 collector.Observe(queue.Event{
 	Kind:   queue.EventEnqueueAccepted,
@@ -1406,46 +1072,31 @@ fmt.Printf("hour=%+v\n", throughput.Hour)
 // hour={Processed:1 Failed:0}
 ```
 
-</GoForjExample>
-
 #### SupportsNativeStats {#queue-supportsnativestats}
 
 SupportsNativeStats reports whether a queue runtime exposes native stats snapshots.
 
-<GoForjExample repo="queue" example="supportsnativestats">
-
 ```go
-// Example: check native stats support
 q, _ := queue.NewSync()
 fmt.Println(queue.SupportsNativeStats(q))
 // Output: true
 ```
 
-</GoForjExample>
-
 #### SupportsPause {#queue-supportspause}
 
 SupportsPause reports whether a queue runtime supports Pause/Resume.
 
-<GoForjExample repo="queue" example="supportspause">
-
 ```go
-// Example: check pause support
 q, _ := queue.NewSync()
 fmt.Println(queue.SupportsPause(q))
 // Output: true
 ```
 
-</GoForjExample>
-
 #### Throughput {#queue-statssnapshot-throughput}
 
 Throughput returns rolling throughput windows for a queue name.
 
-<GoForjExample repo="queue" example="statssnapshot-throughput">
-
 ```go
-// Example: throughput getter
 collector := queue.NewStatsCollector()
 collector.Observe(queue.Event{
 	Kind:   queue.EventProcessSucceeded,
@@ -1459,18 +1110,13 @@ fmt.Printf("ok=%v hour=%+v day=%+v week=%+v\n", ok, throughput.Hour, throughput.
 // Output: ok=true hour={Processed:1 Failed:0} day={Processed:1 Failed:0} week={Processed:1 Failed:0}
 ```
 
-</GoForjExample>
-
 #### Queue {#queue-2}
 
 #### Batch {#queue-queue-batch}
 
 Batch creates a batch builder for fan-out workflow execution.
 
-<GoForjExample repo="queue" example="queue-batch">
-
 ```go
-// Example: batch
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1482,16 +1128,11 @@ _, _ = q.Batch(
 ).Name("send-emails").OnQueue("default").Dispatch(context.Background())
 ```
 
-</GoForjExample>
-
 #### Chain {#queue-queue-chain}
 
 Chain creates a chain builder for sequential workflow execution.
 
-<GoForjExample repo="queue" example="queue-chain">
-
 ```go
-// Example: chain
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1504,16 +1145,11 @@ _, _ = q.Chain(
 ).OnQueue("default").Dispatch(context.Background())
 ```
 
-</GoForjExample>
-
 #### Queue.Dispatch {#queue-queue-dispatch}
 
 Dispatch enqueues a high-level job using context.Background.
 
-<GoForjExample repo="queue" example="queue-dispatch">
-
 ```go
-// Example: dispatch
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1523,8 +1159,6 @@ job := queue.NewJob("emails:send").Payload(map[string]any{"id": 1}).OnQueue("def
 _, _ = q.Dispatch(job)
 ```
 
-</GoForjExample>
-
 #### Queue.DispatchCtx {#queue-queue-dispatchctx}
 
 DispatchCtx enqueues a high-level job using the provided context.
@@ -1533,10 +1167,7 @@ DispatchCtx enqueues a high-level job using the provided context.
 
 Driver reports the configured backend driver for the underlying queue runtime.
 
-<GoForjExample repo="queue" example="queue-driver">
-
 ```go
-// Example: driver
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1545,16 +1176,11 @@ fmt.Println(q.Driver())
 // Output: sync
 ```
 
-</GoForjExample>
-
 #### FindBatch {#queue-queue-findbatch}
 
 FindBatch returns current batch state by ID.
 
-<GoForjExample repo="queue" example="queue-findbatch">
-
 ```go
-// Example: find batch
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1567,16 +1193,11 @@ if err != nil {
 _, _ = q.FindBatch(context.Background(), batchID)
 ```
 
-</GoForjExample>
-
 #### FindChain {#queue-queue-findchain}
 
 FindChain returns current chain state by ID.
 
-<GoForjExample repo="queue" example="queue-findchain">
-
 ```go
-// Example: find chain
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1589,18 +1210,13 @@ if err != nil {
 _, _ = q.FindChain(context.Background(), chainID)
 ```
 
-</GoForjExample>
-
 #### Queue.Pause {#queue-queue-pause}
 
 Pause pauses consumption for a queue when supported by the underlying driver.
 See the README "Queue Backends" table for Pause/Resume support and
 docs/backend-guarantees.md (Capability Matrix) for broader backend differences.
 
-<GoForjExample repo="queue" example="queue-pause">
-
 ```go
-// Example: pause queue
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1610,16 +1226,11 @@ if queue.SupportsPause(q) {
 }
 ```
 
-</GoForjExample>
-
 #### Prune {#queue-queue-prune}
 
 Prune deletes old workflow state records.
 
-<GoForjExample repo="queue" example="queue-prune">
-
 ```go
-// Example: prune workflow state
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1627,16 +1238,11 @@ if err != nil {
 _ = q.Prune(context.Background(), time.Now().Add(-24*time.Hour))
 ```
 
-</GoForjExample>
-
 #### Queue.Register {#queue-queue-register}
 
 Register binds a handler for a high-level job type.
 
-<GoForjExample repo="queue" example="queue-register">
-
 ```go
-// Example: register
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1654,16 +1260,11 @@ q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
 })
 ```
 
-</GoForjExample>
-
 #### Queue.Resume {#queue-queue-resume}
 
 Resume resumes consumption for a queue when supported by the underlying driver.
 
-<GoForjExample repo="queue" example="queue-resume">
-
 ```go
-// Example: resume queue
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1673,16 +1274,11 @@ if queue.SupportsPause(q) {
 }
 ```
 
-</GoForjExample>
-
 #### Run {#queue-queue-run}
 
 Run starts worker processing, blocks until ctx is canceled, then gracefully shuts down.
 
-<GoForjExample repo="queue" example="queue-run">
-
 ```go
-// Example: run until canceled
 ctx, cancel := context.WithCancel(context.Background())
 defer cancel()
 q, err := queue.NewWorkerpool()
@@ -1697,16 +1293,11 @@ go func() {
 _ = q.Run(ctx)
 ```
 
-</GoForjExample>
-
 #### Queue.Shutdown {#queue-queue-shutdown}
 
 Shutdown drains workers and closes underlying resources.
 
-<GoForjExample repo="queue" example="queue-shutdown">
-
 ```go
-// Example: shutdown
 q, err := queue.NewWorkerpool()
 if err != nil {
 	return
@@ -1715,16 +1306,11 @@ _ = q.StartWorkers(context.Background())
 _ = q.Shutdown(context.Background())
 ```
 
-</GoForjExample>
-
 #### Queue.StartWorkers {#queue-queue-startworkers}
 
 StartWorkers starts worker processing.
 
-<GoForjExample repo="queue" example="queue-startworkers">
-
 ```go
-// Example: start workers
 q, err := queue.NewWorkerpool()
 if err != nil {
 	return
@@ -1732,16 +1318,11 @@ if err != nil {
 _ = q.StartWorkers(context.Background())
 ```
 
-</GoForjExample>
-
 #### Stats {#queue-queue-stats}
 
 Stats returns a normalized snapshot when supported by the underlying driver.
 
-<GoForjExample repo="queue" example="queue-stats">
-
 ```go
-// Example: stats
 q, err := queue.NewSync()
 if err != nil {
 	return
@@ -1751,16 +1332,11 @@ if queue.SupportsNativeStats(q) {
 }
 ```
 
-</GoForjExample>
-
 #### WithClock {#queue-withclock}
 
 WithClock overrides the workflow runtime clock.
 
-<GoForjExample repo="queue" example="withclock">
-
 ```go
-// Example: workflow clock
 q, err := queue.New(
 	queue.Config{Driver: queue.DriverSync},
 	queue.WithClock(func() time.Time { return time.Unix(0, 0) }),
@@ -1768,19 +1344,13 @@ q, err := queue.New(
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### WithMiddleware {#queue-withmiddleware}
 
 WithMiddleware appends queue workflow middleware.
 
-<GoForjExample repo="queue" example="withmiddleware">
-
 ```go
-// Example: middleware
 mw := queue.MiddlewareFunc(func(ctx context.Context, m queue.Message, next queue.Next) error {
 	return next(ctx, m)
 })
@@ -1788,19 +1358,13 @@ q, err := queue.New(queue.Config{Driver: queue.DriverSync}, queue.WithMiddleware
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### WithObserver {#queue-withobserver}
 
 WithObserver installs a workflow lifecycle observer.
 
-<GoForjExample repo="queue" example="withobserver">
-
 ```go
-// Example: workflow observer
 observer := queue.WorkflowObserverFunc(func(event queue.WorkflowEvent) {
 	_ = event.Kind
 })
@@ -1808,63 +1372,45 @@ q, err := queue.New(queue.Config{Driver: queue.DriverSync}, queue.WithObserver(o
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### WithStore {#queue-withstore}
 
 WithStore overrides the workflow orchestration store.
 
-<GoForjExample repo="queue" example="withstore">
-
 ```go
-// Example: workflow store
 var store queue.WorkflowStore
 q, err := queue.New(queue.Config{Driver: queue.DriverSync}, queue.WithStore(store))
 if err != nil {
 	return
 }
-_ = q
 ```
-
-</GoForjExample>
 
 #### WithWorkers {#queue-withworkers}
 
 WithWorkers sets desired worker concurrency before StartWorkers.
 It applies to high-level queue constructors (for example NewWorkerpool/New/NewSync).
 
-<GoForjExample repo="queue" example="queue-withworkers">
-
 ```go
-// Example: workers
-q, err := queue.NewWorkerpool()
+q, err := queue.NewWorkerpool(
+	queue.WithWorkers(4), // optional; default: runtime.NumCPU() (min 1)
+)
 if err != nil {
 	return
 }
-q.WithWorkers(4) // optional; default: runtime.NumCPU() (min 1)
 ```
-
-</GoForjExample>
 
 #### Queue.WithWorkers {#queue-queue-withworkers}
 
 WithWorkers sets desired worker concurrency before StartWorkers.
 
-<GoForjExample repo="queue" example="queue-withworkers">
-
 ```go
-// Example: workers
 q, err := queue.NewWorkerpool()
 if err != nil {
 	return
 }
 q.WithWorkers(4) // optional; default: runtime.NumCPU() (min 1)
 ```
-
-</GoForjExample>
 
 #### Testing {#testing}
 
@@ -1935,25 +1481,16 @@ fake.AssertNothingDispatched(t)
 
 Dispatch records a typed job payload in-memory using the fake default queue.
 
-<GoForjExample repo="queue" example="fakequeue-dispatch">
-
 ```go
-// Example: dispatch to fake queue
 fake := queue.NewFake()
 err := fake.Dispatch(queue.NewJob("emails:send").OnQueue("default"))
-_ = err
 ```
-
-</GoForjExample>
 
 #### FakeQueue.DispatchCtx {#queue-fakequeue-dispatchctx}
 
 DispatchCtx submits a typed job payload using the provided context.
 
-<GoForjExample repo="queue" example="fakequeue-dispatchctx">
-
 ```go
-// Example: dispatch with context
 fake := queue.NewFake()
 ctx := context.Background()
 err := fake.DispatchCtx(ctx, queue.NewJob("emails:send").OnQueue("default"))
@@ -1961,31 +1498,20 @@ fmt.Println(err == nil)
 // Output: true
 ```
 
-</GoForjExample>
-
 #### FakeQueue.Driver {#queue-fakequeue-driver}
 
 Driver returns the active queue driver.
 
-<GoForjExample repo="queue" example="fakequeue-driver">
-
 ```go
-// Example: fake driver
 fake := queue.NewFake()
 driver := fake.Driver()
-_ = driver
 ```
-
-</GoForjExample>
 
 #### NewFake {#queue-newfake}
 
 NewFake creates a queue fake that records dispatches and provides assertions.
 
-<GoForjExample repo="queue" example="newfake">
-
 ```go
-// Example: fake queue assertions
 fake := queue.NewFake()
 _ = fake.Dispatch(
 	queue.NewJob("emails:send").
@@ -1997,16 +1523,11 @@ fmt.Println(len(records), records[0].Queue, records[0].Job.Type)
 // Output: 1 critical emails:send
 ```
 
-</GoForjExample>
-
 #### FakeQueue.Records {#queue-fakequeue-records}
 
 Records returns a copy of all dispatch records.
 
-<GoForjExample repo="queue" example="fakequeue-records">
-
 ```go
-// Example: read records
 fake := queue.NewFake()
 _ = fake.Dispatch(queue.NewJob("emails:send").OnQueue("default"))
 records := fake.Records()
@@ -2014,30 +1535,20 @@ fmt.Println(len(records), records[0].Job.Type)
 // Output: 1 emails:send
 ```
 
-</GoForjExample>
-
 #### FakeQueue.Register {#queue-fakequeue-register}
 
 Register associates a handler with a job type.
 
-<GoForjExample repo="queue" example="fakequeue-register">
-
 ```go
-// Example: register no-op on fake
 fake := queue.NewFake()
 fake.Register("emails:send", func(context.Context, queue.Job) error { return nil })
 ```
-
-</GoForjExample>
 
 #### FakeQueue.Reset {#queue-fakequeue-reset}
 
 Reset clears all recorded dispatches.
 
-<GoForjExample repo="queue" example="fakequeue-reset">
-
 ```go
-// Example: reset records
 fake := queue.NewFake()
 _ = fake.Dispatch(queue.NewJob("emails:send").OnQueue("default"))
 fmt.Println(len(fake.Records()))
@@ -2048,53 +1559,34 @@ fmt.Println(len(fake.Records()))
 // 0
 ```
 
-</GoForjExample>
-
 #### FakeQueue.Shutdown {#queue-fakequeue-shutdown}
 
 Shutdown drains running work and releases resources.
 
-<GoForjExample repo="queue" example="fakequeue-shutdown">
-
 ```go
-// Example: shutdown fake queue
 fake := queue.NewFake()
 err := fake.Shutdown(context.Background())
-_ = err
 ```
-
-</GoForjExample>
 
 #### FakeQueue.StartWorkers {#queue-fakequeue-startworkers}
 
 StartWorkers starts worker execution.
 
-<GoForjExample repo="queue" example="fakequeue-startworkers">
-
 ```go
-// Example: start fake workers
 fake := queue.NewFake()
 err := fake.StartWorkers(context.Background())
-_ = err
 ```
-
-</GoForjExample>
 
 #### FakeQueue.Workers {#queue-fakequeue-workers}
 
 Workers sets desired worker concurrency before StartWorkers.
 
-<GoForjExample repo="queue" example="fakequeue-workers">
-
 ```go
-// Example: set worker count
 fake := queue.NewFake()
 q := fake.Workers(4)
 fmt.Println(q != nil)
 // Output: true
 ```
-
-</GoForjExample>
 
 
 ## Driver Constructors {#driver-constructors}
@@ -2105,35 +1597,15 @@ fmt.Println(q != nil)
 
 New creates a high-level Queue using the MySQL SQL backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := mysqlqueue.New(
+	"user:pass@tcp(127.0.0.1:3306)/queue?parseTime=true",
+	queue.WithWorkers(4), // optional; default: 1 worker
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### mysqlqueue.NewWithConfig {#mysqlqueue-newwithconfig}
 
@@ -2165,35 +1637,15 @@ if err != nil {
 
 New creates a high-level Queue using the NATS backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := natsqueue.New(
+	"nats://127.0.0.1:4222",
+	queue.WithWorkers(4), // optional; default: runtime.NumCPU() (min 1)
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### natsqueue.NewWithConfig {#natsqueue-newwithconfig}
 
@@ -2222,35 +1674,15 @@ if err != nil {
 
 New creates a high-level Queue using the Postgres SQL backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := postgresqueue.New(
+	"postgres://user:pass@127.0.0.1:5432/queue?sslmode=disable",
+	queue.WithWorkers(4), // optional; default: 1 worker
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### postgresqueue.NewWithConfig {#postgresqueue-newwithconfig}
 
@@ -2282,35 +1714,15 @@ if err != nil {
 
 New creates a high-level Queue using the RabbitMQ backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := rabbitmqqueue.New(
+	"amqp://guest:guest@127.0.0.1:5672/",
+	queue.WithWorkers(4), // optional; default: runtime.NumCPU() (min 1)
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### rabbitmqqueue.NewWithConfig {#rabbitmqqueue-newwithconfig}
 
@@ -2339,35 +1751,15 @@ if err != nil {
 
 New creates a high-level Queue using the Redis backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := redisqueue.New(
+	"127.0.0.1:6379",
+	queue.WithWorkers(4), // optional; default: runtime.NumCPU() (min 1)
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### redisqueue.NewWithConfig {#redisqueue-newwithconfig}
 
@@ -2398,35 +1790,15 @@ if err != nil {
 
 New creates a high-level Queue using the SQLite SQL backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := sqlitequeue.New(
+	"file:queue.db?_busy_timeout=5000",
+	queue.WithWorkers(4), // optional; default: 1 worker
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### sqlitequeue.NewWithConfig {#sqlitequeue-newwithconfig}
 
@@ -2458,35 +1830,15 @@ if err != nil {
 
 New creates a high-level Queue using the SQS backend.
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
+q, err := sqsqueue.New(
+	"us-east-1",
+	queue.WithWorkers(4), // optional; default: runtime.NumCPU() (min 1)
+)
 if err != nil {
 	return
 }
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
 ```
-
-</GoForjExample>
 
 #### sqsqueue.NewWithConfig {#sqsqueue-newwithconfig}
 
@@ -2671,10 +2023,7 @@ f.AssertWorkflowNotDispatched(t, "emails:send")
 
 Count returns the total number of recorded dispatches.
 
-<GoForjExample repo="queue" example="queuefake-fake-count">
-
 ```go
-// Example: count total dispatches
 f := queuefake.New()
 q := f.Queue()
 _ = q.Dispatch(queue.NewJob("a"))
@@ -2682,16 +2031,11 @@ _ = q.Dispatch(queue.NewJob("b"))
 _ = f.Count()
 ```
 
-</GoForjExample>
-
 #### Fake.CountJob {#queuefake-fake-countjob}
 
 CountJob returns how many times a job type was dispatched.
 
-<GoForjExample repo="queue" example="queuefake-fake-countjob">
-
 ```go
-// Example: count by job type
 f := queuefake.New()
 q := f.Queue()
 _ = q.Dispatch(queue.NewJob("emails:send"))
@@ -2699,88 +2043,48 @@ _ = q.Dispatch(queue.NewJob("emails:send"))
 _ = f.CountJob("emails:send")
 ```
 
-</GoForjExample>
-
 #### Fake.CountOn {#queuefake-fake-counton}
 
 CountOn returns how many times a job type was dispatched on a queue.
 
-<GoForjExample repo="queue" example="queuefake-fake-counton">
-
 ```go
-// Example: count by queue and job type
 f := queuefake.New()
 q := f.Queue()
 _ = q.Dispatch(queue.NewJob("emails:send").OnQueue("critical"))
 _ = f.CountOn("critical", "emails:send")
 ```
 
-</GoForjExample>
-
 #### queuefake.New {#queuefake-new}
 
 New creates a fake queue harness backed by queue.NewFake().
 
-<GoForjExample repo="queue" example="new">
-
 ```go
-// Example: create a queue and dispatch a workflow-capable job
-q, err := queue.New(queue.Config{Driver: queue.DriverWorkerpool})
-if err != nil {
-	return
-}
-type EmailPayload struct {
-	ID int `json:"id"`
-}
-q.Register("emails:send", func(ctx context.Context, m queue.Message) error {
-	var payload EmailPayload
-	if err := m.Bind(&payload); err != nil {
-		return err
-	}
-	_ = payload
-	return nil
-})
-_ = q.WithWorkers(1).StartWorkers(context.Background()) // optional; default: runtime.NumCPU() (min 1)
-defer q.Shutdown(context.Background())
-_, _ = q.Dispatch(
-	queue.NewJob("emails:send").
-		Payload(EmailPayload{ID: 1}).
-		OnQueue("default"),
-)
+f := queuefake.New()
+q := f.Queue()
+_ = q.Dispatch(queue.NewJob("emails:send").OnQueue("default"))
+f.AssertDispatched(t, "emails:send")
+f.AssertCount(t, 1)
 ```
-
-</GoForjExample>
 
 #### Fake.Queue {#queuefake-fake-queue}
 
 Queue returns the queue fake to inject into code under test.
 
-<GoForjExample repo="queue" example="queuefake-fake-queue">
-
 ```go
-// Example: queue fake
 f := queuefake.New()
 q := f.Queue()
 _ = q.Dispatch(queue.NewJob("emails:send").OnQueue("default"))
 ```
 
-</GoForjExample>
-
 #### Fake.Records {#queuefake-fake-records}
 
 Records returns a copy of recorded dispatches.
 
-<GoForjExample repo="queue" example="queuefake-fake-records">
-
 ```go
-// Example: inspect recorded dispatches
 f := queuefake.New()
 _ = f.Queue().Dispatch(queue.NewJob("emails:send"))
 records := f.Records()
-_ = records
 ```
-
-</GoForjExample>
 
 #### Fake.Reset {#queuefake-fake-reset}
 

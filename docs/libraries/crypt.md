@@ -131,11 +131,9 @@ This guarantees all examples are valid, up-to-date, and remain functional as the
 Decrypt decrypts an encrypted payload using the APP_KEY from environment.
 Falls back to APP_PREVIOUS_KEYS when the current key cannot decrypt.
 
-
-<GoForjExample repo="crypt" example="decrypt">
+_Example: decrypt using current key_
 
 ```go
-// Example: decrypt using current key
 keyStr, _ := crypt.GenerateAppKey()
 _ = os.Setenv("APP_KEY", keyStr)
 c, _ := crypt.Encrypt("secret")
@@ -143,8 +141,11 @@ p, _ := crypt.Decrypt(c)
 godump.Dump(p)
 
 // #string "secret"
+```
 
-// Example: decrypt ciphertext encrypted with a previous key
+_Example: decrypt ciphertext encrypted with a previous key_
+
+```go
 oldKeyStr, _ := crypt.GenerateAppKey()
 newKeyStr, _ := crypt.GenerateAppKey()
 _ = os.Setenv("APP_KEY", oldKeyStr)
@@ -157,46 +158,12 @@ godump.Dump(plain, err)
 // #string "rotated"
 // #error <nil>
 ```
-
-</GoForjExample>
-
-
-<GoForjExample repo="crypt" example="decrypt">
-
-```go
-// Example: decrypt using current key
-keyStr, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_KEY", keyStr)
-c, _ := crypt.Encrypt("secret")
-p, _ := crypt.Decrypt(c)
-godump.Dump(p)
-
-// #string "secret"
-
-// Example: decrypt ciphertext encrypted with a previous key
-oldKeyStr, _ := crypt.GenerateAppKey()
-newKeyStr, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_KEY", oldKeyStr)
-oldCipher, _ := crypt.Encrypt("rotated")
-_ = os.Setenv("APP_KEY", newKeyStr)
-_ = os.Setenv("APP_PREVIOUS_KEYS", oldKeyStr)
-plain, err := crypt.Decrypt(oldCipher)
-godump.Dump(plain, err)
-
-// #string "rotated"
-// #error <nil>
-```
-
-</GoForjExample>
 
 ### Encrypt · readonly {#encrypt}
 
 Encrypt encrypts a plaintext using the APP_KEY from environment.
 
-<GoForjExample repo="crypt" example="encrypt">
-
 ```go
-// Example: encrypt with current APP_KEY
 keyStr, _ := crypt.GenerateAppKey()
 _ = os.Setenv("APP_KEY", keyStr)
 ciphertext, err := crypt.Encrypt("secret")
@@ -206,25 +173,18 @@ godump.Dump(err == nil, ciphertext != "")
 // #bool true
 ```
 
-</GoForjExample>
-
 ## Key management {#key-management}
 
 ### GenerateAppKey · readonly {#generateappkey}
 
 GenerateAppKey generates a random base64 app key prefixed with "base64:".
 
-<GoForjExample repo="crypt" example="generateappkey">
-
 ```go
-// Example: generate an AES-256 key
 key, _ := crypt.GenerateAppKey()
 godump.Dump(key)
 
 // #string "base64:..."
 ```
-
-</GoForjExample>
 
 ### GenerateKeyToEnv · mutates-filesystem {#generatekeytoenv}
 
@@ -232,10 +192,7 @@ GenerateKeyToEnv mimics Laravel's key:generate.
 It generates a new APP_KEY and writes it to the provided .env path.
 Other keys are preserved; APP_KEY is replaced/added.
 
-<GoForjExample repo="crypt" example="generatekeytoenv">
-
 ```go
-// Example: generate and write APP_KEY to a temp .env
 tmp := filepath.Join(os.TempDir(), ".env")
 key, err := crypt.GenerateKeyToEnv(tmp)
 godump.Dump(err, key)
@@ -244,16 +201,11 @@ godump.Dump(err, key)
 // #string "base64:..."
 ```
 
-</GoForjExample>
-
 ### GetAppKey · readonly {#getappkey}
 
 GetAppKey retrieves the APP_KEY from the environment and parses it.
 
-<GoForjExample repo="crypt" example="getappkey">
-
 ```go
-// Example: read APP_KEY and ensure the correct size
 keyStr, _ := crypt.GenerateAppKey()
 _ = os.Setenv("APP_KEY", keyStr)
 key, err := crypt.GetAppKey()
@@ -263,17 +215,12 @@ godump.Dump(len(key), err)
 // #error <nil>
 ```
 
-</GoForjExample>
-
 ### GetPreviousAppKeys · readonly {#getpreviousappkeys}
 
 GetPreviousAppKeys retrieves and parses APP_PREVIOUS_KEYS from the environment.
 Keys are expected to be comma-delimited and prefixed with "base64:".
 
-<GoForjExample repo="crypt" example="getpreviousappkeys">
-
 ```go
-// Example: parse two previous keys (mixed AES-128/256)
 k1, _ := crypt.GenerateAppKey()
 k2, _ := crypt.GenerateAppKey()
 _ = os.Setenv("APP_PREVIOUS_KEYS", k1+", "+k2)
@@ -284,17 +231,12 @@ godump.Dump(len(keys), err)
 // #error <nil>
 ```
 
-</GoForjExample>
-
 ### ReadAppKey · readonly {#readappkey}
 
 ReadAppKey parses a base64 encoded app key with "base64:" prefix.
 Accepts 16-byte keys (AES-128) or 32-byte keys (AES-256) after decoding.
 
-<GoForjExample repo="crypt" example="readappkey">
-
 ```go
-// Example: parse AES-128 and AES-256 keys
 key128raw := make([]byte, 16)
 _, _ = rand.Read(key128raw)
 key128str := "base64:" + base64.StdEncoding.EncodeToString(key128raw)
@@ -309,17 +251,12 @@ godump.Dump(len(key128), len(key256))
 // #int 32
 ```
 
-</GoForjExample>
-
 ### RotateKeyInEnv · mutates-filesystem {#rotatekeyinenv}
 
 RotateKeyInEnv mimics Laravel's key:rotate.
 It moves the current APP_KEY into APP_PREVIOUS_KEYS (prepended) and writes a new APP_KEY.
 
-<GoForjExample repo="crypt" example="rotatekeyinenv">
-
 ```go
-// Example: rotate APP_KEY and prepend old key to APP_PREVIOUS_KEYS
 tmp := filepath.Join(os.TempDir(), ".env")
 oldKey, _ := crypt.GenerateAppKey()
 _ = os.WriteFile(tmp, []byte("APP_KEY="+oldKey+"\n"), 0o644)
@@ -329,6 +266,4 @@ godump.Dump(err == nil, newKey != "")
 // #bool true
 // #bool true
 ```
-
-</GoForjExample>
 <!-- api:embed:end -->
