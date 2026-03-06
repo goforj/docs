@@ -95,7 +95,7 @@ DOCKER_PROD_PUSH ?= 0
 docker-production: ##@docker Build production web image (set DOCKER_PROD_IMAGE / DOCKER_PROD_PUSH=1)
 	@docker buildx build \
 		-f containers/web/Dockerfile \
-		--build-arg GA_MEASUREMENT_ID=\"$(GA_MEASUREMENT_ID)\" \
+		--build-arg GA_MEASUREMENT_ID=$(GA_MEASUREMENT_ID) \
 		-t $(DOCKER_PROD_IMAGE) \
 		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
 		.

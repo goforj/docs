@@ -68,7 +68,9 @@ const splitIntoSections = (path: string, html: string) => {
   return sections
 }
 
-const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '').trim()
+const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
+  .trim()
+  .replace(/^['"]+|['"]+$/g, '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'Build faster. Ship smarter. Go development tools forged for productivity.'
