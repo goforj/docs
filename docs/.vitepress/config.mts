@@ -70,6 +70,9 @@ const splitIntoSections = (path: string, html: string) => {
 
 const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '').trim()
 const isProd = process.env.NODE_ENV === 'production'
+const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
+const ogImage = `${siteUrl}/assets/goforj-full.png`
+const siteDescription = 'Build faster. Ship smarter. Go development tools forged for productivity.'
 const analyticsHead = (isProd && gaMeasurementId)
   ? [
       ['script', { async: '', src: `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}` }],
@@ -85,7 +88,7 @@ const deferredHashHead: [string, Record<string, string>, string] = ['script', {}
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "GoForj",
-  description: "Build faster. Ship smarter. Go development tools forged for productivity.",
+  description: siteDescription,
   cleanUrls: true,
   appearance: 'force-dark',
   scrollOffset: {
@@ -110,6 +113,18 @@ export default defineConfig({
     deferredHashHead,
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png?v=2' }],
     ['link', { rel: 'shortcut icon', href: '/favicon.png?v=2' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'GoForj' }],
+    ['meta', { property: 'og:title', content: 'GoForj' }],
+    ['meta', { property: 'og:description', content: siteDescription }],
+    ['meta', { property: 'og:url', content: siteUrl }],
+    ['meta', { property: 'og:image', content: ogImage }],
+    ['meta', { property: 'og:image:secure_url', content: ogImage }],
+    ['meta', { property: 'og:image:alt', content: 'GoForj' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'GoForj' }],
+    ['meta', { name: 'twitter:description', content: siteDescription }],
+    ['meta', { name: 'twitter:image', content: ogImage }],
     ...analyticsHead
   ],
 
