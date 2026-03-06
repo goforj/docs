@@ -14,9 +14,28 @@ function headingTop(el) {
   return window.scrollY + el.getBoundingClientRect().top
 }
 
+function byId(id) {
+  const el = document.getElementById(id)
+  return el instanceof HTMLElement ? el : null
+}
+
 function getApiIndexEl() {
-  const api = document.getElementById('api-index')
-  return api instanceof HTMLElement ? api : null
+  // Primary generated anchor.
+  const primary = byId('api-index')
+  if (primary) return primary
+
+  // Fallbacks for libraries that expose the API table as "Index".
+  const fallback = byId('index')
+  if (fallback) return fallback
+
+  // Last-resort heuristic: first heading containing "index" inside API embed section.
+  const candidates = Array.from(document.querySelectorAll('.vp-doc :is(h1,h2,h3,h4,h5,h6)'))
+  for (const el of candidates) {
+    if (!(el instanceof HTMLElement)) continue
+    const text = (el.textContent || '').trim().toLowerCase()
+    if (text === 'api index' || text === 'index') return el
+  }
+  return null
 }
 
 function getApiIndexTop() {
@@ -79,9 +98,10 @@ function refreshVisibility() {
 
 function goToApiIndex(event) {
   if (event) event.preventDefault()
-  const el = document.getElementById('api-index')
+  const el = getApiIndexEl()
   if (!(el instanceof HTMLElement)) return
-  history.replaceState(history.state || {}, '', `${window.location.pathname}${window.location.search}#api-index`)
+  const targetId = el.id || 'api-index'
+  history.replaceState(history.state || {}, '', `${window.location.pathname}${window.location.search}#${targetId}`)
   window.dispatchEvent(new HashChangeEvent('hashchange'))
 }
 

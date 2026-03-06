@@ -5,35 +5,26 @@ repoUrl: https://github.com/goforj/crypt
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/crypt/main/docs/images/logo.png?v=2" width="400" alt="crypt logo">
+  <img src="https://raw.githubusercontent.com/goforj/crypt/main/docs/images/logo.png?v=2" width="300" alt="crypt logo">
 </p>
 
 <p align="center">
-    Laravel-compatible symmetric encryption for Go - AES-128/256 CBC with HMAC, key rotation, and portable payloads.
+    Symmetric encryption for Go - AES-128/256 CBC with HMAC, key rotation, and portable payloads.
 </p>
 
 <p align="center">
     <a href="https://pkg.go.dev/github.com/goforj/crypt"><img src="https://pkg.go.dev/badge/github.com/goforj/crypt.svg" alt="Go Reference"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/crypt/actions"><img src="https://github.com/goforj/crypt/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.18+-blue?logo=go" alt="Go version"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/crypt?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/crypt" ><img src="https://codecov.io/github/goforj/crypt/graph/badge.svg?token=Z8NM86Q50C"/></a>
     <a href="https://goreportcard.com/report/github.com/goforj/crypt"><img src="https://goreportcard.com/badge/github.com/goforj/crypt" alt="Go Report Card"></a>
 </p>
 
 <p align="center">
-  <code>crypt</code> mirrors Laravel's encryption format so Go services can read and write the same ciphertext as PHP apps. It signs every payload with an HMAC and supports graceful key rotation via <code>APP_PREVIOUS_KEYS</code>.
+  <code>crypt</code> provides symmetric encryption for Go services with authenticated payloads (AES-CBC + HMAC) and key rotation via <code>APP_PREVIOUS_KEYS</code>. It also supports Laravel/PHP-compatible payloads for interoperability.
 </p>
-
-# Features {#features}
-
-- AES-128 / AES-256 encryption compatible with Laravel
-- Authenticated encryption (AES-CBC + HMAC)
-- Transparent key rotation via `APP_PREVIOUS_KEYS`
-- Zero dependencies (stdlib only)
-- Deterministic, testable API
-- Safe defaults with explicit failure modes
 
 ## Install {#install}
 
@@ -41,7 +32,64 @@ repoUrl: https://github.com/goforj/crypt
 go get github.com/goforj/crypt
 ```
 
+# Features {#features}
+
+- AES-128 / AES-256 encryption (Laravel/PHP-compatible payload format)
+- Authenticated encryption (AES-CBC + HMAC)
+- Transparent key rotation via `APP_PREVIOUS_KEYS`
+- Zero dependencies (stdlib only)
+- Deterministic, testable API
+- Instanced and global usage styles
+- Safe defaults with explicit failure modes
+
+## Why crypt? {#why-crypt?}
+
+`crypt` exists to solve one problem well: encrypting small application payloads with safe defaults and painless key rotation.
+
+It is not a general-purpose cryptography library.
+
+It is a focused, application-layer utility designed to be boring, predictable, and interoperable.
+
 ## Quickstart {#quickstart}
+
+### Instanced (recommended) {#instanced-(recommended)}
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/goforj/crypt"
+)
+
+func main() {
+	appKey := "base64:..." // 16-byte (AES-128) or 32-byte (AES-256) key after decoding.
+	key, err := crypt.ReadAppKey(appKey)
+	if err != nil {
+		panic(err)
+	}
+
+	c, err := crypt.New(key)
+	if err != nil {
+		panic(err)
+	}
+
+	ciphertext, err := c.Encrypt("secret")
+	if err != nil {
+		panic(err)
+	}
+
+	plaintext, err := c.Decrypt(ciphertext)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(plaintext) // "secret"
+}
+```
+
+### Global (env-based convenience) {#global-(env-based-convenience)}
 
 ```go
 package main
@@ -54,30 +102,18 @@ import (
 )
 
 func main() {
-	// Typical Laravel-style key: base64 + 32 bytes (AES-256) or 16 bytes (AES-128).
-	if err := os.Setenv("APP_KEY", "base64:..."); err != nil {
-		panic(err)
-	}
+	_ = os.Setenv("APP_KEY", "base64:...")
 
-	ciphertext, err := crypt.Encrypt("secret")
-	if err != nil {
-		panic(err)
-	}
-
-	plaintext, err := crypt.Decrypt(ciphertext)
-	if err != nil {
-		panic(err)
-	}
+	ciphertext, _ := crypt.Encrypt("secret")
+	plaintext, _ := crypt.Decrypt(ciphertext)
 
 	fmt.Println(plaintext) // "secret"
 }
 ```
 
-Here’s a cleaner, tighter rewrite that keeps the same meaning but reads more confidently and fluently:
-
 ## Key format & rotation {#key-format-&-rotation}
 
-`crypt` follows Laravel’s key format and rotation model.
+`crypt` uses a base64-prefixed key format and supports key rotation. This matches Laravel/PHP conventions when interoperability is needed.
 
 * **`APP_KEY`** must be prefixed with `base64:` and decode to either **16 bytes (AES-128)** or **32 bytes (AES-256)**.
 * **`APP_PREVIOUS_KEYS`** is optional and may contain a comma-separated list of older keys in the same format.
@@ -91,44 +127,33 @@ export APP_KEY="base64:J63qRTDLub5NuZvP+kb8YIorGS6qFYHKVo6u7179stY="
 export APP_PREVIOUS_KEYS="base64:2nLsGFGzyoae2ax3EF2Lyq/hH6QghBGLIq5uL+Gp8/w="
 ```
 
-## CLI helpers {#cli-helpers}
-
-Generate a Laravel-style key:
-
-```go
-k, _ := crypt.GenerateAppKey()
-fmt.Println(k) // base64:...
-```
-
-Parse an existing key string:
-
-```go
-keyBytes, err := crypt.ReadAppKey("base64:...") // len == 16 or 32
-```
-
 ## Runnable examples {#runnable-examples}
 
 Every function has a corresponding runnable example under [`./examples`](https://github.com/goforj/crypt/tree/main/examples).
 
-These examples are **generated directly from the documentation blocks** of each function, ensuring the docs and code never drift. These are the same examples you see here in the README and GoDoc.
+Examples are generated directly from function doc comments, and the same snippets power the README and GoDoc examples.
 
-An automated test executes **every example** to verify it builds and runs successfully.
-
-This guarantees all examples are valid, up-to-date, and remain functional as the API evolves.
+An automated test builds every example so the docs stay valid as the API evolves.
 
 <!-- api:embed:start -->
 
 ## API Index {#api-index}
 
-| Group | Functions |
-|------:|-----------|
-| **Encryption** | [Decrypt](#decrypt) [Encrypt](#encrypt) |
-| **Key management** | [GenerateAppKey](#generateappkey) [GenerateKeyToEnv](#generatekeytoenv) [GetAppKey](#getappkey) [GetPreviousAppKeys](#getpreviousappkeys) [ReadAppKey](#readappkey) [RotateKeyInEnv](#rotatekeyinenv) |
+Global = package-level functions (env-based convenience).
+Instanced = methods on `*crypt.Cipher` with injected keys.
+
+| Group | Namespace | Functions |
+|------:|-----------|-----------|
+| **Encryption** | Global | [Decrypt](#decrypt) [Encrypt](#encrypt) |
+| **Encryption** | Instanced | [Cipher.Decrypt](#cipher-decrypt) [Cipher.Encrypt](#cipher-encrypt) |
+| **Key management** | Global | [GenerateAppKey](#generateappkey) [GenerateKeyToEnv](#generatekeytoenv) [GetAppKey](#getappkey) [GetPreviousAppKeys](#getpreviousappkeys) [New](#new) [NewFromEnv](#newfromenv) [ReadAppKey](#readappkey) [RotateKeyInEnv](#rotatekeyinenv) |
 
 
 ## Encryption {#encryption}
 
-### Decrypt · readonly {#decrypt}
+### Global {#global}
+
+#### Decrypt {#decrypt}
 
 Decrypt decrypts an encrypted payload using the APP_KEY from environment.
 Falls back to APP_PREVIOUS_KEYS when the current key cannot decrypt.
@@ -136,135 +161,155 @@ Falls back to APP_PREVIOUS_KEYS when the current key cannot decrypt.
 _Example: decrypt using current key_
 
 ```go
-keyStr, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_KEY", keyStr)
-c, _ := crypt.Encrypt("secret")
-p, _ := crypt.Decrypt(c)
-godump.Dump(p)
-
+appKey, _ := crypt.GenerateAppKey()
+_ = os.Setenv("APP_KEY", appKey)
+ciphertext, _ := crypt.Encrypt("secret")
+plaintext, _ := crypt.Decrypt(ciphertext)
+godump.Dump(plaintext)
 // #string "secret"
 ```
 
 _Example: decrypt ciphertext encrypted with a previous key_
 
 ```go
-oldKeyStr, _ := crypt.GenerateAppKey()
-newKeyStr, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_KEY", oldKeyStr)
-oldCipher, _ := crypt.Encrypt("rotated")
-_ = os.Setenv("APP_KEY", newKeyStr)
-_ = os.Setenv("APP_PREVIOUS_KEYS", oldKeyStr)
-plain, err := crypt.Decrypt(oldCipher)
-godump.Dump(plain, err)
+oldAppKey, _ := crypt.GenerateAppKey()
+newAppKey, _ := crypt.GenerateAppKey()
 
+// Encrypt with the old key first.
+_ = os.Setenv("APP_KEY", oldAppKey)
+rotatedCiphertext, _ := crypt.Encrypt("rotated")
+
+// Rotate to a new current key, but keep the old key in APP_PREVIOUS_KEYS.
+_ = os.Setenv("APP_KEY", newAppKey)
+_ = os.Setenv("APP_PREVIOUS_KEYS", oldAppKey)
+plaintext, err := crypt.Decrypt(rotatedCiphertext)
+godump.Dump(plaintext, err)
 // #string "rotated"
 // #error <nil>
 ```
 
-### Encrypt · readonly {#encrypt}
+#### Encrypt {#encrypt}
 
 Encrypt encrypts a plaintext using the APP_KEY from environment.
 
 ```go
-keyStr, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_KEY", keyStr)
+appKey, _ := crypt.GenerateAppKey()
+_ = os.Setenv("APP_KEY", appKey)
 ciphertext, err := crypt.Encrypt("secret")
 godump.Dump(err == nil, ciphertext != "")
-
 // #bool true
 // #bool true
 ```
 
+### Instanced {#instanced}
+
+#### Cipher.Decrypt {#cipher-decrypt}
+
+Decrypt decrypts ciphertext with the current key, then any configured previous keys.
+
+#### Cipher.Encrypt {#cipher-encrypt}
+
+Encrypt encrypts plaintext with the Cipher's injected current key.
+
 ## Key management {#key-management}
 
-### GenerateAppKey · readonly {#generateappkey}
+### Global {#global-2}
+
+#### GenerateAppKey {#generateappkey}
 
 GenerateAppKey generates a random base64 app key prefixed with "base64:".
 
 ```go
 key, _ := crypt.GenerateAppKey()
 godump.Dump(key)
-
 // #string "base64:..."
 ```
 
-### GenerateKeyToEnv · mutates-filesystem {#generatekeytoenv}
+#### GenerateKeyToEnv {#generatekeytoenv}
 
 GenerateKeyToEnv mimics Laravel's key:generate.
 It generates a new APP_KEY and writes it to the provided .env path.
 Other keys are preserved; APP_KEY is replaced/added.
 
 ```go
-tmp := filepath.Join(os.TempDir(), ".env")
-key, err := crypt.GenerateKeyToEnv(tmp)
+envPath := filepath.Join(os.TempDir(), ".env")
+key, err := crypt.GenerateKeyToEnv(envPath)
 godump.Dump(err, key)
-
 // #error <nil>
 // #string "base64:..."
 ```
 
-### GetAppKey · readonly {#getappkey}
+#### GetAppKey {#getappkey}
 
 GetAppKey retrieves the APP_KEY from the environment and parses it.
 
 ```go
-keyStr, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_KEY", keyStr)
+appKey, _ := crypt.GenerateAppKey()
+_ = os.Setenv("APP_KEY", appKey)
 key, err := crypt.GetAppKey()
 godump.Dump(len(key), err)
-
 // #int 32
 // #error <nil>
 ```
 
-### GetPreviousAppKeys · readonly {#getpreviousappkeys}
+#### GetPreviousAppKeys {#getpreviousappkeys}
 
 GetPreviousAppKeys retrieves and parses APP_PREVIOUS_KEYS from the environment.
 Keys are expected to be comma-delimited and prefixed with "base64:".
 
 ```go
-k1, _ := crypt.GenerateAppKey()
-k2, _ := crypt.GenerateAppKey()
-_ = os.Setenv("APP_PREVIOUS_KEYS", k1+", "+k2)
+oldKeyA, _ := crypt.GenerateAppKey()
+oldKeyB, _ := crypt.GenerateAppKey()
+// APP_PREVIOUS_KEYS is a comma-separated list.
+_ = os.Setenv("APP_PREVIOUS_KEYS", oldKeyA+", "+oldKeyB)
 keys, err := crypt.GetPreviousAppKeys()
 godump.Dump(len(keys), err)
-
 // #int 2
 // #error <nil>
 ```
 
-### ReadAppKey · readonly {#readappkey}
+#### New {#new}
+
+New constructs a Cipher with an injected current key and optional previous keys.
+Keys must be 16 bytes (AES-128) or 32 bytes (AES-256). Inputs are copied.
+
+#### NewFromEnv {#newfromenv}
+
+NewFromEnv constructs a Cipher from APP_KEY and APP_PREVIOUS_KEYS.
+
+#### ReadAppKey {#readappkey}
 
 ReadAppKey parses a base64 encoded app key with "base64:" prefix.
 Accepts 16-byte keys (AES-128) or 32-byte keys (AES-256) after decoding.
 
 ```go
-key128raw := make([]byte, 16)
-_, _ = rand.Read(key128raw)
-key128str := "base64:" + base64.StdEncoding.EncodeToString(key128raw)
+// Build a 16-byte (AES-128) key string manually.
+raw16 := make([]byte, 16)
+_, _ = rand.Read(raw16)
+key16 := "base64:" + base64.StdEncoding.EncodeToString(raw16)
 
-key256str, _ := crypt.GenerateAppKey()
+// Generate a 32-byte (AES-256) key string with the helper.
+key32, _ := crypt.GenerateAppKey()
 
-key128, _ := crypt.ReadAppKey(key128str)
-key256, _ := crypt.ReadAppKey(key256str)
-godump.Dump(len(key128), len(key256))
-
+parsed16, _ := crypt.ReadAppKey(key16)
+parsed32, _ := crypt.ReadAppKey(key32)
+godump.Dump(len(parsed16), len(parsed32))
 // #int 16
 // #int 32
 ```
 
-### RotateKeyInEnv · mutates-filesystem {#rotatekeyinenv}
+#### RotateKeyInEnv {#rotatekeyinenv}
 
 RotateKeyInEnv mimics Laravel's key:rotate.
 It moves the current APP_KEY into APP_PREVIOUS_KEYS (prepended) and writes a new APP_KEY.
 
 ```go
-tmp := filepath.Join(os.TempDir(), ".env")
-oldKey, _ := crypt.GenerateAppKey()
-_ = os.WriteFile(tmp, []byte("APP_KEY="+oldKey+"\n"), 0o644)
-newKey, err := crypt.RotateKeyInEnv(tmp)
+envPath := filepath.Join(os.TempDir(), ".env")
+currentKey, _ := crypt.GenerateAppKey()
+// Seed a minimal .env with an existing APP_KEY.
+_ = os.WriteFile(envPath, []byte("APP_KEY="+currentKey+"\n"), 0o644)
+newKey, err := crypt.RotateKeyInEnv(envPath)
 godump.Dump(err == nil, newKey != "")
-
 // #bool true
 // #bool true
 ```

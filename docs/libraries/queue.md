@@ -5,7 +5,7 @@ repoUrl: https://github.com/goforj/queue
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png?v=1" width="420" alt="queue logo">
+  <img src="https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png?v=1" width="300" alt="queue logo">
 </p>
 
 <p align="center">
@@ -21,8 +21,8 @@ repoUrl: https://github.com/goforj/queue
     <a href="https://goreportcard.com/report/github.com/goforj/queue"><img src="https://goreportcard.com/badge/github.com/goforj/queue" alt="Go Report Card"></a>
     <a href="https://codecov.io/gh/goforj/queue"><img src="https://codecov.io/gh/goforj/queue/graph/badge.svg?token=40Z5UQATME"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/unit_tests-260-brightgreen" alt="Unit tests (executed count)">
-    <img src="https://img.shields.io/badge/integration_tests-522-blue" alt="Integration tests (executed count)">
+    <img src="https://img.shields.io/badge/unit_tests-262-brightgreen" alt="Unit tests (executed count)">
+    <img src="https://img.shields.io/badge/integration_tests-541-blue" alt="Integration tests (executed count)">
 <!-- test-count:embed:end -->
 </p>
 
@@ -69,20 +69,22 @@ func main() {
 
 ## Drivers {#drivers}
 
-| Driver / Backend | Mode | Notes | Durable | Async | Delay | Unique | Backoff | Timeout | Native Stats |
-| ---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://img.shields.io/badge/null-%23666?style=flat" alt="Null"> | Drop-only | Discards dispatched jobs; useful for disabled queue modes and smoke tests. | - | - | - | - | - | - | - |
-| <img src="https://img.shields.io/badge/sync-%23999999?logo=gnometerminal&logoColor=white" alt="Sync"> | Inline (caller) | Deterministic local execution with no external infra. | - | - | - | ✓ | - | ✓ | - |
-| <img src="https://img.shields.io/badge/workerpool-%23696969?logo=clockify&logoColor=white" alt="Workerpool"> | In-process pool | Local async behavior without external broker/database. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - |
-| <img src="https://img.shields.io/badge/mysql-%234479A1?logo=mysql&logoColor=white" alt="MySQL"> | SQL durable queue | MySQL driver module (`driver/mysqlqueue`) built on shared SQL queue core. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| <img src="https://img.shields.io/badge/postgres-%23336791?logo=postgresql&logoColor=white" alt="Postgres"> | SQL durable queue | Postgres driver module (`driver/postgresqueue`) built on shared SQL queue core. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| <img src="https://img.shields.io/badge/sqlite-%23003B57?logo=sqlite&logoColor=white" alt="SQLite"> | SQL durable queue | SQLite driver module (`driver/sqlitequeue`) built on shared SQL queue core. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| <img src="https://img.shields.io/badge/redis-%23DC382D?logo=redis&logoColor=white" alt="Redis"> | Redis/Asynq | Production Redis backend (Asynq semantics). | ✓ | ✓ | ✓ | ✓ | - | ✓ | ✓ |
-| <img src="https://img.shields.io/badge/NATS-007ACC?style=flat" alt="NATS"> | Broker target | NATS transport with queue-subject routing. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - |
-| <img src="https://img.shields.io/badge/SQS-FF9900?style=flat" alt="SQS"> | Broker target | AWS SQS transport with endpoint overrides for localstack/testing. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - |
-| <img src="https://img.shields.io/badge/rabbitmq-%23FF6600?logo=rabbitmq&logoColor=white" alt="RabbitMQ"> | Broker target | RabbitMQ transport and worker consumption. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| Driver / Backend | Mode | Notes | Durable | Async | Delay | Unique | Backoff | Timeout | Native Stats | Queue Admin |
+| ---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="https://img.shields.io/badge/null-%23666?style=flat" alt="Null"> | Drop-only | Discards dispatched jobs; useful for disabled queue modes and smoke tests. | - | - | - | - | - | - | - | - |
+| <img src="https://img.shields.io/badge/sync-%23999999?logo=gnometerminal&logoColor=white" alt="Sync"> | Inline (caller) | Deterministic local execution with no external infra. | - | - | - | ✓ | - | ✓ | - | - |
+| <img src="https://img.shields.io/badge/workerpool-%23696969?logo=clockify&logoColor=white" alt="Workerpool"> | In-process pool | Local async behavior without external broker/database. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - | - |
+| <img src="https://img.shields.io/badge/mysql-%234479A1?logo=mysql&logoColor=white" alt="MySQL"> | SQL durable queue | MySQL driver module (`driver/mysqlqueue`) built on shared SQL queue core. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| <img src="https://img.shields.io/badge/postgres-%23336791?logo=postgresql&logoColor=white" alt="Postgres"> | SQL durable queue | Postgres driver module (`driver/postgresqueue`) built on shared SQL queue core. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| <img src="https://img.shields.io/badge/sqlite-%23003B57?logo=sqlite&logoColor=white" alt="SQLite"> | SQL durable queue | SQLite driver module (`driver/sqlitequeue`) built on shared SQL queue core. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| <img src="https://img.shields.io/badge/redis-%23DC382D?logo=redis&logoColor=white" alt="Redis"> | Redis/Asynq | Production Redis backend (Asynq semantics). | ✓ | ✓ | ✓ | ✓ | - | ✓ | ✓ | ✓ |
+| <img src="https://img.shields.io/badge/NATS-007ACC?style=flat" alt="NATS"> | Broker target | NATS transport with queue-subject routing. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - | - |
+| <img src="https://img.shields.io/badge/SQS-FF9900?style=flat" alt="SQS"> | Broker target | AWS SQS transport with endpoint overrides for localstack/testing. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - | - |
+| <img src="https://img.shields.io/badge/rabbitmq-%23FF6600?logo=rabbitmq&logoColor=white" alt="RabbitMQ"> | Broker target | RabbitMQ transport and worker consumption. | - | ✓ | ✓ | ✓ | ✓ | ✓ | - | - |
 
 > SQL-backed queues (`sqlite`, `mysql`, `postgres`) are durable and convenient, but they trade throughput for operational simplicity. They default to `1` worker, and increasing concurrency may require DB tuning (indexes, connection pool, lock contention). Prefer broker-backed drivers for higher-throughput workloads.
+>
+> **Queue Admin status:** the cross-driver admin contract is defined in core (`ListJobs`, `RetryJob`, `CancelJob`, `DeleteJob`, `ClearQueue`, `QueueHistory`), but **full queue admin operations are currently implemented only for Redis**. Other drivers return `ErrQueueAdminUnsupported` for unsupported admin actions.
 
 ### Driver constructor quick examples {#driver-constructor-quick-examples}
 
@@ -534,6 +536,12 @@ _ = q
 Runnable examples live in the separate `examples` module ([`./examples`](https://github.com/goforj/queue/tree/main/examples)).
 They are not included when applications import `github.com/goforj/queue`, which keeps dependency graphs and build/link overhead smaller.
 
+## Admin Support {#admin-support}
+
+Queue admin APIs are part of the core contract so additional drivers can implement them over time.
+At this time, full admin operations (`ListJobs`, `RetryJob`, `CancelJob`, `DeleteJob`, `ClearQueue`) are Redis-only.
+Use `queue.SupportsQueueAdmin(q)` (or handle `queue.ErrQueueAdminUnsupported`) to gate admin workflows per runtime.
+
 ## API reference {#api-reference}
 
 The API section below is autogenerated; do not edit between the markers.
@@ -544,16 +552,249 @@ The API section below is autogenerated; do not edit between the markers.
 
 | Group | Functions |
 |------:|:-----------|
+| **Admin** | [CancelJob](#queue-canceljob) [Queue.CancelJob](#queue-queue-canceljob) [ClearQueue](#queue-clearqueue) [Queue.ClearQueue](#queue-queue-clearqueue) [DeleteJob](#queue-deletejob) [Queue.DeleteJob](#queue-queue-deletejob) [History](#queue-queue-history) [ListJobs](#queue-listjobs) [Queue.ListJobs](#queue-queue-listjobs) [Normalize](#queue-listjobsoptions-normalize) [QueueHistory](#queue-queuehistory) [RetryJob](#queue-retryjob) [Queue.RetryJob](#queue-queue-retryjob) [SinglePointHistory](#queue-singlepointhistory) [SupportsQueueAdmin](#queue-supportsqueueadmin) [TimelineHistoryFromSnapshot](#queue-timelinehistoryfromsnapshot) |
 | **Constructors** | [New](#queue-new) [NewNull](#queue-newnull) [NewStatsCollector](#queue-newstatscollector) [NewSync](#queue-newsync) [NewWorkerpool](#queue-newworkerpool) |
 | **Job** | [Backoff](#queue-job-backoff) [Bind](#queue-job-bind) [Delay](#queue-job-delay) [NewJob](#queue-newjob) [OnQueue](#queue-job-onqueue) [Payload](#queue-job-payload) [PayloadBytes](#queue-job-payloadbytes) [PayloadJSON](#queue-job-payloadjson) [Retry](#queue-job-retry) [Timeout](#queue-job-timeout) [UniqueFor](#queue-job-uniquefor) |
-| **Observability** | [Active](#queue-statssnapshot-active) [Archived](#queue-statssnapshot-archived) [Failed](#queue-statssnapshot-failed) [MultiObserver](#queue-multiobserver) [ChannelObserver.Observe](#queue-channelobserver-observe) [Observer.Observe](#queue-observer-observe) [ObserverFunc.Observe](#queue-observerfunc-observe) [StatsCollector.Observe](#queue-statscollector-observe) [Pause](#queue-pause) [Paused](#queue-statssnapshot-paused) [Pending](#queue-statssnapshot-pending) [Processed](#queue-statssnapshot-processed) [Queue](#queue-statssnapshot-queue) [Queues](#queue-statssnapshot-queues) [Resume](#queue-resume) [RetryCount](#queue-statssnapshot-retrycount) [SafeObserve](#queue-safeobserve) [Scheduled](#queue-statssnapshot-scheduled) [Snapshot](#queue-snapshot) [StatsCollector.Snapshot](#queue-statscollector-snapshot) [SupportsNativeStats](#queue-supportsnativestats) [SupportsPause](#queue-supportspause) [Throughput](#queue-statssnapshot-throughput) |
-| **Queue** | [Batch](#queue-queue-batch) [Chain](#queue-queue-chain) [Dispatch](#queue-queue-dispatch) [DispatchCtx](#queue-queue-dispatchctx) [Driver](#queue-queue-driver) [FindBatch](#queue-queue-findbatch) [FindChain](#queue-queue-findchain) [Pause](#queue-queue-pause) [Prune](#queue-queue-prune) [Register](#queue-queue-register) [Resume](#queue-queue-resume) [Run](#queue-queue-run) [Shutdown](#queue-queue-shutdown) [StartWorkers](#queue-queue-startworkers) [Stats](#queue-queue-stats) [WithClock](#queue-withclock) [WithMiddleware](#queue-withmiddleware) [WithObserver](#queue-withobserver) [WithStore](#queue-withstore) [WithWorkers](#queue-withworkers) [Queue.WithWorkers](#queue-queue-withworkers) |
+| **Observability** | [Active](#queue-statssnapshot-active) [Archived](#queue-statssnapshot-archived) [Failed](#queue-statssnapshot-failed) [MultiObserver](#queue-multiobserver) [ChannelObserver.Observe](#queue-channelobserver-observe) [Observer.Observe](#queue-observer-observe) [ObserverFunc.Observe](#queue-observerfunc-observe) [StatsCollector.Observe](#queue-statscollector-observe) [Pause](#queue-pause) [Paused](#queue-statssnapshot-paused) [Pending](#queue-statssnapshot-pending) [Processed](#queue-statssnapshot-processed) [Queue](#queue-statssnapshot-queue) [Queues](#queue-statssnapshot-queues) [Ready](#queue-ready) [Resume](#queue-resume) [RetryCount](#queue-statssnapshot-retrycount) [SafeObserve](#queue-safeobserve) [Scheduled](#queue-statssnapshot-scheduled) [Snapshot](#queue-snapshot) [StatsCollector.Snapshot](#queue-statscollector-snapshot) [SupportsNativeStats](#queue-supportsnativestats) [SupportsPause](#queue-supportspause) [Throughput](#queue-statssnapshot-throughput) |
+| **Queue** | [Batch](#queue-queue-batch) [Chain](#queue-queue-chain) [Dispatch](#queue-queue-dispatch) [DispatchCtx](#queue-queue-dispatchctx) [Driver](#queue-queue-driver) [FindBatch](#queue-queue-findbatch) [FindChain](#queue-queue-findchain) [Pause](#queue-queue-pause) [Prune](#queue-queue-prune) [Ready](#queue-queue-ready) [Register](#queue-queue-register) [Resume](#queue-queue-resume) [Run](#queue-queue-run) [Shutdown](#queue-queue-shutdown) [StartWorkers](#queue-queue-startworkers) [Stats](#queue-queue-stats) [WithClock](#queue-withclock) [WithMiddleware](#queue-withmiddleware) [WithObserver](#queue-withobserver) [WithStore](#queue-withstore) [WithWorkers](#queue-withworkers) [Queue.WithWorkers](#queue-queue-withworkers) |
 | **Driver Constructors** | [mysqlqueue.New](#mysqlqueue-new) [mysqlqueue.NewWithConfig](#mysqlqueue-newwithconfig) [natsqueue.New](#natsqueue-new) [natsqueue.NewWithConfig](#natsqueue-newwithconfig) [postgresqueue.New](#postgresqueue-new) [postgresqueue.NewWithConfig](#postgresqueue-newwithconfig) [rabbitmqqueue.New](#rabbitmqqueue-new) [rabbitmqqueue.NewWithConfig](#rabbitmqqueue-newwithconfig) [redisqueue.New](#redisqueue-new) [redisqueue.NewWithConfig](#redisqueue-newwithconfig) [sqlitequeue.New](#sqlitequeue-new) [sqlitequeue.NewWithConfig](#sqlitequeue-newwithconfig) [sqsqueue.New](#sqsqueue-new) [sqsqueue.NewWithConfig](#sqsqueue-newwithconfig) |
 | **Testing** | [AssertBatchCount](#queuefake-fake-assertbatchcount) [AssertBatched](#queuefake-fake-assertbatched) [AssertChained](#queuefake-fake-assertchained) [AssertCount](#queuefake-fake-assertcount) [AssertDispatched](#queuefake-fake-assertdispatched) [AssertDispatchedOn](#queuefake-fake-assertdispatchedon) [AssertDispatchedTimes](#queuefake-fake-assertdispatchedtimes) [AssertNotDispatched](#queuefake-fake-assertnotdispatched) [AssertNothingBatched](#queuefake-fake-assertnothingbatched) [AssertNothingDispatched](#queuefake-fake-assertnothingdispatched) [AssertNothingWorkflowDispatched](#queuefake-fake-assertnothingworkflowdispatched) [AssertWorkflowDispatched](#queuefake-fake-assertworkflowdispatched) [AssertWorkflowDispatchedOn](#queuefake-fake-assertworkflowdispatchedon) [AssertWorkflowDispatchedTimes](#queuefake-fake-assertworkflowdispatchedtimes) [AssertWorkflowNotDispatched](#queuefake-fake-assertworkflownotdispatched) [Count](#queuefake-fake-count) [CountJob](#queuefake-fake-countjob) [CountOn](#queuefake-fake-counton) [New](#queuefake-new) [Queue](#queuefake-fake-queue) [Records](#queuefake-fake-records) [Reset](#queuefake-fake-reset) [Workflow](#queuefake-fake-workflow) |
 
 
 
 ## API {#api}
+
+#### Admin {#admin}
+
+#### CancelJob {#queue-canceljob}
+
+CancelJob cancels a job when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+err = queue.CancelJob(context.Background(), q, "job-id")
+_ = err
+```
+
+#### Queue.CancelJob {#queue-queue-canceljob}
+
+CancelJob cancels a job via queue admin capability when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+if !queue.SupportsQueueAdmin(q) {
+	return
+}
+err = q.CancelJob(context.Background(), "job-id")
+_ = err
+```
+
+#### ClearQueue {#queue-clearqueue}
+
+ClearQueue clears queue jobs when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+err = queue.ClearQueue(context.Background(), q, "default")
+_ = err
+```
+
+#### Queue.ClearQueue {#queue-queue-clearqueue}
+
+ClearQueue clears queue jobs via queue admin capability when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+if !queue.SupportsQueueAdmin(q) {
+	return
+}
+err = q.ClearQueue(context.Background(), "default")
+_ = err
+```
+
+#### DeleteJob {#queue-deletejob}
+
+DeleteJob deletes a job when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+err = queue.DeleteJob(context.Background(), q, "default", "job-id")
+_ = err
+```
+
+#### Queue.DeleteJob {#queue-queue-deletejob}
+
+DeleteJob deletes a job via queue admin capability when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+if !queue.SupportsQueueAdmin(q) {
+	return
+}
+err = q.DeleteJob(context.Background(), "default", "job-id")
+_ = err
+```
+
+#### History {#queue-queue-history}
+
+History returns queue history points via queue admin capability when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+points, err := q.History(context.Background(), "default", queue.QueueHistoryHour)
+_ = err
+```
+
+#### ListJobs {#queue-listjobs}
+
+ListJobs lists jobs for a queue and state when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+_, err = queue.ListJobs(context.Background(), q, queue.ListJobsOptions{
+	Queue: "default",
+	State: queue.JobStatePending,
+})
+_ = err
+```
+
+#### Queue.ListJobs {#queue-queue-listjobs}
+
+ListJobs lists jobs via queue admin capability when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+_, err = q.ListJobs(context.Background(), queue.ListJobsOptions{
+	Queue: "default",
+	State: queue.JobStatePending,
+})
+_ = err
+```
+
+#### Normalize {#queue-listjobsoptions-normalize}
+
+Normalize returns a safe options payload with defaults applied.
+
+```go
+opts := queue.ListJobsOptions{Queue: "", State: "", Page: 0, PageSize: 1000}
+normalized := opts.Normalize()
+fmt.Println(normalized.Queue, normalized.State, normalized.Page, normalized.PageSize)
+// Output: default pending 1 500
+```
+
+#### QueueHistory {#queue-queuehistory}
+
+QueueHistory returns queue history points when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+_, err = queue.QueueHistory(context.Background(), q, "default", queue.QueueHistoryHour)
+_ = err
+```
+
+#### RetryJob {#queue-retryjob}
+
+RetryJob retries (runs now) a job when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+err = queue.RetryJob(context.Background(), q, "default", "job-id")
+_ = err
+```
+
+#### Queue.RetryJob {#queue-queue-retryjob}
+
+RetryJob retries (runs now) a job via queue admin capability when supported.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+if !queue.SupportsQueueAdmin(q) {
+	return
+}
+err = q.RetryJob(context.Background(), "default", "job-id")
+_ = err
+```
+
+#### SinglePointHistory {#queue-singlepointhistory}
+
+SinglePointHistory converts a snapshot into a single current-history point.
+This helper is intended for driver modules that do not expose historical buckets.
+
+```go
+snapshot := queue.StatsSnapshot{
+	ByQueue: map[string]queue.QueueCounters{
+		"default": {Processed: 12, Failed: 1},
+	},
+}
+points := queue.SinglePointHistory(snapshot, "default")
+fmt.Println(len(points), points[0].Processed, points[0].Failed)
+// Output: 1 12 1
+```
+
+#### SupportsQueueAdmin {#queue-supportsqueueadmin}
+
+SupportsQueueAdmin reports whether queue admin operations are available.
+
+```go
+q, err := redisqueue.New("127.0.0.1:6379")
+if err != nil {
+	return
+}
+fmt.Println(queue.SupportsQueueAdmin(q))
+// Output: true
+```
+
+#### TimelineHistoryFromSnapshot {#queue-timelinehistoryfromsnapshot}
+
+TimelineHistoryFromSnapshot records queue counters and returns windowed points.
+This is intended for drivers that don't expose native multi-point history.
+
+```go
+snapshot := queue.StatsSnapshot{
+	ByQueue: map[string]queue.QueueCounters{
+		"default": {Processed: 5, Failed: 1},
+	},
+}
+points := queue.TimelineHistoryFromSnapshot(snapshot, "default", queue.QueueHistoryHour)
+fmt.Println(len(points) >= 1)
+// Output: true
+```
 
 #### Constructors {#constructors}
 
@@ -976,6 +1217,16 @@ fmt.Println(len(names), names[0])
 // Output: 1 critical
 ```
 
+#### Ready {#queue-ready}
+
+Ready validates backend readiness for the provided queue runtime.
+
+```go
+q, _ := queue.NewSync()
+fmt.Println(queue.Ready(context.Background(), q) == nil)
+// true
+```
+
 #### Resume {#queue-resume}
 
 Resume resumes queue consumption for drivers that support it.
@@ -1238,6 +1489,19 @@ if err != nil {
 	return
 }
 _ = q.Prune(context.Background(), time.Now().Add(-24*time.Hour))
+```
+
+#### Queue.Ready {#queue-queue-ready}
+
+Ready validates queue backend readiness for dispatch/worker operation.
+
+```go
+q, err := queue.NewSync()
+if err != nil {
+	return
+}
+fmt.Println(q.Ready(context.Background()) == nil)
+// true
 ```
 
 #### Queue.Register {#queue-queue-register}
@@ -1525,6 +1789,16 @@ fmt.Println(len(records), records[0].Queue, records[0].Job.Type)
 // Output: 1 critical emails:send
 ```
 
+#### FakeQueue.Ready {#queue-fakequeue-ready}
+
+Ready validates fake queue readiness.
+
+```go
+fake := queue.NewFake()
+fmt.Println(fake.Ready(context.Background()) == nil)
+// true
+```
+
 #### FakeQueue.Records {#queue-fakequeue-records}
 
 Records returns a copy of all dispatch records.
@@ -1777,6 +2051,8 @@ q, err := redisqueue.NewWithConfig(
 		Addr: "127.0.0.1:6379", // required
 		Password: "",           // optional; default empty
 		DB: 0,                  // optional; default 0
+		ServerLogger: nil,      // optional; default backend logger
+		ServerLogLevel: redisqueue.ServerLogLevelDefault, // optional
 	},
 	queue.WithWorkers(4), // optional; default: runtime.NumCPU() (min 1)
 )

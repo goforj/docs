@@ -99,6 +99,13 @@ func (c *GenerateCommand) Run() error {
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "crypt.md"),
 		},
+		{
+			Slug:       "storage",
+			Title:      "Storage",
+			CloneURL:   "https://github.com/goforj/storage.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "storage.md"),
+		},
 	}
 	if c.Repo != "" {
 		filtered := make([]RepoConfig, 0, 1)
