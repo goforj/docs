@@ -118,7 +118,6 @@ export default defineConfig({
     ['meta', { property: 'og:site_name', content: 'GoForj' }],
     ['meta', { property: 'og:title', content: 'GoForj' }],
     ['meta', { property: 'og:description', content: siteDescription }],
-    ['meta', { property: 'og:url', content: siteUrl }],
     ['meta', { name: 'twitter:card', content: 'summary' }],
     ['meta', { name: 'twitter:title', content: 'GoForj' }],
     ['meta', { name: 'twitter:description', content: siteDescription }],
