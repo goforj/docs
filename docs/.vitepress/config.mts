@@ -71,7 +71,6 @@ const splitIntoSections = (path: string, html: string) => {
 const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '').trim()
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
-const ogImage = `${siteUrl}/assets/goforj-social.jpg`
 const siteDescription = 'Build faster. Ship smarter. Go development tools forged for productivity.'
 const analyticsHead = (isProd && gaMeasurementId)
   ? [
@@ -118,16 +117,9 @@ export default defineConfig({
     ['meta', { property: 'og:title', content: 'GoForj' }],
     ['meta', { property: 'og:description', content: siteDescription }],
     ['meta', { property: 'og:url', content: siteUrl }],
-    ['meta', { property: 'og:image', content: ogImage }],
-    ['meta', { property: 'og:image:secure_url', content: ogImage }],
-    ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
-    ['meta', { property: 'og:image:width', content: '1198' }],
-    ['meta', { property: 'og:image:height', content: '693' }],
-    ['meta', { property: 'og:image:alt', content: 'GoForj' }],
-    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:card', content: 'summary' }],
     ['meta', { name: 'twitter:title', content: 'GoForj' }],
     ['meta', { name: 'twitter:description', content: siteDescription }],
-    ['meta', { name: 'twitter:image', content: ogImage }],
     ...analyticsHead
   ],
 
