@@ -61,7 +61,7 @@ Today, GoForj is a growing set of **standalone libraries and tools**, including:
 - Command execution and process orchestration
 - Fluent data and string helpers
 - HTTP and filesystem utilities
-- Environment handling and diagnostics helpers
+- Environment handling, diagnostics, and wiring helpers
 
 Each project is intentionally scoped, independently versioned, and usable on its own.
 

@@ -107,7 +107,8 @@ export default defineConfig({
     'libraries/queue.md': 'queue.md',
     'libraries/cache.md': 'cache.md',
     'libraries/crypt.md': 'crypt.md',
-    'libraries/storage.md': 'storage.md'
+    'libraries/storage.md': 'storage.md',
+    'libraries/wire.md': 'wire.md'
   },
 
   head: [
@@ -173,6 +174,7 @@ export default defineConfig({
       { text: 'Cache', link: '/cache' },
       { text: 'Crypt', link: '/crypt' },
       { text: 'Storage', link: '/storage' },
+      { text: 'Wire', link: '/wire' },
       { text: 'What is GoForj?', link: '/about' }
     ],
 
@@ -193,6 +195,7 @@ export default defineConfig({
           { text: 'Cache', link: '/cache' },
           { text: 'Crypt', link: '/crypt' },
           { text: 'Storage', link: '/storage' },
+          { text: 'Wire', link: '/wire' },
           { text: 'About', link: '/about' },
         ]
       }

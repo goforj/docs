@@ -5,7 +5,7 @@ repoUrl: https://github.com/goforj/execx
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/execx/main/docs/images/logo.png?v=2" width="400" alt="str logo">
+  <img src="https://raw.githubusercontent.com/goforj/execx/main/docs/images/logo.png?v=2" width="300" alt="str logo">
 </p>
 
 <p align="center">

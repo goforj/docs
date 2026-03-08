@@ -5,11 +5,11 @@ repoUrl: https://github.com/goforj/collection
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/collection/main/docs/assets/logo.png" width="400" alt="goforj/collection logo">
+  <img src="https://raw.githubusercontent.com/goforj/collection/main/docs/assets/logo.png" width="300" alt="goforj/collection logo">
 </p>
 
 <p align="center">
-    Fluent collections for Go - with generics, chainable pipelines, and expressive data transforms. Inspired by Laravel, designed to feel natural in Go.
+  Fluent collections for Go. Iterate, filter, transform, sort, reduce, group, and debug data with zero dependencies.
 </p>
 
 <p align="center">
@@ -23,11 +23,6 @@ repoUrl: https://github.com/goforj/collection
     <img src="https://img.shields.io/badge/tests-470-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
     <a href="https://goreportcard.com/report/github.com/goforj/collection"><img src="https://goreportcard.com/badge/github.com/goforj/collection" alt="Go Report Card"></a>
-</p>
-
-<p align="center">
-  <code>collection</code> brings an expressive, fluent API to Go.
-    Iterate, filter, transform, sort, reduce, group, and debug data with zero dependencies - familiar to Go developers, pleasant to use everywhere.
 </p>
 
 ## Features {#features}

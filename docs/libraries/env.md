@@ -5,7 +5,7 @@ repoUrl: https://github.com/goforj/env
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/env/main/docs/images/logo.png?v=2" width="300" alt="goforj/env logo">
+  <img src="https://raw.githubusercontent.com/goforj/env/main/docs/images/logo.png?v=2" width="250" alt="goforj/env logo">
 </p>
 
 <p align="center">
@@ -22,13 +22,9 @@ repoUrl: https://github.com/goforj/env
     <a href="https://goreportcard.com/report/github.com/goforj/env/v2"><img src="https://goreportcard.com/badge/github.com/goforj/env/v2" alt="Go Report Card"></a>
 </p>
 
-<p align="center">
-  <code>env</code> provides strongly-typed access to environment variables with predictable fallbacks.  
-  Eliminate string parsing, centralize app environment checks, and keep configuration boring.  
-  Designed to feel native to Go - and invisible when things are working.
-</p>
-
 # Features {#features}
+
+**env** provides strongly-typed access to environment variables with predictable fallbacks. Eliminate string parsing, centralize app environment checks, and keep configuration boring. Designed to feel native to Go - and invisible when things are working.
 
 - **Strongly typed getters** - `int`, `bool`, `float`, `duration`, slices, maps
 - **Safe fallbacks** - never panic, never accidentally empty
@@ -48,15 +44,7 @@ Accessing environment variables in Go often leads to:
 - Inconsistent defaults
 - Scattered app environment checks
 
-**env** solves this by providing **typed accessors with fallbacks**, so configuration stays boring and predictable.
-
-## Features {#features-2}
-
-- Strongly typed getters (`int`, `bool`, `duration`, slices, maps)
-- Safe fallbacks (never panic, never empty by accident)
-- App environment helpers (`local`, `staging`, `production`)
-- Zero dependencies
-- Framework-agnostic
+env solves this by providing typed accessors with fallbacks, so configuration stays boring and predictable.
 
 ## Installation {#installation}
 
@@ -102,11 +90,26 @@ func main() {
 
 See [examples/kitchensink/main.go](https://github.com/goforj/env/blob/main/examples/kitchensink/main.go) for a runnable program that exercises almost every helper (env loading, typed getters, must-getters, runtime + container detection, and the `env.Dump` wrapper) with deterministic godump output.
 
-## Environment file loading {#environment-file-loading}
+## Environment loading {#environment-loading}
 
-This package uses `github.com/joho/godotenv` for `.env` file loading.
+LoadEnvFileIfExists loads env files in this order:
 
-It is intentionally composed into the runtime detection and APP_ENV model rather than reimplemented.
+- `.env`
+- `.env.local`, `.env.staging`, or `.env.production`, based on `APP_ENV` (`local` by default)
+- `.env.testing` when running under tests
+- `.env.host` when running on the host or DinD
+
+Later files override earlier ones. Repeated calls are no-ops.
+
+## Container detection {#container-detection}
+
+| Check | True when | Notes |
+|-------|-----------|-------|
+| IsDocker | /.dockerenv or Docker cgroup markers | Generic Docker container |
+| IsDockerInDocker | /.dockerenv and docker.sock | Inner DinD container |
+| IsDockerHost | docker.sock present, no container cgroups | Host or DinD outer acting as host |
+| IsContainer | Any common container signals (Docker, containerd, kube env/cgroup) | General container detection |
+| IsKubernetes | KUBERNETES_SERVICE_HOST or kubepods cgroup | Inside a Kubernetes pod |
 
 ## Runnable examples {#runnable-examples}
 
@@ -118,26 +121,17 @@ An automated test executes **every example** to verify it builds and runs succes
 
 This guarantees all examples are valid, up-to-date, and remain functional as the API evolves.
 
-## Container detection at a glance {#container-detection-at-a-glance}
+## Environment file loading {#environment-file-loading}
 
-| Check | True when | Notes |
-|-------|-----------|-------|
-| `IsDocker` | `/.dockerenv` or Docker cgroup markers | Generic Docker container |
-| `IsDockerInDocker` | `/.dockerenv` **and** `docker.sock` | Inner DinD container |
-| `IsDockerHost` | `docker.sock` present, no container cgroups | Host or DinD outer acting as host |
-| `IsContainer` | Any common container signals (Docker, containerd, kube env/cgroup) | General container detection |
-| `IsKubernetes` | `KUBERNETES_SERVICE_HOST` or kubepods cgroup | Inside a Kubernetes pod |
+This package uses `github.com/joho/godotenv` for `.env` file loading.
 
-## Environment loading overview {#environment-loading-overview}
+It is intentionally composed into the runtime detection and APP_ENV model rather than reimplemented.
 
-LoadEnvFileIfExists layers env files in a predictable order:
+## Philosophy {#philosophy}
 
-- `.env` is loaded first.
-- `.env.local`, `.env.staging`, or `.env.production` overlays based on `APP_ENV` (defaults to `local` when unset).
-- `.env.testing` overlays when running under tests (APP_ENV=testing or Go test markers).
-- `.env.host` overlays when running on the host or DinD to support host-to-container networking.
+**env** is part of the **GoForj toolchain** - a collection of focused, composable packages designed to make building Go applications *satisfying*.
 
-Later files override earlier values. Subsequent calls are no-ops.
+No magic. No globals. No surprises.
 
 <!-- api:embed:start -->
 
@@ -150,7 +144,7 @@ Later files override earlier values. Subsequent calls are no-ops.
 | **Debugging** | [Dump](#dump) |
 | **Environment loading** | [IsEnvLoaded](#isenvloaded) [LoadEnvFileIfExists](#loadenvfileifexists) |
 | **Runtime** | [Arch](#arch) [IsBSD](#isbsd) [IsContainerOS](#iscontaineros) [IsLinux](#islinux) [IsMac](#ismac) [IsUnix](#isunix) [IsWindows](#iswindows) [OS](#os) |
-| **Typed getters** | [Get](#get) [GetBool](#getbool) [GetDuration](#getduration) [GetEnum](#getenum) [GetFloat](#getfloat) [GetInt](#getint) [GetInt64](#getint64) [GetMap](#getmap) [GetSlice](#getslice) [GetUint](#getuint) [GetUint64](#getuint64) [MustGet](#mustget) [MustGetBool](#mustgetbool) [MustGetInt](#mustgetint) |
+| **Typed getters** | [Get](#get) [GetBool](#getbool) [GetDuration](#getduration) [GetEnum](#getenum) [GetFloat](#getfloat) [GetInt](#getint) [GetInt64](#getint64) [GetMap](#getmap) [GetMapInt](#getmapint) [GetSlice](#getslice) [GetUint](#getuint) [GetUint64](#getuint64) [MustGet](#mustget) [MustGetBool](#mustgetbool) [MustGetInt](#mustgetint) |
 
 
 ## Application environment {#application-environment}
@@ -309,7 +303,7 @@ env.Dump(env.GetAppEnv())
 // #string "testing"
 ```
 
-## Container detection {#container-detection}
+## Container detection {#container-detection-2}
 
 ### IsContainer {#iscontainer}
 
@@ -404,7 +398,7 @@ env.Dump("status", map[string]int{"ok": 1, "fail": 0})
 // ]
 ```
 
-## Environment loading {#environment-loading}
+## Environment loading {#environment-loading-2}
 
 ### IsEnvLoaded {#isenvloaded}
 
@@ -712,6 +706,38 @@ env.Dump(limits)
 // #map[string]string []
 ```
 
+### GetMapInt {#getmapint}
+
+GetMapInt parses key=int pairs separated by commas into a map.
+Invalid, missing, or non-positive values fall back to defaultValue.
+
+_Example: parse worker queue weights_
+
+```go
+_ = os.Setenv("QUEUE_WEIGHTS", "critical=6, default=3, low=1")
+weights := env.GetMapInt("QUEUE_WEIGHTS", "", 1)
+env.Dump(weights)
+// #map[string]int [
+//  "critical" => 6 #int
+//  "default"  => 3 #int
+//  "low"      => 1 #int
+// ]
+```
+
+_Example: invalid values use defaultValue_
+
+```go
+os.Unsetenv("QUEUE_WEIGHTS")
+weights = env.GetMapInt("QUEUE_WEIGHTS", "critical=,default=0,low=nope,misc", 2)
+env.Dump(weights)
+// #map[string]int [
+//  "critical" => 2 #int
+//  "default"  => 2 #int
+//  "low"      => 2 #int
+//  "misc"     => 2 #int
+// ]
+```
+
 ### GetSlice {#getslice}
 
 GetSlice splits a comma-separated string into a []string with trimming.
@@ -841,12 +867,6 @@ _ = os.Setenv("PORT", "not-a-number")
 _ = env.MustGetInt("PORT") // panics when parsing
 ```
 <!-- api:embed:end -->
-
-## Philosophy {#philosophy}
-
-**env** is part of the **GoForj toolchain** - a collection of focused, composable packages designed to make building Go applications *satisfying*.
-
-No magic. No globals. No surprises.
 
 ## License {#license}
 

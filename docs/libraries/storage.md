@@ -18,6 +18,8 @@ repoUrl: https://github.com/goforj/storage
   <a href="https://github.com/goforj/storage/actions/workflows/ci.yml"><img src="https://github.com/goforj/storage/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
   <a href="https://codecov.io/gh/goforj/storage"><img src="https://codecov.io/gh/goforj/storage/graph/badge.svg?token=BPR5IIC5F9"/></a>
+  <img src="https://img.shields.io/github/v/tag/goforj/storage?label=version&sort=semver&filter=%21driver%2A" alt="Latest tag">
+<a href="https://goreportcard.com/report/github.com/goforj/storage"><img src="https://goreportcard.com/badge/github.com/goforj/httpx/v2" alt="Go Report Card"></a>
 <!-- test-count:embed:start -->
   <img src="https://img.shields.io/badge/unit_tests-26-brightgreen" alt="Unit tests (executed count)">
   <img src="https://img.shields.io/badge/integration_tests-78-blue" alt="Integration tests (executed count)">
@@ -39,11 +41,14 @@ Each backend has its own API and client library.
 
 ## Driver Matrix {#driver-matrix}
 
+Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate. 
+
 | Driver | Kind | Notes |
 | ---: | --- | --- |
 | <img src="https://img.shields.io/badge/memory-667085?logo=buffer&logoColor=white" alt="memory"> | In-memory | Best zero-dependency backend for tests and ephemeral workflows. |
+| <img src="https://img.shields.io/badge/redis-CB3837?logo=redis&logoColor=white" alt="redis"> | Distributed memory | Good for temporary distributed blob storage with explicit size and durability tradeoffs. |
 | <img src="https://img.shields.io/badge/local-4C8EDA?logo=files&logoColor=white" alt="local"> | Local filesystem | Good default for local development and tests. |
-| <img src="https://img.shields.io/badge/s3-569A31?logo=amazons3&logoColor=white" alt="s3"> | Object storage | MinIO-backed integration coverage in the shared matrix. |
+| <img src="https://img.shields.io/badge/s3-569A31?logo=files&logoColor=white" alt="s3"> | Object storage | MinIO-backed integration coverage in the shared matrix. |
 | <img src="https://img.shields.io/badge/gcs-4285F4?logo=googlecloud&logoColor=white" alt="gcs"> | Object storage | Emulator-backed integration coverage via fake-gcs-server. |
 | <img src="https://img.shields.io/badge/sftp-1F6FEB?logo=gnu-bash&logoColor=white" alt="sftp"> | Remote filesystem | Container-backed integration coverage in the shared matrix. |
 | <img src="https://img.shields.io/badge/ftp-FF8C00?logo=filezilla&logoColor=white" alt="ftp"> | Remote filesystem | Embedded integration fixture in the shared matrix. |
@@ -63,6 +68,7 @@ Then add the driver modules you need, for example:
 ```bash
 go get github.com/goforj/storage/driver/localstorage
 go get github.com/goforj/storage/driver/memorystorage
+go get github.com/goforj/storage/driver/redisstorage
 go get github.com/goforj/storage/driver/s3storage
 go get github.com/goforj/storage/driver/gcsstorage
 go get github.com/goforj/storage/driver/sftpstorage
@@ -96,7 +102,7 @@ import (
 
 func main() {
     disk, err := storage.Build(localstorage.Config{
-        Remote: "/tmp/storage",
+        Root: "/tmp/storage",
     })
     if err != nil {
         log.Fatal(err)
@@ -165,7 +171,7 @@ import (
 func main() {
     // Build one disk through the shared storage API.
     built, err := storage.Build(localstorage.Config{
-        Remote: "/tmp/storage",
+        Root: "/tmp/storage",
         Prefix: "scratch",
     })
     if err != nil {
@@ -174,7 +180,7 @@ func main() {
 
     // Or construct the driver directly.
     direct, err := localstorage.New(localstorage.Config{
-        Remote: "/tmp/storage",
+        Root: "/tmp/storage",
         Prefix: "scratch",
     })
     if err != nil {
@@ -204,7 +210,7 @@ func main() {
         Default: "assets",
         Disks: map[storage.DiskName]storage.DriverConfig{
             "assets": localstorage.Config{
-                Remote: "/tmp/storage",
+                Root: "/tmp/storage",
                 Prefix: "assets",
             },
             "uploads": s3storage.Config{
@@ -289,6 +295,35 @@ func main() {
 
 See [`examples`](https://github.com/goforj/storage/tree/main/examples) for runnable examples.
 
+### Testing with fakes {#testing-with-fakes}
+
+```go
+package main
+
+import (
+    "testing"
+
+    "github.com/goforj/storage"
+    "github.com/goforj/storage/driver/memorystorage"
+    "github.com/goforj/storage/storagetest"
+)
+
+func TestUpload(t *testing.T) {
+    // Create one fake disk.
+    disk := storagetest.Fake(t)
+    _ = disk.Put("photo.jpg", []byte("ok"))
+
+    // Or create a fake manager with named in-memory disks.
+    mgr := storagetest.FakeManager(t, "photos", map[storage.DiskName]memorystorage.Config{
+        "photos":  {Prefix: "photos"},
+        "avatars": {Prefix: "avatars"},
+    })
+
+    photos, _ := mgr.Disk("photos")
+    _ = photos.Put("one.jpg", []byte("ok"))
+}
+```
+
 ## Benchmarks {#benchmarks}
 
 <!-- bench:embed:start -->
@@ -307,25 +342,25 @@ Each chart sample uses a fixed measurement window per driver, so the ops chart r
 Notes:
 
 - `gcs` uses fake-gcs-server.
-- `ftp` is excluded by default because the current driver opens a fresh connection per operation; include it with `BENCH_DRIVER=ftp`.
-- `s3` and `sftp` use testcontainers; include them with `BENCH_WITH_DOCKER=1` or by explicitly setting `BENCH_DRIVER`.
+- `ftp` is included by default and now reuses a logged-in control connection per storage instance during the benchmark run.
+- `redis`, `s3`, and `sftp` use testcontainers; include them with `BENCH_WITH_DOCKER=1` or by explicitly setting `BENCH_DRIVER`.
 - `rclone_local` measures rclone overhead on top of a local filesystem remote.
 
 ### Latency (ns/op) {#latency-(ns/op)}
 
-![Storage benchmark latency chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ns.svg?t=1772793177)
+![Storage benchmark latency chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ns.svg?t=1773001729)
 
 ### Iterations (N) {#iterations-(n)}
 
-![Storage benchmark iteration chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ops.svg?t=1772793177)
+![Storage benchmark iteration chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ops.svg?t=1773001729)
 
 ### Allocated Bytes (B/op) {#allocated-bytes-(b/op)}
 
-![Storage benchmark bytes chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_bytes.svg?t=1772793177)
+![Storage benchmark bytes chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_bytes.svg?t=1773001729)
 
 ### Allocations (allocs/op) {#allocations-(allocs/op)}
 
-![Storage benchmark allocs chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_allocs.svg?t=1772793177)
+![Storage benchmark allocs chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_allocs.svg?t=1773001729)
 <!-- bench:embed:end -->
 
 ## Capability Matrix {#capability-matrix}
@@ -333,8 +368,9 @@ Notes:
 | Driver | Stat | Copy | Move | Walk | URL | Context |
 | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | <img src="https://img.shields.io/badge/memory-667085?logo=buffer&logoColor=white" alt="memory"> | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ |
+| <img src="https://img.shields.io/badge/redis-CB3837?logo=redis&logoColor=white" alt="redis"> | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ |
 | <img src="https://img.shields.io/badge/local-4C8EDA?logo=files&logoColor=white" alt="local"> | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ |
-| <img src="https://img.shields.io/badge/s3-569A31?logo=amazons3&logoColor=white" alt="s3"> | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| <img src="https://img.shields.io/badge/s3-569A31?logo=files&logoColor=white" alt="s3"> | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | <img src="https://img.shields.io/badge/gcs-4285F4?logo=googlecloud&logoColor=white" alt="gcs"> | ✓ | ✓ | ✓ | ✓ | ~ | ✓ |
 | <img src="https://img.shields.io/badge/sftp-1F6FEB?logo=gnu-bash&logoColor=white" alt="sftp"> | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ |
 | <img src="https://img.shields.io/badge/ftp-FF8C00?logo=filezilla&logoColor=white" alt="ftp"> | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ |
@@ -497,7 +533,7 @@ a Manager.
 
 ```go
 fs, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-example",
+	Root: "/tmp/storage-example",
 	Prefix: "assets",
 })
 ```
@@ -509,7 +545,7 @@ s3storage.Config. It is the public config boundary for Manager and Build.
 
 ```go
 var cfg storage.DriverConfig = localstorage.Config{
-	Remote: "/tmp/storage-config",
+	Root: "/tmp/storage-config",
 }
 ```
 
@@ -569,7 +605,7 @@ GetContext reads the object at path using the caller-provided context.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-get-context",
+	Root: "/tmp/storage-get-context",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 
@@ -653,7 +689,7 @@ Semantics:
 ```go
 var disk storage.Storage
 disk, _ = storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-interface",
+	Root: "/tmp/storage-interface",
 })
 ```
 
@@ -663,7 +699,7 @@ Copy copies the object at src to dst.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-copy",
+	Root: "/tmp/storage-copy",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 _ = disk.Copy("docs/readme.txt", "docs/copy.txt")
@@ -679,7 +715,7 @@ Delete removes the object at path.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-delete",
+	Root: "/tmp/storage-delete",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 _ = disk.Delete("docs/readme.txt")
@@ -695,7 +731,7 @@ Exists reports whether an object exists at path.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-exists",
+	Root: "/tmp/storage-exists",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 
@@ -710,7 +746,7 @@ Get reads the object at path.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-get",
+	Root: "/tmp/storage-get",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 
@@ -725,7 +761,7 @@ List returns the immediate children under path.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-list",
+	Root: "/tmp/storage-list",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 
@@ -740,7 +776,7 @@ Move moves the object at src to dst.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-move",
+	Root: "/tmp/storage-move",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 _ = disk.Move("docs/readme.txt", "docs/archive.txt")
@@ -756,7 +792,7 @@ Put writes an object at path, overwriting any existing object.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-put",
+	Root: "/tmp/storage-put",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 fmt.Println("stored")
@@ -769,7 +805,7 @@ Stat returns the entry at path.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-stat",
+	Root: "/tmp/storage-stat",
 })
 _ = disk.Put("docs/readme.txt", []byte("hello"))
 
@@ -797,7 +833,7 @@ _Example: handle unsupported url generation_
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-url",
+	Root: "/tmp/storage-url",
 })
 
 _, err := disk.URL("docs/readme.txt")
@@ -811,7 +847,7 @@ Walk visits entries recursively when the backend supports it.
 
 ```go
 disk, _ := storage.Build(localstorage.Config{
-	Remote: "/tmp/storage-walk",
+	Root: "/tmp/storage-walk",
 })
 
 err := disk.Walk("", func(entry storage.Entry) error {
@@ -904,7 +940,7 @@ _Example: define local storage config_
 
 ```go
 cfg := localstorage.Config{
-	Remote: "/tmp/storage-local",
+	Root: "/tmp/storage-local",
 	Prefix: "sandbox",
 }
 ```
@@ -913,7 +949,7 @@ _Example: define local storage config with all fields_
 
 ```go
 cfg := localstorage.Config{
-	Remote: "/tmp/storage-local",
+	Root: "/tmp/storage-local",
 	Prefix: "sandbox", // default: ""
 }
 ```
@@ -1053,11 +1089,11 @@ fs, _ := gcsstorage.New(gcsstorage.Config{
 
 ### localstorage.New {#localstorage-new}
 
-New constructs local storage rooted at cfg.Remote with an optional prefix.
+New constructs local storage rooted at cfg.Root with an optional prefix.
 
 ```go
 fs, _ := localstorage.New(localstorage.Config{
-	Remote: "/tmp/storage-local",
+	Root: "/tmp/storage-local",
 	Prefix: "sandbox",
 })
 ```
@@ -1132,7 +1168,7 @@ Config defines named disks using typed driver configs.
 cfg := storage.Config{
 	Default: "local",
 	Disks: map[storage.DiskName]storage.DriverConfig{
-		"local": localstorage.Config{Remote: "/tmp/storage-manager"},
+		"local": localstorage.Config{Root: "/tmp/storage-manager"},
 	},
 }
 ```
@@ -1145,7 +1181,7 @@ Manager holds named storage disks.
 mgr, _ := storage.New(storage.Config{
 	Default: "local",
 	Disks: map[storage.DiskName]storage.DriverConfig{
-		"local": localstorage.Config{Remote: "/tmp/storage-manager"},
+		"local": localstorage.Config{Root: "/tmp/storage-manager"},
 	},
 })
 ```
@@ -1158,7 +1194,7 @@ Default returns the default disk or panics if misconfigured.
 mgr, _ := storage.New(storage.Config{
 	Default: "local",
 	Disks: map[storage.DiskName]storage.DriverConfig{
-		"local": localstorage.Config{Remote: "/tmp/storage-default"},
+		"local": localstorage.Config{Root: "/tmp/storage-default"},
 	},
 })
 
@@ -1175,8 +1211,8 @@ Disk returns a named disk or an error if it does not exist.
 mgr, _ := storage.New(storage.Config{
 	Default: "local",
 	Disks: map[storage.DiskName]storage.DriverConfig{
-		"local":   localstorage.Config{Remote: "/tmp/storage-default"},
-		"uploads": localstorage.Config{Remote: "/tmp/storage-uploads"},
+		"local":   localstorage.Config{Root: "/tmp/storage-default"},
+		"uploads": localstorage.Config{Root: "/tmp/storage-uploads"},
 	},
 })
 
@@ -1193,8 +1229,8 @@ New constructs a Manager and eagerly initializes all disks.
 mgr, _ := storage.New(storage.Config{
 	Default: "local",
 	Disks: map[storage.DiskName]storage.DriverConfig{
-		"local":  localstorage.Config{Remote: "/tmp/storage-local"},
-		"assets": localstorage.Config{Remote: "/tmp/storage-assets", Prefix: "public"},
+		"local":  localstorage.Config{Root: "/tmp/storage-local"},
+		"assets": localstorage.Config{Root: "/tmp/storage-assets", Prefix: "public"},
 	},
 })
 ```

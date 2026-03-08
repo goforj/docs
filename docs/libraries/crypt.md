@@ -22,10 +22,6 @@ repoUrl: https://github.com/goforj/crypt
     <a href="https://goreportcard.com/report/github.com/goforj/crypt"><img src="https://goreportcard.com/badge/github.com/goforj/crypt" alt="Go Report Card"></a>
 </p>
 
-<p align="center">
-  <code>crypt</code> provides symmetric encryption for Go services with authenticated payloads (AES-CBC + HMAC) and key rotation via <code>APP_PREVIOUS_KEYS</code>. It also supports Laravel/PHP-compatible payloads for interoperability.
-</p>
-
 ## Install {#install}
 
 ```bash
@@ -33,6 +29,8 @@ go get github.com/goforj/crypt
 ```
 
 # Features {#features}
+
+**crypt** provides symmetric encryption for Go services with authenticated payloads (AES-CBC + HMAC) and key rotation via **APP_PREVIOUS_KEYS**. It also supports Laravel/PHP-compatible payloads for interoperability.
 
 - AES-128 / AES-256 encryption (Laravel/PHP-compatible payload format)
 - Authenticated encryption (AES-CBC + HMAC)
@@ -44,7 +42,7 @@ go get github.com/goforj/crypt
 
 ## Why crypt? {#why-crypt?}
 
-`crypt` exists to solve one problem well: encrypting small application payloads with safe defaults and painless key rotation.
+**crypt** exists to solve one problem well: encrypting small application payloads with safe defaults and painless key rotation.
 
 It is not a general-purpose cryptography library.
 
