@@ -1,38 +1,216 @@
 ---
 title: Wire
-repoUrl: https://github.com/goforj/goforj/tree/main/wire
+repoSlug: wire
+repoUrl: https://github.com/goforj/wire
 ---
 
-# Wire
+<p align="center">
+  <img src="https://raw.githubusercontent.com/goforj/wire/main/docs/assets/logo-v2.png" width="300" alt="goforj/wire logo">
+</p>
 
-`goforj/wire` is the dependency wiring layer used by GoForj applications and tooling.
+<p align="center">
+    Compile-time dependency injection for Go - fast, explicit, and reflection-free.
+</p>
 
-It builds on top of Google Wire and keeps composition explicit: providers are grouped into focused sets, the application root is assembled in one place, and generated injectors stay easy to audit.
+<p align="center">
+    <a href="https://pkg.go.dev/github.com/goforj/wire"><img src="https://pkg.go.dev/badge/github.com/goforj/wire.svg" alt="Go Reference"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache2-blue.svg" alt="License"></a>
+    <a href="https://github.com/goforj/wire/actions"><img src="https://github.com/goforj/wire/actions/workflows/tests.yml/badge.svg" alt="Go Test"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.19+-blue?logo=go" alt="Go version"></a>
+    <img src="https://img.shields.io/github/v/tag/goforj/wire?label=version&sort=semver" alt="Latest tag">
+    <a href="https://codecov.io/gh/goforj/wire" ><img src="https://codecov.io/github/goforj/wire/graph/badge.svg?token=T7REZRC0G0"/></a>
+    <a href="https://goreportcard.com/report/github.com/goforj/wire"><img src="https://goreportcard.com/badge/github.com/goforj/wire" alt="Go Report Card"></a>
+</p>
 
-## Package
+<p align="center">
+  <code>wire</code> generates plain Go code to wire your application together.
+  No runtime container, no reflection, no hidden magic - just fast, explicit initialization.
+</p>
 
-```go
-import "github.com/goforj/goforj/wire"
+> [!NOTE]
+> This is a maintained fork of `google/wire`.
+> The original project is no longer actively maintained.
+> This fork preserves Wire’s API and behavior while focusing on:
+>
+> - 8-10x+ Faster compile times
+> - Improved generator determinism
+> - Better documentation and developer ergonomics (wire watch etc.)
+>
+> Existing Wire codebases should work without modification.
+
+Wire is a code generation tool that automates connecting components using
+[dependency injection][]. Dependencies between components are represented in
+Wire as function parameters, encouraging explicit initialization instead of
+global variables. Because Wire operates without runtime state or reflection,
+code written to be used with Wire is useful even for hand-written
+initialization.
+
+For an overview, see the [introductory blog post](https://blog.golang.org/wire).
+
+[dependency injection]: https://en.wikipedia.org/wiki/Dependency_injection
+[godoc]: https://godoc.org/github.com/goforj/wire
+
+## Installing {#installing}
+
+```sh
+go install github.com/goforj/wire/cmd/wire@latest
 ```
 
-## What It Provides
+Ensure `$GOPATH/bin` is in your `$PATH`.
 
-- Application assembly through a typed `App` root
-- Focused provider sets for commands and shared services
-- Explicit generated injectors instead of runtime service location
+## Compatibility with google/wire {#compatibility-with-google/wire}
 
-## Example
+Wire remains compatible with codebases that import `github.com/google/wire`.
+The generator emits a `//go:generate` directive pointing at this fork so
+`go generate` consistently uses the maintained toolchain.
+
+To keep existing imports unchanged:
+
+```sh
+go mod edit -replace=github.com/google/wire=github.com/goforj/wire@latest
+```
+
+## How Wire Works (in 60 seconds) {#how-wire-works-(in-60-seconds)}
+
+Wire is a **compile-time dependency injection** tool. Instead of building a runtime
+container, Wire generates ordinary Go code that explicitly initializes your
+application.
+
+There are only two concepts to learn:
+
+### Providers {#providers}
+
+A provider is a normal Go function that produces a value (and optionally an error).
 
 ```go
-app, err := wire.InitializeApplication()
-if err != nil {
-    return err
+func NewDB(cfg Config) (*sql.DB, error) {
+    // ...
+}
+````
+
+Dependencies are expressed as function parameters - no globals, no hidden state.
+
+### Injectors {#injectors}
+
+An injector is a stub function whose body calls `wire.Build(...)`.
+Wire replaces this stub with generated code that calls providers in dependency
+order.
+
+```go
+func InitializeApp(cfg Config) (*App, error) {
+    wire.Build(AppSet)
+    return nil, nil
+}
+```
+
+The generated output is plain Go - readable, debuggable, and fast.
+
+## Minimal Example {#minimal-example}
+
+```go
+// providers.go
+type Message string
+
+func ProvideMessage() Message {
+    return "hello wire"
 }
 
-return app.RootCmd().Run()
+type Greeter struct {
+    Msg Message
+}
+
+func NewGreeter(msg Message) *Greeter {
+    return &Greeter{Msg: msg}
+}
+
+var GreeterSet = wire.NewSet(
+    ProvideMessage,
+    NewGreeter,
+)
 ```
 
-## Source
+```go
+// wire.go
+//go:build wireinject
 
-- Repo: [github.com/goforj/goforj](https://github.com/goforj/goforj)
-- Package: [github.com/goforj/goforj/tree/main/wire](https://github.com/goforj/goforj/tree/main/wire)
+func InitializeGreeter() *Greeter {
+    wire.Build(GreeterSet)
+    return nil
+}
+```
+
+Generate the injector:
+
+```sh
+wire
+```
+
+Wire produces `wire_gen.go` containing explicit initialization code with no
+runtime dependency on Wire.
+
+## Running generation manually {#running-generation-manually}
+
+Run the default command (alias for `wire gen`) or specify packages:
+
+```sh
+wire
+wire gen ./...
+```
+
+## Watching for changes {#watching-for-changes}
+
+Wire includes a native watcher that re-runs generation on Go file changes:
+
+```sh
+wire watch
+wire watch ./...
+```
+
+Detects the package root automatically and uses native filesystem notifications when available (with a polling fallback).
+
+## Design Guidance {#design-guidance}
+
+Wire favors explicitness and long-term maintainability:
+
+* Prefer **small provider sets**, especially in libraries
+* Avoid injecting common types like `string`; define distinct types instead
+* Treat provider sets as **public APIs** with compatibility guarantees
+* Use struct providers and interface bindings to keep graphs readable
+
+For detailed guidance, see **Best Practices**.
+
+## Documentation {#documentation}
+
+If you're new to Wire, we recommend reading in this order:
+
+1. **Tutorial** - A guided introduction with a complete working example
+2. **User Guide** - Full reference for providers, injectors, bindings, and advanced patterns
+3. **Best Practices** - Design guidance for large codebases and libraries
+4. **FAQ** - Design rationale and common questions
+
+* [Tutorial](https://github.com/goforj/wire/blob/main/_tutorial/README.md)
+* [User Guide](https://github.com/goforj/wire/blob/main/docs/guide.md)
+* [Best Practices](https://github.com/goforj/wire/blob/main/docs/best-practices.md)
+* [FAQ](https://github.com/goforj/wire/blob/main/docs/faq.md)
+
+## When Not to Use Wire {#when-not-to-use-wire}
+
+Wire is designed for medium-to-large Go applications with non-trivial
+initialization logic.
+
+For small programs with only a handful of dependencies, hand-written
+initialization is often simpler and clearer.
+
+## Project Status {#project-status}
+
+This fork tracks the original Wire feature set while prioritizing performance,
+determinism, and documentation. Compatibility with existing Wire codebases is a
+core goal.
+
+## Community {#community}
+
+For questions and discussion, use
+[GitHub Discussions](https://github.com/goforj/wire/discussions).
+
+This project follows the Go
+[Code of Conduct](https://github.com/goforj/wire/blob/main/CODE_OF_CONDUCT.md).

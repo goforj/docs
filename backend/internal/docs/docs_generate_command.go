@@ -106,6 +106,15 @@ func (c *GenerateCommand) Run() error {
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "storage.md"),
 		},
+		{
+			Slug:       "wire",
+			Title:      "Wire",
+			CloneURL:   "https://github.com/goforj/wire.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "wire.md"),
+			ReadmePath: "README.md",
+			RepoName:   "wire",
+		},
 	}
 	if c.Repo != "" {
 		filtered := make([]RepoConfig, 0, 1)
@@ -170,10 +179,14 @@ func (c *GenerateCommand) Run() error {
 			}
 			c.logger.Info().Any("repo", repo.Slug).Any("action", action).Msg("Repo synced")
 
-			readmePath := filepath.Join(repoDir, "README.md")
+			readmeRelativePath := repo.ReadmePath
+			if readmeRelativePath == "" {
+				readmeRelativePath = "README.md"
+			}
+			readmePath := filepath.Join(repoDir, filepath.FromSlash(readmeRelativePath))
 			readmeBytes, err := os.ReadFile(readmePath)
 			if err != nil {
-				setErr(fmt.Errorf("read README for %s: %w", repo.Slug, err))
+				setErr(fmt.Errorf("read README %s for %s: %w", readmeRelativePath, repo.Slug, err))
 				return
 			}
 
@@ -231,6 +244,10 @@ func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) strin
 	_, _ = sum.Write([]byte(repo.Slug))
 	_, _ = sum.Write([]byte{'\n'})
 	_, _ = sum.Write([]byte(repo.Branch))
+	_, _ = sum.Write([]byte{'\n'})
+	_, _ = sum.Write([]byte(repo.ReadmePath))
+	_, _ = sum.Write([]byte{'\n'})
+	_, _ = sum.Write([]byte(repo.RepoName))
 	_, _ = sum.Write([]byte{'\n'})
 	_, _ = sum.Write([]byte(rawBase))
 	_, _ = sum.Write([]byte{'\n'})

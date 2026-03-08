@@ -9,15 +9,24 @@ type RepoConfig struct {
 	CloneURL   string
 	Branch     string
 	OutputPath string
+	ReadmePath string
+	RepoName   string
 }
 
 func webGithubBase(repo RepoConfig) string {
+	if repo.RepoName != "" {
+		return ensureTrailingSlash("https://github.com/goforj/" + repo.RepoName)
+	}
 	base := strings.TrimSuffix(repo.CloneURL, ".git")
 	return ensureTrailingSlash(base)
 }
 
 func rawGithubBase(repo RepoConfig, branch string) string {
-	base := "https://raw.githubusercontent.com/goforj/" + repo.Slug + "/" + branch + "/"
+	repoName := repo.Slug
+	if repo.RepoName != "" {
+		repoName = repo.RepoName
+	}
+	base := "https://raw.githubusercontent.com/goforj/" + repoName + "/" + branch + "/"
 	return ensureTrailingSlash(base)
 }
 
