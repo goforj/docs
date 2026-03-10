@@ -22,7 +22,7 @@ repoUrl: https://github.com/goforj/storage
 <a href="https://goreportcard.com/report/github.com/goforj/storage"><img src="https://goreportcard.com/badge/github.com/goforj/httpx/v2" alt="Go Report Card"></a>
 <!-- test-count:embed:start -->
   <img src="https://img.shields.io/badge/unit_tests-26-brightgreen" alt="Unit tests (executed count)">
-  <img src="https://img.shields.io/badge/integration_tests-78-blue" alt="Integration tests (executed count)">
+  <img src="https://img.shields.io/badge/integration_tests-89-blue" alt="Integration tests (executed count)">
 <!-- test-count:embed:end -->
 </p>
 
@@ -940,7 +940,7 @@ _Example: define local storage config_
 
 ```go
 cfg := localstorage.Config{
-	Root: "/tmp/storage-local",
+	Root:   "/tmp/storage-local",
 	Prefix: "sandbox",
 }
 ```
@@ -949,7 +949,7 @@ _Example: define local storage config with all fields_
 
 ```go
 cfg := localstorage.Config{
-	Root: "/tmp/storage-local",
+	Root:   "/tmp/storage-local",
 	Prefix: "sandbox", // default: ""
 }
 ```
@@ -1093,7 +1093,7 @@ New constructs local storage rooted at cfg.Root with an optional prefix.
 
 ```go
 fs, _ := localstorage.New(localstorage.Config{
-	Root: "/tmp/storage-local",
+	Root:   "/tmp/storage-local",
 	Prefix: "sandbox",
 })
 ```
