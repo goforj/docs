@@ -86,6 +86,13 @@ func (c *GenerateCommand) Run() error {
 			OutputPath: filepath.Join("libraries", "queue.md"),
 		},
 		{
+			Slug:       "events",
+			Title:      "Events",
+			CloneURL:   "https://github.com/goforj/events.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "events.md"),
+		},
+		{
 			Slug:       "cache",
 			Title:      "Cache",
 			CloneURL:   "https://github.com/goforj/cache.git",
