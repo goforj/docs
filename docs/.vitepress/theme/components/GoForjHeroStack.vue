@@ -491,7 +491,8 @@ const scene = computed(() => {
       groupGap = LAYOUT.groupGap,
       groupDepth = LAYOUT.groupDepth,
       groupHeight = LAYOUT.groupHeight,
-      childMetricsOverride = null
+      childMetricsOverride = null,
+      interactionZone = 'shared'
     } = options
     const laneSpan = laneGroups.reduce((sum, group) => sum + group.width, 0) + (Math.max(0, laneGroups.length - 1) * groupGap)
     let laneCursorX = shelf.x + (shelf.w - laneSpan) / 2
@@ -510,6 +511,7 @@ const scene = computed(() => {
         textColor: '#ffffff',
         title: group.title,
         href: group.href,
+        interactionZone,
         labelSize: group.id === 'ai-agents' ? 12 : 10,
         iconScale: 0.72,
         highlight: '',
@@ -539,6 +541,7 @@ const scene = computed(() => {
             textColor: '#ffffff',
             title: subgroup.title,
             href: subgroup.href,
+            interactionZone,
             labelSize: 9,
             iconScale: 0.64,
             x: subgroupCursorX,
@@ -568,6 +571,7 @@ const scene = computed(() => {
               labelFace: 'left',
               iconScale: subgroup.childMetrics.scale,
               frontIcon: true,
+              interactionZone,
               x: rowX + (col * (subgroup.childMetrics.size + subgroup.childMetrics.gap)),
               y: subgroupY + 0.2 - (row * subgroup.childMetrics.rowOffsetY),
               z: subgroupZ + LAYOUT.subgroupHeight + (row * subgroup.childMetrics.height * subgroup.childMetrics.rowLiftFactor),
@@ -603,6 +607,7 @@ const scene = computed(() => {
             labelFace: 'left',
             iconScale: topMetrics.scale,
             frontIcon: true,
+            interactionZone,
             x: topChildX + (col * (topMetrics.size + topMetrics.gap)) + (child.assemblyShiftX || 0),
             y: topChildY - (row * topMetrics.rowOffsetY) + (child.assemblyShiftY || 0),
             z: topChildZ + (row * topMetrics.height * topMetrics.rowLiftFactor) + (child.assemblyLift || 0),
@@ -632,6 +637,7 @@ const scene = computed(() => {
             labelFace: 'left',
             iconScale: childMetrics.scale,
             frontIcon: true,
+            interactionZone,
             x: childX + (col * (childMetrics.size + childMetrics.gap)) + (child.assemblyShiftX || 0),
             y: blockY + childYOffset + (child.assemblyShiftY || 0),
             z: blockZ + childLift + (row * childMetrics.height * childMetrics.rowLiftFactor) + (child.assemblyLift || 0),
@@ -654,14 +660,16 @@ const scene = computed(() => {
       groupDepth: 0.84,
       groupHeight: 0.44,
       groupGap: 0.82,
-      childMetricsOverride: { size: 0.72, gap: 0.08, height: 0.78, scale: 0.62, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
+      childMetricsOverride: { size: 0.72, gap: 0.08, height: 0.78, scale: 0.62, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
+      interactionZone: 'lower-shelf'
     })
   }
   if (backGroups.length) {
     placeLane(backGroups, rearShelf, {
       blockYOffset: -0.04,
       childYOffset: 0.08,
-      childLift: LAYOUT.groupHeight + 0.06
+      childLift: LAYOUT.groupHeight + 0.06,
+      interactionZone: 'upper-shelf'
     })
   }
 
@@ -685,9 +693,32 @@ function shouldLiftWithHover(item) {
 
   const hovered = scene.value.tower.find((entry) => entry.id === hoveredBlock.value)
   if (!hovered || item.type !== 'block') return false
+  if (hovered.tier !== 'category-choice' && hovered.tier !== 'category-subgroup' && hovered.tier !== 'assembly-input' && hovered.tier !== 'assembly-result') {
+    return false
+  }
   if (item.id === hovered.id) return true
+  if (hovered.interactionZone && item.interactionZone && hovered.interactionZone !== item.interactionZone) return false
 
   return item.z > hovered.z && overlapsOnPlane(item, hovered)
+}
+
+function getHoverTransform(item) {
+  if (!isMounted.value || !shouldLiftWithHover(item)) return 'translateY(0)'
+  if (item.tier !== 'category-choice' && item.tier !== 'category-subgroup' && item.tier !== 'assembly-input' && item.tier !== 'assembly-result') {
+    return 'translateY(0)'
+  }
+  if (item.tier === 'runtime' || item.tier === 'core' || item.tier === 'platform' || item.tier === 'ground' || item.tier === 'rear-shelf' || item.tier === 'rear-support' || item.tier === 'lower-shelf') {
+    return 'translateY(0)'
+  }
+  const isHovered = item.id === hoveredBlock.value
+  const footprint = Math.min(item.w || 0, item.d || 0)
+
+  if (isHovered && footprint <= 0.6) return 'translate(-16px, 9px)'
+  if (isHovered && footprint <= 0.9) return 'translate(-14px, 8px)'
+  if (isHovered) return 'translate(-12px, 7px)'
+
+  if (footprint <= 0.6) return 'translate(-7px, 4px)'
+  return 'translate(-6px, 3px)'
 }
 
 // PROJECTION
@@ -1043,7 +1074,7 @@ function adjustColor(color, amount) {
                 :style="{
                   opacity: isMounted ? (item.opacity || 1) : 0,
                   transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease',
-                  transform: isMounted && shouldLiftWithHover(item) ? 'translateY(-20px)' : 'translateY(0)'
+                  transform: getHoverTransform(item)
                 }">
                 <title>{{ item.title || item.label || item.id }}</title>
                 <g
