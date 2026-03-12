@@ -647,6 +647,16 @@ function getBlockGeom(block) {
   }
 }
 
+function getTopEdgeStripPath(face, inset = 12) {
+  const p0 = face[3]
+  const p1 = face[2]
+  const p2 = face[1]
+  const p3 = face[0]
+  const i0 = { x: p0.x + (p3.x - p0.x) * 0.09, y: p0.y + (p3.y - p0.y) * 0.09 }
+  const i1 = { x: p1.x + (p2.x - p1.x) * 0.09, y: p1.y + (p2.y - p1.y) * 0.09 }
+  return getFacePath([p0, p1, i1, i0])
+}
+
 function getShadowOpacity(item) {
   if (item.type !== 'block') return 0
   if (item.id === 'ai-agents') return 0.18
@@ -773,13 +783,36 @@ function adjustColor(color, amount) {
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
-            <linearGradient id="forge-plate-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#5a1611" stop-opacity="0.96" />
-              <stop offset="55%" stop-color="#8b2519" stop-opacity="0.94" />
-              <stop offset="100%" stop-color="#3a0d0b" stop-opacity="0.98" />
+            <linearGradient id="forgeMetal" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ff7a2a" />
+              <stop offset="40%" stop-color="#d13b1f" />
+              <stop offset="70%" stop-color="#8b1e14" />
+              <stop offset="100%" stop-color="#4a0f0f" />
+            </linearGradient>
+            <radialGradient id="forgeHeat" cx="50%" cy="30%" r="60%">
+              <stop offset="0%" stop-color="#ffc487" stop-opacity="0.46" />
+              <stop offset="28%" stop-color="#ff9a47" stop-opacity="0.26" />
+              <stop offset="52%" stop-color="#ff7a2a" stop-opacity="0.1" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="forgeSideHeatLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.42" />
+              <stop offset="14%" stop-color="#ffb066" stop-opacity="0.26" />
+              <stop offset="28%" stop-color="#ff7a2a" stop-opacity="0.12" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="forgeSideHeatRight" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.48" />
+              <stop offset="12%" stop-color="#ffb066" stop-opacity="0.3" />
+              <stop offset="26%" stop-color="#ff7a2a" stop-opacity="0.14" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="forgeEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.6" />
+              <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0" />
             </linearGradient>
             <linearGradient id="forge-plate-edge" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ffcf9b" stop-opacity="0.16" />
+              <stop offset="0%" stop-color="#ffcf9b" stop-opacity="0.12" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
             </linearGradient>
             <linearGradient id="output-deck-top" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -791,31 +824,21 @@ function adjustColor(color, amount) {
               <stop offset="0%" stop-color="#ffe0ba" stop-opacity="0.22" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
-            <linearGradient id="forge-top-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ffd6a8" stop-opacity="0.4" />
-              <stop offset="38%" stop-color="#ff8a45" stop-opacity="0.28" />
-              <stop offset="100%" stop-color="#5b130e" stop-opacity="0.02" />
-            </linearGradient>
             <linearGradient id="forge-core-top" x1="10%" y1="10%" x2="90%" y2="90%">
-              <stop offset="0%" stop-color="#ffddb3" />
-              <stop offset="24%" stop-color="#ffb15b" />
-              <stop offset="58%" stop-color="#e25d25" />
-              <stop offset="100%" stop-color="#67140f" />
+              <stop offset="0%" stop-color="#ff9a47" />
+              <stop offset="28%" stop-color="#c5341c" />
+              <stop offset="72%" stop-color="#781710" />
+              <stop offset="100%" stop-color="#43100f" />
             </linearGradient>
             <linearGradient id="forge-core-right" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#d56a29" />
-              <stop offset="45%" stop-color="#7c1a11" />
-              <stop offset="100%" stop-color="#32110a" />
+              <stop offset="0%" stop-color="#b92b19" />
+              <stop offset="55%" stop-color="#781710" />
+              <stop offset="100%" stop-color="#43100f" />
             </linearGradient>
             <linearGradient id="forge-core-left" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#8f2718" />
-              <stop offset="55%" stop-color="#52100c" />
-              <stop offset="100%" stop-color="#1c0705" />
-            </linearGradient>
-            <linearGradient id="forge-vent-glow" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#ffd29d" stop-opacity="0.92" />
-              <stop offset="40%" stop-color="#ff8a4c" stop-opacity="0.78" />
-              <stop offset="100%" stop-color="#4a120c" stop-opacity="0.08" />
+              <stop offset="0%" stop-color="#781710" />
+              <stop offset="55%" stop-color="#4e1411" />
+              <stop offset="100%" stop-color="#2a0d0d" />
             </linearGradient>
             <radialGradient id="forge-underglow" cx="50%" cy="56%" r="55%">
               <stop offset="0%" stop-color="#ff934f" stop-opacity="0.34" />
@@ -837,13 +860,13 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ffd39f" stop-opacity="0" />
             </linearGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6b7280" stop-opacity="0.7" />
-              <stop offset="40%" stop-color="#4b5563" stop-opacity="0.8" />
-              <stop offset="100%" stop-color="#1f2937" stop-opacity="0.9" />
+              <stop offset="0%" stop-color="#5f6b7a" stop-opacity="0.72" />
+              <stop offset="40%" stop-color="#3e4653" stop-opacity="0.82" />
+              <stop offset="100%" stop-color="#232933" stop-opacity="0.9" />
             </linearGradient>
             <linearGradient id="steel-shelf-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#374151" />
-              <stop offset="100%" stop-color="#111827" />
+              <stop offset="0%" stop-color="#313843" />
+              <stop offset="100%" stop-color="#161b24" />
             </linearGradient>
             <linearGradient id="steel-shelf-brush" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stop-color="#cbd5e1" stop-opacity="0.02" />
@@ -856,9 +879,6 @@ function adjustColor(color, amount) {
             </filter>
             <filter id="ambient-blur" x="-30%" y="-30%" width="160%" height="160%">
               <feGaussianBlur stdDeviation="36" />
-            </filter>
-            <filter id="forge-soften" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="8" />
             </filter>
           </defs>
 
@@ -888,11 +908,15 @@ function adjustColor(color, amount) {
                   <template v-if="item.type === 'shelf'">
                     <path
                       :d="getFacePath(getBlockGeom(item).top)"
-                      :fill="item.id === 'platform-shelf' ? 'url(#forge-plate-top)' : 'url(#glass-sheen)'"
+                      :fill="item.id === 'platform-shelf' ? 'url(#forgeMetal)' : 'url(#glass-sheen)'"
                       :fill-opacity="item.id === 'platform-shelf' ? 1 : item.opacity"
                       :stroke="item.id === 'platform-shelf' ? 'url(#forge-plate-edge)' : 'url(#glass-edge)'"
                       :stroke-width="item.id === 'platform-shelf' ? 2.2 : 1.5"
                     />
+                    <template v-if="item.id === 'platform-shelf'">
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" />
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeEdge)" opacity="0.5" />
+                    </template>
                   </template>
                   <template v-else>
                     <ellipse
@@ -908,13 +932,19 @@ function adjustColor(color, amount) {
                     <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="item.id === 'core' ? 'url(#forge-core-left)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fl-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
+                    <template v-if="item.id === 'core'">
+                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forgeSideHeatLeft)" />
+                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forgeSideHeatRight)" />
+                      <path :d="getTopEdgeStripPath(getBlockGeom(item).frontLeft)" fill="#ffd9a0" opacity="0.22" />
+                      <path :d="getTopEdgeStripPath(getBlockGeom(item).frontRight)" fill="#ffd9a0" opacity="0.26" />
+                    </template>
                     <template v-if="catchesForgeGlow(item)">
                       <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-reflection-face)" :opacity="getForgeGlowOpacity(item)" />
                       <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forge-reflection-face)" :opacity="Math.max(0.06, getForgeGlowOpacity(item) - 0.04)" />
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-reflection-top)" :opacity="Math.max(0.04, getForgeGlowOpacity(item) - 0.08)" />
                     </template>
                     <template v-if="item.id === 'core'">
-                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-top-glow)" opacity="0.9" />
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" opacity="0.82" />
                     </template>
                     <template v-else-if="item.id === 'rear-shelf'">
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#steel-shelf-brush)" opacity="0.7" />
