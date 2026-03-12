@@ -1,21 +1,6 @@
 ---
 layout: home
 
-hero:
-  name: "GoForj"
-  text: "High-trust Go libraries and tools, forged for developer productivity and performance"
-  tagline: "Explicit, ergonomic tooling for Go - designed to be readable, auditable, and production-ready."
-  image:
-    src: /assets/goforj-full.png
-    alt: GoForj
-  actions:
-    - theme: brand
-      text: Explore Libraries
-      link: /collection
-    - theme: alt
-      text: Design Philosophy
-      link: /about
-
 features:
   - title: Opinionated, never opaque
     icon: 💠

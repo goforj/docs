@@ -4,6 +4,7 @@ import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
+import GoForjHeroStack from './components/GoForjHeroStack.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -377,6 +378,7 @@ export default {
   ...DefaultTheme,
   Layout: () =>
     h(DefaultTheme.Layout, null, {
+      'home-hero-before': () => h(GoForjHeroStack),
       'doc-before': () => h(LibraryRepoHeader),
       'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker)]
     }),

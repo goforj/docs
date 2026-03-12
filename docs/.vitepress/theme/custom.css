@@ -31,6 +31,19 @@
     -webkit-backdrop-filter: blur(10px);
 }
 
+.VPHome .VPHero .container {
+    display: none !important;
+}
+
+.VPHome .VPHero {
+    padding-top: 0 !important;
+}
+
+.VPHome .VPHero .gf-home-hero {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
 
 
 .vp-code {
