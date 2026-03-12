@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import simpleIconsData from '@iconify-json/simple-icons/icons.json'
 
 const isMounted = ref(false)
 const hoveredBlock = ref(null)
@@ -14,59 +15,320 @@ onMounted(() => {
 const ICONS = {
   openai: "M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 22.8182a5.9847 5.9847 0 0 0 3.9977-2.9 6.0462 6.0462 0 0 0-.7427-7.0966 5.98 5.98 0 0 0 .511-4.9107 6.051 6.051 0 0 0-6.5146-2.9001",
   vue: "M12 22L0 1.5h4.5L12 18l7.5-16.5H24L12 22z M7.5 1.5L12 10l4.5-8.5H16L12 7.5l-4-6H7.5z",
+  react: "M12 10.9a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zm0-5.7c1.02 0 1.98.14 2.8.4 1.03.33 1.72.82 1.72 1.36 0 .46-.48.92-1.23 1.28.11.53.16 1.05.16 1.56s-.05 1.03-.16 1.56c.75.36 1.23.82 1.23 1.28 0 .54-.69 1.03-1.72 1.36-.82.26-1.78.4-2.8.4s-1.98-.14-2.8-.4c-1.03-.33-1.72-.82-1.72-1.36 0-.46.48-.92 1.23-1.28a7.1 7.1 0 0 1-.16-1.56c0-.51.05-1.03.16-1.56-.75-.36-1.23-.82-1.23-1.28 0-.54.69-1.03 1.72-1.36.82-.26 1.78-.4 2.8-.4zm-2.95 1.44c-.83.29-1.33.64-1.33.95 0 .24.3.51.84.76.4-.93.95-1.73 1.59-2.35-.39.14-.76.35-1.1.64zm5.9 0c-.34-.29-.71-.5-1.1-.64.64.62 1.19 1.42 1.59 2.35.54-.25.84-.52.84-.76 0-.31-.5-.66-1.33-.95zM12 7.1c-.7.61-1.31 1.46-1.73 2.5.42 1.04 1.03 1.89 1.73 2.5.7-.61 1.31-1.46 1.73-2.5-.42-1.04-1.03-1.89-1.73-2.5zm-4.26 6.3c0 .31.5.66 1.33.95.34.29.71.5 1.1.64-.64-.62-1.19-1.42-1.59-2.35-.54.25-.84.52-.84.76zm7.13 1.59c.83-.29 1.33-.64 1.33-.95 0-.24-.3-.51-.84-.76-.4.93-.95 1.73-1.59 2.35.39-.14.76-.35 1.1-.64z",
   go: "M2 12h2v10h12v-10h2v12h-16v-12z M12 2c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6z", 
   storage: "M21 12c0 1.66-4 3-9 3s-9-1.34-9-3 4-3 9-3 9 1.34 9 3z M3 5c0 1.66 4 3 9 3s9-1.34 9-3 M3 19c0 1.66 4 3 9 3s9-1.34 9-3 M3 5v14 M21 5v14",
   queue: "M3 6h18 M3 12h18 M3 18h18 M7 6v12 M17 6v12",
-  sparkles: "M12 3l2.4 4.8 5.3.8-3.8 3.7.9 5.3-4.8-2.5-4.8 2.5.9-5.3-3.8-3.7 5.3-.8L12 3z"
+  cache: "M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 17.5zm3 1.5h8m-8 4h5m-5 4h8",
+  events: "M12 3v4m0 10v4M5.64 5.64l2.83 2.83m7.06 7.06l2.83 2.83M3 12h4m10 0h4M5.64 18.36l2.83-2.83m7.06-7.06l2.83-2.83",
+  sparkles: "M12 3l2.4 4.8 5.3.8-3.8 3.7.9 5.3-4.8-2.5-4.8 2.5.9-5.3-3.8-3.7 5.3-.8L12 3z",
+  workflow: "M5 4h8v3H5z M11 17h8v3h-8z M5 10h14v3H5z M7 7v3 M17 13v4",
+  interface: "M4 5h16v12H4z M8 19h8 M10 17h4",
+  brain: "M9 3c-2.76 0-5 2.24-5 5 0 1.3.5 2.48 1.32 3.37C5.11 11.8 5 12.39 5 13v1c0 .55.45 1 1 1h1v2c0 1.1.9 2 2 2h2v-4H9v-2.4c-.88-.38-1.5-1.26-1.5-2.3 0-1.38 1.12-2.5 2.5-2.5.56 0 1.07.18 1.48.49A3.98 3.98 0 0 1 15 6c0-1.66-1.34-3-3-3-.74 0-1.41.27-1.93.71C9.77 3.25 9.4 3 9 3zm6 4c2.76 0 5 2.24 5 5 0 1.8-.95 3.38-2.38 4.26-.39.24-.62.67-.62 1.13V19h-5v-4h1.5c1.38 0 2.5-1.12 2.5-2.5 0-1.04-.62-1.92-1.5-2.3V8h.5c1.1 0 2-.9 2-2s-.9-2-2-2z"
 }
 
-// REFINED ISOMETRIC DATA
-const rawTower = [
-  // Foundation Shelf
-  { id: 'shelf-0', type: 'shelf', x: 0, y: 0, z: 0, w: 4, d: 4, h: 0.1, color: '#f8fafc', opacity: 0.2 },
+const BRAND_ICON_KEYS = {
+  vue: 'vuedotjs',
+  react: 'react',
+  openai: 'openai',
+  anthropic: 'anthropic',
+  claude: 'claude',
+  gemini: 'googlegemini',
+  redis: 'redis',
+  nats: 'natsdotio',
+  kafka: 'apachekafka',
+  rabbitmq: 'rabbitmq',
+  sqlite: 'sqlite',
+  postgres: 'postgresql',
+  mysql: 'mysql',
+  dynamodb: 'amazondynamodb',
+  s3: 'amazonaws',
+  gcs: 'googlecloud',
+  ollama: 'ollama'
+}
 
-  // Runtime - Wide base block
-  { id: 'runtime', type: 'block', label: 'RUNTIME', icon: 'go', labelFace: 'left', x: 0.5, y: 0.5, z: 0.1, w: 3, d: 3, h: 0.6, color: '#1e293b', textColor: '#94a3b8' },
-
-  // Core - Large tall red block with Official Logo
-  { 
-    id: 'core', 
-    type: 'block', 
-    label: 'CORE', 
-    imageLabel: '/assets/goforj-letters.png', 
-    imageIcon: '/assets/goforj-hammer.png',
-    labelFace: 'left', 
-    x: 1, y: 1, z: 0.7, w: 2, d: 2, h: 1.8, 
-    color: '#ef4444', 
-    textColor: '#ffffff' 
+const GROUP_CONFIG = [
+  {
+    id: 'frontend',
+    label: 'FRONTEND',
+    icon: 'interface',
+    color: '#2f89ff',
+    summary: 'UI surfaces and client delivery',
+    row: 'front',
+    children: [
+      { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff' }
+    ]
   },
-
-  // Tooling Shelf - Glass
-  { id: 'shelf-1', type: 'shelf', x: 0.5, y: 0.5, z: 2.5, w: 3, d: 3, h: 0.1, color: '#ffffff', opacity: 0.3 },
-
-  // Libraries on the shelf
-  { id: 'strings', type: 'block', label: 'STRINGS', icon: 'vue', labelFace: 'left', x: 0.7, y: 0.7, z: 2.6, w: 0.8, d: 0.8, h: 0.8, color: '#3b82f6', textColor: '#ffffff' },
-  { id: 'queue', type: 'block', label: 'QUEUE', icon: 'queue', labelFace: 'right', x: 2.5, y: 0.7, z: 2.6, w: 0.8, d: 0.8, h: 0.8, color: '#f59e0b', textColor: '#ffffff' },
-  { id: 'storage', type: 'block', label: 'STORAGE', icon: 'storage', labelFace: 'left', x: 0.7, y: 2.5, z: 2.6, w: 0.8, d: 0.8, h: 0.8, color: '#10b981', textColor: '#ffffff' },
-  { id: 'collection', type: 'block', label: 'COLL', icon: 'sparkles', labelFace: 'right', x: 2.5, y: 2.5, z: 2.6, w: 0.8, d: 0.8, h: 0.8, color: '#8b5cf6', textColor: '#ffffff' },
-
-  // Agents - Top floating block
-  { id: 'agents', type: 'block', label: 'AGENTS', highlight: 'AI Ready', icon: 'openai', labelFace: 'left', x: 1.25, y: 1.25, z: 3.8, w: 1.5, d: 1.5, h: 1.4, color: '#6366f1', textColor: '#ffffff' },
+  {
+    id: 'infrastructure',
+    label: 'INFRA',
+    icon: 'storage',
+    color: '#f0a423',
+    summary: 'Queue, cache, storage, event backends',
+    row: 'back',
+    children: [
+      { id: 'infra-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'infra-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff' }
+    ]
+  },
+  {
+    id: 'ai-agents',
+    label: 'AI AGENTS',
+    icon: 'openai',
+    color: '#818cf8',
+    summary: 'Agent orchestration and model execution',
+    row: 'front',
+    children: [
+      { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'ai-claude', icon: 'claude', color: '#a78bfa', textColor: '#ffffff', iconColor: '#ffffff' },
+      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff' }
+    ]
+  }
 ]
 
-// DEPTH SORTING
-const tower = computed(() => {
-  return [...rawTower].sort((a, b) => {
-    const depthA = a.x + a.y + a.z
-    const depthB = b.x + b.y + b.z
-    return depthA - depthB
+const LAYOUT = {
+  originX: 0.42,
+  originY: 0.42,
+  runtimeZ: 0.1,
+  coreInsetX: 0.52,
+  coreInsetY: 0.4,
+  coreHeight: 1.92,
+  platformInsetX: 0.22,
+  platformInsetY: 0.14,
+  platformDepth: 2.18,
+  platformHeight: 0.1,
+  rearShelfInsetX: 0.12,
+  rearShelfDepth: 1.34,
+  rearShelfYOffset: -1.08,
+  rearShelfLift: 1.28,
+  rearShelfHeight: 0.16,
+  rearSupportInsetX: 0.16,
+  rearSupportDepth: 0.52,
+  groupGap: 0.36,
+  groupPaddingX: 0.14,
+  groupPaddingY: 0.08,
+  groupDepth: 1.02,
+  groupHeight: 0.58,
+  childGap: 0.12,
+  childSize: 0.74,
+  childHeight: 0.84,
+  runtimeSidePadding: 0.62,
+  groundSidePadding: 0.6,
+  runtimeDepth: 3.7,
+  groundDepth: 4.9,
+  groundOpacity: 0.16,
+  platformOpacity: 0.24
+}
+
+const scene = computed(() => {
+  const groups = GROUP_CONFIG.map((group) => {
+    const childCount = group.children.length
+    const childSpan = childCount * LAYOUT.childSize + Math.max(0, childCount - 1) * LAYOUT.childGap
+    const width = childSpan + (LAYOUT.groupPaddingX * 2)
+    return {
+      ...group,
+      width
+    }
   })
+
+  const frontGroups = groups.filter((group) => group.row !== 'back')
+  const backGroups = groups.filter((group) => group.row === 'back')
+  const laneWidth = (items) => items.reduce((sum, group) => sum + group.width, 0) + (Math.max(0, items.length - 1) * LAYOUT.groupGap)
+  const frontWidth = laneWidth(frontGroups)
+  const backWidth = laneWidth(backGroups)
+  const groupsWidth = Math.max(frontWidth, backWidth)
+  const runtimeW = groupsWidth + (LAYOUT.runtimeSidePadding * 2)
+  const coreW = groupsWidth + (LAYOUT.coreInsetX * 2)
+  const groundW = runtimeW + (LAYOUT.groundSidePadding * 2)
+
+  const runtime = {
+    x: LAYOUT.originX,
+    y: LAYOUT.originY,
+    z: LAYOUT.runtimeZ,
+    w: runtimeW,
+    d: LAYOUT.runtimeDepth,
+    h: 0.82
+  }
+
+  const core = {
+    x: runtime.x + (runtime.w - coreW) / 2,
+    y: runtime.y + LAYOUT.coreInsetY,
+    z: runtime.z + runtime.h,
+    w: coreW,
+    d: 2.86,
+    h: LAYOUT.coreHeight
+  }
+
+  const platform = {
+    x: runtime.x + (runtime.w - groupsWidth) / 2 - LAYOUT.platformInsetX,
+    y: core.y + LAYOUT.platformInsetY,
+    z: core.z + core.h,
+    w: groupsWidth + (LAYOUT.platformInsetX * 2),
+    d: LAYOUT.platformDepth,
+    h: LAYOUT.platformHeight
+  }
+
+  const rearShelf = {
+    x: runtime.x + (runtime.w - backWidth) / 2 - LAYOUT.rearShelfInsetX,
+    y: platform.y + LAYOUT.rearShelfYOffset,
+    z: platform.z + platform.h + LAYOUT.rearShelfLift,
+    w: backWidth + (LAYOUT.rearShelfInsetX * 2),
+    d: LAYOUT.rearShelfDepth,
+    h: LAYOUT.rearShelfHeight,
+    opacity: 1
+  }
+
+  const rearSupport = backGroups.length
+    ? {
+        id: 'rear-support',
+        type: 'block',
+        tier: 'rear-support',
+        label: '',
+        color: '#a97524',
+        textColor: '#ffffff',
+        x: rearShelf.x + LAYOUT.rearSupportInsetX,
+        y: rearShelf.y + rearShelf.d - LAYOUT.rearSupportDepth,
+        z: platform.z + platform.h,
+        w: rearShelf.w - (LAYOUT.rearSupportInsetX * 2),
+        d: LAYOUT.rearSupportDepth,
+        h: rearShelf.z - (platform.z + platform.h)
+      }
+    : null
+
+  const ground = {
+    x: runtime.x - LAYOUT.groundSidePadding,
+    y: LAYOUT.originY - 0.04,
+    z: 0,
+    w: groundW,
+    d: LAYOUT.groundDepth,
+    h: 0.1,
+    opacity: LAYOUT.groundOpacity
+  }
+
+  let cursorX = platform.x + LAYOUT.platformInsetX
+  const tower = [
+    { id: 'ground', type: 'shelf', tier: 'ground', color: '#f8fafc', ...ground },
+    {
+      id: 'runtime',
+      type: 'block',
+      tier: 'runtime',
+      label: 'RUNTIME',
+      icon: 'go',
+      labelFace: 'left',
+      color: '#0f172a',
+      textColor: '#93a9cb',
+      labelSize: 18,
+      iconScale: 1.32,
+      ...runtime
+    },
+    {
+      id: 'core',
+      type: 'block',
+      tier: 'core',
+      label: 'CORE',
+      imageLabel: '/assets/goforj-letters.png',
+      imageIcon: '/assets/goforj-hammer.png',
+      labelFace: 'left',
+      color: '#ef4444',
+      textColor: '#ffffff',
+      imageLabelWidth: 168,
+      imageLabelHeight: 54,
+      imageLabelX: -84,
+      imageLabelY: -8,
+      imageIconSize: 60,
+      ...core
+    },
+    { id: 'platform-shelf', type: 'shelf', tier: 'platform', color: '#ffffff', opacity: LAYOUT.platformOpacity, ...platform },
+    ...(rearSupport ? [rearSupport] : []),
+    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#c9952f', textColor: '#ffffff', ...rearShelf }] : [])
+  ]
+
+  const placeLane = (laneGroups, shelf, options = {}) => {
+    const {
+      blockYOffset = 0,
+      childYOffset = 0.08,
+      childLift = LAYOUT.groupHeight
+    } = options
+    let laneCursorX = shelf.x + (shelf.w - laneWidth(laneGroups)) / 2
+
+    laneGroups.forEach((group) => {
+      const blockX = laneCursorX
+      const blockY = shelf.y + LAYOUT.groupPaddingY + blockYOffset
+      const blockZ = shelf.z + shelf.h
+      tower.push({
+        id: group.id,
+        type: 'block',
+        tier: 'category',
+        label: group.label,
+        icon: group.icon,
+        color: group.color,
+        textColor: '#ffffff',
+        labelSize: group.id === 'ai-agents' ? 12 : 10,
+        iconScale: 0.72,
+        highlight: '',
+        highlightSize: 0,
+        x: blockX,
+        y: blockY,
+        z: blockZ,
+        w: group.width,
+        d: LAYOUT.groupDepth,
+        h: LAYOUT.groupHeight,
+        labelFace: 'left'
+      })
+
+      group.children.forEach((child, index) => {
+        tower.push({
+          ...child,
+          type: 'block',
+          tier: 'category-choice',
+          label: '',
+          labelFace: 'left',
+          iconScale: 0.76,
+          frontIcon: true,
+          x: blockX + LAYOUT.groupPaddingX + (index * (LAYOUT.childSize + LAYOUT.childGap)),
+          y: blockY + childYOffset,
+          z: blockZ + childLift,
+          w: LAYOUT.childSize,
+          d: LAYOUT.childSize,
+          h: LAYOUT.childHeight
+        })
+      })
+
+      laneCursorX += group.width + LAYOUT.groupGap
+    })
+  }
+  placeLane(frontGroups, platform, {
+    blockYOffset: 0.7,
+    childYOffset: 0.28,
+    childLift: LAYOUT.groupHeight
+  })
+  if (backGroups.length) {
+    placeLane(backGroups, rearShelf, {
+      blockYOffset: 0.04,
+      childYOffset: 0.08,
+      childLift: LAYOUT.groupHeight + 0.06
+    })
+  }
+
+  return {
+    tower: tower.sort((a, b) => (a.x + a.y + a.z) - (b.x + b.y + b.z)),
+    categories: GROUP_CONFIG
+  }
 })
 
 // PROJECTION
 const SCALE = 70 
-const ORIGIN_X = 400
-const ORIGIN_Y = 500
+const ORIGIN_X = 360
+const ORIGIN_Y = 468
 const ISO_X_VECTOR = { x: 0.866, y: 0.5 } 
 const ISO_Y_VECTOR = { x: -0.866, y: 0.5 } 
 const ISO_Z_VECTOR = { x: 0, y: -1 }      
@@ -98,6 +360,47 @@ function getBlockGeom(block) {
   }
 }
 
+function getShadowOpacity(item) {
+  if (item.type !== 'block') return 0
+  if (item.id === 'ai-agents') return 0.18
+  if (item.id === 'core') return 0.16
+  return 0.12
+}
+
+function getShadowBlur(item) {
+  if (item.id === 'ai-agents') return 16
+  if (item.id === 'core') return 18
+  return 12
+}
+
+function getShadowTransform(item) {
+  const center = project(item.x + item.w / 2, item.y + item.d / 2, item.z)
+  const width = item.w * SCALE * 0.52
+  const height = Math.max(18, item.d * SCALE * 0.18)
+  return {
+    x: center.x,
+    y: center.y + item.h * 12 + 18,
+    width,
+    height
+  }
+}
+
+function getFrontIconPlacement(item) {
+  const base = Math.min(item.w, item.h)
+  const scale = Math.max(1.35, base * 1.55)
+  return {
+    scale,
+    x: -11.25 * scale,
+    y: -10.2 * scale
+  }
+}
+
+function getBrandIconBody(icon) {
+  const key = BRAND_ICON_KEYS[icon]
+  if (!key) return ''
+  return simpleIconsData.icons?.[key]?.body || ''
+}
+
 const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
 const MATRIX_DOWN_LEFT = `matrix(0.866, -0.5, 0, 1, 0, 0)`
 const MATRIX_TOP = `matrix(0.866, 0.5, -0.866, 0.5, 0, 0)`
@@ -123,6 +426,9 @@ function adjustColor(color, amount) {
         <p class="gf-hero-tagline">
           High-trust libraries and tools designed for productivity, performance, and total clarity. Batteries-included, but never opaque.
         </p>
+        <p class="gf-hero-story">
+          Compose your stack by category: frontend choices on the floor, platform capabilities in the middle, and AI orchestration at the top.
+        </p>
         <div class="gf-hero-actions">
           <a href="/collection" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
           <a href="/about" class="gf-hero-btn gf-hero-btn--secondary">Design Philosophy</a>
@@ -132,7 +438,7 @@ function adjustColor(color, amount) {
       <div class="gf-hero-graphic" :class="{ 'is-visible': isMounted }">
         <svg class="gf-hero-svg" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <template v-for="item in rawTower" :key="`grads-${item.id}`">
+            <template v-for="item in scene.tower" :key="`grads-${item.id}`">
               <linearGradient :id="`grad-top-${item.id}`" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" :stop-color="adjustColor(item.color, 35)" />
                 <stop offset="100%" :stop-color="item.color" />
@@ -146,17 +452,31 @@ function adjustColor(color, amount) {
                 <stop offset="100%" :stop-color="adjustColor(item.color, -45)" />
               </linearGradient>
             </template>
+            <radialGradient id="hero-ambient" cx="50%" cy="45%" r="60%">
+              <stop offset="0%" stop-color="#7c83ff" stop-opacity="0.26" />
+              <stop offset="52%" stop-color="#3b82f6" stop-opacity="0.1" />
+              <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
+            </radialGradient>
             <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.1" />
             </linearGradient>
+            <linearGradient id="glass-edge" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
+            </linearGradient>
             <filter id="block-shadow" x="-50%" y="-50%" width="200%" height="200%">
               <feDropShadow dx="0" dy="25" stdDeviation="20" flood-opacity="0.18" />
             </filter>
+            <filter id="ambient-blur" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="36" />
+            </filter>
           </defs>
 
+          <ellipse cx="438" cy="404" rx="180" ry="150" fill="url(#hero-ambient)" filter="url(#ambient-blur)" opacity="0.9" />
+
           <g class="gf-iso-group" filter="url(#block-shadow)">
-            <template v-for="(item, index) in tower" :key="item.id">
+            <template v-for="(item, index) in scene.tower" :key="item.id">
               <g class="gf-iso-item-wrapper"
                  @mouseenter="hoveredBlock = item.id"
                  @mouseleave="hoveredBlock = null"
@@ -170,36 +490,76 @@ function adjustColor(color, amount) {
                  }">
                 <g class="gf-iso-item" :style="{ animationDelay: `${index * 250}ms` }">
                   <template v-if="item.type === 'shelf'">
-                    <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#glass-sheen)" :fill-opacity="item.opacity" stroke="#ffffff" stroke-opacity="0.4" stroke-width="1.5" />
+                    <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#glass-sheen)" :fill-opacity="item.opacity" stroke="url(#glass-edge)" stroke-width="1.5" />
                   </template>
                   <template v-else>
+                    <ellipse
+                      class="gf-block-shadow"
+                      :cx="getShadowTransform(item).x"
+                      :cy="getShadowTransform(item).y"
+                      :rx="getShadowTransform(item).width"
+                      :ry="getShadowTransform(item).height"
+                      fill="#020617"
+                      :opacity="getShadowOpacity(item)"
+                      :style="{ filter: `blur(${getShadowBlur(item)}px)` }"
+                    />
                     <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="`url(#grad-fl-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="`url(#grad-fr-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).top)" :fill="`url(#grad-top-${item.id})`" />
+                    <path class="gf-block-edge" :d="getFacePath(getBlockGeom(item).frontLeft)" />
+                    <path class="gf-block-edge" :d="getFacePath(getBlockGeom(item).frontRight)" />
+                    <path class="gf-block-edge gf-block-edge--top" :d="getFacePath(getBlockGeom(item).top)" />
 
                     <!-- ENHANCED ICON OR IMAGE ON TOP FACE -->
-                    <g :transform="`translate(${getBlockGeom(item).topCenter.x}, ${getBlockGeom(item).topCenter.y})`">
+                    <g v-if="!item.frontIcon" :transform="`translate(${getBlockGeom(item).topCenter.x}, ${getBlockGeom(item).topCenter.y})`">
                       <g :transform="MATRIX_TOP">
                         <template v-if="item.imageIcon">
-                           <image :xlink:href="item.imageIcon" x="-30" y="-30" width="60" height="60" opacity="0.8" />
+                           <image
+                             :xlink:href="item.imageIcon"
+                             :x="-(item.imageIconSize || 60) / 2"
+                             :y="-(item.imageIconSize || 60) / 2"
+                             :width="item.imageIconSize || 60"
+                             :height="item.imageIconSize || 60"
+                             opacity="0.84"
+                           />
                         </template>
                         <template v-else-if="item.icon">
-                          <g transform="translate(-18, -18) scale(1.5)">
+                          <g :transform="`translate(-18, -18) scale(${item.iconScale || 1.5})`">
                             <path :d="ICONS[item.icon]" :fill="item.textColor" fill-opacity="0.7" />
                           </g>
                         </template>
                       </g>
                     </g>
 
+                    <g v-if="item.frontIcon && item.icon" :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
+                      <g :transform="MATRIX_DOWN_RIGHT">
+                        <g
+                          :transform="`translate(${getFrontIconPlacement(item).x}, ${getFrontIconPlacement(item).y}) scale(${getFrontIconPlacement(item).scale})`"
+                          :style="{ color: item.iconColor || item.textColor }"
+                        >
+                          <g v-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
+                          <path v-else :d="ICONS[item.icon]" :fill="item.iconColor || item.textColor" fill-opacity="0.98" />
+                        </g>
+                      </g>
+                    </g>
+
                     <!-- DYNAMIC LABEL ORIENTATION OR IMAGE LABEL -->
-                    <g :transform="`translate(${item.labelFace === 'right' ? getBlockGeom(item).frontRightCenter.x : getBlockGeom(item).frontLeftCenter.x}, ${item.labelFace === 'right' ? getBlockGeom(item).frontRightCenter.y : getBlockGeom(item).frontLeftCenter.y})`">
-                      <g :transform="item.labelFace === 'right' ? MATRIX_DOWN_LEFT : MATRIX_DOWN_RIGHT">
+                    <g :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
+                      <g :transform="MATRIX_DOWN_RIGHT">
                         <template v-if="item.imageLabel">
-                           <image :xlink:href="item.imageLabel" x="-60" y="-20" width="120" height="40" />
+                           <text y="-22" text-anchor="middle" :fill="item.textColor" class="iso-label iso-label--core-kicker">CORE</text>
+                           <image
+                             :xlink:href="item.imageLabel"
+                             :x="item.imageLabelX || -60"
+                             :y="item.imageLabelY || -20"
+                             :width="item.imageLabelWidth || 120"
+                             :height="item.imageLabelHeight || 40"
+                           />
                         </template>
-                        <template v-else-if="item.label">
-                          <text text-anchor="middle" :fill="item.textColor" font-weight="800" font-size="11" class="iso-label">{{ item.label }}</text>
-                          <text v-if="item.highlight" y="32" text-anchor="middle" :fill="item.textColor" font-weight="900" :font-size="item.id === 'core' ? 42 : 28" class="iso-highlight">{{ item.highlight }}</text>
+                        <template v-else-if="item.label && !item.frontIcon">
+                          <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="item.textColor" :font-size="item.topLabelSize || 10" class="iso-label iso-label--category">{{ item.topLabel }}</text>
+                          <text text-anchor="middle" :fill="item.textColor" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
+                          <text v-if="item.highlight" y="28" text-anchor="middle" :fill="item.textColor" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
                         </template>
                       </g>
                     </g>
@@ -209,6 +569,22 @@ function adjustColor(color, amount) {
             </template>
           </g>
         </svg>
+        <div class="gf-category-row" :class="{ 'is-visible': isMounted }">
+          <button
+            v-for="category in scene.categories"
+            :key="category.id"
+            type="button"
+            class="gf-category-card"
+            @mouseenter="hoveredBlock = category.id"
+            @mouseleave="hoveredBlock = null"
+          >
+            <svg class="gf-category-card-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path :d="ICONS[category.icon]" :fill="category.color" />
+            </svg>
+            <span class="gf-category-card-title">{{ category.label }}</span>
+            <span class="gf-category-card-copy">{{ category.summary }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -218,9 +594,11 @@ function adjustColor(color, amount) {
 .gf-home-hero {
   position: relative;
   width: 100%;
-  padding: 1.5rem 2rem 6rem;
+  padding: 0.25rem 2rem 5rem;
   overflow: visible;
-  background: radial-gradient(circle at 75% 35%, rgba(99, 102, 241, 0.08) 0%, transparent 55%);
+  background:
+    radial-gradient(circle at 76% 32%, rgba(99, 102, 241, 0.12) 0%, transparent 34%),
+    radial-gradient(circle at 66% 42%, rgba(59, 130, 246, 0.06) 0%, transparent 28%);
 }
 .gf-hero-container {
   max-width: 1280px;
@@ -228,11 +606,12 @@ function adjustColor(color, amount) {
   display: flex;
   align-items: center;
   gap: 5rem;
+  min-height: calc(100vh - 140px);
 }
 .gf-hero-content {
   flex: 1.1;
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(22px);
   transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .gf-hero-content.is-visible {
@@ -265,8 +644,15 @@ function adjustColor(color, amount) {
   line-height: 1.65;
   color: var(--vp-c-text-2);
   max-width: 580px;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2rem;
   font-weight: 450;
+}
+.gf-hero-story {
+  max-width: 560px;
+  margin: 0 0 3rem;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.98rem;
+  line-height: 1.7;
 }
 .gf-hero-actions {
   display: flex;
@@ -307,38 +693,104 @@ function adjustColor(color, amount) {
   position: relative;
   opacity: 0;
   transition: opacity 1.8s ease;
+  transform: translate3d(10px, -10px, 0);
 }
 .gf-hero-graphic.is-visible {
   opacity: 1;
+  transform: translate3d(0, -10px, 0);
 }
 .gf-hero-svg {
   width: 100%;
   height: auto;
   overflow: visible;
 }
+.gf-category-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: -0.6rem;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.gf-category-row.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.gf-category-card {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  padding: 1rem 1rem 1.05rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.64), rgba(8, 14, 30, 0.58));
+  text-align: left;
+  cursor: default;
+}
+.gf-category-card-icon {
+  width: 20px;
+  height: 20px;
+}
+.gf-category-card-title {
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.gf-category-card-copy {
+  color: rgba(191, 219, 254, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
 .gf-iso-item {
   cursor: pointer;
-  animation: bob 5s ease-in-out infinite alternate;
+  animation: bob 6s ease-in-out infinite alternate;
 }
 @keyframes bob {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-12px); }
+  100% { transform: translateY(-5px); }
+}
+.gf-block-edge {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1.15;
+  vector-effect: non-scaling-stroke;
+}
+.gf-block-edge--top {
+  stroke: rgba(255, 255, 255, 0.18);
+}
+.gf-block-shadow {
+  pointer-events: none;
 }
 .iso-label {
   user-select: none;
   pointer-events: none;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .iso-highlight {
   user-select: none;
   pointer-events: none;
   letter-spacing: -0.02em;
+  paint-order: stroke fill;
+  stroke: rgba(79, 70, 229, 0.2);
+  stroke-width: 1.4;
+}
+.iso-label--core-kicker {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  opacity: 0.82;
+}
+.iso-label--category {
+  opacity: 0.72;
+  letter-spacing: 0.18em;
 }
 @media (max-width: 1024px) {
   .gf-hero-container {
     flex-direction: column;
     text-align: center;
     gap: 3rem;
+    min-height: auto;
   }
   .gf-hero-title {
     font-size: 3.8rem;
@@ -347,12 +799,24 @@ function adjustColor(color, amount) {
     margin-left: auto;
     margin-right: auto;
   }
+  .gf-hero-story {
+    margin-left: auto;
+    margin-right: auto;
+  }
   .gf-hero-actions {
     justify-content: center;
   }
   .gf-hero-graphic {
     width: 100%;
-    max-width: 650px;
+    max-width: 760px;
+    transform: translateY(-10px);
+  }
+  .gf-hero-graphic.is-visible {
+    transform: translateY(-10px);
+  }
+  .gf-category-row {
+    grid-template-columns: 1fr;
+    margin-top: 0.5rem;
   }
 }
 @media (max-width: 640px) {
