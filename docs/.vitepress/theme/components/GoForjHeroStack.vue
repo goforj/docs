@@ -64,13 +64,13 @@ const GROUP_CONFIG = [
     id: 'frontend',
     label: 'FRONTEND',
     icon: 'app-window',
-    color: '#e15b2a',
+    color: '#4f7ec9',
     summary: 'UI surfaces and client delivery',
     title: 'Frontend choices',
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/', assemblyLift: 0.52, assemblyShiftX: 0.1, assemblyShiftY: -0.12, assemblyInProgress: true }
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' }
     ]
   },
     {
@@ -188,7 +188,7 @@ const GROUP_CONFIG = [
     id: 'ai-agents',
     label: 'AI AGENTS',
     icon: 'brain-circuit',
-    color: '#d6542f',
+    color: '#7b74d6',
     summary: 'Agent orchestration and model execution',
     title: 'AI agent providers',
     row: 'front',
@@ -213,6 +213,11 @@ const LAYOUT = {
   rearShelfYOffset: -1.22,
   rearShelfLift: 1.72,
   rearShelfHeight: 0.16,
+  lowerShelfInsetX: 0.1,
+  lowerShelfDepth: 1.02,
+  lowerShelfYOffset: -0.54,
+  lowerShelfLift: 0.58,
+  lowerShelfHeight: 0.14,
   rearSupportInsetX: 0.16,
   rearSupportDepth: 0.28,
   groupGap: 0.3,
@@ -353,6 +358,18 @@ const scene = computed(() => {
     opacity: 0.88
   }
 
+  const lowerShelf = frontGroups.length
+    ? {
+        x: runtime.x + (runtime.w - frontWidth) / 2 - LAYOUT.lowerShelfInsetX,
+        y: platform.y + LAYOUT.lowerShelfYOffset,
+        z: platform.z + platform.h + LAYOUT.lowerShelfLift,
+        w: frontWidth + (LAYOUT.lowerShelfInsetX * 2),
+        d: LAYOUT.lowerShelfDepth,
+        h: LAYOUT.lowerShelfHeight,
+        opacity: 0.92
+      }
+    : null
+
   const ground = {
     x: runtime.x - LAYOUT.groundSidePadding,
     y: LAYOUT.originY - 0.04,
@@ -411,6 +428,7 @@ const scene = computed(() => {
       ...core
     },
     { id: 'platform-shelf', type: 'shelf', tier: 'platform', color: '#ffffff', opacity: LAYOUT.platformOpacity, ...platform },
+    ...(lowerShelf ? [{ id: 'lower-shelf', type: 'block', tier: 'lower-shelf', label: '', color: '#56606f', textColor: '#ffffff', ...lowerShelf }] : []),
     ...(rearSupport ? [rearSupport] : []),
     ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#4b5563', textColor: '#ffffff', ...rearShelf }] : [])
   ]
@@ -470,7 +488,10 @@ const scene = computed(() => {
       blockLift = 0,
       childYOffset = 0.08,
       childLift = LAYOUT.groupHeight,
-      groupGap = LAYOUT.groupGap
+      groupGap = LAYOUT.groupGap,
+      groupDepth = LAYOUT.groupDepth,
+      groupHeight = LAYOUT.groupHeight,
+      childMetricsOverride = null
     } = options
     const laneSpan = laneGroups.reduce((sum, group) => sum + group.width, 0) + (Math.max(0, laneGroups.length - 1) * groupGap)
     let laneCursorX = shelf.x + (shelf.w - laneSpan) / 2
@@ -497,15 +518,15 @@ const scene = computed(() => {
         y: blockY,
         z: blockZ,
         w: group.width,
-        d: LAYOUT.groupDepth,
-        h: LAYOUT.groupHeight,
+        d: groupDepth,
+        h: groupHeight,
         labelFace: 'left'
       })
 
       if (group.subgroups?.length) {
         let subgroupCursorX = blockX + (group.width - (group.subgroups.reduce((sum, subgroup) => sum + subgroup.width, 0) + ((group.subgroups.length - 1) * LAYOUT.subgroupGap))) / 2
         const subgroupY = blockY + 0.12
-        const subgroupZ = blockZ + LAYOUT.groupHeight
+        const subgroupZ = blockZ + groupHeight
 
         group.subgroups.forEach((subgroup) => {
           tower.push({
@@ -591,7 +612,7 @@ const scene = computed(() => {
           })
         })
       } else {
-        const childMetrics = getAdaptiveChildMetrics(group.children.length)
+        const childMetrics = childMetricsOverride || getAdaptiveChildMetrics(group.children.length)
         const rowCounts = getRowCounts(group.children.length, childMetrics.columns)
         group.children.forEach((child, index) => {
           const row = rowCounts.findIndex((rowCount, rowIndex) => {
@@ -624,13 +645,18 @@ const scene = computed(() => {
       laneCursorX += group.width + groupGap
     })
   }
-  placeLane(frontGroups, platform, {
-    blockYOffset: 0.16,
-    blockLift: 0.08,
-    childYOffset: 0.18,
-    childLift: LAYOUT.groupHeight,
-    groupGap: 2.02
-  })
+  if (lowerShelf) {
+    placeLane(frontGroups, lowerShelf, {
+      blockYOffset: 0.06,
+      blockLift: 0.02,
+      childYOffset: 0.12,
+      childLift: 0.44,
+      groupDepth: 0.84,
+      groupHeight: 0.44,
+      groupGap: 0.82,
+      childMetricsOverride: { size: 0.72, gap: 0.08, height: 0.78, scale: 0.62, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
+    })
+  }
   if (backGroups.length) {
     placeLane(backGroups, rearShelf, {
       blockYOffset: -0.04,
@@ -834,10 +860,10 @@ function adjustColor(color, amount) {
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
         <h1 class="gf-hero-title">
           <span class="gf-hero-brand-mark">GoForj</span><br />
-          <span class="gf-hero-headline">The explicit stack for Go services and agents.</span>
+          <span class="gf-hero-headline">The explicit stack for Go applications and services.</span>
         </h1>
         <p class="gf-hero-tagline">
-          High-trust libraries and tools designed for productivity, performance, and total clarity. Batteries-included.
+          High-trust composable libraries and tools for building software in Go.
         </p>
         <div class="gf-hero-actions">
           <a href="/collection" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
