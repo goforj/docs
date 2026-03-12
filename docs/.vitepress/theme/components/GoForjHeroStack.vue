@@ -417,14 +417,10 @@ const scene = computed(() => {
       type: 'block',
       tier: 'core',
       label: 'CORE',
-      imageLabel: '/assets/goforj-letters.png',
+      stampLabel: 'goforj',
       labelFace: 'left',
       color: '#8f2317',
       textColor: '#ffffff',
-      imageLabelWidth: 168,
-      imageLabelHeight: 54,
-      imageLabelX: -84,
-      imageLabelY: -8,
       ...core
     },
     { id: 'platform-shelf', type: 'shelf', tier: 'platform', color: '#ffffff', opacity: LAYOUT.platformOpacity, ...platform },
@@ -920,8 +916,8 @@ function adjustColor(color, amount) {
               </linearGradient>
             </template>
             <radialGradient id="hero-ambient" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#7c83ff" stop-opacity="0.26" />
-              <stop offset="52%" stop-color="#3b82f6" stop-opacity="0.1" />
+              <stop offset="0%" stop-color="#7c83ff" stop-opacity="0.46" />
+              <stop offset="52%" stop-color="#3b82f6" stop-opacity="0.24" />
               <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1058,7 +1054,7 @@ function adjustColor(color, amount) {
             </filter>
           </defs>
 
-          <ellipse cx="438" cy="404" rx="180" ry="150" fill="url(#hero-ambient)" filter="url(#ambient-blur)" opacity="0.9" />
+          <ellipse cx="438" cy="404" rx="214" ry="178" fill="url(#hero-ambient)" filter="url(#ambient-blur)" opacity="1" />
           <ellipse cx="396" cy="526" rx="212" ry="92" fill="url(#forge-underglow)" filter="url(#ambient-blur)" opacity="0.78" />
           <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" filter="url(#ambient-blur)" opacity="0.62" />
 
@@ -1221,7 +1217,57 @@ function adjustColor(color, amount) {
                     <!-- DYNAMIC LABEL ORIENTATION OR IMAGE LABEL -->
                     <g :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
                       <g :transform="MATRIX_DOWN_RIGHT">
-                        <template v-if="item.imageLabel">
+                        <template v-if="item.stampLabel">
+                           <text
+                             y="-24"
+                             text-anchor="middle"
+                             :fill="item.textColor"
+                             class="iso-label iso-label--core-kicker"
+                           >
+                             GOFORJ CORE
+                           </text>
+                           <g class="iso-stamp">
+                             <text
+                               x="-1.05"
+                               y="17.15"
+                               text-anchor="middle"
+                               class="iso-stamp__highlight"
+                             >
+                               {{ item.stampLabel }}
+                             </text>
+                             <text
+                               x="1.55"
+                               y="20.15"
+                               text-anchor="middle"
+                               class="iso-stamp__depth"
+                             >
+                               {{ item.stampLabel }}
+                             </text>
+                             <text
+                               x="1.05"
+                               y="19.55"
+                               text-anchor="middle"
+                               class="iso-stamp__shadow"
+                             >
+                               {{ item.stampLabel }}
+                             </text>
+                             <text
+                               y="18.55"
+                               text-anchor="middle"
+                               class="iso-stamp__cut"
+                             >
+                               {{ item.stampLabel }}
+                             </text>
+                             <text
+                               y="18.55"
+                               text-anchor="middle"
+                               class="iso-stamp__face"
+                             >
+                               {{ item.stampLabel }}
+                             </text>
+                           </g>
+                        </template>
+                        <template v-else-if="item.imageLabel">
                            <text y="-22" text-anchor="middle" :fill="item.textColor" class="iso-label iso-label--core-kicker">GOFORJ CORE</text>
                            <image
                              :xlink:href="item.imageLabel"
@@ -1472,6 +1518,39 @@ function adjustColor(color, amount) {
 .iso-label--category {
   opacity: 0.72;
   letter-spacing: 0.18em;
+}
+.iso-stamp {
+  user-select: none;
+  pointer-events: none;
+}
+.iso-stamp__face,
+.iso-stamp__cut,
+.iso-stamp__depth,
+.iso-stamp__shadow,
+.iso-stamp__highlight {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  font-family: "Copperplate", "Copperplate Gothic Light", "Copperplate Gothic Bold", "Gill Sans", "Trebuchet MS", sans-serif;
+}
+.iso-stamp__cut {
+  fill: none;
+  stroke: rgba(38, 7, 5, 0.98);
+  stroke-width: 2.1;
+  stroke-linejoin: round;
+}
+.iso-stamp__depth {
+  fill: rgba(42, 8, 6, 0.9);
+}
+.iso-stamp__face {
+  fill: #742214;
+}
+.iso-stamp__shadow {
+  fill: rgba(60, 10, 7, 0.78);
+}
+.iso-stamp__highlight {
+  fill: rgba(255, 238, 214, 0.52);
 }
 @media (max-width: 1024px) {
   .gf-hero-container {
