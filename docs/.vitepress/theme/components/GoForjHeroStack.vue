@@ -66,10 +66,12 @@ const GROUP_CONFIG = [
     icon: 'app-window',
     color: '#2f89ff',
     summary: 'UI surfaces and client delivery',
+    title: 'Frontend choices',
+    href: '/about',
     row: 'front',
     children: [
-      { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff' }
+      { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' }
     ]
   },
   {
@@ -78,21 +80,40 @@ const GROUP_CONFIG = [
     icon: 'server',
     color: '#f0a423',
     summary: 'Queue, events, cache, and storage backends',
+    title: 'Backend libraries and infrastructure',
+    href: '/about',
     row: 'back',
     subgroups: [
+      {
+        id: 'backend-core-libraries',
+        label: 'CORE LIBRARIES',
+        icon: 'package-2',
+        color: '#0ea5a4',
+        title: 'Core libraries',
+        href: '/libraries/collection',
+        children: [
+          { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/libraries/collection' },
+          { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/libraries/strings' },
+          { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/libraries/httpx' },
+          { id: 'core-env', icon: 'shield-check', color: '#06b6d4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/libraries/env' },
+          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/libraries/crypt' }
+        ]
+      },
       {
         id: 'backend-queue',
         label: 'QUEUE',
         icon: 'rows-3',
         color: '#f59e0b',
+        title: 'Queue library',
+        href: '/libraries/queue',
         children: [
-          { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'queue-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'queue-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'queue-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff' }
+          { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Queue', href: 'https://redis.io/' },
+          { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff', title: 'RabbitMQ Queue', href: 'https://www.rabbitmq.com/' },
+          { id: 'queue-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
+          { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SQS Queue', href: 'https://aws.amazon.com/sqs/' },
+          { id: 'queue-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
+          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MySQL Queue', href: 'https://www.mysql.com/' },
+          { id: 'queue-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
         ]
       },
       {
@@ -100,13 +121,15 @@ const GROUP_CONFIG = [
         label: 'EVENTS',
         icon: 'git-branch',
         color: '#f0a423',
+        title: 'Events library',
+        href: '/libraries/events',
         children: [
-          { id: 'events-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'events-jetstream', icon: 'jetstream', color: '#1e88e5', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'events-gcppubsub', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff' }
+          { id: 'events-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
+          { id: 'events-jetstream', icon: 'jetstream', color: '#1e88e5', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
+          { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Events', href: 'https://redis.io/' },
+          { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff', title: 'Kafka Events', href: 'https://kafka.apache.org/' },
+          { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SNS Events', href: 'https://aws.amazon.com/sns/' },
+          { id: 'events-gcppubsub', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
         ]
       },
       {
@@ -114,16 +137,18 @@ const GROUP_CONFIG = [
         label: 'STORAGE',
         icon: 'hard-drive',
         color: '#d97706',
+        title: 'Storage library',
+        href: '/libraries/storage',
         children: [
-          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'storage-sftp', icon: 'sftp', color: '#1f6feb', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'storage-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff' }
-          ,{ id: 'storage-dropbox', icon: 'dropbox', color: '#0061ff', textColor: '#ffffff', iconColor: '#ffffff' }
-          ,{ id: 'storage-rclone', icon: 'rclone', color: '#5a45ff', textColor: '#ffffff', iconColor: '#ffffff' }
+          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/libraries/storage' },
+          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/libraries/storage' },
+          { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Storage', href: 'https://redis.io/' },
+          { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff', title: 'FTP Storage', href: 'https://filezilla-project.org/' },
+          { id: 'storage-sftp', icon: 'sftp', color: '#1f6feb', textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
+          { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon S3 Storage', href: 'https://aws.amazon.com/s3/' },
+          { id: 'storage-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
+          { id: 'storage-dropbox', icon: 'dropbox', color: '#0061ff', textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
+          { id: 'storage-rclone', icon: 'rclone', color: '#5a45ff', textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
         ]
       },
       {
@@ -131,16 +156,18 @@ const GROUP_CONFIG = [
         label: 'CACHE',
         icon: 'database-zap',
         color: '#b7791f',
+        title: 'Cache library',
+        href: '/libraries/cache',
         children: [
-          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-memcached', icon: 'memcached', color: '#0198c4', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff' },
-          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff' }
+          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/libraries/cache' },
+          { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/libraries/cache' },
+          { id: 'cache-memcached', icon: 'memcached', color: '#0198c4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
+          { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Cache', href: 'https://redis.io/' },
+          { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
+          { id: 'cache-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
+          { id: 'cache-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
+          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MySQL Cache', href: 'https://www.mysql.com/' },
+          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
         ]
       }
     ],
@@ -152,11 +179,13 @@ const GROUP_CONFIG = [
     icon: 'brain-circuit',
     color: '#818cf8',
     summary: 'Agent orchestration and model execution',
+    title: 'AI agent providers',
+    href: '/about',
     row: 'front',
     children: [
-      { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'ai-claude', icon: 'claude', color: '#a78bfa', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff' }
+      { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
+      { id: 'ai-claude', icon: 'claude', color: '#a78bfa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude', href: 'https://www.anthropic.com/claude' },
+      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/' }
     ]
   }
 ]
@@ -237,6 +266,8 @@ const scene = computed(() => {
       0,
       ...topRowCounts.map((rowCount) => rowCount * topMetrics.size + Math.max(0, rowCount - 1) * topMetrics.gap)
     )
+    // Direct child cubes project beyond the flat span because of isometric depth.
+    const childFootprint = childSpan > 0 ? childSpan + (topMetrics.size * 0.7) : 0
     const subgroupDefs = (group.subgroups || []).map((subgroup) => {
       const subgroupChildCount = subgroup.children.length
       const childMetrics = getAdaptiveChildMetrics(subgroupChildCount)
@@ -254,7 +285,7 @@ const scene = computed(() => {
       }
     })
     const subgroupSpan = subgroupDefs.reduce((sum, subgroup) => sum + subgroup.width, 0) + (Math.max(0, subgroupDefs.length - 1) * LAYOUT.subgroupGap)
-    const width = Math.max(childSpan, subgroupSpan) + (LAYOUT.groupPaddingX * 2)
+    const width = Math.max(childFootprint, subgroupSpan) + (LAYOUT.groupPaddingX * 2)
     return {
       ...group,
       subgroups: subgroupDefs,
@@ -392,7 +423,6 @@ const scene = computed(() => {
         tier: 'category',
         label: group.label,
         icon: group.icon,
-        faceIcon: true,
         color: group.color,
         textColor: '#ffffff',
         labelSize: group.id === 'ai-agents' ? 12 : 10,
@@ -420,7 +450,6 @@ const scene = computed(() => {
             tier: 'category-subgroup',
             label: subgroup.label,
             icon: subgroup.icon,
-            faceIcon: true,
             color: subgroup.color,
             textColor: '#ffffff',
             labelSize: 9,
@@ -497,7 +526,17 @@ const scene = computed(() => {
         })
       } else {
         const childMetrics = getAdaptiveChildMetrics(group.children.length)
+        const rowCounts = getRowCounts(group.children.length, childMetrics.columns)
         group.children.forEach((child, index) => {
+          const row = rowCounts.findIndex((rowCount, rowIndex) => {
+            const start = rowCounts.slice(0, rowIndex).reduce((sum, value) => sum + value, 0)
+            return index >= start && index < start + rowCount
+          })
+          const rowStart = rowCounts.slice(0, row).reduce((sum, value) => sum + value, 0)
+          const col = index - rowStart
+          const rowCount = rowCounts[row]
+          const rowSpan = rowCount * childMetrics.size + Math.max(0, rowCount - 1) * childMetrics.gap
+          const childX = blockX + (group.width - rowSpan) / 2
           tower.push({
             ...child,
             type: 'block',
@@ -506,9 +545,9 @@ const scene = computed(() => {
             labelFace: 'left',
             iconScale: childMetrics.scale,
             frontIcon: true,
-            x: blockX + LAYOUT.groupPaddingX + (index * (childMetrics.size + childMetrics.gap)),
+            x: childX + (col * (childMetrics.size + childMetrics.gap)),
             y: blockY + childYOffset,
-            z: blockZ + childLift,
+            z: blockZ + childLift + (row * childMetrics.height * childMetrics.rowLiftFactor),
             w: childMetrics.size,
             d: childMetrics.size,
             h: childMetrics.height
@@ -620,14 +659,8 @@ function getGenericIconBody(icon) {
   return lucideIconsData.icons?.[icon]?.body || ''
 }
 
-function getFaceLabelIconPlacement(item) {
-  const size = Math.max(0.5, Math.min(item.h, item.d) * 0.42)
-  const scale = size * 1.3
-  return {
-    scale,
-    x: -12 * scale,
-    y: (-6 * scale) - 12
-  }
+function isExternalHref(href) {
+  return typeof href === 'string' && /^https?:\/\//.test(href)
 }
 
 const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
@@ -703,18 +736,23 @@ function adjustColor(color, amount) {
 
           <g class="gf-iso-group" filter="url(#block-shadow)">
             <template v-for="(item, index) in scene.tower" :key="item.id">
-              <g class="gf-iso-item-wrapper"
-                 @mouseenter="hoveredBlock = item.id"
-                 @mouseleave="hoveredBlock = null"
-                 :style="{
-                   transition: 'all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                   transitionDelay: `${index * 80}ms`,
-                   opacity: isMounted ? (item.opacity || 1) : 0,
-                   transform: isMounted
-                     ? `translateY(${hoveredBlock === item.id ? -20 : 0}px)`
-                     : 'translateY(150px)'
-                 }">
-                <g class="gf-iso-item" :style="{ animationDelay: `${index * 250}ms` }">
+              <a
+                class="gf-iso-item-wrapper"
+                :href="item.href || undefined"
+                :target="item.href && isExternalHref(item.href) ? '_blank' : undefined"
+                :rel="item.href && isExternalHref(item.href) ? 'noreferrer noopener' : undefined"
+                @mouseenter="hoveredBlock = item.id"
+                @mouseleave="hoveredBlock = null"
+                :style="{
+                  transition: 'all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transitionDelay: `${index * 80}ms`,
+                  opacity: isMounted ? (item.opacity || 1) : 0,
+                  transform: isMounted
+                    ? `translateY(${hoveredBlock === item.id ? -20 : 0}px)`
+                    : 'translateY(150px)'
+                }">
+                <title>{{ item.title || item.label || item.id }}</title>
+                <g class="gf-iso-item" :class="{ 'gf-iso-item--link': !!item.href }" :style="{ animationDelay: `${index * 250}ms` }">
                   <template v-if="item.type === 'shelf'">
                     <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#glass-sheen)" :fill-opacity="item.opacity" stroke="url(#glass-edge)" stroke-width="1.5" />
                   </template>
@@ -737,7 +775,7 @@ function adjustColor(color, amount) {
                     <path class="gf-block-edge gf-block-edge--top" :d="getFacePath(getBlockGeom(item).top)" />
 
                     <!-- ENHANCED ICON OR IMAGE ON TOP FACE -->
-                    <g v-if="!item.frontIcon && !item.faceIcon" :transform="`translate(${getBlockGeom(item).topCenter.x}, ${getBlockGeom(item).topCenter.y})`">
+                    <g v-if="!item.frontIcon" :transform="`translate(${getBlockGeom(item).topCenter.x}, ${getBlockGeom(item).topCenter.y})`">
                       <g :transform="MATRIX_TOP">
                         <template v-if="item.imageIcon">
                            <image
@@ -749,9 +787,11 @@ function adjustColor(color, amount) {
                              opacity="0.84"
                            />
                         </template>
-                        <template v-else-if="item.icon">
-                          <g :transform="`translate(-18, -18) scale(${item.iconScale || 1.5})`">
-                            <path :d="ICONS[item.icon]" :fill="item.textColor" fill-opacity="0.7" />
+                        <template v-else-if="item.icon && !item.label">
+                          <g :transform="`translate(-18, -18) scale(${item.iconScale || 1.5})`" :style="{ color: item.textColor }">
+                            <g v-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" />
+                            <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
+                            <path v-else :d="ICONS[item.icon]" :fill="item.textColor" fill-opacity="0.7" />
                           </g>
                         </template>
                       </g>
@@ -763,7 +803,8 @@ function adjustColor(color, amount) {
                           :transform="`translate(${getFrontIconPlacement(item).x}, ${getFrontIconPlacement(item).y}) scale(${getFrontIconPlacement(item).scale})`"
                           :style="{ color: item.iconColor || item.textColor }"
                         >
-                          <g v-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
+                          <g v-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" />
+                          <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
                           <path v-else :d="ICONS[item.icon]" :fill="item.iconColor || item.textColor" fill-opacity="0.98" />
                         </g>
                       </g>
@@ -784,28 +825,26 @@ function adjustColor(color, amount) {
                         </template>
                         <template v-else-if="item.label && !item.frontIcon">
                           <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="item.textColor" :font-size="item.topLabelSize || 10" class="iso-label iso-label--category">{{ item.topLabel }}</text>
-                          <g v-if="item.faceIcon && item.icon" :transform="`translate(${getFaceLabelIconPlacement(item).x}, ${getFaceLabelIconPlacement(item).y}) scale(${getFaceLabelIconPlacement(item).scale})`">
-                            <g v-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" :style="{ color: item.textColor }" />
-                            <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" :style="{ color: item.textColor }" />
-                            <path v-else :d="ICONS[item.icon]" :fill="item.textColor" fill-opacity="0.95" />
-                          </g>
-                          <text :y="item.faceIcon ? 10 : 0" text-anchor="middle" :fill="item.textColor" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
+                          <text text-anchor="middle" :fill="item.textColor" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
                           <text v-if="item.highlight" y="28" text-anchor="middle" :fill="item.textColor" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
                         </template>
                       </g>
                     </g>
                   </template>
                 </g>
-              </g>
+              </a>
             </template>
           </g>
         </svg>
         <div class="gf-category-row" :class="{ 'is-visible': isMounted }">
-          <button
+          <a
             v-for="category in scene.categories"
             :key="category.id"
-            type="button"
             class="gf-category-card"
+            :href="category.href || undefined"
+            :target="category.href && isExternalHref(category.href) ? '_blank' : undefined"
+            :rel="category.href && isExternalHref(category.href) ? 'noreferrer noopener' : undefined"
+            :title="category.title || category.label"
             @mouseenter="hoveredBlock = category.id"
             @mouseleave="hoveredBlock = null"
           >
@@ -816,7 +855,7 @@ function adjustColor(color, amount) {
             </svg>
             <span class="gf-category-card-title">{{ category.label }}</span>
             <span class="gf-category-card-copy">{{ category.summary }}</span>
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -960,6 +999,7 @@ function adjustColor(color, amount) {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.64), rgba(8, 14, 30, 0.58));
   text-align: left;
   cursor: default;
+  text-decoration: none;
 }
 .gf-category-card-icon {
   width: 20px;
@@ -978,6 +1018,9 @@ function adjustColor(color, amount) {
 .gf-iso-item {
   cursor: pointer;
   animation: bob 6s ease-in-out infinite alternate;
+}
+.gf-iso-item--link {
+  cursor: pointer;
 }
 @keyframes bob {
   0% { transform: translateY(0); }
