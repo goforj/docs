@@ -70,7 +70,7 @@ const GROUP_CONFIG = [
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' }
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/', assemblyLift: 0.52, assemblyShiftX: 0.1, assemblyShiftY: -0.12, assemblyInProgress: true }
     ]
   },
     {
@@ -195,7 +195,7 @@ const GROUP_CONFIG = [
     children: [
       { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
       { id: 'ai-claude', icon: 'claude', color: '#a78bfa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude', href: 'https://www.anthropic.com/claude' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/', assemblyLift: 0.34, assemblyShiftX: 0.06, assemblyShiftY: -0.04 }
+      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/' }
     ]
   }
 ]
@@ -415,14 +415,65 @@ const scene = computed(() => {
     ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#4b5563', textColor: '#ffffff', ...rearShelf }] : [])
   ]
 
+  const assemblyCenterX = core.x + (core.w * 0.49)
+  const assemblyCenterY = core.y + (core.d * 0.38)
+  const assemblyBaseZ = platform.z + platform.h + 0.02
+
+  tower.push(
+    {
+      id: 'assembly-input-left',
+      type: 'block',
+      tier: 'assembly-input',
+      assemblyRole: 'input',
+      color: '#98a4b3',
+      textColor: '#ffffff',
+      x: assemblyCenterX - 0.92,
+      y: assemblyCenterY + 0.08,
+      z: assemblyBaseZ + 0.44,
+      w: 0.54,
+      d: 0.54,
+      h: 0.58
+    },
+    {
+      id: 'assembly-input-right',
+      type: 'block',
+      tier: 'assembly-input',
+      assemblyRole: 'input',
+      color: '#7e8998',
+      textColor: '#ffffff',
+      x: assemblyCenterX - 0.14,
+      y: assemblyCenterY - 0.06,
+      z: assemblyBaseZ + 0.44,
+      w: 0.54,
+      d: 0.54,
+      h: 0.58
+    },
+    {
+      id: 'assembly-result',
+      type: 'block',
+      tier: 'assembly-result',
+      assemblyRole: 'result',
+      color: '#c96a2b',
+      textColor: '#ffffff',
+      x: assemblyCenterX - 0.5,
+      y: assemblyCenterY + 0.26,
+      z: assemblyBaseZ,
+      w: 0.66,
+      d: 0.66,
+      h: 0.68
+    }
+  )
+
   const placeLane = (laneGroups, shelf, options = {}) => {
     const {
       blockYOffset = 0,
       blockLift = 0,
       childYOffset = 0.08,
-      childLift = LAYOUT.groupHeight
+      childLift = LAYOUT.groupHeight,
+      groupGap = LAYOUT.groupGap
     } = options
-    let laneCursorX = shelf.x + (shelf.w - laneWidth(laneGroups)) / 2
+    const laneSpan = laneGroups.reduce((sum, group) => sum + group.width, 0) + (Math.max(0, laneGroups.length - 1) * groupGap)
+    let laneCursorX = shelf.x + (shelf.w - laneSpan) / 2
 
     laneGroups.forEach((group) => {
       const blockX = laneCursorX
@@ -570,14 +621,15 @@ const scene = computed(() => {
         })
       }
 
-      laneCursorX += group.width + LAYOUT.groupGap
+      laneCursorX += group.width + groupGap
     })
   }
   placeLane(frontGroups, platform, {
     blockYOffset: 0.16,
     blockLift: 0.08,
     childYOffset: 0.18,
-    childLift: LAYOUT.groupHeight
+    childLift: LAYOUT.groupHeight,
+    groupGap: 2.02
   })
   if (backGroups.length) {
     placeLane(backGroups, rearShelf, {
@@ -682,6 +734,20 @@ function getShadowTransform(item) {
   }
 }
 
+function getAssemblyTargetShadow(item) {
+  const center = project(
+    item.x + item.w / 2 - (item.assemblyShiftX || 0),
+    item.y + item.d / 2 - (item.assemblyShiftY || 0),
+    item.z - (item.assemblyLift || 0)
+  )
+  return {
+    x: center.x,
+    y: center.y + 18,
+    width: Math.max(18, item.w * SCALE * 0.3),
+    height: Math.max(10, item.d * SCALE * 0.11)
+  }
+}
+
 function getFrontIconPlacement(item) {
   const base = Math.min(item.w, item.h)
   const scale = base < 0.5
@@ -720,6 +786,11 @@ function sitsOnForgePlate(item) {
     || item.id === 'ai-agents'
     || item.id.startsWith('frontend-')
     || item.id.startsWith('ai-')
+    || item.id.startsWith('assembly-')
+}
+
+function isAssemblyResult(item) {
+  return item?.id === 'assembly-result'
 }
 
 function getForgeGlowOpacity(item) {
@@ -732,6 +803,8 @@ function getForgeGlowOpacity(item) {
 
 function getForgeBounceOpacity(item) {
   if (!sitsOnForgePlate(item)) return 0
+  if (isAssemblyResult(item)) return 0.34
+  if (item.id?.startsWith('assembly-input')) return 0.22
   if (item.tier === 'category-choice') return 0.18
   if (item.tier === 'category') return 0.14
   return 0.1
@@ -885,6 +958,22 @@ function adjustColor(color, amount) {
               <stop offset="0%" stop-color="#ffcf85" stop-opacity="0.3" />
               <stop offset="100%" stop-color="#ffcf85" stop-opacity="0" />
             </linearGradient>
+            <linearGradient id="assembly-result-face-heat" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffb45e" stop-opacity="0.04" />
+              <stop offset="52%" stop-color="#ff8a3d" stop-opacity="0.14" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0.58" />
+            </linearGradient>
+            <radialGradient id="assembly-result-top-heat" cx="50%" cy="58%" r="72%">
+              <stop offset="0%" stop-color="#ffe0a6" stop-opacity="0.54" />
+              <stop offset="30%" stop-color="#ffb45e" stop-opacity="0.28" />
+              <stop offset="58%" stop-color="#ff7a2a" stop-opacity="0.12" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
+            </radialGradient>
+            <radialGradient id="assembly-seam-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffb15a" stop-opacity="0.42" />
+              <stop offset="45%" stop-color="#ff7a2a" stop-opacity="0.22" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
+            </radialGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#5f6b7a" stop-opacity="0.72" />
               <stop offset="40%" stop-color="#3e4653" stop-opacity="0.82" />
@@ -955,6 +1044,17 @@ function adjustColor(color, amount) {
                       :opacity="getShadowOpacity(item)"
                       :style="{ filter: `blur(${getShadowBlur(item)}px)` }"
                     />
+                    <template v-if="item.assemblyInProgress">
+                      <ellipse
+                        :cx="getAssemblyTargetShadow(item).x"
+                        :cy="getAssemblyTargetShadow(item).y"
+                        :rx="getAssemblyTargetShadow(item).width"
+                        :ry="getAssemblyTargetShadow(item).height"
+                        fill="#ff9a47"
+                        opacity="0.22"
+                        style="filter: blur(6px)"
+                      />
+                    </template>
                     <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="item.id === 'core' ? 'url(#forge-core-left)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fl-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
@@ -974,8 +1074,25 @@ function adjustColor(color, amount) {
                       <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forge-bounce-face)" :opacity="Math.max(0.08, getForgeBounceOpacity(item) - 0.03)" />
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-bounce-top)" :opacity="Math.max(0.06, getForgeBounceOpacity(item) - 0.05)" />
                     </template>
+                    <template v-if="isAssemblyResult(item)">
+                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#assembly-result-face-heat)" />
+                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#assembly-result-face-heat)" />
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#assembly-result-top-heat)" />
+                      <path :d="getTopEdgeStripPath(getBlockGeom(item).frontLeft)" fill="#ffe0a6" opacity="0.34" />
+                      <path :d="getTopEdgeStripPath(getBlockGeom(item).frontRight)" fill="#ffe0a6" opacity="0.38" />
+                    </template>
                     <template v-if="item.id === 'core'">
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" opacity="0.82" />
+                    </template>
+                    <template v-if="item.id === 'assembly-input-right'">
+                      <ellipse
+                        :cx="getBlockGeom(item).topCenter.x - 26"
+                        :cy="getBlockGeom(item).topCenter.y + 18"
+                        rx="22"
+                        ry="12"
+                        fill="url(#assembly-seam-glow)"
+                        opacity="0.9"
+                      />
                     </template>
                     <template v-else-if="item.id === 'rear-shelf'">
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#steel-shelf-brush)" opacity="0.7" />
