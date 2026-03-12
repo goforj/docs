@@ -64,10 +64,9 @@ const GROUP_CONFIG = [
     id: 'frontend',
     label: 'FRONTEND',
     icon: 'app-window',
-    color: '#2f89ff',
+    color: '#e15b2a',
     summary: 'UI surfaces and client delivery',
     title: 'Frontend choices',
-    href: '/about',
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
@@ -75,13 +74,12 @@ const GROUP_CONFIG = [
     ]
   },
     {
-      id: 'infrastructure',
-      label: 'BACKEND',
-      icon: 'server',
-    color: '#f0a423',
+    id: 'infrastructure',
+    label: 'BACKEND',
+    icon: 'server',
+    color: '#5b6574',
     summary: 'Queue, events, cache, and storage backends',
     title: 'Backend libraries and infrastructure',
-    href: '/about',
     row: 'back',
     subgroups: [
       {
@@ -103,7 +101,7 @@ const GROUP_CONFIG = [
         id: 'backend-queue',
         label: 'QUEUE',
         icon: 'rows-3',
-        color: '#f59e0b',
+        color: '#64748b',
         title: 'Queue library',
         href: '/libraries/queue',
         children: [
@@ -120,7 +118,7 @@ const GROUP_CONFIG = [
         id: 'backend-events',
         label: 'EVENTS',
         icon: 'git-branch',
-        color: '#f0a423',
+        color: '#56657a',
         title: 'Events library',
         href: '/libraries/events',
         children: [
@@ -136,7 +134,7 @@ const GROUP_CONFIG = [
         id: 'backend-storage',
         label: 'STORAGE',
         icon: 'hard-drive',
-        color: '#d97706',
+        color: '#4b5563',
         title: 'Storage library',
         href: '/libraries/storage',
         children: [
@@ -155,9 +153,8 @@ const GROUP_CONFIG = [
         id: 'backend-database',
         label: 'DATABASE',
         icon: 'database',
-        color: '#c0841a',
+        color: '#5f6b7a',
         title: 'Database backends',
-        href: '/about',
         childMetrics: { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
         children: [
           { id: 'database-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
@@ -169,7 +166,7 @@ const GROUP_CONFIG = [
         id: 'backend-cache',
         label: 'CACHE',
         icon: 'database-zap',
-        color: '#b7791f',
+        color: '#475569',
         title: 'Cache library',
         href: '/libraries/cache',
         children: [
@@ -191,10 +188,9 @@ const GROUP_CONFIG = [
     id: 'ai-agents',
     label: 'AI AGENTS',
     icon: 'brain-circuit',
-    color: '#818cf8',
+    color: '#d6542f',
     summary: 'Agent orchestration and model execution',
     title: 'AI agent providers',
-    href: '/about',
     row: 'front',
     children: [
       { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
@@ -440,6 +436,8 @@ const scene = computed(() => {
         icon: group.icon,
         color: group.color,
         textColor: '#ffffff',
+        title: group.title,
+        href: group.href,
         labelSize: group.id === 'ai-agents' ? 12 : 10,
         iconScale: 0.72,
         highlight: '',
@@ -467,6 +465,8 @@ const scene = computed(() => {
             icon: subgroup.icon,
             color: subgroup.color,
             textColor: '#ffffff',
+            title: subgroup.title,
+            href: subgroup.href,
             labelSize: 9,
             iconScale: 0.64,
             x: subgroupCursorX,
@@ -714,11 +714,26 @@ function catchesForgeGlow(item) {
   return item.z > 2.7
 }
 
+function sitsOnForgePlate(item) {
+  if (typeof item.id !== 'string') return false
+  return item.id === 'frontend'
+    || item.id === 'ai-agents'
+    || item.id.startsWith('frontend-')
+    || item.id.startsWith('ai-')
+}
+
 function getForgeGlowOpacity(item) {
   if (!catchesForgeGlow(item)) return 0
   if (item.id === 'rear-shelf' || item.id === 'rear-support') return 0.18
   if (item.tier === 'category-choice') return 0.22
   if (item.tier === 'category-subgroup') return 0.14
+  return 0.1
+}
+
+function getForgeBounceOpacity(item) {
+  if (!sitsOnForgePlate(item)) return 0
+  if (item.tier === 'category-choice') return 0.18
+  if (item.tier === 'category') return 0.14
   return 0.1
 }
 
@@ -784,15 +799,16 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
             <linearGradient id="forgeMetal" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#ff7a2a" />
-              <stop offset="40%" stop-color="#d13b1f" />
-              <stop offset="70%" stop-color="#8b1e14" />
+              <stop offset="0%" stop-color="#ffb45e" />
+              <stop offset="22%" stop-color="#ff7a2a" />
+              <stop offset="55%" stop-color="#c5341c" />
               <stop offset="100%" stop-color="#4a0f0f" />
             </linearGradient>
             <radialGradient id="forgeHeat" cx="50%" cy="30%" r="60%">
-              <stop offset="0%" stop-color="#ffc487" stop-opacity="0.46" />
-              <stop offset="28%" stop-color="#ff9a47" stop-opacity="0.26" />
-              <stop offset="52%" stop-color="#ff7a2a" stop-opacity="0.1" />
+              <stop offset="0%" stop-color="#ffe0a6" stop-opacity="0.62" />
+              <stop offset="20%" stop-color="#ffb45e" stop-opacity="0.4" />
+              <stop offset="42%" stop-color="#ff7a2a" stop-opacity="0.2" />
+              <stop offset="62%" stop-color="#ff7a2a" stop-opacity="0.08" />
               <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="forgeSideHeatLeft" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -808,7 +824,8 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
             </linearGradient>
             <linearGradient id="forgeEdge" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.6" />
+              <stop offset="0%" stop-color="#fff0c7" stop-opacity="0.82" />
+              <stop offset="22%" stop-color="#ffcf85" stop-opacity="0.38" />
               <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0" />
             </linearGradient>
             <linearGradient id="forge-plate-edge" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -858,6 +875,15 @@ function adjustColor(color, amount) {
             <linearGradient id="forge-reflection-top" x1="0%" y1="100%" x2="0%" y2="0%">
               <stop offset="0%" stop-color="#ffd39f" stop-opacity="0.26" />
               <stop offset="100%" stop-color="#ffd39f" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="forge-bounce-face" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffb15a" stop-opacity="0" />
+              <stop offset="52%" stop-color="#ff9a47" stop-opacity="0.08" />
+              <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0.56" />
+            </linearGradient>
+            <linearGradient id="forge-bounce-top" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#ffcf85" stop-opacity="0.3" />
+              <stop offset="100%" stop-color="#ffcf85" stop-opacity="0" />
             </linearGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#5f6b7a" stop-opacity="0.72" />
@@ -942,6 +968,11 @@ function adjustColor(color, amount) {
                       <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-reflection-face)" :opacity="getForgeGlowOpacity(item)" />
                       <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forge-reflection-face)" :opacity="Math.max(0.06, getForgeGlowOpacity(item) - 0.04)" />
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-reflection-top)" :opacity="Math.max(0.04, getForgeGlowOpacity(item) - 0.08)" />
+                    </template>
+                    <template v-if="sitsOnForgePlate(item)">
+                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-bounce-face)" :opacity="getForgeBounceOpacity(item)" />
+                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forge-bounce-face)" :opacity="Math.max(0.08, getForgeBounceOpacity(item) - 0.03)" />
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-bounce-top)" :opacity="Math.max(0.06, getForgeBounceOpacity(item) - 0.05)" />
                     </template>
                     <template v-if="item.id === 'core'">
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" opacity="0.82" />
