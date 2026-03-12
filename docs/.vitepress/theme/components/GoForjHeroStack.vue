@@ -810,6 +810,10 @@ function getForgeBounceOpacity(item) {
   return 0.1
 }
 
+function getIntroDelay(item) {
+  return Math.round(item.z * 95)
+}
+
 const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
 const MATRIX_DOWN_LEFT = `matrix(0.866, -0.5, 0, 1, 0, 0)`
 const MATRIX_TOP = `matrix(0.866, 0.5, -0.866, 0.5, 0, 0)`
@@ -1002,7 +1006,7 @@ function adjustColor(color, amount) {
           <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" filter="url(#ambient-blur)" opacity="0.62" />
 
           <g class="gf-iso-group" filter="url(#block-shadow)">
-            <template v-for="(item, index) in scene.tower" :key="item.id">
+            <template v-for="item in scene.tower" :key="item.id">
               <a
                 class="gf-iso-item-wrapper"
                 :href="item.href || undefined"
@@ -1011,15 +1015,35 @@ function adjustColor(color, amount) {
                 @mouseenter="hoveredBlock = item.id"
                 @mouseleave="hoveredBlock = null"
                 :style="{
-                  transition: 'all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transitionDelay: `${index * 80}ms`,
                   opacity: isMounted ? (item.opacity || 1) : 0,
-                  transform: isMounted
-                    ? `translateY(${shouldLiftWithHover(item) ? -20 : 0}px)`
-                    : 'translateY(150px)'
+                  transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease',
+                  transform: isMounted && shouldLiftWithHover(item) ? 'translateY(-20px)' : 'translateY(0)'
                 }">
                 <title>{{ item.title || item.label || item.id }}</title>
-                <g class="gf-iso-item" :class="{ 'gf-iso-item--link': !!item.href }" :style="{ animationDelay: `${index * 250}ms` }">
+                <g
+                  class="gf-iso-item"
+                  :class="{ 'gf-iso-item--link': !!item.href }"
+                  opacity="0"
+                  transform="translate(0 90)">
+                  <animate
+                    v-if="isMounted"
+                    attributeName="opacity"
+                    from="0"
+                    to="1"
+                    dur="0.7s"
+                    :begin="`${getIntroDelay(item)}ms`"
+                    fill="freeze"
+                  />
+                  <animateTransform
+                    v-if="isMounted"
+                    attributeName="transform"
+                    type="translate"
+                    from="0 90"
+                    to="0 0"
+                    dur="0.9s"
+                    :begin="`${getIntroDelay(item)}ms`"
+                    fill="freeze"
+                  />
                   <template v-if="item.type === 'shelf'">
                     <path
                       :d="getFacePath(getBlockGeom(item).top)"
