@@ -74,10 +74,10 @@ const GROUP_CONFIG = [
       { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' }
     ]
   },
-  {
-    id: 'infrastructure',
-    label: 'BACKEND',
-    icon: 'server',
+    {
+      id: 'infrastructure',
+      label: 'BACKEND',
+      icon: 'server',
     color: '#f0a423',
     summary: 'Queue, events, cache, and storage backends',
     title: 'Backend libraries and infrastructure',
@@ -199,7 +199,7 @@ const GROUP_CONFIG = [
     children: [
       { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
       { id: 'ai-claude', icon: 'claude', color: '#a78bfa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude', href: 'https://www.anthropic.com/claude' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/' }
+      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/', assemblyLift: 0.34, assemblyShiftX: 0.06, assemblyShiftY: -0.04 }
     ]
   }
 ]
@@ -211,18 +211,15 @@ const LAYOUT = {
   coreInsetX: 0.52,
   coreInsetY: 0.4,
   coreHeight: 1.92,
-  platformInsetX: 0.22,
-  platformInsetY: 0.14,
-  platformDepth: 2.18,
   platformHeight: 0.1,
   rearShelfInsetX: 0.12,
   rearShelfDepth: 1.34,
-  rearShelfYOffset: -1.08,
-  rearShelfLift: 1.28,
+  rearShelfYOffset: -1.22,
+  rearShelfLift: 1.72,
   rearShelfHeight: 0.16,
   rearSupportInsetX: 0.16,
-  rearSupportDepth: 0.52,
-  groupGap: 0.36,
+  rearSupportDepth: 0.28,
+  groupGap: 0.3,
   groupPaddingX: 0.14,
   groupPaddingY: 0.08,
   groupDepth: 1.02,
@@ -231,7 +228,7 @@ const LAYOUT = {
   subgroupPaddingX: 0.12,
   subgroupDepth: 0.9,
   subgroupHeight: 0.52,
-  childGap: 0.12,
+  childGap: 0.1,
   childSize: 0.74,
   childHeight: 0.84,
   runtimeSidePadding: 0.62,
@@ -269,6 +266,12 @@ function getRowCounts(count, columns) {
   const base = Math.floor(count / rows)
   const remainder = count % rows
   return Array.from({ length: rows }, (_, index) => base + (index < remainder ? 1 : 0))
+}
+
+function getDepthSortValue(item) {
+  const base = item.x + item.y + item.z
+  if (item.id === 'rear-support') return base - 100
+  return base
 }
 
 const scene = computed(() => {
@@ -336,11 +339,11 @@ const scene = computed(() => {
   }
 
   const platform = {
-    x: runtime.x + (runtime.w - groupsWidth) / 2 - LAYOUT.platformInsetX,
-    y: core.y + LAYOUT.platformInsetY,
+    x: core.x,
+    y: core.y,
     z: core.z + core.h,
-    w: groupsWidth + (LAYOUT.platformInsetX * 2),
-    d: LAYOUT.platformDepth,
+    w: core.w,
+    d: core.d,
     h: LAYOUT.platformHeight
   }
 
@@ -351,25 +354,8 @@ const scene = computed(() => {
     w: backWidth + (LAYOUT.rearShelfInsetX * 2),
     d: LAYOUT.rearShelfDepth,
     h: LAYOUT.rearShelfHeight,
-    opacity: 1
+    opacity: 0.88
   }
-
-  const rearSupport = backGroups.length
-    ? {
-        id: 'rear-support',
-        type: 'block',
-        tier: 'rear-support',
-        label: '',
-        color: '#a97524',
-        textColor: '#ffffff',
-        x: rearShelf.x + LAYOUT.rearSupportInsetX,
-        y: rearShelf.y + rearShelf.d - LAYOUT.rearSupportDepth,
-        z: platform.z + platform.h,
-        w: rearShelf.w - (LAYOUT.rearSupportInsetX * 2),
-        d: LAYOUT.rearSupportDepth,
-        h: rearShelf.z - (platform.z + platform.h)
-      }
-    : null
 
   const ground = {
     x: runtime.x - LAYOUT.groundSidePadding,
@@ -381,7 +367,23 @@ const scene = computed(() => {
     opacity: LAYOUT.groundOpacity
   }
 
-  let cursorX = platform.x + LAYOUT.platformInsetX
+  const rearSupport = backGroups.length
+    ? {
+        id: 'rear-support',
+        type: 'block',
+        tier: 'rear-support',
+        label: '',
+        color: '#374151',
+        textColor: '#ffffff',
+        x: rearShelf.x + LAYOUT.rearSupportInsetX,
+        y: core.y - LAYOUT.rearSupportDepth,
+        z: core.z,
+        w: rearShelf.w - (LAYOUT.rearSupportInsetX * 2),
+        d: LAYOUT.rearSupportDepth,
+        h: rearShelf.z - core.z
+      }
+    : null
+
   const tower = [
     { id: 'ground', type: 'shelf', tier: 'ground', color: '#f8fafc', ...ground },
     {
@@ -403,25 +405,24 @@ const scene = computed(() => {
       tier: 'core',
       label: 'CORE',
       imageLabel: '/assets/goforj-letters.png',
-      imageIcon: '/assets/goforj-hammer.png',
       labelFace: 'left',
-      color: '#ef4444',
+      color: '#8f2317',
       textColor: '#ffffff',
       imageLabelWidth: 168,
       imageLabelHeight: 54,
       imageLabelX: -84,
       imageLabelY: -8,
-      imageIconSize: 60,
       ...core
     },
     { id: 'platform-shelf', type: 'shelf', tier: 'platform', color: '#ffffff', opacity: LAYOUT.platformOpacity, ...platform },
     ...(rearSupport ? [rearSupport] : []),
-    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#c9952f', textColor: '#ffffff', ...rearShelf }] : [])
+    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#4b5563', textColor: '#ffffff', ...rearShelf }] : [])
   ]
 
   const placeLane = (laneGroups, shelf, options = {}) => {
     const {
       blockYOffset = 0,
+      blockLift = 0,
       childYOffset = 0.08,
       childLift = LAYOUT.groupHeight
     } = options
@@ -430,7 +431,7 @@ const scene = computed(() => {
     laneGroups.forEach((group) => {
       const blockX = laneCursorX
       const blockY = shelf.y + LAYOUT.groupPaddingY + blockYOffset
-      const blockZ = shelf.z + shelf.h
+      const blockZ = shelf.z + shelf.h + blockLift
       tower.push({
         id: group.id,
         type: 'block',
@@ -530,9 +531,9 @@ const scene = computed(() => {
             labelFace: 'left',
             iconScale: topMetrics.scale,
             frontIcon: true,
-            x: topChildX + (col * (topMetrics.size + topMetrics.gap)),
-            y: topChildY - (row * topMetrics.rowOffsetY),
-            z: topChildZ + (row * topMetrics.height * topMetrics.rowLiftFactor),
+            x: topChildX + (col * (topMetrics.size + topMetrics.gap)) + (child.assemblyShiftX || 0),
+            y: topChildY - (row * topMetrics.rowOffsetY) + (child.assemblyShiftY || 0),
+            z: topChildZ + (row * topMetrics.height * topMetrics.rowLiftFactor) + (child.assemblyLift || 0),
             w: topMetrics.size,
             d: topMetrics.size,
             h: topMetrics.height
@@ -559,9 +560,9 @@ const scene = computed(() => {
             labelFace: 'left',
             iconScale: childMetrics.scale,
             frontIcon: true,
-            x: childX + (col * (childMetrics.size + childMetrics.gap)),
-            y: blockY + childYOffset,
-            z: blockZ + childLift + (row * childMetrics.height * childMetrics.rowLiftFactor),
+            x: childX + (col * (childMetrics.size + childMetrics.gap)) + (child.assemblyShiftX || 0),
+            y: blockY + childYOffset + (child.assemblyShiftY || 0),
+            z: blockZ + childLift + (row * childMetrics.height * childMetrics.rowLiftFactor) + (child.assemblyLift || 0),
             w: childMetrics.size,
             d: childMetrics.size,
             h: childMetrics.height
@@ -573,20 +574,21 @@ const scene = computed(() => {
     })
   }
   placeLane(frontGroups, platform, {
-    blockYOffset: 0.7,
-    childYOffset: 0.28,
+    blockYOffset: 0.16,
+    blockLift: 0.08,
+    childYOffset: 0.18,
     childLift: LAYOUT.groupHeight
   })
   if (backGroups.length) {
     placeLane(backGroups, rearShelf, {
-      blockYOffset: 0.04,
+      blockYOffset: -0.04,
       childYOffset: 0.08,
       childLift: LAYOUT.groupHeight + 0.06
     })
   }
 
   return {
-    tower: tower.sort((a, b) => (a.x + a.y + a.z) - (b.x + b.y + b.z)),
+    tower: tower.sort((a, b) => getDepthSortValue(a) - getDepthSortValue(b)),
     categories: GROUP_CONFIG
   }
 })
@@ -696,6 +698,20 @@ function isExternalHref(href) {
   return typeof href === 'string' && /^https?:\/\//.test(href)
 }
 
+function catchesForgeGlow(item) {
+  if (item.type !== 'block') return false
+  if (item.id === 'core' || item.id === 'runtime' || item.id === 'ground' || item.id === 'platform-shelf') return false
+  return item.z > 2.7
+}
+
+function getForgeGlowOpacity(item) {
+  if (!catchesForgeGlow(item)) return 0
+  if (item.id === 'rear-shelf' || item.id === 'rear-support') return 0.18
+  if (item.tier === 'category-choice') return 0.22
+  if (item.tier === 'category-subgroup') return 0.14
+  return 0.1
+}
+
 const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
 const MATRIX_DOWN_LEFT = `matrix(0.866, -0.5, 0, 1, 0, 0)`
 const MATRIX_TOP = `matrix(0.866, 0.5, -0.866, 0.5, 0, 0)`
@@ -757,15 +773,98 @@ function adjustColor(color, amount) {
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
+            <linearGradient id="forge-plate-top" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#5a1611" stop-opacity="0.96" />
+              <stop offset="55%" stop-color="#8b2519" stop-opacity="0.94" />
+              <stop offset="100%" stop-color="#3a0d0b" stop-opacity="0.98" />
+            </linearGradient>
+            <linearGradient id="forge-plate-edge" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffcf9b" stop-opacity="0.16" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+            </linearGradient>
+            <linearGradient id="output-deck-top" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#d7a06a" stop-opacity="0.92" />
+              <stop offset="55%" stop-color="#b96d3a" stop-opacity="0.94" />
+              <stop offset="100%" stop-color="#7f3415" stop-opacity="0.96" />
+            </linearGradient>
+            <linearGradient id="output-deck-edge" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffe0ba" stop-opacity="0.22" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
+            </linearGradient>
+            <linearGradient id="forge-top-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffd6a8" stop-opacity="0.4" />
+              <stop offset="38%" stop-color="#ff8a45" stop-opacity="0.28" />
+              <stop offset="100%" stop-color="#5b130e" stop-opacity="0.02" />
+            </linearGradient>
+            <linearGradient id="forge-core-top" x1="10%" y1="10%" x2="90%" y2="90%">
+              <stop offset="0%" stop-color="#ffddb3" />
+              <stop offset="24%" stop-color="#ffb15b" />
+              <stop offset="58%" stop-color="#e25d25" />
+              <stop offset="100%" stop-color="#67140f" />
+            </linearGradient>
+            <linearGradient id="forge-core-right" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#d56a29" />
+              <stop offset="45%" stop-color="#7c1a11" />
+              <stop offset="100%" stop-color="#32110a" />
+            </linearGradient>
+            <linearGradient id="forge-core-left" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#8f2718" />
+              <stop offset="55%" stop-color="#52100c" />
+              <stop offset="100%" stop-color="#1c0705" />
+            </linearGradient>
+            <linearGradient id="forge-vent-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffd29d" stop-opacity="0.92" />
+              <stop offset="40%" stop-color="#ff8a4c" stop-opacity="0.78" />
+              <stop offset="100%" stop-color="#4a120c" stop-opacity="0.08" />
+            </linearGradient>
+            <radialGradient id="forge-underglow" cx="50%" cy="56%" r="55%">
+              <stop offset="0%" stop-color="#ff934f" stop-opacity="0.34" />
+              <stop offset="50%" stop-color="#ef5b28" stop-opacity="0.18" />
+              <stop offset="100%" stop-color="#2b0b09" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="forge-rise-column" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#ff934f" stop-opacity="0.28" />
+              <stop offset="40%" stop-color="#ff8a45" stop-opacity="0.16" />
+              <stop offset="100%" stop-color="#ffcf9b" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="forge-reflection-face" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffd39f" stop-opacity="0" />
+              <stop offset="56%" stop-color="#ffb15a" stop-opacity="0.02" />
+              <stop offset="100%" stop-color="#ff8a45" stop-opacity="0.46" />
+            </linearGradient>
+            <linearGradient id="forge-reflection-top" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#ffd39f" stop-opacity="0.26" />
+              <stop offset="100%" stop-color="#ffd39f" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6b7280" stop-opacity="0.7" />
+              <stop offset="40%" stop-color="#4b5563" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#1f2937" stop-opacity="0.9" />
+            </linearGradient>
+            <linearGradient id="steel-shelf-side" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#374151" />
+              <stop offset="100%" stop-color="#111827" />
+            </linearGradient>
+            <linearGradient id="steel-shelf-brush" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#cbd5e1" stop-opacity="0.02" />
+              <stop offset="35%" stop-color="#e5e7eb" stop-opacity="0.1" />
+              <stop offset="55%" stop-color="#9ca3af" stop-opacity="0.04" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01" />
+            </linearGradient>
             <filter id="block-shadow" x="-50%" y="-50%" width="200%" height="200%">
               <feDropShadow dx="0" dy="25" stdDeviation="20" flood-opacity="0.18" />
             </filter>
             <filter id="ambient-blur" x="-30%" y="-30%" width="160%" height="160%">
               <feGaussianBlur stdDeviation="36" />
             </filter>
+            <filter id="forge-soften" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="8" />
+            </filter>
           </defs>
 
           <ellipse cx="438" cy="404" rx="180" ry="150" fill="url(#hero-ambient)" filter="url(#ambient-blur)" opacity="0.9" />
+          <ellipse cx="396" cy="526" rx="212" ry="92" fill="url(#forge-underglow)" filter="url(#ambient-blur)" opacity="0.78" />
+          <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" filter="url(#ambient-blur)" opacity="0.62" />
 
           <g class="gf-iso-group" filter="url(#block-shadow)">
             <template v-for="(item, index) in scene.tower" :key="item.id">
@@ -787,7 +886,13 @@ function adjustColor(color, amount) {
                 <title>{{ item.title || item.label || item.id }}</title>
                 <g class="gf-iso-item" :class="{ 'gf-iso-item--link': !!item.href }" :style="{ animationDelay: `${index * 250}ms` }">
                   <template v-if="item.type === 'shelf'">
-                    <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#glass-sheen)" :fill-opacity="item.opacity" stroke="url(#glass-edge)" stroke-width="1.5" />
+                    <path
+                      :d="getFacePath(getBlockGeom(item).top)"
+                      :fill="item.id === 'platform-shelf' ? 'url(#forge-plate-top)' : 'url(#glass-sheen)'"
+                      :fill-opacity="item.id === 'platform-shelf' ? 1 : item.opacity"
+                      :stroke="item.id === 'platform-shelf' ? 'url(#forge-plate-edge)' : 'url(#glass-edge)'"
+                      :stroke-width="item.id === 'platform-shelf' ? 2.2 : 1.5"
+                    />
                   </template>
                   <template v-else>
                     <ellipse
@@ -800,9 +905,20 @@ function adjustColor(color, amount) {
                       :opacity="getShadowOpacity(item)"
                       :style="{ filter: `blur(${getShadowBlur(item)}px)` }"
                     />
-                    <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="`url(#grad-fl-${item.id})`" />
-                    <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="`url(#grad-fr-${item.id})`" />
-                    <path :d="getFacePath(getBlockGeom(item).top)" :fill="`url(#grad-top-${item.id})`" />
+                    <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="item.id === 'core' ? 'url(#forge-core-left)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fl-${item.id})`" />
+                    <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
+                    <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
+                    <template v-if="catchesForgeGlow(item)">
+                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-reflection-face)" :opacity="getForgeGlowOpacity(item)" />
+                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forge-reflection-face)" :opacity="Math.max(0.06, getForgeGlowOpacity(item) - 0.04)" />
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-reflection-top)" :opacity="Math.max(0.04, getForgeGlowOpacity(item) - 0.08)" />
+                    </template>
+                    <template v-if="item.id === 'core'">
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-top-glow)" opacity="0.9" />
+                    </template>
+                    <template v-else-if="item.id === 'rear-shelf'">
+                      <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#steel-shelf-brush)" opacity="0.7" />
+                    </template>
                     <path class="gf-block-edge" :d="getFacePath(getBlockGeom(item).frontLeft)" />
                     <path class="gf-block-edge" :d="getFacePath(getBlockGeom(item).frontRight)" />
                     <path class="gf-block-edge gf-block-edge--top" :d="getFacePath(getBlockGeom(item).top)" />
@@ -847,7 +963,7 @@ function adjustColor(color, amount) {
                     <g :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
                       <g :transform="MATRIX_DOWN_RIGHT">
                         <template v-if="item.imageLabel">
-                           <text y="-22" text-anchor="middle" :fill="item.textColor" class="iso-label iso-label--core-kicker">CORE</text>
+                           <text y="-22" text-anchor="middle" :fill="item.textColor" class="iso-label iso-label--core-kicker">GOFORJ CORE</text>
                            <image
                              :xlink:href="item.imageLabel"
                              :x="item.imageLabelX || -60"
@@ -1058,6 +1174,10 @@ function adjustColor(color, amount) {
 @keyframes bob {
   0% { transform: translateY(0); }
   100% { transform: translateY(-5px); }
+}
+@keyframes forgePulse {
+  0% { opacity: 0.45; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(-3px); }
 }
 .gf-block-edge {
   fill: none;
