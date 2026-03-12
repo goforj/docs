@@ -577,6 +577,25 @@ const scene = computed(() => {
   }
 })
 
+function overlapsOnPlane(a, b) {
+  const ax2 = a.x + a.w
+  const ay2 = a.y + a.d
+  const bx2 = b.x + b.w
+  const by2 = b.y + b.d
+
+  return a.x < bx2 && ax2 > b.x && a.y < by2 && ay2 > b.y
+}
+
+function shouldLiftWithHover(item) {
+  if (!hoveredBlock.value) return false
+
+  const hovered = scene.value.tower.find((entry) => entry.id === hoveredBlock.value)
+  if (!hovered || item.type !== 'block') return false
+  if (item.id === hovered.id) return true
+
+  return item.z > hovered.z && overlapsOnPlane(item, hovered)
+}
+
 // PROJECTION
 const SCALE = 70 
 const ORIGIN_X = 360
@@ -739,8 +758,8 @@ function adjustColor(color, amount) {
               <a
                 class="gf-iso-item-wrapper"
                 :href="item.href || undefined"
-                :target="item.href && isExternalHref(item.href) ? '_blank' : undefined"
-                :rel="item.href && isExternalHref(item.href) ? 'noreferrer noopener' : undefined"
+                :target="item.href ? '_blank' : undefined"
+                :rel="item.href ? 'noreferrer noopener' : undefined"
                 @mouseenter="hoveredBlock = item.id"
                 @mouseleave="hoveredBlock = null"
                 :style="{
@@ -748,7 +767,7 @@ function adjustColor(color, amount) {
                   transitionDelay: `${index * 80}ms`,
                   opacity: isMounted ? (item.opacity || 1) : 0,
                   transform: isMounted
-                    ? `translateY(${hoveredBlock === item.id ? -20 : 0}px)`
+                    ? `translateY(${shouldLiftWithHover(item) ? -20 : 0}px)`
                     : 'translateY(150px)'
                 }">
                 <title>{{ item.title || item.label || item.id }}</title>
@@ -842,8 +861,8 @@ function adjustColor(color, amount) {
             :key="category.id"
             class="gf-category-card"
             :href="category.href || undefined"
-            :target="category.href && isExternalHref(category.href) ? '_blank' : undefined"
-            :rel="category.href && isExternalHref(category.href) ? 'noreferrer noopener' : undefined"
+            :target="category.href ? '_blank' : undefined"
+            :rel="category.href ? 'noreferrer noopener' : undefined"
             :title="category.title || category.label"
             @mouseenter="hoveredBlock = category.id"
             @mouseleave="hoveredBlock = null"
