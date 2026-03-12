@@ -44,7 +44,7 @@ const BRAND_ICON_KEYS = {
   sns: 'buffer',
   sqlite: 'sqlite',
   postgres: 'postgresql',
-  mysql: 'mysql',
+  mysql: 'mariadb',
   dynamodb: 'amazondynamodb',
   s3: 'files',
   gcs: 'googlecloud',
@@ -112,7 +112,7 @@ const GROUP_CONFIG = [
           { id: 'queue-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
           { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SQS Queue', href: 'https://aws.amazon.com/sqs/' },
           { id: 'queue-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
-          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MySQL Queue', href: 'https://www.mysql.com/' },
+          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
           { id: 'queue-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
         ]
       },
@@ -152,6 +152,20 @@ const GROUP_CONFIG = [
         ]
       },
       {
+        id: 'backend-database',
+        label: 'DATABASE',
+        icon: 'database',
+        color: '#c0841a',
+        title: 'Database backends',
+        href: '/about',
+        childMetrics: { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
+        children: [
+          { id: 'database-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
+          { id: 'database-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres', href: 'https://www.postgresql.org/' },
+          { id: 'database-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite', href: 'https://sqlite.org/' }
+        ]
+      },
+      {
         id: 'backend-cache',
         label: 'CACHE',
         icon: 'database-zap',
@@ -166,7 +180,7 @@ const GROUP_CONFIG = [
           { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
           { id: 'cache-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
           { id: 'cache-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
-          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MySQL Cache', href: 'https://www.mysql.com/' },
+          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
           { id: 'cache-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
         ]
       }
@@ -270,7 +284,7 @@ const scene = computed(() => {
     const childFootprint = childSpan > 0 ? childSpan + (topMetrics.size * 0.7) : 0
     const subgroupDefs = (group.subgroups || []).map((subgroup) => {
       const subgroupChildCount = subgroup.children.length
-      const childMetrics = getAdaptiveChildMetrics(subgroupChildCount)
+      const childMetrics = subgroup.childMetrics || getAdaptiveChildMetrics(subgroupChildCount)
       const rowCounts = getRowCounts(subgroupChildCount, childMetrics.columns)
       const subgroupChildSpan = Math.max(
         0,
@@ -984,11 +998,11 @@ function adjustColor(color, amount) {
   position: relative;
   opacity: 0;
   transition: opacity 1.8s ease;
-  transform: translate3d(10px, -10px, 0);
+  transform: translate3d(-80px, -10px, 0);
 }
 .gf-hero-graphic.is-visible {
   opacity: 1;
-  transform: translate3d(0, -10px, 0);
+  transform: translate3d(-90px, -10px, 0);
 }
 .gf-hero-svg {
   width: 100%;
@@ -1104,10 +1118,10 @@ function adjustColor(color, amount) {
   .gf-hero-graphic {
     width: 100%;
     max-width: 760px;
-    transform: translateY(-10px);
+    transform: translate(-60px, -10px);
   }
   .gf-hero-graphic.is-visible {
-    transform: translateY(-10px);
+    transform: translate(-60px, -10px);
   }
   .gf-category-row {
     grid-template-columns: 1fr;
