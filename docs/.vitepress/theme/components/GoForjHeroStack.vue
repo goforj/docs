@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import simpleIconsData from '@iconify-json/simple-icons/icons.json'
+import lucideIconsData from '@iconify-json/lucide/icons.json'
 
 const isMounted = ref(false)
 const hoveredBlock = ref(null)
@@ -36,14 +37,25 @@ const BRAND_ICON_KEYS = {
   gemini: 'googlegemini',
   redis: 'redis',
   nats: 'natsdotio',
+  jetstream: 'natsdotio',
   kafka: 'apachekafka',
   rabbitmq: 'rabbitmq',
+  sqs: 'amazonsqs',
+  sns: 'buffer',
   sqlite: 'sqlite',
   postgres: 'postgresql',
   mysql: 'mysql',
   dynamodb: 'amazondynamodb',
-  s3: 'amazonaws',
+  s3: 'files',
   gcs: 'googlecloud',
+  dropbox: 'dropbox',
+  rclone: 'rclone',
+  ftp: 'filezilla',
+  sftp: 'gnubash',
+  local: 'files',
+  memory: 'buffer',
+  file: 'files',
+  memcached: 'buffer',
   ollama: 'ollama'
 }
 
@@ -51,7 +63,7 @@ const GROUP_CONFIG = [
   {
     id: 'frontend',
     label: 'FRONTEND',
-    icon: 'interface',
+    icon: 'app-window',
     color: '#2f89ff',
     summary: 'UI surfaces and client delivery',
     row: 'front',
@@ -62,28 +74,82 @@ const GROUP_CONFIG = [
   },
   {
     id: 'infrastructure',
-    label: 'INFRA',
-    icon: 'storage',
+    label: 'BACKEND',
+    icon: 'server',
     color: '#f0a423',
-    summary: 'Queue, cache, storage, event backends',
+    summary: 'Queue, events, cache, and storage backends',
     row: 'back',
-    children: [
-      { id: 'infra-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff' },
-      { id: 'infra-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff' }
-    ]
+    subgroups: [
+      {
+        id: 'backend-queue',
+        label: 'QUEUE',
+        icon: 'rows-3',
+        color: '#f59e0b',
+        children: [
+          { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'queue-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'queue-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'queue-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff' }
+        ]
+      },
+      {
+        id: 'backend-events',
+        label: 'EVENTS',
+        icon: 'git-branch',
+        color: '#f0a423',
+        children: [
+          { id: 'events-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'events-jetstream', icon: 'jetstream', color: '#1e88e5', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'events-gcppubsub', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff' }
+        ]
+      },
+      {
+        id: 'backend-storage',
+        label: 'STORAGE',
+        icon: 'hard-drive',
+        color: '#d97706',
+        children: [
+          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'storage-sftp', icon: 'sftp', color: '#1f6feb', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'storage-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff' }
+          ,{ id: 'storage-dropbox', icon: 'dropbox', color: '#0061ff', textColor: '#ffffff', iconColor: '#ffffff' }
+          ,{ id: 'storage-rclone', icon: 'rclone', color: '#5a45ff', textColor: '#ffffff', iconColor: '#ffffff' }
+        ]
+      },
+      {
+        id: 'backend-cache',
+        label: 'CACHE',
+        icon: 'database-zap',
+        color: '#b7791f',
+        children: [
+          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-memcached', icon: 'memcached', color: '#0198c4', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff' },
+          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff' }
+        ]
+      }
+    ],
+    children: []
   },
   {
     id: 'ai-agents',
     label: 'AI AGENTS',
-    icon: 'openai',
+    icon: 'brain-circuit',
     color: '#818cf8',
     summary: 'Agent orchestration and model execution',
     row: 'front',
@@ -118,6 +184,10 @@ const LAYOUT = {
   groupPaddingY: 0.08,
   groupDepth: 1.02,
   groupHeight: 0.58,
+  subgroupGap: 0.18,
+  subgroupPaddingX: 0.12,
+  subgroupDepth: 0.9,
+  subgroupHeight: 0.52,
   childGap: 0.12,
   childSize: 0.74,
   childHeight: 0.84,
@@ -129,13 +199,65 @@ const LAYOUT = {
   platformOpacity: 0.24
 }
 
+function getAdaptiveChildMetrics(count) {
+  if (count >= 9) {
+    return { size: 0.32, gap: 0.05, height: 0.4, scale: 0.31, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
+  }
+  if (count >= 7) {
+    return { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
+  }
+  if (count >= 5) {
+    return { size: 0.4, gap: 0.06, height: 0.48, scale: 0.39, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
+  }
+  return {
+    size: LAYOUT.childSize,
+    gap: LAYOUT.childGap,
+    height: LAYOUT.childHeight,
+    scale: 0.64,
+    columns: Math.min(3, Math.max(1, count)),
+    rowOffsetY: 0,
+    rowLiftFactor: 1.02,
+    rowInsetX: 0
+  }
+}
+
+function getRowCounts(count, columns) {
+  const rows = Math.ceil(count / columns)
+  const base = Math.floor(count / rows)
+  const remainder = count % rows
+  return Array.from({ length: rows }, (_, index) => base + (index < remainder ? 1 : 0))
+}
+
 const scene = computed(() => {
   const groups = GROUP_CONFIG.map((group) => {
     const childCount = group.children.length
-    const childSpan = childCount * LAYOUT.childSize + Math.max(0, childCount - 1) * LAYOUT.childGap
-    const width = childSpan + (LAYOUT.groupPaddingX * 2)
+    const topMetrics = getAdaptiveChildMetrics(childCount)
+    const topRowCounts = getRowCounts(childCount, topMetrics.columns)
+    const childSpan = Math.max(
+      0,
+      ...topRowCounts.map((rowCount) => rowCount * topMetrics.size + Math.max(0, rowCount - 1) * topMetrics.gap)
+    )
+    const subgroupDefs = (group.subgroups || []).map((subgroup) => {
+      const subgroupChildCount = subgroup.children.length
+      const childMetrics = getAdaptiveChildMetrics(subgroupChildCount)
+      const rowCounts = getRowCounts(subgroupChildCount, childMetrics.columns)
+      const subgroupChildSpan = Math.max(
+        0,
+        ...rowCounts.map((rowCount) => rowCount * childMetrics.size + Math.max(0, rowCount - 1) * childMetrics.gap)
+      )
+      const width = Math.max(subgroupChildSpan, childMetrics.size * 1.5) + (LAYOUT.subgroupPaddingX * 2)
+      return {
+        ...subgroup,
+        childMetrics,
+        rowCounts,
+        width
+      }
+    })
+    const subgroupSpan = subgroupDefs.reduce((sum, subgroup) => sum + subgroup.width, 0) + (Math.max(0, subgroupDefs.length - 1) * LAYOUT.subgroupGap)
+    const width = Math.max(childSpan, subgroupSpan) + (LAYOUT.groupPaddingX * 2)
     return {
       ...group,
+      subgroups: subgroupDefs,
       width
     }
   })
@@ -270,6 +392,7 @@ const scene = computed(() => {
         tier: 'category',
         label: group.label,
         icon: group.icon,
+        faceIcon: true,
         color: group.color,
         textColor: '#ffffff',
         labelSize: group.id === 'ai-agents' ? 12 : 10,
@@ -285,23 +408,113 @@ const scene = computed(() => {
         labelFace: 'left'
       })
 
-      group.children.forEach((child, index) => {
-        tower.push({
-          ...child,
-          type: 'block',
-          tier: 'category-choice',
-          label: '',
-          labelFace: 'left',
-          iconScale: 0.76,
-          frontIcon: true,
-          x: blockX + LAYOUT.groupPaddingX + (index * (LAYOUT.childSize + LAYOUT.childGap)),
-          y: blockY + childYOffset,
-          z: blockZ + childLift,
-          w: LAYOUT.childSize,
-          d: LAYOUT.childSize,
-          h: LAYOUT.childHeight
+      if (group.subgroups?.length) {
+        let subgroupCursorX = blockX + (group.width - (group.subgroups.reduce((sum, subgroup) => sum + subgroup.width, 0) + ((group.subgroups.length - 1) * LAYOUT.subgroupGap))) / 2
+        const subgroupY = blockY + 0.12
+        const subgroupZ = blockZ + LAYOUT.groupHeight
+
+        group.subgroups.forEach((subgroup) => {
+          tower.push({
+            id: subgroup.id,
+            type: 'block',
+            tier: 'category-subgroup',
+            label: subgroup.label,
+            icon: subgroup.icon,
+            faceIcon: true,
+            color: subgroup.color,
+            textColor: '#ffffff',
+            labelSize: 9,
+            iconScale: 0.64,
+            x: subgroupCursorX,
+            y: subgroupY,
+            z: subgroupZ,
+            w: subgroup.width,
+            d: LAYOUT.subgroupDepth,
+            h: LAYOUT.subgroupHeight,
+            labelFace: 'left'
+          })
+
+          subgroup.children.forEach((child, index) => {
+            const row = subgroup.rowCounts.findIndex((rowCount, rowIndex) => {
+              const start = subgroup.rowCounts.slice(0, rowIndex).reduce((sum, value) => sum + value, 0)
+              return index >= start && index < start + rowCount
+            })
+            const rowStart = subgroup.rowCounts.slice(0, row).reduce((sum, value) => sum + value, 0)
+            const col = index - rowStart
+            const rowCount = subgroup.rowCounts[row]
+            const rowSpan = rowCount * subgroup.childMetrics.size + Math.max(0, rowCount - 1) * subgroup.childMetrics.gap
+            const rowX = subgroupCursorX + (subgroup.width - rowSpan) / 2 + (row * subgroup.childMetrics.rowInsetX)
+            tower.push({
+              ...child,
+              type: 'block',
+              tier: 'category-choice',
+              label: '',
+              labelFace: 'left',
+              iconScale: subgroup.childMetrics.scale,
+              frontIcon: true,
+              x: rowX + (col * (subgroup.childMetrics.size + subgroup.childMetrics.gap)),
+              y: subgroupY + 0.2 - (row * subgroup.childMetrics.rowOffsetY),
+              z: subgroupZ + LAYOUT.subgroupHeight + (row * subgroup.childMetrics.height * subgroup.childMetrics.rowLiftFactor),
+              w: subgroup.childMetrics.size,
+              d: subgroup.childMetrics.size,
+              h: subgroup.childMetrics.height
+            })
+          })
+
+          subgroupCursorX += subgroup.width + LAYOUT.subgroupGap
         })
-      })
+
+        const topMetrics = getAdaptiveChildMetrics(group.children.length)
+        const topRowCounts = getRowCounts(group.children.length, topMetrics.columns)
+        const topChildY = subgroupY + 0.16
+        const topChildZ = subgroupZ + LAYOUT.subgroupHeight + 0.74
+
+        group.children.forEach((child, index) => {
+          const row = topRowCounts.findIndex((rowCount, rowIndex) => {
+            const start = topRowCounts.slice(0, rowIndex).reduce((sum, value) => sum + value, 0)
+            return index >= start && index < start + rowCount
+          })
+          const rowStart = topRowCounts.slice(0, row).reduce((sum, value) => sum + value, 0)
+          const col = index - rowStart
+          const rowCount = topRowCounts[row]
+          const rowSpan = rowCount * topMetrics.size + Math.max(0, rowCount - 1) * topMetrics.gap
+          const topChildX = blockX + (group.width - rowSpan) / 2 + (row * topMetrics.rowInsetX)
+          tower.push({
+            ...child,
+            type: 'block',
+            tier: 'category-choice',
+            label: '',
+            labelFace: 'left',
+            iconScale: topMetrics.scale,
+            frontIcon: true,
+            x: topChildX + (col * (topMetrics.size + topMetrics.gap)),
+            y: topChildY - (row * topMetrics.rowOffsetY),
+            z: topChildZ + (row * topMetrics.height * topMetrics.rowLiftFactor),
+            w: topMetrics.size,
+            d: topMetrics.size,
+            h: topMetrics.height
+          })
+        })
+      } else {
+        const childMetrics = getAdaptiveChildMetrics(group.children.length)
+        group.children.forEach((child, index) => {
+          tower.push({
+            ...child,
+            type: 'block',
+            tier: 'category-choice',
+            label: '',
+            labelFace: 'left',
+            iconScale: childMetrics.scale,
+            frontIcon: true,
+            x: blockX + LAYOUT.groupPaddingX + (index * (childMetrics.size + childMetrics.gap)),
+            y: blockY + childYOffset,
+            z: blockZ + childLift,
+            w: childMetrics.size,
+            d: childMetrics.size,
+            h: childMetrics.height
+          })
+        })
+      }
 
       laneCursorX += group.width + LAYOUT.groupGap
     })
@@ -387,7 +600,9 @@ function getShadowTransform(item) {
 
 function getFrontIconPlacement(item) {
   const base = Math.min(item.w, item.h)
-  const scale = Math.max(1.35, base * 1.55)
+  const scale = base < 0.5
+    ? Math.max(0.72, base * 1.02)
+    : Math.max(1.08, base * 1.42)
   return {
     scale,
     x: -11.25 * scale,
@@ -399,6 +614,20 @@ function getBrandIconBody(icon) {
   const key = BRAND_ICON_KEYS[icon]
   if (!key) return ''
   return simpleIconsData.icons?.[key]?.body || ''
+}
+
+function getGenericIconBody(icon) {
+  return lucideIconsData.icons?.[icon]?.body || ''
+}
+
+function getFaceLabelIconPlacement(item) {
+  const size = Math.max(0.5, Math.min(item.h, item.d) * 0.42)
+  const scale = size * 1.3
+  return {
+    scale,
+    x: -12 * scale,
+    y: (-6 * scale) - 12
+  }
 }
 
 const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
@@ -424,10 +653,7 @@ function adjustColor(color, amount) {
           <span class="gf-hero-headline">The explicit stack for Go services and agents.</span>
         </h1>
         <p class="gf-hero-tagline">
-          High-trust libraries and tools designed for productivity, performance, and total clarity. Batteries-included, but never opaque.
-        </p>
-        <p class="gf-hero-story">
-          Compose your stack by category: frontend choices on the floor, platform capabilities in the middle, and AI orchestration at the top.
+          High-trust libraries and tools designed for productivity, performance, and total clarity. Batteries-included.
         </p>
         <div class="gf-hero-actions">
           <a href="/collection" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
@@ -511,7 +737,7 @@ function adjustColor(color, amount) {
                     <path class="gf-block-edge gf-block-edge--top" :d="getFacePath(getBlockGeom(item).top)" />
 
                     <!-- ENHANCED ICON OR IMAGE ON TOP FACE -->
-                    <g v-if="!item.frontIcon" :transform="`translate(${getBlockGeom(item).topCenter.x}, ${getBlockGeom(item).topCenter.y})`">
+                    <g v-if="!item.frontIcon && !item.faceIcon" :transform="`translate(${getBlockGeom(item).topCenter.x}, ${getBlockGeom(item).topCenter.y})`">
                       <g :transform="MATRIX_TOP">
                         <template v-if="item.imageIcon">
                            <image
@@ -558,7 +784,12 @@ function adjustColor(color, amount) {
                         </template>
                         <template v-else-if="item.label && !item.frontIcon">
                           <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="item.textColor" :font-size="item.topLabelSize || 10" class="iso-label iso-label--category">{{ item.topLabel }}</text>
-                          <text text-anchor="middle" :fill="item.textColor" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
+                          <g v-if="item.faceIcon && item.icon" :transform="`translate(${getFaceLabelIconPlacement(item).x}, ${getFaceLabelIconPlacement(item).y}) scale(${getFaceLabelIconPlacement(item).scale})`">
+                            <g v-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" :style="{ color: item.textColor }" />
+                            <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" :style="{ color: item.textColor }" />
+                            <path v-else :d="ICONS[item.icon]" :fill="item.textColor" fill-opacity="0.95" />
+                          </g>
+                          <text :y="item.faceIcon ? 10 : 0" text-anchor="middle" :fill="item.textColor" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
                           <text v-if="item.highlight" y="28" text-anchor="middle" :fill="item.textColor" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
                         </template>
                       </g>
@@ -579,7 +810,9 @@ function adjustColor(color, amount) {
             @mouseleave="hoveredBlock = null"
           >
             <svg class="gf-category-card-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path :d="ICONS[category.icon]" :fill="category.color" />
+              <g v-if="getGenericIconBody(category.icon)" v-html="getGenericIconBody(category.icon)" :style="{ color: category.color }" />
+              <g v-else-if="getBrandIconBody(category.icon)" v-html="getBrandIconBody(category.icon)" :style="{ color: category.color }" />
+              <path v-else :d="ICONS[category.icon]" :fill="category.color" />
             </svg>
             <span class="gf-category-card-title">{{ category.label }}</span>
             <span class="gf-category-card-copy">{{ category.summary }}</span>
