@@ -886,11 +886,10 @@ function adjustColor(color, amount) {
     <div class="gf-hero-container">
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
         <h1 class="gf-hero-title">
-          <span class="gf-hero-brand-mark">GoForj</span><br />
-          <span class="gf-hero-headline">The explicit stack for Go applications and services.</span>
+          <span class="gf-hero-headline">The composable stack for building Go applications and services.</span>
         </h1>
         <p class="gf-hero-tagline">
-          High-trust composable libraries and tools for building software in Go.
+          Build and ship everything from simple CLIs to production systems.
         </p>
         <div class="gf-hero-actions">
           <a href="/collection" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
@@ -1228,24 +1227,24 @@ function adjustColor(color, amount) {
                            </text>
                            <g class="iso-stamp">
                              <text
-                               x="-1.05"
-                               y="17.15"
+                               x="-0.62"
+                               y="17.7"
                                text-anchor="middle"
                                class="iso-stamp__highlight"
                              >
                                {{ item.stampLabel }}
                              </text>
                              <text
-                               x="1.55"
-                               y="20.15"
+                               x="1.18"
+                               y="19.7"
                                text-anchor="middle"
                                class="iso-stamp__depth"
                              >
                                {{ item.stampLabel }}
                              </text>
                              <text
-                               x="1.05"
-                               y="19.55"
+                               x="0.74"
+                               y="19.15"
                                text-anchor="middle"
                                class="iso-stamp__shadow"
                              >
@@ -1337,28 +1336,22 @@ function adjustColor(color, amount) {
 .gf-hero-content {
   flex: 1.1;
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(-16px);
   transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .gf-hero-content.is-visible {
   opacity: 1;
-  transform: translateY(0);
-}
-.gf-hero-brand-mark {
-  font-size: 1.65rem;
-  font-weight: 800;
-  color: #6366f1;
-  letter-spacing: -0.01em;
-  margin-bottom: 1.2rem;
-  display: inline-block;
+  transform: translateY(-68px);
 }
 .gf-hero-title {
-  font-size: 5rem;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.05em;
+  font-size: 4.6rem;
+  font-weight: 780;
+  line-height: 1.02;
+  letter-spacing: -0.048em;
   color: var(--vp-c-text-1);
-  margin-bottom: 2.5rem;
+  max-width: 12ch;
+  text-wrap: balance;
+  margin-bottom: 2rem;
 }
 .gf-hero-headline {
   background: linear-gradient(to bottom right, var(--vp-c-text-1) 30%, var(--vp-c-text-2));
@@ -1366,12 +1359,12 @@ function adjustColor(color, amount) {
   background-clip: text;
 }
 .gf-hero-tagline {
-  font-size: 1.35rem;
-  line-height: 1.65;
+  font-size: 1.18rem;
+  line-height: 1.7;
   color: var(--vp-c-text-2);
-  max-width: 580px;
+  max-width: 34rem;
   margin-bottom: 2rem;
-  font-weight: 450;
+  font-weight: 430;
 }
 .gf-hero-story {
   max-width: 560px;
@@ -1528,29 +1521,29 @@ function adjustColor(color, amount) {
 .iso-stamp__depth,
 .iso-stamp__shadow,
 .iso-stamp__highlight {
-  font-size: 27px;
+  font-size: 26px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: lowercase;
   font-family: "Copperplate", "Copperplate Gothic Light", "Copperplate Gothic Bold", "Gill Sans", "Trebuchet MS", sans-serif;
 }
 .iso-stamp__cut {
   fill: none;
-  stroke: rgba(38, 7, 5, 0.98);
-  stroke-width: 2.1;
+  stroke: rgba(57, 16, 10, 0.78);
+  stroke-width: 1.2;
   stroke-linejoin: round;
 }
 .iso-stamp__depth {
-  fill: rgba(42, 8, 6, 0.9);
+  fill: rgba(86, 23, 15, 0.58);
 }
 .iso-stamp__face {
-  fill: #742214;
+  fill: #9a331f;
 }
 .iso-stamp__shadow {
-  fill: rgba(60, 10, 7, 0.78);
+  fill: rgba(91, 28, 18, 0.42);
 }
 .iso-stamp__highlight {
-  fill: rgba(255, 238, 214, 0.52);
+  fill: rgba(255, 224, 182, 0.26);
 }
 @media (max-width: 1024px) {
   .gf-hero-container {
@@ -1560,7 +1553,8 @@ function adjustColor(color, amount) {
     min-height: auto;
   }
   .gf-hero-title {
-    font-size: 3.8rem;
+    font-size: 3.6rem;
+    max-width: none;
   }
   .gf-hero-tagline {
     margin-left: auto;
@@ -1588,7 +1582,7 @@ function adjustColor(color, amount) {
 }
 @media (max-width: 640px) {
   .gf-hero-title {
-    font-size: 3rem;
+    font-size: 2.85rem;
   }
   .gf-hero {
     padding-top: 3rem;
