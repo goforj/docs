@@ -26,6 +26,14 @@ repoUrl: https://github.com/goforj/queue
 <!-- test-count:embed:end -->
 </p>
 
+## Using With GoForj {#using-with-goforj}
+
+Generated GoForj Apps wrap this library behind generated queue components, job registration, and worker commands such as `forj run worker`.
+
+Use `QUEUE_SUPPORTED_DRIVERS` to control which queue drivers are compiled into the App. Use `QUEUE_DRIVER` and named queue variables to select sync, in-process, SQL, broker, or cloud-backed execution without rewriting job code.
+
+Use this page for standalone queue construction, driver behavior, and package-level API details. Use [Events Versus Queues](/async/events-vs-queues), [Configuration](/getting-started/configuration), and [Generated Components](/core/generated-components) for the generated App integration model.
+
 ## Installation {#installation}
 
 ```bash

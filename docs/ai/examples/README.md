@@ -169,8 +169,8 @@ For generated app examples, include the relevant `forj` command:
 
 ```bash
 forj run route:list
-forj run queue:work
-forj run schedule:run
+forj run worker
+forj run scheduler
 ```
 
 Use the actual command names only after confirming them from the current framework source.

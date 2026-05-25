@@ -188,7 +188,7 @@ Use this sequence when building public docs:
 7. `notifications`: subscribe to `users.created`.
 8. `notifications`: dispatch `emails:send`.
 9. `reports`: define `reports:generate` job.
-10. `reports`: run `queue:work`.
+10. `reports`: run `worker`.
 11. `reports`: schedule `reports:daily`.
 12. `monitoring`: observe metrics and inspects.
 13. `operations`: run workers and scheduler in production.
@@ -235,11 +235,11 @@ Runnable scenarios:
 
 Use confirmed generated command names:
 
-- `forj run run`
-- `forj run http:serve`
+- `forj run app`
+- `forj run api`
 - `forj run route:list`
-- `forj run queue:work`
-- `forj run schedule:run`
+- `forj run worker`
+- `forj run scheduler`
 - `forj run make:job`
 - `forj run make:event`
 - `forj run migrate`
@@ -257,4 +257,3 @@ Avoid:
 - anonymous schedules for meaningful work
 - controllers that perform full workflows inline
 - examples that require external infrastructure before local examples exist
-

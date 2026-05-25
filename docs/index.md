@@ -2,37 +2,37 @@
 layout: home
 
 features:
-  - title: Opinionated, never opaque
-    icon: 💠
+  - title: One application experience
     details: "Explicit configuration, no hidden globals, and clear escape hatches. You always know what a tool is doing."
 
   - title: Ergonomics without magic
-    icon: 🧭
     details: "Fluent APIs that reduce noise while preserving Go’s clarity, types, and explicit control."
 
   - title: Production-first behavior
-    icon: 🔁
     details: "Designed for real workloads: predictable errors, deterministic execution, and no surprising defaults."
 
-  - title: Performance is intentional
-    icon: ⚡️
-    details: "Benchmarked, allocation-aware, and designed to scale. Performance tradeoffs are visible, not hidden."
+  - title: Local-first infrastructure
+    details: "Start with local drivers, then swap infrastructure backends through configuration and providers without rewriting business logic."
 
-  - title: Tested and documented by design
-    icon: 🔍
-    details: "Runnable examples, high coverage, and docs that stay in sync with real code."
+  - title: Libraries you can compose
+    details: "Each first-party library stands on its own and also fits underneath generated GoForj App abstractions."
 
-  - title: Tools you can compose
-    icon: 🛠️
-    details: "Each library stands on its own, but shares consistent patterns and mental models across the ecosystem."
+  - title: Tools you can inspect
+    details: "Runtime behavior, metrics, inspections, and generated code are designed to be auditable."
 ---
 
-## Coming soon
+## Two Ways To Use GoForj
 
-GoForj is focusing on releasing a focused set of **high-quality libraries and tools** over time. Each library is designed to be independently useful, with clear documentation, examples, and tests.
+GoForj supports two valid adoption paths.
 
-A guided project creation experience - including `forj new` - is in active development and will be introduced once it meets the same standards of clarity, explicitness, and trust as the rest of the ecosystem.
+Use the framework docs when you want a cohesive GoForj App with runtime orchestration, generated components, explicit dependency injection, local-first drivers, and production-oriented operations.
 
-For now, explore the available libraries, run the examples, and use only the pieces you need.
+Use the library docs when you want standalone first-party Go packages that can be adopted independently in existing Go services, CLIs, and workers.
 
-_Check back soon._
+## Start Here
+
+- [Getting Started](/getting-started/) introduces the generated App path.
+- [Runnable Scenarios](/scenarios/) show end-to-end App workflows with code, wiring, commands, and tests.
+- [Core Concepts](/core/) explains the framework model behind Apps, runtimes, providers, drivers, and generated components.
+- [Libraries](/libraries/) collects standalone first-party Go packages.
+- [Operations](/operations/) explains how GoForj applications run, observe, and shut down.

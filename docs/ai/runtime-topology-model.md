@@ -29,10 +29,10 @@ Docs must not collapse these into one vague "app runtime".
 
 Generated Apps expose both combined and leaf runtime commands:
 
-- `forj run run`
-- `forj run http:serve`
-- `forj run queue:work`
-- `forj run schedule:run`
+- `forj run app`
+- `forj run api`
+- `forj run worker`
+- `forj run scheduler`
 - `forj run route:list`
 
 The combined command is the normal local host path. Leaf commands remain important for production, explicit debugging, and distributed process layouts.

@@ -74,6 +74,7 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'Build faster. Ship smarter. Go development tools forged for productivity.'
+const docsVersion = 'v0.9'
 const analyticsHead = (isProd && gaMeasurementId)
   ? [
       ['script', { async: '', src: `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}` }],
@@ -99,7 +100,9 @@ export default defineConfig({
   rewrites: {
     'libraries/collection.md': 'collection.md',
     'libraries/strings.md': 'strings.md',
+    'libraries/web.md': 'web.md',
     'libraries/httpx.md': 'httpx.md',
+    'libraries/metrics.md': 'metrics.md',
     'libraries/execx.md': 'execx.md',
     'libraries/godump.md': 'godump.md',
     'libraries/env.md': 'env.md',
@@ -133,6 +136,7 @@ export default defineConfig({
   ],
 
   themeConfig: {
+    docsVersion,
     // https://vitepress.dev/reference/default-theme-config
     search: {
       provider: 'local',
@@ -167,19 +171,21 @@ export default defineConfig({
 
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Libraries', link: '/collection' },
-      { text: 'Strings', link: '/strings' },
-      { text: 'HTTPX', link: '/httpx' },
-      { text: 'ExecX', link: '/execx' },
-      { text: 'GoDump', link: '/godump' },
-      { text: 'Env', link: '/env' },
-      { text: 'Scheduler', link: '/scheduler' },
-      { text: 'Queue', link: '/queue' },
-      { text: 'Events', link: '/events' },
-      { text: 'Cache', link: '/cache' },
-      { text: 'Crypt', link: '/crypt' },
-      { text: 'Storage', link: '/storage' },
-      { text: 'Wire', link: '/wire' },
+      { text: 'Getting Started', link: '/getting-started/' },
+      { text: 'Core Concepts', link: '/core/' },
+      { text: 'Applications', link: '/applications/' },
+      { text: 'Scenarios', link: '/scenarios/' },
+      { text: 'Async', link: '/async/' },
+      { text: 'Operations', link: '/operations/' },
+      { text: 'Libraries', link: '/libraries/' },
+      { text: 'Reference', link: '/reference/' },
+      {
+        text: docsVersion,
+        items: [
+          { text: `${docsVersion} Current`, link: '/' },
+          { text: 'Version Policy', link: '/versions/' }
+        ]
+      },
       { text: 'What is GoForj?', link: '/about' }
     ],
 
@@ -187,28 +193,190 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: 'Docs',
+        text: 'Getting Started',
         items: [
-          { text: 'Collections', link: '/collection' },
-          { text: 'Strings', link: '/strings' },
-          { text: 'HTTPX', link: '/httpx' },
-          { text: 'ExecX', link: '/execx' },
-          { text: 'GoDump', link: '/godump' },
-          { text: 'Env', link: '/env' },
-          { text: 'Scheduler', link: '/scheduler' },
+          { text: 'Overview', link: '/getting-started/' },
+          { text: 'Quickstart', link: '/getting-started/quickstart' },
+          { text: 'Project Structure', link: '/getting-started/project-structure' },
+          { text: 'Configuration', link: '/getting-started/configuration' },
+          { text: 'Starter Kits', link: '/getting-started/starter-kits' }
+        ]
+      },
+      {
+        text: 'Core Concepts',
+        items: [
+          { text: 'Overview', link: '/core/' },
+          { text: 'App', link: '/core/app' },
+          { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
+          { text: 'Runtime Topology', link: '/core/runtime-topology' },
+          { text: 'Dependency Injection', link: '/core/dependency-injection' },
+          { text: 'Providers', link: '/core/providers' },
+          { text: 'Drivers And Adapters', link: '/core/drivers-and-adapters' },
+          { text: 'Generated Components', link: '/core/generated-components' },
+          { text: 'Generated Extension Points', link: '/core/generated-extension-points' },
+          { text: 'Named Resources', link: '/core/named-resources' },
+          { text: 'Code Generation', link: '/core/code-generation' },
+          { text: 'Local-First Development', link: '/core/local-first-development' }
+        ]
+      },
+      {
+        text: 'Applications',
+        items: [
+          { text: 'Overview', link: '/applications/' },
+          { text: 'HTTP Services', link: '/applications/http-services' },
+          { text: 'Routes', link: '/applications/routes' },
+          { text: 'Controllers', link: '/applications/controllers' },
+          { text: 'Middleware', link: '/applications/middleware' },
+          { text: 'Requests And Validation', link: '/applications/requests-validation' },
+          { text: 'Responses And Errors', link: '/applications/responses-errors' },
+          { text: 'Application Services', link: '/applications/services' },
+          { text: 'Commands', link: '/applications/commands' },
+          { text: 'API Index', link: '/applications/api-index' },
+          { text: 'OpenAPI', link: '/applications/openapi' }
+        ]
+      },
+      {
+        text: 'Security',
+        items: [
+          { text: 'Overview', link: '/security/' },
+          { text: 'Auth', link: '/security/auth' }
+        ]
+      },
+      {
+        text: 'Frontend',
+        items: [
+          { text: 'Overview', link: '/frontend/' },
+          { text: 'Vue Starter Kit', link: '/frontend/vue-starter-kit' }
+        ]
+      },
+      {
+        text: 'Data And Persistence',
+        items: [
+          { text: 'Overview', link: '/data/' },
+          { text: 'Database Strategy', link: '/data/database-strategy' },
+          { text: 'Migrations', link: '/data/migrations' },
+          { text: 'Repositories', link: '/data/repositories' },
+          { text: 'Transactions', link: '/data/transactions' },
+          { text: 'Cache Patterns', link: '/data/cache-patterns' },
+          { text: 'Storage Patterns', link: '/data/storage-patterns' },
+          { text: 'Driver Selection', link: '/data/driver-selection' }
+        ]
+      },
+      {
+        text: 'Async And Workflows',
+        items: [
+          { text: 'Overview', link: '/async/' },
+          { text: 'Events Versus Queues', link: '/async/events-vs-queues' },
+          { text: 'Queues', link: '/async/queues' },
+          { text: 'Jobs', link: '/async/jobs' },
+          { text: 'Workers', link: '/async/workers' },
+          { text: 'Events', link: '/async/events' },
+          { text: 'Event Subscribers', link: '/async/event-subscribers' },
+          { text: 'Scheduler', link: '/async/scheduler' },
+          { text: 'Retries And Idempotency', link: '/async/retries-idempotency' }
+        ]
+      },
+      {
+        text: 'Testing',
+        items: [
+          { text: 'Overview', link: '/testing/' },
+          { text: 'Testing Overview', link: '/testing/overview' },
+          { text: 'Unit Tests', link: '/testing/unit-tests' },
+          { text: 'HTTP Tests', link: '/testing/http-tests' },
+          { text: 'Command Tests', link: '/testing/command-tests' },
+          { text: 'Job And Queue Tests', link: '/testing/job-queue-tests' },
+          { text: 'Event Tests', link: '/testing/event-tests' },
+          { text: 'Cache And Storage Tests', link: '/testing/cache-storage-tests' },
+          { text: 'Integration Tests', link: '/testing/integration-tests' },
+          { text: 'Rendered App Smoke Tests', link: '/testing/rendered-app-smoke-tests' }
+        ]
+      },
+      {
+        text: 'Runnable Scenarios',
+        items: [
+          { text: 'Overview', link: '/scenarios/' },
+          { text: 'JSON API Route', link: '/scenarios/json-api-route' },
+          { text: 'Cached User Profile', link: '/scenarios/cached-user-profile' },
+          { text: 'File Upload To Storage', link: '/scenarios/file-upload-storage' },
+          { text: 'Users Created Event', link: '/scenarios/users-created-event' },
+          { text: 'Reports Generate Job', link: '/scenarios/reports-generate-job' }
+        ]
+      },
+      {
+        text: 'Operations',
+        items: [
+          { text: 'Overview', link: '/operations/' },
+          { text: 'Deployment Basics', link: '/operations/deployment-basics' },
+          { text: 'Runtime Processes', link: '/operations/runtime-processes' },
+          { text: 'HTTP Server', link: '/operations/http-server' },
+          { text: 'Queue Workers', link: '/operations/queue-workers' },
+          { text: 'Scheduler Processes', link: '/operations/scheduler-processes' },
+          { text: 'Health And Readiness', link: '/operations/health-readiness' },
+          { text: 'Logging', link: '/operations/logging' },
+          { text: 'Metrics', link: '/operations/metrics' },
+          { text: 'Inspects', link: '/operations/inspects' },
+          { text: 'Lighthouse', link: '/operations/lighthouse' },
+          { text: 'Standalone Versus Distributed', link: '/operations/standalone-vs-distributed' },
+          { text: 'Lazy Initialization', link: '/operations/lazy-initialization' },
+          { text: 'Production Checklist', link: '/operations/production-checklist' }
+        ]
+      },
+      {
+        text: 'Developer Tools',
+        items: [
+          { text: 'Overview', link: '/developer-tools/' },
+          { text: 'forj dev', link: '/developer-tools/forj-dev' }
+        ]
+      },
+      {
+        text: 'Libraries',
+        items: [
+          { text: 'Overview', link: '/libraries/' },
+          { text: 'Web', link: '/web' },
+          { text: 'Cache', link: '/cache' },
+          { text: 'Storage', link: '/storage' },
           { text: 'Queue', link: '/queue' },
           { text: 'Events', link: '/events' },
-          { text: 'Cache', link: '/cache' },
-          { text: 'Crypt', link: '/crypt' },
-          { text: 'Storage', link: '/storage' },
+          { text: 'Scheduler', link: '/scheduler' },
+          { text: 'Metrics', link: '/metrics' },
           { text: 'Wire', link: '/wire' },
-          { text: 'About', link: '/about' },
+          { text: 'Env', link: '/env' },
+          { text: 'Crypt', link: '/crypt' },
+          { text: 'HTTPX', link: '/httpx' },
+          { text: 'ExecX', link: '/execx' },
+          { text: 'Collection', link: '/collection' },
+          { text: 'Strings', link: '/strings' },
+          { text: 'GoDump', link: '/godump' }
+        ]
+      },
+      {
+        text: 'Reference',
+        items: [
+          { text: 'Overview', link: '/reference/' },
+          { text: 'CLI Reference', link: '/reference/cli' },
+          { text: 'Environment Variables', link: '/reference/env-vars' },
+          { text: 'Configuration Reference', link: '/reference/configuration' },
+          { text: 'Generated Files', link: '/reference/generated-files' },
+          { text: 'Generation Commands', link: '/reference/generation-commands' },
+          { text: 'Errors', link: '/reference/errors' }
+        ]
+      },
+      {
+        text: 'Versions',
+        items: [
+          { text: `${docsVersion} Current`, link: '/versions/' }
+        ]
+      },
+      {
+        text: 'About',
+        items: [
+          { text: 'What is GoForj?', link: '/about' }
         ]
       }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/goforj' }
     ]
   }
 })

@@ -1,5 +1,5 @@
 import DefaultTheme from 'vitepress/theme'
-import { useRoute } from 'vitepress'
+import { useData, useRoute } from 'vitepress'
 import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import CodeVariantPicker from './components/CodeVariantPicker.vue'
@@ -376,12 +376,17 @@ function applyCodeVariantPreference() {
 
 export default {
   ...DefaultTheme,
-  Layout: () =>
-    h(DefaultTheme.Layout, null, {
+  Layout: () => {
+    const { theme } = useData()
+    const docsVersion = theme.value.docsVersion || 'v0.9'
+
+    return h(DefaultTheme.Layout, null, {
+      'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
       'home-hero-before': () => h(GoForjHeroStack),
       'doc-before': () => h(LibraryRepoHeader),
       'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker)]
-    }),
+    })
+  },
   setup() {
     const route = useRoute()
     let routeHashTimers = []

@@ -25,8 +25,8 @@ Every runtime surface should answer:
 
 Document:
 
-- command: `forj run http:serve`
-- combined runtime command: `forj run run`
+- command: `forj run api`
+- combined runtime command: `forj run app`
 - route registration
 - middleware stack
 - health and readiness routes
@@ -45,7 +45,7 @@ Avoid:
 
 Document:
 
-- command: `forj run queue:work`
+- command: `forj run worker`
 - handler registration before worker start
 - driver behavior
 - retry and timeout behavior
@@ -61,7 +61,7 @@ Explain that queue dispatch and queue work are separate concerns.
 
 Document:
 
-- command: `forj run schedule:run`
+- command: `forj run scheduler`
 - schedule registration in `internal/scheduler/scheduler_registry.go`
 - stable schedule names
 - overlap control

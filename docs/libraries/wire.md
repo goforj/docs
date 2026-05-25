@@ -50,6 +50,14 @@ For an overview, see the [introductory blog post](https://blog.golang.org/wire).
 [dependency injection]: https://en.wikipedia.org/wiki/Dependency_injection
 [godoc]: https://godoc.org/github.com/goforj/wire
 
+## Using With GoForj {#using-with-goforj}
+
+Generated GoForj Apps use Wire through the `wire/` package. Provider functions declare dependencies as normal Go parameters, Wire generates `wire/wire_gen.go`, and `forj build` refreshes generated wiring before compiling the App.
+
+Do not edit `wire_gen.go` by hand. Add or change providers, provider sets, and generated component inputs, then regenerate. The result should remain ordinary Go initialization code with explicit dependencies and no runtime container.
+
+Use this page for standalone Wire usage and generator behavior. Use [Dependency Injection](/core/dependency-injection) and [Generated Components](/core/generated-components) for the generated App integration model.
+
 ## Installing {#installing}
 
 ```sh

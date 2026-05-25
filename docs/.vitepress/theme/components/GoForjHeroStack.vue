@@ -673,8 +673,7 @@ const scene = computed(() => {
   }
 
   return {
-    tower: tower.sort((a, b) => getDepthSortValue(a) - getDepthSortValue(b)),
-    categories: GROUP_CONFIG
+    tower: tower.sort((a, b) => getDepthSortValue(a) - getDepthSortValue(b))
   }
 })
 
@@ -1259,27 +1258,6 @@ function adjustColor(color, amount) {
             </template>
           </g>
         </svg>
-        <div class="gf-category-row" :class="{ 'is-visible': isMounted }">
-          <a
-            v-for="category in scene.categories"
-            :key="category.id"
-            class="gf-category-card"
-            :href="category.href || undefined"
-            :target="category.href ? '_blank' : undefined"
-            :rel="category.href ? 'noreferrer noopener' : undefined"
-            :title="category.title || category.label"
-            @mouseenter="hoveredBlock = category.id"
-            @mouseleave="hoveredBlock = null"
-          >
-            <svg class="gf-category-card-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <g v-if="getGenericIconBody(category.icon)" v-html="getGenericIconBody(category.icon)" :style="{ color: category.color }" />
-              <g v-else-if="getBrandIconBody(category.icon)" v-html="getBrandIconBody(category.icon)" :style="{ color: category.color }" />
-              <path v-else :d="ICONS[category.icon]" :fill="category.color" />
-            </svg>
-            <span class="gf-category-card-title">{{ category.label }}</span>
-            <span class="gf-category-card-copy">{{ category.summary }}</span>
-          </a>
-        </div>
       </div>
     </div>
   </div>
@@ -1396,45 +1374,6 @@ function adjustColor(color, amount) {
   height: auto;
   overflow: visible;
 }
-.gf-category-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.9rem;
-  margin-top: -0.6rem;
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.gf-category-row.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.gf-category-card {
-  display: grid;
-  justify-items: start;
-  gap: 0.5rem;
-  padding: 1rem 1rem 1.05rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.64), rgba(8, 14, 30, 0.58));
-  text-align: left;
-  cursor: default;
-  text-decoration: none;
-}
-.gf-category-card-icon {
-  width: 20px;
-  height: 20px;
-}
-.gf-category-card-title {
-  color: #f8fafc;
-  font-size: 1rem;
-  font-weight: 700;
-}
-.gf-category-card-copy {
-  color: rgba(191, 219, 254, 0.72);
-  font-size: 0.82rem;
-  line-height: 1.5;
-}
 .gf-iso-item {
   cursor: pointer;
 }
@@ -1539,10 +1478,6 @@ function adjustColor(color, amount) {
   }
   .gf-hero-graphic.is-visible {
     transform: translate(-60px, -10px);
-  }
-  .gf-category-row {
-    grid-template-columns: 1fr;
-    margin-top: 0.5rem;
   }
 }
 @media (max-width: 640px) {

@@ -29,6 +29,14 @@ repoUrl: https://github.com/goforj/cache
  
 An explicit cache abstraction with a minimal Store interface and ergonomic Cache helpers. Drivers are chosen when you construct the store, so swapping backends is a dependency-injection change instead of a refactor.
 
+## Using With GoForj {#using-with-goforj}
+
+Generated GoForj Apps wrap this library behind generated cache components and named accessors such as `app.Cache()` and `app.Caches().Sessions()`.
+
+Use `CACHE_SUPPORTED_DRIVERS` to control which drivers are compiled into the App. Use `CACHE_DRIVER` and named variables such as `CACHE_SESSIONS_DRIVER` to choose the runtime backend without changing application code.
+
+Use this page for standalone constructors, driver behavior, and package-level API details. Use [Configuration](/getting-started/configuration) and [Generated Components](/core/generated-components) for the generated App integration model.
+
 ## Installation {#installation}
 
 ```bash

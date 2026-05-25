@@ -39,6 +39,14 @@ Each backend has its own API and client library.
 
 `storage` provides a **small, consistent interface** so your application code doesn't have to change when the backend changes.
 
+## Using With GoForj {#using-with-goforj}
+
+Generated GoForj Apps wrap this library behind generated storage components and named disks such as `app.Storage()` and `app.Storage().Public()`.
+
+Use `STORAGE_SUPPORTED_DRIVERS` to control which storage drivers are compiled into the App. Use `STORAGE_DRIVER` and named variables such as `STORAGE_PUBLIC_DRIVER` to select local disks, object storage, or remote filesystems at runtime.
+
+Use this page for standalone constructors, driver behavior, and package-level API details. Use [Configuration](/getting-started/configuration) and [Generated Components](/core/generated-components) for the generated App integration model.
+
 ## Driver Matrix {#driver-matrix}
 
 Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate. 

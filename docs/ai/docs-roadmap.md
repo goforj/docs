@@ -57,19 +57,19 @@ Exit criteria:
 
 Goal: make the site structure reflect the intended docs system before writing many pages.
 
-- [ ] Create a top-level `libraries/index.md`.
-- [ ] Create placeholder directories for `getting-started`, `core`, `applications`, `data`, `async`, `testing`, `operations`, and `reference`.
-- [ ] Update VitePress nav to expose `Getting Started`, `Core Concepts`, `Applications`, `Async`, `Operations`, and `Libraries`.
-- [ ] Update VitePress sidebar to group existing library pages under `Libraries`.
-- [ ] Keep existing library URLs or redirects stable.
-- [ ] Add search titles/descriptions that distinguish framework guides from library pages.
-- [ ] Add a public docs landing page section that explains the two paths: build a GoForj App or use standalone Libraries.
+- [x] Create a top-level `libraries/index.md`.
+- [x] Create placeholder directories for `getting-started`, `core`, `applications`, `data`, `async`, `testing`, `operations`, and `reference`.
+- [x] Update VitePress nav to expose `Getting Started`, `Core Concepts`, `Applications`, `Async`, `Operations`, and `Libraries`.
+- [x] Update VitePress sidebar to group existing library pages under `Libraries`.
+- [x] Keep existing library URLs or redirects stable.
+- [x] Add search titles/descriptions that distinguish framework guides from library pages.
+- [x] Add a public docs landing page section that explains the two paths: build a GoForj App or use standalone Libraries.
 
 Exit criteria:
 
-- [ ] A reader can find Libraries without treating them as an appendix.
-- [ ] A reader can find the framework getting-started path without browsing library pages first.
-- [ ] Existing library pages remain reachable.
+- [x] A reader can find Libraries without treating them as an appendix.
+- [x] A reader can find the framework getting-started path without browsing library pages first.
+- [x] Existing library pages remain reachable.
 
 ## Phase 2: First 10 Framework Pages
 
@@ -77,216 +77,262 @@ Goal: publish the minimum coherent "build with GoForj" path.
 
 Write these in order:
 
-- [ ] `getting-started/quickstart.md`
-- [ ] `getting-started/project-structure.md`
-- [ ] `getting-started/configuration.md`
-- [ ] `core/runtime-lifecycle.md`
-- [ ] `core/runtime-topology.md`
-- [ ] `core/dependency-injection.md`
-- [ ] `core/generated-components.md`
-- [ ] `applications/http-services.md`
-- [ ] `async/events-vs-queues.md`
-- [ ] `testing/overview.md`
+- [x] `getting-started/quickstart.md`
+- [x] `getting-started/project-structure.md`
+- [x] `getting-started/configuration.md`
+- [x] `core/runtime-lifecycle.md`
+- [x] `core/runtime-topology.md`
+- [x] `core/dependency-injection.md`
+- [x] `core/generated-components.md`
+- [x] `applications/http-services.md`
+- [x] `async/events-vs-queues.md`
+- [x] `testing/overview.md`
 
 Acceptance criteria for each page:
 
-- [ ] Uses terminology from `docs/ai/terminology.md`.
-- [ ] Follows the relevant template from `docs/ai/page-templates.md`.
-- [ ] Names generated App locations when relevant.
-- [ ] Shows local-first behavior before production variants.
-- [ ] Includes a verification step when task-oriented.
-- [ ] Links to the next likely page.
-- [ ] Links to Libraries when deeper primitive detail is needed.
+- [x] Uses terminology from `docs/ai/terminology.md`.
+- [x] Follows the relevant template from `docs/ai/page-templates.md`.
+- [x] Names generated App locations when relevant.
+- [x] Shows local-first behavior before production variants.
+- [x] Includes a verification step when task-oriented.
+- [x] Links to the next likely page.
+- [x] Links to Libraries when deeper primitive detail is needed.
 
 ## Phase 3: Libraries Track
 
 Goal: preserve and improve standalone first-party library docs while connecting them to framework guides.
 
-- [ ] `libraries/index.md` explains the Libraries section and groups packages.
-- [ ] `libraries/cache.md` has or links to a concise "Using With GoForj" note.
-- [ ] `libraries/storage.md` has or links to a concise "Using With GoForj" note.
-- [ ] `libraries/queue.md` has or links to a concise "Using With GoForj" note.
-- [ ] `libraries/events.md` has or links to a concise "Using With GoForj" note.
-- [ ] `libraries/scheduler.md` has or links to a concise "Using With GoForj" note.
-- [ ] `libraries/wire.md` has or links to a concise "Using With GoForj" note.
-- [ ] Decide whether `web` should appear as `libraries/web.md` in addition to or instead of `httpx.md`.
-- [ ] Decide whether `metrics` should be added under Libraries.
-- [ ] Keep README-slurped API/reference sections intact for standalone package users.
-- [ ] Avoid duplicating full driver matrices in framework workflow pages.
+- [x] `libraries/index.md` explains the Libraries section and groups packages.
+- [x] `libraries/cache.md` has or links to a concise "Using With GoForj" note.
+- [x] `libraries/storage.md` has or links to a concise "Using With GoForj" note.
+- [x] `libraries/queue.md` has or links to a concise "Using With GoForj" note.
+- [x] `libraries/events.md` has or links to a concise "Using With GoForj" note.
+- [x] `libraries/scheduler.md` has or links to a concise "Using With GoForj" note.
+- [x] `libraries/wire.md` has or links to a concise "Using With GoForj" note.
+- [x] Decide whether `web` should appear as `libraries/web.md` in addition to or instead of `httpx.md`.
+- [x] Decide whether `metrics` should be added under Libraries.
+- [x] Keep README-slurped API/reference sections intact for standalone package users.
+- [x] Avoid duplicating full driver matrices in framework workflow pages.
 
 Exit criteria:
 
-- [ ] Standalone package users can still succeed from library docs.
-- [ ] Generated App users can jump from framework guides to library details without confusion.
-- [ ] Major primitives have bidirectional links between framework and library projections.
+- [x] Standalone package users can still succeed from library docs.
+- [x] Generated App users can jump from framework guides to library details without confusion.
+- [x] Major primitives have bidirectional links between framework and library projections.
 
 ## Phase 4: Core Concepts Expansion
 
 Goal: finish the conceptual layer needed by all feature docs.
 
-- [ ] `core/app.md`
-- [ ] `core/providers.md`
-- [ ] `core/drivers-and-adapters.md`
-- [ ] `core/generated-extension-points.md`
-- [ ] `core/named-resources.md`
-- [ ] `core/code-generation.md`
-- [ ] `core/local-first-development.md`
+- [x] `core/app.md`
+- [x] `core/providers.md`
+- [x] `core/drivers-and-adapters.md`
+- [x] `core/generated-extension-points.md`
+- [x] `core/named-resources.md`
+- [x] `core/code-generation.md`
+- [x] `core/local-first-development.md`
 
 Exit criteria:
 
-- [ ] App, Framework, Stack, Runtime, Provider, Driver, Adapter, Service, Resource, Inspect, and Lighthouse are consistently explained.
-- [ ] Generated component codegen and named accessors are explained before cache, queue, storage, events, and database guides depend on them.
-- [ ] Runtime topology is explained before operations pages depend on it.
+- [x] App, Framework, Stack, Runtime, Provider, Driver, Adapter, Service, Resource, Inspect, and Lighthouse are consistently explained.
+- [x] Generated component codegen and named accessors are explained before cache, queue, storage, events, and database guides depend on them.
+- [x] Runtime topology is explained before operations pages depend on it.
 
 ## Phase 5: Application Building
 
 Goal: let users build normal GoForj App features.
 
-- [ ] `applications/routes.md`
-- [ ] `applications/controllers.md`
-- [ ] `applications/middleware.md`
-- [ ] `applications/requests-validation.md`
-- [ ] `applications/responses-errors.md`
-- [ ] `applications/services.md`
-- [ ] `applications/commands.md`
+- [x] `applications/routes.md`
+- [x] `applications/controllers.md`
+- [x] `applications/middleware.md`
+- [x] `applications/requests-validation.md`
+- [x] `applications/responses-errors.md`
+- [x] `applications/services.md`
+- [x] `applications/commands.md`
 
 Exit criteria:
 
-- [ ] Reader can add routes, controllers, services, and commands.
-- [ ] Examples keep business logic out of runtime bootstrap.
-- [ ] HTTP docs use `web` abstractions and link to the standalone library page.
-- [ ] Route visibility through `route:list` is documented.
+- [x] Reader can add routes, controllers, services, and commands.
+- [x] Examples keep business logic out of runtime bootstrap.
+- [x] HTTP docs use `web` abstractions and link to the standalone library page.
+- [x] Route visibility through `route:list` is documented.
 
 ## Phase 6: Data And Persistence
 
 Goal: explain durable data, derived data, and file/blob storage boundaries.
 
-- [ ] `data/database-strategy.md`
-- [ ] `data/migrations.md`
-- [ ] `data/repositories.md`
-- [ ] `data/transactions.md`
-- [ ] `data/cache-patterns.md`
-- [ ] `data/storage-patterns.md`
-- [ ] `data/driver-selection.md`
+- [x] `data/database-strategy.md`
+- [x] `data/migrations.md`
+- [x] `data/repositories.md`
+- [x] `data/transactions.md`
+- [x] `data/cache-patterns.md`
+- [x] `data/storage-patterns.md`
+- [x] `data/driver-selection.md`
 
 Exit criteria:
 
-- [ ] Readers understand source-of-truth versus cache.
-- [ ] Storage disks and cache accessors are documented as named resources.
-- [ ] `*_SUPPORTED_DRIVERS` generation is explained where relevant.
-- [ ] Database guidance is honest about current framework ownership.
+- [x] Readers understand source-of-truth versus cache.
+- [x] Storage disks and cache accessors are documented as named resources.
+- [x] `*_SUPPORTED_DRIVERS` generation is explained where relevant.
+- [x] Database guidance is honest about current framework ownership.
 
 ## Phase 7: Async And Workflows
 
 Goal: explain background work, fan-out, and recurring work.
 
-- [ ] `async/queues.md`
-- [ ] `async/jobs.md`
-- [ ] `async/workers.md`
-- [ ] `async/events.md`
-- [ ] `async/event-subscribers.md`
-- [ ] `async/scheduler.md`
-- [ ] `async/retries-idempotency.md`
+- [x] `async/queues.md`
+- [x] `async/jobs.md`
+- [x] `async/workers.md`
+- [x] `async/events.md`
+- [x] `async/event-subscribers.md`
+- [x] `async/scheduler.md`
+- [x] `async/retries-idempotency.md`
 
 Exit criteria:
 
-- [ ] Events and queues are clearly separated.
-- [ ] Jobs are named and observable.
-- [ ] Workers and scheduler lifecycle are explicit.
-- [ ] Local-first and production drivers are separated.
-- [ ] Queue and event docs link to standalone Libraries.
+- [x] Events and queues are clearly separated.
+- [x] Jobs are named and observable.
+- [x] Workers and scheduler lifecycle are explicit.
+- [x] Local-first and production drivers are separated.
+- [x] Queue and event docs link to standalone Libraries.
 
 ## Phase 8: Testing
 
 Goal: make tests part of the normal GoForj workflow.
 
-- [ ] `testing/unit-tests.md`
-- [ ] `testing/http-tests.md`
-- [ ] `testing/command-tests.md`
-- [ ] `testing/job-queue-tests.md`
-- [ ] `testing/event-tests.md`
-- [ ] `testing/cache-storage-tests.md`
-- [ ] `testing/integration-tests.md`
-- [ ] `testing/rendered-app-smoke-tests.md`
+- [x] `testing/unit-tests.md`
+- [x] `testing/http-tests.md`
+- [x] `testing/command-tests.md`
+- [x] `testing/job-queue-tests.md`
+- [x] `testing/event-tests.md`
+- [x] `testing/cache-storage-tests.md`
+- [x] `testing/integration-tests.md`
+- [x] `testing/rendered-app-smoke-tests.md`
 
 Exit criteria:
 
-- [ ] Each major subsystem has a test path.
-- [ ] Local drivers and fakes are documented.
-- [ ] Rendered App smoke testing is documented for framework contributors.
+- [x] Each major subsystem has a test path.
+- [x] Local drivers and fakes are documented.
+- [x] Rendered App smoke testing is documented for framework contributors.
 
 ## Phase 9: Operations And Observability
 
 Goal: make production and runtime behavior explicit.
 
-- [ ] `operations/deployment-basics.md`
-- [ ] `operations/runtime-processes.md`
-- [ ] `operations/http-server.md`
-- [ ] `operations/queue-workers.md`
-- [ ] `operations/scheduler-processes.md`
-- [ ] `operations/health-readiness.md`
-- [ ] `operations/logging.md`
-- [ ] `operations/metrics.md`
-- [ ] `operations/inspects.md`
-- [ ] `operations/lighthouse.md`
-- [ ] `operations/standalone-vs-distributed.md`
-- [ ] `operations/lazy-initialization.md`
-- [ ] `operations/production-checklist.md`
+- [x] `operations/deployment-basics.md`
+- [x] `operations/runtime-processes.md`
+- [x] `operations/http-server.md`
+- [x] `operations/queue-workers.md`
+- [x] `operations/scheduler-processes.md`
+- [x] `operations/health-readiness.md`
+- [x] `operations/logging.md`
+- [x] `operations/metrics.md`
+- [x] `operations/inspects.md`
+- [x] `operations/lighthouse.md`
+- [x] `operations/standalone-vs-distributed.md`
+- [x] `operations/lazy-initialization.md`
+- [x] `operations/production-checklist.md`
 
 Exit criteria:
 
-- [ ] Every long-running runtime has process, startup, shutdown, and failure docs.
-- [ ] Metrics and inspects are explained before Lighthouse dashboards.
-- [ ] Standalone versus distributed topology is explicit.
-- [ ] Lazy initialization is documented without weakening fail-fast wiring.
+- [x] Every long-running runtime has process, startup, shutdown, and failure docs.
+- [x] Metrics and inspects are explained before Lighthouse dashboards.
+- [x] Standalone versus distributed topology is explicit.
+- [x] Lazy initialization is documented without weakening fail-fast wiring.
 
 ## Phase 10: Product Surfaces
 
 Goal: document larger framework capabilities that compose multiple primitives.
 
-- [ ] `security/auth.md`
-- [ ] `getting-started/starter-kits.md`
-- [ ] `frontend/vue-starter-kit.md`
-- [ ] `applications/api-index.md`
-- [ ] `applications/openapi.md`
-- [ ] `developer-tools/forj-dev.md`
-- [ ] Decide when extension docs can become public user docs.
+- [x] `security/auth.md`
+- [x] `getting-started/starter-kits.md`
+- [x] `frontend/vue-starter-kit.md`
+- [x] `applications/api-index.md`
+- [x] `applications/openapi.md`
+- [x] `developer-tools/forj-dev.md`
+- [x] Decide when extension docs can become public user docs.
+
+Decision: extension docs can become public user docs when they describe stable App-owned extension points, name generated file ownership clearly, avoid maintainer-only template workflow, and link to internal/generated component details instead of exposing template implementation as the primary path.
 
 Exit criteria:
 
-- [ ] Auth docs explain server-authoritative sessions, cookies, refresh behavior, reset/verification, scheduled cleanup, and inspect visibility.
-- [ ] Starter kit docs explain generated ownership and optional component compatibility.
-- [ ] API Index docs are explicit about current AST-based capabilities and limits.
-- [ ] `forj dev` docs match the transcript-first tooling model.
+- [x] Auth docs explain server-authoritative sessions, cookies, refresh behavior, reset/verification, scheduled cleanup, and inspect visibility.
+- [x] Starter kit docs explain generated ownership and optional component compatibility.
+- [x] API Index docs are explicit about current AST-based capabilities and limits.
+- [x] `forj dev` docs match the transcript-first tooling model.
 
 ## Phase 11: Framework Reference
 
 Goal: provide lookup material after workflow docs exist.
 
-- [ ] `reference/cli.md`
-- [ ] `reference/env-vars.md`
-- [ ] `reference/configuration.md`
-- [ ] `reference/generated-files.md`
-- [ ] `reference/generation-commands.md`
-- [ ] `reference/errors.md`
+- [x] `reference/cli.md`
+- [x] `reference/env-vars.md`
+- [x] `reference/configuration.md`
+- [x] `reference/generated-files.md`
+- [x] `reference/generation-commands.md`
+- [x] `reference/errors.md`
 
 Exit criteria:
 
-- [ ] Framework-level lookup details live in reference.
-- [ ] Workflow pages link to reference.
-- [ ] Framework reference does not duplicate full library API indexes.
+- [x] Framework-level lookup details live in reference.
+- [x] Workflow pages link to reference.
+- [x] Framework reference does not duplicate full library API indexes.
+
+## Phase 12: Documentation Versioning
+
+Goal: tag the current documentation line and establish the versioning model before publishing.
+
+- [x] Expose the current docs version as `v0.9`.
+- [x] Add a nav version selector.
+- [x] Add `versions/index.md` with the public version policy.
+- [x] Add `docs/ai/docs-versioning.md` with internal versioning governance.
+- [ ] Create a frozen `/versions/v0.9/` snapshot when a second active documentation line exists.
+
+Exit criteria:
+
+- [x] Readers can see which documentation line they are reading.
+- [x] Maintainers know when to snapshot and what to snapshot.
+- [x] Library docs remain separate from framework version snapshots until package-version alignment requires otherwise.
 
 ## First Runnable Scenarios
 
+Status: paused after the first five scenarios.
+
+Do not continue expanding runnable scenarios until the publishing-quality pass is complete, unless explicitly requested.
+
 Build these after the first 10 framework pages:
 
-- [ ] JSON API route with controller and service.
-- [ ] Cached user profile lookup.
-- [ ] File upload to named storage disk.
-- [ ] `users.created` event with subscriber.
-- [ ] `reports:generate` job and worker.
+- [x] Create `docs/ai/runnable-scenarios.md` to define the shared scenario model.
+- [x] JSON API route with controller and service.
+- [x] Cached user profile lookup.
+- [x] File upload to named storage disk.
+- [x] `users.created` event with subscriber.
+- [x] `reports:generate` job and worker.
 - [ ] `reports:daily` schedule.
 - [ ] Runtime observability through metrics and inspects.
+
+Remaining scenario action items:
+
+- [ ] Add `reports:daily` schedule scenario that dispatches existing durable work instead of duplicating job logic.
+- [ ] Add runtime observability scenario that follows API -> event -> job -> schedule behavior through metrics, inspects, Lighthouse, and logs.
+- [ ] Re-review all runnable scenarios as one sequence for command consistency, generated file ownership, local-first driver choices, and repeated terminology.
+
+## Publishing Quality Pass
+
+Goal: move from broad coverage to publishable confidence.
+
+Work these before adding more scenario pages:
+
+- [ ] Run a complete navigation pass across all top-level sections.
+- [ ] Review every section index page for clear reader orientation and next-step links.
+- [ ] Audit public pages for stale command names, especially `forj run app`, `forj run api`, `forj run worker`, `forj run scheduler`, and production `./bin/app` commands.
+- [ ] Audit environment variable examples against source-generated configuration keys.
+- [ ] Audit generated file paths against current templates and rendered App output.
+- [ ] Review code snippets for imports, constructor names, package names, and compile-shaped examples.
+- [ ] Ensure framework pages link to Libraries for standalone primitive detail without duplicating README content.
+- [ ] Ensure Libraries pages link back to framework guides only where generated App integration is relevant.
+- [ ] Review sidebar ordering and top nav for the intended learning path.
+- [ ] Run `npm run build` after quality-pass changes.
 
 ## Quality Gates
 
