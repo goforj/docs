@@ -64,7 +64,7 @@ It then:
 - attaches log sinks for inspect records
 - attaches cache and event observers
 - registers framework lifecycle hooks
-- registers queue job handlers
+- registers framework-owned queue job handlers
 - calls the user lifecycle registry
 - returns the App with its managers and command root
 

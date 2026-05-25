@@ -23,6 +23,8 @@ Generate a migration:
 forj make:migration create_users
 ```
 
+Run this from the generated App root. Migration scaffolding is a project-level `forj` command, while applying and rolling back migrations happens through the generated App command surface.
+
 Rollback recent migrations:
 
 ```bash

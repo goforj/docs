@@ -15,9 +15,12 @@ The first published pages in this section should get a reader from an empty work
 - [Project Structure](/getting-started/project-structure)
 - [Configuration](/getting-started/configuration)
 - [Starter Kits](/getting-started/starter-kits)
-- Local Development
-- First Route
-- First Command
+
+## Next Practical Steps
+
+- [Local-First Development](/core/local-first-development) explains the local runtime loop after the first build.
+- [JSON API Route](/scenarios/json-api-route) walks through a first route, controller, service, Wire provider, and test.
+- [Commands](/applications/commands) explains generated App commands and custom command placement.
 
 ## Related Sections
 

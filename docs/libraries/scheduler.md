@@ -47,7 +47,7 @@ Generated GoForj Apps use this library through the generated scheduler runtime a
 
 Register recurring application work in the scheduler registry, then run it with `forj run scheduler`. Keep schedule definitions close to application intent, and keep infrastructure decisions such as locking or cache-backed coordination in configuration and providers.
 
-Use this page for standalone scheduler construction, schedule expressions, locking behavior, and package-level API details. Use [Events Versus Queues](/async/events-vs-queues) for how recurring work relates to events, jobs, and workers.
+Use this page for standalone scheduler construction, schedule expressions, locking behavior, and package-level API details. Use [Scheduler](/async/scheduler) and [Scheduler Processes](/operations/scheduler-processes) for generated App registration and runtime behavior, and [Events Versus Queues](/async/events-vs-queues) for how recurring work relates to events, jobs, and workers.
 
 ## Installation {#installation}
 

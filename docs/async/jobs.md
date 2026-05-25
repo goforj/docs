@@ -85,7 +85,9 @@ Return errors when the job should fail and let queue behavior handle retry polic
 
 ## Registration
 
-Generated App construction registers job handlers before workers start.
+Generated App construction registers framework-owned job handlers before workers start.
+
+App-owned jobs should be registered through generated or documented App extension points before workers start.
 
 Do not register handlers after workers are already running.
 

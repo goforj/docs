@@ -20,7 +20,7 @@ It is intentionally narrow:
 
 Generated GoForj Apps use metrics through generated observability and HTTP runtime code. When metrics are enabled, the App can expose a Prometheus scrape endpoint such as `GET /metrics` alongside health and readiness routes.
 
-Keep metric registration explicit and close to the service or runtime component that owns the behavior being measured. Use generated App guides for where metrics are mounted and how HTTP exposure is configured. Use this page for the standalone registry, metric types, naming model, and Prometheus exporter behavior.
+Keep metric registration explicit and close to the service or runtime component that owns the behavior being measured. Use [Metrics](/operations/metrics) and [HTTP Server](/operations/http-server) for generated App exposure and runtime behavior. Use this page for the standalone registry, metric types, naming model, and Prometheus exporter behavior.
 
 ## Install
 

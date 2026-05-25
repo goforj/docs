@@ -323,16 +323,16 @@ Goal: move from broad coverage to publishable confidence.
 
 Work these before adding more scenario pages:
 
-- [ ] Run a complete navigation pass across all top-level sections.
-- [ ] Review every section index page for clear reader orientation and next-step links.
-- [ ] Audit public pages for stale command names, especially `forj run app`, `forj run api`, `forj run worker`, `forj run scheduler`, and production `./bin/app` commands.
-- [ ] Audit environment variable examples against source-generated configuration keys.
-- [ ] Audit generated file paths against current templates and rendered App output.
+- [x] Run a complete navigation pass across all top-level sections.
+- [x] Review every section index page for clear reader orientation and next-step links.
+- [x] Audit public pages for stale command names, especially `forj run app`, `forj run api`, `forj run worker`, `forj run scheduler`, and production `./bin/app` commands.
+- [x] Audit environment variable examples against source-generated configuration keys.
+- [x] Audit generated file paths against current templates and rendered App output.
 - [ ] Review code snippets for imports, constructor names, package names, and compile-shaped examples.
-- [ ] Ensure framework pages link to Libraries for standalone primitive detail without duplicating README content.
-- [ ] Ensure Libraries pages link back to framework guides only where generated App integration is relevant.
-- [ ] Review sidebar ordering and top nav for the intended learning path.
-- [ ] Run `npm run build` after quality-pass changes.
+- [x] Ensure framework pages link to Libraries for standalone primitive detail without duplicating README content.
+- [x] Ensure Libraries pages link back to framework guides only where generated App integration is relevant.
+- [x] Review sidebar ordering and top nav for the intended learning path.
+- [x] Run `npm run build` after quality-pass changes.
 
 ## Quality Gates
 

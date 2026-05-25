@@ -19,10 +19,12 @@ Start here:
 - [Users Created Event](/scenarios/users-created-event) publishes a typed event and handles it with a lifecycle-registered subscriber.
 - [Reports Generate Job](/scenarios/reports-generate-job) dispatches durable work from an event subscriber and processes it with a worker.
 
-Upcoming scenarios:
+Planned later:
 
 - `reports:daily` schedule
 - runtime observability with metrics and inspects
+
+These are tracked as action items in the internal docs roadmap. The current scenario set is enough to validate the main application-building path before the publishing quality pass continues.
 
 ## How To Read These
 

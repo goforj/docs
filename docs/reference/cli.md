@@ -18,6 +18,7 @@ Use workflow pages for full context.
 | `forj run <app-command>` | Run generation, API indexing, then `go run . <app-command>`. |
 | `forj dev` | Run local development watchers from `.goforj.yml`. |
 | `forj generate` | Refresh generated component code and derived files. |
+| `forj make:migration <name>` | Generate migration files for supported database drivers. |
 
 ## Common App Commands
 
@@ -36,7 +37,6 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 | `migrate:rollback` | `migrate:rollback` | Roll back recent migrations. |
 | `make:event` | `make:event` | Generate an event scaffold. |
 | `make:job` | `make:job` | Generate a job scaffold. |
-| `make:migration` | `make:migration` | Generate migration files. |
 
 Examples:
 
@@ -50,6 +50,12 @@ forj run scheduler
 These resolve to generated App commands through Kong aliases.
 
 Available commands depend on selected components.
+
+Migration scaffolding is a project-level `forj` command:
+
+```bash
+forj make:migration create_users
+```
 
 ## Maintainer Commands
 

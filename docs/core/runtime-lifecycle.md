@@ -95,11 +95,13 @@ Examples include:
 
 - event buses start during startup and close during shutdown
 - database connections close during shutdown
-- queue job handlers are registered during App construction
+- framework-owned queue job handlers are registered during App construction
 - cache observers record cache operations into inspects
 - event observers record events into inspects and metrics
 
 These hooks are registered explicitly in the generated App wiring. They are not hidden runtime registrations.
+
+App-owned handlers and subscribers should still be registered through documented App extension points before their runtime starts.
 
 ## Shutdown Timeouts
 

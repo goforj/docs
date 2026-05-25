@@ -23,14 +23,16 @@ Goal: get the reader to a running App with a basic mental model.
 
 Pages:
 
-- What Is GoForj?
-- Installation
 - Quickstart
 - Project Structure
 - Configuration
-- Local Development
-- First Route
-- First Command
+- Starter Kits
+
+Next-step links should point to:
+
+- Core Concepts: Local-First Development
+- Runnable Scenarios: JSON API Route
+- Applications: Commands
 
 ### Core Concepts
 
@@ -40,11 +42,14 @@ Pages:
 
 - App
 - Runtime Lifecycle
+- Runtime Topology
 - Dependency Injection
 - Providers
 - Drivers And Adapters
-- Configuration Flow
+- Generated Components
 - Generated Extension Points
+- Named Resources
+- Code Generation
 - Local-First Development
 
 ### Libraries
@@ -84,8 +89,9 @@ Pages:
 - Requests And Validation
 - Responses And Errors
 - Application Services
-- Repositories
 - Commands
+- API Index
+- OpenAPI
 
 ### Data And Persistence
 
@@ -95,10 +101,8 @@ Pages:
 
 - Database Strategy
 - Migrations
-- Models And Domain Types
 - Repositories
 - Transactions
-- Seeding And Fixtures
 - Cache Patterns
 - Storage Patterns
 - Driver Selection
@@ -116,7 +120,6 @@ Pages:
 - Events
 - Event Subscribers
 - Scheduler
-- Scheduled Work
 - Retries And Idempotency
 
 ### Testing
@@ -146,28 +149,27 @@ Pages:
 - HTTP Server
 - Queue Workers
 - Scheduler Processes
-- Configuration In Production
 - Health And Readiness
 - Logging
 - Metrics
-- Failure Handling
+- Inspects
+- Lighthouse
+- Standalone Versus Distributed
+- Lazy Initialization
 - Production Checklist
 
-### Lighthouse And Observability
+### Product Surfaces
 
-Goal: teach local and operator-facing runtime visibility.
+Goal: document larger capabilities that compose multiple primitives.
 
 Pages:
 
-- Observability Overview
-- Metrics
-- Inspects
-- Lighthouse
-- Route Visibility
-- Queue Visibility
-- Scheduler Visibility
-- Storage And Cache Visibility
-- Debugging Runtime Behavior
+- Auth
+- Starter Kits
+- Vue Starter Kit
+- API Index
+- OpenAPI
+- forj dev
 
 ### Reference
 
@@ -178,8 +180,9 @@ Pages:
 - CLI Reference
 - Environment Variables
 - Configuration Reference
-- Generated Files Reference
-- Error Reference
+- Generated Files
+- Generation Commands
+- Errors
 
 Driver matrices and package API reference usually belong in Libraries unless the material is specifically about generated App configuration.
 
@@ -210,8 +213,8 @@ When ordering nav or tutorials, prefer:
 8. Cache and storage
 9. Events, queues, jobs, and scheduler
 10. Testing
-11. Observability
-12. Operations
+11. Runnable scenarios
+12. Operations and observability
 13. Libraries
 14. Reference
 15. Internals
@@ -224,10 +227,10 @@ Do not turn every page into a link directory.
 
 Good cross-links:
 
-- HTTP Services -> Controllers -> HTTP Tests -> Route Visibility -> Libraries: Web
+- HTTP Services -> Controllers -> HTTP Tests -> HTTP Server -> Libraries: Web
 - Queues -> Jobs -> Workers -> Job Tests -> Worker Operations -> Libraries: Queue
 - Events -> Events Versus Queues -> Event Tests -> Libraries: Events
-- Scheduler -> Scheduled Work -> Scheduler Operations -> Lighthouse Scheduler Views -> Libraries: Scheduler
+- Scheduler -> Scheduler Processes -> Lighthouse -> Libraries: Scheduler
 - Storage Patterns -> Driver Selection -> Storage Tests -> Libraries: Storage
 - Cache Patterns -> Driver Selection -> Cache Tests -> Libraries: Cache
 - Metrics -> Operations -> Lighthouse -> Libraries: Metrics
