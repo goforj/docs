@@ -369,7 +369,7 @@ GoForj should maintain four documentation layers:
 - Public reference docs: CLI, env vars, generated files, and framework configuration.
 - Internal AI and maintainer docs: philosophy, terminology, architecture, anti-patterns, review checklists.
 
-The `docs/ai` directory should govern all three.
+The `ai` directory should govern all three.
 
 ## 3. Golden Path Reinforcement
 
@@ -990,7 +990,7 @@ Create checklists for:
 - operations pages
 - AI-generated drafts
 
-These should live in `docs/ai` and be used before publishing.
+These should live in `ai` and be used before publishing.
 
 ## Drift Prevention Systems
 
@@ -1009,7 +1009,7 @@ Recommended systems:
 
 ## Recommended Additions For GoForj
 
-The current `docs/ai` foundation is strong. To make it more operational, add these next:
+The current `ai` foundation is strong. To make it more operational, add these next:
 
 1. `information-architecture.md`
    - Canonical public docs sitemap, navigation rules, page grouping, and conceptual dependency order.

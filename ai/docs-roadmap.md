@@ -21,28 +21,29 @@ Use this file as the working plan. Check boxes as pages, navigation changes, exa
 
 Goal: finish the internal AI/docs operating layer.
 
-- [x] Create `docs/ai/docs-constitution.md`.
-- [x] Create `docs/ai/vision.md`.
-- [x] Create `docs/ai/philosophy.md`.
-- [x] Create `docs/ai/terminology.md`.
-- [x] Create `docs/ai/tone.md`.
-- [x] Create `docs/ai/docs-style-guide.md`.
-- [x] Create `docs/ai/golden-paths.md`.
-- [x] Create `docs/ai/anti-patterns.md`.
-- [x] Create `docs/ai/architecture.md`.
-- [x] Create `docs/ai/framework-docs-analysis.md`.
-- [x] Create `docs/ai/information-architecture.md`.
-- [x] Create `docs/ai/page-templates.md`.
-- [x] Create `docs/ai/review-checklists.md`.
-- [x] Create `docs/ai/example-registry.md`.
-- [x] Create `docs/ai/operations-docs-model.md`.
-- [x] Create `docs/ai/driver-decision-model.md`.
-- [x] Create `docs/ai/library-docs-model.md`.
-- [x] Create `docs/ai/generated-components-model.md`.
-- [x] Create `docs/ai/runtime-topology-model.md`.
-- [x] Create `docs/ai/product-surfaces-model.md`.
-- [x] Create `docs/ai/source-context-map.md`.
-- [x] Create `docs/ai/ai-docs-workflow.md`.
+- [x] Create `ai/docs-constitution.md`.
+- [x] Create `ai/vision.md`.
+- [x] Create `ai/philosophy.md`.
+- [x] Create `ai/terminology.md`.
+- [x] Create `ai/tone.md`.
+- [x] Create `ai/docs-style-guide.md`.
+- [x] Create `ai/golden-paths.md`.
+- [x] Create `ai/anti-patterns.md`.
+- [x] Create `ai/architecture.md`.
+- [x] Create `ai/framework-docs-analysis.md`.
+- [x] Create `ai/information-architecture.md`.
+- [x] Create `ai/page-templates.md`.
+- [x] Create `ai/review-checklists.md`.
+- [x] Create `ai/example-registry.md`.
+- [x] Create `ai/operations-docs-model.md`.
+- [x] Create `ai/driver-decision-model.md`.
+- [x] Create `ai/library-docs-model.md`.
+- [x] Create `ai/generated-components-model.md`.
+- [x] Create `ai/runtime-topology-model.md`.
+- [x] Create `ai/product-surfaces-model.md`.
+- [x] Create `ai/marketing-site-strategy.md`.
+- [x] Create `ai/source-context-map.md`.
+- [x] Create `ai/ai-docs-workflow.md`.
 - [x] Replace older non-actionable planning notes with this actionable roadmap.
 
 Exit criteria:
@@ -90,8 +91,8 @@ Write these in order:
 
 Acceptance criteria for each page:
 
-- [x] Uses terminology from `docs/ai/terminology.md`.
-- [x] Follows the relevant template from `docs/ai/page-templates.md`.
+- [x] Uses terminology from `ai/terminology.md`.
+- [x] Follows the relevant template from `ai/page-templates.md`.
 - [x] Names generated App locations when relevant.
 - [x] Shows local-first behavior before production variants.
 - [x] Includes a verification step when task-oriented.
@@ -285,7 +286,7 @@ Goal: tag the current documentation line and establish the versioning model befo
 - [x] Expose the current docs version as `v0.9`.
 - [x] Add a nav version selector.
 - [x] Add `versions/index.md` with the public version policy.
-- [x] Add `docs/ai/docs-versioning.md` with internal versioning governance.
+- [x] Add `ai/docs-versioning.md` with internal versioning governance.
 - [ ] Create a frozen `/versions/v0.9/` snapshot when a second active documentation line exists.
 
 Exit criteria:
@@ -293,6 +294,22 @@ Exit criteria:
 - [x] Readers can see which documentation line they are reading.
 - [x] Maintainers know when to snapshot and what to snapshot.
 - [x] Library docs remain separate from framework version snapshots until package-version alignment requires otherwise.
+
+## Future Marketing Surfaces
+
+Goal: keep product storytelling, showcase pages, and future publishing surfaces aligned with the documentation system.
+
+- [x] Capture the unified VitePress-first site strategy in `ai/marketing-site-strategy.md`.
+- [ ] Decide when to add a public `Showcase` section.
+- [ ] Design the first Lighthouse showcase page as a product story, not API reference.
+- [ ] Decide when a lightweight blog/news section has enough content to justify public navigation.
+- [ ] Revisit whether VitePress is still the right platform if CMS workflows, complex demos, or separate marketing ownership become real constraints.
+
+Exit criteria:
+
+- [ ] Marketing pages, showcase pages, blog posts, docs pages, and library pages have distinct roles.
+- [ ] Product storytelling supports the docs learning path instead of competing with it.
+- [ ] Any future platform split is based on concrete constraints, not aesthetic preference alone.
 
 ## First Runnable Scenarios
 
@@ -302,7 +319,7 @@ Do not continue expanding runnable scenarios until the publishing-quality pass i
 
 Build these after the first 10 framework pages:
 
-- [x] Create `docs/ai/runnable-scenarios.md` to define the shared scenario model.
+- [x] Create `ai/runnable-scenarios.md` to define the shared scenario model.
 - [x] JSON API route with controller and service.
 - [x] Cached user profile lookup.
 - [x] File upload to named storage disk.
@@ -339,8 +356,8 @@ Work these before adding more scenario pages:
 Apply before publishing a page:
 
 - [ ] Page follows the relevant template.
-- [ ] Terminology matches `docs/ai/terminology.md`.
-- [ ] Examples use canonical names from `docs/ai/example-registry.md`.
+- [ ] Terminology matches `ai/terminology.md`.
+- [ ] Examples use canonical names from `ai/example-registry.md`.
 - [ ] Commands are verified against source or generated templates.
 - [ ] File paths are verified against source or generated templates.
 - [ ] Framework pages link to Libraries for primitive details.

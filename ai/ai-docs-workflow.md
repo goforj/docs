@@ -10,10 +10,10 @@ The goal is to produce accurate, cohesive GoForj docs without inventing behavior
 
 For any substantial docs task, read:
 
-1. `docs/ai/docs-constitution.md`
-2. `docs/ai/terminology.md`
-3. `docs/ai/golden-paths.md`
-4. `docs/ai/docs-style-guide.md`
+1. `ai/docs-constitution.md`
+2. `ai/terminology.md`
+3. `ai/golden-paths.md`
+4. `ai/docs-style-guide.md`
 5. the specific operating file for the task:
    - `information-architecture.md`
    - `page-templates.md`

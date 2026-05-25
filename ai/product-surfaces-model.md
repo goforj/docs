@@ -45,7 +45,7 @@ Auth docs should be security-first and operationally precise. Avoid presenting J
 
 Recommended artifact:
 
-- `security/auth-docs-model.md` or `docs/ai/auth-docs-model.md`
+- `security/auth-docs-model.md` or `ai/auth-docs-model.md`
 
 ## Starter Kits
 
