@@ -24,11 +24,21 @@
     }
 }
 
-/* Content panel transparency */
-.content-body, .VPNavBar {
-    background: rgba(27,27,31, 0.25) !important;
+/* Keep the navbar glass as one continuous layer. */
+.VPNavBar {
+    background: rgba(27, 27, 31, 0.42) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+}
+
+.VPNavBar .content-body {
+    background: transparent !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.content-body {
+    background: rgba(27,27,31, 0.25) !important;
 }
 
 .VPHome .VPHero .container {

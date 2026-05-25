@@ -1450,6 +1450,9 @@ function adjustColor(color, amount) {
   fill: rgba(255, 224, 182, 0.26);
 }
 @media (max-width: 1024px) {
+  .gf-home-hero {
+    padding-top: calc(var(--vp-nav-height) + 2rem);
+  }
   .gf-hero-container {
     flex-direction: column;
     text-align: center;
@@ -1471,6 +1474,9 @@ function adjustColor(color, amount) {
   .gf-hero-actions {
     justify-content: center;
   }
+  .gf-hero-content.is-visible {
+    transform: translateY(0);
+  }
   .gf-hero-graphic {
     width: 100%;
     max-width: 760px;
@@ -1481,11 +1487,11 @@ function adjustColor(color, amount) {
   }
 }
 @media (max-width: 640px) {
+  .gf-home-hero {
+    padding: calc(var(--vp-nav-height) + 1.5rem) 1.25rem 4rem;
+  }
   .gf-hero-title {
     font-size: 2.85rem;
-  }
-  .gf-hero {
-    padding-top: 3rem;
   }
   .gf-hero-actions {
     flex-direction: column;
