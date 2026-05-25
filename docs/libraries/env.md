@@ -65,7 +65,7 @@ import (
 )
 
 func init() {
-	if err := env.LoadEnvFileIfExists(); err != nil {
+	if err := env.Load(); err != nil {
 		log.Fatalf("load env: %v", err)
 	}
 }
@@ -86,13 +86,67 @@ func main() {
 }
 ```
 
+## Scoped prefixes {#scoped-prefixes}
+
+Use `Scope` when a group of related settings share a common prefix and may also expose named child configs.
+
+```go
+package main
+
+import (
+	"os"
+
+	"github.com/goforj/env/v2"
+)
+
+func main() {
+	_ = os.Setenv("STORAGE_DRIVER", "local")
+	_ = os.Setenv("STORAGE_ROOT", "storage/app/private")
+	_ = os.Setenv("STORAGE_PUBLIC_DRIVER", "local")
+	_ = os.Setenv("STORAGE_PUBLIC_ROOT", "storage/app/public")
+	_ = os.Setenv("STORAGE_AVATARS_DRIVER", "s3")
+	_ = os.Setenv("STORAGE_AVATARS_BUCKET", "my-bucket")
+	_ = os.Setenv("STORAGE_AVATARS_REGION", "us-east-1")
+
+	storage := env.WithPrefix("STORAGE")
+
+	// Root/default config reads STORAGE_* keys.
+	driver := storage.Get("DRIVER", "local")
+	root := storage.Get("ROOT", "storage/app/private")
+
+	public := storage.Child("PUBLIC")
+
+	// Child scopes compose STORAGE_<NAME>_* keys.
+	publicDriver := public.Get("DRIVER", "local")
+	publicRoot := public.Get("ROOT", "storage/app/public")
+
+	// ChildNames discovers named children while ignoring root keys.
+	names := storage.ChildNames([]string{
+		"DRIVER",
+		"ROOT",
+		"BUCKET",
+		"REGION",
+	})
+
+	env.Dump(driver, root, publicDriver, publicRoot, names)
+	// #string "local"
+	// #string "storage/app/private"
+	// #string "local"
+	// #string "storage/app/public"
+	// #[]string [
+	//  0 => "AVATARS" #string
+	//  1 => "PUBLIC" #string
+	// ]
+}
+```
+
 ### Full kitchen-sink example {#full-kitchen-sink-example}
 
 See [examples/kitchensink/main.go](https://github.com/goforj/env/blob/main/examples/kitchensink/main.go) for a runnable program that exercises almost every helper (env loading, typed getters, must-getters, runtime + container detection, and the `env.Dump` wrapper) with deterministic godump output.
 
 ## Environment loading {#environment-loading}
 
-LoadEnvFileIfExists loads env files in this order:
+Load loads env files in this order:
 
 - `.env`
 - `.env.local`, `.env.staging`, or `.env.production`, based on `APP_ENV` (`local` by default)
@@ -142,9 +196,10 @@ No magic. No globals. No surprises.
 | **Application environment** | [GetAppEnv](#getappenv) [IsAppEnv](#isappenv) [IsAppEnvLocal](#isappenvlocal) [IsAppEnvLocalOrStaging](#isappenvlocalorstaging) [IsAppEnvProduction](#isappenvproduction) [IsAppEnvStaging](#isappenvstaging) [IsAppEnvTesting](#isappenvtesting) [IsAppEnvTestingOrLocal](#isappenvtestingorlocal) [SetAppEnv](#setappenv) [SetAppEnvLocal](#setappenvlocal) [SetAppEnvProduction](#setappenvproduction) [SetAppEnvStaging](#setappenvstaging) [SetAppEnvTesting](#setappenvtesting) |
 | **Container detection** | [IsContainer](#iscontainer) [IsDocker](#isdocker) [IsDockerHost](#isdockerhost) [IsDockerInDocker](#isdockerindocker) [IsHostEnvironment](#ishostenvironment) [IsKubernetes](#iskubernetes) |
 | **Debugging** | [Dump](#dump) |
-| **Environment loading** | [IsEnvLoaded](#isenvloaded) [LoadEnvFileIfExists](#loadenvfileifexists) |
+| **Environment loading** | [IsEnvLoaded](#isenvloaded) [Load](#load) [LoadEnvFileIfExists](#loadenvfileifexists) [Reload](#reload) |
+| **Other** | [Key](#key) |
 | **Runtime** | [Arch](#arch) [IsBSD](#isbsd) [IsContainerOS](#iscontaineros) [IsLinux](#islinux) [IsMac](#ismac) [IsUnix](#isunix) [IsWindows](#iswindows) [OS](#os) |
-| **Typed getters** | [Get](#get) [GetBool](#getbool) [GetDuration](#getduration) [GetEnum](#getenum) [GetFloat](#getfloat) [GetInt](#getint) [GetInt64](#getint64) [GetMap](#getmap) [GetMapInt](#getmapint) [GetSlice](#getslice) [GetUint](#getuint) [GetUint64](#getuint64) [MustGet](#mustget) [MustGetBool](#mustgetbool) [MustGetInt](#mustgetint) |
+| **Typed getters** | [Child](#child) [ChildNames](#childnames) [Get](#get) [GetBool](#getbool) [GetDuration](#getduration) [GetEnum](#getenum) [GetFloat](#getfloat) [GetInt](#getint) [GetInt64](#getint64) [GetMap](#getmap) [GetMapInt](#getmapint) [GetSlice](#getslice) [GetUint](#getuint) [GetUint64](#getuint64) [MustGet](#mustget) [MustGetBool](#mustgetbool) [MustGetInt](#mustgetint) [WithPrefix](#withprefix) |
 
 
 ## Application environment {#application-environment}
@@ -251,7 +306,7 @@ env.Dump(env.IsAppEnvTestingOrLocal())
 // #bool true
 ```
 
-### SetAppEnv · mutates-process-env {#setappenv}
+### SetAppEnv {#setappenv}
 
 SetAppEnv sets APP_ENV to a supported value.
 
@@ -263,7 +318,7 @@ env.Dump(env.GetAppEnv())
 // #string "staging"
 ```
 
-### SetAppEnvLocal · mutates-process-env {#setappenvlocal}
+### SetAppEnvLocal {#setappenvlocal}
 
 SetAppEnvLocal sets APP_ENV to "local".
 
@@ -273,7 +328,7 @@ env.Dump(env.GetAppEnv())
 // #string "local"
 ```
 
-### SetAppEnvProduction · mutates-process-env {#setappenvproduction}
+### SetAppEnvProduction {#setappenvproduction}
 
 SetAppEnvProduction sets APP_ENV to "production".
 
@@ -283,7 +338,7 @@ env.Dump(env.GetAppEnv())
 // #string "production"
 ```
 
-### SetAppEnvStaging · mutates-process-env {#setappenvstaging}
+### SetAppEnvStaging {#setappenvstaging}
 
 SetAppEnvStaging sets APP_ENV to "staging".
 
@@ -293,7 +348,7 @@ env.Dump(env.GetAppEnv())
 // #string "staging"
 ```
 
-### SetAppEnvTesting · mutates-process-env {#setappenvtesting}
+### SetAppEnvTesting {#setappenvtesting}
 
 SetAppEnvTesting sets APP_ENV to "testing".
 
@@ -402,18 +457,20 @@ env.Dump("status", map[string]int{"ok": 1, "fail": 0})
 
 ### IsEnvLoaded {#isenvloaded}
 
-IsEnvLoaded reports whether LoadEnvFileIfExists was executed in this process.
+IsEnvLoaded reports whether Load or LoadEnvFileIfExists was executed in this process.
 
 ```go
 env.Dump(env.IsEnvLoaded())
-// #bool true  (after LoadEnvFileIfExists)
+// #bool true  (after Load)
 // #bool false (otherwise)
 ```
 
-### LoadEnvFileIfExists · mutates-process-env {#loadenvfileifexists}
+### Load {#load}
 
-LoadEnvFileIfExists loads .env with optional layering for .env.local/.env.staging/.env.production,
-plus .env.testing/.env.host when present.
+Load loads .env with optional layering for .env.local/.env.staging/.env.production,
+plus .env.testing/.env.host when present. It only applies once per process;
+subsequent calls return without reloading because the result is cached. Use
+Reload to re-read env files after the first load.
 
 _Example: test-specific env file_
 
@@ -423,7 +480,7 @@ _ = os.WriteFile(filepath.Join(tmp, ".env.testing"), []byte("PORT=9090\nENV_DEBU
 _ = os.Chdir(tmp)
 _ = os.Setenv("APP_ENV", env.Testing)
 
-_ = env.LoadEnvFileIfExists()
+_ = env.Load()
 env.Dump(os.Getenv("PORT"))
 // #string "9090"
 ```
@@ -432,10 +489,40 @@ _Example: default .env on a host_
 
 ```go
 _ = os.WriteFile(".env", []byte("SERVICE=api\nENV_DEBUG=3"), 0o644)
-_ = env.LoadEnvFileIfExists()
+_ = env.Load()
 env.Dump(os.Getenv("SERVICE"))
 // #string "api"
 ```
+
+### LoadEnvFileIfExists {#loadenvfileifexists}
+
+LoadEnvFileIfExists is a compatibility alias for Load.
+
+```go
+_ = env.LoadEnvFileIfExists()
+```
+
+### Reload {#reload}
+
+Reload re-applies the same layered env loading as Load, even if Load already
+ran earlier in the same process.
+
+_Example: refresh changed env files_
+
+```go
+_ = os.WriteFile(".env", []byte("SERVICE=api"), 0o644)
+_ = env.Load()
+_ = os.WriteFile(".env", []byte("SERVICE=worker"), 0o644)
+_ = env.Reload()
+env.Dump(os.Getenv("SERVICE"))
+// #string "worker"
+```
+
+## Other {#other}
+
+### Key {#key}
+
+Key builds the fully qualified environment key for key within the scope.
 
 ## Runtime {#runtime}
 
@@ -525,6 +612,50 @@ env.Dump(env.OS())
 ```
 
 ## Typed getters {#typed-getters}
+
+### Child {#child}
+
+Child returns a new scope rooted at the current prefix plus name.
+
+_Example: named child scope_
+
+```go
+_ = os.Setenv("STORAGE_PUBLIC_ROOT", "storage/app/public")
+
+public := env.WithPrefix("STORAGE").Child("PUBLIC")
+env.Dump(
+	public.Key("ROOT"),
+	public.Get("ROOT", "storage/app/public"),
+)
+// #string "STORAGE_PUBLIC_ROOT"
+// #string "storage/app/public"
+```
+
+### ChildNames {#childnames}
+
+ChildNames discovers named child scopes under the current prefix.
+
+_Example: discover child names_
+
+```go
+_ = os.Setenv("STORAGE_DRIVER", "local")
+_ = os.Setenv("STORAGE_ROOT", "storage/app/private")
+_ = os.Setenv("STORAGE_PUBLIC_ROOT", "storage/app/public")
+_ = os.Setenv("STORAGE_AVATARS_BUCKET", "my-bucket")
+_ = os.Setenv("STORAGE_AVATARS_REGION", "us-east-1")
+
+names := env.WithPrefix("STORAGE").ChildNames([]string{
+	"DRIVER",
+	"ROOT",
+	"BUCKET",
+	"REGION",
+})
+env.Dump(names)
+// #[]string [
+//  0 => "AVATARS" #string
+//  1 => "PUBLIC" #string
+// ]
+```
 
 ### Get {#get}
 
@@ -807,7 +938,7 @@ env.Dump(maxItems)
 // #uint64 100
 ```
 
-### MustGet · panic {#mustget}
+### MustGet {#mustget}
 
 MustGet returns the value of key or panics if missing/empty.
 
@@ -827,7 +958,7 @@ os.Unsetenv("API_SECRET")
 secret = env.MustGet("API_SECRET") // panics: env variable missing: API_SECRET
 ```
 
-### MustGetBool · panic {#mustgetbool}
+### MustGetBool {#mustgetbool}
 
 MustGetBool panics if missing or invalid.
 
@@ -847,7 +978,7 @@ _ = os.Setenv("FEATURE_ENABLED", "maybe")
 _ = env.MustGetBool("FEATURE_ENABLED") // panics when parsing
 ```
 
-### MustGetInt · panic {#mustgetint}
+### MustGetInt {#mustgetint}
 
 MustGetInt panics if the value is missing or not an int.
 
@@ -865,6 +996,27 @@ _Example: panic on bad value_
 ```go
 _ = os.Setenv("PORT", "not-a-number")
 _ = env.MustGetInt("PORT") // panics when parsing
+```
+
+### WithPrefix {#withprefix}
+
+WithPrefix returns a scope rooted at prefix after minimal normalization.
+
+_Example: root scope access_
+
+```go
+_ = os.Setenv("STORAGE_DRIVER", "local")
+_ = os.Setenv("STORAGE_ROOT", "storage/app/private")
+
+storage := env.WithPrefix(" STORAGE ")
+env.Dump(
+	storage.Key("DRIVER"),
+	storage.Get("DRIVER", "s3"),
+	storage.Get("ROOT", "storage/app/private"),
+)
+// #string "STORAGE_DRIVER"
+// #string "local"
+// #string "storage/app/private"
 ```
 <!-- api:embed:end -->
 

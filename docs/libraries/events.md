@@ -22,7 +22,7 @@ repoUrl: https://github.com/goforj/events
     <a href="https://codecov.io/gh/goforj/events"><img src="https://codecov.io/gh/goforj/events/graph/badge.svg?token=07N6F71OXM" alt="Codecov"></a>
 <!-- test-count:embed:start -->
   <img src="https://img.shields.io/badge/unit_tests-25-brightgreen" alt="Unit tests (executed count)">
-  <img src="https://img.shields.io/badge/integration_tests-62-blue" alt="Integration tests (executed count)">
+  <img src="https://img.shields.io/badge/integration_tests-86-blue" alt="Integration tests (executed count)">
 <!-- test-count:embed:end -->
 </p>
 
@@ -31,14 +31,6 @@ repoUrl: https://github.com/goforj/events
 **events** is a typed event bus for Go and handles **event publication and fan-out**. Durable background work such as retries and worker queues belongs in [`queue`](https://github.com/goforj/queue).
 
 It lets applications publish and subscribe to events using normal Go types, with delivery handled either in-process or through distributed backends like NATS, Redis, Kafka, or Google Pub/Sub.
-
-## Using With GoForj {#using-with-goforj}
-
-Generated GoForj Apps wrap this library behind generated event components, subscriber registration, and typed event files created by commands such as `forj run make:event UserRegistered`.
-
-Use `EVENTS_SUPPORTED_DRIVERS` to control which event drivers are compiled into the App. Use `EVENTS_DRIVER` and named event bus variables to select local or distributed delivery without changing publisher or subscriber code.
-
-Use this page for standalone event construction, driver behavior, and package-level API details. Use [Events Versus Queues](/async/events-vs-queues), [Configuration](/getting-started/configuration), and [Generated Components](/core/generated-components) for the generated App integration model.
 
 ## Installation {#installation}
 
@@ -162,15 +154,15 @@ sh scripts/refresh-bench-snapshot.sh
 <!-- bench:embed:start -->
 These charts compare one publish-plus-delivery round trip for `sync` and each enabled distributed driver fixture.
 
-Note: `gcppubsub` is excluded from the default charts because the Pub/Sub emulator is not representative enough for backend latency comparison. Benchmark it explicitly with `INTEGRATION_DRIVER=gcppubsub` when needed.
+Note: `sns` and `gcppubsub` run through local emulators in this repo, so read those results as development approximations rather than direct managed-service latency comparisons.
 
-![Events backend latency chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ns.svg)
+![Events backend latency chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ns.svg?v=1773131451)
 
-![Events backend throughput chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ops.svg)
+![Events backend throughput chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ops.svg?v=1773131451)
 
-![Events backend bytes chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_bytes.svg)
+![Events backend bytes chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_bytes.svg?v=1773131451)
 
-![Events backend allocations chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_allocs.svg)
+![Events backend allocations chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_allocs.svg?v=1773131451)
 <!-- bench:embed:end -->
 
 These checks are for obvious regression detection, not for noisy micro-optimism
@@ -182,14 +174,14 @@ or hard CI performance gates.
 
 | Group | Functions |
 |------:|-----------|
-| **Bus** | [Driver](#bus-driver) [Ready](#bus-ready) [ReadyContext](#bus-readycontext) |
+| **Bus** | [Driver](#bus-driver) [Ready](#bus-ready) [WithContext](#bus-withcontext) |
 | **Config** | [Config](#events-config) [gcppubsubevents.Config](#gcppubsubevents-config) [kafkaevents.Config](#kafkaevents-config) [natsevents.Config](#natsevents-config) [natsjetstreamevents.Config](#natsjetstreamevents-config) [redisevents.Config](#redisevents-config) [snsevents.Config](#snsevents-config) |
 | **Construction** | [New](#events-new) [NewNull](#events-newnull) [NewSync](#events-newsync) |
 | **Driver Constructors** | [gcppubsubevents.New](#gcppubsubevents-new) [kafkaevents.New](#kafkaevents-new) [natsevents.New](#natsevents-new) [natsjetstreamevents.New](#natsjetstreamevents-new) [redisevents.New](#redisevents-new) [snsevents.New](#snsevents-new) |
 | **Lifecycle** | [Close](#driver-close) |
 | **Options** | [Option](#events-option) [WithCodec](#events-withcodec) |
-| **Publish** | [Publish](#bus-publish) [PublishContext](#bus-publishcontext) [TopicEvent](#events-topicevent) |
-| **Subscribe** | [Subscribe](#bus-subscribe) [SubscribeContext](#bus-subscribecontext) [Subscription](#events-subscription) |
+| **Publish** | [Publish](#bus-publish) [TopicEvent](#events-topicevent) |
+| **Subscribe** | [Subscribe](#bus-subscribe) [Subscription](#events-subscription) |
 | **Testing** | [Fake](#events-fake) [Fake.Bus](#fake-bus) [Fake.Count](#fake-count) [Fake.Records](#fake-records) [Fake.Reset](#fake-reset) [NewFake](#events-newfake) [Record](#events-record) |
 
 
@@ -215,15 +207,9 @@ fmt.Println(bus.Ready() == nil)
 // Output: true
 ```
 
-### ReadyContext {#bus-readycontext}
+### WithContext {#bus-withcontext}
 
-ReadyContext reports whether the bus is ready.
-
-```go
-bus, _ := events.NewSync()
-fmt.Println(bus.ReadyContext(context.Background()) == nil)
-// Output: true
-```
+WithContext returns a derived bus handle bound to ctx for subsequent operations.
 
 ## Config {#config}
 
@@ -514,24 +500,6 @@ _ = bus.Publish(UserCreated{ID: "123"})
 // Output: 123
 ```
 
-### PublishContext {#bus-publishcontext}
-
-PublishContext publishes an event using the configured codec and dispatch flow.
-
-```go
-type UserCreated struct {
-	ID string `json:"id"`
-}
-
-bus, _ := events.NewSync()
-_, _ = bus.Subscribe(func(ctx context.Context, event UserCreated) error {
-	fmt.Println(event.ID, ctx != nil)
-	return nil
-})
-_ = bus.PublishContext(context.Background(), UserCreated{ID: "123"})
-// Output: 123 true
-```
-
 ### TopicEvent {#events-topicevent}
 
 TopicEvent overrides the derived topic for an event.
@@ -555,25 +523,6 @@ sub, _ := bus.Subscribe(func(ctx context.Context, event UserCreated) error {
 defer sub.Close()
 _ = bus.Publish(UserCreated{ID: "123"})
 // Output: 123
-```
-
-### SubscribeContext {#bus-subscribecontext}
-
-SubscribeContext registers a typed handler.
-
-```go
-type UserCreated struct {
-	ID string `json:"id"`
-}
-
-bus, _ := events.NewSync()
-sub, _ := bus.SubscribeContext(context.Background(), func(ctx context.Context, event UserCreated) error {
-	fmt.Println(event.ID, ctx != nil)
-	return nil
-})
-defer sub.Close()
-_ = bus.PublishContext(context.Background(), UserCreated{ID: "123"})
-// Output: 123 true
 ```
 
 ### Subscription {#events-subscription}

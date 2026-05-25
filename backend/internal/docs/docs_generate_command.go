@@ -51,6 +51,13 @@ func (c *GenerateCommand) Run() error {
 			OutputPath: filepath.Join("libraries", "httpx.md"),
 		},
 		{
+			Slug:       "web",
+			Title:      "Web",
+			CloneURL:   "https://github.com/goforj/web.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "web.md"),
+		},
+		{
 			Slug:       "execx",
 			Title:      "ExecX",
 			CloneURL:   "https://github.com/goforj/execx.git",
@@ -91,6 +98,13 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/events.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "events.md"),
+		},
+		{
+			Slug:       "mail",
+			Title:      "Mail",
+			CloneURL:   "https://github.com/goforj/mail.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "mail.md"),
 		},
 		{
 			Slug:       "cache",

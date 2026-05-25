@@ -20,7 +20,7 @@ repoUrl: https://github.com/goforj/cache
     <a href="https://goreportcard.com/report/github.com/goforj/cache"><img src="https://goreportcard.com/badge/github.com/goforj/cache" alt="Go Report Card"></a>
     <a href="https://codecov.io/gh/goforj/cache"><img src="https://codecov.io/gh/goforj/cache/graph/badge.svg?token=B6ROULLKWU"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/unit_tests-187-brightgreen" alt="Unit tests (executed count)">
+    <img src="https://img.shields.io/badge/unit_tests-189-brightgreen" alt="Unit tests (executed count)">
     <img src="https://img.shields.io/badge/integration_tests-113-blue" alt="Integration tests (executed count)">
 <!-- test-count:embed:end -->
 </p>
@@ -28,14 +28,6 @@ repoUrl: https://github.com/goforj/cache
 ## What cache is {#what-cache-is}
  
 An explicit cache abstraction with a minimal Store interface and ergonomic Cache helpers. Drivers are chosen when you construct the store, so swapping backends is a dependency-injection change instead of a refactor.
-
-## Using With GoForj {#using-with-goforj}
-
-Generated GoForj Apps wrap this library behind generated cache components and named accessors such as `app.Cache()` and `app.Caches().Sessions()`.
-
-Use `CACHE_SUPPORTED_DRIVERS` to control which drivers are compiled into the App. Use `CACHE_DRIVER` and named variables such as `CACHE_SESSIONS_DRIVER` to choose the runtime backend without changing application code.
-
-Use this page for standalone constructors, driver behavior, and package-level API details. Use [Configuration](/getting-started/configuration) and [Generated Components](/core/generated-components) for the generated App integration model.
 
 ## Installation {#installation}
 
@@ -371,15 +363,15 @@ Many functions also provide `...Context` variants that accept an explicit `conte
 | Group | Functions |
 |------:|:-----------|
 | **Constructors** | [NewFileStore](#newfilestore) [NewFileStoreWithConfig](#newfilestorewithconfig) [NewMemoryStore](#newmemorystore) [NewMemoryStoreWithConfig](#newmemorystorewithconfig) [NewNullStore](#newnullstore) [NewNullStoreWithConfig](#newnullstorewithconfig) |
-| **Core** | [Driver](#cache-driver) [NewCache](#newcache) [NewCacheWithTTL](#newcachewithttl) [Ready](#cache-ready) [Store](#cache-store) |
+| **Core** | [Driver](#cache-driver) [Inspector](#cache-inspector) [NewCache](#newcache) [NewCacheWithTTL](#newcachewithttl) [Ready](#cache-ready) [Store](#cache-store) [WithContext](#cache-withcontext) |
 | **Driver Configs** | [Shared BaseConfig](#driver-configs-shared-baseconfig) [DynamoDB Config](#driver-config-dynamocache) [Memcached Config](#driver-config-memcachedcache) [MySQL Config](#driver-config-mysqlcache) [NATS Config](#driver-config-natscache) [Postgres Config](#driver-config-postgrescache) [Redis Config](#driver-config-rediscache) [SQL Core Config](#driver-config-sqlcore) [SQLite Config](#driver-config-sqlitecache) |
 | **Invalidation** | [Delete](#cache-delete) [DeleteMany](#cache-deletemany) [Flush](#cache-flush) [Pull](#pull) [PullBytes](#cache-pullbytes) |
-| **Locking** | [Acquire](#lockhandle-acquire) [Block](#lockhandle-block) [Lock](#cache-lock) [LockContext](#cache-lockcontext) [LockHandle.Get](#lockhandle-get) [NewLockHandle](#cache-newlockhandle) [Release](#lockhandle-release) [TryLock](#cache-trylock) [Unlock](#cache-unlock) |
+| **Locking** | [Acquire](#lockhandle-acquire) [Block](#lockhandle-block) [Lock](#cache-lock) [LockHandle.Get](#lockhandle-get) [NewLockHandle](#cache-newlockhandle) [Release](#lockhandle-release) [TryLock](#cache-trylock) [Unlock](#cache-unlock) |
 | **Memoization** | [NewMemoStore](#newmemostore) |
 | **Observability** | [OnCacheOp](#observerfunc-oncacheop) [WithObserver](#cache-withobserver) |
 | **Rate Limiting** | [RateLimit](#cache-ratelimit) |
-| **Read Through** | [Remember](#remember) [RememberBytes](#cache-rememberbytes) [RememberStale](#rememberstale) [RememberStaleBytes](#cache-rememberstalebytes) [RememberStaleContext](#rememberstalecontext) |
-| **Reads** | [BatchGetBytes](#cache-batchgetbytes) [Get](#get) [GetBytes](#cache-getbytes) [GetJSON](#getjson) [GetString](#cache-getstring) |
+| **Read Through** | [Remember](#remember) [RememberBytes](#cache-rememberbytes) [RememberStale](#rememberstale) [RememberStaleBytes](#cache-rememberstalebytes) |
+| **Reads** | [BatchGetBytes](#cache-batchgetbytes) [Get](#get) [GetBytes](#cache-getbytes) [GetJSON](#getjson) [GetString](#cache-getstring) [ListPage](#listpage) |
 | **Refresh Ahead** | [RefreshAhead](#refreshahead) [RefreshAheadBytes](#cache-refreshaheadbytes) [RefreshAheadValueWithCodec](#refreshaheadvaluewithcodec) |
 | **Testing Helpers** | [AssertCalled](#fake-assertcalled) [AssertNotCalled](#fake-assertnotcalled) [AssertTotal](#fake-asserttotal) [Cache](#fake-cache) [Count](#fake-count) [New](#new) [Reset](#fake-reset) [Total](#fake-total) |
 | **Writes** | [Add](#cache-add) [BatchSetBytes](#cache-batchsetbytes) [Decrement](#cache-decrement) [Increment](#cache-increment) [Set](#set) [SetBytes](#cache-setbytes) [SetJSON](#setjson) [SetString](#cache-setstring) |
@@ -473,6 +465,17 @@ fmt.Println(store.Driver()) // null
 
 Driver reports the underlying store driver.
 
+### Inspector {#cache-inspector}
+
+Inspector returns the optional browsing interface for the underlying store.
+
+```go
+ctx := context.Background()
+c := cache.NewCache(cache.NewMemoryStore(ctx))
+inspector, ok := c.Inspector()
+fmt.Println(ok, inspector.Capabilities().CanList) // true true
+```
+
 ### NewCache {#newcache}
 
 NewCache creates a cache facade bound to a concrete store.
@@ -514,6 +517,10 @@ ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
 fmt.Println(c.Store().Driver()) // memory
 ```
+
+### WithContext {#cache-withcontext}
+
+WithContext returns a derived cache handle that binds ctx to subsequent operations.
 
 ## Driver Configs {#driver-configs}
 
@@ -810,10 +817,6 @@ locked, err := c.Lock("job:sync", 10*time.Second, time.Second)
 fmt.Println(err == nil, locked) // true true
 ```
 
-### LockContext {#cache-lockcontext}
-
-LockContext retries lock acquisition until success or context cancellation.
-
 ### LockHandle.Get {#lockhandle-get}
 
 Get acquires the lock once, runs fn if acquired, then releases automatically.
@@ -1011,20 +1014,6 @@ body, usedStale, err := c.RememberStaleBytes("profile:42", time.Minute, 10*time.
 fmt.Println(err == nil, usedStale, len(body) > 0)
 ```
 
-### RememberStaleContext {#rememberstalecontext}
-
-RememberStaleContext returns a typed value with stale fallback semantics using JSON encoding by default.
-
-```go
-type Profile struct { Name string `json:"name"` }
-ctx := context.Background()
-c := cache.NewCache(cache.NewMemoryStore(ctx))
-profile, usedStale, err := cache.RememberStaleContext[Profile](ctx, c, "profile:42", time.Minute, 10*time.Minute, func(ctx context.Context) (Profile, error) {
-	return Profile{Name: "Ada"}, nil
-})
-fmt.Println(err == nil, usedStale, profile.Name) // true false Ada
-```
-
 ## Reads {#reads}
 
 ### BatchGetBytes {#cache-batchgetbytes}
@@ -1092,6 +1081,22 @@ c := cache.NewCache(cache.NewMemoryStore(ctx))
 _ = c.SetString("user:42:name", "Ada", 0)
 name, ok, _ := c.GetString("user:42:name")
 fmt.Println(ok, name) // true Ada
+```
+
+### ListPage {#listpage}
+
+ListPage lists cache entries from an inspector-capable store.
+
+```go
+ctx := context.Background()
+c := cache.NewCache(cache.NewMemoryStore(ctx))
+_ = c.SetString("profile:1", "Ada", time.Minute)
+_ = c.SetString("profile:2", "Grace", time.Minute)
+page, _ := cache.ListPage(ctx, c, cachecore.ListPageOptions{
+	Query: "profile:",
+	Limit: 10,
+})
+fmt.Println(len(page.Entries), page.Entries[0].Key) // 2 profile:1
 ```
 
 ## Refresh Ahead {#refresh-ahead}

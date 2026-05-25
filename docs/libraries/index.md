@@ -16,6 +16,7 @@ Each library page remains useful for standalone package users. Framework guides 
 - [Storage](/storage) provides filesystem and object storage primitives.
 - [Queue](/queue) provides queueing, workers, and workflow primitives.
 - [Events](/events) provides event dispatch and subscription primitives.
+- [Mail](/mail) provides message composition and pluggable delivery primitives.
 - [Scheduler](/scheduler) provides scheduled work primitives.
 - [Metrics](/metrics) provides in-memory metrics primitives and Prometheus-compatible export.
 - [Wire](/wire) supports explicit dependency wiring.
