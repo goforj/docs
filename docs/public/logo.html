@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GoForj Logo Preview</title>
+    <style>
+      :root {
+        --bg-1: #140909;
+        --bg-2: #29110d;
+        --bg-3: #090506;
+        --panel: rgba(30, 16, 14, 0.78);
+        --line: rgba(255, 197, 145, 0.18);
+        --text: #ffe2bf;
+        --muted: #d9b08d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at top, rgba(255, 138, 64, 0.14), transparent 38%),
+          radial-gradient(circle at 20% 80%, rgba(255, 112, 51, 0.12), transparent 26%),
+          linear-gradient(160deg, var(--bg-3), var(--bg-1) 55%, var(--bg-2));
+        color: var(--text);
+        font-family: "SF Pro Display", "Segoe UI", Inter, sans-serif;
+      }
+
+      .frame {
+        width: min(920px, calc(100vw - 32px));
+        padding: 28px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+        box-shadow:
+          0 24px 80px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 22px 24px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .stage {
+        min-height: 70vh;
+        display: grid;
+        place-items: center;
+        padding: 48px 24px 56px;
+        background:
+          radial-gradient(circle at center, rgba(255, 162, 95, 0.1), transparent 34%),
+          radial-gradient(circle at center, rgba(255, 214, 161, 0.05), transparent 54%);
+      }
+
+      .logo-shell {
+        width: min(560px, 88vw);
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+      }
+
+      .logo-shell img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .logo-shell object {
+        width: 100%;
+        height: auto;
+        display: block;
+        aspect-ratio: 554 / 636;
+      }
+
+      .footer {
+        padding: 0 24px 24px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      code {
+        color: var(--text);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="frame">
+      <section class="panel">
+        <div class="header">
+          <h1>GoForj Logo Preview</h1>
+          <p>Previewing the current docs logo asset used by the VitePress navigation.</p>
+        </div>
+        <div class="stage">
+          <div class="logo-shell">
+            <img src="/assets/goforj-v7.png" alt="GoForj logo">
+          </div>
+        </div>
+        <div class="footer">
+          Preview source: <code>/assets/goforj-v7.png</code>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

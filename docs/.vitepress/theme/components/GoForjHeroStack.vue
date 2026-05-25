@@ -444,6 +444,7 @@ const scene = computed(() => {
       x: assemblyCenterX - 0.92,
       y: assemblyCenterY + 0.08,
       z: assemblyBaseZ + 0.44,
+      shadowPlaneZ: assemblyBaseZ,
       w: 0.54,
       d: 0.54,
       h: 0.58
@@ -458,6 +459,7 @@ const scene = computed(() => {
       x: assemblyCenterX - 0.14,
       y: assemblyCenterY - 0.06,
       z: assemblyBaseZ + 0.44,
+      shadowPlaneZ: assemblyBaseZ,
       w: 0.54,
       d: 0.54,
       h: 0.58
@@ -472,6 +474,7 @@ const scene = computed(() => {
       x: assemblyCenterX - 0.5,
       y: assemblyCenterY + 0.26,
       z: assemblyBaseZ,
+      shadowPlaneZ: assemblyBaseZ,
       w: 0.66,
       d: 0.66,
       h: 0.68
@@ -709,12 +712,12 @@ function getHoverTransform(item) {
   const isHovered = item.id === hoveredBlock.value
   const footprint = Math.min(item.w || 0, item.d || 0)
 
-  if (isHovered && footprint <= 0.6) return 'translate(-16px, 9px)'
-  if (isHovered && footprint <= 0.9) return 'translate(-14px, 8px)'
-  if (isHovered) return 'translate(-12px, 7px)'
+  if (isHovered && footprint <= 0.6) return 'translate(-9px, 5px)'
+  if (isHovered && footprint <= 0.9) return 'translate(-8px, 4px)'
+  if (isHovered) return 'translate(-7px, 4px)'
 
-  if (footprint <= 0.6) return 'translate(-7px, 4px)'
-  return 'translate(-6px, 3px)'
+  if (footprint <= 0.6) return 'translate(-3px, 2px)'
+  return 'translate(-2px, 1px)'
 }
 
 // PROJECTION
@@ -762,43 +765,30 @@ function getTopEdgeStripPath(face, inset = 12) {
   return getFacePath([p0, p1, i1, i0])
 }
 
-function getShadowOpacity(item) {
-  if (item.type !== 'block') return 0
-  if (item.id === 'ai-agents') return 0.18
-  if (item.id === 'core') return 0.16
-  return 0.12
+function hasForgePlateShadow(item) {
+  return typeof item?.shadowPlaneZ === 'number' && item.z > item.shadowPlaneZ + 0.02
 }
 
-function getShadowBlur(item) {
-  if (item.id === 'ai-agents') return 16
-  if (item.id === 'core') return 18
-  return 12
+function getForgePlateShadowPath(item) {
+  const lift = Math.max(0, item.z - item.shadowPlaneZ)
+  const widthInset = item.w * 0.18
+  const depthInset = item.d * 0.2
+  const offsetX = 0.06 + (lift * 0.05)
+  const offsetY = 0.02 - (lift * 0.01)
+  const z = item.shadowPlaneZ + 0.001
+  const face = [
+    project(item.x + widthInset + offsetX, item.y + depthInset + offsetY, z),
+    project(item.x + item.w - widthInset + offsetX, item.y + depthInset + offsetY, z),
+    project(item.x + item.w - widthInset + offsetX, item.y + item.d - depthInset + offsetY, z),
+    project(item.x + widthInset + offsetX, item.y + item.d - depthInset + offsetY, z)
+  ]
+  return getFacePath(face)
 }
 
-function getShadowTransform(item) {
-  const center = project(item.x + item.w / 2, item.y + item.d / 2, item.z)
-  const width = item.w * SCALE * 0.52
-  const height = Math.max(18, item.d * SCALE * 0.18)
-  return {
-    x: center.x,
-    y: center.y + item.h * 12 + 18,
-    width,
-    height
-  }
-}
-
-function getAssemblyTargetShadow(item) {
-  const center = project(
-    item.x + item.w / 2 - (item.assemblyShiftX || 0),
-    item.y + item.d / 2 - (item.assemblyShiftY || 0),
-    item.z - (item.assemblyLift || 0)
-  )
-  return {
-    x: center.x,
-    y: center.y + 18,
-    width: Math.max(18, item.w * SCALE * 0.3),
-    height: Math.max(10, item.d * SCALE * 0.11)
-  }
+function getForgePlateShadowOpacity(item) {
+  if (!hasForgePlateShadow(item)) return 0
+  if (item.id?.startsWith('assembly-input')) return 0.06
+  return 0.04
 }
 
 function getFrontIconPlacement(item) {
@@ -1045,19 +1035,13 @@ function adjustColor(color, amount) {
               <stop offset="55%" stop-color="#9ca3af" stop-opacity="0.04" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01" />
             </linearGradient>
-            <filter id="block-shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="25" stdDeviation="20" flood-opacity="0.18" />
-            </filter>
-            <filter id="ambient-blur" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="36" />
-            </filter>
           </defs>
 
-          <ellipse cx="438" cy="404" rx="214" ry="178" fill="url(#hero-ambient)" filter="url(#ambient-blur)" opacity="1" />
-          <ellipse cx="396" cy="526" rx="212" ry="92" fill="url(#forge-underglow)" filter="url(#ambient-blur)" opacity="0.78" />
-          <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" filter="url(#ambient-blur)" opacity="0.62" />
+          <ellipse cx="438" cy="404" rx="214" ry="178" fill="url(#hero-ambient)" opacity="0.72" />
+          <ellipse cx="396" cy="526" rx="212" ry="92" fill="url(#forge-underglow)" opacity="0.52" />
+          <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" opacity="0.34" />
 
-          <g class="gf-iso-group" filter="url(#block-shadow)">
+          <g class="gf-iso-group">
             <template v-for="item in scene.tower" :key="item.id">
               <a
                 class="gf-iso-item-wrapper"
@@ -1068,7 +1052,8 @@ function adjustColor(color, amount) {
                 @mouseleave="hoveredBlock = null"
                 :style="{
                   opacity: isMounted ? (item.opacity || 1) : 0,
-                  transition: 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease',
+                  transition: 'transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease',
+                  willChange: 'transform, opacity',
                   transform: getHoverTransform(item)
                 }">
                 <title>{{ item.title || item.label || item.id }}</title>
@@ -1110,27 +1095,6 @@ function adjustColor(color, amount) {
                     </template>
                   </template>
                   <template v-else>
-                    <ellipse
-                      class="gf-block-shadow"
-                      :cx="getShadowTransform(item).x"
-                      :cy="getShadowTransform(item).y"
-                      :rx="getShadowTransform(item).width"
-                      :ry="getShadowTransform(item).height"
-                      fill="#020617"
-                      :opacity="getShadowOpacity(item)"
-                      :style="{ filter: `blur(${getShadowBlur(item)}px)` }"
-                    />
-                    <template v-if="item.assemblyInProgress">
-                      <ellipse
-                        :cx="getAssemblyTargetShadow(item).x"
-                        :cy="getAssemblyTargetShadow(item).y"
-                        :rx="getAssemblyTargetShadow(item).width"
-                        :ry="getAssemblyTargetShadow(item).height"
-                        fill="#ff9a47"
-                        opacity="0.22"
-                        style="filter: blur(6px)"
-                      />
-                    </template>
                     <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="item.id === 'core' ? 'url(#forge-core-left)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fl-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
@@ -1146,6 +1110,12 @@ function adjustColor(color, amount) {
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-reflection-top)" :opacity="Math.max(0.04, getForgeGlowOpacity(item) - 0.08)" />
                     </template>
                     <template v-if="sitsOnForgePlate(item)">
+                      <path
+                        v-if="hasForgePlateShadow(item)"
+                        :d="getForgePlateShadowPath(item)"
+                        fill="#020617"
+                        :opacity="getForgePlateShadowOpacity(item)"
+                      />
                       <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-bounce-face)" :opacity="getForgeBounceOpacity(item)" />
                       <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forge-bounce-face)" :opacity="Math.max(0.08, getForgeBounceOpacity(item) - 0.03)" />
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-bounce-top)" :opacity="Math.max(0.06, getForgeBounceOpacity(item) - 0.05)" />
@@ -1337,7 +1307,8 @@ function adjustColor(color, amount) {
   flex: 1.1;
   opacity: 0;
   transform: translateY(-16px);
-  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 .gf-hero-content.is-visible {
   opacity: 1;
@@ -1385,7 +1356,7 @@ function adjustColor(color, amount) {
   border-radius: 9999px;
   font-weight: 700;
   font-size: 1.15rem;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.24s ease, background-color 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 .gf-hero-btn--primary {
   background-color: #6366f1;
@@ -1402,6 +1373,7 @@ function adjustColor(color, amount) {
   color: var(--vp-c-text-1);
   border: 1px solid var(--vp-c-divider);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .gf-hero-btn--secondary:hover {
   background-color: rgba(255, 255, 255, 0.08);
@@ -1411,7 +1383,8 @@ function adjustColor(color, amount) {
   flex: 1.4;
   position: relative;
   opacity: 0;
-  transition: opacity 1.8s ease;
+  transition: transform 1.8s ease, opacity 1.8s ease;
+  will-change: transform, opacity;
   transform: translate3d(-80px, -10px, 0);
 }
 .gf-hero-graphic.is-visible {
@@ -1464,14 +1437,9 @@ function adjustColor(color, amount) {
 }
 .gf-iso-item {
   cursor: pointer;
-  animation: bob 6s ease-in-out infinite alternate;
 }
 .gf-iso-item--link {
   cursor: pointer;
-}
-@keyframes bob {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-5px); }
 }
 @keyframes forgePulse {
   0% { opacity: 0.45; transform: translateY(0); }
@@ -1485,9 +1453,6 @@ function adjustColor(color, amount) {
 }
 .gf-block-edge--top {
   stroke: rgba(255, 255, 255, 0.18);
-}
-.gf-block-shadow {
-  pointer-events: none;
 }
 .iso-label {
   user-select: none;
