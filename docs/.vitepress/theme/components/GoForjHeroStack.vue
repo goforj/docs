@@ -875,11 +875,25 @@ function adjustColor(color, amount) {
     <div class="gf-hero-container">
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
         <h1 class="gf-hero-title">
-          <span class="gf-hero-headline">The composable stack for building Go applications and services.</span>
+          <span class="gf-hero-headline">The composable stack for building with Go</span>
         </h1>
         <p class="gf-hero-tagline">
-          Build and ship everything from simple CLIs to production systems.
+          Build Go applications with one cohesive runtime, explicit dependency wiring, local-first drivers, and production-ready primitives for HTTP, queues, events, storage, cache, scheduling, and observability.
         </p>
+        <div class="gf-hero-principles" aria-label="GoForj principles">
+          <div class="gf-hero-principle">
+            <strong>Driver swappable</strong>
+            <span>Change infrastructure without rewriting application code.</span>
+          </div>
+          <div class="gf-hero-principle">
+            <strong>Explicit runtime</strong>
+            <span>Generated wiring and lifecycle behavior stay inspectable.</span>
+          </div>
+          <div class="gf-hero-principle">
+            <strong>Local first</strong>
+            <span>Start locally, then move to production topology when needed.</span>
+          </div>
+        </div>
         <div class="gf-hero-actions">
           <a href="/collection" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
           <a href="/about" class="gf-hero-btn gf-hero-btn--secondary">Design Philosophy</a>
@@ -1267,7 +1281,7 @@ function adjustColor(color, amount) {
 .gf-home-hero {
   position: relative;
   width: 100%;
-  padding: 0.25rem 2rem 5rem;
+  padding: 1.35rem 2rem 5rem;
   overflow: visible;
   background:
     radial-gradient(circle at 76% 32%, rgba(99, 102, 241, 0.12) 0%, transparent 34%),
@@ -1290,17 +1304,17 @@ function adjustColor(color, amount) {
 }
 .gf-hero-content.is-visible {
   opacity: 1;
-  transform: translateY(-68px);
+  transform: translateY(0);
 }
 .gf-hero-title {
-  font-size: 4.6rem;
+  font-size: clamp(4rem, 4.6vw, 4.6rem);
   font-weight: 780;
-  line-height: 1.02;
+  line-height: 0.96;
   letter-spacing: -0.048em;
   color: var(--vp-c-text-1);
   max-width: 12ch;
   text-wrap: balance;
-  margin-bottom: 2rem;
+  margin-bottom: 1.45rem;
 }
 .gf-hero-headline {
   background: linear-gradient(to bottom right, var(--vp-c-text-1) 30%, var(--vp-c-text-2));
@@ -1308,12 +1322,44 @@ function adjustColor(color, amount) {
   background-clip: text;
 }
 .gf-hero-tagline {
-  font-size: 1.18rem;
-  line-height: 1.7;
+  font-size: 1.14rem;
+  line-height: 1.62;
   color: var(--vp-c-text-2);
-  max-width: 34rem;
-  margin-bottom: 2rem;
+  max-width: 42rem;
+  margin-bottom: 1.05rem;
   font-weight: 430;
+}
+.gf-hero-principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  max-width: 43rem;
+  margin: 0 0 1.7rem;
+}
+.gf-hero-principle {
+  min-height: 6.2rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(15, 18, 27, 0.32);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.gf-hero-principle strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: rgba(245, 248, 255, 0.92);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.gf-hero-principle span {
+  display: block;
+  color: rgba(203, 213, 225, 0.72);
+  font-size: 0.78rem;
+  font-weight: 520;
+  line-height: 1.38;
 }
 .gf-hero-story {
   max-width: 560px;
@@ -1330,10 +1376,10 @@ function adjustColor(color, amount) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.85rem 2.25rem;
+  padding: 0.78rem 2.05rem;
   border-radius: 9999px;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.08rem;
   transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.24s ease, background-color 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 .gf-hero-btn--primary {
@@ -1466,6 +1512,13 @@ function adjustColor(color, amount) {
   .gf-hero-tagline {
     margin-left: auto;
     margin-right: auto;
+  }
+  .gf-hero-principles {
+    grid-template-columns: 1fr;
+    max-width: 34rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
   }
   .gf-hero-story {
     margin-left: auto;
