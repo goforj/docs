@@ -5,15 +5,26 @@ description: Create, build, and run a generated GoForj App.
 
 # Quickstart
 
-This page creates a generated GoForj App, builds it, and runs the local runtime.
-
-The quickstart assumes the `forj` CLI is installed and available on your `PATH`.
+This page installs the `forj` CLI, creates a generated GoForj App, builds it, and runs the local runtime.
 
 ## Prerequisites
 
 - Go installed for your platform.
-- The `forj` CLI available from your shell.
 - Docker available if you select Docker-backed components in the project wizard.
+
+## Install the CLI
+
+Install `forj` with Go:
+
+```bash
+go install github.com/goforj/goforj/cmd/forj@latest
+```
+
+Make sure your Go binary directory is on your `PATH`. For most local Go installs, that means:
+
+```bash
+export PATH="$(go env GOPATH)/bin:$PATH"
+```
 
 Verify the CLI:
 
