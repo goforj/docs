@@ -1,9 +1,9 @@
 ---
-title: Health And Readiness
+title: Health and Readiness
 description: How generated GoForj Apps expose liveness and readiness checks.
 ---
 
-# Health And Readiness
+# Health and Readiness
 
 Health and readiness answer different operational questions.
 

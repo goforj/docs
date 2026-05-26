@@ -1,9 +1,9 @@
 ---
-title: Standalone Versus Distributed
+title: Standalone versus Distributed
 description: How standalone and distributed runtime topology affect operations.
 ---
 
-# Standalone Versus Distributed
+# Standalone versus Distributed
 
 GoForj supports standalone and distributed runtime topology.
 
@@ -23,6 +23,30 @@ Use it for:
 - demos
 - small deployments
 - simple operational environments
+
+## Default Launch Binaries
+
+For single-process deployments, `forj build --auto-run` can compile the standalone launch target into the binary:
+
+```bash
+forj build --auto-run
+```
+
+With that build option, launching the binary with no command starts the App runtime:
+
+```bash
+./bin/app
+```
+
+This is equivalent to running:
+
+```bash
+./bin/app run
+```
+
+Explicit commands still win. If a process supervisor starts `./bin/app api`, `./bin/app worker`, or any other command, the binary runs that command instead of the default launch target.
+
+Use this when the deployment unit should behave like a normal executable service. Do not use it to hide runtime topology decisions; distributed deployments should still start explicit runtime commands.
 
 ## Distributed
 

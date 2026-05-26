@@ -60,4 +60,4 @@ Use queues for durable, retryable, worker-managed work.
 
 - [Events](/async/events) explains event publishing.
 - [Jobs](/async/jobs) explains durable background work.
-- [Retries And Idempotency](/async/retries-idempotency) explains safe retry design.
+- [Retries and Idempotency](/async/retries-idempotency) explains safe retry design.

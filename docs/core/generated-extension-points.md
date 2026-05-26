@@ -73,13 +73,13 @@ s.Every(30).Seconds().Name("monitor:poll").Do(s.monitorCheckJob.RunScheduledPoll
 
 Prefer direct calls into owning domain types. Avoid growing scheduler runtime files into business-logic buckets.
 
-## Jobs And Events
+## Jobs and Events
 
 Job handlers and event subscribers should be registered through generated or documented registration surfaces.
 
 Use stable names and typed payloads. Keep registration visible before workers or event runtimes start.
 
-## Lighthouse And Operator Glue
+## Lighthouse and Operator Glue
 
 Operator-facing integration can belong in runtime-specific Lighthouse files when the concern is presentation, operator commands, or UI metadata.
 

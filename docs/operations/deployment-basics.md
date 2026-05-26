@@ -69,5 +69,5 @@ Typical order:
 ## Next Steps
 
 - [Runtime Processes](/operations/runtime-processes)
-- [Standalone Versus Distributed](/operations/standalone-vs-distributed)
+- [Standalone versus Distributed](/operations/standalone-vs-distributed)
 - [Production Checklist](/operations/production-checklist)

@@ -64,6 +64,6 @@ for the full route table.
 
 ## Next Steps
 
-- [Health And Readiness](/operations/health-readiness)
+- [Health and Readiness](/operations/health-readiness)
 - [Logging](/operations/logging)
 - [HTTP Services](/applications/http-services)

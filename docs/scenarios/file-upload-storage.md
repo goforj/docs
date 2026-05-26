@@ -237,7 +237,7 @@ func (c *Controller) Store(ctx web.Context) error {
 
 The controller owns request binding and HTTP status decisions. The service owns storage behavior.
 
-## Step 4: Wire The Disk And Service
+## Step 4: Wire the Disk and Service
 
 Open `wire/inject_app_services.go`.
 

@@ -173,7 +173,7 @@ Examples:
 
 Controllers should translate HTTP requests into service calls. Services should own application behavior. Repositories should own persistence-specific access.
 
-## Generated And User-Owned Code
+## Generated and User-Owned Code
 
 GoForj renders code so the App has a complete local structure, but not every file has the same ownership.
 

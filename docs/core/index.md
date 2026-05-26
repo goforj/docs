@@ -16,7 +16,7 @@ These pages should establish the runtime lifecycle, dependency flow, provider mo
 - [Runtime Topology](/core/runtime-topology)
 - [Dependency Injection](/core/dependency-injection)
 - [Providers](/core/providers)
-- [Drivers And Adapters](/core/drivers-and-adapters)
+- [Drivers and Adapters](/core/drivers-and-adapters)
 - [Generated Components](/core/generated-components)
 - [Generated Extension Points](/core/generated-extension-points)
 - [Named Resources](/core/named-resources)

@@ -1,9 +1,9 @@
 ---
-title: Requests And Validation
+title: Requests and Validation
 description: How controllers bind, normalize, validate, and pass request input into services.
 ---
 
-# Requests And Validation
+# Requests and Validation
 
 Request handling should make invalid input visible at the HTTP boundary before application services perform business behavior.
 
@@ -102,5 +102,5 @@ This preserves request cancellation and deadlines across service, repository, qu
 ## Next Steps
 
 - [Controllers](/applications/controllers) explains request handler structure.
-- [Responses And Errors](/applications/responses-errors) explains error response policy.
+- [Responses and Errors](/applications/responses-errors) explains error response policy.
 - [Application Services](/applications/services) explains service inputs.

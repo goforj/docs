@@ -56,5 +56,5 @@ Job handlers should not care whether workers run inside `run` or in a dedicated 
 ## Next Steps
 
 - [Workers](/async/workers)
-- [Retries And Idempotency](/async/retries-idempotency)
+- [Retries and Idempotency](/async/retries-idempotency)
 - [Queue](/queue)

@@ -97,5 +97,5 @@ forj generate --events
 ## Next Steps
 
 - [Event Subscribers](/async/event-subscribers) explains handlers.
-- [Events Versus Queues](/async/events-vs-queues) explains boundary decisions.
+- [Events versus Queues](/async/events-vs-queues) explains boundary decisions.
 - [Events](/events) covers standalone package details.

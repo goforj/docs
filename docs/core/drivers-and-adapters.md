@@ -1,9 +1,9 @@
 ---
-title: Drivers And Adapters
+title: Drivers and Adapters
 description: The difference between interchangeable infrastructure drivers and integration adapters in GoForj.
 ---
 
-# Drivers And Adapters
+# Drivers and Adapters
 
 Drivers and adapters let GoForj Apps use different infrastructure without rewriting application logic.
 

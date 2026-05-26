@@ -103,4 +103,4 @@ Do not register handlers after workers are already running.
 
 - [Queues](/async/queues) explains queue configuration.
 - [Workers](/async/workers) explains execution lifecycle.
-- [Retries And Idempotency](/async/retries-idempotency) explains safe retry behavior.
+- [Retries and Idempotency](/async/retries-idempotency) explains safe retry behavior.

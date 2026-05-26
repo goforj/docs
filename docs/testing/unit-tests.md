@@ -68,5 +68,5 @@ Full runtime tests are useful, but they are slower and should be reserved for bo
 ## Next Steps
 
 - [HTTP Tests](/testing/http-tests) covers controller and route behavior.
-- [Job And Queue Tests](/testing/job-queue-tests) covers background work.
+- [Job and Queue Tests](/testing/job-queue-tests) covers background work.
 - [Integration Tests](/testing/integration-tests) covers backend behavior.

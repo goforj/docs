@@ -91,6 +91,6 @@ Use `web.Context` for HTTP-specific behavior such as params, binding, response h
 
 ## Next Steps
 
-- [Requests And Validation](/applications/requests-validation) explains request input boundaries.
-- [Responses And Errors](/applications/responses-errors) explains response shape.
+- [Requests and Validation](/applications/requests-validation) explains request input boundaries.
+- [Responses and Errors](/applications/responses-errors) explains response shape.
 - [Application Services](/applications/services) explains where business behavior belongs.

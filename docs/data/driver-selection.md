@@ -112,6 +112,6 @@ Library pages own driver matrices, constructors, and low-level behavior:
 
 ## Next Steps
 
-- [Drivers And Adapters](/core/drivers-and-adapters) explains the core model.
+- [Drivers and Adapters](/core/drivers-and-adapters) explains the core model.
 - [Local-First Development](/core/local-first-development) explains default local workflows.
 - [Libraries](/libraries/) contains standalone driver documentation.

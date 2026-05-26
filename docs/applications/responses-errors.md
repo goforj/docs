@@ -1,9 +1,9 @@
 ---
-title: Responses And Errors
+title: Responses and Errors
 description: How generated GoForj Apps should shape HTTP responses and error behavior.
 ---
 
-# Responses And Errors
+# Responses and Errors
 
 HTTP responses should be explicit, predictable, and safe to expose.
 
@@ -84,6 +84,6 @@ Authorization: Bearer $APP_DIAG_TOKEN
 
 ## Next Steps
 
-- [Requests And Validation](/applications/requests-validation) explains invalid input handling.
+- [Requests and Validation](/applications/requests-validation) explains invalid input handling.
 - [Controllers](/applications/controllers) explains where HTTP decisions belong.
 - [HTTP Services](/applications/http-services) explains framework health and readiness routes.

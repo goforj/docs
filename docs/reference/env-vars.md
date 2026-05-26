@@ -21,7 +21,7 @@ This page groups the major variable families. Generated component READMEs and wo
 | `APP_DIAG_TOKEN` | Token for authorized diagnostic endpoints. |
 | `APP_SHUTDOWN_TIMEOUT` | Root shutdown budget. |
 
-## HTTP And OpenAPI
+## HTTP and OpenAPI
 
 | Variable | Purpose |
 | --- | --- |
@@ -60,7 +60,7 @@ Common metrics variables:
 - `METRICS_AUTH_ENABLED`
 - `METRICS_SCHEDULER_ENABLED`
 
-## Lighthouse And Inspects
+## Lighthouse and Inspects
 
 Common variables:
 

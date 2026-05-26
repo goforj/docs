@@ -95,7 +95,7 @@ For local tests, prefer:
 EVENTS_DRIVER=inproc
 ```
 
-## Test Queues And Jobs
+## Test Queues and Jobs
 
 For job tests, test the handler directly first.
 

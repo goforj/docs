@@ -96,7 +96,7 @@ Add the constructor to the appropriate provider set so Wire can build it.
 
 Do not reach into global state from services. Services should receive dependencies through constructors.
 
-## Required And Optional Dependencies
+## Required and Optional Dependencies
 
 Constructor parameters are part of a service's contract.
 

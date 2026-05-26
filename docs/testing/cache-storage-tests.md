@@ -1,9 +1,9 @@
 ---
-title: Cache And Storage Tests
+title: Cache and Storage Tests
 description: How to test cache and storage behavior with local drivers and targeted backend integration tests.
 ---
 
-# Cache And Storage Tests
+# Cache and Storage Tests
 
 Cache and storage tests should use local drivers by default.
 

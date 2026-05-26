@@ -15,9 +15,9 @@ These pages should show how to test application services directly, verify HTTP a
 - [Unit Tests](/testing/unit-tests)
 - [HTTP Tests](/testing/http-tests)
 - [Command Tests](/testing/command-tests)
-- [Job And Queue Tests](/testing/job-queue-tests)
+- [Job and Queue Tests](/testing/job-queue-tests)
 - [Event Tests](/testing/event-tests)
-- [Cache And Storage Tests](/testing/cache-storage-tests)
+- [Cache and Storage Tests](/testing/cache-storage-tests)
 - [Integration Tests](/testing/integration-tests)
 - [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests)
 

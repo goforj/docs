@@ -72,7 +72,7 @@ reports/{reportID}/exports/latest.csv
 
 Avoid raw user filenames as trusted paths. Normalize and validate paths at the boundary that accepts user input.
 
-## Local And Production Drivers
+## Local and Production Drivers
 
 Use local or memory storage for local development and tests.
 

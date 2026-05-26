@@ -65,7 +65,7 @@ Typical flow:
 
 Cache misses should be normal.
 
-## Local And Production Drivers
+## Local and Production Drivers
 
 Use memory or file cache locally.
 

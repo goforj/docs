@@ -9,7 +9,7 @@ Generated files are not all owned the same way.
 
 Check file headers and local package READMEs before editing.
 
-## Common Files And Directories
+## Common Files and Directories
 
 | Path | Purpose |
 | --- | --- |

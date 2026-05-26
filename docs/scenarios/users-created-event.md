@@ -475,7 +475,7 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 9: Wire The Event Boundary And Subscriber
+## Step 9: Wire the Event Boundary and Subscriber
 
 Open `wire/inject_app_services.go`.
 

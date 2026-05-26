@@ -25,7 +25,7 @@ Examples include:
 
 Use stable names because they appear in logs, metrics, inspects, route lists, worker output, and Lighthouse surfaces.
 
-## Default And Named Scopes
+## Default and Named Scopes
 
 Generated Apps usually provide a default resource and optional named resources.
 
@@ -99,7 +99,7 @@ Examples:
 
 Avoid names derived from user input, request payloads, email addresses, IDs, or unbounded values.
 
-## Metrics And Labels
+## Metrics and Labels
 
 Use named resources as metric labels when labels are needed.
 
@@ -125,5 +125,5 @@ Avoid raw paths, raw SQL, user IDs, emails, or arbitrary payload values.
 ## Next Steps
 
 - [Generated Components](/core/generated-components) explains regeneration.
-- [Drivers And Adapters](/core/drivers-and-adapters) explains backend selection.
+- [Drivers and Adapters](/core/drivers-and-adapters) explains backend selection.
 - [Libraries](/libraries/) contains package-level resource behavior.

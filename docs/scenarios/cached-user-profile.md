@@ -192,7 +192,7 @@ func profileCacheKey(id string) string {
 
 The service still owns the workflow. The controller continues to call `service.Find`.
 
-## Step 4: Wire The Repository And Cache
+## Step 4: Wire the Repository and Cache
 
 Open `wire/inject_app_services.go`.
 

@@ -50,7 +50,7 @@ wire/inject_jobs_app.go
 
 The queue and storage generators update generated manager/accessor files. Do not edit generated files by hand.
 
-## Step 1: Configure Queue And Storage
+## Step 1: Configure Queue and Storage
 
 Use SQLite for the default local queue:
 
@@ -351,7 +351,7 @@ func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
 
 This registers the job handler before startup completes. Worker commands start processing after App startup, so the handler is ready before jobs are consumed.
 
-## Step 6: Wire Reports And The Job
+## Step 6: Wire Reports and the Job
 
 Open `wire/inject_app_services.go`.
 

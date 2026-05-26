@@ -103,5 +103,5 @@ Local-first docs should avoid:
 ## Next Steps
 
 - [Runtime Topology](/core/runtime-topology) explains standalone and distributed runtime modes.
-- [Drivers And Adapters](/core/drivers-and-adapters) explains driver selection.
+- [Drivers and Adapters](/core/drivers-and-adapters) explains driver selection.
 - [Generated Components](/core/generated-components) explains how driver support is compiled into the App.

@@ -38,13 +38,13 @@ Be deliberate when a transaction also relates to:
 
 Document ordering and failure behavior. For example, dispatching a job before a transaction commits can expose work that depends on data not yet durable.
 
-## Cache And Transactions
+## Cache and Transactions
 
 Cache should usually be updated after durable state changes.
 
 Treat cache invalidation as part of the workflow. Cache misses should remain normal and recoverable.
 
-## Storage And Transactions
+## Storage and Transactions
 
 File/blob storage is not automatically transactional with the database.
 

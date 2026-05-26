@@ -1,9 +1,9 @@
 ---
-title: Job And Queue Tests
+title: Job and Queue Tests
 description: How to test queued jobs, handlers, dispatch behavior, and worker boundaries.
 ---
 
-# Job And Queue Tests
+# Job and Queue Tests
 
 Test job handlers directly first.
 
@@ -62,4 +62,4 @@ Do not use worker tests for ordinary service behavior.
 
 - [Jobs](/async/jobs) explains handler shape.
 - [Workers](/async/workers) explains runtime lifecycle.
-- [Retries And Idempotency](/async/retries-idempotency) explains retry-safe behavior.
+- [Retries and Idempotency](/async/retries-idempotency) explains retry-safe behavior.

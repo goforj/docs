@@ -16,16 +16,16 @@ This section should document process topology, startup, shutdown, configuration,
 - [HTTP Server](/operations/http-server)
 - [Queue Workers](/operations/queue-workers)
 - [Scheduler Processes](/operations/scheduler-processes)
-- [Health And Readiness](/operations/health-readiness)
+- [Health and Readiness](/operations/health-readiness)
 - [Logging](/operations/logging)
 - [Metrics](/operations/metrics)
 - [Inspects](/operations/inspects)
 - [Lighthouse](/operations/lighthouse)
-- [Standalone Versus Distributed](/operations/standalone-vs-distributed)
+- [Standalone versus Distributed](/operations/standalone-vs-distributed)
 - [Lazy Initialization](/operations/lazy-initialization)
 - [Production Checklist](/operations/production-checklist)
 
 ## Related Sections
 
 - [Core Concepts](/core/) explains runtime lifecycle and generated components.
-- [Async And Workflows](/async/) explains queues, jobs, events, and scheduled work.
+- [Async and Workflows](/async/) explains queues, jobs, events, and scheduled work.

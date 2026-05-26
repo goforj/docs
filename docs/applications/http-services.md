@@ -149,7 +149,7 @@ Common framework routes include:
 
 Application route docs should not treat these as user-owned routes.
 
-## Health And Readiness
+## Health and Readiness
 
 Use liveness for process health:
 

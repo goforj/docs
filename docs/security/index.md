@@ -17,4 +17,4 @@ Start with [Auth](/security/auth) when the App includes generated account and se
 
 - [HTTP Services](/applications/http-services) explains protected routes and middleware.
 - [Inspects](/operations/inspects) explains request-scoped runtime diagnostics.
-- [Health And Readiness](/operations/health-readiness) explains diagnostic token behavior.
+- [Health and Readiness](/operations/health-readiness) explains diagnostic token behavior.

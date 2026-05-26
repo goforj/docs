@@ -1,9 +1,9 @@
 ---
-title: Events Versus Queues
+title: Events versus Queues
 description: Choose events for fan-out and queues/jobs for durable background work.
 ---
 
-# Events Versus Queues
+# Events versus Queues
 
 Events and queues solve different problems.
 
@@ -55,7 +55,7 @@ EVENTS_INPROC_BUFFER=1024
 
 `inproc` is the local-first default. It is process-local and non-durable.
 
-## Queues And Jobs
+## Queues and Jobs
 
 A Queue is an asynchronous work transport and execution system.
 

@@ -1,24 +1,24 @@
 ---
-title: Async And Workflows
+title: Async and Workflows
 description: Events, queues, jobs, workers, scheduler processes, retries, and idempotency in GoForj.
 ---
 
-# Async And Workflows
+# Async and Workflows
 
-Async And Workflows covers work that runs outside the immediate request path.
+Async and Workflows covers work that runs outside the immediate request path.
 
 These pages should keep events, queues, jobs, workers, and scheduled work distinct. They should show local-first execution before production backends, and make lifecycle, retries, shutdown, and observability explicit.
 
 ## Async Pages
 
-- [Events Versus Queues](/async/events-vs-queues)
+- [Events versus Queues](/async/events-vs-queues)
 - [Queues](/async/queues)
 - [Jobs](/async/jobs)
 - [Workers](/async/workers)
 - [Events](/async/events)
 - [Event Subscribers](/async/event-subscribers)
 - [Scheduler](/async/scheduler)
-- [Retries And Idempotency](/async/retries-idempotency)
+- [Retries and Idempotency](/async/retries-idempotency)
 
 ## Related Sections
 

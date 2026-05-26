@@ -1,9 +1,9 @@
 ---
-title: Retries And Idempotency
+title: Retries and Idempotency
 description: How to design jobs, subscribers, and schedules that can safely run more than once.
 ---
 
-# Retries And Idempotency
+# Retries and Idempotency
 
 Any background work that can fail should be designed with retry behavior in mind.
 

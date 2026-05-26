@@ -52,11 +52,11 @@ Likely causes:
 
 Start with:
 
-- [Health And Readiness](/operations/health-readiness)
+- [Health and Readiness](/operations/health-readiness)
 - [Driver Selection](/data/driver-selection)
 - [Environment Variables](/reference/env-vars)
 
-## API Index And OpenAPI Errors
+## API Index and OpenAPI Errors
 
 Likely causes:
 

@@ -18,7 +18,7 @@ EVENTS_SUPPORTED_DRIVERS=inproc
 
 Use distributed event driver tests only when transport behavior matters.
 
-## Publish And Subscribe
+## Publish and Subscribe
 
 ```go
 bus, err := events.NewBus(context.Background())

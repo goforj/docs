@@ -40,7 +40,7 @@ wire/
 
 The root `main.go` stays small. It loads environment configuration, initializes the App through Wire, and calls the generated App runner.
 
-## App Versus Framework
+## App versus Framework
 
 Use this distinction when deciding where code belongs:
 

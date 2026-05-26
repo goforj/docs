@@ -7,7 +7,7 @@ description: A practical checklist before running a generated GoForj App in prod
 
 Use this checklist before production deployment.
 
-## Build And Configuration
+## Build and Configuration
 
 - Run `forj build`.
 - Confirm `.goforj.yml` matches intended components.

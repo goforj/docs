@@ -95,4 +95,4 @@ Examples:
 
 - [Dependency Injection](/core/dependency-injection) explains Wire generation.
 - [Generated Components](/core/generated-components) explains generated managers and provider inputs.
-- [Drivers And Adapters](/core/drivers-and-adapters) explains backend and boundary construction.
+- [Drivers and Adapters](/core/drivers-and-adapters) explains backend and boundary construction.

@@ -83,7 +83,7 @@ Commands are a good fit for:
 
 Commands should not become unstructured backdoors around application services.
 
-## Context And Cancellation
+## Context and Cancellation
 
 For short commands, a background context may be acceptable when the command API does not provide a context.
 

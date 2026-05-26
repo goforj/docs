@@ -33,7 +33,7 @@ func NewService(repo *Repository, queue Queue, cache Cache, events Events) *Serv
 
 Required dependencies stay required. Optional dependencies should be modeled explicitly.
 
-## Inputs And Outputs
+## Inputs and Outputs
 
 Use typed inputs for service operations:
 
@@ -78,7 +78,7 @@ Prefer generated App accessors and interfaces at the consumer boundary:
 
 Avoid importing backend driver packages into services.
 
-## Transactions And Consistency
+## Transactions and Consistency
 
 Keep consistency decisions close to the service method that owns the workflow.
 
@@ -96,4 +96,4 @@ If a workflow writes to the database, dispatches a job, updates cache, and publi
 
 - [Controllers](/applications/controllers) explains HTTP callers.
 - [Commands](/applications/commands) explains CLI callers.
-- [Events Versus Queues](/async/events-vs-queues) explains async callers.
+- [Events versus Queues](/async/events-vs-queues) explains async callers.

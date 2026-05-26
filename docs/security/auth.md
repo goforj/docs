@@ -63,7 +63,7 @@ If access is missing or expired, middleware can attempt refresh fallback so the 
 
 This separation keeps normal browser request bursts from racing refresh rotation while still making explicit refresh behavior auditable.
 
-## Password Reset And Email Verification
+## Password Reset and Email Verification
 
 Password reset request creates a reset grant without leaking account existence.
 

@@ -48,6 +48,6 @@ Lazy construction does not mean production can ignore dependency readiness.
 
 ## Next Steps
 
-- [Health And Readiness](/operations/health-readiness)
+- [Health and Readiness](/operations/health-readiness)
 - [Generated Components](/core/generated-components)
 - [Dependency Injection](/core/dependency-injection)

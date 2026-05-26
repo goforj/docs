@@ -186,7 +186,7 @@ export default defineConfig({
         items: [
           { text: 'Applications', link: '/applications/' },
           { text: 'Runnable Scenarios', link: '/scenarios/' },
-          { text: 'Data And Persistence', link: '/data/' },
+          { text: 'Data and Persistence', link: '/data/' },
           { text: 'Security', link: '/security/' },
           { text: 'Frontend', link: '/frontend/' },
           { text: 'Testing', link: '/testing/' }
@@ -233,7 +233,7 @@ export default defineConfig({
           { text: 'Runtime Topology', link: '/core/runtime-topology' },
           { text: 'Dependency Injection', link: '/core/dependency-injection' },
           { text: 'Providers', link: '/core/providers' },
-          { text: 'Drivers And Adapters', link: '/core/drivers-and-adapters' },
+          { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
           { text: 'Generated Components', link: '/core/generated-components' },
           { text: 'Generated Extension Points', link: '/core/generated-extension-points' },
           { text: 'Named Resources', link: '/core/named-resources' },
@@ -249,8 +249,8 @@ export default defineConfig({
           { text: 'Routes', link: '/applications/routes' },
           { text: 'Controllers', link: '/applications/controllers' },
           { text: 'Middleware', link: '/applications/middleware' },
-          { text: 'Requests And Validation', link: '/applications/requests-validation' },
-          { text: 'Responses And Errors', link: '/applications/responses-errors' },
+          { text: 'Requests and Validation', link: '/applications/requests-validation' },
+          { text: 'Responses and Errors', link: '/applications/responses-errors' },
           { text: 'Application Services', link: '/applications/services' },
           { text: 'Commands', link: '/applications/commands' },
           { text: 'API Index', link: '/applications/api-index' },
@@ -272,7 +272,7 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Data And Persistence',
+        text: 'Data and Persistence',
         items: [
           { text: 'Overview', link: '/data/' },
           { text: 'Database Strategy', link: '/data/database-strategy' },
@@ -285,17 +285,17 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Async And Workflows',
+        text: 'Async and Workflows',
         items: [
           { text: 'Overview', link: '/async/' },
-          { text: 'Events Versus Queues', link: '/async/events-vs-queues' },
+          { text: 'Events versus Queues', link: '/async/events-vs-queues' },
           { text: 'Queues', link: '/async/queues' },
           { text: 'Jobs', link: '/async/jobs' },
           { text: 'Workers', link: '/async/workers' },
           { text: 'Events', link: '/async/events' },
           { text: 'Event Subscribers', link: '/async/event-subscribers' },
           { text: 'Scheduler', link: '/async/scheduler' },
-          { text: 'Retries And Idempotency', link: '/async/retries-idempotency' }
+          { text: 'Retries and Idempotency', link: '/async/retries-idempotency' }
         ]
       },
       {
@@ -306,9 +306,9 @@ export default defineConfig({
           { text: 'Unit Tests', link: '/testing/unit-tests' },
           { text: 'HTTP Tests', link: '/testing/http-tests' },
           { text: 'Command Tests', link: '/testing/command-tests' },
-          { text: 'Job And Queue Tests', link: '/testing/job-queue-tests' },
+          { text: 'Job and Queue Tests', link: '/testing/job-queue-tests' },
           { text: 'Event Tests', link: '/testing/event-tests' },
-          { text: 'Cache And Storage Tests', link: '/testing/cache-storage-tests' },
+          { text: 'Cache and Storage Tests', link: '/testing/cache-storage-tests' },
           { text: 'Integration Tests', link: '/testing/integration-tests' },
           { text: 'Rendered App Smoke Tests', link: '/testing/rendered-app-smoke-tests' }
         ]
@@ -333,12 +333,12 @@ export default defineConfig({
           { text: 'HTTP Server', link: '/operations/http-server' },
           { text: 'Queue Workers', link: '/operations/queue-workers' },
           { text: 'Scheduler Processes', link: '/operations/scheduler-processes' },
-          { text: 'Health And Readiness', link: '/operations/health-readiness' },
+          { text: 'Health and Readiness', link: '/operations/health-readiness' },
           { text: 'Logging', link: '/operations/logging' },
           { text: 'Metrics', link: '/operations/metrics' },
           { text: 'Inspects', link: '/operations/inspects' },
           { text: 'Lighthouse', link: '/operations/lighthouse' },
-          { text: 'Standalone Versus Distributed', link: '/operations/standalone-vs-distributed' },
+          { text: 'Standalone versus Distributed', link: '/operations/standalone-vs-distributed' },
           { text: 'Lazy Initialization', link: '/operations/lazy-initialization' },
           { text: 'Production Checklist', link: '/operations/production-checklist' }
         ]
