@@ -150,7 +150,9 @@ export default defineConfig({
         _render: (src, env, md) => {
           const frontmatterMatch = src.match(/^---\n[\s\S]*?\n---\n?/)
           let title = ''
+          let noAutoTitle = false
           if (frontmatterMatch) {
+            noAutoTitle = /^noAutoTitle:\s*true\s*$/m.test(frontmatterMatch[0])
             const titleMatch = frontmatterMatch[0].match(/^title:\s*(.+)$/m)
             if (titleMatch) {
               title = titleMatch[1].trim()
@@ -162,7 +164,7 @@ export default defineConfig({
             const base = file.replace(/\.md$/, '')
             title = base === 'index' ? '' : base
           }
-          if (title) {
+          if (title && !noAutoTitle) {
             title = title.charAt(0).toUpperCase() + title.slice(1)
             src = `# ${title}\n\n${src}`
           }
@@ -205,6 +207,7 @@ export default defineConfig({
         ]
       },
       { text: 'Libraries', link: '/libraries/' },
+      { text: 'Blog', link: '/blog/' },
       { text: 'Reference', link: '/reference/' },
       {
         text: docsVersion,

@@ -45,7 +45,7 @@ These principles apply across the framework, libraries, examples, and documentat
 - APIs are designed for long-lived codebases
 - Cross-platform behavior is documented honestly
 
-### Developer experience matters
+### Developer Experience
 - Fluent APIs where they reduce noise
 - Copy-paste-ready examples that actually run
 - Documentation kept in sync with real code

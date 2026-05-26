@@ -77,7 +77,7 @@ collection.
 
 ### Performance Benchmarks {#performance-benchmarks}
 
-> **tl;dr**: *lo* is excellent. We solve a different problem - and in chained pipelines, that difference matters.
+> **tl;dr**: *lo* is excellent. `collection` solves a different problem: fluent pipelines that keep allocation behavior visible.
 
 `lo` is a fantastic library and a major inspiration for this project. It is battle-tested, idiomatic, and often the right choice when you want small, standalone helpers that operate on slices in isolation.
 
@@ -85,7 +85,7 @@ collection.
 
 Rather than treating each operation as an independent transformation, `collection` is built around **explicit, fluent pipelines**. Many operations are designed to **mutate the same backing slice intentionally**, allowing chained workflows to avoid intermediate allocations and unnecessary copying - while still making that behavior visible and documented.
 
-That design choice doesn't matter much for some single operations. It matters a *lot* once you start chaining and especially in hot paths.
+That design choice is less visible for single operations. It becomes much more noticeable once you start chaining operations, especially in hot paths.
 
 Below - A fixed ~24B allocation is the cost of the Collection wrapper (one-time per pipeline), not additional work per operation
 
@@ -183,7 +183,7 @@ When you opt into mutation, **the pipeline stays on the same backing array** unl
 * **Lower end-to-end latency in hot paths**
 * **Much stronger scaling in multi-step pipelines**
 
-That's why the biggest deltas appear in benchmarks like:
+The biggest deltas appear in benchmarks like:
 
 * `Pipeline F→M→T→R`
 * `Map`

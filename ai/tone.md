@@ -118,6 +118,7 @@ Avoid:
 - emojis
 - exclamation points
 - repeated slogans
+- stock explanatory phrases such as "why this matters", "this is why", and "that matters"
 
 ## Title Tone
 

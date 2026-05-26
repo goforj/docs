@@ -25,7 +25,7 @@ This keeps the site cohesive, searchable, fast to iterate on, and close to the d
 
 Docs teach how GoForj works.
 
-Marketing pages explain why GoForj matters.
+Marketing pages explain where GoForj fits, what problems it solves, and which tradeoffs shaped the product.
 
 Showcase pages demonstrate one product capability with a focused narrative, strong visuals, and precise technical grounding.
 
@@ -67,6 +67,16 @@ Good early post categories:
 - deep dives into specific GoForj systems
 
 A blog should not be added just to create an empty content surface. If the blog becomes a major acquisition or publishing channel, reconsider whether VitePress is still the best platform for that surface.
+
+Do not show planned or placeholder posts on the public blog index. Empty future-topic cards make the site feel unfinished. Keep topic ideas in internal planning notes until a post is real enough to publish.
+
+Current internal topic backlog:
+
+- Lighthouse and operational visibility: inspections, health, metrics, runtime state, and operator-facing confidence without hiding production behavior.
+- Runtime topology for local and production systems: standalone binaries, distributed runtime commands, `forj build --auto-run`, and the relationship between local development and process boundaries.
+- Migration strategy across database dialects: raw SQL, dialect variants, translation, validation, and testcontainer-backed correctness checks for multi-dialect teams.
+
+The visual card treatment used for future-topic cards can be reused later for real posts, series landing pages, or related-post blocks. Do not expose it as "planned" content.
 
 ## When To Stay With VitePress
 
