@@ -9,7 +9,7 @@ repoUrl: https://github.com/goforj/collection
 </p>
 
 <p align="center">
-  Fluent collections for Go. Iterate, filter, transform, sort, reduce, group, and debug data with zero dependencies.
+  Fluent collections for Go. Iterate, filter, transform, sort, reduce, group, and debug data with a tiny dependency footprint.
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@ repoUrl: https://github.com/goforj/collection
     <img src="https://img.shields.io/github/v/tag/goforj/collection?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/collection" ><img src="https://codecov.io/github/goforj/collection/graph/badge.svg?token=3KFTK96U8C"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-469-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-472-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
     <a href="https://goreportcard.com/report/github.com/goforj/collection"><img src="https://goreportcard.com/badge/github.com/goforj/collection" alt="Go Report Card"></a>
 </p>
@@ -29,7 +29,7 @@ repoUrl: https://github.com/goforj/collection
 
 - **Fluent chaining** - pipeline your operations like Laravel Collections
 - **Fully generic** (`Collection[T]`) - no reflection, no `interface{}`
-- **Minimal dependencies** - small footprint (godump for debugging)
+- **Tiny dependency footprint** - only `godump` for debugging helpers
 - **Minimal allocations** - slice views where possible; in-place ops reuse backing storage when semantics allow
 - **Map / Filter / Reduce** - clean functional transforms
 - **First / Last / FirstWhere / IndexWhere / Contains** helpers
@@ -968,7 +968,7 @@ NewNumeric wraps a slice of numeric types in a NumericCollection and borrows it.
 
 ## Debugging {#debugging}
 
-### Dd · terminal {#dd}
+### Dd · readonly · terminal {#dd}
 
 Dd prints items then terminates execution.
 Like Laravel's dd(), this is intended for debugging and
