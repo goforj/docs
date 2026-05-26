@@ -89,7 +89,6 @@ gtag('config', '${gaMeasurementId}');`]
 
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
 const codeVariantHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var key='goforjCodeVariant';var allowed={ink:1,obsidian:1,terminal:1,'desert-dusk':1,'retro-amber-crt':1,'sepia-noir':1,'mono-slate':1,paper:1,chrome:1,'rose-metal':1,'midnight-gold':1,halo:1,glass:1,amber:1,forest:1,sunset:1};var variant=localStorage.getItem(key)||'ink';document.documentElement.dataset.gfCodeVariant=allowed[variant]?variant:'ink';}catch(e){document.documentElement.dataset.gfCodeVariant='ink';}})();`]
-const navStabilityHead: [string, Record<string, string>, string] = ['style', {}, `@media (min-width:960px){.VPNavBar.has-sidebar .wrapper{padding:0}.VPNavBar.has-sidebar .container{max-width:100%}.VPNavBar.has-sidebar .title{position:absolute;top:0;left:0;z-index:2;padding:0 32px;width:var(--vp-sidebar-width);height:var(--vp-nav-height);background-color:transparent}.VPNavBar.has-sidebar .content{position:relative;z-index:1;padding-right:32px;padding-left:var(--vp-sidebar-width)}}@media (min-width:1440px){.VPNavBar.has-sidebar .title{padding-left:max(32px,calc((100% - (var(--vp-layout-max-width) - 64px)) / 2));width:calc((100% - (var(--vp-layout-max-width) - 64px)) / 2 + var(--vp-sidebar-width) - 32px)}.VPNavBar.has-sidebar .content{padding-right:calc((100vw - var(--vp-layout-max-width)) / 2 + 32px);padding-left:calc((100vw - var(--vp-layout-max-width)) / 2 + var(--vp-sidebar-width))}}`]
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -121,7 +120,6 @@ export default defineConfig({
   },
 
   head: [
-    navStabilityHead,
     codeVariantHead,
     deferredHashHead,
     ['link', { rel: 'icon', type: 'image/x-icon', href: faviconHref('/favicon.ico') }],
