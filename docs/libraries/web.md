@@ -359,7 +359,7 @@ fmt.Println(err == nil, manifest.Version != "")
 // true true
 ```
 
-### Middleware - Auth {#middleware--auth}
+### Auth Middleware {#auth-middleware}
 
 #### webmiddleware.BasicAuth {#webmiddleware-basicauth}
 
@@ -461,7 +461,7 @@ fmt.Println(ctx.StatusCode())
 // 400
 ```
 
-### Middleware - Compression {#middleware--compression}
+### Compression Middleware {#compression-middleware}
 
 #### webmiddleware.Compress {#webmiddleware-compress}
 
@@ -550,7 +550,7 @@ fmt.Println(ctx.Response().Header().Get("Content-Encoding") == "")
 // true
 ```
 
-### Middleware - Method Override {#middleware--method-override}
+### Method Override Middleware {#method-override-middleware}
 
 #### webmiddleware.MethodFromForm {#webmiddleware-methodfromform}
 
@@ -622,7 +622,7 @@ _ = handler(ctx)
 // DELETE
 ```
 
-### Middleware - Path Rewriting {#middleware--path-rewriting}
+### Path Rewriting Middleware {#path-rewriting-middleware}
 
 #### webmiddleware.AddTrailingSlash {#webmiddleware-addtrailingslash}
 
@@ -716,7 +716,7 @@ _ = handler(ctx)
 // /v2/users
 ```
 
-### Middleware - Payloads {#middleware--payloads}
+### Payloads Middleware {#payloads-middleware}
 
 #### webmiddleware.BodyDump {#webmiddleware-bodydump}
 
@@ -809,7 +809,7 @@ _ = handler(ctx)
 // 500
 ```
 
-### Middleware - Proxying {#middleware--proxying}
+### Proxying Middleware {#proxying-middleware}
 
 #### webmiddleware.NewRandomBalancer {#webmiddleware-newrandombalancer}
 
@@ -863,7 +863,7 @@ fmt.Println(ctx.Get("target").(*webmiddleware.ProxyTarget).URL.Host)
 // localhost:8080
 ```
 
-### Middleware - Rate Limiting {#middleware--rate-limiting}
+### Rate Limiting Middleware {#rate-limiting-middleware}
 
 #### webmiddleware.NewRateLimiterMemoryStore {#webmiddleware-newratelimitermemorystore}
 
@@ -932,7 +932,7 @@ fmt.Println(ctx.StatusCode())
 // 202
 ```
 
-### Middleware - Redirects {#middleware--redirects}
+### Redirects Middleware {#redirects-middleware}
 
 #### webmiddleware.HTTPSNonWWWRedirect {#webmiddleware-httpsnonwwwredirect}
 
@@ -1054,7 +1054,7 @@ fmt.Println(ctx.StatusCode())
 // 307
 ```
 
-### Middleware - Reliability {#middleware--reliability}
+### Reliability Middleware {#reliability-middleware}
 
 #### webmiddleware.Recover {#webmiddleware-recover}
 
@@ -1082,7 +1082,7 @@ fmt.Println(handler(ctx) != nil)
 // true
 ```
 
-### Middleware - Request Lifecycle {#middleware--request-lifecycle}
+### Request Lifecycle Middleware {#request-lifecycle-middleware}
 
 #### webmiddleware.ContextTimeout {#webmiddleware-contexttimeout}
 
@@ -1199,7 +1199,7 @@ fmt.Println(ctx.StatusCode())
 // 202
 ```
 
-### Middleware - Security {#middleware--security}
+### Security Middleware {#security-middleware}
 
 #### webmiddleware.CORS {#webmiddleware-cors}
 
@@ -1256,7 +1256,7 @@ fmt.Println(ctx.Response().Header().Get("Referrer-Policy"))
 // same-origin
 ```
 
-### Middleware - Static Files {#middleware--static-files}
+### Static Files Middleware {#static-files-middleware}
 
 #### webmiddleware.Static {#webmiddleware-static}
 
