@@ -171,13 +171,34 @@ export default defineConfig({
     logo: '/assets/goforj-v7.png',
 
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Getting Started', link: '/getting-started/' },
+      {
+        text: 'Getting Started',
+        items: [
+          { text: 'Overview', link: '/getting-started/' },
+          { text: 'Quickstart', link: '/getting-started/quickstart' },
+          { text: 'What is GoForj?', link: '/about' }
+        ]
+      },
       { text: 'Core Concepts', link: '/core/' },
-      { text: 'Applications', link: '/applications/' },
-      { text: 'Scenarios', link: '/scenarios/' },
-      { text: 'Async', link: '/async/' },
-      { text: 'Operations', link: '/operations/' },
+      {
+        text: 'Build',
+        items: [
+          { text: 'Applications', link: '/applications/' },
+          { text: 'Runnable Scenarios', link: '/scenarios/' },
+          { text: 'Data And Persistence', link: '/data/' },
+          { text: 'Security', link: '/security/' },
+          { text: 'Frontend', link: '/frontend/' },
+          { text: 'Testing', link: '/testing/' }
+        ]
+      },
+      {
+        text: 'Runtime',
+        items: [
+          { text: 'Async', link: '/async/' },
+          { text: 'Operations', link: '/operations/' },
+          { text: 'Developer Tools', link: '/developer-tools/' }
+        ]
+      },
       { text: 'Libraries', link: '/libraries/' },
       { text: 'Reference', link: '/reference/' },
       {
@@ -186,8 +207,7 @@ export default defineConfig({
           { text: `${docsVersion} Current`, link: '/' },
           { text: 'Version Policy', link: '/versions/' }
         ]
-      },
-      { text: 'What is GoForj?', link: '/about' }
+      }
     ],
 
     outline: [1, 3],

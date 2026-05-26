@@ -33,6 +33,7 @@ services:
     restart: unless-stopped
 
   web:
+    image: ${DOCKER_PROD_IMAGE:-docs-web:latest}
     build:
       context: .
       dockerfile: containers/web/Dockerfile
