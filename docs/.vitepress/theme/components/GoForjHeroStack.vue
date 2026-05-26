@@ -88,13 +88,13 @@ const GROUP_CONFIG = [
         icon: 'package-2',
         color: '#0ea5a4',
         title: 'Core libraries',
-        href: '/libraries/collection',
+        href: '/collection',
         children: [
-          { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/libraries/collection' },
-          { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/libraries/strings' },
-          { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/libraries/httpx' },
-          { id: 'core-env', icon: 'shield-check', color: '#06b6d4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/libraries/env' },
-          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/libraries/crypt' }
+          { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/collection' },
+          { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
+          { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/httpx' },
+          { id: 'core-env', icon: 'shield-check', color: '#06b6d4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
+          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' }
         ]
       },
       {
@@ -103,7 +103,7 @@ const GROUP_CONFIG = [
         icon: 'rows-3',
         color: '#64748b',
         title: 'Queue library',
-        href: '/libraries/queue',
+        href: '/queue',
         children: [
           { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Queue', href: 'https://redis.io/' },
           { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff', title: 'RabbitMQ Queue', href: 'https://www.rabbitmq.com/' },
@@ -120,7 +120,7 @@ const GROUP_CONFIG = [
         icon: 'git-branch',
         color: '#56657a',
         title: 'Events library',
-        href: '/libraries/events',
+        href: '/events',
         children: [
           { id: 'events-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
           { id: 'events-jetstream', icon: 'jetstream', color: '#1e88e5', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
@@ -136,10 +136,10 @@ const GROUP_CONFIG = [
         icon: 'hard-drive',
         color: '#4b5563',
         title: 'Storage library',
-        href: '/libraries/storage',
+        href: '/storage',
         children: [
-          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/libraries/storage' },
-          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/libraries/storage' },
+          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/storage' },
+          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
           { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Storage', href: 'https://redis.io/' },
           { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff', title: 'FTP Storage', href: 'https://filezilla-project.org/' },
           { id: 'storage-sftp', icon: 'sftp', color: '#1f6feb', textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
@@ -168,10 +168,10 @@ const GROUP_CONFIG = [
         icon: 'database-zap',
         color: '#475569',
         title: 'Cache library',
-        href: '/libraries/cache',
+        href: '/cache',
         children: [
-          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/libraries/cache' },
-          { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/libraries/cache' },
+          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
+          { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/cache' },
           { id: 'cache-memcached', icon: 'memcached', color: '#0198c4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
           { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Cache', href: 'https://redis.io/' },
           { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
@@ -895,7 +895,7 @@ function adjustColor(color, amount) {
           </div>
         </div>
         <div class="gf-hero-actions">
-          <a href="/collection" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
+          <a href="/libraries/" class="gf-hero-btn gf-hero-btn--primary">Explore Libraries</a>
           <a href="/about" class="gf-hero-btn gf-hero-btn--secondary">Design Philosophy</a>
         </div>
       </div>
