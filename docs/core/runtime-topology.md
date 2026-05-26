@@ -43,7 +43,9 @@ Depending on selected components, the combined runtime can include:
 - jobs runtime
 - metrics endpoint behavior
 
-Standalone is useful for local development, demos, and small deployments where one process is the right shape.
+Standalone is useful for local development, onboarding, demos, and simple process models.
+
+For built binaries, production process commands, and `forj build --auto-run`, use [Standalone versus Distributed](/operations/standalone-vs-distributed).
 
 ## Distributed Runtime
 
@@ -57,7 +59,9 @@ forj run scheduler
 
 Each command starts the App lifecycle and then runs the selected runtime boundary.
 
-This is useful when production wants separate processes, containers, scaling rules, or restart policies for HTTP, workers, and scheduler.
+This is useful when an environment wants separate processes, containers, scaling rules, or restart policies for HTTP, workers, and scheduler.
+
+This page uses `forj run ...` because it explains the generated App model through the developer CLI. Deployment docs use `./bin/app ...` because they describe the built binary.
 
 ## Runtime Host Behavior
 
@@ -91,8 +95,8 @@ Use standalone first:
 
 - local development
 - quick demos
-- small single-process deployments
-- first onboarding and examples
+- onboarding examples
+- simple process models
 
 Use explicit runtime commands when:
 
@@ -113,4 +117,5 @@ The App code should not need to change when topology changes.
 ## Next Steps
 
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown ordering.
-- `operations/runtime-processes.md` will explain production process deployment.
+- [Runtime Processes](/operations/runtime-processes) explains production process deployment.
+- [Standalone versus Distributed](/operations/standalone-vs-distributed) explains built binary commands and default-launch binaries.
