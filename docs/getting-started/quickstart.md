@@ -9,8 +9,8 @@ This page installs the `forj` CLI, creates a generated GoForj App, builds it, an
 
 ## Prerequisites
 
-- Go installed for your platform.
-- Docker available if you select Docker-backed components in the project wizard.
+- [Go installed](https://go.dev/dl/) for your platform.
+- [Docker](https://docs.docker.com/get-docker/) and the `docker-compose` command available if you select Docker-backed components in the project wizard. On macOS, [OrbStack](https://orbstack.dev/) is a recommended Docker-compatible option that is fast and lightweight.
 
 ## Install the CLI
 
