@@ -387,6 +387,13 @@ function applyCodeVariantPreference() {
   document.documentElement.dataset.gfCodeVariant = variant
 }
 
+function revealNavbarSearch() {
+  if (typeof document === 'undefined') return
+  requestAnimationFrame(() => {
+    document.documentElement.classList.add('gf-search-ready')
+  })
+}
+
 export default {
   ...DefaultTheme,
   Layout: () => {
@@ -430,6 +437,7 @@ export default {
 
     onMounted(() => {
       applyCodeVariantPreference()
+      revealNavbarSearch()
       initLightbox()
       refreshSoon()
       restoreDeferredInitialHash()
