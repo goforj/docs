@@ -37,7 +37,37 @@ Generated Apps expose both combined and leaf runtime commands:
 
 The combined command is the normal local host path. Leaf commands remain important for production, explicit debugging, and distributed process layouts.
 
-## Standalone Versus Distributed
+Built binaries should usually be documented with their direct command surface:
+
+- `./bin/app run`
+- `./bin/app api`
+- `./bin/app worker`
+- `./bin/app scheduler`
+- `./bin/app migrate`
+
+Use `forj run ...` when documenting developer CLI behavior. Use `./bin/app ...` when documenting deployment and process supervision.
+
+## Default Launch Binaries
+
+`forj build --auto-run` can compile a default launch target into the binary.
+
+When present, running the binary with no command starts the standalone App runtime:
+
+```bash
+./bin/app
+```
+
+This should be described as equivalent to the standalone launch command:
+
+```bash
+./bin/app run
+```
+
+Explicit commands still win. If a supervisor runs `./bin/app api`, `./bin/app worker`, or another command, the binary runs that command instead of the default launch target.
+
+Docs should frame this as a packaging convenience for single-process services, not as a replacement for explaining topology.
+
+## Standalone versus Distributed
 
 Docs should explain topology separately from business logic.
 
@@ -137,4 +167,3 @@ Recommended public docs:
 - `operations/runtime-processes.md`
 - `operations/standalone-vs-distributed.md`
 - `operations/lazy-initialization.md`
-

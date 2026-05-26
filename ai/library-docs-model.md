@@ -43,7 +43,7 @@ Examples:
 
 The docs should respect that a user may adopt one library without adopting the full GoForj framework.
 
-## Framework Pages Versus Library Pages
+## Framework Pages versus Library Pages
 
 ### Framework Pages
 
@@ -138,7 +138,7 @@ Recommended groups:
 
 The current slurped README pages should remain available under Libraries and should be linked from framework pages as needed.
 
-## Search And Discovery
+## Search and Discovery
 
 Search results should preserve projection context.
 
@@ -194,4 +194,3 @@ When reviewing a framework page:
 - It avoids duplicating the library README.
 - It keeps driver imports near configuration or provider examples.
 - It preserves the golden path for App users.
-

@@ -62,7 +62,7 @@ Answer:
 - What constructors, drivers, adapters, and APIs exist?
 - How do standalone users install and test it?
 
-## Codegen And Accessor Pattern
+## Codegen and Accessor Pattern
 
 Several generated components use the same pattern:
 
@@ -82,6 +82,10 @@ Examples:
 - `DB_SUPPORTED_DRIVERS`
 
 This pattern deserves first-class documentation. It is central to GoForj's "swap drivers, not business logic" story because it keeps binaries lean while preserving runtime environment flexibility.
+
+When documenting regeneration, prefer `forj build` as the normal path.
+
+Focused generation commands are valid reference material, but public workflow pages should not imply developers must run them manually during normal development. During `forj dev`, the generated build watcher normally runs `forj build` for the developer.
 
 ## Named Resource Pattern
 
@@ -138,6 +142,8 @@ Instead:
 - link to generated component docs or reference for full env detail
 - link to library pages for primitive APIs and driver matrices
 
+Use native VitePress info callouts for recurring workflow context such as automatic `forj dev` build behavior. Do not add this as inline noise after every command.
+
 ## Artifacts Needed
 
 Recommended public docs:
@@ -152,4 +158,3 @@ Recommended reference docs:
 - `reference/generated-files.md`
 - `reference/env-vars.md`
 - `reference/generation-commands.md`
-

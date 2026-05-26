@@ -231,11 +231,11 @@ Recommended GoForj top-level IA:
 - Core Concepts
 - Libraries
 - Building Applications
-- Data And Persistence
-- Async And Workflows
+- Data and Persistence
+- Async and Workflows
 - Testing
 - Operations
-- Lighthouse And Observability
+- Lighthouse and Observability
 - Reference
 - Internals
 
@@ -248,16 +248,16 @@ Recommended grouping:
 - Getting Started: installation, quickstart, project structure, configuration
 - Core Concepts: app, runtime, lifecycle, dependency injection, providers, drivers
 - Building Applications: HTTP, controllers, middleware, commands, services, validation, error handling
-- Data And Persistence: database, repositories, migrations, cache, storage
-- Async And Workflows: queues, jobs, events, scheduler, events versus queues
+- Data and Persistence: database, repositories, migrations, cache, storage
+- Async and Workflows: queues, jobs, events, scheduler, events versus queues
 - Testing: unit, HTTP, jobs, events, storage, cache, integration, rendered app smoke tests
 - Operations: deployment, workers, schedulers, metrics, logging, health, readiness
-- Lighthouse And Observability: inspects, resource explorers, runtime views, local debugging
+- Lighthouse and Observability: inspects, resource explorers, runtime views, local debugging
 - Reference: CLI, env vars, generated files, framework configuration
 - Libraries: standalone package APIs, driver matrices, primitive examples
 - Internals: generated templates, repo boundaries, contribution architecture
 
-## Reference Versus Guide Separation
+## Reference versus Guide Separation
 
 Framework guides teach how to build generated Apps.
 
@@ -276,7 +276,7 @@ GoForj should avoid making the first framework experience a library page. A queu
 
 Standalone package users can enter through the queue library page directly.
 
-## Beginner Versus Advanced Progression
+## Beginner versus Advanced Progression
 
 Beginner pages should show:
 
@@ -628,7 +628,7 @@ GoForj examples should:
 - include testing guidance where appropriate
 - show production driver swaps as configuration/provider changes
 
-## 5. Tone And Writing Style Analysis
+## 5. Tone and Writing Style Analysis
 
 ## Pacing
 

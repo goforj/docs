@@ -119,6 +119,28 @@ Avoid:
 - exclamation points
 - repeated slogans
 
+## Title Tone
+
+Use calm sentence-style titles in public docs.
+
+Prefer:
+
+- `Requests and Validation`
+- `Drivers and Adapters`
+- `Events versus Queues`
+
+Avoid title-case connector words such as `And`, `Or`, and `Versus` unless they are part of a proper noun.
+
+This keeps the docs from feeling generated or over-formal.
+
+## Visual Tone
+
+Visuals should clarify system relationships.
+
+Use diagrams, callouts, cards, and custom VitePress components when they make a concept easier to understand. Do not add imagery only to make a page feel more designed.
+
+When possible, prefer maintainable, code-native visuals over static screenshots. This keeps docs easier to update as the framework changes.
+
 ## Example Tone
 
 Examples should feel like code a team might keep.
@@ -169,4 +191,3 @@ Comparisons to other ecosystems should be rare and brief.
 It is acceptable to say GoForj offers a cohesive framework experience for Go. Avoid writing public docs as if every concept must be justified by another framework.
 
 Do not copy wording, naming conventions, or page structure from other frameworks unless the concept is already idiomatic in GoForj.
-

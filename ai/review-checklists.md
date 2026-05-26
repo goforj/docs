@@ -11,6 +11,7 @@ Use these checklists before publishing new docs, reviewing AI-generated drafts, 
 - The page has one primary purpose.
 - The first example follows the GoForj golden path.
 - Terminology matches `terminology.md`.
+- Titles, headings, nav labels, and sidebar labels use sentence-style capitalization.
 - The page uses a calm, direct voice.
 - The page avoids hype and vague claims.
 - The page identifies the generated App location when relevant.
@@ -81,6 +82,8 @@ Use these checklists before publishing new docs, reviewing AI-generated drafts, 
 ## Operations Checklist
 
 - The process or command is named.
+- Development commands and built binary commands are not conflated.
+- Default-launch binary behavior is documented when topology pages discuss `forj build --auto-run`.
 - Startup behavior is described.
 - Shutdown behavior is described.
 - Health or readiness behavior is described when relevant.
@@ -95,6 +98,7 @@ Use these checklists before publishing new docs, reviewing AI-generated drafts, 
 - The draft does not invent GoForj behavior.
 - The draft uses existing source context for commands, file paths, and APIs.
 - Unverified commands are marked or removed.
+- Generated internal AI context is not placed under the public docs tree.
 - The draft follows the page type structure in `docs-style-guide.md`.
 - The draft reinforces `golden-paths.md`.
 - The draft avoids anti-patterns listed in `anti-patterns.md`.

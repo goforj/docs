@@ -54,7 +54,7 @@ Exit criteria:
 - [x] Review checklists exist.
 - [x] Libraries and framework projections are modeled separately.
 
-## Phase 1: Navigation And IA
+## Phase 1: Navigation and IA
 
 Goal: make the site structure reflect the intended docs system before writing many pages.
 
@@ -158,7 +158,7 @@ Exit criteria:
 - [x] HTTP docs use `web` abstractions and link to the standalone library page.
 - [x] Route visibility through `route:list` is documented.
 
-## Phase 6: Data And Persistence
+## Phase 6: Data and Persistence
 
 Goal: explain durable data, derived data, and file/blob storage boundaries.
 
@@ -177,7 +177,7 @@ Exit criteria:
 - [x] `*_SUPPORTED_DRIVERS` generation is explained where relevant.
 - [x] Database guidance is honest about current framework ownership.
 
-## Phase 7: Async And Workflows
+## Phase 7: Async and Workflows
 
 Goal: explain background work, fan-out, and recurring work.
 
@@ -216,7 +216,7 @@ Exit criteria:
 - [x] Local drivers and fakes are documented.
 - [x] Rendered App smoke testing is documented for framework contributors.
 
-## Phase 9: Operations And Observability
+## Phase 9: Operations and Observability
 
 Goal: make production and runtime behavior explicit.
 

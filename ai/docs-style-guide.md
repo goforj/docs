@@ -143,9 +143,22 @@ Avoid `####` unless the page is API reference generated from code.
 
 Headings should be short and concrete:
 
-- Good: `## Register A Job`
+- Good: `## Register a Job`
 - Good: `## Worker Lifecycle`
 - Avoid: `## How You Can Start Thinking About Running Background Things`
+
+Use sentence-style titles for public docs navigation, page titles, sidebar labels, and headings.
+
+Lowercase connector words unless they are proper nouns or fixed technical names:
+
+- Good: `Requests and Validation`
+- Good: `Drivers and Adapters`
+- Good: `Events versus Queues`
+- Good: `Health and Readiness`
+- Avoid: `Requests And Validation`
+- Avoid: `Standalone Versus Distributed`
+
+Keep acronyms and product names in their canonical form: `HTTP`, `OpenAPI`, `Lighthouse`, `GoForj`, `Wire`.
 
 ## Paragraph Size
 
@@ -196,6 +209,19 @@ Prefer:
 forj run route:list
 ```
 
+For rendered App binaries, prefer production-shaped commands:
+
+```bash
+./bin/app run
+./bin/app api
+./bin/app worker
+./bin/app scheduler
+```
+
+Use `forj run app`, `forj run api`, `forj run worker`, and `forj run scheduler` when the page is specifically about the development CLI pass-through.
+
+When documenting `forj build --auto-run`, describe it as a build-time default launch setting: launching `./bin/app` with no command starts the App runtime, while explicit commands still take precedence.
+
 When showing Go commands in internal maintainer docs, use the GoForj cache environment:
 
 ```bash
@@ -213,6 +239,18 @@ Use a warning for behavior that can cause data loss, security issues, broken pro
 Use a tip only when it materially shortens the workflow.
 
 Do not use callouts to create visual variety.
+
+Use VitePress native custom containers for callouts:
+
+```md
+::: info Dev Loop
+During `forj dev`, the generated build watcher normally runs `forj build` for you.
+:::
+```
+
+The current docs theme styles `info` blocks as the standard calm callout. Prefer this for workflow context such as automatic build behavior. Keep the title short and useful.
+
+For repeated `Common Mistakes` sections, keep the `## Common Mistakes` heading for outline/search stability. If extra contrast is needed, wrap the list in a native callout under the heading and test the pattern on one page before applying globally.
 
 ## Conceptual Layering
 
@@ -265,7 +303,7 @@ Advanced pages may show:
 
 Never mix beginner and advanced paths in the same first example.
 
-## Beginner Versus Advanced Pacing
+## Beginner versus Advanced Pacing
 
 Beginner docs should answer:
 
@@ -308,7 +346,7 @@ Hide or defer implementation details when they are:
 Use:
 
 - sentence-case paragraphs
-- title-case headings only when consistent with the surrounding page
+- sentence-style headings and navigation labels
 - backticks for code identifiers, commands, file paths, env vars, and package names
 - fenced code blocks with language identifiers
 - simple tables for bounded comparisons
@@ -321,6 +359,10 @@ Avoid:
 - repeated bold emphasis
 - nested lists unless no alternative is clear
 - screenshots as the only source of truth
+
+Prefer maintainable illustrations built from Markdown, tables, ASCII diagrams, or CSS/Vue components before static screenshots. Screenshots are acceptable when they show a real visual surface that cannot be explained otherwise, but they should not be the only documentation of a workflow.
+
+For VitePress site assets, cache-bust favicon and manifest links when changing icons. Chrome can retain stale favicon state for a production origin even when normal page assets refresh correctly.
 
 ## API Reference Structure
 

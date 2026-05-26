@@ -66,6 +66,14 @@ For commands, verify in:
 - `goforj/internal/forj`
 - generated app templates
 
+When choosing command wording:
+
+- Use `forj dev` for the development loop.
+- Use `forj build` as the normal regeneration/build path.
+- Use `forj run ...` for developer CLI pass-through behavior.
+- Use `./bin/app ...` for built binary, deployment, and process-supervision docs.
+- Mention `forj build --auto-run` only where default-launch binary behavior matters.
+
 For primitives, verify in sibling repos:
 
 - `web`
@@ -101,6 +109,8 @@ Before finalizing:
 5. Check for ASCII unless the file already requires Unicode.
 6. Run docs build if dependencies are usable.
 7. Note any build or verification blockers.
+
+For VitePress presentation changes, verify the generated HTML when relevant. Favicon changes should use versioned URLs because Chrome can retain stale production-origin favicon state even after the asset exists and Safari renders it correctly.
 
 Use `review-checklists.md`.
 

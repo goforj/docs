@@ -36,7 +36,7 @@ Use for:
 - scheduler registry docs
 - generated App ownership
 
-### Runtime And Operations
+### Runtime and Operations
 
 Read:
 
@@ -53,7 +53,7 @@ Use for:
 - metrics and logging behavior
 - standalone versus distributed behavior
 
-### Rendering And Validation
+### Rendering and Validation
 
 Read:
 
@@ -81,7 +81,7 @@ Use for:
 - sibling repo docs
 - release and dependency guidance
 
-### Observability And Lighthouse
+### Observability and Lighthouse
 
 Read:
 
@@ -130,7 +130,7 @@ Use for:
 - named resources
 - component-specific behavior
 
-### Frontend And Starter Kits
+### Frontend and Starter Kits
 
 Read:
 
@@ -163,4 +163,3 @@ Use for:
 Load the smallest set of files that answers the task.
 
 Do not bulk-load all context files unless the task is explicitly broad architecture work.
-

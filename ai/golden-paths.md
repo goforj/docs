@@ -42,6 +42,24 @@ Typical ownership:
 
 Business packages may be organized by domain, but examples should keep ownership clear.
 
+## Build and Run Commands
+
+Golden path for local development:
+
+- `forj dev` for the normal development loop
+- `forj build` for generation, Wire, API indexing, and binary build
+- `forj run app` when intentionally running through the CLI pass-through
+
+Golden path for built binaries:
+
+- `./bin/app run` for standalone runtime
+- `./bin/app api` for HTTP/API runtime
+- `./bin/app worker` for queue workers
+- `./bin/app scheduler` for scheduler runtime
+- `./bin/app migrate` for migrations
+
+When `forj build --auto-run` is used, `./bin/app` with no command launches the standalone App runtime. Treat this as build-time default launch behavior, not a separate runtime topology. Explicit commands still take precedence.
+
 ## Configuration
 
 Golden path:
@@ -250,4 +268,3 @@ Golden path:
 - Use rendered app smoke tests for template and wiring changes.
 
 Docs should make testing part of the normal workflow, not an appendix.
-

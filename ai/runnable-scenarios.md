@@ -118,7 +118,7 @@ Use bounded labels such as route, queue, job, disk, cache accessor, schedule, st
 
 Write scenarios in this order.
 
-### 1. JSON API Route With Controller And Service
+### 1. JSON API Route with Controller and Service
 
 Purpose:
 
@@ -236,7 +236,7 @@ Primary pages supported:
 - `async/events-vs-queues.md`
 - `libraries/events.md`
 
-### 5. `reports:generate` Job And Worker
+### 5. `reports:generate` Job and Worker
 
 Purpose:
 
@@ -294,7 +294,7 @@ Primary pages supported:
 - `operations/scheduler-processes.md`
 - `libraries/scheduler.md`
 
-### 7. Runtime Observability Through Metrics And Inspects
+### 7. Runtime Observability Through Metrics and Inspects
 
 Purpose:
 

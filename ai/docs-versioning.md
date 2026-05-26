@@ -34,7 +34,7 @@ Do not version docs because of:
 - internal AI documentation updates
 - generated README refreshes that do not change framework integration behavior
 
-## Root And Snapshot Model
+## Root and Snapshot Model
 
 Use this model:
 
@@ -51,8 +51,8 @@ Snapshot framework behavior pages:
 - Getting Started
 - Core Concepts
 - Applications
-- Data And Persistence
-- Async And Workflows
+- Data and Persistence
+- Async and Workflows
 - Testing
 - Operations
 - Developer Tools
@@ -93,4 +93,3 @@ Every page that mentions version-specific behavior should answer one question:
 Would a user on another version build, configure, run, test, or deploy the App differently?
 
 If not, keep the page version-neutral.
-

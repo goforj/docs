@@ -86,7 +86,7 @@ Docs should cover:
 
 Lighthouse should be introduced after metrics and inspects are explained.
 
-## API Index And OpenAPI
+## API Index and OpenAPI
 
 API Index is a framework tooling surface.
 
@@ -159,4 +159,3 @@ Every product surface doc should answer:
 - how it is observed
 - how it is tested
 - what is intentionally not part of the surface
-

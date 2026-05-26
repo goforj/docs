@@ -26,7 +26,9 @@ Every runtime surface should answer:
 Document:
 
 - command: `forj run api`
+- built binary command: `./bin/app api`
 - combined runtime command: `forj run app`
+- built standalone command: `./bin/app run`
 - route registration
 - middleware stack
 - health and readiness routes
@@ -46,6 +48,7 @@ Avoid:
 Document:
 
 - command: `forj run worker`
+- built binary command: `./bin/app worker`
 - handler registration before worker start
 - driver behavior
 - retry and timeout behavior
@@ -62,6 +65,7 @@ Explain that queue dispatch and queue work are separate concerns.
 Document:
 
 - command: `forj run scheduler`
+- built binary command: `./bin/app scheduler`
 - schedule registration in `internal/scheduler/scheduler_registry.go`
 - stable schedule names
 - overlap control
@@ -76,6 +80,9 @@ Document:
 Document:
 
 - generated command surfaces
+- `forj run ...` as developer CLI pass-through
+- `./bin/app ...` as the built App command surface
+- default-launch behavior from `forj build --auto-run` when relevant
 - command lifecycle
 - context cancellation
 - logging
@@ -135,7 +142,7 @@ Use these sections for long-running runtimes:
 3. `## Startup`
 4. `## Shutdown`
 5. `## Configuration`
-6. `## Health And Readiness`
+6. `## Health and Readiness`
 7. `## Logs`
 8. `## Metrics`
 9. `## Inspects`
@@ -144,6 +151,8 @@ Use these sections for long-running runtimes:
 12. `## Production Checklist`
 
 Skip sections that truly do not apply, but do not omit lifecycle, configuration, or failure modes for long-running processes.
+
+For topology pages, include a short section for default-launch binaries when the page discusses standalone process deployment. State that `forj build --auto-run` makes `./bin/app` launch the standalone runtime with no arguments, while explicit runtime commands continue to behave normally.
 
 ## Failure Mode Language
 
@@ -189,4 +198,3 @@ Example:
 - driver dependencies are reachable
 - retries and timeouts are understood
 - Lighthouse access is controlled if enabled
-

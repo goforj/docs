@@ -33,6 +33,8 @@ For common tasks, teach one official path before alternatives.
 
 Alternatives are allowed only after the reader understands the default architecture.
 
+Golden path does not mean every deployment looks identical. It means the docs present one application model first, then explain topology, packaging, and driver choices as explicit variations on that model.
+
 ### Go-Native Always
 
 Docs must preserve Go's strengths:
@@ -53,6 +55,8 @@ Do not teach patterns that only make sense in dynamic-language frameworks.
 Generated app code is part of GoForj's user experience.
 
 Docs should treat generated files as readable, maintainable, and intentional. If generated code would be embarrassing to document, the code should improve.
+
+Generated local READMEs are also product surface. They may be more ownership-oriented than public docs, but they must still be simple, accurate, and pleasant to read.
 
 ### Swap Drivers, Not Business Logic
 
@@ -80,6 +84,8 @@ Startup, shutdown, workers, schedules, background processes, and runtime boundar
 
 Hidden lifecycle behavior erodes trust.
 
+Packaging conveniences such as default-launch binaries should be documented as build-time behavior, not as hidden runtime magic. A binary built with `forj build --auto-run` may launch the standalone runtime with no command, while explicit commands remain explicit.
+
 ### Observability Is Core
 
 Logs, metrics, inspects, route lists, health checks, and Lighthouse are part of the framework model.
@@ -91,6 +97,8 @@ Docs should make runtime visibility normal, not optional polish.
 Examples should compile, run, and feel realistic.
 
 An example that cannot be run should be clearly marked as a fragment. A fragment should not carry the main teaching burden of a task page.
+
+When examples produce useful output, include the expected value in comments or verification text. Readers should not have to infer what success looks like.
 
 ## What Great GoForj Docs Feel Like
 
@@ -147,6 +155,8 @@ Docs must never:
 - imply distributed infrastructure is required for first use
 - document implementation accidents as framework principles
 - offer three architectures when one should exist
+- let generated AI context files leak into the public docs index or search
+- treat visual styling as decoration when it does not clarify the system
 
 ## Evolution Rules
 
@@ -173,4 +183,3 @@ Future AI-assisted documentation should:
 - mark uncertainty rather than presenting guesses as facts
 
 AI output should be treated as a draft until examples and commands are verified.
-
