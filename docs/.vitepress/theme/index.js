@@ -371,11 +371,15 @@ function applyCodeVariantPreference() {
     'paper',
     'chrome',
     'obsidian',
+    'frost',
     'midnight-gold',
     'desert-dusk',
     'retro-amber-crt',
+    'aurora',
     'rose-metal',
+    'cobalt-luxe',
     'mono-slate',
+    'mint-neon',
     'sepia-noir'
   ])
   let variant = window.localStorage.getItem(CODE_VARIANT_KEY) || 'ink'

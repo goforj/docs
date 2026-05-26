@@ -182,20 +182,15 @@
 
 :root {
     --gf-code-radius: 12px;
-    --gf-code-border: rgba(170, 188, 240, 0.22);
+    --gf-code-border: rgba(138, 149, 177, 0.18);
     --gf-code-bg:
-        radial-gradient(1200px 200px at 12% 0%, rgba(44, 104, 255, 0.06), transparent 48%),
-        radial-gradient(900px 160px at 88% 0%, rgba(80, 168, 255, 0.04), transparent 52%),
-        linear-gradient(180deg, rgba(22, 27, 38, 0.985), rgba(13, 16, 24, 0.985));
+        linear-gradient(180deg, rgba(12, 13, 17, 0.994), rgba(8, 9, 12, 0.997));
     --gf-code-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.025),
-        0 0 0 1px rgba(38, 78, 165, 0.10),
-        0 10px 34px rgba(0, 0, 0, 0.22),
-        0 0 28px rgba(33, 86, 210, 0.10);
-    --gf-code-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 16%);
-    --gf-code-lang: rgba(224, 231, 248, 0.62);
-    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+        inset 0 1px 0 rgba(255,255,255,0.006),
+        0 8px 24px rgba(0, 0, 0, 0.18);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.001), transparent 10%);
+    --gf-code-lang: rgba(214, 220, 236, 0.58);
+    --gf-code-line-gutter-bg: rgba(255,255,255,0.01);
     --gf-code-line-gutter-border: rgba(255, 255, 255, 0.05);
     --gf-info-border: rgba(135, 184, 255, 0.20);
     --gf-info-accent: rgb(135, 184, 255);

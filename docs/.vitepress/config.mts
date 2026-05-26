@@ -88,6 +88,7 @@ gtag('config', '${gaMeasurementId}');`]
   : []
 
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
+const codeVariantHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var key='goforjCodeVariant';var allowed={ink:1,obsidian:1,terminal:1,'desert-dusk':1,'retro-amber-crt':1,'sepia-noir':1,'mono-slate':1,paper:1,chrome:1,'rose-metal':1,'midnight-gold':1,halo:1,glass:1,amber:1,forest:1,sunset:1};var variant=localStorage.getItem(key)||'ink';document.documentElement.dataset.gfCodeVariant=allowed[variant]?variant:'ink';}catch(e){document.documentElement.dataset.gfCodeVariant='ink';}})();`]
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -119,6 +120,7 @@ export default defineConfig({
   },
 
   head: [
+    codeVariantHead,
     deferredHashHead,
     ['link', { rel: 'icon', type: 'image/x-icon', href: faviconHref('/favicon.ico') }],
     ['link', { rel: 'icon', type: 'image/png', sizes: '96x96', href: faviconHref('/favicon-96x96.png') }],
