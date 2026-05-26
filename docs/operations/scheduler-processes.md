@@ -45,10 +45,12 @@ Use stable schedule names because they become operator-facing identifiers.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not put large business workflows in the scheduler registry.
 - Do not run duplicate scheduler processes accidentally.
 - Do not use anonymous callbacks for important production schedules.
 - Do not treat schedules as queues.
+:::
 
 ## Next Steps
 

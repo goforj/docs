@@ -193,11 +193,13 @@ Scheduler:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not use events as a substitute for durable background jobs.
 - Do not put long-running work directly in an HTTP controller.
 - Do not hide important job names behind anonymous functions.
 - Do not make event subscribers silently swallow important failures.
 - Do not assume in-process events are durable across processes.
+:::
 
 ## Next Steps
 

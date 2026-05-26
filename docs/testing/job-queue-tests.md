@@ -53,10 +53,12 @@ Do not use worker tests for ordinary service behavior.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not test all job behavior only through a running worker.
 - Do not swallow handler errors in tests.
 - Do not assume in-process drivers have the same durability as broker-backed drivers.
 - Do not make test payloads untyped when production payloads are typed.
+:::
 
 ## Next Steps
 

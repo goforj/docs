@@ -486,11 +486,13 @@ Store metadata such as owner, original filename, content type, and retention pol
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not trust raw user filenames as storage paths.
 - Do not import S3, GCS, or local driver packages into `UploadService`.
 - Do not edit generated storage accessors by hand.
 - Do not forget `forj build` after adding `STORAGE_UPLOADS_*`.
 - Do not store ownership, authorization, or lifecycle rules only in object paths.
+:::
 
 ## Next Step
 

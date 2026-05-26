@@ -107,11 +107,13 @@ Do not introduce distributed infrastructure just to make a first example look pr
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not call every integration an adapter.
 - Do not call every backend a provider.
 - Do not change business code when only the backend changes.
 - Do not document driver matrices in framework workflow pages when the library page already owns them.
 - Do not compile every possible driver into every App by default.
+:::
 
 ## Next Steps
 

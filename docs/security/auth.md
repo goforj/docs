@@ -98,11 +98,13 @@ Security-sensitive values must not be logged:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not treat the JWT as the only source of truth.
 - Do not auto-link provider identities to existing users by email unless the App explicitly owns that policy.
 - Do not expose reset or verification tokens outside controlled local flows.
 - Do not log raw auth credentials or token material.
 - Do not bypass generated auth middleware for protected route groups.
+:::
 
 ## Next Steps
 

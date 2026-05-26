@@ -93,11 +93,13 @@ Runtime commands such as HTTP, queue workers, and scheduler processes already us
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not implement durable application behavior only as a shell script.
 - Do not duplicate service workflows inside commands.
 - Do not bypass Wire with package globals.
 - Do not forget to regenerate wiring after adding command providers.
 - Do not hide long-running runtime behavior in a short-lived command accidentally.
+:::
 
 ## Next Steps
 

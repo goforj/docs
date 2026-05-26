@@ -186,10 +186,12 @@ These options are useful for packaging, but most local development should use `.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not add a runtime driver without also including it in `*_SUPPORTED_DRIVERS` when generated code needs that driver compiled in.
 - Do not edit generated managers by hand to add resources. Change environment configuration and regenerate.
 - Do not put business behavior in `.goforj.yml`; it is a project and development configuration file.
 - Do not use cache as durable business storage.
+:::
 
 ## Next Steps
 

@@ -90,11 +90,13 @@ Do not add application behavior by editing framework route registration.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not scatter route registration across unrelated packages.
 - Do not bypass `web` routes with low-level HTTP setup in normal App code.
 - Do not put business logic in route registration.
 - Do not make route paths depend on runtime topology.
 - Do not treat framework routes as application-owned endpoints.
+:::
 
 ## Next Steps
 

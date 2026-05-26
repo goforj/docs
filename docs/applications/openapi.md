@@ -75,10 +75,12 @@ Use conventional route/controller patterns when you want strong generated metada
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not edit `build/openapi.json` by hand.
 - Do not assume OpenAPI output proves runtime authorization behavior.
 - Do not expose Swagger in environments where your deployment policy disables it.
 - Do not ignore diagnostics when generated operations are missing.
+:::
 
 ## Next Steps
 

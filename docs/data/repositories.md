@@ -71,11 +71,13 @@ Use driver-specific integration tests when SQL behavior depends on MySQL or Post
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not query the database from controllers.
 - Do not make repositories depend on HTTP or CLI types.
 - Do not import database driver packages into normal repository code.
 - Do not hide retries, job dispatch, or event publication in repositories unless the repository explicitly owns that persistence side effect.
 - Do not use cache as a repository substitute.
+:::
 
 ## Next Steps
 

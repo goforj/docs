@@ -64,11 +64,13 @@ The job code should not change when topology changes.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not run workers from HTTP handlers.
 - Do not assume `forj run app` is the only runtime shape.
 - Do not start multiple scheduler processes accidentally when scaling workers.
 - Do not ignore shutdown timeouts for long-running jobs.
 - Do not hide worker startup in constructors or package globals.
+:::
 
 ## Next Steps
 

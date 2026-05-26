@@ -50,11 +50,13 @@ Use queues for durable, retryable, worker-managed work.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not hide critical business workflows only in event subscribers.
 - Do not use subscribers as an implicit service locator.
 - Do not assume all event drivers handle errors the same way.
 - Do not make subscribers depend on HTTP-only types.
 - Do not use events to avoid clear service orchestration.
+:::
 
 ## Next Steps
 

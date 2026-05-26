@@ -133,10 +133,12 @@ Runtime-specific behavior belongs near the runtime package that owns it.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not put startup behavior in `main.go` when it belongs in `internal/app/lifecycle_registry.go`.
 - Do not make required dependencies appear optional. Construction and lifecycle behavior should expose invalid setup clearly.
 - Do not run long-lived runtime startup from random constructors.
 - Do not scatter shutdown behavior across package globals.
+:::
 
 ## Next Steps
 

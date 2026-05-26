@@ -98,11 +98,13 @@ Do not use cache as the source of truth. Do not use object storage as a replacem
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not make every command connect to the database during boot.
 - Do not add a runtime driver without including it in `DB_SUPPORTED_DRIVERS`.
 - Do not hide database configuration in leaf services.
 - Do not treat cache or storage as durable relational state.
 - Do not edit generated DB accessors by hand.
+:::
 
 ## Next Steps
 

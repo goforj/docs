@@ -51,11 +51,13 @@ Avoid depending on a developer's local `.env` unless the test is intentionally v
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not move every test into the integration layer.
 - Do not hide integration prerequisites.
 - Do not duplicate rendered compose dependency shape in a separate hardcoded test list.
 - Do not ignore the first render or Wire failure when many generated tests fail.
 - Do not patch only a rendered App when the durable fix belongs in templates or generators.
+:::
 
 ## Next Steps
 

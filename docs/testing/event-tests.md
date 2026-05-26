@@ -50,10 +50,12 @@ If the subscriber does durable work, prefer asserting that it dispatches the rig
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not assume in-process events cross process boundaries.
 - Do not rely on subscriber errors as durable retries unless the driver guarantees that behavior.
 - Do not hide critical workflows only in event subscribers.
 - Do not test event transport when the target is service behavior.
+:::
 
 ## Next Steps
 

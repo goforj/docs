@@ -53,10 +53,12 @@ APP_LOG_TIME
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not print directly to raw `stderr` from generated managers.
 - Do not repeat the same optional-resource warning for every process.
 - Do not leak secrets or raw payloads into default logs.
 - Do not bury important degraded-state information at trace level.
+:::
 
 ## Next Steps
 

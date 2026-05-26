@@ -41,10 +41,12 @@ Lazy construction does not mean production can ignore dependency readiness.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not confuse lazy backend connection with optional dependency injection.
 - Do not make required resources appear optional.
 - Do not make every command eagerly connect to every backend.
 - Do not hide degraded optional resources from operators.
+:::
 
 ## Next Steps
 

@@ -39,10 +39,12 @@ Prefer testing their owned runtime components directly unless the command wiring
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not duplicate service workflow tests in command tests.
 - Do not shell out to the binary when a direct command test is enough.
 - Do not use package globals to bypass command injection.
 - Do not turn every command test into a full rendered App integration test.
+:::
 
 ## Next Steps
 

@@ -85,11 +85,13 @@ Examples:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not introduce a runtime reflection container.
 - Do not use package globals to avoid provider wiring.
 - Do not put business workflows in providers.
 - Do not start long-running goroutines from constructors unless that is the explicit design of the type.
 - Do not make required dependencies look optional.
+:::
 
 ## Next Steps
 

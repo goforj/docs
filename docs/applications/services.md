@@ -86,11 +86,13 @@ If a workflow writes to the database, dispatches a job, updates cache, and publi
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not put business workflows in controllers, middleware, runtime bootstrap, or provider functions.
 - Do not read environment variables repeatedly inside services when configuration can be injected.
 - Do not make services depend on HTTP-only types.
 - Do not use package globals as an infrastructure shortcut.
 - Do not swallow dependency errors that should fail fast.
+:::
 
 ## Next Steps
 

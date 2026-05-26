@@ -48,10 +48,12 @@ Job handlers should not care whether workers run inside `run` or in a dedicated 
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not run queue workers from HTTP handlers.
 - Do not assume shutdown means instant termination.
 - Do not ignore idempotency when retries are possible.
 - Do not treat workerpool as equivalent to durable distributed queues.
+:::
 
 ## Next Steps
 

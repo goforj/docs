@@ -96,11 +96,13 @@ Use these surfaces before editing framework-owned runtime glue.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not put business workflows in `main.go`, `internal/http`, or runtime bootstrap files.
 - Do not bypass generated registration surfaces with package globals.
 - Do not edit generated files when a documented extension point exists.
 - Do not treat the App as a dependency injection container. It is the runnable application boundary.
 - Do not make business behavior depend on whether runtimes are hosted together or split.
+:::
 
 ## Next Steps
 

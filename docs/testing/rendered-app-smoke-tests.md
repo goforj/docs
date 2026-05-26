@@ -60,10 +60,12 @@ render:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not assume a dirty framework worktree is harmless during render smoke.
 - Do not patch only the rendered App for a template bug.
 - Do not ignore module replacement drift when testing sibling repository changes.
 - Do not treat render smoke as the default test path for every application team.
+:::
 
 ## Next Steps
 

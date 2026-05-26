@@ -120,11 +120,13 @@ During `forj dev`, the generated build watcher normally runs `forj build` for yo
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not edit generated accessors to add resources manually.
 - Do not edit `wire_gen.go`.
 - Do not assume all generated files are safe to overwrite.
 - Do not put business logic in generated framework glue.
 - Do not forget regeneration after changing named resource environment variables.
+:::
 
 ## Next Steps
 

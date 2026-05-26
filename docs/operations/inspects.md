@@ -50,11 +50,13 @@ If the buffer is full or Lighthouse is unavailable, new finished inspects can be
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not call the product surface traces in docs.
 - Do not treat source runtimes as long-term inspect storage.
 - Do not show fake request memory usage.
 - Do not put child job payloads in the root job payload tab.
 - Do not rely on inspects as the only production observability tool.
+:::
 
 ## Next Steps
 

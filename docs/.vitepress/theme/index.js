@@ -12,6 +12,15 @@ const CODE_VARIANT_KEY = 'goforjCodeVariant'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
 const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
 
+function DocsPreviewBanner() {
+  return h('div', { class: 'gf-docs-preview-banner', role: 'note' }, [
+    h('div', { class: 'gf-docs-preview-banner-inner' }, [
+      h('span', { class: 'gf-docs-preview-banner-label' }, 'Documentation preview'),
+      h('span', { class: 'gf-docs-preview-banner-text' }, 'These docs are actively being built for GoForj v0.9. Some pages may change as the framework and examples are finalized.')
+    ])
+  ])
+}
+
 function getLightboxState() {
   if (typeof window === 'undefined') return null
   if (!window[LIGHTBOX_KEY]) {
@@ -383,6 +392,7 @@ export default {
     return h(DefaultTheme.Layout, null, {
       'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
       'home-hero-before': () => h(GoForjHeroStack),
+      'layout-top': () => h(DocsPreviewBanner),
       'doc-before': () => h(LibraryRepoHeader),
       'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker)]
     })

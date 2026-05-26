@@ -116,11 +116,13 @@ Avoid raw paths, raw SQL, user IDs, emails, or arbitrary payload values.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not add named resources by hand in generated accessor files.
 - Do not treat missing named accessors as optional runtime state.
 - Do not use cache names or queue names as arbitrary user input.
 - Do not change business code when only a named resource driver changes.
 - Do not use different names for the same resource across docs and examples.
+:::
 
 ## Next Steps
 

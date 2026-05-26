@@ -93,11 +93,13 @@ Do not register handlers after workers are already running.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not hide job names behind anonymous functions.
 - Do not put all business logic in `HandleTask`; delegate to services.
 - Do not use untyped `map[string]any` payloads when a typed payload is clearer.
 - Do not swallow handler errors that should be retried or observed.
 - Do not dispatch jobs from repositories unless persistence code intentionally owns that side effect.
+:::
 
 ## Next Steps
 

@@ -154,11 +154,13 @@ These commands may require Docker or external backends depending on the selected
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not start the full runtime for service behavior that can be tested directly.
 - Do not use distributed infrastructure when a local driver proves the behavior.
 - Do not make required dependencies look optional only to make tests easier.
 - Do not patch only a rendered smoke App if the bug belongs in templates or generators.
 - Do not make scheduler tests depend on wall-clock timing when the domain method can be tested directly.
+:::
 
 ## Next Steps
 

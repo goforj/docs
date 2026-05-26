@@ -79,10 +79,12 @@ Unknown or empty values normalize to `standalone`.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not make services depend on runtime topology.
 - Do not scale scheduler processes like HTTP processes by default.
 - Do not assume standalone is only for toys.
 - Do not assume distributed topology makes jobs more correct without idempotency and backend planning.
+:::
 
 ## Next Steps
 

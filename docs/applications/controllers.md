@@ -83,11 +83,13 @@ Use `web.Context` for HTTP-specific behavior such as params, binding, response h
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not put business workflows directly in controllers.
 - Do not import backend driver packages into controllers.
 - Do not use controllers as service locators.
 - Do not hide validation failures behind generic internal errors.
 - Do not depend on the underlying HTTP engine in normal App controllers.
+:::
 
 ## Next Steps
 

@@ -54,10 +54,12 @@ Examples:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not treat Lighthouse as all observability.
 - Do not make Lighthouse the first place metric semantics are validated.
 - Do not hide unavailable resources as empty UI.
 - Do not push operator-specific payload shaping into low-level runtime files when a Lighthouse adapter owns it.
+:::
 
 ## Next Steps
 

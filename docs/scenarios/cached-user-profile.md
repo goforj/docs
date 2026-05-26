@@ -364,11 +364,13 @@ Keep cache keys bounded and predictable. Use IDs inside keys when needed, but do
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not treat cache as source-of-truth storage.
 - Do not import Redis, Memcached, or SQL cache drivers into `UserService`.
 - Do not edit generated cache accessors by hand.
 - Do not forget `forj build` after adding `CACHE_PROFILES_*`.
 - Do not hide repository behavior inside the controller.
+:::
 
 ## Next Step
 

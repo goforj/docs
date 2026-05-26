@@ -88,11 +88,13 @@ forj generate --events
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not use events as durable job transport.
 - Do not assume in-process events are visible across processes.
 - Do not publish events for every private method call.
 - Do not use unstable topic names.
 - Do not make subscribers silently swallow important failures.
+:::
 
 ## Next Steps
 

@@ -75,11 +75,13 @@ Use [Cache](/cache) for the full package-level driver matrix.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not store source-of-truth business state only in cache.
 - Do not omit TTLs for data that should expire.
 - Do not put user input directly into metric labels or cache resource names.
 - Do not import cache driver packages into business services.
 - Do not assume local memory cache is shared across runtime processes.
+:::
 
 ## Next Steps
 

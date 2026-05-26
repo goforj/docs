@@ -73,11 +73,13 @@ Do not scale scheduler processes the same way as stateless HTTP or queue workers
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not hide important scheduled work behind anonymous callbacks.
 - Do not put large business workflows in the scheduler registry.
 - Do not run duplicate scheduler processes accidentally.
 - Do not treat schedules as durable queues.
 - Do not use unstable names for operator-facing schedules.
+:::
 
 ## Next Steps
 

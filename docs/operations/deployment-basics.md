@@ -61,10 +61,12 @@ Typical order:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not deploy a binary after changing generated drivers without running `forj build`.
 - Do not run every runtime in one process just because local development does.
 - Do not start multiple scheduler processes unless the schedules support it.
 - Do not make required configuration appear optional.
+:::
 
 ## Next Steps
 

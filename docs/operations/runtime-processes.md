@@ -50,10 +50,12 @@ SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not start long-running work from constructors.
 - Do not make business behavior depend on process topology.
 - Do not assume worker shutdown is instant when jobs are in flight.
 - Do not scale scheduler processes like stateless HTTP processes without locks or singleton control.
+:::
 
 ## Next Steps
 

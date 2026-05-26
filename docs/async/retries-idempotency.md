@@ -60,11 +60,13 @@ Ask:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not assume retries are safe by default.
 - Do not use events as the retry system for critical work.
 - Do not let anonymous callbacks hide operational identity.
 - Do not perform irreversible external side effects before durable state is ready.
 - Do not ignore shutdown behavior for long-running jobs.
+:::
 
 ## Next Steps
 

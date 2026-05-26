@@ -52,11 +52,13 @@ If a workflow writes both database state and storage objects, define cleanup and
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not hide transaction boundaries in controllers.
 - Do not perform external irreversible side effects inside a transaction without a clear reason.
 - Do not assume queue dispatch, event publication, and storage writes roll back with SQL.
 - Do not use cache as the consistency authority.
 - Do not spread one transaction across unrelated runtime boundaries.
+:::
 
 ## Next Steps
 

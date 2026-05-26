@@ -104,11 +104,13 @@ Library pages own driver matrices, constructors, and low-level behavior:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not show full driver matrices in every workflow page.
 - Do not use production-only drivers in first examples.
 - Do not compile every driver into every App by default.
 - Do not make services import backend driver packages directly.
 - Do not change business code when only the runtime backend changes.
+:::
 
 ## Next Steps
 

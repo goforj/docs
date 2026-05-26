@@ -147,11 +147,13 @@ forj generate
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not introduce a reflection container for application services.
 - Do not use package globals to bypass Wire.
 - Do not make required dependencies look optional.
 - Do not edit `wire_gen.go` by hand.
 - Do not put business workflows in provider functions.
+:::
 
 ## Next Steps
 

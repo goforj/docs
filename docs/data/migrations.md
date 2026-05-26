@@ -87,11 +87,13 @@ forj run migrate --dry-run
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not assume one SQL file works for every driver.
 - Do not put named-connection migrations in the root directory.
 - Do not manually edit migration history unless you are intentionally repairing a database.
 - Do not run migrations outside the App path when the generated command owns connection selection.
 - Do not forget that each connection has its own migration table.
+:::
 
 ## Next Steps
 

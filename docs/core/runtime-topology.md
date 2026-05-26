@@ -15,10 +15,8 @@ Generated Apps model two runtime modes:
 
 | Mode | Meaning |
 | --- | --- |
-| `standalone` | Enabled runtimes are hosted together in one process. |
+| `standalone` | Default. Enabled runtimes are hosted together in one process. |
 | `distributed` | Runtimes are expected to be launched through explicit runtime commands. |
-
-Unknown or empty values normalize to `standalone`.
 
 The runtime mode is resolved from:
 
@@ -109,10 +107,12 @@ The App code should not need to change when topology changes.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not assume `forj run app` is the only production shape.
 - Do not make business logic depend on whether HTTP, workers, and scheduler run in one process.
 - Do not hide runtime-specific startup in generic helpers when a runtime package owns that process boundary.
 - Do not run multiple scheduler processes unless the scheduler and deployment are configured for that behavior.
+:::
 
 ## Next Steps
 

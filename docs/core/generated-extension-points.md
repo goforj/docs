@@ -105,11 +105,13 @@ Change only the App when the behavior is application-specific.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not edit `wire_gen.go` by hand.
 - Do not edit generated managers to add named resources manually.
 - Do not put App-specific behavior into framework templates.
 - Do not put framework-wide fixes only in a rendered App.
 - Do not hide important runtime behavior in anonymous callbacks.
+:::
 
 ## Next Steps
 

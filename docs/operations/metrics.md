@@ -64,10 +64,12 @@ This keeps metric names, labels, and dashboards honest.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not add high-cardinality labels.
 - Do not count internal scrape traffic as application traffic.
 - Do not create a second metrics registry for normal App metrics.
 - Do not use metrics as a replacement for logs or inspects.
+:::
 
 ## Next Steps
 

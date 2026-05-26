@@ -93,11 +93,13 @@ This preserves request cancellation and deadlines across service, repository, qu
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not pass raw request structs deep into services when a typed service input is clearer.
 - Do not silently accept malformed payloads.
 - Do not mix request binding with persistence logic.
 - Do not use validation tags as a substitute for clear boundary behavior.
 - Do not leak internal validation detail that is not useful to clients.
+:::
 
 ## Next Steps
 

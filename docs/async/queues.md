@@ -90,11 +90,13 @@ forj generate --queue
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not use events as a replacement for durable queued work.
 - Do not dispatch unnamed or anonymous work in docs.
 - Do not import backend queue driver packages in business services.
 - Do not assume in-process queues behave like distributed queues.
 - Do not forget to plan shutdown behavior for long-running workers.
+:::
 
 ## Next Steps
 

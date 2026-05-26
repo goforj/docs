@@ -53,10 +53,12 @@ When a starter kit requires Web UI, the generator should make that dependency ex
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not select a starter kit over an existing custom frontend unless replacement is intended.
 - Do not treat starter kit code as framework-owned after generation.
 - Do not assume Web API and Web UI are the same component.
 - Do not add production-only infrastructure requirements to starter kit first-run docs.
+:::
 
 ## Next Steps
 

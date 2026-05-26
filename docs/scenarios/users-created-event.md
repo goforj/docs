@@ -684,12 +684,14 @@ Published events and subscriber deliveries can appear in:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not use events as a substitute for durable background jobs.
 - Do not register subscribers in package `init` functions.
 - Do not publish from controllers when the service owns the workflow.
 - Do not put full user records, tokens, or request payloads in events.
 - Do not assume `inproc` events are visible across processes.
 - Do not hide critical business workflows only inside subscribers.
+:::
 
 ## Next Step
 

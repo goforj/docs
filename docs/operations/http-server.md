@@ -57,10 +57,12 @@ for the full route table.
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not print the full route table on every boot.
 - Do not rely on low-level HTTP setup when the App uses `web`.
 - Do not expose detailed readiness errors publicly.
 - Do not let access logs drown out higher-signal runtime logs.
+:::
 
 ## Next Steps
 

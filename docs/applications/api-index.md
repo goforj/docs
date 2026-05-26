@@ -51,10 +51,12 @@ It is useful for conventional GoForj route/controller patterns, but it should no
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not hand-edit generated API index output.
 - Do not assume API indexing replaces route tests.
 - Do not hide important routes behind dynamic registration when static route visibility matters.
 - Do not treat diagnostics as noise; they usually explain why metadata could not be inferred.
+:::
 
 ## Next Steps
 

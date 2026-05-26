@@ -93,11 +93,13 @@ When a workflow creates both database rows and storage objects, decide:
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not store relational source-of-truth data in object paths alone.
 - Do not hardcode local filesystem paths in business services.
 - Do not import storage driver packages into normal application logic.
 - Do not assume every driver supports every capability, such as temporary URLs.
 - Do not skip path normalization for user-controlled filenames.
+:::
 
 ## Next Steps
 

@@ -69,11 +69,13 @@ For full App behavior, prefer HTTP tests against the generated route surface so 
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not hide business logic in middleware.
 - Do not apply route-specific policy globally just because it is easy.
 - Do not duplicate framework middleware in application route registration.
 - Do not depend directly on the underlying HTTP engine for normal App middleware.
 - Do not leave important middleware unnamed when route visibility matters.
+:::
 
 ## Next Steps
 

@@ -61,11 +61,13 @@ On interrupt, it stops watchers and can run configured down tasks when `dev.down
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not treat `forj dev` as the production process manager.
 - Do not put App runtime policy into watcher code.
 - Do not assume every change needs a full render; many changes only need build or restart.
 - Do not use `~` in `render.module_replaces`; use absolute paths.
 - Do not fix generated App issues only in a rendered smoke target if the durable fix belongs in templates or generators.
+:::
 
 ## Next Steps
 

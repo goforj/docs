@@ -544,12 +544,14 @@ Keep job payloads stable and small. Store large artifacts in storage, not inside
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not use an in-process queue when API and worker run as separate processes.
 - Do not put report generation logic directly inside the event subscriber.
 - Do not make HTTP controllers build raw queue jobs.
 - Do not register job handlers after workers have started.
 - Do not put full report contents into the queue payload.
 - Do not assume retries are safe unless the handler is idempotent.
+:::
 
 ## Next Step
 

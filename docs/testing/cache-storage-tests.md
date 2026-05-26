@@ -55,11 +55,13 @@ Keep those tests explicit and isolated because they may need containers, emulato
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not use cache as the source of truth in tests.
 - Do not hardcode local filesystem paths that collide across tests.
 - Do not require cloud storage for normal unit tests.
 - Do not assume every storage driver supports every capability.
 - Do not skip regeneration after adding named caches or disks.
+:::
 
 ## Next Steps
 

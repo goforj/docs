@@ -156,7 +156,7 @@ During `forj dev`, the generated build watcher normally runs `forj build` for yo
 
 ## Common Mistakes
 
-::: info Review Before Editing
+::: warning Common mistakes
 - Do not edit generated manager files to add named resources by hand.
 - Do not add a runtime driver without including it in `*_SUPPORTED_DRIVERS`.
 - Do not edit `wire_gen.go` manually.

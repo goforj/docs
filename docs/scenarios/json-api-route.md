@@ -320,11 +320,13 @@ Do not add route-specific production behavior in the controller. Prefer middlewa
 
 ## Common Mistakes
 
+::: warning Common mistakes
 - Do not put user lookup logic in `Show`.
 - Do not register routes directly in the HTTP server package.
 - Do not edit `wire/wire_gen.go` by hand.
 - Do not skip `forj build` after changing Wire providers.
 - Do not import the underlying HTTP engine in normal App controllers.
+:::
 
 ## Next Step
 
