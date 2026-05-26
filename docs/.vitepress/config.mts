@@ -75,6 +75,8 @@ const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'Build faster. Ship smarter. Go development tools forged for productivity.'
 const docsVersion = 'v0.9'
+const faviconVersion = '20260526'
+const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
 const analyticsHead = (isProd && gaMeasurementId)
   ? [
       ['script', { async: '', src: `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}` }],
@@ -118,13 +120,13 @@ export default defineConfig({
 
   head: [
     deferredHashHead,
-    ['link', { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
-    ['link', { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png' }],
-    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' }],
-    ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16.png' }],
-    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
-    ['link', { rel: 'manifest', href: '/site.webmanifest' }],
-    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
+    ['link', { rel: 'icon', type: 'image/x-icon', href: faviconHref('/favicon.ico') }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '96x96', href: faviconHref('/favicon-96x96.png') }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: faviconHref('/favicon-32.png') }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: faviconHref('/favicon-16.png') }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: faviconHref('/apple-touch-icon.png') }],
+    ['link', { rel: 'manifest', href: faviconHref('/site.webmanifest') }],
+    ['link', { rel: 'shortcut icon', href: faviconHref('/favicon.ico') }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'GoForj' }],
     ['meta', { property: 'og:title', content: 'GoForj' }],
