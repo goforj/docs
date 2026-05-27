@@ -1,15 +1,15 @@
 ---
 title: Providers
-description: How provider functions construct services, managers, drivers, adapters, and runtime components in GoForj Apps.
+description: How provider functions construct services, adapters, managers, and runtime components in GoForj Apps.
 ---
 
 # Providers
 
-A Provider is a normal Go function that constructs a dependency for the App.
+A provider is a Go function Wire can call to construct a dependency.
 
-Providers keep construction explicit. They make the dependency graph auditable, compile-time checked, and compatible with Wire generation.
+Providers keep construction explicit: dependencies go in as parameters, and the constructed value comes out as the return value.
 
-## Provider Shape
+## Shape
 
 Most providers are constructors:
 
@@ -22,7 +22,19 @@ func NewService(repo *Repository, cache Cache) *Service {
 }
 ```
 
-Dependencies are function parameters. The returned value is the thing Wire can provide to another constructor.
+A provider can also return an error when construction can fail:
+
+```go
+func ProvideGateway(cfg Config) (*Gateway, error) {
+	if cfg.BaseURL == "" {
+		return nil, errors.New("BILLING_API_URL is required")
+	}
+
+	return NewGateway(cfg), nil
+}
+```
+
+Wire uses the return type to satisfy another constructor's parameter.
 
 ## What Providers Build
 
@@ -34,67 +46,43 @@ Providers can build:
 - commands
 - job handlers
 - managers
-- configuration structs
-- drivers
-- adapters
+- adapters and gateways
+- typed configuration values
 - runtime components
 
-Keep the provider's job narrow: construct and validate dependencies. Do not hide business workflows in provider functions.
+Keep the provider's job narrow: construct dependencies, choose implementations, and validate construction inputs.
 
-## Provider Sets
+## What They Should Not Do
 
-GoForj groups providers into Wire sets.
+Providers should not hide runtime behavior.
 
-Examples include:
+Avoid:
 
-- App-level providers
-- command providers
-- HTTP providers
-- queue and job providers
-- event providers
-- cache, storage, database, and mail providers
-- observability and metrics providers
+- business workflows
+- package globals
+- background workers started from random constructors
+- repeated environment reads from leaf services
+- nil fallbacks for required dependencies
 
-Provider sets describe how the App is constructed. They are not runtime registries.
+Construction and runtime are separate. Long-running work should start through lifecycle hooks or runtime commands, not from provider functions.
 
 ## Required Dependencies
 
-Required dependencies should be visible in the provider signature.
+Required dependencies should be visible in the constructor signature.
 
-If a service needs a repository, queue, cache, or manager, express that dependency as a constructor parameter. If the dependency is optional, model the optional behavior directly through an option, configuration value, or explicit nullable field.
+```go
+func NewService(repo *Repository, gateway *Gateway) *Service {
+	return &Service{
+		repo:    repo,
+		gateway: gateway,
+	}
+}
+```
 
-Clear provider contracts make the generated dependency graph easier to inspect and test.
-
-## Configuration Providers
-
-Configuration should be resolved near the App boundary and passed into providers as typed values where practical.
-
-Avoid repeatedly reading environment variables from leaf services. That makes behavior harder to test and obscures where runtime policy is chosen.
-
-## Provider Lifecycle
-
-Construction and startup are separate.
-
-Providers may create lightweight values, managers, configuration objects, handlers, and clients. Long-running runtime work should start through lifecycle hooks or runtime commands, not from random constructors.
-
-Examples:
-
-- Construct a queue manager in a provider.
-- Register queue handlers during App construction.
-- Start queue workers from `forj run worker` or `forj run app`.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not introduce a runtime reflection container.
-- Do not use package globals to avoid provider wiring.
-- Do not put business workflows in providers.
-- Do not start long-running goroutines from constructors unless that is the explicit design of the type.
-- Do not make required dependencies look optional.
-:::
+If a dependency is optional, model the optional behavior directly. Do not make required wiring look optional just to avoid a Wire error.
 
 ## Next Steps
 
-- [Dependency Injection](/core/dependency-injection) explains Wire generation.
-- [Generated Components](/core/generated-components) explains generated managers and provider inputs.
-- [Drivers and Adapters](/core/drivers-and-adapters) explains backend and boundary construction.
+- [Dependency Injection](/core/dependency-injection) explains the generated graph model.
+- [Provider Patterns](/core/provider-patterns) shows practical provider shapes.
+- [Wiring Recipes](/core/wiring-recipes) shows where providers are registered.

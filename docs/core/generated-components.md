@@ -73,6 +73,27 @@ forj generate --observability
 
 Running `forj generate` without flags runs the available generators for the current App.
 
+## Generated Managers
+
+Generated managers provide stable App access to infrastructure resources selected for the project.
+
+Examples:
+
+```go
+app.Cache()
+app.Caches()
+app.Storage()
+app.Events()
+app.Bus()
+app.Queue()
+app.Queues()
+app.DB()
+```
+
+Managers are generated App surfaces, not dependency injection concepts. Wire may construct them, but their purpose is to expose framework-owned resources through stable App methods.
+
+Managers should be cheap to construct. Backend connections should happen at the correct lifecycle or first-use boundary.
+
 ## Named Resources
 
 Several GoForj primitives generate named resources from environment scopes.

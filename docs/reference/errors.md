@@ -38,6 +38,8 @@ Start with:
 
 - [Dependency Injection](/core/dependency-injection)
 - [Providers](/core/providers)
+- [Wiring Recipes](/core/wiring-recipes)
+- [Reading Wire Errors](/core/reading-wire-errors)
 - [Generated Files](/reference/generated-files)
 
 ## Runtime Readiness Errors

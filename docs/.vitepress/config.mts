@@ -270,9 +270,12 @@ export default defineConfig({
           { text: 'Runtime Topology', link: '/core/runtime-topology' },
           { text: 'Dependency Injection', link: '/core/dependency-injection' },
           { text: 'Providers', link: '/core/providers' },
-          { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
+          { text: 'Provider Patterns', link: '/core/provider-patterns' },
+          { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
+          { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
           { text: 'Generated Components', link: '/core/generated-components' },
           { text: 'Generated Extension Points', link: '/core/generated-extension-points' },
+          { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
           { text: 'Named Resources', link: '/core/named-resources' },
           { text: 'Code Generation', link: '/core/code-generation' },
           { text: 'Local-First Development', link: '/core/local-first-development' }

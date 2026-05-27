@@ -7,13 +7,14 @@ description: The framework model behind GoForj Apps, runtimes, providers, driver
 
 Core Concepts explains the mental model shared by every GoForj App.
 
-Read these pages when you want to understand how generated code, runtime boundaries, providers, drivers, and named resources fit together.
+Read these pages when you want to understand the generated App model, runtime lifecycle, wiring, providers, generated extension points, drivers, and named resources.
 
 ## Start Here
 
 - [App](/core/app) defines the generated application model.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup, execution, and shutdown.
 - [Dependency Injection](/core/dependency-injection) explains how providers and Wire construct the App.
+- [Wiring Recipes](/core/wiring-recipes) shows where to register services, adapters, controllers, commands, jobs, and resources.
 - [Generated Extension Points](/core/generated-extension-points) explains where application-owned code belongs.
 
 ## All Concept Pages
@@ -23,9 +24,12 @@ Read these pages when you want to understand how generated code, runtime boundar
 - [Runtime Topology](/core/runtime-topology)
 - [Dependency Injection](/core/dependency-injection)
 - [Providers](/core/providers)
-- [Drivers and Adapters](/core/drivers-and-adapters)
+- [Provider Patterns](/core/provider-patterns)
+- [Wiring Recipes](/core/wiring-recipes)
+- [Reading Wire Errors](/core/reading-wire-errors)
 - [Generated Components](/core/generated-components)
 - [Generated Extension Points](/core/generated-extension-points)
+- [Drivers and Adapters](/core/drivers-and-adapters)
 - [Named Resources](/core/named-resources)
 - [Code Generation](/core/code-generation)
 - [Local-First Development](/core/local-first-development)
