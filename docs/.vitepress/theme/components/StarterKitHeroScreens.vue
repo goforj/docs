@@ -7,13 +7,22 @@ let timeouts = []
 
 const visibleTransform = 'rotateX(6deg) rotateY(2deg) rotateZ(3.5deg)'
 const cards = [
-  { selector: '.gf-starter-hero__card--primary', x: 180, y: 78, delay: 120 },
-  { selector: '.gf-starter-hero__card--overlay', x: 220, y: 98, delay: 360 },
-  { selector: '.gf-starter-hero__card--command', x: 260, y: 118, delay: 600 },
+  { selector: '.gf-starter-hero__card--primary', x: 180, y: 78, delay: 80 },
+  { selector: '.gf-starter-hero__card--overlay', x: 220, y: 98, delay: 220 },
+  { selector: '.gf-starter-hero__card--command', x: 260, y: 118, delay: 360 },
 ]
 
 function hiddenTransform(card) {
   return `translate3d(${card.x}px, ${card.y}px, 0) ${visibleTransform} scale(0.9)`
+}
+
+function initialStyle(card) {
+  return {
+    opacity: '0',
+    visibility: 'hidden',
+    filter: 'blur(12px)',
+    transform: hiddenTransform(card),
+  }
 }
 
 function imageReady(image) {
@@ -38,15 +47,18 @@ function setCardState(image, card, progress) {
   const scale = 0.9 + (0.1 * eased)
   const blur = 12 * (1 - eased)
 
+  image.style.visibility = 'visible'
   image.style.opacity = String(eased)
   image.style.filter = `blur(${blur}px)`
   image.style.setProperty('transform', `translate3d(${x}px, ${y}px, 0) ${visibleTransform} scale(${scale})`, 'important')
 }
 
 function animateCard(image, card) {
-  const duration = 1200
+  const duration = 1100
   const start = performance.now()
   let frame = 0
+
+  setCardState(image, card, 0)
 
   function tick(now) {
     animationFrames.delete(frame)
@@ -86,6 +98,7 @@ onMounted(async () => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       cardImages.forEach(({ image, card }) => {
+        image.style.visibility = 'hidden'
         const timeout = window.setTimeout(() => animateCard(image, card), card.delay)
         timeouts.push(timeout)
       })
@@ -112,17 +125,26 @@ onBeforeUnmount(() => {
       class="gf-starter-hero__primary gf-starter-hero__card gf-starter-hero__card--primary"
       src="/assets/starter-kits/browser-navigation-patterns.png"
       alt="Starter kit navigation component reference inside a browser frame"
+      :style="initialStyle(cards[0])"
+      loading="eager"
+      decoding="async"
     >
     <div class="gf-starter-hero__mini">
       <img
         class="gf-starter-hero__card gf-starter-hero__card--overlay"
         src="/assets/starter-kits/browser-overlay-patterns.png"
         alt="Starter kit overlay component reference inside a browser frame"
+        :style="initialStyle(cards[1])"
+        loading="eager"
+        decoding="async"
       >
       <img
         class="gf-starter-hero__card gf-starter-hero__card--command"
         src="/assets/starter-kits/browser-command-palette.png"
         alt="Starter kit command palette inside a browser frame"
+        :style="initialStyle(cards[2])"
+        loading="eager"
+        decoding="async"
       >
     </div>
   </div>

@@ -1455,6 +1455,7 @@ html.gf-lightbox-open body {
         0 0 0 1px rgba(255, 255, 255, 0.025) inset;
     transform-origin: top left;
     opacity: 0;
+    visibility: hidden;
     filter: blur(12px);
     transform: translate3d(180px, 78px, 0) var(--gf-starter-card-tilt) scale(0.9);
     will-change: opacity, transform, filter;
@@ -1500,9 +1501,10 @@ html.gf-lightbox-open body {
 
 @media (prefers-reduced-motion: reduce) {
     .gf-starter-hero__visual img {
-        opacity: 1;
-        filter: blur(0);
-        transform: var(--gf-starter-card-tilt);
+        opacity: 1 !important;
+        visibility: visible !important;
+        filter: blur(0) !important;
+        transform: var(--gf-starter-card-tilt) !important;
     }
 }
 
@@ -1659,6 +1661,7 @@ html.gf-lightbox-open body {
         position: static;
         width: 100%;
         margin-top: 16px;
+        visibility: visible !important;
         transform: none !important;
     }
 
