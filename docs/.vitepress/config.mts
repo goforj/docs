@@ -74,6 +74,7 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.'
+const socialImage = `${siteUrl}/assets/goforj-social.jpg`
 const docsVersion = 'v0.9'
 const faviconVersion = '20260526'
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
@@ -90,6 +91,15 @@ gtag('config', '${gaMeasurementId}');`]
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
 const codeVariantHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var key='goforjCodeVariant';var allowed={ink:1,obsidian:1,terminal:1,'desert-dusk':1,'retro-amber-crt':1,'sepia-noir':1,'mono-slate':1,paper:1,chrome:1,'rose-metal':1,'midnight-gold':1,halo:1,glass:1,amber:1,forest:1,sunset:1};var variant=localStorage.getItem(key)||'ink';document.documentElement.dataset.gfCodeVariant=allowed[variant]?variant:'ink';}catch(e){document.documentElement.dataset.gfCodeVariant='ink';}})();`]
 const searchHydrationHead: [string, Record<string, string>, string] = ['style', {}, `html:not(.gf-search-ready) .VPNavBarSearch{opacity:0}html.gf-search-ready .VPNavBarSearch{opacity:1;transition:opacity .12s ease}`]
+
+const pageUrl = (page: string) => {
+  const cleanPath = page
+    .replace(/(^|\/)index\.md$/, '$1')
+    .replace(/\.md$/, '')
+    .replace(/\/+$/, '')
+
+  return `${siteUrl}${cleanPath ? `/${cleanPath}` : '/'}`
+}
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -131,15 +141,33 @@ export default defineConfig({
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: faviconHref('/apple-touch-icon.png') }],
     ['link', { rel: 'manifest', href: faviconHref('/site.webmanifest') }],
     ['link', { rel: 'shortcut icon', href: faviconHref('/favicon.ico') }],
-    ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:site_name', content: 'GoForj' }],
-    ['meta', { property: 'og:title', content: 'GoForj' }],
-    ['meta', { property: 'og:description', content: siteDescription }],
-    ['meta', { name: 'twitter:card', content: 'summary' }],
-    ['meta', { name: 'twitter:title', content: 'GoForj' }],
-    ['meta', { name: 'twitter:description', content: siteDescription }],
     ...analyticsHead
   ],
+
+  transformHead({ page, title, description }) {
+    const socialTitle = title || 'GoForj'
+    const socialDescription = description || siteDescription
+
+    return [
+      ['link', { rel: 'canonical', href: pageUrl(page) }],
+      ['meta', { property: 'og:type', content: 'website' }],
+      ['meta', { property: 'og:site_name', content: 'GoForj' }],
+      ['meta', { property: 'og:title', content: socialTitle }],
+      ['meta', { property: 'og:description', content: socialDescription }],
+      ['meta', { property: 'og:url', content: pageUrl(page) }],
+      ['meta', { property: 'og:image', content: socialImage }],
+      ['meta', { property: 'og:image:secure_url', content: socialImage }],
+      ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
+      ['meta', { property: 'og:image:width', content: '1198' }],
+      ['meta', { property: 'og:image:height', content: '693' }],
+      ['meta', { property: 'og:image:alt', content: 'GoForj documentation preview' }],
+      ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+      ['meta', { name: 'twitter:title', content: socialTitle }],
+      ['meta', { name: 'twitter:description', content: socialDescription }],
+      ['meta', { name: 'twitter:image', content: socialImage }],
+      ['meta', { name: 'twitter:image:alt', content: 'GoForj documentation preview' }]
+    ]
+  },
 
   themeConfig: {
     docsVersion,
