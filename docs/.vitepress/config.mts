@@ -75,6 +75,7 @@ const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.'
 const socialImage = process.env.SOCIAL_IMAGE_URL || 'https://raw.githubusercontent.com/goforj/docs/cmilesdev/hero/docs/public/assets/goforj-og-20260527.jpg'
+const socialIcon = process.env.SOCIAL_ICON_URL || 'https://raw.githubusercontent.com/goforj/docs/cmilesdev/hero/docs/public/apple-touch-icon.png'
 const docsVersion = 'v0.9'
 const faviconVersion = '20260526'
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
@@ -139,6 +140,7 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: faviconHref('/favicon-32.png') }],
     ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: faviconHref('/favicon-16.png') }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: faviconHref('/apple-touch-icon.png') }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: socialIcon }],
     ['link', { rel: 'manifest', href: faviconHref('/site.webmanifest') }],
     ['link', { rel: 'shortcut icon', href: faviconHref('/favicon.ico') }],
     ...analyticsHead
