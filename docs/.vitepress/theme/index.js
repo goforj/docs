@@ -258,6 +258,37 @@ function refreshOutlineAutoScroll() {
   requestAnimationFrame(scrollActiveOutlineLinkIntoView)
 }
 
+function scrollActiveSidebarItemIntoView() {
+  if (typeof document === 'undefined') return
+  const nav = document.querySelector('#VPSidebarNav')
+  if (!(nav instanceof HTMLElement)) return
+
+  const scroller = nav.closest('.VPSidebar')
+  if (!(scroller instanceof HTMLElement)) return
+
+  const active = nav.querySelector('.VPSidebarItem.is-active > .item')
+  if (!(active instanceof HTMLElement)) return
+
+  const activeRect = active.getBoundingClientRect()
+  const scrollerRect = scroller.getBoundingClientRect()
+  const scrollerStyles = getComputedStyle(scroller)
+  const topInset = parseFloat(scrollerStyles.paddingTop || '0') || 0
+  const bottomInset = parseFloat(scrollerStyles.paddingBottom || '0') || 0
+  const visibleTop = scrollerRect.top + topInset + 16
+  const visibleBottom = scrollerRect.bottom - bottomInset - 24
+
+  if (activeRect.top >= visibleTop && activeRect.bottom <= visibleBottom) return
+
+  const targetTop = scroller.scrollTop + activeRect.top - scrollerRect.top - (scroller.clientHeight * 0.42)
+  scroller.scrollTop = Math.max(0, targetTop)
+}
+
+function refreshSidebarAutoScroll() {
+  requestAnimationFrame(() => {
+    scrollActiveSidebarItemIntoView()
+  })
+}
+
 function resetOutlineScrollerPosition() {
   if (typeof document === 'undefined') return
   const scroller = document.querySelector('.VPDoc .aside-container')
@@ -422,8 +453,11 @@ export default {
       await nextTick()
       refreshZoomableImages()
       refreshOutlineAutoScroll()
+      refreshSidebarAutoScroll()
       window.setTimeout(refreshZoomableImages, 120)
       window.setTimeout(refreshOutlineAutoScroll, 120)
+      window.setTimeout(refreshSidebarAutoScroll, 120)
+      window.setTimeout(refreshSidebarAutoScroll, 360)
     }
 
     const scheduleCrossPageHashCorrection = () => {
