@@ -7,9 +7,9 @@ let timeouts = []
 
 const visibleTransform = 'rotateX(6deg) rotateY(2deg) rotateZ(3.5deg)'
 const cards = [
-  { selector: '.gf-starter-hero__card--primary', x: 180, y: 78, delay: 220 },
-  { selector: '.gf-starter-hero__card--overlay', x: 220, y: 98, delay: 760 },
-  { selector: '.gf-starter-hero__card--command', x: 260, y: 118, delay: 1300 },
+  { selector: '.gf-starter-hero__card--primary', x: 180, y: 78, delay: 120 },
+  { selector: '.gf-starter-hero__card--overlay', x: 220, y: 98, delay: 360 },
+  { selector: '.gf-starter-hero__card--command', x: 260, y: 118, delay: 600 },
 ]
 
 function hiddenTransform(card) {
