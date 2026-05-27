@@ -39,6 +39,12 @@ This page groups the major variable families. Generated component READMEs and wo
 | `API_SWAGGER_ENABLED` | Enables generated API reference routes. |
 | `OPENAPI_SPEC_PATH` | Overrides the served OpenAPI JSON path. |
 
+## HTTP Client Diagnostics
+
+| Variable | Purpose |
+| --- | --- |
+| `HTTP_TRACE` | Enables `httpx` request and response dump output for clients created with `httpx.New()` when the variable is present. |
+
 ## Driver Families
 
 GoForj separates compile-time support from runtime selection.
@@ -115,4 +121,5 @@ Generated auth Apps commonly use:
 
 - [Configuration](/getting-started/configuration)
 - [Generated Components](/core/generated-components)
+- [HTTP Clients](/applications/http-clients)
 - [Driver Selection](/data/driver-selection)

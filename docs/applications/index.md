@@ -15,7 +15,8 @@ Use these pages when you are adding HTTP routes, controllers, services, commands
 2. [Routes](/applications/routes) shows how route registration stays explicit.
 3. [Controllers](/applications/controllers) shows the HTTP boundary around services.
 4. [Application Services](/applications/services) explains where product behavior belongs.
-5. [Commands](/applications/commands) covers App-owned CLI entry points.
+5. [HTTP Clients](/applications/http-clients) covers outbound HTTP dependencies.
+6. [Commands](/applications/commands) covers App-owned CLI entry points.
 
 ## All Application Pages
 
@@ -26,6 +27,7 @@ Use these pages when you are adding HTTP routes, controllers, services, commands
 - [Requests and Validation](/applications/requests-validation)
 - [Responses and Errors](/applications/responses-errors)
 - [Application Services](/applications/services)
+- [HTTP Clients](/applications/http-clients)
 - [Commands](/applications/commands)
 - [API Index](/applications/api-index)
 - [OpenAPI](/applications/openapi)

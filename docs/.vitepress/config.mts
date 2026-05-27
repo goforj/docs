@@ -289,6 +289,7 @@ export default defineConfig({
           { text: 'Requests and Validation', link: '/applications/requests-validation' },
           { text: 'Responses and Errors', link: '/applications/responses-errors' },
           { text: 'Application Services', link: '/applications/services' },
+          { text: 'HTTP Clients', link: '/applications/http-clients' },
           { text: 'Commands', link: '/applications/commands' },
           { text: 'API Index', link: '/applications/api-index' },
           { text: 'OpenAPI', link: '/applications/openapi' }
