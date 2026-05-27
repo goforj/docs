@@ -74,7 +74,7 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.'
-const socialImage = `${siteUrl}/assets/goforj-social.jpg`
+const socialImage = `${siteUrl}/assets/goforj-v7.png`
 const docsVersion = 'v0.9'
 const faviconVersion = '20260526'
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
@@ -157,9 +157,9 @@ export default defineConfig({
       ['meta', { property: 'og:url', content: pageUrl(page) }],
       ['meta', { property: 'og:image', content: socialImage }],
       ['meta', { property: 'og:image:secure_url', content: socialImage }],
-      ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
-      ['meta', { property: 'og:image:width', content: '1198' }],
-      ['meta', { property: 'og:image:height', content: '693' }],
+      ['meta', { property: 'og:image:type', content: 'image/png' }],
+      ['meta', { property: 'og:image:width', content: '550' }],
+      ['meta', { property: 'og:image:height', content: '550' }],
       ['meta', { property: 'og:image:alt', content: 'GoForj documentation preview' }],
       ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
       ['meta', { name: 'twitter:title', content: socialTitle }],
