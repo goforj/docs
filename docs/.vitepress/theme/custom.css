@@ -54,6 +54,46 @@
     margin: 0 auto;
 }
 
+.VPDoc {
+    position: relative;
+    overflow: hidden;
+}
+
+.VPDoc::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 460px;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(620px 260px at 42% 0%, rgba(92, 125, 255, 0.060), transparent 72%),
+        radial-gradient(480px 220px at 78% 2%, rgba(110, 190, 210, 0.030), transparent 76%),
+        linear-gradient(rgba(122, 147, 198, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(122, 147, 198, 0.020) 1px, transparent 1px);
+    background-size:
+        auto,
+        auto,
+        88px 88px,
+        88px 88px;
+    mask-image:
+        linear-gradient(180deg, black 0, black 54%, rgba(0, 0, 0, 0.42) 72%, transparent 100%);
+    -webkit-mask-image:
+        linear-gradient(180deg, black 0, black 54%, rgba(0, 0, 0, 0.42) 72%, transparent 100%);
+}
+
+.VPSidebar {
+    border-right: 1px solid rgba(148, 163, 184, 0.08) !important;
+    background: rgba(19, 20, 24, 0.985) !important;
+}
+
+.VPDoc > .container {
+    position: relative;
+    z-index: 1;
+}
+
 .gf-docs-version {
     display: inline-flex;
     align-items: center;
