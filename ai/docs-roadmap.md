@@ -300,15 +300,18 @@ Exit criteria:
 Goal: keep product storytelling, showcase pages, and future publishing surfaces aligned with the documentation system.
 
 - [x] Capture the unified VitePress-first site strategy in `ai/marketing-site-strategy.md`.
-- [ ] Decide when to add a public `Showcase` section.
+- [x] Add a top-level Starter Kits marketing page that is separate from the starter kit docs page.
+- [x] Add a lightweight Blog surface with a real first post instead of placeholder content.
+- [ ] Decide when to add a public `Showcase` section beyond individual top-level product pages.
 - [ ] Design the first Lighthouse showcase page as a product story, not API reference.
-- [ ] Decide when a lightweight blog/news section has enough content to justify public navigation.
+- [x] Decide when a lightweight blog/news section has enough content to justify public navigation.
+- [ ] Verify the Starter Kits hero screenshot animation visibly runs on full page refresh.
 - [ ] Revisit whether VitePress is still the right platform if CMS workflows, complex demos, or separate marketing ownership become real constraints.
 
 Exit criteria:
 
-- [ ] Marketing pages, showcase pages, blog posts, docs pages, and library pages have distinct roles.
-- [ ] Product storytelling supports the docs learning path instead of competing with it.
+- [x] Marketing pages, showcase pages, blog posts, docs pages, and library pages have distinct roles.
+- [x] Product storytelling supports the docs learning path instead of competing with it.
 - [ ] Any future platform split is based on concrete constraints, not aesthetic preference alone.
 
 ## First Runnable Scenarios

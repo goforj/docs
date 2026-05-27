@@ -362,6 +362,20 @@ Avoid:
 
 Prefer maintainable illustrations built from Markdown, tables, ASCII diagrams, or CSS/Vue components before static screenshots. Screenshots are acceptable when they show a real visual surface that cannot be explained otherwise, but they should not be the only documentation of a workflow.
 
+For marketing/showcase pages, use Markdown frontmatter to opt out of normal docs chrome when appropriate:
+
+```md
+---
+sidebar: false
+aside: false
+noAutoTitle: true
+---
+```
+
+Use custom Vue components for animated or stateful visuals. Do not depend on complex raw Markdown image stacks when Vue can make mount timing, animation state, and accessibility clearer.
+
+Display headings on marketing pages should usually not end with periods. Body copy should use normal prose punctuation.
+
 For VitePress site assets, cache-bust favicon and manifest links when changing icons. Chrome can retain stale favicon state for a production origin even when normal page assets refresh correctly.
 
 ## API Reference Structure

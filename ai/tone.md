@@ -134,6 +134,22 @@ Avoid title-case connector words such as `And`, `Or`, and `Versus` unless they a
 
 This keeps the docs from feeling generated or over-formal.
 
+For marketing and showcase pages, large display headings should usually omit terminal periods.
+
+Prefer:
+
+- `The composable stack for building with Go`
+- `Start from a real application`
+- `A frontend foundation that belongs to your App`
+
+Avoid:
+
+- `The composable stack for building with Go.`
+- `Start from a real application.`
+- `A frontend foundation that belongs to your App.`
+
+Use a period when the line is a full prose sentence in a paragraph, card body, or explanatory caption.
+
 ## Visual Tone
 
 Visuals should clarify system relationships.
@@ -141,6 +157,10 @@ Visuals should clarify system relationships.
 Use diagrams, callouts, cards, and custom VitePress components when they make a concept easier to understand. Do not add imagery only to make a page feel more designed.
 
 When possible, prefer maintainable, code-native visuals over static screenshots. This keeps docs easier to update as the framework changes.
+
+Marketing pages are the exception. They may use large real screenshots and staged product visuals when the visual communicates the product experience better than prose. Keep them grounded in actual generated App behavior.
+
+Avoid captions under screenshots when the caption only repeats the surrounding heading. Captions should add concrete information or be removed.
 
 ## Example Tone
 

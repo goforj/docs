@@ -112,6 +112,17 @@ Before finalizing:
 
 For VitePress presentation changes, verify the generated HTML when relevant. Favicon changes should use versioned URLs because Chrome can retain stale production-origin favicon state even after the asset exists and Safari renders it correctly.
 
+For custom marketing components, verify behavior in the browser, not only through `npm run build`. If an animation is expected, confirm that it visibly runs on refresh and not only after hot module replacement.
+
+Current implementation caveat: the Starter Kits hero screenshot stack has been converted to a Vue component because CSS-only animation on Markdown images was not visibly animating during refresh. If animation still does not run, debug in this order:
+
+1. Confirm the component is mounted on the page.
+2. Confirm the expected card selectors match real DOM nodes.
+3. Confirm JavaScript sets inline opacity and transform before the first visible frame.
+4. Confirm `prefers-reduced-motion` is not disabling the effect.
+5. Confirm no existing transform rule with higher priority overrides the animated transform.
+6. Add temporary visible state or console logs before changing timing values.
+
 Use `review-checklists.md`.
 
 ## Verification Commands

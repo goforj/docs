@@ -43,6 +43,7 @@ Use custom Vue components inside VitePress for product-story pages such as:
 - runtime observability
 - generated App topology
 - driver swappability
+- Starter Kits
 
 Showcase pages may be more visual than normal docs pages, but they should still feel engineering-first. They should be precise, calm, and grounded in real framework behavior.
 
@@ -54,9 +55,32 @@ Good showcase pages:
 - link to the relevant docs path after the concept is understood
 - avoid unsupported claims, hype language, and vague comparisons
 
+## Starter Kits Showcase
+
+Starter Kits is a top-level product surface, not only a getting-started docs page.
+
+The public showcase page should feel like a marketing/product page built inside VitePress:
+
+- full-width layout, not constrained to the normal documentation column
+- strong real-product screenshots from generated Apps
+- screenshots copied into `docs/assets/starter-kits/` with descriptive names
+- large product headlines without terminal periods
+- concise body copy that explains generated ownership and practical value
+- direct calls to create an App and read the starter kit docs
+- no image captions unless the caption adds information the surrounding copy cannot carry
+- no placeholder, planned, or "coming soon" cards in the public surface
+
+The showcase page should sell the experience of starting from source that already has shape: auth surfaces, settings screens, dashboard structure, component references, backend integration points, and frontend patterns that live in the user's App.
+
+The docs page should stay separate at `getting-started/starter-kits.md`. It should explain what is generated, what the App owns, which components are optional, and how to adapt or remove the generated code. Do not make the docs page carry the visual marketing burden.
+
+For animated screenshot stacks, prefer a real Vue component registered in the VitePress theme over raw Markdown/CSS tricks. If animation does not appear in dev, debug component mount, selector matching, reduced-motion state, and browser-applied transforms before adding more CSS.
+
 ## Blog
 
-Add a blog only when there are several strong posts ready and a realistic publishing cadence exists.
+The blog may live inside VitePress while it remains lightweight and file-based.
+
+The blog index should feel like a real publication surface, not a page explaining what a blog is. Feature published posts. Do not show planned or placeholder posts publicly.
 
 Good early post categories:
 

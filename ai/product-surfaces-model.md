@@ -53,6 +53,7 @@ Starter kits are product starting points, not framework primitives.
 
 Docs should cover:
 
+- optional component selection during App creation
 - component compatibility
 - what the kit generates
 - which code the user owns after creation
@@ -63,10 +64,24 @@ Docs should cover:
 
 Starter kits should feel production-minded, not demo-only.
 
+Starter kits should not imply that GoForj pulls in the full framework by default. App owners choose the components they need during creation. A starter can be a simple CLI, an API service, a frontend-backed application, or a full system with auth, mail, queues, scheduling, metrics, observability, Docker resources, and database support.
+
+The strongest message is ownership: generated starter files live in the App source tree. They are not hosted templates, hidden framework internals, or opaque runtime surfaces. Teams can inspect, replace, or evolve the generated code.
+
+The Starter Kits marketing page should show real generated surfaces:
+
+- login, registration, password reset, and settings screens
+- dashboard shell and application navigation
+- component reference pages grouped by workflow
+- overlay, command palette, and form patterns
+
+Keep public screenshots current and descriptive. Rename imported screenshots to product-oriented names rather than timestamped desktop filenames.
+
 Recommended public docs:
 
 - `getting-started/starter-kits.md`
 - `frontend/vue-starter-kit.md`
+- `starter-kits.md`
 
 ## Lighthouse
 
