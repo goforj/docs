@@ -49,6 +49,18 @@ GoForj is designed to make those concerns work as one application system while p
 
 The operating principle is simple: swap drivers, not business logic.
 
+## Why I Built It
+
+I built GoForj because it is the dream stack I wanted for building my own CLIs, applications, and everything in between.
+
+I LOVE building in Go. I liked how direct the code felt, how simple deployment could be, and how production services could stay understandable for a long time. But I got tired of wiring the same plumbing, scaffolding the same structure, and copy-pasting the same application glue every time a project needed queues, mail, scheduling, storage, cache, commands, or a solid local development loop.
+
+I kept missing the feeling I had in ecosystems like Laravel, where those pieces felt like parts of one application instead of separate decisions to reassemble every time.
+
+I did not want to bring dynamic-language magic into Go. I wanted the full-stack application experience I missed, but built out of things that still felt like Go: explicit wiring, compiled binaries, small interfaces, readable control flow, and clear production behavior.
+
+GoForj is the stack I always wanted.
+
 ## What It Feels Like
 
 A developer should be able to start with a real application, not a skeleton that only becomes useful after the infrastructure is assembled.
