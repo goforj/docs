@@ -5,11 +5,19 @@ description: Test GoForj applications, services, commands, queues, events, cache
 
 # Testing
 
-Testing should be presented as part of the normal GoForj workflow, not an advanced topic.
+Testing is part of the normal GoForj workflow.
 
-These pages should show how to test application services directly, verify HTTP and command behavior, exercise async workflows, and use local drivers or fakes where appropriate.
+Start with normal Go tests for services and handlers. Add runtime, integration, or rendered App tests only when the behavior crosses a runtime boundary or depends on generated wiring.
 
-## Testing Pages
+## Recommended Path
+
+1. [Testing Overview](/testing/overview) explains the test layers.
+2. [Unit Tests](/testing/unit-tests) covers service and pure behavior.
+3. [HTTP Tests](/testing/http-tests) covers controllers, route groups, and generated HTTP behavior.
+4. [Job and Queue Tests](/testing/job-queue-tests) covers background work.
+5. [Integration Tests](/testing/integration-tests) covers backend and rendered App boundaries.
+
+## All Testing Pages
 
 - [Testing Overview](/testing/overview)
 - [Unit Tests](/testing/unit-tests)

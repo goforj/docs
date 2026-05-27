@@ -195,7 +195,7 @@ Use `route:list` for the full route table instead of relying on startup logs for
 
 ## Next Steps
 
-- `applications/routes.md` will cover route registration in depth.
-- `applications/controllers.md` will cover controller patterns.
+- [Routes](/applications/routes) covers route registration in depth.
+- [Controllers](/applications/controllers) covers controller patterns.
 - [Runtime Topology](/core/runtime-topology) explains combined and split runtime processes.
 - [Web](/web) covers the standalone server-side HTTP package.

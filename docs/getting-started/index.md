@@ -7,14 +7,14 @@ description: Start here to build and understand a GoForj application.
 
 This section is the entry point for building a GoForj App.
 
-The first published pages in this section should get a reader from an empty workspace to a running local application, then explain the project structure and configuration model before introducing deeper framework concepts.
+Start here when you want to create a generated App, run it locally, and understand the files GoForj creates before moving into feature-specific guides.
 
-## Getting Started Pages
+## Recommended Path
 
-- [Quickstart](/getting-started/quickstart)
-- [Project Structure](/getting-started/project-structure)
-- [Configuration](/getting-started/configuration)
-- [Starter Kits](/getting-started/starter-kits)
+1. [Quickstart](/getting-started/quickstart) creates, builds, runs, and verifies a local App.
+2. [Project Structure](/getting-started/project-structure) explains the generated layout and ownership boundaries.
+3. [Configuration](/getting-started/configuration) explains `.goforj.yml`, environment files, and driver selection.
+4. [Starter Kits](/getting-started/starter-kits) explains optional generated frontend scaffolds.
 
 ## Next Practical Steps
 

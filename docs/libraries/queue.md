@@ -32,6 +32,12 @@ repoUrl: https://github.com/goforj/queue
 go get github.com/goforj/queue
 ```
 
+## Using With GoForj Apps
+
+Generated Apps resolve queues through `internal/queues`, job registration, worker commands, metrics, and inspects. Start with [Events versus Queues](/async/events-vs-queues), [Jobs](/async/jobs), [Queues](/async/queues), and [Workers](/async/workers) when queueing is part of a full App.
+
+Use this page when you need standalone queue APIs, driver semantics, middleware, worker primitives, or backend-specific behavior.
+
 ## Quick Start {#quick-start}
 
 ```go

@@ -7,9 +7,17 @@ description: Events, queues, jobs, workers, scheduler processes, retries, and id
 
 Async and Workflows covers work that runs outside the immediate request path.
 
-These pages should keep events, queues, jobs, workers, and scheduled work distinct. They should show local-first execution before production backends, and make lifecycle, retries, shutdown, and observability explicit.
+Use these pages when your App needs queued jobs, workers, event fan-out, recurring schedules, retries, or idempotent background workflows.
 
-## Async Pages
+## Recommended Path
+
+1. [Events versus Queues](/async/events-vs-queues) explains which primitive to use.
+2. [Jobs](/async/jobs) shows the unit of queued work.
+3. [Queues](/async/queues) explains dispatch and backend selection.
+4. [Workers](/async/workers) covers long-running worker processes.
+5. [Scheduler](/async/scheduler) covers recurring work.
+
+## All Async Pages
 
 - [Events versus Queues](/async/events-vs-queues)
 - [Queues](/async/queues)

@@ -39,6 +39,12 @@ Each backend has its own API and client library.
 
 `storage` provides a **small, consistent interface** so your application code doesn't have to change when the backend changes.
 
+## Using With GoForj Apps
+
+Generated Apps resolve storage through `internal/storages`, named disk accessors, and provider wiring. Start with [Storage Patterns](/data/storage-patterns), [Named Resources](/core/named-resources), and [File Upload To Storage](/scenarios/file-upload-storage) when storage is part of a full App.
+
+Use this page when you need standalone constructors, driver capability details, path behavior, or backend-specific configuration.
+
 ## Driver Matrix {#driver-matrix}
 
 Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate. 

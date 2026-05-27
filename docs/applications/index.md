@@ -7,9 +7,17 @@ description: Build HTTP services, commands, controllers, middleware, and applica
 
 Applications covers normal product code inside a GoForj App.
 
-These pages should teach one cohesive way to add routes, controllers, middleware, services, commands, responses, and errors without moving business logic into runtime bootstrap code.
+Use these pages when you are adding HTTP routes, controllers, services, commands, middleware, responses, and API documentation to a generated App.
 
-## Application Pages
+## Recommended Path
+
+1. [HTTP Services](/applications/http-services) explains the HTTP runtime and application-owned route surface.
+2. [Routes](/applications/routes) shows how route registration stays explicit.
+3. [Controllers](/applications/controllers) shows the HTTP boundary around services.
+4. [Application Services](/applications/services) explains where product behavior belongs.
+5. [Commands](/applications/commands) covers App-owned CLI entry points.
+
+## All Application Pages
 
 - [HTTP Services](/applications/http-services)
 - [Routes](/applications/routes)

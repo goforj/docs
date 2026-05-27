@@ -36,7 +36,7 @@ Each library page remains useful for standalone package users. Framework guides 
 
 ## How Libraries Relate To Apps
 
-Framework pages should show the generated App integration first. Library pages should show the standalone package API.
+Framework pages show generated App integration first. Library pages show standalone package APIs.
 
 Use the framework guides when you are building a full GoForj App. Use the library pages when you need direct package details, a driver matrix, standalone usage, or lower-level behavior.
 

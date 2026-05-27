@@ -14,19 +14,37 @@ Use the smallest boundary that proves the behavior.
 Test a controller handler directly when route registration is not the focus:
 
 ```go
-req := httptest.NewRequest(http.MethodGet, "/users/123", nil)
-ctx := webtest.NewContext(req, nil, "/users/:id", map[string]string{"id": "123"})
+package users
 
-err := controller.Show(ctx)
-if err != nil {
-	t.Fatalf("show user: %v", err)
-}
-if ctx.StatusCode() != http.StatusOK {
-	t.Fatalf("status = %d", ctx.StatusCode())
+import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/goforj/web/webtest"
+)
+
+func TestControllerShow(t *testing.T) {
+	controller := NewController(NewService())
+
+	req := httptest.NewRequest(http.MethodGet, "/users/42", nil)
+	rec := httptest.NewRecorder()
+	ctx := webtest.NewContext(req, rec, "/users/:id", webtest.PathParams{"id": "42"})
+
+	if err := controller.Show(ctx); err != nil {
+		t.Fatalf("show user: %v", err)
+	}
+	if ctx.StatusCode() != http.StatusOK {
+		t.Fatalf("status = %d", ctx.StatusCode())
+	}
+	if !strings.Contains(rec.Body.String(), `"id":"42"`) {
+		t.Fatalf("body = %s", rec.Body.String())
+	}
 }
 ```
 
-Use [Web](/web) for package-level testing helpers.
+This matches the controller from [JSON API Route](/scenarios/json-api-route). Use [Web](/web) for package-level testing helpers.
 
 ## Route Tests
 

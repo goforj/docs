@@ -7,9 +7,16 @@ description: The framework model behind GoForj Apps, runtimes, providers, driver
 
 Core Concepts explains the mental model shared by every GoForj App.
 
-These pages should establish the runtime lifecycle, dependency flow, provider model, generated extension points, and infrastructure swappability before feature-specific guides depend on them.
+Read these pages when you want to understand how generated code, runtime boundaries, providers, drivers, and named resources fit together.
 
-## Concept Pages
+## Start Here
+
+- [App](/core/app) defines the generated application model.
+- [Runtime Lifecycle](/core/runtime-lifecycle) explains startup, execution, and shutdown.
+- [Dependency Injection](/core/dependency-injection) explains how providers and Wire construct the App.
+- [Generated Extension Points](/core/generated-extension-points) explains where application-owned code belongs.
+
+## All Concept Pages
 
 - [App](/core/app)
 - [Runtime Lifecycle](/core/runtime-lifecycle)

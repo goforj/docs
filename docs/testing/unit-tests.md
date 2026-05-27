@@ -22,23 +22,37 @@ go test ./...
 Test services directly:
 
 ```go
-func TestReportsServiceCreatesReport(t *testing.T) {
-	repo := reports.NewMemoryRepository()
-	service := reports.NewService(repo)
+package users
 
-	report, err := service.Create(context.Background(), reports.CreateInput{
-		Name: "Weekly summary",
-	})
+import (
+	"context"
+	"errors"
+	"testing"
+)
+
+func TestServiceFindsUser(t *testing.T) {
+	service := NewService()
+
+	user, err := service.Find(context.Background(), "42")
 	if err != nil {
-		t.Fatalf("create report: %v", err)
+		t.Fatalf("find user: %v", err)
 	}
-	if report.Name != "Weekly summary" {
-		t.Fatalf("unexpected report name: %s", report.Name)
+	if user.ID != "42" {
+		t.Fatalf("user id = %q, want %q", user.ID, "42")
+	}
+}
+
+func TestServiceRejectsEmptyID(t *testing.T) {
+	service := NewService()
+
+	_, err := service.Find(context.Background(), "")
+	if !errors.Is(err, ErrUserNotFound) {
+		t.Fatalf("error = %v, want %v", err, ErrUserNotFound)
 	}
 }
 ```
 
-Use fakes, in-memory repositories, or local drivers when they make behavior clear.
+This matches the service from [JSON API Route](/scenarios/json-api-route). Use fakes, in-memory repositories, or local drivers when they make behavior clear.
 
 ## What To Unit Test
 

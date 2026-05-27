@@ -29,6 +29,12 @@ repoUrl: https://github.com/goforj/cache
  
 An explicit cache abstraction with a minimal Store interface and ergonomic Cache helpers. Drivers are chosen when you construct the store, so swapping backends is a dependency-injection change instead of a refactor.
 
+## Using With GoForj Apps
+
+Generated Apps resolve cache through `internal/caches`, named cache accessors, and provider wiring. Start with [Cache Patterns](/data/cache-patterns), [Named Resources](/core/named-resources), and [Generated Components](/core/generated-components) when cache is part of a full App.
+
+Use this page when you need standalone constructors, driver behavior, cache semantics, or testing helpers.
+
 ## Installation {#installation}
 
 ```bash

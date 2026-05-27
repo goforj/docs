@@ -12,16 +12,32 @@ Use queue runtime tests only when dispatch, driver behavior, retries, worker lif
 ## Payload Tests
 
 ```go
-job := queue.NewJob(SendWelcomeEmailTypeName).
-	Payload(SendWelcomeEmailPayload{UserID: "user_123"}).
-	OnQueue("default")
+package jobs
 
-var payload SendWelcomeEmailPayload
-if err := job.Bind(&payload); err != nil {
-	t.Fatalf("bind payload: %v", err)
+import (
+	"testing"
+
+	"github.com/goforj/queue"
+)
+
+const SendWelcomeEmailTypeName = "emails:welcome"
+
+type SendWelcomeEmailPayload struct {
+	UserID string `json:"user_id"`
 }
-if payload.UserID != "user_123" {
-	t.Fatalf("unexpected user id: %s", payload.UserID)
+
+func TestSendWelcomeEmailPayload(t *testing.T) {
+	job := queue.NewJob(SendWelcomeEmailTypeName).
+		Payload(SendWelcomeEmailPayload{UserID: "user_123"}).
+		OnQueue("default")
+
+	var payload SendWelcomeEmailPayload
+	if err := job.Bind(&payload); err != nil {
+		t.Fatalf("bind payload: %v", err)
+	}
+	if payload.UserID != "user_123" {
+		t.Fatalf("unexpected user id: %s", payload.UserID)
+	}
 }
 ```
 

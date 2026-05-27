@@ -7,9 +7,17 @@ description: Run, observe, inspect, and deploy GoForj applications with explicit
 
 Operations explains how GoForj applications run outside the happy path.
 
-This section should document process topology, startup, shutdown, configuration, health, readiness, logging, metrics, inspects, Lighthouse, failure modes, and production checks. It should make runtime behavior visible instead of implied.
+Use these pages when you need to run, split, observe, deploy, or troubleshoot an App in local and production environments.
 
-## Operations Pages
+## Recommended Path
+
+1. [Runtime Processes](/operations/runtime-processes) explains App process shapes.
+2. [Standalone versus Distributed](/operations/standalone-vs-distributed) explains topology choices.
+3. [Health and Readiness](/operations/health-readiness) explains probes and diagnostics.
+4. [Logging](/operations/logging), [Metrics](/operations/metrics), and [Inspects](/operations/inspects) explain runtime visibility.
+5. [Production Checklist](/operations/production-checklist) collects deployment checks.
+
+## All Operations Pages
 
 - [Deployment Basics](/operations/deployment-basics)
 - [Runtime Processes](/operations/runtime-processes)

@@ -36,6 +36,12 @@ repoUrl: https://github.com/goforj/web
 
 `web` is built on top of [Echo](https://echo.labstack.com/), which is a fantastic HTTP framework with a fast router, strong middleware story, and a mature ecosystem. GoForj wraps it so applications can code against a smaller app-facing contract while still getting a high-quality underlying engine, reusable middleware packages, testing helpers, route indexing, and framework-owned integration points like Prometheus and generated wiring.
 
+## Using With GoForj Apps
+
+Generated Apps use `web` through controllers, route groups, middleware, route listing, metrics, and inspects. Start with [HTTP Services](/applications/http-services), [Routes](/applications/routes), and [Controllers](/applications/controllers) when you are building a full App.
+
+Use this page when you need standalone package APIs, adapter details, middleware primitives, or `webtest` helpers.
+
 ## Installation {#installation}
 
 ```bash

@@ -9,7 +9,7 @@ This page installs the `forj` CLI, creates a generated GoForj App, builds it, an
 
 ## Prerequisites
 
-- [Go installed](https://go.dev/dl/) for your platform.
+- [Go 1.25 or newer installed](https://go.dev/dl/) for your platform.
 - [Docker](https://docs.docker.com/get-docker/) and the `docker-compose` command available if you select Docker-backed components in the project wizard. On macOS, [OrbStack](https://orbstack.dev/) is a recommended Docker-compatible option that is fast and lightweight.
 
 ## Install the CLI
@@ -40,6 +40,15 @@ Run the project wizard:
 forj new
 ```
 
+For a deterministic first App, choose a small HTTP shape:
+
+- select `cli`
+- select `web_api`
+- leave `web_ui` disabled unless you want a frontend starter kit
+- leave database, jobs, scheduler, and distributed infrastructure disabled for the first run
+
+If you keep the wizard defaults instead, the same commands below still apply as long as HTTP is enabled.
+
 The wizard asks for:
 
 - project name
@@ -48,7 +57,7 @@ The wizard asks for:
 - optional starter kit
 - project path
 
-For the first pass, keep the default component selection unless you have a reason to remove something. The defaults create a broad local application surface with HTTP, CLI, database, jobs, scheduler, cache, storage, events, and supporting development configuration.
+The project name becomes `APP_NAME`. The module path becomes the Go module path used by imports in generated code.
 
 After the wizard completes, move into the generated App:
 
@@ -68,6 +77,17 @@ forj build
 
 ```text
 ./bin/app
+```
+
+You should now have a generated Go project with files such as:
+
+```text
+.goforj.yml
+.env
+main.go
+wire/
+internal/
+bin/app
 ```
 
 ## Run The App
@@ -142,6 +162,8 @@ You can also list routes:
 ```bash
 forj run route:list
 ```
+
+For an HTTP App, the route list should include framework routes such as `/-/health` and `/-/ready`. If the sample controller is enabled, it should also include a generated application route under `/api/v1`.
 
 ## Next Steps
 

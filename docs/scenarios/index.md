@@ -11,20 +11,13 @@ Use these after the Quickstart when you want to build real application behavior 
 
 ## Scenarios
 
-Start here:
-
 - [JSON API Route](/scenarios/json-api-route) builds a route, controller, service, Wire provider, route registration, and service test.
 - [Cached User Profile](/scenarios/cached-user-profile) adds a repository and named cache resource.
 - [File Upload To Storage](/scenarios/file-upload-storage) writes uploads to a named storage disk.
 - [Users Created Event](/scenarios/users-created-event) publishes a typed event and handles it with a lifecycle-registered subscriber.
 - [Reports Generate Job](/scenarios/reports-generate-job) dispatches durable work from an event subscriber and processes it with a worker.
 
-Planned later:
-
-- `reports:daily` schedule
-- runtime observability with metrics and inspects
-
-These are tracked as action items in the internal docs roadmap. The current scenario set is enough to validate the main application-building path before the publishing quality pass continues.
+Read them in order if you are learning the framework model. Each scenario builds on the same App shape and adds one new boundary.
 
 ## How To Read These
 

@@ -41,6 +41,12 @@ Go has excellent low-level scheduling libraries, but defining real-world schedul
 
 Everything remains explicit, testable, and inspectable, while staying pleasant to read and maintain.
 
+## Using With GoForj Apps
+
+Generated Apps configure schedules through `internal/scheduler/scheduler_registry.go` and run them through the scheduler runtime command. Start with [Scheduler](/async/scheduler), [Scheduler Processes](/operations/scheduler-processes), and [Runtime Topology](/core/runtime-topology) when scheduling is part of a full App.
+
+Use this page when you need standalone scheduler APIs, locking, filters, hooks, or lower-level runtime control.
+
 ## Installation {#installation}
 
 ```bash

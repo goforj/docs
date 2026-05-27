@@ -7,9 +7,18 @@ description: Durable data, cache, storage, transactions, repositories, and drive
 
 Data and Persistence explains how GoForj applications work with durable data, derived data, and files.
 
-This section should keep source-of-truth storage, cache, and blob/file storage clearly separated. Framework pages should show generated App accessors and named resources, then link to Libraries for standalone package APIs and driver matrices.
+Use these pages to keep durable database state, temporary cache data, and file/blob storage separate while still using generated App resources consistently.
 
-## Data Pages
+## Recommended Path
+
+1. [Database Strategy](/data/database-strategy) explains source-of-truth data.
+2. [Repositories](/data/repositories) explains query ownership.
+3. [Transactions](/data/transactions) explains workflow boundaries.
+4. [Cache Patterns](/data/cache-patterns) explains temporary and derived data.
+5. [Storage Patterns](/data/storage-patterns) explains files and blobs.
+6. [Driver Selection](/data/driver-selection) explains backend choices.
+
+## All Data Pages
 
 - [Database Strategy](/data/database-strategy)
 - [Migrations](/data/migrations)

@@ -32,6 +32,12 @@ repoUrl: https://github.com/goforj/events
 
 It lets applications publish and subscribe to events using normal Go types, with delivery handled either in-process or through distributed backends like NATS, Redis, Kafka, or Google Pub/Sub.
 
+## Using With GoForj Apps
+
+Generated Apps resolve event buses through `internal/events`, lifecycle-registered subscribers, provider wiring, metrics, and inspects. Start with [Events versus Queues](/async/events-vs-queues), [Events](/async/events), [Event Subscribers](/async/event-subscribers), and [Users Created Event](/scenarios/users-created-event) when events are part of a full App.
+
+Use this page when you need standalone bus APIs, driver constructors, topic behavior, or testing helpers.
+
 ## Installation {#installation}
 
 ```bash

@@ -7,7 +7,7 @@ description: Framework-level lookup material for GoForj CLI commands, environmen
 
 Reference pages are lookup material.
 
-They should appear after workflow and concept pages exist. Reference should clarify exact command names, environment variables, generated files, configuration keys, and errors without becoming the first place beginners must learn the framework.
+Use reference pages after you know the workflow and need exact command names, environment variables, configuration keys, generated files, or error behavior.
 
 ## Reference Pages
 

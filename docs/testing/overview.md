@@ -49,21 +49,27 @@ Application services should be easy to test without starting HTTP, queue workers
 Use constructor injection and provide fakes or test repositories:
 
 ```go
-func TestUserServiceFindsUser(t *testing.T) {
-	repo := users.NewMemoryRepository()
-	service := users.NewService(repo)
+package users
 
-	user, err := service.Find(context.Background(), "user_123")
+import (
+	"context"
+	"testing"
+)
+
+func TestUserServiceFindsUser(t *testing.T) {
+	service := NewService()
+
+	user, err := service.Find(context.Background(), "42")
 	if err != nil {
 		t.Fatalf("find user: %v", err)
 	}
-	if user.ID != "user_123" {
+	if user.ID != "42" {
 		t.Fatalf("unexpected user id: %s", user.ID)
 	}
 }
 ```
 
-If a service needs cache, storage, events, or queues, depend on a narrow interface or use local drivers.
+This matches the service shape from [JSON API Route](/scenarios/json-api-route). If a service needs cache, storage, events, or queues, depend on a narrow interface or use local drivers.
 
 ## Test HTTP Behavior
 
