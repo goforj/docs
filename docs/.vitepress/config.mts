@@ -207,6 +207,7 @@ export default defineConfig({
         ]
       },
       { text: 'Libraries', link: '/libraries/' },
+      { text: 'Starter Kits', link: '/starter-kits' },
       { text: 'Blog', link: '/blog/' },
       { text: 'Reference', link: '/reference/' },
       {

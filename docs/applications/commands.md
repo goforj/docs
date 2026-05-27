@@ -54,13 +54,67 @@ Inject services through the constructor. Keep command code focused on flags, inp
 
 ## Registering Commands
 
-Generated Apps collect application commands in generated command surfaces, commonly under:
+A command needs two registrations:
+
+- a constructor in the command Wire set
+- a field in the generated command collection
+
+First, expose the constructor from:
 
 ```text
-internal/cmd
+internal/cmd/wire.go
 ```
 
-Add the command constructor to the relevant provider set so Wire can build it. Then add the command to the App command collection.
+Add the constructor to `AppCommandSet`:
+
+```go
+var AppCommandSet = wire.NewSet(
+	// existing command providers...
+	NewReconcileReportsCmd,
+)
+```
+
+If the command lives in another package, import that package and use its constructor:
+
+```go
+var AppCommandSet = wire.NewSet(
+	// existing command providers...
+	reports.NewReconcileReportsCmd,
+)
+```
+
+The command constructor should receive application services as parameters. It should not create repositories, managers, clients, or services itself.
+
+Then expose the command through the generated App command collection:
+
+```text
+internal/cmd/app_commands.go
+```
+
+Add a field to `AppCommands`:
+
+```go
+type AppCommands struct {
+	// existing commands...
+	ReconcileReportsCmd ReconcileReportsCmd `cmd:""`
+}
+```
+
+Add the command to `NewAppCommands` so Wire can pass it into the command tree:
+
+```go
+func NewAppCommands(
+	// existing command parameters...
+	reconcileReportsCmd *ReconcileReportsCmd,
+) *AppCommands {
+	return &AppCommands{
+		// existing command assignments...
+		ReconcileReportsCmd: *reconcileReportsCmd,
+	}
+}
+```
+
+This makes `reports:reconcile` available through the generated App binary and through `forj run reports:reconcile`.
 
 Run:
 

@@ -9,6 +9,8 @@ Starter kits are optional generated scaffolds that help an App start with a work
 
 They are not separate frameworks. After generation, their files belong to the App.
 
+For the visual overview, see the [Starter Kits showcase](/starter-kits).
+
 ## When Starter Kits Apply
 
 Starter kit selection appears during `forj new` when the selected components support it.

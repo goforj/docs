@@ -5,6 +5,7 @@ import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import GoForjHeroStack from './components/GoForjHeroStack.vue'
+import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -16,7 +17,7 @@ function DocsPreviewBanner() {
   return h('div', { class: 'gf-docs-preview-banner', role: 'note' }, [
     h('div', { class: 'gf-docs-preview-banner-inner' }, [
       h('span', { class: 'gf-docs-preview-banner-label' }, 'Documentation preview'),
-      h('span', { class: 'gf-docs-preview-banner-text' }, 'These docs are actively being built for GoForj v0.9. Some pages may change as the framework and examples are finalized.')
+      h('span', { class: 'gf-docs-preview-banner-text' }, 'These docs are actively being built. Some pages may change as the framework and examples are finalized.')
     ])
   ])
 }
@@ -396,6 +397,10 @@ function revealNavbarSearch() {
 
 export default {
   ...DefaultTheme,
+  enhanceApp(ctx) {
+    DefaultTheme.enhanceApp?.(ctx)
+    ctx.app.component('StarterKitHeroScreens', StarterKitHeroScreens)
+  },
   Layout: () => {
     const { theme } = useData()
     const docsVersion = theme.value.docsVersion || 'v0.9'

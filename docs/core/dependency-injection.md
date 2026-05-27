@@ -92,7 +92,59 @@ func NewService(repo *Repository, cache Cache) *Service {
 }
 ```
 
-Add the constructor to the appropriate provider set so Wire can build it.
+Register each constructor in the generated Wire set that owns that kind of value.
+
+For an application service, edit:
+
+```text
+wire/inject_app_services.go
+```
+
+Import the package and add the service constructor to `appSet`:
+
+```go
+import (
+	"github.com/google/wire"
+	"myapp/internal/reports"
+)
+
+var appSet = wire.NewSet(
+	// existing framework and app providers...
+	reports.NewService,
+)
+```
+
+If that service depends on a repository, register the repository constructor in the repository set instead:
+
+```text
+wire/inject_repositories.go
+```
+
+```go
+import (
+	"github.com/google/wire"
+	"myapp/internal/reports"
+)
+
+var repositorySet = wire.NewSet(
+	// existing repository providers...
+	reports.NewRepository,
+)
+```
+
+The order inside `wire.NewSet` is not the construction order. Wire reads the constructors, matches return types to parameters, and generates the construction code in `wire/wire_gen.go`.
+
+Use the more specific generated set when the value belongs to a specific surface:
+
+| Value | Register it in |
+| --- | --- |
+| Application service | `wire/inject_app_services.go` |
+| Repository | `wire/inject_repositories.go` |
+| HTTP controller | `wire/inject_http_controllers.go` |
+| App command | `internal/cmd/wire.go` |
+| Job handler | `wire/inject_jobs_app.go` |
+
+After changing provider sets, run `forj build`. If Wire cannot resolve `*reports.Service`, the build will fail with the missing constructor or dependency in the generated graph.
 
 Do not reach into global state from services. Services should receive dependencies through constructors.
 
