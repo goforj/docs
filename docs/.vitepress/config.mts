@@ -74,10 +74,10 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.'
-const socialImage = process.env.SOCIAL_IMAGE_URL || 'https://raw.githubusercontent.com/goforj/docs/cmilesdev/hero/docs/public/assets/goforj-og-20260527.jpg'
-const socialIcon = process.env.SOCIAL_ICON_URL || 'https://raw.githubusercontent.com/goforj/docs/cmilesdev/hero/docs/public/apple-touch-icon.png'
 const docsVersion = 'v0.9'
 const faviconVersion = '20260526'
+const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260527.jpg`
+const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
 const analyticsHead = (isProd && gaMeasurementId)
   ? [
