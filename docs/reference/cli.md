@@ -18,6 +18,8 @@ Use workflow pages for full context.
 | `forj run <app-command>` | Run generation, API indexing, then `go run . <app-command>`. |
 | `forj dev` | Run local development watchers from `.goforj.yml`. |
 | `forj generate` | Refresh generated component code and derived files. |
+| `forj make:controller <name>` | Generate an HTTP controller and wire it into HTTP. |
+| `forj make:command <name>` | Generate an application command and wire it into the App command tree. |
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
 
 ## Common App Commands
@@ -35,8 +37,9 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 | `route:list` | `route:list` | List registered HTTP routes. |
 | `migrate` | `migrate` | Run database migrations. |
 | `migrate:rollback` | `migrate:rollback` | Roll back recent migrations. |
-| `make:event` | `make:event` | Generate an event scaffold. |
-| `make:job` | `make:job` | Generate a job scaffold. |
+| `make:event` | `make:event` | Generate an event type. |
+| `make:job` | `make:job` | Generate a queue job and wire it into jobs. |
+| `make:model` | `make:model` | Generate a model and repository when database support is enabled. |
 
 Examples:
 
@@ -51,9 +54,11 @@ These resolve to generated App commands through Kong aliases.
 
 Available commands depend on selected components.
 
-Migration scaffolding is a project-level `forj` command:
+Controller, command, and migration generation are project-level `forj` commands:
 
 ```bash
+forj make:controller users
+forj make:command reports:reconcile
 forj make:migration create_users
 ```
 
@@ -70,5 +75,6 @@ These are mainly for framework contributors:
 ## Related Pages
 
 - [Quickstart](/getting-started/quickstart)
+- [Make Commands](/core/make-commands)
 - [forj dev](/developer-tools/forj-dev)
 - [Generation Commands](/reference/generation-commands)

@@ -17,7 +17,7 @@ Job code usually lives in:
 internal/jobs
 ```
 
-Create a job scaffold:
+Create a job:
 
 ```bash
 forj run make:job SendWelcomeEmail

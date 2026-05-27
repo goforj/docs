@@ -176,7 +176,7 @@ The service writes through `storage.Storage`, not a local filesystem or cloud SD
 
 ## Step 3: Add The Job
 
-You can scaffold the file:
+You can generate the file:
 
 ```bash
 forj run make:job GenerateReport
@@ -398,7 +398,7 @@ var jobAppSet = wire.NewSet(
 )
 ```
 
-If you used `forj run make:job GenerateReport`, the constructor may already be present.
+If you used `forj run make:job GenerateReport`, the constructor should already be present.
 
 ## Step 7: Build
 

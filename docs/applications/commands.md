@@ -52,9 +52,46 @@ func (c *ReconcileReportsCmd) Run() error {
 
 Inject services through the constructor. Keep command code focused on flags, input translation, output, and calling application services.
 
+## Make Commands
+
+Use `forj make:command` when starting a new application command:
+
+```bash
+forj make:command ReconcileReports
+```
+
+The make command generates the command and injects it into the generated command wiring surfaces. In the normal flow, you do not hand-edit the command Wire set or command collection just to expose the new command.
+
+Use grouped names to place commands with the package they belong to:
+
+```bash
+forj make:command billing:reports:sync
+```
+
+This creates `internal/billing/reports/sync_cmd.go` and exposes the generated command through the App command tree. Use `-d` only when you intentionally want to override the package directory.
+
+Review what the make command created or updated:
+
+- the command type owns `Signature`, constructor, and `Run`
+- `internal/cmd/wire.go` provides the command constructor
+- `internal/cmd/app_commands.go` exposes the command through the generated command tree
+
+If the command delegates to an application service, make sure that service is wired through `wire/inject_app_services.go`. The make command wires the command; application services still belong in the app services set.
+
+Run:
+
+```bash
+forj build
+forj run reports:reconcile
+```
+
+`forj build` verifies the generated graph. Running the command verifies the generated `Signature` is exposed through the App command tree. Use the command name from the generated or edited `Signature`.
+
 ## Registering Commands
 
-A command needs two registrations:
+`forj make:command` handles command registration for generated commands.
+
+If you are reviewing generated output or wiring a command by hand, a command needs two registrations:
 
 - a constructor in the command Wire set
 - a field in the generated command collection
@@ -157,6 +194,8 @@ Runtime commands such as HTTP, queue workers, and scheduler processes already us
 
 ## Next Steps
 
+- [Make Commands](/core/make-commands) explains grouped package placement and generated wiring updates.
 - [Application Services](/applications/services) explains where command behavior should delegate.
+- [Wiring Recipes](/core/wiring-recipes) shows the command wiring flow.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains command startup and shutdown.
 - [Testing Overview](/testing/overview) explains command test direction.

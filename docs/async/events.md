@@ -17,7 +17,7 @@ Generated event code lives in:
 internal/events
 ```
 
-Create an event scaffold:
+Create an event type:
 
 ```bash
 forj run make:event UserRegistered

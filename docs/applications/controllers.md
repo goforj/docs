@@ -43,6 +43,57 @@ func (c *Controller) Show(ctx web.Context) error {
 }
 ```
 
+## Make Commands
+
+Use `forj make:controller` when starting a new controller:
+
+```bash
+forj make:controller Users
+```
+
+The make command generates the controller and injects it into the generated HTTP wiring surfaces. In the normal flow, you do not hand-edit the controller provider set just to make the new controller constructible.
+
+Use grouped names to place controllers with the package they belong to:
+
+```bash
+forj make:controller billing:reports
+```
+
+This creates `internal/billing/reports/controller.go`, wires the controller constructor, and registers the controller routes. Use `-d` only when you intentionally want to override the package directory.
+
+Review what the make command created or updated:
+
+- `internal/users/controller.go` owns the controller type, constructor, handlers, and route list.
+- `wire/inject_http_controllers.go` provides the controller constructor.
+- `internal/router/routes_registry.go` includes the controller routes in the App route registry.
+
+If the controller depends on a service, make sure the service constructor is wired from `wire/inject_app_services.go`. The make command wires the controller; the service provider still belongs in the app services set.
+
+```go
+var appSet = wire.NewSet(
+	// existing framework and app providers...
+	users.NewService,
+)
+```
+
+The controller itself belongs in the HTTP controller set. The make command adds this provider for you:
+
+```go
+var httpAppControllerSet = wire.NewSet(
+	// existing controllers...
+	users.NewController,
+)
+```
+
+Run:
+
+```bash
+forj build
+forj run route:list
+```
+
+`forj build` verifies the generated graph. `route:list` verifies the controller routes are registered where the App can serve them.
+
 ## Responsibilities
 
 Controllers should own:
@@ -93,6 +144,8 @@ Use `web.Context` for HTTP-specific behavior such as params, binding, response h
 
 ## Next Steps
 
+- [Make Commands](/core/make-commands) explains grouped package placement and generated wiring updates.
+- [Wiring Recipes](/core/wiring-recipes) shows the controller wiring flow.
 - [Requests and Validation](/applications/requests-validation) explains request input boundaries.
 - [Responses and Errors](/applications/responses-errors) explains response shape.
 - [Application Services](/applications/services) explains where business behavior belongs.

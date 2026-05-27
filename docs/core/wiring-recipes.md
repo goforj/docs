@@ -23,6 +23,23 @@ GoForj Apps use explicit provider sets. Your package owns constructors. The gene
 
 Use the most specific generated set that owns the surface. If a generated file is not present, the App probably does not have that component enabled.
 
+## Make Commands
+
+For controllers and commands, start with the make command.
+
+The make command is not just a file generator. It also injects the generated resource into the correct wiring harness. This is the normal DX path: generate first, then review what changed.
+
+| Flow | Start with | Verify |
+| --- | --- | --- |
+| HTTP controller | `forj make:controller Users` | controller file, HTTP controller set, route registry |
+| App command | `forj make:command ReconcileReports` | command type, command Wire set, command collection |
+| Queue job | `forj run make:job GenerateReport` | job type, job Wire set |
+| Model repository | `forj run make:model users --package users` | model, repository, repository Wire set |
+
+The wiring still matters because generated resources usually depend on application services. The make command wires the generated resource itself; you may still need to wire the application services it depends on.
+
+See [Make Commands](/core/make-commands) for grouped package placement, output overrides, and the full command map.
+
 ## Service and Adapter
 
 Application packages usually own the service and any adapter it depends on:
@@ -61,6 +78,16 @@ Wire can construct `*billing.Service` because `billing.ProvideGateway` provides 
 
 Controllers belong to the HTTP controller set:
 
+```bash
+forj make:controller Users
+```
+
+After running the make command, verify the wiring it updated:
+
+- `internal/users/controller.go` exists
+- `users.NewController` is in `wire/inject_http_controllers.go`
+- the controller routes are included from `internal/router/routes_registry.go`
+
 ```text
 wire/inject_http_controllers.go
 ```
@@ -80,11 +107,28 @@ var httpAppControllerSet = wire.NewSet(
 )
 ```
 
-The controller can depend on an application service already provided by `appSet`.
+The controller can depend on an application service already provided by `appSet`. If Wire cannot provide that service, add the service constructor to `wire/inject_app_services.go`.
+
+Verify the result:
+
+```bash
+forj build
+forj run route:list
+```
 
 ## Command
 
 Application commands are registered from:
+
+```bash
+forj make:command ReconcileReports
+```
+
+After running the make command, verify the wiring it updated:
+
+- the command type has `Signature`, constructor, and `Run`
+- the constructor is in `internal/cmd/wire.go`
+- the command is exposed through `internal/cmd/app_commands.go`
 
 ```text
 internal/cmd/wire.go
@@ -158,6 +202,7 @@ forj build
 
 ## Next Steps
 
+- [Make Commands](/core/make-commands) explains the generated resource flow.
 - [Provider Patterns](/core/provider-patterns) shows how to shape providers in application packages.
 - [Reading Wire Errors](/core/reading-wire-errors) explains how to debug missing and duplicate providers.
 - [Dependency Injection](/core/dependency-injection) explains the generated graph model.

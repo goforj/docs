@@ -271,6 +271,7 @@ export default defineConfig({
           { text: 'Dependency Injection', link: '/core/dependency-injection' },
           { text: 'Providers', link: '/core/providers' },
           { text: 'Provider Patterns', link: '/core/provider-patterns' },
+          { text: 'Make Commands', link: '/core/make-commands' },
           { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
           { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
           { text: 'Generated Components', link: '/core/generated-components' },
