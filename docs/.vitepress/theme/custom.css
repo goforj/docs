@@ -1456,21 +1456,22 @@ html.gf-lightbox-open body {
     transform-origin: top left;
     opacity: 0;
     visibility: hidden;
-    filter: blur(12px);
-    transform: translate3d(180px, 78px, 0) var(--gf-starter-card-tilt) scale(0.9);
-    will-change: opacity, transform, filter;
+    filter: none;
+    clip-path: inset(0 100% 0 0 round 12px);
+    transform: var(--gf-starter-card-tilt);
+    will-change: opacity, clip-path;
 }
 
 .gf-starter-hero__card--primary {
-    transform: translate3d(180px, 78px, 0) var(--gf-starter-card-tilt) scale(0.9);
+    transform: var(--gf-starter-card-tilt);
 }
 
 .gf-starter-hero__card--overlay {
-    transform: translate3d(220px, 98px, 0) var(--gf-starter-card-tilt) scale(0.9);
+    transform: var(--gf-starter-card-tilt);
 }
 
 .gf-starter-hero__card--command {
-    transform: translate3d(260px, 118px, 0) var(--gf-starter-card-tilt) scale(0.9);
+    transform: var(--gf-starter-card-tilt);
 }
 
 .gf-starter-hero__primary {
