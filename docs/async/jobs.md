@@ -32,6 +32,8 @@ Create a job:
 forj run make:job SendWelcomeEmail
 ```
 
+Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+
 ## Job Shape
 
 ```go
@@ -115,3 +117,4 @@ Do not register handlers after workers are already running.
 - [Queues](/async/queues) explains queue configuration.
 - [Workers](/async/workers) explains execution lifecycle.
 - [Retries and Idempotency](/async/retries-idempotency) explains safe retry behavior.
+- [Naming Conventions](/core/naming-conventions) defines stable job names.

@@ -32,6 +32,10 @@ Create an event type:
 forj run make:event UserRegistered
 ```
 
+`make:event` generates a plain payload type and topic constant. It does not add a Wire provider because event payloads are created at publish time, not constructed once as App dependencies.
+
+Use `domain.past_tense` topics, such as `users.created` or `invoices.paid`. Review the generated topic constant before other code depends on it. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+
 ## Event Shape
 
 ```go
@@ -109,4 +113,5 @@ forj generate --events
 
 - [Event Subscribers](/async/event-subscribers) explains handlers.
 - [Events versus Queues](/async/events-vs-queues) explains boundary decisions.
+- [Naming Conventions](/core/naming-conventions) defines stable event topics.
 - [Events](/events) covers standalone package details.

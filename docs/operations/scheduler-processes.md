@@ -25,7 +25,11 @@ or, in standalone mode:
 
 Schedulers often need singleton behavior in production.
 
-Do not run multiple scheduler processes unless your schedules, locks, and deployment topology are designed for it.
+Stable schedule names are operator-facing identifiers. They are not locks.
+
+For non-overlapping work in one scheduler process, add `WithoutOverlapping()` to the schedule. For non-overlapping work across processes, use `WithoutOverlappingWithLocker(...)` with a shared locker.
+
+Do not run multiple scheduler processes unless your schedules, locks, and deployment topology are designed for it. Generated scheduler registration does not add distributed locking automatically.
 
 ## Shutdown
 
@@ -48,6 +52,7 @@ Use stable schedule names because they become operator-facing identifiers.
 ::: warning Common mistakes
 - Do not put large business workflows in the scheduler registry.
 - Do not run duplicate scheduler processes accidentally.
+- Do not rely on schedule names alone to prevent overlapping runs.
 - Do not use anonymous callbacks for important production schedules.
 - Do not treat schedules as queues.
 :::

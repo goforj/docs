@@ -25,6 +25,8 @@ Register subscribers through generated or documented App registration surfaces b
 
 Subscriber registration should be visible in App construction, not hidden in package `init` functions.
 
+The event type itself does not belong in the provider graph. The subscriber object or registrar does, because it may need services, repositories, queues, or publishers injected before it subscribes to the bus during App startup.
+
 ## Error Handling
 
 Event bus behavior depends on the driver. Do not assume subscriber errors are durable retry signals.

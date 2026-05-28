@@ -290,6 +290,7 @@ export default defineConfig({
           { text: 'Providers', link: '/core/providers' },
           { text: 'Provider Patterns', link: '/core/provider-patterns' },
           { text: 'Make Commands', link: '/core/make-commands' },
+          { text: 'Naming Conventions', link: '/core/naming-conventions' },
           { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
           { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
           { text: 'Generated Components', link: '/core/generated-components' },

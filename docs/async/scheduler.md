@@ -53,6 +53,8 @@ func (s *Scheduler) Register() error {
 
 Schedules should have stable names.
 
+Use `category:cadence` for cadence-oriented schedules such as `reports:daily`, or `category:action` for maintenance actions such as `sessions:cleanup`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+
 ## Start Scheduler
 
 Run the scheduler directly:
@@ -91,7 +93,18 @@ Lighthouse can expose schedule metadata and operator controls through runtime-sp
 
 In production, scheduler runtime usually needs clear singleton behavior or distributed locking when more than one process could run the same schedule.
 
-Do not scale scheduler processes the same way as stateless HTTP or queue workers unless the schedules and locking strategy support it.
+Stable schedule names make scheduler behavior understandable, but they do not prevent overlap by themselves. Add overlap protection on the schedule when the work cannot run concurrently:
+
+```go
+s.EveryFiveMinutes().
+	WithoutOverlapping().
+	Name("reports:daily").
+	Do(s.inspectTask("reports:daily", s.reports.GenerateDaily))
+```
+
+Use `WithoutOverlapping()` for same-process overlap control. Use `WithoutOverlappingWithLocker(...)` with a shared locker when multiple scheduler processes could run the same schedule.
+
+Do not scale scheduler processes the same way as stateless HTTP or queue workers unless the schedules and locking strategy support it. Generated scheduler registration does not add distributed locking automatically.
 
 ## Common Mistakes
 
@@ -99,6 +112,7 @@ Do not scale scheduler processes the same way as stateless HTTP or queue workers
 - Do not hide important scheduled work behind anonymous callbacks.
 - Do not put large business workflows in the scheduler registry.
 - Do not run duplicate scheduler processes accidentally.
+- Do not assume stable schedule names are a locking mechanism.
 - Do not treat schedules as durable queues.
 - Do not use unstable names for operator-facing schedules.
 :::
@@ -107,4 +121,5 @@ Do not scale scheduler processes the same way as stateless HTTP or queue workers
 
 - [Retries and Idempotency](/async/retries-idempotency) explains safe recurring work.
 - [Runtime Topology](/core/runtime-topology) explains process boundaries.
+- [Naming Conventions](/core/naming-conventions) defines stable schedule names.
 - [Scheduler](/scheduler) covers standalone package details.

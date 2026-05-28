@@ -15,7 +15,13 @@ Health says the process is alive. Readiness says the App can serve traffic safel
 curl http://localhost:3000/-/health
 ```
 
-Health should stay lightweight.
+Generated Apps return a fixed `200` response:
+
+```json
+{"status":"ok"}
+```
+
+Health does not run dependency checks. Use it for container liveness and "is the process answering HTTP?" probes.
 
 ## Readiness
 
@@ -23,7 +29,12 @@ Health should stay lightweight.
 curl http://localhost:3000/-/ready
 ```
 
-Readiness can check dependencies and return `503` when the App is not ready.
+Generated Apps return:
+
+- `200` with `{"status":"ready"}` when all readiness checks pass
+- `503` with `{"status":"not_ready"}` when any readiness check fails
+
+Readiness checks run against the enabled infrastructure components and use a short per-check timeout. Failed readiness checks are logged server-side.
 
 ## Authorized Readiness
 
@@ -33,7 +44,34 @@ Detailed readiness output should require:
 Authorization: Bearer $APP_DIAG_TOKEN
 ```
 
-Public readiness should avoid leaking raw infrastructure errors.
+Public readiness omits raw dependency errors and infrastructure details. Authorized readiness includes structured checks with type, name, driver, status, and the raw error for failed checks.
+
+Example authorized failure shape:
+
+```json
+{
+  "status": "not_ready",
+  "checks": [
+    {
+      "type": "db",
+      "name": "default",
+      "driver": "mysql",
+      "status": "failed",
+      "error": "dial tcp 127.0.0.1:3306: connect: connection refused"
+    }
+  ]
+}
+```
+
+## Health Command
+
+Generated Apps include a `health` command that queries a live App without booting local runtime dependencies.
+
+```bash
+./bin/app health --probe ready --fail
+```
+
+The command defaults to `http://127.0.0.1:3000`, uses `ready` by default, and automatically sends `Authorization: Bearer $APP_DIAG_TOKEN` for readiness when the token is configured.
 
 ## What To Check
 

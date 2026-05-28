@@ -74,6 +74,8 @@ This creates `internal/reports/sync_cmd.go` and exposes the generated command th
 forj make:command reports:sync -d ./internal/billing/reports
 ```
 
+See [Naming Conventions](/core/naming-conventions) for command naming rules and examples.
+
 Review what the make command created or updated:
 
 - the command type owns `Signature`, constructor, and `Run`
@@ -199,6 +201,7 @@ Runtime commands such as HTTP, queue workers, and scheduler processes already us
 ## Next Steps
 
 - [Make Commands](/core/make-commands) explains grouped package placement and generated wiring updates.
+- [Naming Conventions](/core/naming-conventions) defines stable command names.
 - [Application Services](/applications/services) explains where command behavior should delegate.
 - [Wiring Recipes](/core/wiring-recipes) shows the command wiring flow.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains command startup and shutdown.

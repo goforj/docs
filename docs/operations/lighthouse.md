@@ -47,10 +47,12 @@ Examples:
 
 - list routes
 - inspect requests
-- view job payloads
+- browse queue jobs
 - control schedules
 - browse cache or storage resources
 - run selected CLI commands
+
+Queue actions depend on the selected queue backend. The queue contract defines admin operations such as list, retry, cancel, delete, clear, and history, but drivers can return an unsupported error when the backend does not implement that action. Lighthouse should show that limitation instead of pretending the queue is empty or controllable.
 
 ## Common Mistakes
 
@@ -58,6 +60,7 @@ Examples:
 - Do not treat Lighthouse as all observability.
 - Do not make Lighthouse the first place metric semantics are validated.
 - Do not hide unavailable resources as empty UI.
+- Do not imply every queue backend supports every Lighthouse queue action.
 - Do not push operator-specific payload shaping into low-level runtime files when a Lighthouse adapter owns it.
 :::
 

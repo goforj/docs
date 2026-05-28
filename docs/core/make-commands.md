@@ -27,6 +27,8 @@ internal/reports/sync_cmd.go
 
 Use two segments unless the extra segment is truly part of the operator-facing command. When the command belongs in a deeper package, keep the command name short and use `-d` to control file placement.
 
+See [Naming Conventions](/core/naming-conventions) for command, job, event, schedule, route, and named resource names.
+
 ## Command Map
 
 | Command | Generates | Default package behavior | Updates wiring |
@@ -145,5 +147,6 @@ Use `route:list` for controllers. For commands, run the generated command signat
 
 - [Controllers](/applications/controllers) shows the HTTP boundary around services.
 - [Commands](/applications/commands) shows App-owned CLI entry points.
+- [Naming Conventions](/core/naming-conventions) defines stable operational names.
 - [Wiring Recipes](/core/wiring-recipes) shows where generated and hand-written providers belong.
 - [CLI Reference](/reference/cli) lists project-level commands and generated App command patterns.

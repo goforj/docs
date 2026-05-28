@@ -99,6 +99,8 @@ Examples:
 
 Avoid names derived from user input, request payloads, email addresses, IDs, or unbounded values.
 
+Use [Naming Conventions](/core/naming-conventions) when choosing names for commands, jobs, schedules, events, routes, and named resources.
+
 ## Metrics and Labels
 
 Use named resources as metric labels when labels are needed.
@@ -128,4 +130,5 @@ Avoid raw paths, raw SQL, user IDs, emails, or arbitrary payload values.
 
 - [Generated Components](/core/generated-components) explains regeneration.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains backend selection.
+- [Naming Conventions](/core/naming-conventions) defines stable resource names.
 - [Libraries](/libraries/) contains package-level resource behavior.

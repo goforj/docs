@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This file defines how docs should explain GoForj runtime topology, process ownership, and lazy infrastructure initialization.
+This file defines how docs should explain GoForj runtime topology, process ownership, and infrastructure startup.
 
-The source context shows this is important enough to be a dedicated documentation model.
+The source context shows runtime topology, startup, and readiness behavior are important enough to be a dedicated documentation model.
 
 ## Core Runtime Distinction
 
@@ -89,7 +89,7 @@ Do not imply process-local drivers behave as shared infrastructure across distri
 
 ## Infrastructure Startup
 
-GoForj docs should not claim lazy infrastructure initialization unless the generated App and selected driver explicitly implement it.
+GoForj docs should not claim general deferred infrastructure startup unless the generated App and selected driver explicitly implement it.
 
 Constructors should usually stay cheap:
 

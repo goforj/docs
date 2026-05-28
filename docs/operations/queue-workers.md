@@ -46,6 +46,14 @@ Scale workers separately when queue throughput or resource use differs from HTTP
 
 Job handlers should not care whether workers run inside `run` or in a dedicated `worker` process.
 
+## Queue Control
+
+Runtime queue controls depend on the selected backend.
+
+Redis-backed queues support the full admin surface today. Other drivers may support only part of the contract or return an unsupported error for admin actions such as listing, retrying, canceling, deleting, clearing, or reading queue history.
+
+Design operational workflows around the backend you deploy, and expose unsupported queue controls clearly in Lighthouse or CLI tooling.
+
 ## Common Mistakes
 
 ::: warning Common mistakes
@@ -53,6 +61,7 @@ Job handlers should not care whether workers run inside `run` or in a dedicated 
 - Do not assume shutdown means instant termination.
 - Do not ignore idempotency when retries are possible.
 - Do not treat workerpool as equivalent to durable distributed queues.
+- Do not assume every queue driver supports queue admin operations.
 :::
 
 ## Next Steps

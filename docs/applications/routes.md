@@ -65,6 +65,17 @@ func ProvideRoutes(r *AppRoutes, authService *auth.Service) []web.RouteGroup {
 
 Route groups are the right place for shared prefixes and group-level middleware.
 
+## Route Naming
+
+Use REST-ish paths that describe resources. Let HTTP methods carry the action:
+
+```text
+GET  /api/v1/users/:id
+POST /api/v1/reports
+```
+
+Avoid RPC-style paths such as `/api/v1/get-user` for normal resource operations. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+
 ## Listing Routes
 
 Use:
@@ -102,4 +113,5 @@ Do not add application behavior by editing framework route registration.
 
 - [Controllers](/applications/controllers) explains handler structure.
 - [Middleware](/applications/middleware) explains route and group policy.
+- [Naming Conventions](/core/naming-conventions) defines route naming.
 - [Web](/web) covers standalone route primitives.

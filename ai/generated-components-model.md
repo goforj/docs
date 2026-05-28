@@ -105,6 +105,8 @@ Named generated accessors usually should not return errors. If a named accessor 
 
 Generated managers may construct lightweight handles, but docs should not claim lazy resource initialization unless the generated App and selected driver explicitly implement it.
 
+Current confirmed nuance: generated database connections open and cache connections on first accessor use. Do not generalize that database-specific behavior to cache, storage, queue, or event managers unless their generated code supports it.
+
 Docs should distinguish:
 
 - constructing a manager
