@@ -5,6 +5,10 @@ description: Publish a typed users.created event and handle it with a lifecycle-
 
 # Users Created Event
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario extends the user profile flow with a `POST /api/v1/users` endpoint that publishes a typed `users.created` event after a user is saved.
 
 The event announces that something happened. The subscriber reacts to it. Durable background work, retries, and worker lifecycle belong in a job and queue, which the next scenario introduces.
@@ -30,7 +34,7 @@ internal/events
 
 ## Golden Path State
 
-Before this scenario, user profile behavior is synchronous: HTTP calls the controller, the controller calls the service, and the service reads or writes application state.
+Before this scenario, user profile behavior is synchronous: HTTP calls the controller, the controller calls the service, and the service reads application state through the cached repository.
 
 After this scenario, creating a user also publishes a typed `users.created` fact. A subscriber reacts to the event through lifecycle-registered wiring, but durable work is still left for the next job scenario.
 
@@ -38,53 +42,72 @@ After this scenario, creating a user also publishes a typed `users.created` fact
 
 This scenario edits or creates:
 
+**Configuration**
+
 ```text
 .env
+```
+
+**Events**
+
+```text
 internal/events/user_created_event.go
+```
+
+**Users feature**
+
+```text
 internal/users/repository.go
 internal/users/events.go
 internal/users/service.go
 internal/users/service_test.go
 internal/users/controller.go
+```
+
+**Notifications**
+
+```text
 internal/notifications/service.go
 internal/notifications/subscribers.go
+```
+
+**Lifecycle and wiring**
+
+```text
 internal/app/lifecycle_registry.go
 wire/inject_app_services.go
 ```
 
-The event generator may update generated event manager files. Do not edit generated files by hand.
+The event generator may update generated event manager files.
+
+```text
+internal/events/accessors_gen.go
+internal/events/manager_gen.go
+```
+
+Do not edit generated event files by hand.
 
 ## Step 1: Configure Events
 
-Use the in-process event driver for local development:
+Use the in-process event driver for local development. The generated App exposes `app.Bus()` and `app.Events()`.
+
+Update `.env` so it includes:
 
 ```dotenv
-EVENTS_SUPPORTED_DRIVERS=inproc
-EVENTS_DRIVER=inproc
 EVENTS_INPROC_WORKERS=0
-EVENTS_INPROC_BUFFER=1024
 ```
-
-Run:
 
 ```bash
 forj build
 ```
 
-::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
-:::
-
-The generated App should expose:
-
-```go
-app.Bus()
-app.Events()
-```
-
 ## Step 2: Add The Event
 
-Create `internal/events/user_created_event.go`:
+Create `internal/events/user_created_event.go`.
+
+Events should be small typed facts. They should not carry full domain objects, request payloads, or driver-specific metadata.
+
+Create or replace `internal/events/user_created_event.go`:
 
 ```go
 package events
@@ -101,20 +124,28 @@ func (UserCreated) Topic() string {
 }
 ```
 
-Events should be small typed facts. They should not carry full domain objects, request payloads, or driver-specific metadata.
-
 ## Step 3: Extend The Repository
 
-Replace `internal/users/repository.go` with:
+Replace `internal/users/repository.go`.
+
+The repository still owns source-of-truth storage and cache-aside reads. This example uses memory so the scenario stays local and runnable.
+
+Create or replace `internal/users/repository.go`:
 
 ```go
 package users
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"sync"
+	"time"
+
+	"github.com/goforj/cache"
 )
+
+const profileCacheTTL = 5 * time.Minute
 
 type UserRepository interface {
 	Find(ctx context.Context, id string) (User, error)
@@ -162,13 +193,65 @@ func (r *MemoryUserRepository) Save(ctx context.Context, user User) (User, error
 	r.users[user.ID] = user
 	return user, nil
 }
-```
 
-The repository still owns source-of-truth storage. This example uses memory so the scenario stays local and runnable.
+type CachedUserRepository struct {
+	source       UserRepository
+	profileCache *cache.Cache
+}
+
+func NewCachedUserRepository(source UserRepository, profileCache *cache.Cache) *CachedUserRepository {
+	return &CachedUserRepository{
+		source:       source,
+		profileCache: profileCache,
+	}
+}
+
+func (r *CachedUserRepository) Find(ctx context.Context, id string) (User, error) {
+	key := profileCacheKey(id)
+
+	user, ok, err := cache.Get[User](r.profileCache.WithContext(ctx), key)
+	if err != nil {
+		return User{}, fmt.Errorf("read user profile cache: %w", err)
+	}
+	if ok {
+		return user, nil
+	}
+
+	user, err = r.source.Find(ctx, id)
+	if err != nil {
+		return User{}, err
+	}
+
+	if err := cache.Set(r.profileCache.WithContext(ctx), key, user, profileCacheTTL); err != nil {
+		return User{}, fmt.Errorf("write user profile cache: %w", err)
+	}
+
+	return user, nil
+}
+
+func (r *CachedUserRepository) Save(ctx context.Context, user User) (User, error) {
+	user, err := r.source.Save(ctx, user)
+	if err != nil {
+		return User{}, err
+	}
+	if err := cache.Set(r.profileCache.WithContext(ctx), profileCacheKey(user.ID), user, profileCacheTTL); err != nil {
+		return User{}, fmt.Errorf("write user profile cache: %w", err)
+	}
+	return user, nil
+}
+
+func profileCacheKey(id string) string {
+	return "users:" + id + ":profile"
+}
+```
 
 ## Step 4: Add An Event Publisher Boundary
 
-Create `internal/users/events.go`:
+Create `internal/users/events.go`.
+
+The service will depend on `UserEvents`, not on global App state. That keeps tests direct and keeps the event boundary visible.
+
+Create or replace `internal/users/events.go`:
 
 ```go
 package users
@@ -199,11 +282,13 @@ func (p *UserEventPublisher) PublishCreated(ctx context.Context, user User) erro
 }
 ```
 
-The service will depend on `UserEvents`, not on global App state. That keeps tests direct and keeps the event boundary visible.
-
 ## Step 5: Publish From The Service
 
-Replace `internal/users/service.go` with:
+Replace `internal/users/service.go`.
+
+The service owns the application workflow: validate, save, publish. The repository owns cache-aside access. The controller still owns HTTP concerns.
+
+Create or replace `internal/users/service.go`:
 
 ```go
 package users
@@ -213,9 +298,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
-
-	"github.com/goforj/cache"
 )
 
 var (
@@ -223,8 +305,6 @@ var (
 	ErrNameRequired  = errors.New("name is required")
 	ErrEmailRequired = errors.New("email is required")
 )
-
-const profileCacheTTL = 5 * time.Minute
 
 type User struct {
 	ID    string `json:"id"`
@@ -238,16 +318,14 @@ type CreateUserInput struct {
 }
 
 type Service struct {
-	repo         UserRepository
-	profileCache *cache.Cache
-	userEvents   UserEvents
+	repo       UserRepository
+	userEvents UserEvents
 }
 
-func NewService(repo UserRepository, profileCache *cache.Cache, userEvents UserEvents) *Service {
+func NewService(repo UserRepository, userEvents UserEvents) *Service {
 	return &Service{
-		repo:         repo,
-		profileCache: profileCache,
-		userEvents:   userEvents,
+		repo:       repo,
+		userEvents: userEvents,
 	}
 }
 
@@ -256,26 +334,7 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 		return User{}, ErrUserNotFound
 	}
 
-	key := profileCacheKey(id)
-
-	user, ok, err := cache.Get[User](s.profileCache.WithContext(ctx), key)
-	if err != nil {
-		return User{}, fmt.Errorf("read user profile cache: %w", err)
-	}
-	if ok {
-		return user, nil
-	}
-
-	user, err = s.repo.Find(ctx, id)
-	if err != nil {
-		return User{}, err
-	}
-
-	if err := cache.Set(s.profileCache.WithContext(ctx), key, user, profileCacheTTL); err != nil {
-		return User{}, fmt.Errorf("write user profile cache: %w", err)
-	}
-
-	return user, nil
+	return s.repo.Find(ctx, id)
 }
 
 func (s *Service) Create(ctx context.Context, input CreateUserInput) (User, error) {
@@ -303,17 +362,15 @@ func (s *Service) Create(ctx context.Context, input CreateUserInput) (User, erro
 
 	return user, nil
 }
-
-func profileCacheKey(id string) string {
-	return "users:" + id + ":profile"
-}
 ```
-
-The service owns the application workflow: validate, save, publish. The controller still owns HTTP concerns.
 
 ## Step 6: Add The Subscriber
 
-Create `internal/notifications/service.go`:
+Create `internal/notifications/service.go` and `internal/notifications/subscribers.go`.
+
+The subscriber reacts to a typed fact. It should not become a hidden replacement for explicit service orchestration.
+
+Create or replace `internal/notifications/service.go`:
 
 ```go
 package notifications
@@ -327,12 +384,15 @@ func NewService() *Service {
 }
 
 func (s *Service) SendWelcome(ctx context.Context, userID string, email string) error {
-	// In a real App this could enqueue an email job.
 	return nil
 }
 ```
 
-Create `internal/notifications/subscribers.go`:
+## Step 7: Add Subscriber Registration
+
+`Subscribers.Register` subscribes to the typed `users.created` event.
+
+Create or replace `internal/notifications/subscribers.go`:
 
 ```go
 package notifications
@@ -358,11 +418,13 @@ func (s *Subscribers) Register(ctx context.Context, bus events.Bus) (events.Subs
 }
 ```
 
-The subscriber reacts to a typed fact. It should not become a hidden replacement for explicit service orchestration.
+## Step 8: Register Subscribers In The Lifecycle
 
-## Step 7: Register Subscribers In The Lifecycle
+Update `internal/app/lifecycle_registry.go`.
 
-Update `internal/app/lifecycle_registry.go`:
+This keeps subscriber registration in the App lifecycle, not in `init`, package globals, or controller constructors.
+
+Create or replace `internal/app/lifecycle_registry.go`:
 
 ```go
 package app
@@ -375,8 +437,8 @@ import (
 )
 
 type LifecycleRegistry struct {
-	eventManager            *events.Manager
-	notificationSubscribers *notifications.Subscribers
+	eventManager             *events.Manager
+	notificationSubscribers  *notifications.Subscribers
 	notificationSubscription events.Subscription
 }
 
@@ -406,11 +468,11 @@ func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
 }
 ```
 
-This keeps subscriber registration in the App lifecycle, not in `init`, package globals, or controller constructors.
+## Step 9: Update The Controller
 
-## Step 8: Update The Controller
+Update `internal/users/controller.go` so it supports both `GET /users/:id` and `POST /users`.
 
-Update `internal/users/controller.go` so it supports both `GET /users/:id` and `POST /users`:
+Create or replace `internal/users/controller.go`:
 
 ```go
 package users
@@ -481,84 +543,51 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 9: Wire the Event Boundary and Subscriber
+## Step 10: Wire The Event Boundary And Subscriber
 
-Open `wire/inject_app_services.go`.
+Add the event publisher and notification subscriber providers.
 
-Add imports for notifications and users:
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-import (
-	"your/module/internal/notifications"
-	"your/module/internal/users"
-)
+"your/module/internal/makecmd"
+"your/module/internal/notifications"
 ```
 
-Add providers:
+## Step 11: Add Event Providers
+
+`provideEventBus` exposes the generated default event bus to the application publisher.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-var appSet = wire.NewSet(
-	provideCacheManager,
-	provideStorageManager,
-	provideEventManager,
-	provideInspectManager,
-	provideEventBus,
-	provideUserProfileCache,
-	users.NewMemoryUserRepository,
-	wire.Bind(new(users.UserRepository), new(*users.MemoryUserRepository)),
-	users.NewUserEventPublisher,
-	wire.Bind(new(users.UserEvents), new(*users.UserEventPublisher)),
-	users.NewService,
-	notifications.NewService,
-	notifications.NewSubscribers,
-	app.NewLifecycleRegistry,
-	// existing providers...
-)
+provideEventBus,
+users.NewUserEventPublisher,
+wire.Bind(new(users.UserEvents), new(*users.UserEventPublisher)),
+users.NewService,
+notifications.NewService,
+notifications.NewSubscribers,
+```
 
+## Step 12: Add The Event Bus Provider
+
+Wire can now satisfy `users.NewUserEventPublisher`.
+
+Update `wire/inject_app_services.go` so it includes:
+
+```go
 func provideEventBus(manager *events.Manager) events.Bus {
-	return manager.Default()
+        return manager.Default()
 }
+
+func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
 ```
 
-If `app.NewLifecycleRegistry` is already in the set, keep only one copy and let Wire satisfy its new constructor parameters.
+## Step 13: Update The Service Test
 
-## Step 10: Build
+The test uses a small event boundary fake. It does not need to start the event bus or the App runtime.
 
-Run:
-
-```bash
-forj build
-```
-
-This refreshes generated event support, regenerates Wire, builds API index artifacts, and builds the App.
-
-## Verify
-
-Serve HTTP:
-
-```bash
-forj run api
-```
-
-Create a user:
-
-```bash
-curl -X POST http://localhost:3000/api/v1/users \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Grace Hopper","email":"grace@example.test"}'
-```
-
-Expected response:
-
-```json
-{"id":"43","name":"Grace Hopper","email":"grace@example.test"}
-```
-
-The service saved the user, published `users.created`, and the lifecycle-registered subscriber handled the event.
-
-## Test The Service
-
-Replace `internal/users/service_test.go` with:
+Create or replace `internal/users/service_test.go`:
 
 ```go
 package users
@@ -579,12 +608,12 @@ func (r *recordingUserEvents) PublishCreated(ctx context.Context, user User) err
 	return nil
 }
 
-func TestServiceFindsAndCachesUser(t *testing.T) {
+func TestServiceFindsUser(t *testing.T) {
 	ctx := context.Background()
-	profileCache := cache.NewCache(cache.NewMemoryStore(ctx))
-	repo := NewMemoryUserRepository()
-	events := &recordingUserEvents{}
-	service := NewService(repo, profileCache, events)
+	service := NewService(
+		NewCachedUserRepository(NewMemoryUserRepository(), cache.NewCache(cache.NewMemoryStore(ctx))),
+		&recordingUserEvents{},
+	)
 
 	user, err := service.Find(ctx, "42")
 	if err != nil {
@@ -593,25 +622,13 @@ func TestServiceFindsAndCachesUser(t *testing.T) {
 	if user.ID != "42" {
 		t.Fatalf("user id = %q, want %q", user.ID, "42")
 	}
-
-	cached, ok, err := cache.Get[User](profileCache.WithContext(ctx), "users:42:profile")
-	if err != nil {
-		t.Fatalf("read cache: %v", err)
-	}
-	if !ok {
-		t.Fatal("expected cached profile")
-	}
-	if cached.ID != "42" {
-		t.Fatalf("cached user id = %q, want %q", cached.ID, "42")
-	}
 }
 
 func TestServicePublishesUserCreatedEvent(t *testing.T) {
 	ctx := context.Background()
 	events := &recordingUserEvents{}
 	service := NewService(
-		NewMemoryUserRepository(),
-		cache.NewCache(cache.NewMemoryStore(ctx)),
+		NewCachedUserRepository(NewMemoryUserRepository(), cache.NewCache(cache.NewMemoryStore(ctx))),
 		events,
 	)
 
@@ -636,8 +653,7 @@ func TestServicePublishesUserCreatedEvent(t *testing.T) {
 func TestServiceRejectsEmptyID(t *testing.T) {
 	ctx := context.Background()
 	service := NewService(
-		NewMemoryUserRepository(),
-		cache.NewCache(cache.NewMemoryStore(ctx)),
+		NewCachedUserRepository(NewMemoryUserRepository(), cache.NewCache(cache.NewMemoryStore(ctx))),
 		&recordingUserEvents{},
 	)
 
@@ -648,13 +664,56 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-Run:
+## Build And Verify
+
+```bash
+forj build
+```
 
 ```bash
 go test ./...
 ```
 
-The test uses a small event boundary fake. It does not need to start the event bus or the App runtime.
+```bash
+forj run route:list
+```
+
+Expected output includes:
+
+- `/api/v1/users`
+
+## Try The Route
+
+Run the HTTP server:
+
+```bash
+forj run api
+```
+
+Create a user:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Grace Hopper","email":"grace@example.test"}'
+```
+
+Expected response:
+
+```json
+{"id":"43","name":"Grace Hopper","email":"grace@example.test"}
+```
+
+The service saved the user, published `users.created`, and the lifecycle-registered subscriber handled the event.
+
+## Operations
+
+Operational notes:
+
+- `inproc` is process-local and non-durable, which is useful for local same-process reactions.
+- Use a distributed event driver when events must cross process boundaries.
+- Use a queue and job when work needs retries, delay, timeout, worker lifecycle, or operational replay.
+- Published events and subscriber deliveries can appear in metrics, inspect records, Lighthouse runtime views, and driver configuration.
 
 ## Swap The Driver
 
@@ -674,20 +733,6 @@ forj build
 
 Business code does not change. The service still publishes through `UserEvents`, and the subscriber still registers against the generated bus.
 
-## Operations
-
-The `inproc` driver is process-local and non-durable. It is useful for local fan-out and same-process reactions.
-
-Use a distributed event driver when events must cross process boundaries. Use a queue and job when work needs retries, delay, timeout, worker lifecycle, or operational replay.
-
-Published events and subscriber deliveries can appear in:
-
-- event publish metrics
-- event subscription metrics
-- inspect records
-- Lighthouse runtime views
-- driver configuration
-
 ## Common Mistakes
 
 ::: warning Common mistakes
@@ -699,6 +744,6 @@ Published events and subscriber deliveries can appear in:
 - Do not hide critical business workflows only inside subscribers.
 :::
 
-## Next Step
+## Next Steps
 
-Next, dispatch durable work from an event subscriber with [Reports Generate Job](/scenarios/reports-generate-job).
+- Next, dispatch durable work from an event subscriber with [Reports Generate Job](/scenarios/reports-generate-job).

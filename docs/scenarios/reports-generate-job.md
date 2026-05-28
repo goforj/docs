@@ -5,33 +5,28 @@ description: Dispatch durable reports:generate work from a users.created subscri
 
 # Reports Generate Job
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario turns the `users.created` subscriber into a durable work dispatcher.
 
 The event still announces that a user was created. The subscriber now queues `reports:generate`, and a worker process generates a small report artifact. This keeps fan-out and durable work separate.
 
 ## What You Will Build
 
-- `QUEUE_*` config selects a local SQLite queue so API and worker processes can share queued work.
+- `QUEUE_*` config selects the queue backend used by API and worker processes.
 - `STORAGE_REPORTS_*` defines a named disk for generated report artifacts.
 - `reports.Service` writes a report file to storage.
-- `jobs.GenerateReportJob` owns the queue payload, dispatch shape, and handler.
+- `jobs.GenerateJob` owns the queue payload, dispatch shape, and handler.
 - `notifications.Service` dispatches the job from the `users.created` subscriber.
-- `internal/app/lifecycle_registry.go` registers the job handler before workers start.
+- Wire binds the job to a small queueing interface used by notifications.
 
 ## Prerequisites
 
 Complete [Users Created Event](/scenarios/users-created-event) first.
 
 The generated App should have queues, jobs, events, and storage enabled.
-
-Verify these generated packages exist:
-
-```text
-internal/events
-internal/jobs
-internal/queues
-internal/storages
-```
 
 ## Golden Path State
 
@@ -43,33 +38,53 @@ After this scenario, the subscriber dispatches named durable work, workers proce
 
 This scenario edits or creates:
 
+**Configuration**
+
 ```text
 .env
+```
+
+**Reports feature**
+
+```text
 internal/reports/service.go
 internal/reports/service_test.go
-internal/jobs/generate_report_job.go
-internal/notifications/service.go
-internal/app/lifecycle_registry.go
-wire/inject_app_services.go
+```
+
+**Jobs**
+
+```text
+internal/jobs/generate_job.go
 wire/inject_jobs_app.go
 ```
 
-The queue and storage generators update generated manager/accessor files. Do not edit generated files by hand.
+**Notifications**
 
-## Step 1: Configure Queue and Storage
-
-Use SQLite for the default local queue:
-
-```dotenv
-QUEUE_SUPPORTED_DRIVERS=sqlite
-QUEUE_DRIVER=sqlite
-QUEUE_DSN=file:storage/queue-default.db?_busy_timeout=5000
-QUEUE_DEFAULT_QUEUE=default
-QUEUE_WORKERS=2
-QUEUE_SHUTDOWN_TIMEOUT=10s
+```text
+internal/notifications/service.go
 ```
 
-Use a named local storage disk for report artifacts:
+**App wiring**
+
+```text
+wire/inject_app_services.go
+```
+
+The queue and storage generators update generated manager and accessor files.
+
+```text
+internal/queues/manager_gen.go
+internal/storages/accessors_gen.go
+internal/storages/manager_gen.go
+```
+
+Do not edit generated queue or storage files by hand.
+
+## Step 1: Configure Report Storage
+
+Use a named local storage disk for report artifacts. Keep the queue driver shared between API and worker processes.
+
+Append to `.env`:
 
 ```dotenv
 STORAGE_REPORTS_DRIVER=local
@@ -77,34 +92,31 @@ STORAGE_REPORTS_ROOT=storage/app/reports
 STORAGE_REPORTS_PREFIX=
 ```
 
-If your App uses `STORAGE_SUPPORTED_DRIVERS`, make sure `local` is included:
+## Step 2: Enable Memory Storage For Tests
+
+Compile memory storage support for service tests.
+
+Update `.env` so it includes:
 
 ```dotenv
-STORAGE_SUPPORTED_DRIVERS=local
+STORAGE_SUPPORTED_DRIVERS=local,memory
 ```
 
-Run:
+## Step 3: Refresh Generated Resources
+
+Run the build pipeline so the generated App exposes `app.Queue()` and `app.Storage().Reports()`.
 
 ```bash
 forj build
 ```
 
-::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
-:::
+## Step 4: Add The Report Service
 
-After generation, the App should expose:
+Create `internal/reports/service.go`.
 
-```go
-app.Queue()
-app.Storage().Reports()
-```
+The service writes through `storage.Storage`, not a local filesystem or cloud SDK. The selected driver remains configuration.
 
-SQLite is intentional here. A `workerpool` queue is process-local, so it is useful for single-process local runtime, but it is not the right default when `forj run api` and `forj run worker` run as separate processes.
-
-## Step 2: Add The Report Service
-
-Create `internal/reports/service.go`:
+Create or replace `internal/reports/service.go`:
 
 ```go
 package reports
@@ -128,6 +140,10 @@ var (
 
 type Service struct {
 	disk storage.Storage
+}
+
+type ReportQueue interface {
+	Queue(ctx context.Context, userID string, email string) error
 }
 
 type UserReport struct {
@@ -178,17 +194,21 @@ func safeSegment(value string) string {
 }
 ```
 
-The service writes through `storage.Storage`, not a local filesystem or cloud SDK. The selected driver remains configuration.
+## Step 5: Generate The Job
 
-## Step 3: Add The Job
-
-You can generate the file:
+Use the generated App's make command to create the job file and add its constructor to job wiring.
 
 ```bash
-forj run make:job GenerateReport
+forj run make:job reports:generate --output-dir ./internal/jobs
 ```
 
-Then replace `internal/jobs/generate_report_job.go` with:
+## Step 6: Replace The Generated Job
+
+Replace `internal/jobs/generate_job.go`.
+
+The job owns the queue payload and dispatch options. The handler binds the message and delegates business behavior to `reports.Service`.
+
+Create or replace `internal/jobs/generate_job.go`:
 
 ```go
 package jobs
@@ -205,27 +225,27 @@ import (
 	"your/module/internal/reports"
 )
 
-const GenerateReportJobTypeName = "reports:generate"
+const GenerateJobTypeName = "reports:generate"
 
-type GenerateReportPayload struct {
+type GeneratePayload struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
 }
 
-type GenerateReportJob struct {
+type GenerateJob struct {
 	queues  *queues.Manager
 	reports *reports.Service
 }
 
-func NewGenerateReportJob(queues *queues.Manager, reports *reports.Service) *GenerateReportJob {
-	return &GenerateReportJob{
+func NewGenerateJob(queues *queues.Manager, reports *reports.Service) *GenerateJob {
+	return &GenerateJob{
 		queues:  queues,
 		reports: reports,
 	}
 }
 
-func (j *GenerateReportJob) Queue(ctx context.Context, userID string, email string) error {
-	payload, err := json.Marshal(GenerateReportPayload{
+func (j *GenerateJob) Queue(ctx context.Context, userID string, email string) error {
+	payload, err := json.Marshal(GeneratePayload{
 		UserID: userID,
 		Email:  email,
 	})
@@ -234,7 +254,7 @@ func (j *GenerateReportJob) Queue(ctx context.Context, userID string, email stri
 	}
 
 	_, err = j.queues.WithContext(ctx).Dispatch(
-		queue.NewJob(GenerateReportJobTypeName).
+		queue.NewJob(GenerateJobTypeName).
 			Payload(payload).
 			OnQueue("default").
 			Retry(3).
@@ -243,8 +263,8 @@ func (j *GenerateReportJob) Queue(ctx context.Context, userID string, email stri
 	return err
 }
 
-func (j *GenerateReportJob) HandleTask(ctx context.Context, msg queue.Message) error {
-	var payload GenerateReportPayload
+func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
+	var payload GeneratePayload
 	if err := msg.Bind(&payload); err != nil {
 		return fmt.Errorf("bind generate report payload: %w", err)
 	}
@@ -254,11 +274,43 @@ func (j *GenerateReportJob) HandleTask(ctx context.Context, msg queue.Message) e
 }
 ```
 
-The job owns the queue payload and dispatch options. The handler binds the message and delegates business behavior to `reports.Service`.
+## Step 7: Remove The Grouped Job Stub
 
-## Step 4: Dispatch The Job From Notifications
+The generator used the grouped name for package placement. Keep the public job in `internal/jobs` so queue wiring does not create an import cycle with application services.
 
-Replace `internal/notifications/service.go`:
+Create or replace `internal/reports/generate_job.go`:
+
+```go
+package reports
+```
+
+## Step 8: Point Job Wiring At The Jobs Package
+
+Register the job constructor from `internal/jobs`.
+
+Update `wire/inject_jobs_app.go` so it includes:
+
+```go
+
+```
+
+## Step 9: Replace The Generated Job Provider
+
+The App service set owns this job because notifications depend on its queueing interface.
+
+Update `wire/inject_jobs_app.go` so it includes:
+
+```go
+
+```
+
+## Step 10: Dispatch The Job From Notifications
+
+Replace `internal/notifications/service.go`.
+
+The method name is still intentionally application-facing. The implementation now queues durable work instead of doing it inside the event subscriber.
+
+Create or replace `internal/notifications/service.go`:
 
 ```go
 package notifications
@@ -266,14 +318,14 @@ package notifications
 import (
 	"context"
 
-	"your/module/internal/jobs"
+	"your/module/internal/reports"
 )
 
 type Service struct {
-	generateReport *jobs.GenerateReportJob
+	generateReport reports.ReportQueue
 }
 
-func NewService(generateReport *jobs.GenerateReportJob) *Service {
+func NewService(generateReport reports.ReportQueue) *Service {
 	return &Service{generateReport: generateReport}
 }
 
@@ -282,23 +334,13 @@ func (s *Service) SendWelcome(ctx context.Context, userID string, email string) 
 }
 ```
 
-The method name is still intentionally application-facing. The implementation now queues durable work instead of doing it inside the event subscriber.
+## Step 11: Keep Lifecycle Subscriber Registration
 
-Your existing `internal/notifications/subscribers.go` can stay the same:
+Update `internal/app/lifecycle_registry.go`.
 
-```go
-func (s *Subscribers) Register(ctx context.Context, bus events.Bus) (events.Subscription, error) {
-	return bus.WithContext(ctx).Subscribe(func(ctx context.Context, event events.UserCreated) error {
-		return s.service.SendWelcome(ctx, event.UserID, event.Email)
-	})
-}
-```
+The lifecycle still owns subscriber registration. The subscriber dispatches durable work through the notification service.
 
-The subscriber remains thin: receive event, call service, return errors.
-
-## Step 5: Register The Job Handler
-
-Update `internal/app/lifecycle_registry.go`:
+Create or replace `internal/app/lifecycle_registry.go`:
 
 ```go
 package app
@@ -307,39 +349,26 @@ import (
 	"context"
 
 	"your/module/internal/events"
-	"your/module/internal/jobs"
 	"your/module/internal/notifications"
-	"your/module/internal/queues"
 )
 
 type LifecycleRegistry struct {
-	eventManager              *events.Manager
-	queues                    *queues.Manager
-	generateReportJob         *jobs.GenerateReportJob
-	notificationSubscribers   *notifications.Subscribers
-	notificationSubscription  events.Subscription
+	eventManager             *events.Manager
+	notificationSubscribers  *notifications.Subscribers
+	notificationSubscription events.Subscription
 }
 
 func NewLifecycleRegistry(
 	eventManager *events.Manager,
-	queues *queues.Manager,
-	generateReportJob *jobs.GenerateReportJob,
 	notificationSubscribers *notifications.Subscribers,
 ) *LifecycleRegistry {
 	return &LifecycleRegistry{
 		eventManager:            eventManager,
-		queues:                  queues,
-		generateReportJob:       generateReportJob,
 		notificationSubscribers: notificationSubscribers,
 	}
 }
 
 func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
-	lifecycle.On(BeforeStartup, func(ctx context.Context) error {
-		r.queues.Register(jobs.GenerateReportJobTypeName, r.generateReportJob.HandleTask)
-		return nil
-	})
-
 	lifecycle.On(Startup, func(ctx context.Context) error {
 		subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
 		if err != nil {
@@ -355,104 +384,65 @@ func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
 }
 ```
 
-This registers the job handler before startup completes. Worker commands start processing after App startup, so the handler is ready before jobs are consumed.
+## Step 12: Wire Reports And The Job
 
-## Step 6: Wire Reports and the Job
+Add the report storage provider and report service constructor.
 
-Open `wire/inject_app_services.go`.
-
-Add imports:
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
 import (
-	"github.com/goforj/storage"
-
-	"your/module/internal/reports"
-	"your/module/internal/storages"
-)
+        "github.com/goforj/storage"
 ```
 
-Add providers:
+## Step 13: Add Report Imports
+
+Add imports for the report service and generated storage manager.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-var appSet = wire.NewSet(
-	provideCacheManager,
-	provideStorageManager,
-	provideEventManager,
-	provideInspectManager,
-	provideReportStorage,
-	reports.NewService,
-	app.NewLifecycleRegistry,
-	// existing providers...
-)
+"your/module/internal/jobs"
+"your/module/internal/notifications"
+"your/module/internal/reports"
+"your/module/internal/storages"
+```
 
+## Step 14: Add Report Storage Providers
+
+The report service receives the named `reports` storage disk.
+
+Update `wire/inject_app_services.go` so it includes:
+
+```go
+provideReportStorage,
+reports.NewService,
+jobs.NewGenerateJob,
+wire.Bind(new(reports.ReportQueue), new(*jobs.GenerateJob)),
+provideEventBus,
+```
+
+## Step 15: Add The Report Storage Provider
+
+`provideReportStorage` selects the generated named storage resource.
+
+Update `wire/inject_app_services.go` so it includes:
+
+```go
 func provideReportStorage(manager *storages.Manager) storage.Storage {
-	return manager.Reports()
+        return manager.Reports()
 }
+
+func provideEventBus(manager *events.Manager) events.Bus {
 ```
 
-Open `wire/inject_jobs_app.go`.
+## Step 16: Add A Report Service Test
 
-Make sure the job constructor is present:
+Create `internal/reports/service_test.go`.
 
-```go
-var jobAppSet = wire.NewSet(
-	jobs.NewExampleHelloJob,
-	jobs.NewExampleHelloJobCmd,
-	jobs.NewGenerateReportJob,
-	// existing providers...
-)
-```
+This test verifies the report behavior without starting the queue worker.
 
-If you used `forj run make:job GenerateReport`, the constructor should already be present.
-
-## Step 7: Build
-
-Run:
-
-```bash
-forj build
-```
-
-This refreshes generated queue and storage support, regenerates Wire, builds API index artifacts, and builds the App.
-
-## Verify
-
-Start a worker in one terminal:
-
-```bash
-forj run worker
-```
-
-Start the API in another terminal:
-
-```bash
-forj run api
-```
-
-Create a user:
-
-```bash
-curl -X POST http://localhost:3000/api/v1/users \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Grace Hopper","email":"grace@example.test"}'
-```
-
-The API publishes `users.created`. The subscriber dispatches `reports:generate`. The worker consumes the job and writes:
-
-```text
-storage/app/reports/users/43/profile.json
-```
-
-Production binaries use the same runtime boundary:
-
-```bash
-./bin/app worker
-```
-
-## Test The Report Service
-
-Create `internal/reports/service_test.go`:
+Create or replace `internal/reports/service_test.go`:
 
 ```go
 package reports
@@ -505,20 +495,63 @@ func TestServiceRejectsMissingUserID(t *testing.T) {
 }
 ```
 
-Run:
+## Build And Verify
+
+```bash
+forj build
+```
 
 ```bash
 go test ./...
 ```
 
-This test verifies the report behavior without starting the queue worker.
+```bash
+forj run route:list
+```
+
+Expected output includes:
+
+- `/api/v1/users`
+
+## Try The Route
+
+Start a worker in one terminal:
+
+```bash
+forj run worker
+```
+
+Start the API in another terminal:
+
+```bash
+forj run api
+```
+
+Create a user:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Grace Hopper","email":"grace@example.test"}'
+```
+
+The API publishes `users.created`. The subscriber dispatches `reports:generate`. The worker consumes the job and writes `storage/app/reports/users/43/profile.json`.
+
+## Operations
+
+Operational notes:
+
+- Queued jobs can be retried and processed outside the HTTP request path.
+- Use this boundary for work that sends email, generates reports, calls external APIs, or may need operational recovery.
+- The job can appear in queue metrics, inspect records, Lighthouse queue views, worker logs, and driver backend state.
+- Keep job payloads stable and small. Store large artifacts in storage, not inside queue payloads.
 
 ## Swap The Driver
 
 To use Redis in production, compile Redis queue support and select it:
 
 ```dotenv
-QUEUE_SUPPORTED_DRIVERS=sqlite,redis
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 QUEUE_DRIVER=redis
 QUEUE_ADDR=redis:6379
 QUEUE_DEFAULT_QUEUE=default
@@ -531,22 +564,7 @@ Then run:
 forj build
 ```
 
-Business code does not change. `GenerateReportJob` still dispatches `reports:generate`, and workers still run with `forj run worker` or `./bin/app worker`.
-
-## Operations
-
-Queued jobs can be retried and processed outside the HTTP request path. This is the boundary to use for work that sends email, generates reports, calls external APIs, or may need operational recovery.
-
-The job can appear in:
-
-- queue dispatch metrics
-- queue processing metrics
-- inspect records
-- Lighthouse queue views
-- worker logs
-- driver backend state
-
-Keep job payloads stable and small. Store large artifacts in storage, not inside queue payloads.
+Business code does not change. `GenerateJob` still dispatches `reports:generate`, and workers still run with `forj run worker` or `./bin/app worker`.
 
 ## Common Mistakes
 
@@ -559,6 +577,6 @@ Keep job payloads stable and small. Store large artifacts in storage, not inside
 - Do not assume retries are safe unless the handler is idempotent.
 :::
 
-## Next Step
+## Next Steps
 
-Next, schedule recurring report dispatch with [Reports Daily Schedule](/scenarios/reports-daily-schedule).
+- Next, schedule recurring report dispatch with [Reports Daily Schedule](/scenarios/reports-daily-schedule).

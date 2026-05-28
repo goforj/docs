@@ -22,6 +22,110 @@ Each scenario must:
 - name runtime resources clearly
 - include a verification command
 - reinforce driver swappability without forcing distributed infrastructure
+- be generated from an executable scenario spec when it appears under `docs/scenarios`
+
+## Current Implementation
+
+The public scenario pages in `docs/scenarios/*.md` are generated from executable specs in the GoForj CLI repo:
+
+```text
+/workspace/code/goforj/internal/scenarios/specs/*.yaml
+```
+
+The scenario engine lives in:
+
+```text
+/workspace/code/goforj/internal/scenarios
+```
+
+The public CLI adapters live in:
+
+```text
+/workspace/code/goforj/internal/forj/scenario_cmd.go
+```
+
+Available hidden maintainer commands:
+
+```bash
+forj scenario:list
+forj scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios
+forj scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+forj scenario:test --all
+forj scenario:test json-api-route
+```
+
+Do not hand-edit generated scenario pages for content changes. Change the spec, regenerate the markdown, then run the scenario check.
+
+Generated scenario pages include a banner:
+
+```markdown
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+```
+
+That banner means the scenario passes the automated executable scenario, not merely that the snippets were reviewed.
+
+## Spec Model
+
+A scenario spec can define:
+
+- `id`, `title`, and `description`
+- `depends_on` for replaying prior scenario steps into a fresh generated App
+- generated App `components`
+- markdown content such as intro, prerequisites, files, operations, common mistakes, and next steps
+- `file_groups` for visually grouping changed files by package or ownership boundary
+- `diagrams` rendered as fenced blocks, usually `mermaid`
+- executable `steps`
+- `verify.commands`
+
+Supported step types:
+
+- `run`: execute a real command, such as `forj make:controller users` or `forj build`
+- `write`: create or replace a file
+- `append`: append content to a file
+- `replace`: replace one exact text block with another
+
+The runner applies file edits before `run` when both are present in the same step. Use this for "edit config, then build" steps.
+
+Dependency scenarios are replayed before the current scenario. This lets later pages validate against the accumulated App shape while each scenario still starts from a fresh rendered App.
+
+## Diagram Rule
+
+If a scenario needs a diagram, put it in the spec under `markdown.diagrams`.
+
+Do not add Mermaid blocks directly to generated markdown; they will be overwritten. Keep Mermaid syntax conservative:
+
+```yaml
+diagrams:
+  - language: mermaid
+    content: |
+      flowchart LR
+        api["API request"] --> service["Service"]
+        service --> job["reports:generate"]
+```
+
+Avoid inline labels that Mermaid parses ambiguously. Use quoted node labels.
+
+## File List Rule
+
+Use `markdown.file_groups` when a scenario touches more than one package or ownership boundary.
+
+Prefer groups such as:
+
+- Configuration
+- Users feature
+- Uploads feature
+- Reports feature
+- Notifications
+- Events
+- Jobs
+- Scheduler
+- HTTP registration
+- Lifecycle and wiring
+- App wiring
+
+Keep the flat `files` list only for simple scenarios or as source metadata. Generated pages should be easy to scan before the reader reaches the step-by-step edits.
 
 ## Canonical Sample App
 
@@ -51,10 +155,10 @@ Avoid introducing new domains unless a page cannot be explained with these.
 
 HTTP:
 
-- `GET /api/users/{id}`
-- `POST /api/users`
-- `POST /api/uploads`
-- `GET /api/reports/{id}`
+- `GET /api/v1/users/:id`
+- `POST /api/v1/users`
+- `POST /api/v1/uploads`
+- `GET /api/v1/reports/:id`
 
 Services:
 
@@ -157,18 +261,20 @@ Show named cache resources without making cache the source of truth.
 
 Must show:
 
-- `UserService` using `UserRepository`
-- cache lookup by stable key
+- `UserRepository` as the service boundary
+- cached repository wrapper owning cache-aside access
+- cache lookup by stable key in repository access code
 - explicit TTL
 - repository as source of truth
 - local cache behavior
 - cache driver swappability by configuration
-- service-level test with local or fake cache
+- repository-level cache-aside test
 
 Must not show:
 
 - direct Redis clients in business services
 - cache-only persistence
+- cache-aside reads in the service when the repository can own that access pattern
 - distributed setup before local behavior
 
 Primary pages supported:
@@ -246,12 +352,13 @@ Must show:
 
 - named job
 - payload shape
-- dispatch from controller, command, or service
+- dispatch from event subscriber through an injected notification service
 - handler calling `ReportService`
 - queue name
 - `worker` verification
 - retry and idempotency note
 - job handler test
+- `forj run make:job reports:generate` as the real-world generator command
 
 Must not show:
 
@@ -277,7 +384,7 @@ Must show:
 
 - named schedule
 - schedule registration
-- `ReportService.GenerateDaily`
+- `reports.DailyRunner`
 - `scheduler` verification
 - direct service test
 - operations note for scheduler process ownership
@@ -371,6 +478,8 @@ Use commands confirmed from the framework source or generated templates.
 Common commands:
 
 ```bash
+forj make:controller users
+forj run make:job reports:generate
 forj build
 forj dev
 forj run route:list
@@ -387,6 +496,27 @@ GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go test ./...
 ```
 
 For generated user Apps, show the command users should normally run. Add cache env vars only when the page is explicitly about repository-local validation.
+
+For scenario system validation from the GoForj repo, use:
+
+```bash
+GOCACHE=/tmp/gocache go test ./internal/scenarios
+GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
+/tmp/forj-scenario-mvp scenario:test --all
+/tmp/forj-scenario-mvp scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+```
+
+Then build the docs:
+
+```bash
+npm run build
+```
+
+Run from:
+
+```text
+/workspace/code/goforj-docs/docs
+```
 
 ## File Location Rules
 
@@ -441,7 +571,8 @@ Before publishing a runnable scenario:
 
 - [ ] The scenario has one primary teaching goal.
 - [ ] The domain and names match this file and `example-registry.md`.
-- [ ] The code compiles or the page clearly marks fragments.
+- [ ] The scenario spec passes `forj scenario:test <id>`.
+- [ ] Generated markdown passes `forj scenario:generate --check`.
 - [ ] The page names generated App-owned files.
 - [ ] The page uses local-first drivers before production backends.
 - [ ] Business logic lives in services.
@@ -449,6 +580,7 @@ Before publishing a runnable scenario:
 - [ ] Required dependencies are explicit.
 - [ ] The scenario includes a verification command.
 - [ ] The scenario includes at least one meaningful test.
+- [ ] Diagrams live in the spec, not directly in generated markdown.
 - [ ] The page links to the next scenario.
 - [ ] Framework pages link to Libraries for primitive details.
 - [ ] The VitePress build passes after publication.

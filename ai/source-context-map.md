@@ -59,6 +59,8 @@ Read:
 
 - `/workspace/code/goforj/docs/context/rendering-and-smoke-workflow.md`
 - `/workspace/code/goforj/docs/context/practical-workflows.md`
+- `/workspace/code/goforj/internal/scenarios`
+- `/workspace/code/goforj/internal/scenarios/specs`
 
 Use for:
 
@@ -66,6 +68,27 @@ Use for:
 - generated app smoke testing
 - template change validation
 - `forj render` and `forj generate` behavior
+- executable scenario docs
+- generated scenario markdown
+
+### Runnable Scenarios
+
+Read:
+
+- `/workspace/code/goforj-docs/ai/runnable-scenarios.md`
+- `/workspace/code/goforj/internal/scenarios/scenarios.go`
+- `/workspace/code/goforj/internal/scenarios/specs/*.yaml`
+- `/workspace/code/goforj/internal/forj/scenario_cmd.go`
+
+Use for:
+
+- `docs/scenarios/*.md`
+- runnable examples
+- scenario diagrams
+- scenario command shapes
+- automated docs validation
+
+Generated scenario markdown is derived from specs. Change specs first, then regenerate docs.
 
 ### Repo Boundaries
 

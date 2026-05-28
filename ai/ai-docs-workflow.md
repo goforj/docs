@@ -22,6 +22,7 @@ For any substantial docs task, read:
    - `driver-decision-model.md`
    - `library-docs-model.md`
    - `generated-components-model.md`
+   - `runnable-scenarios.md`
    - `runtime-topology-model.md`
    - `product-surfaces-model.md`
    - `source-context-map.md`
@@ -98,6 +99,25 @@ Before writing an example:
 6. Include verification.
 7. Confirm commands and package APIs.
 
+For public pages under `docs/scenarios`, do not draft directly in markdown. Update the executable scenario spec in:
+
+```text
+/workspace/code/goforj/internal/scenarios/specs
+```
+
+Then regenerate and check:
+
+```bash
+GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
+/tmp/forj-scenario-mvp scenario:test <scenario-id>
+/tmp/forj-scenario-mvp scenario:generate <scenario-id> --out-dir /workspace/code/goforj-docs/docs/scenarios
+/tmp/forj-scenario-mvp scenario:generate <scenario-id> --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+```
+
+Use `--all` before finalizing broad scenario changes.
+
+Scenario diagrams belong in `markdown.diagrams` inside the spec. Do not hand-edit Mermaid blocks into generated scenario pages.
+
 ## Review Workflow
 
 Before finalizing:
@@ -150,6 +170,15 @@ For GoForj framework/template work, prefer focused checks first:
 ```bash
 GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go test ./internal/generate -count=1
 GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go test ./internal/forj -count=1
+```
+
+For executable scenario docs:
+
+```bash
+GOCACHE=/tmp/gocache go test ./internal/scenarios ./internal/forj ./wire -run 'TestScenario|TestLoadEmbedded|TestRenderScenario|^$'
+GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
+/tmp/forj-scenario-mvp scenario:test --all
+/tmp/forj-scenario-mvp scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
 ```
 
 ## AI Failure Modes

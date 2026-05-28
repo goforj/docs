@@ -5,28 +5,25 @@ description: Build a JSON API route with a controller, service, Wire provider, r
 
 # JSON API Route
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario adds a `GET /api/v1/users/:id` endpoint to a generated GoForj App.
 
-The endpoint is intentionally small. It establishes the normal shape for application features: route registration, a thin controller, service-owned behavior, explicit Wire wiring, and a fast service test.
+The endpoint is intentionally small. It establishes the normal shape for application features: start from the make command, keep the controller thin, put behavior behind a service, register providers explicitly, and verify the route through the generated runtime.
 
 ## What You Will Build
 
 - `internal/users.Service` owns user lookup behavior.
 - `internal/users.Controller` translates HTTP into a service call.
+- `forj make:controller users` creates the controller wiring and route registration.
 - `wire/appSet` provides the service.
-- `wire/httpAppControllerSet` provides the controller.
-- `internal/router.ProvideAppRoutes` adds the controller routes.
 - `forj run route:list` shows the registered endpoint.
 
 ## Prerequisites
 
 Start from a generated GoForj App with HTTP enabled.
-
-From the App root, verify the existing route surface:
-
-```bash
-forj run route:list
-```
 
 ## Golden Path State
 
@@ -38,18 +35,42 @@ After this scenario, the App has one tested `GET /api/v1/users/:id` route, a thi
 
 This scenario edits or creates:
 
+**Users feature**
+
 ```text
 internal/users/service.go
 internal/users/service_test.go
 internal/users/controller.go
-wire/inject_app_services.go
+```
+
+**HTTP registration**
+
+```text
 wire/inject_http_controllers.go
 internal/router/routes_registry.go
 ```
 
-## Step 1: Add The Service
+**App wiring**
 
-Create `internal/users/service.go`:
+```text
+wire/inject_app_services.go
+```
+
+## Step 1: Scaffold The Controller
+
+Start with the real make command. It creates `internal/users/controller.go`, wires the controller constructor into `wire/inject_http_controllers.go`, and adds the controller routes to `internal/router/routes_registry.go`.
+
+```bash
+forj make:controller users
+```
+
+## Step 2: Add The Service
+
+Create `internal/users/service.go`.
+
+The service owns application behavior. This first version is intentionally simple and keeps persistence out of the HTTP boundary.
+
+Create or replace `internal/users/service.go`:
 
 ```go
 package users
@@ -86,11 +107,15 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 }
 ```
 
-This first version has no repository yet. [Cached User Profile](/scenarios/cached-user-profile) introduces a repository and cache boundary.
+## Step 3: Replace The Starter Controller
 
-## Step 2: Add The Controller
+Replace `internal/users/controller.go`.
 
-Create `internal/users/controller.go`:
+Keep the generated controller registration, but replace the starter handler with a service-backed `GET /users/:id` route.
+
+The controller only reads HTTP input, calls the service, and writes the HTTP response. It does not own persistence, cache behavior, queue dispatch, or infrastructure setup.
+
+Create or replace `internal/users/controller.go`:
 
 ```go
 package users
@@ -131,148 +156,39 @@ func (c *Controller) Show(ctx web.Context) error {
 }
 ```
 
-The controller only reads HTTP input, calls the service, and writes the HTTP response. It does not own persistence, cache behavior, queue dispatch, or infrastructure setup.
-
-## Step 3: Provide The Service
+## Step 4: Provide The Service
 
 Open `wire/inject_app_services.go`.
 
-Add the users package to the imports, using your App module path:
+Wire can already construct the controller after the make command, but the controller now needs `*users.Service`. Add the users package to the imports, using your App module path.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-import (
-	// existing imports...
-
-	"your/module/internal/users"
-)
+"your/module/internal/makecmd"
+        "your/module/internal/users"
 ```
 
-Add `users.NewService` to `appSet`:
+## Step 5: Add The Service Provider
+
+Add `users.NewService` to `appSet`.
+
+`Service` is now part of the compiled App dependency graph, and Wire can construct the controller because `appSet` provides `*users.Service`.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-var appSet = wire.NewSet(
-	provideCacheManager,
-	provideStorageManager,
-	provideEventManager,
-	provideInspectManager,
-	users.NewService,
-	// existing providers...
-)
+users.NewService,
+app.NewLifecycleRegistry,
 ```
 
-`Service` is now part of the compiled App dependency graph.
+## Step 6: Add A Service Test
 
-## Step 4: Provide The Controller
+Create `internal/users/service_test.go`.
 
-Open `wire/inject_http_controllers.go`.
+The service test does not start HTTP. It proves the business behavior directly.
 
-Add the users package to the imports:
-
-```go
-import (
-	// existing imports...
-
-	"your/module/internal/users"
-)
-```
-
-Add `users.NewController` to `httpAppControllerSet`:
-
-```go
-var httpAppControllerSet = wire.NewSet(
-	users.NewController,
-	// existing controllers...
-)
-```
-
-Wire can now construct the controller because `appSet` provides `*users.Service`.
-
-## Step 5: Register The Routes
-
-Open `internal/router/routes_registry.go`.
-
-Add the users package to the imports:
-
-```go
-import (
-	"github.com/goforj/web"
-
-	"your/module/internal/users"
-)
-```
-
-Add the controller to `ProvideAppRoutes`:
-
-```go
-func ProvideAppRoutes(
-	// existing controllers...
-	usersController *users.Controller,
-) *AppRoutes {
-	var publicRoutes []web.Route
-	var protectedRoutes []web.Route
-
-	publicRoutes = append(publicRoutes, usersController.Routes()...)
-
-	// existing route registration...
-
-	return &AppRoutes{
-		public:    publicRoutes,
-		protected: protectedRoutes,
-	}
-}
-```
-
-Generated Apps mount public routes under `/api/v1` by default, so the controller route `/users/:id` becomes `/api/v1/users/:id`.
-
-## Step 6: Build
-
-Run the normal build pipeline:
-
-```bash
-forj build
-```
-
-`forj build` refreshes generated code, runs Wire, builds API index artifacts, and then builds the App binary.
-
-::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
-:::
-
-## Verify
-
-List registered routes:
-
-```bash
-forj run route:list
-```
-
-You should see a `GET` route for:
-
-```text
-/api/v1/users/:id
-```
-
-Run the HTTP server:
-
-```bash
-forj run api
-```
-
-Request the endpoint:
-
-```bash
-curl http://localhost:3000/api/v1/users/42
-```
-
-Expected response:
-
-```json
-{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
-```
-
-## Test The Service
-
-Create `internal/users/service_test.go`:
+Create or replace `internal/users/service_test.go`:
 
 ```go
 package users
@@ -304,25 +220,53 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-Run:
+## Build And Verify
+
+```bash
+forj build
+```
 
 ```bash
 go test ./...
 ```
 
-The service test does not start HTTP. It proves the business behavior directly.
+```bash
+forj run route:list
+```
+
+Expected output includes:
+
+- `/api/v1/users/:id`
+
+## Try The Route
+
+Run the HTTP server:
+
+```bash
+forj run api
+```
+
+Request the endpoint:
+
+```bash
+curl http://localhost:3000/api/v1/users/42
+```
+
+Expected response:
+
+```json
+{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
+```
 
 ## Operations
 
-This route participates in the normal HTTP runtime:
+Operational notes:
 
 - `route:list` shows it after registration.
 - HTTP request logs include requests to it when access logging is enabled.
 - HTTP metrics include it when metrics are enabled.
 - HTTP inspects can show request and response details when inspect capture is enabled.
 - Lighthouse can display route and runtime information when Lighthouse is enabled.
-
-Do not add route-specific production behavior in the controller. Prefer middleware, services, metrics, and inspects at the appropriate boundary.
 
 ## Common Mistakes
 
@@ -334,6 +278,8 @@ Do not add route-specific production behavior in the controller. Prefer middlewa
 - Do not import the underlying HTTP engine in normal App controllers.
 :::
 
-## Next Step
+## Next Steps
 
-Next, extend this feature with a repository and named cache resource in [Cached User Profile](/scenarios/cached-user-profile).
+- Next, extend this feature with a repository and named cache resource in [Cached User Profile](/scenarios/cached-user-profile).
+- [Controllers](/applications/controllers) explains handler structure.
+- [Wiring Recipes](/core/wiring-recipes) shows where providers belong.

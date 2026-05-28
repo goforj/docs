@@ -315,9 +315,9 @@ Exit criteria:
 
 ## First Runnable Scenarios
 
-Status: paused after the first five scenarios.
+Status: first generated executable scenario set is implemented.
 
-Do not continue expanding runnable scenarios until the publishing-quality pass is complete, unless explicitly requested.
+Scenario content now lives in executable specs in `/workspace/code/goforj/internal/scenarios/specs`. Public markdown in `docs/scenarios` is generated from those specs.
 
 Build these after the first 10 framework pages:
 
@@ -327,14 +327,26 @@ Build these after the first 10 framework pages:
 - [x] File upload to named storage disk.
 - [x] `users.created` event with subscriber.
 - [x] `reports:generate` job and worker.
-- [ ] `reports:daily` schedule.
-- [ ] Runtime observability through metrics and inspects.
+- [x] `reports:daily` schedule.
+- [x] Runtime observability through metrics and inspects.
 
 Remaining scenario action items:
 
 - [x] Add `reports:daily` schedule scenario that dispatches existing durable work instead of duplicating job logic.
 - [x] Add runtime observability scenario that follows API -> event -> job -> schedule behavior through metrics, inspects, Lighthouse, and logs.
-- [ ] Re-review all runnable scenarios as one sequence for command consistency, generated file ownership, local-first driver choices, and repeated terminology.
+- [x] Re-review all runnable scenarios as one sequence for command consistency, generated file ownership, local-first driver choices, and repeated terminology.
+- [x] Convert public scenario pages to generated markdown from executable specs.
+- [x] Add Mermaid diagram support to scenario specs so diagrams survive regeneration.
+
+Validation used for this set:
+
+```bash
+GOCACHE=/tmp/gocache go test ./internal/scenarios ./internal/forj ./wire -run 'TestScenario|TestLoadEmbedded|TestRenderScenario|^$'
+GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
+/tmp/forj-scenario-mvp scenario:test --all
+/tmp/forj-scenario-mvp scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+npm run build
+```
 
 ## Publishing Quality Pass
 

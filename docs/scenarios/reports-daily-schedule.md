@@ -5,9 +5,13 @@ description: Schedule reports:daily recurring work that dispatches existing repo
 
 # Reports Daily Schedule
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario adds a `reports:daily` schedule that dispatches the existing `reports:generate` job.
 
-The schedule decides when daily report work should begin. The queue still owns durable execution, retries, worker lifecycle, and failure visibility.
+The schedule decides when daily report work should begin. The queue still owns execution, retries, worker lifecycle, and failure visibility.
 
 ## What You Will Build
 
@@ -41,22 +45,45 @@ internal/queues
 
 Before this scenario, reports are generated when the `users.created` subscriber dispatches `reports:generate`.
 
-After this scenario, `reports:daily` can start the same report workflow on a recurring schedule. The schedule decides when work begins; the queue and workers still own durable execution.
+After this scenario, `reports:daily` can start the same report workflow on a recurring schedule. The schedule decides when work begins; the queue and workers still own execution.
 
 ## Files
 
 This scenario edits or creates:
 
+**Reports feature**
+
 ```text
 internal/reports/daily.go
 internal/reports/daily_test.go
+```
+
+**Users repository**
+
+```text
+internal/users/repository.go
+```
+
+**Scheduler**
+
+```text
+internal/scheduler/scheduler.go
 internal/scheduler/scheduler_registry.go
+```
+
+**App wiring**
+
+```text
 wire/inject_app_services.go
 ```
 
 ## Step 1: Add A Daily Runner
 
-Create `internal/reports/daily.go`:
+Create `internal/reports/daily.go`.
+
+The runner does not generate reports itself. It turns a recurring schedule into queued work.
+
+Create or replace `internal/reports/daily.go`:
 
 ```go
 package reports
@@ -73,10 +100,6 @@ type DailyTarget struct {
 
 type DailyTargetRepository interface {
 	DueForDailyReport(ctx context.Context) ([]DailyTarget, error)
-}
-
-type ReportQueue interface {
-	Queue(ctx context.Context, userID string, email string) error
 }
 
 type DailyRunner struct {
@@ -107,85 +130,129 @@ func (r *DailyRunner) Run(ctx context.Context) error {
 }
 ```
 
-The runner does not generate reports itself. It turns a recurring schedule into durable queued work.
+## Step 2: Add Daily Targets To The Repository
 
-## Step 2: Register The Schedule
+Extend `MemoryUserRepository` so the schedule can ask the repository for due report targets.
 
-Open `internal/scheduler/scheduler_registry.go`.
-
-Inject the daily runner into the scheduler type, then register the schedule:
+Update `internal/users/repository.go` so it includes:
 
 ```go
-func (s *Scheduler) Register() error {
-	s.DailyAt("04:00").
-		Name("reports:daily").
-		Do(s.inspectTask("reports:daily", s.dailyReports.Run))
+"github.com/goforj/cache"
 
-	return nil
+"your/module/internal/reports"
+```
+
+## Step 3: Implement Daily Target Lookup
+
+Keep target selection behind the repository boundary.
+
+Update `internal/users/repository.go` so it includes:
+
+```go
+func (r *MemoryUserRepository) Save(ctx context.Context, user User) (User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if user.ID == "" {
+		user.ID = strconv.Itoa(r.nextID)
+		r.nextID++
+	}
+	r.users[user.ID] = user
+	return user, nil
+}
+
+func (r *MemoryUserRepository) DueForDailyReport(ctx context.Context) ([]reports.DailyTarget, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	targets := make([]reports.DailyTarget, 0, len(r.users))
+	for _, user := range r.users {
+		targets = append(targets, reports.DailyTarget{
+			UserID: user.ID,
+			Email:  user.Email,
+		})
+	}
+	return targets, nil
 }
 ```
 
+## Step 4: Inject The Daily Runner Into Scheduler
+
+Add the daily runner to the generated scheduler type.
+
+Update `internal/scheduler/scheduler.go` so it includes:
+
+```go
+"your/module/internal/inspects"
+"your/module/internal/reports"
+```
+
+## Step 5: Add Scheduler Field
+
+Store the injected runner on the scheduler.
+
+Update `internal/scheduler/scheduler.go` so it includes:
+
+```go
+inspectManager *inspects.Manager
+dailyReports   *reports.DailyRunner
+```
+
+## Step 6: Add Scheduler Constructor Parameter
+
+Wire can now provide the runner to the scheduler.
+
+Update `internal/scheduler/scheduler.go` so it includes:
+
+```go
+inspectManager *inspects.Manager,
+dailyReports *reports.DailyRunner,
+```
+
+## Step 7: Assign Scheduler Runner
+
+Preserve the generated scheduler wiring and add the new field assignment.
+
+Update `internal/scheduler/scheduler.go` so it includes:
+
+```go
+inspectManager: inspectManager,
+dailyReports:   dailyReports,
+```
+
+## Step 8: Register The Schedule
+
 Keep the registry declarative. The registry names the schedule and points to the domain-owned method.
 
-## Step 3: Wire The Runner
-
-Open `wire/inject_app_services.go`.
-
-Bind the existing `GenerateReportJob` to the small queueing interface:
+Update `internal/scheduler/scheduler_registry.go` so it includes:
 
 ```go
-var appSet = wire.NewSet(
-	reports.NewDailyRunner,
-	wire.Bind(new(reports.ReportQueue), new(*jobs.GenerateReportJob)),
-	// existing providers...
-)
+s.registerJobObservers()
+
+s.DailyAt("04:00").
+        Name("reports:daily").
+        Do(s.inspectTask("reports:daily", s.dailyReports.Run))
 ```
 
-Provide a `DailyTargetRepository` from your user repository or reporting repository. The important boundary is the interface: the schedule asks for report targets, then dispatches jobs.
+## Step 9: Wire The Runner
 
-## Step 4: Build
+Bind the existing report job to the small queueing interface and bind the user repository to daily target lookup.
 
-Run:
-
-```bash
-forj build
-```
-
-This regenerates Wire and builds the App binary.
-
-## Verify
-
-Start a worker in one terminal:
-
-```bash
-forj run worker
-```
-
-Start the scheduler in another terminal:
-
-```bash
-forj run scheduler
-```
-
-For a fast local check, temporarily use a short interval while developing:
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-s.Every(30).Seconds().
-	Name("reports:daily").
-	Do(s.inspectTask("reports:daily", s.dailyReports.Run))
+reports.NewService,
+reports.NewDailyRunner,
+wire.Bind(new(reports.DailyTargetRepository), new(*users.MemoryUserRepository)),
 ```
 
-When the schedule runs, the worker should process `reports:generate` jobs and write report artifacts under:
+## Step 10: Test The Runner
 
-```text
-storage/app/reports/users/{userID}/profile.json
-```
+Create `internal/reports/daily_test.go`.
 
-Return to `DailyAt("04:00")` before treating the schedule as production-shaped.
+The unit test proves schedule target behavior without waiting for the scheduler runtime.
 
-## Test The Runner
-
-Create `internal/reports/daily_test.go`:
+Create or replace `internal/reports/daily_test.go`:
 
 ```go
 package reports
@@ -228,27 +295,47 @@ func TestDailyRunnerQueuesReports(t *testing.T) {
 }
 ```
 
-Run:
+## Build And Verify
+
+```bash
+forj build
+```
 
 ```bash
 go test ./...
 ```
 
-The unit test proves schedule target behavior without waiting for the scheduler runtime.
+## Verify The Schedule
 
-## Production
-
-Run scheduler processes explicitly:
+Start a worker in one terminal:
 
 ```bash
-./bin/app scheduler
+forj run worker
 ```
 
-Keep the scheduler singleton unless your locking strategy supports more than one scheduler process. Scale workers separately:
+Start the scheduler in another terminal:
 
 ```bash
-./bin/app worker
+forj run scheduler
 ```
+
+For a fast local check, temporarily use a short interval while developing:
+
+```go
+s.Every(30).Seconds().
+  Name("reports:daily").
+  Do(s.inspectTask("reports:daily", s.dailyReports.Run))
+```
+
+Return to `DailyAt("04:00")` before treating the schedule as production-shaped.
+
+## Operations
+
+Operational notes:
+
+- Run scheduler processes explicitly with `./bin/app scheduler`.
+- Keep the scheduler singleton unless your locking strategy supports more than one scheduler process.
+- Scale workers separately with `./bin/app worker`.
 
 ## Common Mistakes
 
@@ -260,6 +347,6 @@ Keep the scheduler singleton unless your locking strategy supports more than one
 - Do not skip the worker process; the schedule dispatches jobs, and workers perform the work.
 :::
 
-## Next Step
+## Next Steps
 
-Next, follow the full API, event, job, schedule, metrics, inspects, Lighthouse, and log path in [Runtime Observability](/scenarios/runtime-observability).
+- Next, follow the full API, event, job, schedule, metrics, inspects, Lighthouse, and log path in [Runtime Observability](/scenarios/runtime-observability).

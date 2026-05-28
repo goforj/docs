@@ -5,6 +5,10 @@ description: Add an upload endpoint that writes files to a named GoForj storage 
 
 # File Upload To Storage
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario adds a `POST /api/v1/uploads` endpoint that writes a file to a named `uploads` storage disk.
 
 The example uses a small JSON payload so the page can focus on the GoForj storage boundary. Multipart parsing, streaming uploads, and large object handling are separate HTTP concerns.
@@ -34,14 +38,31 @@ After this scenario, the App also has an upload endpoint and a named `uploads` s
 
 This scenario edits or creates:
 
+**Configuration**
+
 ```text
 .env
+```
+
+**Uploads feature**
+
+```text
 internal/uploads/service.go
 internal/uploads/service_test.go
 internal/uploads/controller.go
-wire/inject_app_services.go
+```
+
+**HTTP registration**
+
+```text
 wire/inject_http_controllers.go
 internal/router/routes_registry.go
+```
+
+**App wiring**
+
+```text
+wire/inject_app_services.go
 ```
 
 The storage generator updates:
@@ -55,7 +76,9 @@ Do not edit generated storage files by hand.
 
 ## Step 1: Add A Named Storage Disk
 
-Add a named `uploads` disk to `.env`:
+Add a named `uploads` disk to `.env`, then run the build pipeline so the generated App exposes `app.Storage().Uploads()`.
+
+Append to `.env`:
 
 ```dotenv
 STORAGE_UPLOADS_DRIVER=local
@@ -63,31 +86,31 @@ STORAGE_UPLOADS_ROOT=storage/app/uploads
 STORAGE_UPLOADS_PREFIX=
 ```
 
-If your App uses `STORAGE_SUPPORTED_DRIVERS`, make sure `local` is included:
+Update `.env` so it includes:
 
 ```dotenv
-STORAGE_SUPPORTED_DRIVERS=local
+STORAGE_SUPPORTED_DRIVERS=local,memory
 ```
-
-Run:
 
 ```bash
 forj build
 ```
 
-::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
-:::
+## Step 2: Scaffold The Controller
 
-After generation, the App should expose:
+Start with the real make command. It creates the uploads controller, wires the constructor, and registers its routes.
 
-```go
-app.Storage().Uploads()
+```bash
+forj make:controller uploads
 ```
 
-## Step 2: Add The Service
+## Step 3: Add The Service
 
-Create `internal/uploads/service.go`:
+Create `internal/uploads/service.go`.
+
+The service receives `storage.Storage`, not a local filesystem or S3 client.
+
+Create or replace `internal/uploads/service.go`:
 
 ```go
 package uploads
@@ -177,11 +200,13 @@ func safeFilename(name string) string {
 }
 ```
 
-The service receives `storage.Storage`, not a local filesystem or S3 client.
+## Step 4: Replace The Starter Controller
 
-## Step 3: Add The Controller
+Replace `internal/uploads/controller.go`.
 
-Create `internal/uploads/controller.go`:
+The controller owns request binding and HTTP status decisions. The service owns storage behavior.
+
+Create or replace `internal/uploads/controller.go`:
 
 ```go
 package uploads
@@ -241,152 +266,64 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-The controller owns request binding and HTTP status decisions. The service owns storage behavior.
-
-## Step 4: Wire the Disk and Service
+## Step 5: Wire The Disk And Service
 
 Open `wire/inject_app_services.go`.
 
-Add imports for storage, the generated storage manager, and uploads:
-
-```go
-import (
-	"github.com/goforj/storage"
-
-	"your/module/internal/storages"
-	"your/module/internal/uploads"
-)
-```
-
-Add providers:
-
-```go
-var appSet = wire.NewSet(
-	provideCacheManager,
-	provideStorageManager,
-	provideEventManager,
-	provideInspectManager,
-	provideUploadsDisk,
-	uploads.NewService,
-	// existing providers...
-)
-
-func provideUploadsDisk(manager *storages.Manager) storage.Storage {
-	return manager.Uploads()
-}
-```
-
 The App can now provide `UploadService` with the named disk.
 
-## Step 5: Provide The Controller
-
-Open `wire/inject_http_controllers.go`.
-
-Add the package import:
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
 import (
-	// existing imports...
-
-	"your/module/internal/uploads"
-)
+        "github.com/goforj/storage"
 ```
 
-Add the controller constructor:
+## Step 6: Add Upload Imports
+
+Add imports for the generated storage manager and uploads package.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-var httpAppControllerSet = wire.NewSet(
-	uploads.NewController,
-	// existing controllers...
-)
+"your/module/internal/makecmd"
+"your/module/internal/storages"
+"your/module/internal/uploads"
 ```
 
-## Step 6: Register The Route
+## Step 7: Add Upload Providers
 
-Open `internal/router/routes_registry.go`.
+Add the named disk provider and upload service constructor.
 
-Add the package import:
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-import (
-	"github.com/goforj/web"
-
-	"your/module/internal/uploads"
-)
+provideUploadsDisk,
+uploads.NewService,
+provideUserProfileCache,
 ```
 
-Add the controller to `ProvideAppRoutes`:
+## Step 8: Add The Disk Provider
+
+`provideUploadsDisk` selects the generated named storage resource.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-func ProvideAppRoutes(
-	// existing controllers...
-	uploadsController *uploads.Controller,
-) *AppRoutes {
-	var publicRoutes []web.Route
-	var protectedRoutes []web.Route
-
-	publicRoutes = append(publicRoutes, uploadsController.Routes()...)
-
-	// existing route registration...
-
-	return &AppRoutes{
-		public:    publicRoutes,
-		protected: protectedRoutes,
-	}
+func provideUploadsDisk(manager *storages.Manager) storage.Storage {
+        return manager.Uploads()
 }
+
+func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
 ```
 
-Generated Apps mount public routes under `/api/v1`, so the controller route `/uploads` becomes `/api/v1/uploads`.
+## Step 9: Add A Service Test
 
-## Step 7: Build
+Create `internal/uploads/service_test.go`.
 
-Run:
+The test uses memory storage. It does not create local files and does not require S3.
 
-```bash
-forj build
-```
-
-This refreshes storage accessors, regenerates Wire, builds API index artifacts, and builds the App.
-
-## Verify
-
-List routes:
-
-```bash
-forj run route:list
-```
-
-You should see:
-
-```text
-POST /api/v1/uploads
-```
-
-Run the HTTP server:
-
-```bash
-forj run api
-```
-
-Send a small upload:
-
-```bash
-curl -X POST http://localhost:3000/api/v1/uploads \
-  -H 'Content-Type: application/json' \
-  -d '{"filename":"hello.txt","content_type":"text/plain","body_base64":"aGVsbG8="}'
-```
-
-Expected response:
-
-```json
-{"path":"incoming/20260525/hello.txt","content_type":"text/plain","size":5}
-```
-
-The date segment uses the current UTC date.
-
-## Test The Service
-
-Create `internal/uploads/service_test.go`:
+Create or replace `internal/uploads/service_test.go`:
 
 ```go
 package uploads
@@ -448,13 +385,55 @@ func TestServiceRejectsMissingFilename(t *testing.T) {
 }
 ```
 
-Run:
+## Build And Verify
+
+```bash
+forj build
+```
 
 ```bash
 go test ./...
 ```
 
-The test uses memory storage. It does not create local files and does not require S3.
+```bash
+forj run route:list
+```
+
+Expected output includes:
+
+- `/api/v1/uploads`
+
+## Try The Route
+
+Run the HTTP server:
+
+```bash
+forj run api
+```
+
+Send a small upload:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/uploads \
+  -H 'Content-Type: application/json' \
+  -d '{"filename":"hello.txt","content_type":"text/plain","body_base64":"aGVsbG8="}'
+```
+
+Expected response shape:
+
+```json
+{"path":"incoming/YYYYMMDD/hello.txt","content_type":"text/plain","size":5}
+```
+
+The date segment uses the current UTC date.
+
+## Operations
+
+Operational notes:
+
+- `uploads` is a named storage resource and appears in generated storage accessors.
+- Storage operation metrics, inspect records, and Lighthouse views can use the named disk.
+- Store ownership, metadata, content type, and retention policy in durable application state when those values matter.
 
 ## Swap The Driver
 
@@ -476,20 +455,6 @@ forj build
 
 Business code does not change. The service still receives `storage.Storage`.
 
-## Operations
-
-The `uploads` disk is a named resource.
-
-That means it can appear in:
-
-- generated storage accessors
-- storage operation metrics
-- inspect records
-- Lighthouse runtime views
-- driver configuration
-
-Store metadata such as owner, original filename, content type, and retention policy in durable application state when those values matter. Storage paths alone should not be the only source of business truth.
-
 ## Common Mistakes
 
 ::: warning Common mistakes
@@ -500,6 +465,6 @@ Store metadata such as owner, original filename, content type, and retention pol
 - Do not store ownership, authorization, or lifecycle rules only in object paths.
 :::
 
-## Next Step
+## Next Steps
 
-Next, publish a `users.created` event and handle it with [Users Created Event](/scenarios/users-created-event).
+- Next, publish a `users.created` event and handle it with [Users Created Event](/scenarios/users-created-event).

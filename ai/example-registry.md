@@ -229,21 +229,32 @@ Runnable scenarios:
 - Must include setup assumptions.
 - Must include commands.
 - Must include expected behavior.
-- Should be covered by CI or a documented smoke workflow when feasible.
+- Must be covered by executable scenario specs when published under `docs/scenarios`.
+- Must preserve diagrams in the spec, not by hand-editing generated markdown.
 
 ## Commands
 
 Use confirmed generated command names:
 
-- `forj run app`
+- `forj build`
+- `forj dev`
 - `forj run api`
 - `forj run route:list`
 - `forj run worker`
 - `forj run scheduler`
+- `forj make:controller users`
 - `forj run make:job`
 - `forj run make:event`
 - `forj run migrate`
 - `forj run migrate:rollback`
+
+For maintained scenario docs, use hidden maintainer commands from the GoForj CLI:
+
+- `forj scenario:list`
+- `forj scenario:test <id>`
+- `forj scenario:test --all`
+- `forj scenario:generate <id>`
+- `forj scenario:generate --all --check`
 
 Only use command names after checking current generated templates or CLI source.
 

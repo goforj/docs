@@ -5,6 +5,10 @@ description: Follow a GoForj workflow through routes, logs, metrics, inspects, L
 
 # Runtime Observability
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario follows the same application behavior through the surfaces operators use to trust a running App.
 
 The goal is not to add new business behavior. The goal is to prove that HTTP requests, events, jobs, schedules, metrics, inspects, Lighthouse, and logs all describe the same runtime story.
@@ -52,7 +56,25 @@ Before this scenario, the App has routes, cache, storage, events, jobs, workers,
 
 After this scenario, you should know where to prove each runtime boundary: route list for HTTP, logs for process behavior, metrics for bounded counters and timings, inspects for execution records, and Lighthouse for operator-facing runtime state.
 
-## Step 1: Confirm Routes
+## Build And Verify
+
+```bash
+forj build
+```
+
+```bash
+go test ./...
+```
+
+```bash
+forj run route:list
+```
+
+Expected output includes:
+
+- `/api/v1/users`
+
+## Trigger The Workflow
 
 List the registered routes:
 
@@ -60,35 +82,11 @@ List the registered routes:
 forj run route:list
 ```
 
-Expected route evidence:
-
-```text
-POST /api/v1/users
-GET  /-/health
-GET  /-/ready
-```
-
-Use `route:list` as the HTTP source of truth. Startup logs are useful, but the route list is the complete route surface.
-
-## Step 2: Start Runtime Processes
-
-Use separate terminals so each runtime boundary stays visible.
-
-Start the API:
+Start the API, worker, and scheduler in separate terminals:
 
 ```bash
 forj run api
-```
-
-Start workers:
-
-```bash
 forj run worker
-```
-
-Start the scheduler:
-
-```bash
 forj run scheduler
 ```
 
@@ -99,8 +97,6 @@ In production, use the built binary equivalents:
 ./bin/app worker
 ./bin/app scheduler
 ```
-
-## Step 3: Trigger The Workflow
 
 Create a user:
 
@@ -118,7 +114,9 @@ Expected behavior:
 - the worker processes `reports:generate`
 - storage receives a report artifact
 
-## Step 4: Check Metrics
+Then check route output, process logs, metrics endpoints, inspect records, and Lighthouse for the same bounded names: `/api/v1/users`, `users.created`, `reports:generate`, and `reports:daily`.
+
+## Check Metrics
 
 Check the shared local metrics endpoint:
 
@@ -148,7 +146,7 @@ source="scheduler"
 
 Metric names can evolve with the metrics package and generated App version. The content that must remain stable is the label discipline: bounded operational names, not user-controlled data.
 
-## Step 5: Check Inspects
+## Check Inspects
 
 Open Lighthouse and inspect recent executions.
 
@@ -163,7 +161,7 @@ Each inspect should tell a bounded execution story: source runtime, duration, st
 
 Use `inspect` for the product surface. `trace_id` may still appear as a correlation field in logs or payloads.
 
-## Step 6: Check Logs
+## Check Logs
 
 Use logs to confirm lifecycle and failure behavior:
 
@@ -183,7 +181,7 @@ Good logs should answer:
 
 Logs should not be the only way to discover registered routes, queue depth, or scheduler state. Use route lists, metrics, inspects, and Lighthouse for those surfaces.
 
-## Step 7: Follow The Schedule
+## Follow The Schedule
 
 Run the scheduler with the temporary short interval from [Reports Daily Schedule](/scenarios/reports-daily-schedule) when testing locally.
 
@@ -195,13 +193,22 @@ Expected evidence:
 - workers process one or more `reports:generate` jobs
 - job metrics and job inspects use `reports:generate`
 
-This proves the schedule dispatches durable work instead of performing report generation inside scheduler bootstrap.
+This proves the schedule dispatches queued work instead of performing report generation inside scheduler bootstrap.
+
+## Operations
+
+Operational notes:
+
+- Use `route:list` as the HTTP source of truth.
+- Use metrics for bounded counters and timings; do not put user IDs, raw URLs, emails, request IDs, or filenames in labels.
+- Use inspect records and Lighthouse to follow request, job, scheduler, and CLI execution stories.
+- Use logs to confirm lifecycle and failure behavior, not as the only route or queue inventory.
 
 ## Troubleshooting
 
 If no route appears, run `forj build` and then `forj run route:list`.
 
-If no job is processed, confirm the API and worker processes use a shared queue backend. `workerpool` is process-local; use SQLite or another shared backend when API and worker run separately.
+If no job is processed, confirm the API and worker processes use a shared queue backend. `workerpool` is process-local; use Redis, SQL-backed queues, or another shared backend when API and worker run separately.
 
 If metrics are empty, confirm metrics were enabled for the surface you are checking:
 
@@ -220,13 +227,15 @@ If Lighthouse has no inspect records, confirm Lighthouse is enabled and the insp
 - Do not use metrics labels for user IDs, emails, raw paths, request IDs, or filenames.
 - Do not treat Lighthouse as the only observability surface.
 - Do not call inspects traces in user-facing docs.
-- Do not rely on startup logs as the route source of truth.
+- Do not rely only on logs to discover registered routes or queue state.
 - Do not hide worker or scheduler startup inside constructors.
+- Do not expect `workerpool` queues to cross process boundaries.
+- Do not treat missing Lighthouse records as proof that work did not happen; confirm inspect configuration and buffer limits.
 :::
 
 ## Next Steps
 
-- [Metrics](/operations/metrics) explains metric endpoints and label rules.
+- [Metrics](/operations/metrics) explains metric surfaces.
 - [Inspects](/operations/inspects) explains execution records.
-- [Lighthouse](/operations/lighthouse) explains the operator surface.
+- [Lighthouse](/operations/lighthouse) explains the operator UI.
 - [Production Checklist](/operations/production-checklist) collects production readiness checks.

@@ -5,6 +5,10 @@ description: Add a repository and named cache resource to the JSON API route sce
 
 # Cached User Profile
 
+::: info Verified Scenario
+We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+:::
+
 This scenario extends the JSON API route with a repository and a named cache resource.
 
 The source repository remains the source of truth. A cached repository wrapper owns the cache-aside access pattern so the service can keep depending on the `UserRepository` contract.
@@ -37,12 +41,24 @@ After this scenario, user lookup has a repository boundary and a named `profiles
 
 This scenario edits or creates:
 
+**Configuration**
+
 ```text
 .env
+```
+
+**Users feature**
+
+```text
 internal/users/repository.go
 internal/users/repository_test.go
 internal/users/service.go
 internal/users/service_test.go
+```
+
+**App wiring**
+
+```text
 wire/inject_app_services.go
 ```
 
@@ -57,39 +73,28 @@ Do not edit generated cache files by hand.
 
 ## Step 1: Add A Named Cache
 
-Add a named `profiles` cache to `.env`:
+Add a named `profiles` cache to `.env`, then run the build pipeline so the generated App exposes `app.Caches().Profiles()`.
+
+Append to `.env`:
 
 ```dotenv
+
 CACHE_PROFILES_DRIVER=memory
 CACHE_PROFILES_DEFAULT_TTL_SECONDS=300
 CACHE_PROFILES_PREFIX=profiles
 ```
 
-If your App uses `CACHE_SUPPORTED_DRIVERS`, make sure `memory` is included:
-
-```dotenv
-CACHE_SUPPORTED_DRIVERS=memory
-```
-
-Run the build pipeline:
-
 ```bash
 forj build
 ```
 
-::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
-:::
-
-After generation, the App should expose:
-
-```go
-app.Caches().Profiles()
-```
-
 ## Step 2: Add The Repository
 
-Create `internal/users/repository.go`:
+Create `internal/users/repository.go`.
+
+This keeps persistence and cache-aside reads behind a repository boundary. A later database-backed source repository can replace `MemoryUserRepository` without changing the controller or service.
+
+Create or replace `internal/users/repository.go`:
 
 ```go
 package users
@@ -172,11 +177,13 @@ func profileCacheKey(id string) string {
 }
 ```
 
-This keeps persistence and cache-aside reads behind a repository boundary. A later database-backed source repository can replace `MemoryUserRepository` without changing the controller or service.
-
 ## Step 3: Use The Repository In The Service
 
-Replace `internal/users/service.go` with:
+Replace `internal/users/service.go`.
+
+The service owns user behavior. The repository owns read access, including cache-aside lookup. The controller continues to call `service.Find`.
+
+Create or replace `internal/users/service.go`:
 
 ```go
 package users
@@ -211,91 +218,57 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 }
 ```
 
-The service owns user behavior. The repository owns read access, including cache-aside lookup. The controller continues to call `service.Find`.
-
-## Step 4: Wire the Repository and Cache
+## Step 4: Wire The Repository And Cache
 
 Open `wire/inject_app_services.go`.
 
-Add imports for cache manager and users:
+The service depends only on `users.UserRepository`. The provider composes the source repository with the cached repository. The cached repository depends on `*cache.Cache`, not a Redis, file, or memory driver. Driver choice stays in configuration.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
 import (
-	"github.com/goforj/cache"
-
-	"your/module/internal/caches"
-	"your/module/internal/users"
-)
+        "github.com/goforj/cache"
 ```
 
-Add the providers:
+## Step 5: Add Repository Providers
+
+Add the source repository, cached repository provider, and named cache provider.
+
+Update `wire/inject_app_services.go` so it includes:
 
 ```go
-var appSet = wire.NewSet(
-	provideCacheManager,
-	provideStorageManager,
-	provideEventManager,
-	provideInspectManager,
-	provideUserProfileCache,
-	users.NewMemoryUserRepository,
-	provideUserRepository,
-	users.NewService,
-	// existing providers...
-)
+provideUserProfileCache,
+users.NewMemoryUserRepository,
+provideUserRepository,
+users.NewService,
+```
 
+## Step 6: Add Provider Functions
+
+`provideUserProfileCache` selects the named resource. `provideUserRepository` keeps the service wired to the repository interface.
+
+Update `wire/inject_app_services.go` so it includes:
+
+```go
 func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
-	return users.NewCachedUserRepository(source, profileCache)
+        return users.NewCachedUserRepository(source, profileCache)
 }
 
 func provideUserProfileCache(manager *caches.Manager) *cache.Cache {
-	return manager.Profiles()
+        return manager.Profiles()
 }
+
+func provideInspectManager(caches *caches.Manager) *inspects.Manager {
 ```
 
-The service depends only on `users.UserRepository`. The provider composes the source repository with the cached repository. The cached repository depends on `*cache.Cache`, not a Redis, file, or memory driver. Driver choice stays in configuration.
+## Step 7: Add Repository Tests
 
-## Step 5: Build
+Create `internal/users/repository_test.go`.
 
-Run:
+The repository test uses the same cache package as the App, but it does not start the runtime or require Redis.
 
-```bash
-forj build
-```
-
-This refreshes named cache accessors, regenerates Wire, builds API index artifacts, and builds the App.
-
-## Verify
-
-Run:
-
-```bash
-forj run route:list
-```
-
-Then serve HTTP:
-
-```bash
-forj run api
-```
-
-Request the profile twice:
-
-```bash
-curl http://localhost:3000/api/v1/users/42
-curl http://localhost:3000/api/v1/users/42
-```
-
-Both responses should return:
-
-```json
-{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
-```
-
-The first request reads from the repository and writes the cache. The second request can return from `profiles` cache.
-
-## Test The Repository
-
-Create `internal/users/repository_test.go`:
+Create or replace `internal/users/repository_test.go`:
 
 ```go
 package users
@@ -333,7 +306,11 @@ func TestCachedUserRepositoryFindsAndCachesUser(t *testing.T) {
 }
 ```
 
-Keep the service test focused on service behavior:
+## Step 8: Update The Service Test
+
+Keep the service test focused on service behavior.
+
+Create or replace `internal/users/service_test.go`:
 
 ```go
 package users
@@ -354,13 +331,55 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-Run:
+## Build And Verify
+
+```bash
+forj build
+```
 
 ```bash
 go test ./...
 ```
 
-The repository test uses the same cache package as the App, but it does not start the runtime or require Redis.
+```bash
+forj run route:list
+```
+
+Expected output includes:
+
+- `/api/v1/users/:id`
+
+## Try The Route
+
+Run the HTTP server:
+
+```bash
+forj run api
+```
+
+Request the profile twice:
+
+```bash
+curl http://localhost:3000/api/v1/users/42
+curl http://localhost:3000/api/v1/users/42
+```
+
+Both responses should return:
+
+```json
+{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
+```
+
+The first request reads from the repository and writes the cache. The second request can return from `profiles` cache.
+
+## Operations
+
+Operational notes:
+
+- `profiles` is a named cache resource and appears in generated cache accessors.
+- Cache operation metrics and inspect records can use the named resource.
+- Keep cache keys bounded and predictable; do not use raw emails, tokens, or arbitrary request payloads as resource names or metric labels.
+- Keep cache-aside behavior in the repository layer when it is part of read access.
 
 ## Swap The Driver
 
@@ -380,22 +399,6 @@ forj build
 
 Business code does not change. The service still receives `UserRepository`; the cached repository receives `*cache.Cache`.
 
-## Operations
-
-The `profiles` cache is a named resource.
-
-That means it can appear in:
-
-- generated cache accessors
-- cache operation metrics
-- inspect records
-- Lighthouse runtime views
-- driver configuration
-
-Keep cache keys bounded and predictable. Use IDs inside keys when needed, but do not use raw emails, tokens, arbitrary request payloads, or unbounded values as resource names or metric labels.
-
-Keep cache-aside behavior in the repository layer when it is part of read access. Put cache in a service only when the cached value is a service-level derived result rather than repository data access.
-
 ## Common Mistakes
 
 ::: warning Common mistakes
@@ -407,6 +410,6 @@ Keep cache-aside behavior in the repository layer when it is part of read access
 - Do not hide repository behavior inside the controller.
 :::
 
-## Next Step
+## Next Steps
 
-Next, add [File Upload To Storage](/scenarios/file-upload-storage) with a named storage disk.
+- Next, add [File Upload To Storage](/scenarios/file-upload-storage) with a named storage disk.
