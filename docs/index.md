@@ -32,7 +32,7 @@ Use the library docs when you want standalone first-party Go packages that can b
 ## Start Here
 
 - [Getting Started](/getting-started/) introduces the generated App path.
-- [Runnable Scenarios](/scenarios/) show end-to-end App workflows with code, wiring, commands, and tests.
+- [Runnable Scenarios](/scenarios/) are the main guided path after Quickstart: route, cache, storage, events, jobs, schedules, and observability.
 - [Core Concepts](/core/) explains the framework model behind Apps, runtimes, providers, drivers, and generated components.
 - [Libraries](/libraries/) collects standalone first-party Go packages.
 - [Operations](/operations/) explains how GoForj applications run, observe, and shut down.

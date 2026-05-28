@@ -59,6 +59,20 @@ Storage is a good fit for:
 
 Store metadata, ownership, and lifecycle rules in the database when those are part of business state.
 
+## Choosing Storage Drivers
+
+Use this default path:
+
+| Need | Driver Shape |
+| --- | --- |
+| Local development and tests | local or memory |
+| One host owns the files | local |
+| Multiple hosts need the same files | object storage or remote filesystem |
+| Public asset delivery | object storage or CDN-backed disk |
+| Temporary distributed blob storage | Redis only with explicit size and durability limits |
+
+Use local storage until deployment topology makes that wrong. If API and workers run on different hosts, local disk paths stop being a shared contract.
+
 ## Path Discipline
 
 Keep storage paths stable and scoped.

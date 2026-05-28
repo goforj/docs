@@ -5,9 +5,11 @@
     "preview": "vitepress preview ."
   },
   "devDependencies": {
+    "playwright": "^1.60.0",
     "vitepress": "^1.6.3"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.96"
+    "@iconify-json/lucide": "^1.2.96",
+    "mermaid": "^11.15.0"
   }
 }

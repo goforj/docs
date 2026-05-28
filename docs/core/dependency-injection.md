@@ -27,6 +27,14 @@ application package -> provider set -> wire/wire_gen.go -> App
 
 Wire matches constructor parameters to provider return types. If a constructor needs `*reports.Repository`, some provider in the graph must return `*reports.Repository`.
 
+```mermaid
+flowchart LR
+  ctor["constructors: NewService, NewController"] --> providers["provider sets"]
+  providers --> wire["Wire graph"]
+  wire --> generated["wire/wire_gen.go"]
+  generated --> app["constructed App"]
+```
+
 ## Where It Lives
 
 The main wiring package is:

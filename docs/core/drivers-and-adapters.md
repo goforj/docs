@@ -22,6 +22,14 @@ Examples:
 
 The application-facing contract stays stable. The backend can change through configuration and generated provider support.
 
+```mermaid
+flowchart LR
+  service["application service"] --> contract["GoForj primitive contract"]
+  contract --> manager["generated manager/accessor"]
+  manager --> driver["selected driver"]
+  driver --> backend["backend infrastructure"]
+```
+
 ## Adapter
 
 An Adapter connects a GoForj-facing contract to another implementation or ecosystem boundary.

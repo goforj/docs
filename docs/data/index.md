@@ -30,5 +30,7 @@ Use these pages to keep durable database state, temporary cache data, and file/b
 
 ## Related Sections
 
+- [Cached User Profile](/scenarios/cached-user-profile) shows cache as derived data.
+- [File Upload To Storage](/scenarios/file-upload-storage) shows named storage disks.
 - [Core Concepts](/core/) explains drivers, adapters, providers, and named resources.
 - [Libraries](/libraries/) includes standalone Cache and Storage documentation.

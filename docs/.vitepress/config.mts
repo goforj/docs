@@ -9,6 +9,11 @@ const clearHtmlTags = (value: string) => value
   .replace(/&ZeroWidthSpace;/gi, '')
   .replace(/\u200b/g, '')
 const normalizeTitle = (value: string) => clearHtmlTags(value).trim().toLowerCase()
+const escapeHtml = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
 
 const getPageTitle = (path: string, html: string) => {
   const h1Match = h1Regex.exec(html)
@@ -111,6 +116,19 @@ export default defineConfig({
   scrollOffset: {
     selector: '.VPNav',
     padding: 8
+  },
+  markdown: {
+    config(md) {
+      const defaultFence = md.renderer.rules.fence
+      md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        const token = tokens[idx]
+        const info = token.info.trim().split(/\s+/)[0]
+        if (info === 'mermaid') {
+          return `<pre class="gf-mermaid mermaid">${escapeHtml(token.content)}</pre>`
+        }
+        return defaultFence ? defaultFence(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
+      }
+    }
   },
   rewrites: {
     'libraries/collection.md': 'collection.md',
@@ -363,7 +381,9 @@ export default defineConfig({
           { text: 'Cached User Profile', link: '/scenarios/cached-user-profile' },
           { text: 'File Upload To Storage', link: '/scenarios/file-upload-storage' },
           { text: 'Users Created Event', link: '/scenarios/users-created-event' },
-          { text: 'Reports Generate Job', link: '/scenarios/reports-generate-job' }
+          { text: 'Reports Generate Job', link: '/scenarios/reports-generate-job' },
+          { text: 'Reports Daily Schedule', link: '/scenarios/reports-daily-schedule' },
+          { text: 'Runtime Observability', link: '/scenarios/runtime-observability' }
         ]
       },
       {

@@ -555,4 +555,4 @@ Keep job payloads stable and small. Store large artifacts in storage, not inside
 
 ## Next Step
 
-Next, schedule recurring report generation with a `reports:daily` schedule.
+Next, schedule recurring report dispatch with [Reports Daily Schedule](/scenarios/reports-daily-schedule).

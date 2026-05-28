@@ -12,6 +12,7 @@ const LIGHTBOX_KEY = '__goforjLightboxState'
 const CODE_VARIANT_KEY = 'goforjCodeVariant'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
 const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
+const MERMAID_KEY = '__goforjMermaidState'
 
 function DocsPreviewBanner() {
   return h('div', { class: 'gf-docs-preview-banner', role: 'note' }, [
@@ -47,6 +48,18 @@ function getOutlineScrollState() {
     }
   }
   return window[OUTLINE_SCROLL_KEY]
+}
+
+function getMermaidState() {
+  if (typeof window === 'undefined') return null
+  if (!window[MERMAID_KEY]) {
+    window[MERMAID_KEY] = {
+      mermaid: null,
+      loading: null,
+      initialized: false
+    }
+  }
+  return window[MERMAID_KEY]
 }
 
 function isBadgeImage(img) {
@@ -426,6 +439,53 @@ function revealNavbarSearch() {
   })
 }
 
+async function refreshMermaidDiagrams() {
+  if (typeof document === 'undefined') return
+  const diagrams = Array.from(document.querySelectorAll('.gf-mermaid'))
+    .filter((node) => node instanceof HTMLElement)
+  if (!diagrams.length) return
+
+  const state = getMermaidState()
+  if (!state) return
+
+  if (!state.mermaid) {
+    if (!state.loading) {
+      state.loading = import('mermaid').then((mod) => {
+        const mermaid = mod.default || mod
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'strict',
+          theme: 'dark',
+          themeVariables: {
+            background: 'transparent',
+            primaryColor: '#172033',
+            primaryTextColor: '#e5edf7',
+            primaryBorderColor: '#5f7fb5',
+            lineColor: '#8aa4d6',
+            secondaryColor: '#1f2937',
+            tertiaryColor: '#111827',
+            fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+            fontSize: '14px'
+          },
+          flowchart: {
+            curve: 'basis',
+            htmlLabels: false,
+            nodeSpacing: 34,
+            rankSpacing: 42,
+            padding: 8
+          }
+        })
+        state.initialized = true
+        state.mermaid = mermaid
+        return mermaid
+      })
+    }
+    await state.loading
+  }
+
+  await state.mermaid.run({ nodes: diagrams })
+}
+
 export default {
   ...DefaultTheme,
   enhanceApp(ctx) {
@@ -452,9 +512,11 @@ export default {
     const refreshSoon = async () => {
       await nextTick()
       refreshZoomableImages()
+      refreshMermaidDiagrams()
       refreshOutlineAutoScroll()
       refreshSidebarAutoScroll()
       window.setTimeout(refreshZoomableImages, 120)
+      window.setTimeout(refreshMermaidDiagrams, 120)
       window.setTimeout(refreshOutlineAutoScroll, 120)
       window.setTimeout(refreshSidebarAutoScroll, 120)
       window.setTimeout(refreshSidebarAutoScroll, 360)

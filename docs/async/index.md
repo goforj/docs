@@ -30,5 +30,7 @@ Use these pages when your App needs queued jobs, workers, event fan-out, recurri
 
 ## Related Sections
 
+- [Reports Generate Job](/scenarios/reports-generate-job) shows events dispatching durable queued work.
+- [Reports Daily Schedule](/scenarios/reports-daily-schedule) shows scheduler dispatching existing jobs.
 - [Operations](/operations/) explains long-running workers and scheduler processes.
 - [Libraries](/libraries/) includes standalone Queue, Events, and Scheduler documentation.

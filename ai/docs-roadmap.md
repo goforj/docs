@@ -333,8 +333,8 @@ Build these after the first 10 framework pages:
 
 Remaining scenario action items:
 
-- [ ] Add `reports:daily` schedule scenario that dispatches existing durable work instead of duplicating job logic.
-- [ ] Add runtime observability scenario that follows API -> event -> job -> schedule behavior through metrics, inspects, Lighthouse, and logs.
+- [x] Add `reports:daily` schedule scenario that dispatches existing durable work instead of duplicating job logic.
+- [x] Add runtime observability scenario that follows API -> event -> job -> schedule behavior through metrics, inspects, Lighthouse, and logs.
 - [ ] Re-review all runnable scenarios as one sequence for command consistency, generated file ownership, local-first driver choices, and repeated terminology.
 
 ## Publishing Quality Pass

@@ -21,6 +21,17 @@ Use this rule:
 | Multiple independent handlers should react to one fact | Event |
 | A recurring task should run on a schedule | Scheduler |
 
+Use this process rule:
+
+| Runtime Shape | Good Default |
+| --- | --- |
+| One local process | in-process events, `workerpool` queue |
+| Split local API and worker | in-process events only for same-process reactions, SQLite queue for durable work |
+| Multiple production hosts | transport-backed events when fan-out must cross processes, durable queue backend for jobs |
+| Recurring work | scheduler dispatches a job when the work needs durability or retries |
+
+Events announce facts. Jobs do work. Schedules decide when recurring work starts.
+
 ## Events
 
 An Event is a typed fact that something happened.
@@ -105,6 +116,15 @@ A common pattern:
 4. `worker` processes the email job.
 
 The event announces the fact. The job performs the durable background work.
+
+```mermaid
+flowchart LR
+  request["HTTP request"] --> service["UserService"]
+  service --> event["publish users.created"]
+  event --> subscriber["subscriber"]
+  subscriber --> job["dispatch emails:send or reports:generate"]
+  job --> worker["worker processes job"]
+```
 
 ## Scheduler
 

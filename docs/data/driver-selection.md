@@ -53,6 +53,21 @@ Start local:
 
 This keeps onboarding and local development small while preserving the production architecture.
 
+## Decision Guide
+
+Use the smallest driver that satisfies the runtime boundary you actually have.
+
+| Situation | Default Choice | Move When |
+| --- | --- | --- |
+| One local process, no shared queue state | `workerpool` queue | API and workers split into separate processes |
+| API and worker run separately on one machine | SQLite queue | Throughput, concurrency, or multi-node workers matter |
+| Local cache for one process | memory cache | Multiple runtimes need shared values or locks |
+| Local file/blob work | local storage | More than one host needs the same files |
+| Local event fan-out | in-process events | Events must cross process boundaries |
+| Local relational state | SQLite | Production concurrency, managed backups, or multi-node writes matter |
+
+Do not choose a distributed driver because it sounds production-like. Choose it when the App needs the behavior: durability, shared state, cross-process delivery, managed operations, or independent scaling.
+
 ## Production Drivers
 
 Move to production drivers for concrete operational reasons:
@@ -66,6 +81,14 @@ Move to production drivers for concrete operational reasons:
 - queue retry and worker control
 
 Do not introduce distributed infrastructure before the App needs the behavior.
+
+The normal upgrade sequence is:
+
+1. keep the application service code unchanged
+2. add the production driver to `*_SUPPORTED_DRIVERS`
+3. choose the driver with environment variables
+4. run `forj build`
+5. verify the runtime with metrics, inspects, logs, and smoke commands
 
 ## Regeneration
 

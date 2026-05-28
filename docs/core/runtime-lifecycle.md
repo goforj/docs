@@ -35,6 +35,16 @@ Inside `App.Run`, the App:
 6. shuts the App down with a bounded timeout
 7. finishes the inspect record
 
+```mermaid
+flowchart LR
+  construct["construct App"] --> parse["parse command"]
+  parse --> inspect["begin inspect"]
+  inspect --> startup["BeforeStartup -> Startup -> AfterStartup"]
+  startup --> command["run selected command"]
+  command --> shutdown["BeforeShutdown -> Shutdown -> AfterShutdown"]
+  shutdown --> finish["finish inspect"]
+```
+
 ## Lifecycle Phases
 
 Generated Apps use the lifecycle manager in `internal/app`.

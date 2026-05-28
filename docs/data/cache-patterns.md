@@ -54,6 +54,19 @@ Cache is a good fit for:
 
 Set TTLs deliberately.
 
+## Choosing Cache Drivers
+
+Use this default path:
+
+| Need | Driver Shape |
+| --- | --- |
+| Fast local development or unit tests | memory |
+| Local persistence across restarts | file |
+| Shared cache across API, workers, or scheduler | Redis, Memcached, NATS, DynamoDB, or SQL-backed cache |
+| Distributed locks or rate limits | shared backend with explicit TTLs |
+
+Use memory cache until process boundaries make that wrong. A memory cache is not shared between `api`, `worker`, and `scheduler` processes.
+
 ## Cache-Aside Shape
 
 Typical flow:

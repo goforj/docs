@@ -40,6 +40,17 @@ wire/
 
 The root `main.go` stays small. It loads environment configuration, initializes the App through Wire, and calls the generated App runner.
 
+```mermaid
+flowchart LR
+  main["main.go"] --> wire["wire.InitializeApplication"]
+  wire --> app["App"]
+  app --> commands["generated commands"]
+  commands --> http["api/http:serve"]
+  commands --> worker["worker/queue:work"]
+  commands --> scheduler["scheduler/schedule:run"]
+  commands --> short["route:list and other short commands"]
+```
+
 ## App versus Framework
 
 Use this distinction when deciding where code belongs:

@@ -220,6 +220,38 @@
     border-radius: 4px 0 0 4px !important;
 }
 
+.vp-doc .gf-mermaid {
+    margin: 22px 0;
+    padding: 14px;
+    overflow: auto;
+    max-height: 460px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, rgba(21, 31, 48, 0.78), rgba(15, 23, 42, 0.62));
+    white-space: pre;
+}
+
+.vp-doc .gf-mermaid svg {
+    display: block;
+    width: auto !important;
+    max-width: min(100%, 720px);
+    max-height: 420px;
+    height: auto !important;
+    margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+    .vp-doc .gf-mermaid {
+        max-height: 380px;
+        padding: 10px;
+    }
+
+    .vp-doc .gf-mermaid svg {
+        max-height: 340px;
+    }
+}
+
 :root {
     --gf-code-radius: 12px;
     --gf-code-border: rgba(138, 149, 177, 0.18);

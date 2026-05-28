@@ -9,6 +9,19 @@ The Scheduler defines recurring work.
 
 Use it for work that should run on an interval, cron expression, or calendar schedule.
 
+## Default Recommendation
+
+Use the scheduler to decide when recurring work starts.
+
+| Need | Shape |
+| --- | --- |
+| Short, idempotent maintenance call | schedule calls a domain service method |
+| Durable work with retries | schedule dispatches a named job |
+| Operator-visible recurring behavior | stable schedule name plus metrics and inspects |
+| High-throughput background processing | queue workers, not scheduler callbacks |
+
+The scheduler should not become the place where business workflows accumulate.
+
 ## Registry
 
 Schedule registration lives in:
