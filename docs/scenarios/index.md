@@ -33,6 +33,18 @@ flowchart LR
   schedule --> observe["Runtime Observability"]
 ```
 
+## Golden Path State
+
+| Step | App State Before | App State After |
+| --- | --- | --- |
+| JSON API Route | Generated App with HTTP enabled | One tested user lookup route is registered and visible in `route:list`. |
+| Cached User Profile | User route exists | User lookup has a repository boundary and named `profiles` cache. |
+| File Upload To Storage | App has HTTP and generated storage support | Uploads write to a named `uploads` storage disk. |
+| Users Created Event | User service owns read/write behavior | Creating a user publishes a typed `users.created` event and a subscriber reacts to it. |
+| Reports Generate Job | Event subscriber exists | Subscriber dispatches durable `reports:generate` work and workers write report artifacts. |
+| Reports Daily Schedule | Report job exists | `reports:daily` schedule dispatches the same report job on a recurring cadence. |
+| Runtime Observability | API, cache, storage, event, job, and schedule paths exist | The whole workflow can be followed through routes, logs, metrics, inspects, and Lighthouse. |
+
 ## How To Read These
 
 Each scenario uses the same small internal reporting app shape.

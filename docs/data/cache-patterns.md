@@ -9,6 +9,15 @@ Cache is for temporary, derived, or performance-oriented data.
 
 It is not durable business storage.
 
+## When To Use Cache
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | Data can be recomputed, reloaded, or safely treated as temporary. |
+| Avoid this when | The value is the only source of business truth or must survive driver loss. |
+| Start with | Memory cache for one-process local development and focused tests. |
+| Upgrade to | Shared cache when API, workers, scheduler, or multiple hosts need the same values, locks, or counters. |
+
 ## Generated Accessors
 
 Generated Apps expose cache through default and named accessors:

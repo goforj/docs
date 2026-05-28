@@ -9,6 +9,15 @@ A Queue is an asynchronous work transport and execution system.
 
 Use queues when work needs to run outside the request path, use workers, retry, delay, timeout, or move across process boundaries.
 
+## When To Use Queues
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | Work should run outside the request path or be processed by workers. |
+| Avoid this when | The result must be available before returning the current response. |
+| Start with | `sync` or `workerpool` for one-process local development. |
+| Upgrade to | SQLite, Redis, SQL, NATS, SQS, RabbitMQ, or another shared backend when API and workers split or work needs durable state. |
+
 ## Generated Package
 
 Generated queue code lives in:

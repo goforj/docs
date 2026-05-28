@@ -7,7 +7,7 @@ description: How generated GoForj Apps model database connections, driver suppor
 
 Database connections are the source-of-truth path for durable relational data in a generated GoForj App.
 
-GoForj keeps database configuration explicit, generated, and lazy so non-database commands do not require a live database unless they use one.
+GoForj keeps database configuration explicit and generated so App code receives named connection access through documented wiring surfaces.
 
 ## Generated Package
 
@@ -20,7 +20,6 @@ internal/database
 The generated package owns:
 
 - database connection configuration
-- lazy connection creation
 - default and named connection access
 - driver-specific generated support
 - local database README guidance
@@ -74,7 +73,9 @@ db, err := conns.Default()
 analytics, err := conns.Analytics()
 ```
 
-Connections are lazy and cached. A command that does not touch the database should not need a live database just because database support exists in the App.
+Connection behavior is owned by the generated database package and selected driver. Do not document database availability as lazy unless the generated App and driver implementation explicitly support that behavior.
+
+Use health and readiness checks to make required database availability visible for the runtime process that needs it.
 
 ## Driver Support
 
@@ -99,7 +100,6 @@ Do not use cache as the source of truth. Do not use object storage as a replacem
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not make every command connect to the database during boot.
 - Do not add a runtime driver without including it in `DB_SUPPORTED_DRIVERS`.
 - Do not hide database configuration in leaf services.
 - Do not treat cache or storage as durable relational state.

@@ -231,7 +231,6 @@ Goal: make production and runtime behavior explicit.
 - [x] `operations/inspects.md`
 - [x] `operations/lighthouse.md`
 - [x] `operations/standalone-vs-distributed.md`
-- [x] `operations/lazy-initialization.md`
 - [x] `operations/production-checklist.md`
 
 Exit criteria:
@@ -239,7 +238,7 @@ Exit criteria:
 - [x] Every long-running runtime has process, startup, shutdown, and failure docs.
 - [x] Metrics and inspects are explained before Lighthouse dashboards.
 - [x] Standalone versus distributed topology is explicit.
-- [x] Lazy initialization is documented without weakening fail-fast wiring.
+- [x] Infrastructure startup is documented without claiming a general lazy initialization model.
 
 ## Phase 10: Product Surfaces
 

@@ -401,7 +401,6 @@ export default defineConfig({
           { text: 'Inspects', link: '/operations/inspects' },
           { text: 'Lighthouse', link: '/operations/lighthouse' },
           { text: 'Standalone versus Distributed', link: '/operations/standalone-vs-distributed' },
-          { text: 'Lazy Initialization', link: '/operations/lazy-initialization' },
           { text: 'Production Checklist', link: '/operations/production-checklist' }
         ]
       },

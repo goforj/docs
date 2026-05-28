@@ -9,6 +9,15 @@ A Job is a named unit of queued work with a payload and a registered handler.
 
 Jobs make background work explicit, observable, retryable, and operable.
 
+## When To Use Jobs
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | Background work needs a stable name, typed payload, handler, retry behavior, or worker lifecycle. |
+| Avoid this when | The behavior is just a local function call or a typed fact that subscribers may observe. |
+| Start with | A small payload containing IDs and references to source-of-truth data. |
+| Upgrade to | Dedicated queues, retry policy, idempotency keys, and worker process planning as operational risk grows. |
+
 ## Generated Package
 
 Job code usually lives in:

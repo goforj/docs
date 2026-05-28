@@ -28,6 +28,12 @@ The generated App should have event support enabled. Verify that the generated e
 internal/events
 ```
 
+## Golden Path State
+
+Before this scenario, user profile behavior is synchronous: HTTP calls the controller, the controller calls the service, and the service reads or writes application state.
+
+After this scenario, creating a user also publishes a typed `users.created` fact. A subscriber reacts to the event through lifecycle-registered wiring, but durable work is still left for the next job scenario.
+
 ## Files
 
 This scenario edits or creates:

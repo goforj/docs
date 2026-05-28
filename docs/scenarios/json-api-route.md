@@ -28,6 +28,12 @@ From the App root, verify the existing route surface:
 forj run route:list
 ```
 
+## Golden Path State
+
+Before this scenario, the App has the generated HTTP runtime but no application-owned user feature.
+
+After this scenario, the App has one tested `GET /api/v1/users/:id` route, a thin controller, a service boundary, Wire providers, and route registration that appears in `route:list`.
+
 ## Files
 
 This scenario edits or creates:

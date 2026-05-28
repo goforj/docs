@@ -1699,7 +1699,8 @@ html.gf-lightbox-open body {
     }
 
     .gf-starter-hero__mini {
-        display: none;
+        display: grid;
+        gap: 14px;
     }
 
     .gf-starter-gallery--auth,

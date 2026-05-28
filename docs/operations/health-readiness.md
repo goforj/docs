@@ -60,5 +60,4 @@ Optional facilities should report degraded state instead of crashing unrelated r
 ## Next Steps
 
 - [HTTP Server](/operations/http-server)
-- [Lazy Initialization](/operations/lazy-initialization)
 - [Production Checklist](/operations/production-checklist)

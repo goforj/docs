@@ -32,7 +32,7 @@ The make command is not just a file generator. It also injects the generated res
 | Flow | Start with | Verify |
 | --- | --- | --- |
 | HTTP controller | `forj make:controller Users` | controller file, HTTP controller set, route registry |
-| App command | `forj make:command ReconcileReports` | command type, command Wire set, command collection |
+| App command | `forj make:command reports:reconcile` | command type, command Wire set, command collection |
 | Queue job | `forj run make:job GenerateReport` | job type, job Wire set |
 | Model repository | `forj run make:model users --package users` | model, repository, repository Wire set |
 
@@ -121,7 +121,7 @@ forj run route:list
 Application commands are registered from:
 
 ```bash
-forj make:command ReconcileReports
+forj make:command reports:reconcile
 ```
 
 After running the make command, verify the wiring it updated:

@@ -9,6 +9,15 @@ The runtime lifecycle is the ordered path from App construction to startup, comm
 
 GoForj keeps lifecycle behavior explicit so commands, HTTP servers, workers, schedulers, metrics, events, and storage all have a predictable place to start and stop.
 
+## When To Use Lifecycle Hooks
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | App behavior must run at startup or shutdown with injected dependencies. |
+| Avoid this when | The behavior belongs to a request, job, schedule, command, constructor, or package `init` function. |
+| Start with | `internal/app/lifecycle_registry.go` and small service methods registered on the right phase. |
+| Upgrade to | Runtime-specific lifecycle policy only when the behavior is framework-owned or belongs to every generated App. |
+
 ## Why It Exists
 
 Go applications often accumulate startup behavior in `main.go`, package `init` functions, or hidden global state.

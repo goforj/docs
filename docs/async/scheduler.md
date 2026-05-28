@@ -9,6 +9,15 @@ The Scheduler defines recurring work.
 
 Use it for work that should run on an interval, cron expression, or calendar schedule.
 
+## When To Use Scheduler
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | Work should begin on a recurring interval, cron expression, or calendar schedule. |
+| Avoid this when | The work is event-driven, request-driven, or needs queue durability by itself. |
+| Start with | A stable schedule name that calls a domain service or dispatches a named job. |
+| Upgrade to | Singleton process policy, distributed locking, and queue-backed work when production overlap or retries matter. |
+
 ## Default Recommendation
 
 Use the scheduler to decide when recurring work starts.

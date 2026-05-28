@@ -37,6 +37,12 @@ internal/jobs
 internal/queues
 ```
 
+## Golden Path State
+
+Before this scenario, reports are generated when the `users.created` subscriber dispatches `reports:generate`.
+
+After this scenario, `reports:daily` can start the same report workflow on a recurring schedule. The schedule decides when work begins; the queue and workers still own durable execution.
+
 ## Files
 
 This scenario edits or creates:

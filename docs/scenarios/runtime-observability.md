@@ -39,11 +39,18 @@ Complete these scenarios first:
 
 1. [JSON API Route](/scenarios/json-api-route)
 2. [Cached User Profile](/scenarios/cached-user-profile)
-3. [Users Created Event](/scenarios/users-created-event)
-4. [Reports Generate Job](/scenarios/reports-generate-job)
-5. [Reports Daily Schedule](/scenarios/reports-daily-schedule)
+3. [File Upload To Storage](/scenarios/file-upload-storage)
+4. [Users Created Event](/scenarios/users-created-event)
+5. [Reports Generate Job](/scenarios/reports-generate-job)
+6. [Reports Daily Schedule](/scenarios/reports-daily-schedule)
 
 Enable metrics and Lighthouse when creating or configuring the App.
+
+## Golden Path State
+
+Before this scenario, the App has routes, cache, storage, events, jobs, workers, and a schedule.
+
+After this scenario, you should know where to prove each runtime boundary: route list for HTTP, logs for process behavior, metrics for bounded counters and timings, inspects for execution records, and Lighthouse for operator-facing runtime state.
 
 ## Step 1: Confirm Routes
 

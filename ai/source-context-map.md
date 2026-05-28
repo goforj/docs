@@ -48,7 +48,7 @@ Read:
 Use for:
 
 - runtime topology
-- lazy initialization
+- infrastructure startup and readiness behavior
 - operations docs
 - metrics and logging behavior
 - standalone versus distributed behavior

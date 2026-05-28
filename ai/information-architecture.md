@@ -155,7 +155,6 @@ Pages:
 - Inspects
 - Lighthouse
 - Standalone versus Distributed
-- Lazy Initialization
 - Production Checklist
 
 ### Product Surfaces

@@ -101,18 +101,18 @@ Docs should treat these as generated configuration invariants.
 
 Named generated accessors usually should not return errors. If a named accessor is missing or misaligned, that is a generation/configuration mismatch, not an optional missing dependency.
 
-## Lazy Resource Pattern
+## Resource Startup Pattern
 
-Generated managers often construct lightweight handles and initialize infrastructure on first use.
+Generated managers may construct lightweight handles, but docs should not claim lazy resource initialization unless the generated App and selected driver explicitly implement it.
 
 Docs should distinguish:
 
 - constructing a manager
 - resolving a named accessor
-- first use of remote infrastructure
-- runtime-owned eager start for long-lived processes
+- runtime-owned startup for long-lived processes
+- readiness checks for required infrastructure
 
-This prevents docs from incorrectly claiming that every command must connect to every backend during boot.
+This prevents docs from incorrectly claiming that GoForj has a general lazy initialization model.
 
 ## Generated README Standards
 

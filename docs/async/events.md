@@ -9,6 +9,15 @@ An Event is a typed fact that something happened.
 
 Use events for fan-out and decoupled reactions. Use queues and jobs for durable background work, retries, delays, timeouts, and worker lifecycle.
 
+## When To Use Events
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | Something happened and one or more subscribers may react to that fact. |
+| Avoid this when | The work needs durability, retries, queue selection, delays, timeout policy, or worker scaling. |
+| Start with | `inproc` events for local same-process fan-out. |
+| Upgrade to | Transport-backed events when subscribers must run in other processes or hosts. |
+
 ## Generated Package
 
 Generated event code lives in:

@@ -9,6 +9,15 @@ GoForj uses two main configuration layers: project configuration and runtime env
 
 `.goforj.yml` describes what the App is and how local development should run. `.env` files describe how the App behaves when it starts.
 
+## When To Change Configuration
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | You need to change generated shape, runtime behavior, drivers, resource names, ports, secrets, or deployment defaults. |
+| Avoid this when | You are trying to express business behavior that belongs in services, routes, jobs, schedules, or lifecycle hooks. |
+| Start with | `.env` for local runtime behavior and `.goforj.yml` for generated App shape. |
+| Upgrade to | Environment-specific files, process environment, secret management, and build-time defaults or overrides for packaged deployments. |
+
 ## Configuration Layers
 
 | Layer | File or source | Purpose |

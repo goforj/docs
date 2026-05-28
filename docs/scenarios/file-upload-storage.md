@@ -24,6 +24,12 @@ Start from the App used in the previous scenarios.
 
 The generated App should have HTTP and storage support enabled.
 
+## Golden Path State
+
+Before this scenario, the App can read user profiles through a service, repository, and named cache.
+
+After this scenario, the App also has an upload endpoint and a named `uploads` storage disk. File content moves through an upload service; ownership, metadata, and path discipline stay explicit application concerns.
+
 ## Files
 
 This scenario edits or creates:

@@ -9,6 +9,15 @@ Storage is for files and blobs.
 
 Use storage disks for uploads, generated files, public assets, private files, and remote object stores. Use the database for relational state and metadata.
 
+## When To Use Storage
+
+| Question | Guidance |
+| --- | --- |
+| Use this when | The workflow produces or consumes files, blobs, exports, uploads, or remote objects. |
+| Avoid this when | The data needs relational querying, ownership rules, authorization state, or transactional updates by itself. |
+| Start with | Local or memory storage for local development and tests. |
+| Upgrade to | Object storage or a remote filesystem when more than one host or runtime needs the same files. |
+
 ## Generated Disks
 
 Generated Apps expose default and named disks:

@@ -30,7 +30,6 @@ Use these pages when you need to run, split, observe, deploy, or troubleshoot an
 - [Inspects](/operations/inspects)
 - [Lighthouse](/operations/lighthouse)
 - [Standalone versus Distributed](/operations/standalone-vs-distributed)
-- [Lazy Initialization](/operations/lazy-initialization)
 - [Production Checklist](/operations/production-checklist)
 
 ## Related Sections

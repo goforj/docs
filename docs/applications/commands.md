@@ -57,18 +57,22 @@ Inject services through the constructor. Keep command code focused on flags, inp
 Use `forj make:command` when starting a new application command:
 
 ```bash
-forj make:command ReconcileReports
+forj make:command reports:reconcile
 ```
 
 The make command generates the command and injects it into the generated command wiring surfaces. In the normal flow, you do not hand-edit the command Wire set or command collection just to expose the new command.
 
-Use grouped names to place commands with the package they belong to:
+Use `category:action` names for application commands:
 
 ```bash
-forj make:command billing:reports:sync
+forj make:command reports:sync
 ```
 
-This creates `internal/billing/reports/sync_cmd.go` and exposes the generated command through the App command tree. Use `-d` only when you intentionally want to override the package directory.
+This creates `internal/reports/sync_cmd.go` and exposes the generated command through the App command tree. If the command belongs in a deeper package, keep the command name short and use `-d` for placement:
+
+```bash
+forj make:command reports:sync -d ./internal/billing/reports
+```
 
 Review what the make command created or updated:
 

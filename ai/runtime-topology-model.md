@@ -87,26 +87,18 @@ Distributed mode:
 
 Do not imply process-local drivers behave as shared infrastructure across distributed processes.
 
-## Lazy Infrastructure Initialization
+## Infrastructure Startup
 
-GoForj should document lazy initialization precisely.
+GoForj docs should not claim lazy infrastructure initialization unless the generated App and selected driver explicitly implement it.
 
-Constructors should usually be cheap:
+Constructors should usually stay cheap:
 
 - capture config
 - build factories
 - prepare managers
 - register dependencies
 
-First use should initialize infrastructure:
-
-- database handle use
-- queue dispatch
-- event publish
-- storage operation
-- cache operation
-
-Runtime-owned eager start remains correct for:
+Runtime-owned startup remains correct for:
 
 - HTTP listener startup
 - queue worker polling
@@ -119,14 +111,14 @@ Runtime-owned eager start remains correct for:
 
 GoForj favors fail-fast behavior for bad wiring and required runtime dependencies.
 
-That does not mean every command should eagerly connect to every configured backend.
+That does not mean docs should invent lazy backend behavior.
 
 Docs should distinguish:
 
 - fail fast on required dependency use
 - fail fast on invalid generated configuration
-- lazy initialize unrelated infrastructure for commands that do not use it
-- eagerly initialize infrastructure when the runtime owns it
+- avoid touching unrelated infrastructure from commands that do not use it
+- initialize infrastructure when the runtime owns it or readiness requires it
 
 This nuance prevents two bad doc patterns:
 
@@ -157,7 +149,7 @@ Every operations page for a runtime should state:
 - shutdown ownership
 - metrics identity
 - Lighthouse identity
-- lazy versus eager infrastructure behavior
+- infrastructure startup and readiness behavior
 
 ## Artifacts Needed
 
@@ -166,4 +158,4 @@ Recommended public docs:
 - `core/runtime-topology.md`
 - `operations/runtime-processes.md`
 - `operations/standalone-vs-distributed.md`
-- `operations/lazy-initialization.md`
+- `operations/health-readiness.md`

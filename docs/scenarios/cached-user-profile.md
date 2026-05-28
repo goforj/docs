@@ -7,15 +7,15 @@ description: Add a repository and named cache resource to the JSON API route sce
 
 This scenario extends the JSON API route with a repository and a named cache resource.
 
-The repository remains the source of truth. The cache stores short-lived derived user profile data so the service can avoid repeated repository reads.
+The source repository remains the source of truth. A cached repository wrapper owns the cache-aside access pattern so the service can keep depending on the `UserRepository` contract.
 
 ## What You Will Build
 
-- `UserRepository` owns source-of-truth reads.
-- `UserService` checks `app.Caches().Profiles()` before reading the repository.
+- `MemoryUserRepository` owns source-of-truth reads.
+- `CachedUserRepository` checks the named `profiles` cache before reading the source repository.
 - `CACHE_PROFILES_*` defines the named cache resource.
-- Wire provides the repository, named cache, and service.
-- A service test proves cache-aside behavior without starting HTTP.
+- Wire provides the source repository, named cache, cached repository, and service.
+- A repository test proves cache-aside behavior without starting HTTP.
 
 ## Prerequisites
 
@@ -27,6 +27,12 @@ The generated App should have cache support enabled. Verify that the default cac
 internal/caches
 ```
 
+## Golden Path State
+
+Before this scenario, `GET /api/v1/users/:id` returns a hard-coded user through a service.
+
+After this scenario, user lookup has a repository boundary and a named `profiles` cache. The controller still depends only on the service, and the service remains testable without starting HTTP.
+
 ## Files
 
 This scenario edits or creates:
@@ -34,6 +40,7 @@ This scenario edits or creates:
 ```text
 .env
 internal/users/repository.go
+internal/users/repository_test.go
 internal/users/service.go
 internal/users/service_test.go
 wire/inject_app_services.go
@@ -87,7 +94,15 @@ Create `internal/users/repository.go`:
 ```go
 package users
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/goforj/cache"
+)
+
+const profileCacheTTL = 5 * time.Minute
 
 type UserRepository interface {
 	Find(ctx context.Context, id string) (User, error)
@@ -116,56 +131,23 @@ func (r *MemoryUserRepository) Find(ctx context.Context, id string) (User, error
 	}
 	return user, nil
 }
-```
 
-This keeps persistence behind a repository boundary. A later database-backed repository can replace it without changing the controller.
-
-## Step 3: Use Cache In The Service
-
-Replace `internal/users/service.go` with:
-
-```go
-package users
-
-import (
-	"context"
-	"errors"
-	"fmt"
-	"time"
-
-	"github.com/goforj/cache"
-)
-
-var ErrUserNotFound = errors.New("user not found")
-
-const profileCacheTTL = 5 * time.Minute
-
-type User struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
-type Service struct {
-	repo         UserRepository
+type CachedUserRepository struct {
+	source       UserRepository
 	profileCache *cache.Cache
 }
 
-func NewService(repo UserRepository, profileCache *cache.Cache) *Service {
-	return &Service{
-		repo:         repo,
+func NewCachedUserRepository(source UserRepository, profileCache *cache.Cache) *CachedUserRepository {
+	return &CachedUserRepository{
+		source:       source,
 		profileCache: profileCache,
 	}
 }
 
-func (s *Service) Find(ctx context.Context, id string) (User, error) {
-	if id == "" {
-		return User{}, ErrUserNotFound
-	}
-
+func (r *CachedUserRepository) Find(ctx context.Context, id string) (User, error) {
 	key := profileCacheKey(id)
 
-	user, ok, err := cache.Get[User](s.profileCache.WithContext(ctx), key)
+	user, ok, err := cache.Get[User](r.profileCache.WithContext(ctx), key)
 	if err != nil {
 		return User{}, fmt.Errorf("read user profile cache: %w", err)
 	}
@@ -173,12 +155,12 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 		return user, nil
 	}
 
-	user, err = s.repo.Find(ctx, id)
+	user, err = r.source.Find(ctx, id)
 	if err != nil {
 		return User{}, err
 	}
 
-	if err := cache.Set(s.profileCache.WithContext(ctx), key, user, profileCacheTTL); err != nil {
+	if err := cache.Set(r.profileCache.WithContext(ctx), key, user, profileCacheTTL); err != nil {
 		return User{}, fmt.Errorf("write user profile cache: %w", err)
 	}
 
@@ -190,7 +172,46 @@ func profileCacheKey(id string) string {
 }
 ```
 
-The service still owns the workflow. The controller continues to call `service.Find`.
+This keeps persistence and cache-aside reads behind a repository boundary. A later database-backed source repository can replace `MemoryUserRepository` without changing the controller or service.
+
+## Step 3: Use The Repository In The Service
+
+Replace `internal/users/service.go` with:
+
+```go
+package users
+
+import (
+	"context"
+	"errors"
+)
+
+var ErrUserNotFound = errors.New("user not found")
+
+type User struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type Service struct {
+	repo UserRepository
+}
+
+func NewService(repo UserRepository) *Service {
+	return &Service{repo: repo}
+}
+
+func (s *Service) Find(ctx context.Context, id string) (User, error) {
+	if id == "" {
+		return User{}, ErrUserNotFound
+	}
+
+	return s.repo.Find(ctx, id)
+}
+```
+
+The service owns user behavior. The repository owns read access, including cache-aside lookup. The controller continues to call `service.Find`.
 
 ## Step 4: Wire the Repository and Cache
 
@@ -217,17 +238,21 @@ var appSet = wire.NewSet(
 	provideInspectManager,
 	provideUserProfileCache,
 	users.NewMemoryUserRepository,
-	wire.Bind(new(users.UserRepository), new(*users.MemoryUserRepository)),
+	provideUserRepository,
 	users.NewService,
 	// existing providers...
 )
+
+func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
+	return users.NewCachedUserRepository(source, profileCache)
+}
 
 func provideUserProfileCache(manager *caches.Manager) *cache.Cache {
 	return manager.Profiles()
 }
 ```
 
-The service depends on `*cache.Cache`, not a Redis, file, or memory driver. Driver choice stays in configuration.
+The service depends only on `users.UserRepository`. The provider composes the source repository with the cached repository. The cached repository depends on `*cache.Cache`, not a Redis, file, or memory driver. Driver choice stays in configuration.
 
 ## Step 5: Build
 
@@ -268,9 +293,9 @@ Both responses should return:
 
 The first request reads from the repository and writes the cache. The second request can return from `profiles` cache.
 
-## Test The Service
+## Test The Repository
 
-Replace `internal/users/service_test.go` with:
+Create `internal/users/repository_test.go`:
 
 ```go
 package users
@@ -282,13 +307,12 @@ import (
 	"github.com/goforj/cache"
 )
 
-func TestServiceFindsAndCachesUser(t *testing.T) {
+func TestCachedUserRepositoryFindsAndCachesUser(t *testing.T) {
 	ctx := context.Background()
 	profileCache := cache.NewCache(cache.NewMemoryStore(ctx))
-	repo := NewMemoryUserRepository()
-	service := NewService(repo, profileCache)
+	repo := NewCachedUserRepository(NewMemoryUserRepository(), profileCache)
 
-	user, err := service.Find(ctx, "42")
+	user, err := repo.Find(ctx, "42")
 	if err != nil {
 		t.Fatalf("find user: %v", err)
 	}
@@ -307,13 +331,21 @@ func TestServiceFindsAndCachesUser(t *testing.T) {
 		t.Fatalf("cached user id = %q, want %q", cached.ID, "42")
 	}
 }
+```
+
+Keep the service test focused on service behavior:
+
+```go
+package users
+
+import (
+	"context"
+	"testing"
+)
 
 func TestServiceRejectsEmptyID(t *testing.T) {
 	ctx := context.Background()
-	service := NewService(
-		NewMemoryUserRepository(),
-		cache.NewCache(cache.NewMemoryStore(ctx)),
-	)
+	service := NewService(NewMemoryUserRepository())
 
 	_, err := service.Find(ctx, "")
 	if err == nil {
@@ -328,7 +360,7 @@ Run:
 go test ./...
 ```
 
-The test uses the same cache package as the App, but it does not start the runtime or require Redis.
+The repository test uses the same cache package as the App, but it does not start the runtime or require Redis.
 
 ## Swap The Driver
 
@@ -346,7 +378,7 @@ Then run:
 forj build
 ```
 
-Business code does not change. The service still receives `*cache.Cache`.
+Business code does not change. The service still receives `UserRepository`; the cached repository receives `*cache.Cache`.
 
 ## Operations
 
@@ -362,11 +394,14 @@ That means it can appear in:
 
 Keep cache keys bounded and predictable. Use IDs inside keys when needed, but do not use raw emails, tokens, arbitrary request payloads, or unbounded values as resource names or metric labels.
 
+Keep cache-aside behavior in the repository layer when it is part of read access. Put cache in a service only when the cached value is a service-level derived result rather than repository data access.
+
 ## Common Mistakes
 
 ::: warning Common mistakes
 - Do not treat cache as source-of-truth storage.
-- Do not import Redis, Memcached, or SQL cache drivers into `UserService`.
+- Do not import Redis, Memcached, or SQL cache drivers into repositories or services.
+- Do not make `UserService` know about cache-aside reads when the repository can own that access pattern.
 - Do not edit generated cache accessors by hand.
 - Do not forget `forj build` after adding `CACHE_PROFILES_*`.
 - Do not hide repository behavior inside the controller.

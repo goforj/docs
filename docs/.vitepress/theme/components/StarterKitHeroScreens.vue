@@ -50,7 +50,7 @@ function setCardState(image, progress) {
   image.style.opacity = String(eased)
   image.style.filter = 'none'
   image.style.clipPath = `inset(0 ${hiddenWidth}% 0 0 round 12px)`
-  image.style.setProperty('transform', visibleTransform, 'important')
+  image.style.transform = visibleTransform
 }
 
 function animateCard(image) {
@@ -92,7 +92,7 @@ onMounted(async () => {
     image.style.visibility = 'hidden'
     image.style.filter = 'none'
     image.style.clipPath = 'inset(0 100% 0 0 round 12px)'
-    image.style.setProperty('transform', hiddenTransform(), 'important')
+    image.style.transform = hiddenTransform()
   })
 
   const images = cardImages.map(({ image }) => image)

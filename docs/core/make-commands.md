@@ -11,21 +11,21 @@ They are the normal starting point for controllers, commands, jobs, events, mode
 
 ## Package Placement
 
-Make commands prefer colocated packages.
+Make commands prefer colocated packages, but command names should stay operationally short.
 
-Grouped names become package paths by default. The last segment becomes the resource name:
+Use `category:action` for application command names:
 
 ```bash
-forj make:command billing:reports:sync
+forj make:command reports:sync
 ```
 
 This creates a command in:
 
 ```text
-internal/billing/reports/sync_cmd.go
+internal/reports/sync_cmd.go
 ```
 
-Use grouped names when the resource belongs to a domain package. Use `-d` when you intentionally want to override the output directory.
+Use two segments unless the extra segment is truly part of the operator-facing command. When the command belongs in a deeper package, keep the command name short and use `-d` to control file placement.
 
 ## Command Map
 
@@ -50,13 +50,13 @@ forj make:controller billing:reports
 
 This creates `internal/billing/reports/controller.go`, wires the controller constructor, and adds the controller routes to the route registry. The default route path follows the grouped name, such as `/billing/reports`.
 
-Create a colocated App command:
+Create an App command:
 
 ```bash
-forj make:command billing:reports:sync
+forj make:command reports:sync
 ```
 
-This creates `internal/billing/reports/sync_cmd.go`, wires the constructor, and exposes the generated command through the App command tree.
+This creates `internal/reports/sync_cmd.go`, wires the constructor, and exposes the generated command through the App command tree.
 
 Create a colocated job:
 
@@ -95,7 +95,7 @@ This writes timestamped SQL migration files for the configured database drivers.
 Use `-d` when the default grouped package path is not the package you want:
 
 ```bash
-forj make:command billing:reports:sync -d ./internal/ops/reports
+forj make:command reports:sync -d ./internal/billing/reports
 forj run make:job billing:sync-reports -d ./internal/ops
 forj run make:event billing:invoice-paid -d ./internal/billing/events
 ```

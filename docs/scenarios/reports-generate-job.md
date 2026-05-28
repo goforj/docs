@@ -33,6 +33,12 @@ internal/queues
 internal/storages
 ```
 
+## Golden Path State
+
+Before this scenario, `users.created` is an in-process fact with a subscriber reaction.
+
+After this scenario, the subscriber dispatches named durable work, workers process `reports:generate`, and generated report files land on the named `reports` storage disk. Event fan-out and job execution are now separate boundaries.
+
 ## Files
 
 This scenario edits or creates:
