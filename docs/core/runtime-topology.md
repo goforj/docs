@@ -29,7 +29,7 @@ RUNTIME_MODE
 The default local path is:
 
 ```bash
-forj run app
+forj app
 ```
 
 This runs the generated App command alias `app`, which gathers enabled runtimes and hosts them together.
@@ -50,16 +50,16 @@ For built binaries, production process commands, and `forj build --auto-run`, us
 Distributed topology uses explicit runtime commands:
 
 ```bash
-forj run api
-forj run worker
-forj run scheduler
+forj api
+forj worker
+forj scheduler
 ```
 
 Each command starts the App lifecycle and then runs the selected runtime boundary.
 
 This is useful when an environment wants separate processes, containers, scaling rules, or restart policies for HTTP, workers, and scheduler.
 
-This page uses `forj run ...` because it explains the generated App model through the developer CLI. Deployment docs use `./bin/app ...` because they describe the built binary.
+This page uses `forj ...` because it explains the generated App model through the developer CLI. Deployment docs use `./bin/app ...` because they describe the built binary.
 
 ## Runtime Host Behavior
 
@@ -108,7 +108,7 @@ The App code should not need to change when topology changes.
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not assume `forj run app` is the only production shape.
+- Do not assume `forj app` is the only production shape.
 - Do not make business logic depend on whether HTTP, workers, and scheduler run in one process.
 - Do not hide runtime-specific startup in generic helpers when a runtime package owns that process boundary.
 - Do not run multiple scheduler processes unless the scheduler and deployment are configured for that behavior.

@@ -83,11 +83,11 @@ Construction should not start long-running runtime work. HTTP servers, queue wor
 The App runs through generated commands:
 
 ```bash
-forj run app
-forj run api
-forj run worker
-forj run scheduler
-forj run route:list
+forj app
+forj api
+forj worker
+forj scheduler
+forj route:list
 ```
 
 Each command has a clear runtime boundary. Some commands are short-lived. Others block until interrupted.

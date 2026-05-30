@@ -142,11 +142,11 @@ The lifecycle applies to every generated command, but not every command starts t
 
 Examples:
 
-- `forj run route:list` starts the App lifecycle, lists routes, and shuts down.
-- `forj run api` starts the HTTP runtime and blocks until interrupted.
-- `forj run worker` starts worker runtime behavior and blocks until interrupted.
-- `forj run scheduler` starts scheduler runtime behavior and blocks until interrupted.
-- `forj run app` starts enabled runtimes together through the runtime host.
+- `forj route:list` starts the App lifecycle, lists routes, and shuts down.
+- `forj api` starts the HTTP runtime and blocks until interrupted.
+- `forj worker` starts worker runtime behavior and blocks until interrupted.
+- `forj scheduler` starts scheduler runtime behavior and blocks until interrupted.
+- `forj app` starts enabled runtimes together through the runtime host.
 
 Runtime-specific behavior belongs near the runtime package that owns it.
 

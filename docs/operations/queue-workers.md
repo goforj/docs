@@ -12,23 +12,23 @@ Workers are long-running runtime processes with explicit startup, shutdown, queu
 ## Start
 
 ```bash
-forj run worker
+forj worker
 ./bin/app worker
 ```
 
 or, in standalone mode:
 
 ```bash
-forj run app
+forj app
 ./bin/app run
 ```
 
-The built binary form is what supervisors usually run. The `forj run` form is the development alias that refreshes generated code before running the App command.
+The built binary form is what supervisors usually run. The `forj` form is the development surface that refreshes generated code before running the App command.
 
 Without flags, `worker` starts every configured generated queue. To dedicate a process to one queue:
 
 ```bash
-forj run worker --queue reports
+forj worker --queue reports
 ./bin/app worker --queue reports
 ```
 

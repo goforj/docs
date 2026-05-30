@@ -89,7 +89,7 @@ Run:
 
 ```bash
 forj build
-forj run route:list
+forj route:list
 ```
 
 `forj build` verifies the generated graph. `route:list` verifies the controller routes are registered where the App can serve them.

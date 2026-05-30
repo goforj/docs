@@ -14,7 +14,7 @@ Local-first does not mean local-only. It means the first working path is small, 
 Start with:
 
 ```bash
-forj run app
+forj app
 ```
 
 The generated `app` command hosts enabled runtimes together in one process when `RUNTIME_MODE` is unset or `standalone`.
@@ -22,9 +22,9 @@ The generated `app` command hosts enabled runtimes together in one process when 
 Use direct runtime commands when you need explicit process boundaries:
 
 ```bash
-forj run api
-forj run worker
-forj run scheduler
+forj api
+forj worker
+forj scheduler
 ```
 
 ## Local Drivers
@@ -75,9 +75,9 @@ Use `route:list`, health checks, readiness, metrics, inspects, and Lighthouse to
 Production may run the same App in split processes:
 
 ```bash
-forj run api
-forj run worker
-forj run scheduler
+forj api
+forj worker
+forj scheduler
 ```
 
 The App should not contain business logic that depends on whether these runtimes are hosted together or separately.

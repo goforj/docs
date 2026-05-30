@@ -29,7 +29,7 @@ internal/events
 Create an event type:
 
 ```bash
-forj run make:event UserRegistered
+forj make:event UserRegistered
 ```
 
 `make:event` generates a plain payload type and topic constant. It does not add a Wire provider because event payloads are created at publish time, not constructed once as App dependencies.

@@ -310,13 +310,13 @@ go test ./...
 Start a worker in one terminal:
 
 ```bash
-forj run worker
+forj worker
 ```
 
 Start the scheduler in another terminal:
 
 ```bash
-forj run scheduler
+forj scheduler
 ```
 
 For a fast local check, temporarily use a short interval while developing:

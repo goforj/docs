@@ -199,7 +199,7 @@ func safeSegment(value string) string {
 Use the generated App's make command to create the job file and add its constructor to job wiring.
 
 ```bash
-forj run make:job reports:generate --output-dir ./internal/jobs
+forj make:job reports:generate --output-dir ./internal/jobs
 ```
 
 ## Step 6: Replace The Generated Job
@@ -506,7 +506,7 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Expected output includes:
@@ -518,13 +518,13 @@ Expected output includes:
 Start a worker in one terminal:
 
 ```bash
-forj run worker
+forj worker
 ```
 
 Start the API in another terminal:
 
 ```bash
-forj run api
+forj api
 ```
 
 Create a user:
@@ -564,7 +564,7 @@ Then run:
 forj build
 ```
 
-Business code does not change. `GenerateJob` still dispatches `reports:generate`, and workers still run with `forj run worker` or `./bin/app worker`.
+Business code does not change. `GenerateJob` still dispatches `reports:generate`, and workers still run with `forj worker` or `./bin/app worker`.
 
 ## Common Mistakes
 

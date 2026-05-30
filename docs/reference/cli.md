@@ -22,9 +22,13 @@ Use workflow pages for full context.
 | `forj make:command <name>` | Generate an application command and wire it into the App command tree. |
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
 
+Inside a generated App, `forj <command>` is the normal development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the generated App through the same source-aware path as `forj run <command>`.
+
+Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands. Use `./bin/app <command>` for the built binary and deployment/runtime process supervision.
+
 ## Common App Commands
 
-Run these through `forj run` during development or directly through `./bin/app` after build.
+Run these as `forj <command>` during development or directly through `./bin/app <command>` after build.
 
 Prefer the short aliases in day-to-day commands. The canonical command names remain available.
 
@@ -44,10 +48,12 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 Examples:
 
 ```bash
-forj run app
-forj run api
-forj run worker
-forj run scheduler
+forj app
+forj api
+forj worker
+forj scheduler
+forj route:list
+forj make:job reports:generate
 
 ./bin/app run
 ./bin/app api

@@ -206,7 +206,7 @@ Show commands from the project root unless stated otherwise.
 Prefer:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 For rendered App binaries, prefer production-shaped commands:
@@ -218,16 +218,16 @@ For rendered App binaries, prefer production-shaped commands:
 ./bin/app scheduler
 ```
 
-Use `forj run app`, `forj run api`, `forj run worker`, and `forj run scheduler` when the page is specifically about the development CLI pass-through.
+Use `forj app`, `forj api`, `forj worker`, and `forj scheduler` when documenting development commands inside a generated App. Use `forj run <command>` only when the page is specifically explaining the explicit App-command path or collision escape hatch.
 
 When an operations page lists common runtime processes, show both forms side by side:
 
 | Process | Built binary | Development alias |
 | --- | --- | --- |
-| Combined runtime | `./bin/app run` | `forj run app` |
-| HTTP | `./bin/app api` | `forj run api` |
-| Queue workers | `./bin/app worker` | `forj run worker` |
-| Scheduler | `./bin/app scheduler` | `forj run scheduler` |
+| Combined runtime | `./bin/app run` | `forj app` |
+| HTTP | `./bin/app api` | `forj api` |
+| Queue workers | `./bin/app worker` | `forj worker` |
+| Scheduler | `./bin/app scheduler` | `forj scheduler` |
 
 When documenting `forj build --auto-run`, describe it as a build-time default launch setting: launching `./bin/app` with no command starts the App runtime, while explicit commands still take precedence.
 

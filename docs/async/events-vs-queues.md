@@ -52,7 +52,7 @@ internal/events
 Create an event type from the generated App:
 
 ```bash
-forj run make:event UserRegistered
+forj make:event UserRegistered
 ```
 
 Event backends are configured with:
@@ -89,7 +89,7 @@ internal/jobs
 Start workers:
 
 ```bash
-forj run worker
+forj worker
 ```
 
 Queue drivers are configured with:
@@ -139,7 +139,7 @@ internal/scheduler/scheduler_registry.go
 Start the scheduler:
 
 ```bash
-forj run scheduler
+forj scheduler
 ```
 
 Schedules should have stable names and point to domain-owned methods or command work.

@@ -71,7 +71,8 @@ When choosing command wording:
 
 - Use `forj dev` for the development loop.
 - Use `forj build` as the normal regeneration/build path.
-- Use `forj run ...` for developer CLI pass-through behavior.
+- Use `forj ...` for generated App commands during development.
+- Use `forj run ...` only when documenting the explicit App-command path or collision escape hatch.
 - Use `./bin/app ...` for built binary, deployment, and process-supervision docs.
 - Mention `forj build --auto-run` only where default-launch binary behavior matters.
 

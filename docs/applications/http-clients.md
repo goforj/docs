@@ -65,13 +65,13 @@ The module path and `httpx` version should match the App's `go.mod`.
 Run a command with dumps enabled:
 
 ```bash
-HTTP_TRACE=1 forj run sync:billing
+HTTP_TRACE=1 forj sync:billing
 ```
 
 Unset the variable to disable this behavior:
 
 ```bash
-forj run sync:billing
+forj sync:billing
 ```
 
 `HTTP_TRACE` is useful for local diagnosis and temporary operator debugging. It should not be a normal production setting.

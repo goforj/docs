@@ -35,12 +35,12 @@ See [Naming Conventions](/core/naming-conventions) for command, job, event, sche
 | --- | --- | --- | --- |
 | `forj make:controller <name>` | HTTP controller | grouped name maps to `internal/<group>/controller.go` | HTTP controller set and route registry |
 | `forj make:command <name>` | App command | grouped name maps to `internal/<group>/<name>_cmd.go` | command set and App command collection |
-| `forj run make:job <name>` | Queue job | grouped name maps to `internal/<group>/<name>_job.go` | job set |
-| `forj run make:event <name>` | Event type | grouped name maps to `internal/<group>/<name>_event.go` | none |
-| `forj run make:model <table>` | Model and repository | `--package` controls the model package | repository set |
+| `forj make:job <name>` | Queue job | grouped name maps to `internal/<group>/<name>_job.go` | job set |
+| `forj make:event <name>` | Event type | grouped name maps to `internal/<group>/<name>_event.go` | none |
+| `forj make:model <table>` | Model and repository | `--package` controls the model package | repository set |
 | `forj make:migration <name>` | SQL migration files | writes to the migrations directory | none |
 
-`make:controller`, `make:command`, and `make:migration` are project-level `forj` commands. `make:event`, `make:job`, and `make:model` are generated App commands, so run them through `forj run`.
+Some make commands are native GoForj commands and some are generated App commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the App through the same source-aware path as `forj run`.
 
 ## Examples
 
@@ -63,7 +63,7 @@ This creates `internal/reports/sync_cmd.go`, wires the constructor, and exposes 
 Create a colocated job:
 
 ```bash
-forj run make:job billing:sync-reports --queue billing
+forj make:job billing:sync-reports --queue billing
 ```
 
 This creates `internal/billing/sync_reports_job.go`, stamps the generated dispatch helper with `OnQueue("billing")`, and wires the job constructor into the generated job set.
@@ -71,7 +71,7 @@ This creates `internal/billing/sync_reports_job.go`, stamps the generated dispat
 Create a colocated event:
 
 ```bash
-forj run make:event billing:invoice-paid
+forj make:event billing:invoice-paid
 ```
 
 This creates `internal/billing/invoice_paid_event.go`. Events are plain application types, so the generated file does not need a Wire registration by itself.
@@ -79,7 +79,7 @@ This creates `internal/billing/invoice_paid_event.go`. Events are plain applicat
 Create a model in an explicit package:
 
 ```bash
-forj run make:model invoices --package billing
+forj make:model invoices --package billing
 ```
 
 This generates the model and repository in the selected package and wires the repository constructor.
@@ -98,8 +98,8 @@ Use `-d` when the default grouped package path is not the package you want:
 
 ```bash
 forj make:command reports:sync -d ./internal/billing/reports
-forj run make:job billing:sync-reports -d ./internal/ops
-forj run make:event billing:invoice-paid -d ./internal/billing/events
+forj make:job billing:sync-reports -d ./internal/ops
+forj make:event billing:invoice-paid -d ./internal/billing/events
 ```
 
 The override controls the file location and package name. The grouped command name can still express the command, job, or event identity.
@@ -138,10 +138,10 @@ After running a make command, verify the graph and the exposed runtime surface:
 
 ```bash
 forj build
-forj run route:list
+forj route:list
 ```
 
-Use `route:list` for controllers. For commands, run the generated command signature through `forj run`.
+Use `route:list` for controllers. For commands, run the generated command signature through `forj <command>`. Use `forj run <command>` only when you want to force App command execution explicitly.
 
 ## Next Steps
 

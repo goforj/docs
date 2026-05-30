@@ -174,8 +174,8 @@ Do not end task pages without showing how to confirm the result.
 
 Use:
 
-- `forj run route:list`
-- `forj run worker`
+- `forj route:list`
+- `forj worker`
 - HTTP smoke requests
 - test commands
 - `/metrics`

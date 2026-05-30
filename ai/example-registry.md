@@ -238,15 +238,15 @@ Use confirmed generated command names:
 
 - `forj build`
 - `forj dev`
-- `forj run api`
-- `forj run route:list`
-- `forj run worker`
-- `forj run scheduler`
+- `forj api`
+- `forj route:list`
+- `forj worker`
+- `forj scheduler`
 - `forj make:controller users`
-- `forj run make:job`
-- `forj run make:event`
-- `forj run migrate`
-- `forj run migrate:rollback`
+- `forj make:job`
+- `forj make:event`
+- `forj migrate`
+- `forj migrate:rollback`
 
 For maintained scenario docs, use hidden maintainer commands from the GoForj CLI:
 

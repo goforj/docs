@@ -60,13 +60,13 @@ Use `category:cadence` for cadence-oriented schedules such as `reports:daily`, o
 Run the scheduler directly:
 
 ```bash
-forj run scheduler
+forj scheduler
 ```
 
 Run it with other enabled local runtimes:
 
 ```bash
-forj run app
+forj app
 ```
 
 ## Target Shape

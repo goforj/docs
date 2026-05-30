@@ -48,7 +48,7 @@ Golden path for local development:
 
 - `forj dev` for the normal development loop
 - `forj build` for generation, Wire, API indexing, and binary build
-- `forj run app` when intentionally running through the CLI pass-through
+- `forj app` when intentionally running through the CLI pass-through
 
 Golden path for built binaries:
 

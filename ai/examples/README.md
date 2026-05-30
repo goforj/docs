@@ -123,7 +123,7 @@ package users
 For commands:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Every runnable example should include:
@@ -168,9 +168,9 @@ GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go test ./...
 For generated app examples, include the relevant `forj` command:
 
 ```bash
-forj run route:list
-forj run worker
-forj run scheduler
+forj route:list
+forj worker
+forj scheduler
 ```
 
 Use the actual command names only after confirming them from the current framework source.

@@ -14,7 +14,7 @@ Generated GoForj Apps include migration commands when database support is enable
 Run pending migrations:
 
 ```bash
-forj run migrate
+forj migrate
 ```
 
 Generate a migration:
@@ -28,7 +28,7 @@ Run this from the generated App root. Migration generation is a project-level `f
 Rollback recent migrations:
 
 ```bash
-forj run migrate:rollback
+forj migrate:rollback
 ```
 
 The generated migration command supports options such as step count, dry run, and connection selection.
@@ -82,7 +82,7 @@ Prefer migrations that are:
 Use dry run before applying migrations when you need visibility:
 
 ```bash
-forj run migrate --dry-run
+forj migrate --dry-run
 ```
 
 ## Common Mistakes

@@ -29,11 +29,11 @@ Docs must not collapse these into one vague "app runtime".
 
 Generated Apps expose both combined and leaf runtime commands:
 
-- `forj run app`
-- `forj run api`
-- `forj run worker`
-- `forj run scheduler`
-- `forj run route:list`
+- `forj app`
+- `forj api`
+- `forj worker`
+- `forj scheduler`
+- `forj route:list`
 
 The combined command is the normal local host path. Leaf commands remain important for production, explicit debugging, and distributed process layouts.
 
@@ -45,7 +45,7 @@ Built binaries should usually be documented with their direct command surface:
 - `./bin/app scheduler`
 - `./bin/app migrate`
 
-Use `forj run ...` when documenting developer CLI behavior. Use `./bin/app ...` when documenting deployment and process supervision.
+Use `forj ...` when documenting developer CLI behavior inside a generated App. Use `forj run ...` only when documenting the explicit App-command path or a collision escape hatch. Use `./bin/app ...` when documenting deployment and process supervision.
 
 ## Default Launch Binaries
 

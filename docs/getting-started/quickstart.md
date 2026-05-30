@@ -95,7 +95,7 @@ bin/app
 Run the combined local runtime:
 
 ```bash
-forj run app
+forj app
 ```
 
 `app` is the generated App command alias for the combined runtime. It starts the enabled runtimes together in one local process.
@@ -110,10 +110,10 @@ Depending on the components you selected, the combined runtime can include:
 
 ## Inspect The App Commands
 
-Generated Apps expose their own command surface. You can run those commands through `forj run`:
+Generated Apps expose their own command surface. Inside the App directory, run those commands through `forj`:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Common generated commands include:
@@ -160,7 +160,7 @@ Expected response:
 You can also list routes:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 For an HTTP App, the route list should include framework routes such as `/-/health` and `/-/ready`. If the sample controller is enabled, it should also include a generated application route under `/api/v1`.

@@ -7,24 +7,26 @@ description: How to add application commands to generated GoForj Apps.
 
 Commands are first-class App entry points for developer, operator, and application workflows.
 
-They run through the generated App lifecycle, use injected dependencies, and are exposed through `forj run`.
+They run through the generated App lifecycle, use injected dependencies, and are exposed through `forj`.
 
 ## Running Commands
 
 Use:
 
 ```bash
-forj run <command>
+forj <command>
 ```
 
 Examples:
 
 ```bash
-forj run route:list
-forj run hello:world
-forj run worker
-forj run scheduler
+forj route:list
+forj hello:world
+forj worker
+forj scheduler
 ```
+
+Inside a generated App, native GoForj commands take precedence. If no native command matches, GoForj delegates to the generated App through the same source-aware path as `forj run <command>`. Use `forj run <command>` when you want to force App command execution explicitly, and use `./bin/app <command>` when running the built binary.
 
 The command runs inside the generated App, not as an ad hoc shell script around it.
 
@@ -88,10 +90,12 @@ Run:
 
 ```bash
 forj build
-forj run reports:reconcile
+forj reports:reconcile
 ```
 
 `forj build` verifies the generated graph. Running the command verifies the generated `Signature` is exposed through the App command tree. Use the command name from the generated or edited `Signature`.
+
+`forj make:command` checks the current GoForj and generated App command surfaces and rejects names that are already in use, such as `build`, `dev`, `new`, `generate`, and `run`. Choose an app-specific operator name such as `reports:sync` or `billing:reconcile`.
 
 ## Registering Commands
 
@@ -157,7 +161,7 @@ func NewAppCommands(
 }
 ```
 
-This makes `reports:reconcile` available through the generated App binary and through `forj run reports:reconcile`.
+This makes `reports:reconcile` available through the generated App binary and through `forj reports:reconcile`.
 
 Run:
 

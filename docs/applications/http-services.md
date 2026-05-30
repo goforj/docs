@@ -43,19 +43,19 @@ internal/hello/controller.go
 Run the HTTP server directly:
 
 ```bash
-forj run api
+forj api
 ```
 
 Run all enabled local runtimes together:
 
 ```bash
-forj run app
+forj app
 ```
 
 List registered routes:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 ## Server Configuration

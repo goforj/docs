@@ -14,14 +14,14 @@ They are long-running runtime processes with explicit startup, shutdown, metrics
 Run workers directly:
 
 ```bash
-forj run worker
+forj worker
 ./bin/app worker
 ```
 
 Run workers with other enabled runtimes in local standalone mode:
 
 ```bash
-forj run app
+forj app
 ./bin/app run
 ```
 
@@ -34,7 +34,7 @@ This makes workers a clear operational boundary separate from HTTP and scheduler
 By default, `worker` starts workers for every configured generated queue. Use `--queue` when a process should work only one named queue:
 
 ```bash
-forj run worker --queue reports
+forj worker --queue reports
 ./bin/app worker --queue reports
 ```
 
@@ -92,7 +92,7 @@ The job code should not change when topology changes.
 
 ::: warning Common mistakes
 - Do not run workers from HTTP handlers.
-- Do not assume `forj run app` is the only runtime shape.
+- Do not assume `forj app` is the only runtime shape.
 - Do not start multiple scheduler processes accidentally when scaling workers.
 - Do not ignore shutdown timeouts for long-running jobs.
 - Do not hide worker startup in constructors or package globals.

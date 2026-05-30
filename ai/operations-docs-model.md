@@ -25,9 +25,9 @@ Every runtime surface should answer:
 
 Document:
 
-- command: `forj run api`
+- command: `forj api`
 - built binary command: `./bin/app api`
-- combined runtime command: `forj run app`
+- combined runtime command: `forj app`
 - built standalone command: `./bin/app run`
 - route registration
 - middleware stack
@@ -36,7 +36,7 @@ Document:
 - HTTP metrics
 - request inspects
 - graceful shutdown
-- route visibility through `forj run route:list`
+- route visibility through `forj route:list`
 
 Avoid:
 
@@ -47,7 +47,7 @@ Avoid:
 
 Document:
 
-- command: `forj run worker`
+- command: `forj worker`
 - built binary command: `./bin/app worker`
 - default queue behavior: no `--queue` starts every configured generated queue
 - queue selection: `--queue <name>` starts only the selected named queue; repeat for a subset
@@ -69,7 +69,7 @@ Keep backend-specific priority knobs secondary. The framework docs should lead w
 
 Document:
 
-- command: `forj run scheduler`
+- command: `forj scheduler`
 - built binary command: `./bin/app scheduler`
 - schedule registration in `internal/scheduler/scheduler_registry.go`
 - stable schedule names
@@ -85,7 +85,8 @@ Document:
 Document:
 
 - generated command surfaces
-- `forj run ...` as developer CLI pass-through
+- `forj ...` as the normal generated App development surface
+- `forj run ...` as the explicit App-command path or collision escape hatch
 - `./bin/app ...` as the built App command surface
 - default-launch behavior from `forj build --auto-run` when relevant
 - command lifecycle

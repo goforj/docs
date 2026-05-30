@@ -29,13 +29,13 @@ internal/jobs
 Create a job:
 
 ```bash
-forj run make:job SendWelcomeEmail
+forj make:job SendWelcomeEmail
 ```
 
 Stamp a generated dispatch helper with a named queue when the job belongs to a specific operational lane:
 
 ```bash
-forj run make:job reports:generate --queue reports
+forj make:job reports:generate --queue reports
 ```
 
 Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.

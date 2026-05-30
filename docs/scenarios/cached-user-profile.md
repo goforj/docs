@@ -342,7 +342,7 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Expected output includes:
@@ -354,7 +354,7 @@ Expected output includes:
 Run the HTTP server:
 
 ```bash
-forj run api
+forj api
 ```
 
 Request the profile twice:

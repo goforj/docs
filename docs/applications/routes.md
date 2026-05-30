@@ -81,7 +81,7 @@ Avoid RPC-style paths such as `/api/v1/get-user` for normal resource operations.
 Use:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Use `route:list` as the source of truth for what the App registered. Do not rely only on startup logs.

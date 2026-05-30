@@ -90,7 +90,7 @@ Do not make HTTP controllers build raw queue payloads when a job type can own th
 When generating a job, pass `--queue` to stamp the generated dispatch helper:
 
 ```bash
-forj run make:job reports:generate --queue reports
+forj make:job reports:generate --queue reports
 ```
 
 ## Workers
@@ -98,14 +98,14 @@ forj run make:job reports:generate --queue reports
 Start workers with:
 
 ```bash
-forj run worker
+forj worker
 ./bin/app worker
 ```
 
 Without `--queue`, the worker process starts workers for every configured generated queue. To run only one queue:
 
 ```bash
-forj run worker --queue reports
+forj worker --queue reports
 ./bin/app worker --queue reports
 ```
 
@@ -118,7 +118,7 @@ Repeat `--queue` to run a subset:
 In standalone local mode, workers can also be hosted with other enabled runtimes:
 
 ```bash
-forj run app
+forj app
 ./bin/app run
 ```
 

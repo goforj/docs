@@ -358,7 +358,7 @@ Must show:
 - `worker` verification
 - retry and idempotency note
 - job handler test
-- `forj run make:job reports:generate` as the real-world generator command
+- `forj make:job reports:generate` as the real-world generator command
 
 Must not show:
 
@@ -479,13 +479,13 @@ Common commands:
 
 ```bash
 forj make:controller users
-forj run make:job reports:generate
+forj make:job reports:generate
 forj build
 forj dev
-forj run route:list
-forj run api
-forj run worker
-forj run scheduler
+forj route:list
+forj api
+forj worker
+forj scheduler
 go test ./...
 ```
 

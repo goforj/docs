@@ -356,7 +356,7 @@ Work these before adding more scenario pages:
 
 - [x] Run a complete navigation pass across all top-level sections.
 - [x] Review every section index page for clear reader orientation and next-step links.
-- [x] Audit public pages for stale command names, especially `forj run app`, `forj run api`, `forj run worker`, `forj run scheduler`, and production `./bin/app` commands.
+- [x] Audit public pages for stale command names, especially `forj app`, `forj api`, `forj worker`, `forj scheduler`, and production `./bin/app` commands.
 - [x] Audit environment variable examples against source-generated configuration keys.
 - [x] Audit generated file paths against current templates and rendered App output.
 - [ ] Review code snippets for imports, constructor names, package names, and compile-shaped examples.
