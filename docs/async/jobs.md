@@ -32,6 +32,12 @@ Create a job:
 forj run make:job SendWelcomeEmail
 ```
 
+Stamp a generated dispatch helper with a named queue when the job belongs to a specific operational lane:
+
+```bash
+forj run make:job reports:generate --queue reports
+```
+
 Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
 
 ## Job Shape
@@ -68,8 +74,8 @@ func (j *SendWelcomeEmail) Queue(ctx context.Context, userID string) error {
 
 	_, err = j.queues.WithContext(ctx).Dispatch(
 		queue.NewJob(SendWelcomeEmailTypeName).
-			Payload(payload).
-			OnQueue("default"),
+				Payload(payload).
+				OnQueue("emails"),
 	)
 	return err
 }

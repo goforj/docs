@@ -220,6 +220,15 @@ For rendered App binaries, prefer production-shaped commands:
 
 Use `forj run app`, `forj run api`, `forj run worker`, and `forj run scheduler` when the page is specifically about the development CLI pass-through.
 
+When an operations page lists common runtime processes, show both forms side by side:
+
+| Process | Built binary | Development alias |
+| --- | --- | --- |
+| Combined runtime | `./bin/app run` | `forj run app` |
+| HTTP | `./bin/app api` | `forj run api` |
+| Queue workers | `./bin/app worker` | `forj run worker` |
+| Scheduler | `./bin/app scheduler` | `forj run scheduler` |
+
 When documenting `forj build --auto-run`, describe it as a build-time default launch setting: launching `./bin/app` with no command starts the App runtime, while explicit commands still take precedence.
 
 When showing Go commands in internal maintainer docs, use the GoForj cache environment:

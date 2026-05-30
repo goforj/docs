@@ -63,10 +63,10 @@ This creates `internal/reports/sync_cmd.go`, wires the constructor, and exposes 
 Create a colocated job:
 
 ```bash
-forj run make:job billing:sync-reports
+forj run make:job billing:sync-reports --queue billing
 ```
 
-This creates `internal/billing/sync_reports_job.go` and wires the job constructor into the generated job set.
+This creates `internal/billing/sync_reports_job.go`, stamps the generated dispatch helper with `OnQueue("billing")`, and wires the job constructor into the generated job set.
 
 Create a colocated event:
 

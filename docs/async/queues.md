@@ -39,6 +39,10 @@ critical := app.Queues().Critical()
 
 Named accessors are generated invariants. If a named accessor is missing or misaligned with runtime environment, the App should fail fast.
 
+Use named queues when the App has distinct classes of work. For example, `emails`, `reports`, and `critical` can each have their own generated accessor, backend configuration, worker count, metrics labels, and operational process.
+
+One generated queue resource represents one queue. The resource name is the app-facing queue name, and by default it is also the backend queue name. Use `QUEUE_<NAME>_NAME` only when the backend queue name must differ.
+
 ## Driver Configuration
 
 Compile-time support:
@@ -52,12 +56,30 @@ Runtime selection:
 ```text
 QUEUE_DRIVER=workerpool
 QUEUE_CRITICAL_DRIVER=redis
-QUEUE_DEFAULT_QUEUE=default
+QUEUE_NAME=default
 QUEUE_WORKERS=30
 QUEUE_SHUTDOWN_TIMEOUT=10s
 ```
 
 Use `sync` or `workerpool` locally. Use durable or broker-backed drivers when production work needs shared state, retries, and independent workers.
+
+Named queues inherit the root queue driver unless they override it:
+
+```text
+QUEUE_DRIVER=redis
+QUEUE_EMAILS_WORKERS=6
+QUEUE_REPORTS_WORKERS=2
+```
+
+In this example, both named queues use Redis. `emails` gets more worker capacity than `reports`, so it is prioritized by runtime allocation rather than by leaking backend-specific weighting into the main App model.
+
+Use `about` to verify what the App will run:
+
+```bash
+./bin/app about
+```
+
+The queue section shows the app queue name, driver, backend queue name, and worker count. For example, `reports` may show `Queue Name: reports`, `Driver: redis`, and `Workers: 2`.
 
 ## Dispatching Work
 
@@ -65,18 +87,39 @@ Application services usually dispatch jobs through injected job types or queue d
 
 Do not make HTTP controllers build raw queue payloads when a job type can own the payload shape and dispatch behavior.
 
+When generating a job, pass `--queue` to stamp the generated dispatch helper:
+
+```bash
+forj run make:job reports:generate --queue reports
+```
+
 ## Workers
 
 Start workers with:
 
 ```bash
 forj run worker
+./bin/app worker
+```
+
+Without `--queue`, the worker process starts workers for every configured generated queue. To run only one queue:
+
+```bash
+forj run worker --queue reports
+./bin/app worker --queue reports
+```
+
+Repeat `--queue` to run a subset:
+
+```bash
+./bin/app worker --queue emails --queue reports
 ```
 
 In standalone local mode, workers can also be hosted with other enabled runtimes:
 
 ```bash
 forj run app
+./bin/app run
 ```
 
 ## Regeneration

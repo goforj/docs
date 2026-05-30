@@ -143,6 +143,9 @@ Golden path:
 - Dispatch jobs from services or controllers through an injected queue dependency.
 - Use local `sync` or `workerpool` drivers for development and tests.
 - Use durable or broker-backed drivers when production requirements require them.
+- Use named queues for distinct operational classes such as `emails`, `reports`, or `critical`.
+- Prioritize queues by worker allocation and process sizing, for example `QUEUE_EMAILS_WORKERS=6` versus `QUEUE_REPORTS_WORKERS=2`.
+- Use `worker --queue <name>` when a process should work only one named queue.
 - Treat retries as part of job design.
 - Make job handlers idempotent where retries are possible.
 - Run workers as explicit App processes or commands.

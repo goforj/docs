@@ -48,6 +48,11 @@ forj run app
 forj run api
 forj run worker
 forj run scheduler
+
+./bin/app run
+./bin/app api
+./bin/app worker
+./bin/app scheduler
 ```
 
 These resolve to generated App commands through Kong aliases.

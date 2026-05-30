@@ -93,6 +93,8 @@ Examples:
 - `uploads`
 - `critical`
 - `audit`
+- `emails`
+- `reports`
 - `emails:send`
 - `reports:daily`
 - `GET /api/v1/users/:id`

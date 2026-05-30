@@ -15,12 +15,14 @@ Run workers directly:
 
 ```bash
 forj run worker
+./bin/app worker
 ```
 
 Run workers with other enabled runtimes in local standalone mode:
 
 ```bash
 forj run app
+./bin/app run
 ```
 
 ## Runtime Boundary
@@ -29,6 +31,19 @@ The worker command starts the App lifecycle, starts the queue worker runtime, bl
 
 This makes workers a clear operational boundary separate from HTTP and scheduler processes when needed.
 
+By default, `worker` starts workers for every configured generated queue. Use `--queue` when a process should work only one named queue:
+
+```bash
+forj run worker --queue reports
+./bin/app worker --queue reports
+```
+
+Repeat the flag to work a subset:
+
+```bash
+./bin/app worker --queue emails --queue reports
+```
+
 ## Configuration
 
 Common worker-related variables include:
@@ -36,11 +51,21 @@ Common worker-related variables include:
 ```text
 QUEUE_DRIVER=workerpool
 QUEUE_WORKERS=30
-QUEUE_DEFAULT_QUEUE=default
+QUEUE_NAME=default
 QUEUE_SHUTDOWN_TIMEOUT=10s
 ```
 
-Some drivers support additional queue weighting or backend-specific behavior. Use [Queue](/queue) for the full package details.
+Named queues use `QUEUE_<NAME>_*` variables. If a named queue does not set its own driver, it inherits `QUEUE_DRIVER`.
+
+```text
+QUEUE_DRIVER=redis
+QUEUE_EMAILS_WORKERS=6
+QUEUE_REPORTS_WORKERS=2
+```
+
+Prefer named queues for operational priority. Give higher-priority work more worker capacity, and run dedicated `worker --queue <name>` processes when it needs separate scaling, CPU, memory, or deployment policy.
+
+Some drivers support additional backend-specific queue weighting. Keep that as a driver detail; use [Queue](/queue) for the full package behavior.
 
 ## Metrics
 
@@ -59,6 +84,7 @@ Use explicit worker processes when production needs:
 - restart isolation
 - separate deploy topology
 - queue-specific concurrency tuning
+- queue-specific priority through worker allocation
 
 The job code should not change when topology changes.
 

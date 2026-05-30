@@ -11,14 +11,14 @@ Each runtime starts through a command and participates in App startup and shutdo
 
 ## Common Processes
 
-| Process | Command |
-| --- | --- |
-| Combined runtime | `./bin/app run` |
-| HTTP | `./bin/app api` |
-| Queue workers | `./bin/app worker` |
-| Scheduler | `./bin/app scheduler` |
+| Process | Built binary | Development alias |
+| --- | --- | --- |
+| Combined runtime | `./bin/app run` | `forj run app` |
+| HTTP | `./bin/app api` | `forj run api` |
+| Queue workers | `./bin/app worker` | `forj run worker` |
+| Scheduler | `./bin/app scheduler` | `forj run scheduler` |
 
-Each command starts the App lifecycle, runs its owned runtime boundary, and shuts down through the lifecycle manager.
+Both forms start the same App command. Use the built binary form for deployment and process supervision. Use the `forj run` alias during local development when you want GoForj to refresh generated code before running the App command.
 
 ## Combined Runtime
 

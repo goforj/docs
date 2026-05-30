@@ -49,6 +49,9 @@ Document:
 
 - command: `forj run worker`
 - built binary command: `./bin/app worker`
+- default queue behavior: no `--queue` starts every configured generated queue
+- queue selection: `--queue <name>` starts only the selected named queue; repeat for a subset
+- priority model: named queues plus worker allocation, for example `QUEUE_EMAILS_WORKERS=6` and `QUEUE_REPORTS_WORKERS=2`
 - handler registration before worker start
 - driver behavior
 - retry and timeout behavior
@@ -59,6 +62,8 @@ Document:
 - production process supervision
 
 Explain that queue dispatch and queue work are separate concerns.
+
+Keep backend-specific priority knobs secondary. The framework docs should lead with named queues and process sizing, then mention driver-specific weighting only when a backend page requires it.
 
 ### Scheduler
 

@@ -554,7 +554,7 @@ To use Redis in production, compile Redis queue support and select it:
 QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 QUEUE_DRIVER=redis
 QUEUE_ADDR=redis:6379
-QUEUE_DEFAULT_QUEUE=default
+QUEUE_NAME=default
 QUEUE_WORKERS=30
 ```
 

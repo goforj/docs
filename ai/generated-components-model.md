@@ -101,6 +101,8 @@ Docs should treat these as generated configuration invariants.
 
 Named generated accessors usually should not return errors. If a named accessor is missing or misaligned, that is a generation/configuration mismatch, not an optional missing dependency.
 
+Queue nuance: named queues inherit the root queue driver unless they override it. One generated queue resource represents one queue. The resource name is the app-facing queue name, and by default it is also the backend queue name. Use `QUEUE_<NAME>_NAME` only for rare backend name overrides. The worker command with no `--queue` starts all configured generated queues. `worker --queue <name>` selects one queue, and repeated flags select a subset. Use named queue worker counts as the primary priority model before backend-specific queue weighting.
+
 ## Resource Startup Pattern
 
 Generated managers may construct lightweight handles, but docs should not claim lazy resource initialization unless the generated App and selected driver explicitly implement it.

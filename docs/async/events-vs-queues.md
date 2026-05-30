@@ -97,7 +97,7 @@ Queue drivers are configured with:
 ```text
 QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 QUEUE_DRIVER=workerpool
-QUEUE_DEFAULT_QUEUE=default
+QUEUE_NAME=default
 QUEUE_WORKERS=30
 QUEUE_SHUTDOWN_TIMEOUT=10s
 ```
