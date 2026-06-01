@@ -317,7 +317,7 @@ Exit criteria:
 
 Status: first generated executable scenario set is implemented.
 
-Scenario content now lives in executable specs in `/workspace/code/goforj/internal/scenarios/specs`. Public markdown in `docs/scenarios` is generated from those specs.
+Scenario content now lives in executable specs in `../goforj/internal/scenarios/specs`. Public markdown in `docs/scenarios` is generated from those specs.
 
 Build these after the first 10 framework pages:
 
@@ -344,7 +344,7 @@ Validation used for this set:
 GOCACHE=/tmp/gocache go test ./internal/scenarios ./internal/forj ./wire -run 'TestScenario|TestLoadEmbedded|TestRenderScenario|^$'
 GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
 /tmp/forj-scenario-mvp scenario:test --all
-/tmp/forj-scenario-mvp scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+/tmp/forj-scenario-mvp scenario:generate --all --out-dir docs/scenarios --check
 npm run build
 ```
 

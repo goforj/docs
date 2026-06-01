@@ -29,27 +29,27 @@ Each scenario must:
 The public scenario pages in `docs/scenarios/*.md` are generated from executable specs in the GoForj CLI repo:
 
 ```text
-/workspace/code/goforj/internal/scenarios/specs/*.yaml
+../goforj/internal/scenarios/specs/*.yaml
 ```
 
 The scenario engine lives in:
 
 ```text
-/workspace/code/goforj/internal/scenarios
+../goforj/internal/scenarios
 ```
 
 The public CLI adapters live in:
 
 ```text
-/workspace/code/goforj/internal/forj/scenario_cmd.go
+../goforj/internal/forj/scenario_cmd.go
 ```
 
 Available hidden maintainer commands:
 
 ```bash
 forj scenario:list
-forj scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios
-forj scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+forj scenario:generate --all --out-dir docs/scenarios
+forj scenario:generate --all --out-dir docs/scenarios --check
 forj scenario:test --all
 forj scenario:test json-api-route
 ```
@@ -503,7 +503,7 @@ For scenario system validation from the GoForj repo, use:
 GOCACHE=/tmp/gocache go test ./internal/scenarios
 GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
 /tmp/forj-scenario-mvp scenario:test --all
-/tmp/forj-scenario-mvp scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+/tmp/forj-scenario-mvp scenario:generate --all --out-dir docs/scenarios --check
 ```
 
 Then build the docs:
@@ -515,7 +515,7 @@ npm run build
 Run from:
 
 ```text
-/workspace/code/goforj-docs/docs
+docs
 ```
 
 ## File Location Rules

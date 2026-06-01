@@ -8,7 +8,7 @@ It is an internal architecture document for GoForj documentation. It is not a co
 
 ## Source Lens
 
-The analysis used mature framework documentation patterns as reference material, including local framework docs in `/workspace/code/laravel-docs`.
+The analysis used mature framework documentation patterns as reference material, including local framework docs in `../laravel-docs`.
 
 Transferable patterns were evaluated through a GoForj lens:
 

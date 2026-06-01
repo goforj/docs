@@ -50,12 +50,12 @@ Direct rendered App edits are useful for quick hypothesis checks, but they are n
 
 Use `render.module_replaces` when smoke testing against local sibling repositories.
 
-Use absolute paths. Do not use `~`.
+Use paths that are stable from the generated project root. For local sibling repositories, prefer a relative path and avoid container-specific absolute paths.
 
 ```yaml
 render:
   module_replaces:
-    github.com/goforj/web: /workspace/code/web
+    github.com/goforj/web: ../web
 ```
 
 ## Common Mistakes

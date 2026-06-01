@@ -103,7 +103,7 @@ Before writing an example:
 For public pages under `docs/scenarios`, do not draft directly in markdown. Update the executable scenario spec in:
 
 ```text
-/workspace/code/goforj/internal/scenarios/specs
+../goforj/internal/scenarios/specs
 ```
 
 Then regenerate and check:
@@ -111,8 +111,8 @@ Then regenerate and check:
 ```bash
 GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
 /tmp/forj-scenario-mvp scenario:test <scenario-id>
-/tmp/forj-scenario-mvp scenario:generate <scenario-id> --out-dir /workspace/code/goforj-docs/docs/scenarios
-/tmp/forj-scenario-mvp scenario:generate <scenario-id> --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+/tmp/forj-scenario-mvp scenario:generate <scenario-id> --out-dir docs/scenarios
+/tmp/forj-scenario-mvp scenario:generate <scenario-id> --out-dir docs/scenarios --check
 ```
 
 Use `--all` before finalizing broad scenario changes.
@@ -157,7 +157,7 @@ npm run build
 Run from:
 
 ```bash
-/workspace/code/goforj-docs/docs
+docs
 ```
 
 For Go examples or generated app checks, use the repository's Go cache defaults:
@@ -179,7 +179,7 @@ For executable scenario docs:
 GOCACHE=/tmp/gocache go test ./internal/scenarios ./internal/forj ./wire -run 'TestScenario|TestLoadEmbedded|TestRenderScenario|^$'
 GOCACHE=/tmp/gocache go build -o /tmp/forj-scenario-mvp ./cmd/forj
 /tmp/forj-scenario-mvp scenario:test --all
-/tmp/forj-scenario-mvp scenario:generate --all --out-dir /workspace/code/goforj-docs/docs/scenarios --check
+/tmp/forj-scenario-mvp scenario:generate --all --out-dir docs/scenarios --check
 ```
 
 ## AI Failure Modes

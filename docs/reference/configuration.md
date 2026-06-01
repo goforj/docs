@@ -84,15 +84,15 @@ Component dependencies are resolved by the renderer. For example, auth requires 
 
 ## Module Replaces
 
-Use absolute paths:
+Use paths that are stable from the generated project root. For local sibling repositories, prefer a relative path:
 
 ```yaml
 render:
   module_replaces:
-    github.com/goforj/web: /workspace/code/web
+    github.com/goforj/web: ../web
 ```
 
-Do not use `~`. Do not assume relative paths are stable across tools.
+Do not use container-specific absolute paths; they only work in one local environment.
 
 ## Related Pages
 
