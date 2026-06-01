@@ -265,7 +265,7 @@ Examples:
 
 - `internal/app/lifecycle_registry.go`
 - generated route registration surfaces
-- `internal/scheduler/scheduler_registry.go`
+- `internal/schedules/scheduler_registry.go`
 - generated command surfaces
 - provider functions and Wire sets
 

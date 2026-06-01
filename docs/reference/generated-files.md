@@ -19,7 +19,7 @@ Check file headers and local package READMEs before editing.
 | `wire/wire_gen.go` | Generated Wire output. Do not edit by hand. |
 | `internal/app/lifecycle_registry.go` | App-owned lifecycle extension point. |
 | `internal/router/routes_registry.go` | App route composition. |
-| `internal/scheduler/scheduler_registry.go` | App-owned schedule registration. |
+| `internal/schedules/scheduler_registry.go` | App-owned schedule registration. |
 | `internal/caches/*_gen.go` | Generated cache accessors and config. |
 | `internal/storages/*_gen.go` | Generated storage accessors and config. |
 | `internal/queues/*_gen.go` | Generated queue accessors and config. |

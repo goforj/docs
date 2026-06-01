@@ -34,6 +34,7 @@ The make command is not just a file generator. It also injects the generated res
 | HTTP controller | `forj make:controller Users` | controller file, HTTP controller set, route registry |
 | App command | `forj make:command reports:reconcile` | command type, command Wire set, command collection |
 | Queue job | `forj make:job GenerateReport` | job type, job Wire set |
+| Scheduled task | `forj make:schedule reports:daily --every 24h` | schedule type, App scheduler Wire set |
 | Model repository | `forj make:model users --package users` | model, repository, repository Wire set |
 
 The wiring still matters because generated resources usually depend on application services. The make command wires the generated resource itself; you may still need to wire the application services it depends on.

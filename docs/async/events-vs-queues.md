@@ -133,7 +133,7 @@ The Scheduler defines recurring work.
 Schedules live in:
 
 ```text
-internal/scheduler/scheduler_registry.go
+internal/schedules/scheduler_registry.go
 ```
 
 Start the scheduler:

@@ -7,7 +7,7 @@ description: Operational behavior for generated scheduler runtimes.
 
 The scheduler runtime runs recurring work.
 
-Schedules should be named, declarative, and registered in `internal/scheduler/scheduler_registry.go`.
+Schedules should be named, declarative, and registered in `internal/schedules/scheduler_registry.go`.
 
 ## Start
 

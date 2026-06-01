@@ -16,7 +16,7 @@ The schedule decides when daily report work should begin. The queue still owns e
 ## What You Will Build
 
 - `internal/reports/daily.go` selects users that need daily reports.
-- `internal/scheduler/scheduler_registry.go` registers a named `reports:daily` schedule.
+- `internal/schedules/scheduler_registry.go` registers a named `reports:daily` schedule.
 - The schedule calls a domain-owned method instead of putting report logic in scheduler bootstrap.
 - The method dispatches `reports:generate` jobs, so workers continue to process report generation.
 
@@ -36,7 +36,7 @@ Complete [Reports Generate Job](/scenarios/reports-generate-job) first.
 The generated App should have scheduler and jobs enabled. Verify these generated packages exist:
 
 ```text
-internal/scheduler
+internal/schedules
 internal/jobs
 internal/queues
 ```
@@ -67,8 +67,8 @@ internal/users/repository.go
 **Scheduler**
 
 ```text
-internal/scheduler/scheduler.go
-internal/scheduler/scheduler_registry.go
+internal/schedules/scheduler.go
+internal/schedules/scheduler_registry.go
 ```
 
 **App wiring**
@@ -180,7 +180,7 @@ func (r *MemoryUserRepository) DueForDailyReport(ctx context.Context) ([]reports
 
 Add the daily runner to the generated scheduler type.
 
-Update `internal/scheduler/scheduler.go` so it includes:
+Update `internal/schedules/scheduler.go` so it includes:
 
 ```go
 "your/module/internal/inspects"
@@ -191,7 +191,7 @@ Update `internal/scheduler/scheduler.go` so it includes:
 
 Store the injected runner on the scheduler.
 
-Update `internal/scheduler/scheduler.go` so it includes:
+Update `internal/schedules/scheduler.go` so it includes:
 
 ```go
 inspectManager *inspects.Manager
@@ -202,7 +202,7 @@ dailyReports   *reports.DailyRunner
 
 Wire can now provide the runner to the scheduler.
 
-Update `internal/scheduler/scheduler.go` so it includes:
+Update `internal/schedules/scheduler.go` so it includes:
 
 ```go
 inspectManager *inspects.Manager,
@@ -213,7 +213,7 @@ dailyReports *reports.DailyRunner,
 
 Preserve the generated scheduler wiring and add the new field assignment.
 
-Update `internal/scheduler/scheduler.go` so it includes:
+Update `internal/schedules/scheduler.go` so it includes:
 
 ```go
 inspectManager: inspectManager,
@@ -224,7 +224,7 @@ dailyReports:   dailyReports,
 
 Keep the registry declarative. The registry names the schedule and points to the domain-owned method.
 
-Update `internal/scheduler/scheduler_registry.go` so it includes:
+Update `internal/schedules/scheduler_registry.go` so it includes:
 
 ```go
 s.registerJobObservers()

@@ -43,6 +43,7 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 | `migrate:rollback` | `migrate:rollback` | Roll back recent migrations. |
 | `make:event` | `make:event` | Generate an event type. |
 | `make:job` | `make:job` | Generate a queue job and wire it into jobs. |
+| `make:schedule` | `make:schedule` | Generate a scheduled task and wire it into the scheduler. |
 | `make:model` | `make:model` | Generate a model and repository when database support is enabled. |
 
 Examples:
@@ -54,6 +55,7 @@ forj worker
 forj scheduler
 forj route:list
 forj make:job reports:generate
+forj make:schedule reports:daily --every 24h
 
 ./bin/app run
 ./bin/app api

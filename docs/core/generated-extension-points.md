@@ -62,7 +62,7 @@ Use commands for explicit operator or developer actions. Avoid shell wrappers ar
 Use:
 
 ```text
-internal/scheduler/scheduler_registry.go
+internal/schedules/scheduler_registry.go
 ```
 
 Keep the scheduler registry declarative:

@@ -7,7 +7,7 @@ description: How GoForj make commands generate resources, place files in owning 
 
 Make commands create application resources and update the generated wiring surfaces that expose them.
 
-They are the normal starting point for controllers, commands, jobs, events, models, and migrations. Generate the resource, review the changed files, then add the product behavior that belongs to your App.
+They are the normal starting point for controllers, commands, jobs, schedules, events, models, and migrations. Generate the resource, review the changed files, then add the product behavior that belongs to your App.
 
 ## Package Placement
 
@@ -36,6 +36,7 @@ See [Naming Conventions](/core/naming-conventions) for command, job, event, sche
 | `forj make:controller <name>` | HTTP controller | grouped name maps to `internal/<group>/controller.go` | HTTP controller set and route registry |
 | `forj make:command <name>` | App command | grouped name maps to `internal/<group>/<name>_cmd.go` | command set and App command collection |
 | `forj make:job <name>` | Queue job | grouped name maps to `internal/<group>/<name>_job.go` | job set |
+| `forj make:schedule <name>` | Scheduled task | grouped name maps to `internal/<group>/<name>_schedule.go` | App scheduler set |
 | `forj make:event <name>` | Event type | grouped name maps to `internal/<group>/<name>_event.go` | none |
 | `forj make:model <table>` | Model and repository | `--package` controls the model package | repository set |
 | `forj make:migration <name>` | SQL migration files | writes to the migrations directory | none |
@@ -68,6 +69,14 @@ forj make:job billing:sync-reports --queue billing
 
 This creates `internal/billing/sync_reports_job.go`, stamps the generated dispatch helper with `OnQueue("billing")`, and wires the job constructor into the generated job set.
 
+Create a colocated schedule:
+
+```bash
+forj make:schedule reports:daily --every 24h
+```
+
+This creates `internal/reports/daily_schedule.go`, wires the schedule constructor into the App-owned `wire/inject_scheduler_schedules.go`, and registers it through the App schedule registry with the `reports:daily` schedule name. If `--every` is omitted, GoForj writes a valid `1h` starter interval that you can edit in the generated file.
+
 Create a colocated event:
 
 ```bash
@@ -99,6 +108,7 @@ Use `-d` when the default grouped package path is not the package you want:
 ```bash
 forj make:command reports:sync -d ./internal/billing/reports
 forj make:job billing:sync-reports -d ./internal/ops
+forj make:schedule reports:daily -d ./internal/billing/reports
 forj make:event billing:invoice-paid -d ./internal/billing/events
 ```
 
@@ -113,6 +123,7 @@ Make commands update the framework-owned files that should not require hand edit
 - `make:controller` adds the controller provider and route registry entry.
 - `make:command` adds the command provider and App command collection entry.
 - `make:job` adds the job provider.
+- `make:schedule` adds the schedule provider to `wire/inject_scheduler_schedules.go`, which is preserved across re-renders.
 - `make:model` adds the repository provider.
 
 `make:event` and `make:migration` generate files that do not need a provider registration by default.
@@ -126,6 +137,7 @@ Generated files are starting points. Your App still owns:
 - route behavior, validation, and response shape
 - command input parsing and console output
 - job payloads and handler behavior
+- schedule intervals and handler behavior
 - event payloads and subscribers
 - migration SQL
 - model relationships and repository options

@@ -36,7 +36,7 @@ The scheduler should not become the place where business workflows accumulate.
 Schedule registration lives in:
 
 ```text
-internal/scheduler/scheduler_registry.go
+internal/schedules/scheduler_registry.go
 ```
 
 Keep the registry declarative.

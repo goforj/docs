@@ -98,7 +98,7 @@ Common App-owned extension points include:
 
 - `internal/app/lifecycle_registry.go` for startup and shutdown hooks
 - `internal/router/routes_registry.go` for application routes
-- `internal/scheduler/scheduler_registry.go` for recurring work
+- `internal/schedules/scheduler_registry.go` for recurring work
 - generated command registration surfaces for custom commands
 - generated job registration surfaces for queued work
 - generated event files and subscriber registration surfaces for fan-out

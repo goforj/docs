@@ -119,6 +119,7 @@ The generated root command includes framework commands such as:
 - `migrate`
 - `make:event`
 - `make:job`
+- `make:schedule`
 
 Application-specific commands belong in the App command extension surface, not in ad hoc shell scripts around the binary.
 
@@ -128,7 +129,7 @@ Runtime packages appear when their components are enabled:
 
 - `internal/http` owns HTTP server composition, health endpoints, readiness, route listing, Swagger, and HTTP runtime behavior.
 - `internal/jobs` owns long-running queue worker process behavior.
-- `internal/scheduler` owns scheduler runtime behavior and schedule registration.
+- `internal/schedules` owns scheduler runtime behavior and schedule registration.
 - `internal/lighthouse` owns Lighthouse runtime and operator-facing integration.
 - `internal/metrics` owns metrics registration and export behavior.
 
@@ -182,7 +183,7 @@ Prefer these extension points first:
 - lifecycle hooks in `internal/app/lifecycle_registry.go`
 - commands in the generated App command surface
 - routes and controllers in the generated HTTP surfaces
-- schedules in `internal/scheduler/scheduler_registry.go`
+- schedules in `internal/schedules/scheduler_registry.go`
 - domain behavior in application-owned packages under `internal/`
 
 Avoid scattering changes through generated runtime glue when a documented extension point exists.

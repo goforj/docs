@@ -60,7 +60,7 @@ Be opinionated where GoForj has a preferred path.
 
 Good:
 
-> Put scheduled work in `internal/scheduler/scheduler_registry.go` and call domain-owned methods from the registry.
+> Put scheduled work in `internal/schedules/scheduler_registry.go` and call domain-owned methods from the registry.
 
 Avoid:
 

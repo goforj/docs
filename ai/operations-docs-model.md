@@ -71,7 +71,7 @@ Document:
 
 - command: `forj scheduler`
 - built binary command: `./bin/app scheduler`
-- schedule registration in `internal/scheduler/scheduler_registry.go`
+- schedule registration in `internal/schedules/scheduler_registry.go`
 - stable schedule names
 - overlap control
 - scheduler metrics

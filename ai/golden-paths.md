@@ -34,7 +34,7 @@ Typical ownership:
 - `internal/cmd`: CLI commands and command registration
 - `internal/jobs`: job handlers, worker runtime, queue command surface
 - `internal/events`: event definitions, topics, bus integration
-- `internal/scheduler`: schedule registration and scheduler runtime
+- `internal/schedules`: schedule registration and scheduler runtime
 - `internal/storages`: storage manager and named disk access
 - `internal/caches`: named cache accessors
 - `internal/metrics`: app metrics endpoint and framework instrumentation
@@ -181,7 +181,7 @@ Docs should explicitly teach "events versus queues" early.
 
 Golden path:
 
-- Register schedules in `internal/scheduler/scheduler_registry.go`.
+- Register schedules in `internal/schedules/scheduler_registry.go`.
 - Keep the registry declarative.
 - Give every schedule a stable explicit name.
 - Call domain-owned methods directly from schedule entries.
