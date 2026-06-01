@@ -48,7 +48,9 @@ Golden path for local development:
 
 - `forj dev` for the normal development loop
 - `forj build` for generation, Wire, API indexing, and binary build
-- `forj app` when intentionally running through the CLI pass-through
+- `forj ...` for generated App commands when working inside a generated App
+- `forj run ...` only when the docs need the explicit App-command path or collision escape hatch
+- `forj app` when intentionally running the combined generated App runtime
 
 Golden path for built binaries:
 
@@ -181,6 +183,9 @@ Docs should explicitly teach "events versus queues" early.
 
 Golden path:
 
+- Use `forj make:schedule <name> --every <duration>` to create App-owned scheduled work.
+- Let grouped schedule names colocate with their domain package, for example `forj make:schedule reports:daily --every 24h` creates `internal/reports/daily_schedule.go`.
+- Wire App-owned schedule providers through `wire/inject_scheduler_schedules.go`, which is rendered once and preserved across re-renders.
 - Register schedules in `internal/schedules/scheduler_registry.go`.
 - Keep the registry declarative.
 - Give every schedule a stable explicit name.

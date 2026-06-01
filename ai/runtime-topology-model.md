@@ -47,6 +47,15 @@ Built binaries should usually be documented with their direct command surface:
 
 Use `forj ...` when documenting developer CLI behavior inside a generated App. Use `forj run ...` only when documenting the explicit App-command path or a collision escape hatch. Use `./bin/app ...` when documenting deployment and process supervision.
 
+When explaining command execution, keep the surfaces distinct:
+
+- `forj <native-command>` runs Framework-owned commands.
+- `forj <app-command>` delegates to the generated App when no native command matches.
+- `forj run <app-command>` forces the source-aware App-command path.
+- `./bin/app <command>` runs the built binary and is the deployment/runtime surface.
+
+Do not imply App-owned generation logic moved into the Framework CLI. `forj` may route commands, but App-owned generators and commands remain generated App code so they can use App configuration, dependencies, and wiring.
+
 ## Default Launch Binaries
 
 `forj build --auto-run` can compile a default launch target into the binary.

@@ -71,7 +71,9 @@ Document:
 
 - command: `forj scheduler`
 - built binary command: `./bin/app scheduler`
+- generated schedule command: `forj make:schedule <name> --every <duration>`
 - schedule registration in `internal/schedules/scheduler_registry.go`
+- App-owned schedule providers in `wire/inject_scheduler_schedules.go`
 - stable schedule names
 - overlap control
 - scheduler metrics
@@ -85,7 +87,8 @@ Document:
 Document:
 
 - generated command surfaces
-- `forj ...` as the normal generated App development surface
+- `forj ...` as the normal generated App development surface inside a generated App
+- native `forj` commands taking precedence over delegated App commands
 - `forj run ...` as the explicit App-command path or collision escape hatch
 - `./bin/app ...` as the built App command surface
 - default-launch behavior from `forj build --auto-run` when relevant

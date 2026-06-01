@@ -103,6 +103,10 @@ Named generated accessors usually should not return errors. If a named accessor 
 
 Queue nuance: named queues inherit the root queue driver unless they override it. One generated queue resource represents one queue. The resource name is the app-facing queue name, and by default it is also the backend queue name. Use `QUEUE_<NAME>_NAME` only for rare backend name overrides. The worker command with no `--queue` starts all configured generated queues. `worker --queue <name>` selects one queue, and repeated flags select a subset. Use named queue worker counts as the primary priority model before backend-specific queue weighting.
 
+Schedule nuance: scheduler runtime code lives in `internal/schedules`, while generated schedule implementations may be colocated with their owning domain package. `forj make:schedule reports:daily --every 24h` should create a domain-owned schedule such as `internal/reports/daily_schedule.go` and wire its provider into the render-once `wire/inject_scheduler_schedules.go`. Do not document `internal/scheduler`; that package name was replaced to avoid conflicting with the `github.com/goforj/scheduler/v2` library import.
+
+Command nuance: inside a generated App, `forj <command>` is the normal development command surface. Native Framework commands take precedence. If no native command matches, `forj` delegates to the generated App through the source-aware path. `forj run <command>` remains the explicit App-command path and collision escape hatch. `./bin/app <command>` remains the built binary/deployment surface.
+
 ## Resource Startup Pattern
 
 Generated managers may construct lightweight handles, but docs should not claim lazy resource initialization unless the generated App and selected driver explicitly implement it.
