@@ -12,15 +12,17 @@ Use these pages to keep durable database state, temporary cache data, and file/b
 ## Recommended Path
 
 1. [Database Strategy](/data/database-strategy) explains source-of-truth data.
-2. [Repositories](/data/repositories) explains query ownership.
-3. [Transactions](/data/transactions) explains workflow boundaries.
-4. [Cache Patterns](/data/cache-patterns) explains temporary and derived data.
-5. [Storage Patterns](/data/storage-patterns) explains files and blobs.
-6. [Driver Selection](/data/driver-selection) explains backend choices.
+2. [Database Shell](/data/database-shell) explains interactive and non-interactive shell access.
+3. [Repositories](/data/repositories) explains query ownership.
+4. [Transactions](/data/transactions) explains workflow boundaries.
+5. [Cache Patterns](/data/cache-patterns) explains temporary and derived data.
+6. [Storage Patterns](/data/storage-patterns) explains files and blobs.
+7. [Driver Selection](/data/driver-selection) explains backend choices.
 
 ## All Data Pages
 
 - [Database Strategy](/data/database-strategy)
+- [Database Shell](/data/database-shell)
 - [Migrations](/data/migrations)
 - [Repositories](/data/repositories)
 - [Transactions](/data/transactions)

@@ -337,6 +337,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/data/' },
           { text: 'Database Strategy', link: '/data/database-strategy' },
+          { text: 'Database Shell', link: '/data/database-shell' },
           { text: 'Migrations', link: '/data/migrations' },
           { text: 'Repositories', link: '/data/repositories' },
           { text: 'Transactions', link: '/data/transactions' },

@@ -41,6 +41,7 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 | `route:list` | `route:list` | List registered HTTP routes. |
 | `migrate` | `migrate` | Run database migrations. |
 | `migrate:rollback` | `migrate:rollback` | Roll back recent migrations. |
+| `db` | `db:shell` | Open a database shell for a configured connection. |
 | `make:event` | `make:event` | Generate an event type. |
 | `make:job` | `make:job` | Generate a queue job and wire it into jobs. |
 | `make:schedule` | `make:schedule` | Generate a scheduled task and wire it into the scheduler. |
@@ -54,6 +55,7 @@ forj api
 forj worker
 forj scheduler
 forj route:list
+forj db
 forj make:job reports:generate
 forj make:schedule reports:daily --every 24h
 
@@ -61,11 +63,24 @@ forj make:schedule reports:daily --every 24h
 ./bin/app api
 ./bin/app worker
 ./bin/app scheduler
+./bin/app db
 ```
 
 These resolve to generated App commands through Kong aliases.
 
 Available commands depend on selected components.
+
+Database shell examples:
+
+```bash
+forj db
+forj db analytics
+forj db --method compose
+forj db --print
+forj db --exec "select count(*) from users"
+forj db -- --batch -e "select count(*) from users"
+forj db analytics -- -c "select count(*) from events"
+```
 
 Controller, command, and migration generation are project-level `forj` commands:
 
@@ -89,5 +104,6 @@ These are mainly for framework contributors:
 
 - [Quickstart](/getting-started/quickstart)
 - [Make Commands](/core/make-commands)
+- [Database Shell](/data/database-shell)
 - [forj dev](/developer-tools/forj-dev)
 - [Generation Commands](/reference/generation-commands)
