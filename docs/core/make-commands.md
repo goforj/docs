@@ -36,8 +36,10 @@ See [Naming Conventions](/core/naming-conventions) for command, job, event, sche
 | `forj make:controller <name>` | HTTP controller | grouped name maps to `internal/<group>/controller.go` | HTTP controller set and route registry |
 | `forj make:command <name>` | App command | grouped name maps to `internal/<group>/<name>_cmd.go` | command set and App command collection |
 | `forj make:job <name>` | Queue job | grouped name maps to `internal/<group>/<name>_job.go` | job set |
+| `forj make:queue <name>` | Named queue config | updates `.env` queue keys | none |
 | `forj make:schedule <name>` | Scheduled task | grouped name maps to `internal/<group>/<name>_schedule.go` | App scheduler set |
 | `forj make:event <name>` | Event type | grouped name maps to `internal/<group>/<name>_event.go` | none |
+| `forj make:subscriber <name>` | Event subscriber | grouped name maps to `internal/<group>/<name>_subscriber.go` | App event subscriber set |
 | `forj make:model <table>` | Model and repository | `--package` controls the model package | repository set |
 | `forj make:migration <name>` | SQL migration files | writes to the migrations directory | none |
 
@@ -69,6 +71,14 @@ forj make:job billing:sync-reports --queue billing
 
 This creates `internal/billing/sync_reports_job.go`, stamps the generated dispatch helper with `OnQueue("billing")`, and wires the job constructor into the generated job set.
 
+Configure a named queue:
+
+```bash
+forj make:queue reports --workers 2
+```
+
+This updates the queue section in `.env` with `QUEUE_REPORTS_NAME=reports` and `QUEUE_REPORTS_WORKERS=2`. Run `forj make:queue` without arguments in an interactive terminal to use the resource wizard.
+
 Create a colocated schedule:
 
 ```bash
@@ -84,6 +94,14 @@ forj make:event billing:invoice-paid
 ```
 
 This creates `internal/billing/invoice_paid_event.go`. Events are plain application types, so the generated file does not need a Wire registration by itself.
+
+Create a subscriber for a colocated event:
+
+```bash
+forj make:subscriber billing:invoice-paid
+```
+
+This creates `internal/billing/invoice_paid_subscriber.go`, wires the subscriber constructor into the App-owned `wire/inject_event_subscribers.go`, and subscribes it to the default event bus. Use `--bus audit` to subscribe through a named event bus configured by `EVENTS_AUDIT_DRIVER`.
 
 Create a model in an explicit package:
 
@@ -110,6 +128,7 @@ forj make:command reports:sync -d ./internal/billing/reports
 forj make:job billing:sync-reports -d ./internal/ops
 forj make:schedule reports:daily -d ./internal/billing/reports
 forj make:event billing:invoice-paid -d ./internal/billing/events
+forj make:subscriber billing:invoice-paid -d ./internal/billing/events
 ```
 
 The override controls the file location and package name. The grouped command name can still express the command, job, or event identity.
@@ -123,7 +142,9 @@ Make commands update the framework-owned files that should not require hand edit
 - `make:controller` adds the controller provider and route registry entry.
 - `make:command` adds the command provider and App command collection entry.
 - `make:job` adds the job provider.
+- `make:queue` updates `.env` queue resource keys.
 - `make:schedule` adds the schedule provider to `wire/inject_scheduler_schedules.go`, which is preserved across re-renders.
+- `make:subscriber` adds the subscriber provider and subscription to `wire/inject_event_subscribers.go`, which is preserved across re-renders.
 - `make:model` adds the repository provider.
 
 `make:event` and `make:migration` generate files that do not need a provider registration by default.

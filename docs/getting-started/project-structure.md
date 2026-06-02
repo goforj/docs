@@ -118,7 +118,9 @@ The generated root command includes framework commands such as:
 - `scheduler`
 - `migrate`
 - `make:event`
+- `make:subscriber`
 - `make:job`
+- `make:queue`
 - `make:schedule`
 
 Application-specific commands belong in the App command extension surface, not in ad hoc shell scripts around the binary.

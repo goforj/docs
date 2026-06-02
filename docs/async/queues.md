@@ -28,6 +28,25 @@ internal/queues
 
 The generated package builds the default queue from `QUEUE_*` variables and optional named queues from `QUEUE_<NAME>_*` variables.
 
+Configure a named queue with:
+
+```bash
+forj make:queue reports --workers 2
+```
+
+This updates the queue section in `.env`:
+
+```text
+QUEUE_REPORTS_NAME=reports
+QUEUE_REPORTS_WORKERS=2
+```
+
+Run `forj make:queue` without arguments in an interactive terminal to use the resource wizard. Use `--name` only when the backend queue name should differ from the App-facing queue name:
+
+```bash
+forj make:queue reports --workers 2 --name production-report-jobs
+```
+
 ## Accessors
 
 Generated Apps expose queues through default and named accessors:

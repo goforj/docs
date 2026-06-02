@@ -34,6 +34,14 @@ forj make:event UserRegistered
 
 `make:event` generates a plain payload type and topic constant. It does not add a Wire provider because event payloads are created at publish time, not constructed once as App dependencies.
 
+Create subscribers separately:
+
+```bash
+forj make:subscriber users:registered
+```
+
+`make:subscriber` creates a handler object and registers it in the App-owned event subscriber injector. Use `--bus <name>` when the subscriber should listen on a named bus configured by `EVENTS_<NAME>_DRIVER`.
+
 Use `domain.past_tense` topics, such as `users.created` or `invoices.paid`. Review the generated topic constant before other code depends on it. See [Naming Conventions](/core/naming-conventions) for the full naming map.
 
 ## Event Shape

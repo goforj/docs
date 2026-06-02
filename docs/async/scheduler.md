@@ -41,6 +41,14 @@ internal/schedules/scheduler_registry.go
 
 Keep the registry declarative.
 
+Generate App-owned scheduled work with:
+
+```bash
+forj make:schedule reports:daily --every 24h
+```
+
+This creates a colocated schedule such as `internal/reports/daily_schedule.go`, wires its provider into `wire/inject_scheduler_schedules.go`, and registers it with the stable `reports:daily` schedule name. The injector file is rendered once and preserved across re-renders.
+
 ```go
 func (s *Scheduler) Register() error {
 	s.DailyAt("04:11").

@@ -11,6 +11,32 @@ Subscribers are useful for fan-out, secondary reactions, and integration points.
 
 ## Subscriber Shape
 
+Generate a subscriber from the event name:
+
+```bash
+forj make:subscriber billing:invoice-paid
+```
+
+This creates a colocated subscriber such as:
+
+```text
+internal/billing/invoice_paid_subscriber.go
+```
+
+It also updates the App-owned subscriber injector:
+
+```text
+wire/inject_event_subscribers.go
+```
+
+Use `--bus` when the subscriber should attach to a named event bus:
+
+```bash
+forj make:subscriber billing:invoice-paid --bus audit
+```
+
+The named bus must be configured, for example with `EVENTS_AUDIT_DRIVER`.
+
 ```go
 _, err := bus.WithContext(ctx).Subscribe(func(ctx context.Context, event UserRegisteredEvent) error {
 	return welcomeEmails.Queue(ctx, event.UserID)
@@ -24,6 +50,8 @@ The event announces the fact. If work must be durable or retried, the subscriber
 Register subscribers through generated or documented App registration surfaces before the event runtime starts.
 
 Subscriber registration should be visible in App construction, not hidden in package `init` functions.
+
+Generated subscribers are registered in `wire/inject_event_subscribers.go`. The file is rendered once and preserved across re-renders, so App-owned subscriber wiring stays with the App.
 
 The event type itself does not belong in the provider graph. The subscriber object or registrar does, because it may need services, repositories, queues, or publishers injected before it subscribes to the bus during App startup.
 
