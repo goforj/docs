@@ -12,6 +12,7 @@
 
 backend/frontend/dist/
 bin/
+_data/
 
 # Local env file
 .env
