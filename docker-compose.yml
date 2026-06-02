@@ -32,37 +32,32 @@ services:
       - traefik_letsencrypt:/letsencrypt
     restart: unless-stopped
 
-  openinary:
-    image: openinary/openinary:latest
-    platform: linux/amd64
+  slink:
+    image: anirdev/slink:latest
     environment:
-      BETTER_AUTH_SECRET: ${OPENINARY_BETTER_AUTH_SECRET:?Set OPENINARY_BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: https://img.${DOMAIN}
-      API_SECRET: ${OPENINARY_API_SECRET:?Set OPENINARY_API_SECRET}
-      DB_PATH: /app/data/auth.db
-      STORAGE_PUBLIC_URL: ${OPENINARY_STORAGE_PUBLIC_URL:-https://img.${DOMAIN}}
-      MAX_FILE_SIZE_MB: ${OPENINARY_MAX_FILE_SIZE_MB:-50}
-      PUBLIC_RATE_LIMIT_MAX: ${OPENINARY_PUBLIC_RATE_LIMIT_MAX:-200}
-      PUBLIC_RATE_LIMIT_WINDOW_MS: ${OPENINARY_PUBLIC_RATE_LIMIT_WINDOW_MS:-60000}
+      TZ: ${TZ:-UTC}
+      ORIGIN: https://img.${DOMAIN}
+      REQUIRE_SSL: "true"
+      USER_APPROVAL_REQUIRED: ${SLINK_USER_APPROVAL_REQUIRED:-true}
+      USER_PASSWORD_MIN_LENGTH: ${SLINK_USER_PASSWORD_MIN_LENGTH:-8}
+      USER_PASSWORD_REQUIREMENTS: ${SLINK_USER_PASSWORD_REQUIREMENTS:-15}
+      IMAGE_MAX_SIZE: ${SLINK_IMAGE_MAX_SIZE:-15M}
+      IMAGE_STRIP_EXIF_METADATA: ${SLINK_IMAGE_STRIP_EXIF_METADATA:-true}
+      IMAGE_COMPRESSION_QUALITY: ${SLINK_IMAGE_COMPRESSION_QUALITY:-80}
+      STORAGE_PROVIDER: local
     volumes:
-      - ./_data/openinary/cache:/app/apps/api/cache
-      - ./_data/openinary/public:/app/apps/api/public
-      - ./_data/openinary/db:/app/data
+      - ./_data/slink/var/data:/app/var/data
+      - ./_data/slink/images:/app/slink/images
     labels:
       - traefik.enable=true
-      - traefik.http.routers.openinary-public.rule=Host(`img.${DOMAIN}`) && (PathPrefix(`/t/`) || PathPrefix(`/download/`) || PathPrefix(`/authenticated/`) || Path(`/health`))
-      - traefik.http.routers.openinary-public.entrypoints=websecure
-      - traefik.http.routers.openinary-public.tls.certresolver=le
-      - traefik.http.routers.openinary-public.priority=100
-      - traefik.http.routers.openinary-admin.rule=Host(`img.${DOMAIN}`)
-      - traefik.http.routers.openinary-admin.entrypoints=websecure
-      - traefik.http.routers.openinary-admin.tls.certresolver=le
-      - traefik.http.routers.openinary-admin.priority=1
-      - traefik.http.routers.openinary-http.rule=Host(`img.${DOMAIN}`)
-      - traefik.http.routers.openinary-http.entrypoints=web
-      - traefik.http.routers.openinary-http.middlewares=openinary-redirect-to-https
-      - traefik.http.middlewares.openinary-redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.services.openinary.loadbalancer.server.port=3000
+      - traefik.http.routers.slink.rule=Host(`img.${DOMAIN}`)
+      - traefik.http.routers.slink.entrypoints=websecure
+      - traefik.http.routers.slink.tls.certresolver=le
+      - traefik.http.routers.slink-http.rule=Host(`img.${DOMAIN}`)
+      - traefik.http.routers.slink-http.entrypoints=web
+      - traefik.http.routers.slink-http.middlewares=slink-redirect-to-https
+      - traefik.http.middlewares.slink-redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.services.slink.loadbalancer.server.port=3000
     restart: unless-stopped
     depends_on:
       - traefik
