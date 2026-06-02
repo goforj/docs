@@ -12,6 +12,7 @@ Start with [forj dev](/developer-tools/forj-dev) for the local watcher workflow.
 ## Pages
 
 - [forj dev](/developer-tools/forj-dev)
+- [Opening Generated Files](/developer-tools/editor-open)
 
 ## Related Sections
 

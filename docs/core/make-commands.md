@@ -45,6 +45,19 @@ See [Naming Conventions](/core/naming-conventions) for command, job, event, sche
 
 Some make commands are native GoForj commands and some are generated App commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the App through the same source-aware path as `forj run`.
 
+## Opening Generated Files
+
+File-generating make commands support `--open` and `-o` to open the primary generated file after the command succeeds:
+
+```bash
+forj make:controller billing:reports -o
+forj make:job billing:sync-reports --open
+```
+
+Use `--no-open` to suppress editor opening for a single run. Generated Apps can also set `FORJ_MAKE_OPEN=auto`, `always`, or `never`, and `FORJ_EDITOR` can pin the editor command.
+
+See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and configuration.
+
 ## Examples
 
 Create a controller for a colocated HTTP package:

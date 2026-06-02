@@ -105,6 +105,8 @@ forj make:command reports:reconcile
 forj make:migration create_users
 ```
 
+File-generating make commands support `--open` / `-o` to open the generated file and `--no-open` to suppress opening. See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and `FORJ_MAKE_OPEN` configuration.
+
 ## Maintainer Commands
 
 These are mainly for framework contributors:
@@ -119,6 +121,7 @@ These are mainly for framework contributors:
 
 - [Quickstart](/getting-started/quickstart)
 - [Make Commands](/core/make-commands)
+- [Opening Generated Files](/developer-tools/editor-open)
 - [Database Shell](/data/database-shell)
 - [forj dev](/developer-tools/forj-dev)
 - [Generation Commands](/reference/generation-commands)

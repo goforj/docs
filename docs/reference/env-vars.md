@@ -45,6 +45,15 @@ This page groups the major variable families. Generated component READMEs and wo
 | --- | --- |
 | `HTTP_TRACE` | Enables `httpx` request and response dump output for clients created with `httpx.New()` when the variable is present. |
 
+## Forj Developer Tools
+
+| Variable | Purpose |
+| --- | --- |
+| `FORJ_MAKE_OPEN` | Controls whether file-generating make commands open generated files. Values are `auto`, `always`, or `never`. |
+| `FORJ_EDITOR` | Optional editor command for opening generated files. Supports `{file}`, `{line}`, and `{location}` placeholders. |
+
+See [Opening Generated Files](/developer-tools/editor-open) for editor detection and examples.
+
 ## Driver Families
 
 GoForj separates compile-time support from runtime selection.
@@ -121,5 +130,6 @@ Generated auth Apps commonly use:
 
 - [Configuration](/getting-started/configuration)
 - [Generated Components](/core/generated-components)
+- [Opening Generated Files](/developer-tools/editor-open)
 - [HTTP Clients](/applications/http-clients)
 - [Driver Selection](/data/driver-selection)
