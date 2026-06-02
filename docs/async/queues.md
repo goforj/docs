@@ -28,7 +28,7 @@ internal/queues
 
 The generated package builds the default queue from `QUEUE_*` variables and optional named queues from `QUEUE_<NAME>_*` variables.
 
-Configure a named queue with:
+Create a named queue with:
 
 ```bash
 forj make:queue reports --workers 2

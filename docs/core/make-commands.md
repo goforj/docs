@@ -71,7 +71,7 @@ forj make:job billing:sync-reports --queue billing
 
 This creates `internal/billing/sync_reports_job.go`, stamps the generated dispatch helper with `OnQueue("billing")`, and wires the job constructor into the generated job set.
 
-Configure a named queue:
+Create a named queue:
 
 ```bash
 forj make:queue reports --workers 2
