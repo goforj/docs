@@ -42,6 +42,7 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 | `migrate` | `migrate` | Run database migrations. |
 | `migrate:rollback` | `migrate:rollback` | Roll back recent migrations. |
 | `db` | `db:shell` | Open a database shell for a configured connection. |
+| `cache` | `cache:shell` | Open a Redis shell for a configured cache store. |
 | `make:event` | `make:event` | Generate an event type. |
 | `make:job` | `make:job` | Generate a queue job and wire it into jobs. |
 | `make:schedule` | `make:schedule` | Generate a scheduled task and wire it into the scheduler. |
@@ -56,6 +57,7 @@ forj worker
 forj scheduler
 forj route:list
 forj db
+forj cache
 forj make:job reports:generate
 forj make:schedule reports:daily --every 24h
 
@@ -64,6 +66,7 @@ forj make:schedule reports:daily --every 24h
 ./bin/app worker
 ./bin/app scheduler
 ./bin/app db
+./bin/app cache
 ```
 
 These resolve to generated App commands through Kong aliases.
@@ -80,6 +83,18 @@ forj db --print
 forj db --exec "select count(*) from users"
 forj db -- --batch -e "select count(*) from users"
 forj db analytics -- -c "select count(*) from events"
+```
+
+Cache shell examples:
+
+```bash
+forj cache
+forj cache sessions
+forj cache --method compose
+forj cache --print
+forj cache --exec "PING"
+forj cache -- PING
+forj cache sessions -- GET user:1
 ```
 
 Controller, command, and migration generation are project-level `forj` commands:

@@ -51,6 +51,39 @@ Use focused generation only when you intentionally want to refresh cache code wi
 forj generate --cache
 ```
 
+## Cache Shell
+
+Redis-backed cache stores can be inspected with the generated `cache:shell` command:
+
+```bash
+forj cache
+forj cache:shell
+```
+
+Pass a cache store name when the App has named Redis caches:
+
+```bash
+forj cache sessions
+forj cache --store sessions
+```
+
+GoForj tries `redis-cli` first, then falls back to the generated Docker Compose `redis` service when one exists:
+
+```bash
+forj cache --method local
+forj cache --method compose
+forj cache --print
+```
+
+Run one Redis command non-interactively, or pass native `redis-cli` arguments after `--`:
+
+```bash
+forj cache --exec "PING"
+forj cache sessions --exec "GET user:1"
+forj cache -- PING
+forj cache sessions -- GET user:1
+```
+
 ## Good Uses
 
 Cache is a good fit for:
