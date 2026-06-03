@@ -25,6 +25,14 @@ forj make:migration create_users
 
 Run this from the generated App root. Migration generation is a project-level `forj` command, while applying and rolling back migrations happens through the generated App command surface.
 
+Remove generated migration files that match a migration name:
+
+```bash
+forj make:migration create_users --remove
+```
+
+The removal command matches timestamped files by migration name, including driver-specific files such as `.sqlite.up.sql` and `.postgres.down.sql`. Use `--connection analytics` when removing migration files from a named connection directory.
+
 Rollback recent migrations:
 
 ```bash

@@ -107,6 +107,16 @@ forj make:migration create_users
 
 File-generating make commands support `--open` / `-o` to open the generated file and `--no-open` to suppress opening. See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and `FORJ_MAKE_OPEN` configuration.
 
+Make commands also support `--remove` to delete the generated file or resource config and undo the wiring that the command manages:
+
+```bash
+forj make:controller users --remove
+forj make:command reports:reconcile --remove
+forj make:migration create_users --remove
+```
+
+Use `--dry-run` with `--remove` to preview the changes. See [Make Commands](/core/make-commands#removing-generated-resources) for the command-by-command removal behavior.
+
 ## Maintainer Commands
 
 These are mainly for framework contributors:

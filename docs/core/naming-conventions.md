@@ -32,11 +32,7 @@ Prefer:
 forj make:command reports:sync
 ```
 
-Avoid using command names as package paths:
-
-```bash
-forj make:command billing:reports:sync
-```
+Do not use command names as package paths. Keep the command name in the operator-facing `category:action` shape, then use `-d` if the file belongs somewhere else.
 
 If the command belongs in a deeper package, keep the command name short and use `-d` for placement:
 

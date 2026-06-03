@@ -15,6 +15,7 @@ Read these pages when you want to understand the generated App model, runtime li
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup, execution, and shutdown.
 - [Dependency Injection](/core/dependency-injection) explains how providers and Wire construct the App.
 - [Make Commands](/core/make-commands) explains how resource generators place files and update wiring.
+- [Organizing Generated Code](/core/organizing-generated-code) explains how generated controllers, commands, jobs, schedules, events, subscribers, models, and services fit into owning Go packages.
 - [Naming Conventions](/core/naming-conventions) defines stable names for commands, jobs, schedules, events, routes, and named resources.
 - [Wiring Recipes](/core/wiring-recipes) shows where to register services, adapters, controllers, commands, jobs, and resources.
 - [Generated Extension Points](/core/generated-extension-points) explains where application-owned code belongs.
@@ -28,6 +29,7 @@ Read these pages when you want to understand the generated App model, runtime li
 - [Providers](/core/providers)
 - [Provider Patterns](/core/provider-patterns)
 - [Make Commands](/core/make-commands)
+- [Organizing Generated Code](/core/organizing-generated-code)
 - [Naming Conventions](/core/naming-conventions)
 - [Wiring Recipes](/core/wiring-recipes)
 - [Reading Wire Errors](/core/reading-wire-errors)

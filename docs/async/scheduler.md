@@ -52,8 +52,8 @@ This creates a colocated schedule such as `internal/reports/daily_schedule.go`, 
 ```go
 func (s *Scheduler) Register() error {
 	s.DailyAt("04:11").
-		Name("auth:sessions:cleanup").
-		Do(s.inspectTask("auth:sessions:cleanup", s.authService.Cleanup))
+		Name("sessions:cleanup").
+		Do(s.inspectTask("sessions:cleanup", s.authService.Cleanup))
 
 	return nil
 }

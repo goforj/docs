@@ -29,6 +29,8 @@ Use two segments unless the extra segment is truly part of the operator-facing c
 
 See [Naming Conventions](/core/naming-conventions) for command, job, event, schedule, route, and named resource names.
 
+See [Organizing Generated Code](/core/organizing-generated-code) for the broader package ownership model behind colocated controllers, commands, jobs, schedules, events, subscribers, models, and services.
+
 ## Command Map
 
 | Command | Generates | Default package behavior | Updates wiring |
@@ -57,6 +59,52 @@ forj make:job billing:sync-reports --open
 Use `--no-open` to suppress editor opening for a single run. Generated Apps can also set `FORJ_MAKE_OPEN=auto`, `always`, or `never`, and `FORJ_EDITOR` can pin the editor command.
 
 See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and configuration.
+
+## Removing Generated Resources
+
+Make commands also support `--remove` when you want to back out a generated resource:
+
+```bash
+forj make:controller reports --remove
+forj make:command reports:sync --remove
+forj make:job reports:generate --remove
+forj make:schedule reports:daily --remove
+forj make:event reports:report-generated --remove
+forj make:subscriber reports:report-generated --remove
+forj make:model reports --package reports --remove
+forj make:migration create_reports --remove
+forj make:queue reports --remove
+```
+
+Removal uses the same name, package, and output flags as creation. If you used `-d`, `--package`, `--connection`, or `--bus` when creating the resource, pass the same option when removing it.
+
+Use `--dry-run` to preview the delete and wiring cleanup:
+
+```bash
+forj make:controller reports --remove --dry-run
+```
+
+`--remove` is deterministic. It removes the generated file and the wiring that the matching make command knows how to add. It does not inspect your business logic, service code, tests, or manually added references.
+
+| Command | Remove behavior |
+| --- | --- |
+| `make:controller` | removes the controller file, HTTP controller provider, and route registry entry |
+| `make:command` | removes the command file, command provider, and App command collection entry |
+| `make:job` | removes the job file and job provider |
+| `make:schedule` | removes the schedule file and App schedule provider |
+| `make:event` | removes the event file |
+| `make:subscriber` | removes the subscriber file, subscriber provider, and event subscription block |
+| `make:model` | removes the model file and repository provider |
+| `make:migration` | removes timestamped migration files matching the migration name |
+| `make:queue` | removes the named queue env keys |
+
+After removing a wired resource, run:
+
+```bash
+forj build
+```
+
+This catches any remaining application references that still point at the removed type, command, route, repository, job, schedule, or subscriber.
 
 ## Examples
 
@@ -193,6 +241,7 @@ Use `route:list` for controllers. For commands, run the generated command signat
 
 - [Controllers](/applications/controllers) shows the HTTP boundary around services.
 - [Commands](/applications/commands) shows App-owned CLI entry points.
+- [Organizing Generated Code](/core/organizing-generated-code) explains the package ownership model behind generated files.
 - [Naming Conventions](/core/naming-conventions) defines stable operational names.
 - [Wiring Recipes](/core/wiring-recipes) shows where generated and hand-written providers belong.
 - [CLI Reference](/reference/cli) lists project-level commands and generated App command patterns.

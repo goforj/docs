@@ -44,6 +44,32 @@ forj generate --observability
 
 Running `forj generate` without flags refreshes available generators for the current App.
 
+## Make Command Removal
+
+Use `--remove` when you need to undo a resource created by a make command:
+
+```bash
+forj make:controller reports --remove
+forj make:command reports:sync --remove
+forj make:job reports:generate --remove
+forj make:schedule reports:daily --remove
+forj make:event reports:report-generated --remove
+forj make:subscriber reports:report-generated --remove
+forj make:model reports --package reports --remove
+forj make:migration create_reports --remove
+forj make:queue reports --remove
+```
+
+Pass the same placement or resource options you used during creation, such as `-d`, `--package`, `--connection`, or `--bus`.
+
+Use `--dry-run` to preview removal without writing files:
+
+```bash
+forj make:job reports:generate --remove --dry-run
+```
+
+After removal, run `forj build` to catch any remaining App references to deleted types or resources.
+
 ## Render
 
 `forj render` is mainly a framework/template workflow command. It renders project files from `.goforj.yml` and selected components.
@@ -67,4 +93,5 @@ Use `forj build` when unsure.
 
 - [Code Generation](/core/code-generation)
 - [Generated Components](/core/generated-components)
+- [Make Commands](/core/make-commands)
 - [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests)
