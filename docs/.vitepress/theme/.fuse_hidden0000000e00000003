@@ -2177,18 +2177,6 @@ html.gf-lightbox-open body {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     color: var(--vp-c-text-1);
-    /* One continuous light field for the whole page. Glows alternate
-       hue and side in a gentle S-curve and never end at a section
-       boundary, so scrolling reads as one canvas instead of boxes. */
-    background:
-        radial-gradient(1100px 700px at 82% 4%, rgba(91, 115, 255, 0.07), transparent 70%),
-        radial-gradient(1000px 720px at 14% 16%, rgba(229, 107, 58, 0.055), transparent 72%),
-        radial-gradient(1100px 760px at 86% 30%, rgba(91, 115, 255, 0.05), transparent 72%),
-        radial-gradient(1000px 700px at 14% 43%, rgba(91, 115, 255, 0.05), transparent 72%),
-        radial-gradient(1100px 760px at 86% 55%, rgba(229, 107, 58, 0.05), transparent 72%),
-        radial-gradient(1200px 800px at 50% 67%, rgba(91, 115, 255, 0.06), transparent 72%),
-        radial-gradient(1100px 760px at 50% 83%, rgba(229, 107, 58, 0.06), transparent 72%),
-        radial-gradient(1200px 820px at 50% 98%, rgba(229, 107, 58, 0.065), transparent 74%);
 }
 
 /* Reset vp-doc typography inside the custom landing sections. */
@@ -2210,7 +2198,7 @@ html.gf-lightbox-open body {
 
 .gf-home-section {
     position: relative;
-    padding: clamp(48px, 5.5vw, 80px) clamp(22px, 5vw, 96px);
+    padding: clamp(64px, 8vw, 118px) clamp(22px, 5vw, 96px);
 }
 
 .gf-home-section__inner {
@@ -2221,7 +2209,7 @@ html.gf-lightbox-open body {
 
 .gf-home-section__header {
     max-width: 760px;
-    margin: 0 auto clamp(32px, 3.8vw, 52px);
+    margin: 0 auto clamp(36px, 4.4vw, 62px);
     text-align: center;
 }
 
@@ -2286,20 +2274,24 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-points {
-    margin: 28px 0 0 !important;
+    margin: 26px 0 0 !important;
     padding: 0 !important;
     list-style: none !important;
     display: grid;
-    gap: 18px;
+    gap: 14px;
 }
 
 .gf-home-points li {
     margin: 0 !important;
-    padding: 0 0 0 18px;
-    border-left: 2px solid rgba(255, 154, 96, 0.35);
+    padding: 14px 16px;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    border-radius: 14px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+        rgba(13, 16, 24, 0.4);
     color: rgba(203, 213, 225, 0.72);
     font-size: 0.92rem;
-    line-height: 1.6;
+    line-height: 1.55;
 }
 
 .gf-home-points li strong {
@@ -2421,11 +2413,18 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
 
 /* --- start section --- */
 
-/* Section atmospheres live on the .gf-home canvas, not per section. */
+.gf-home-start {
+    background:
+        radial-gradient(760px 420px at 80% 18%, rgba(91, 115, 255, 0.1), transparent 70%),
+        linear-gradient(180deg, rgba(26, 28, 35, 0.32), rgba(22, 23, 28, 0));
+}
 
 /* --- swap section --- */
 
-/* Swap keeps only its masked grid texture (seamless by design). */
+.gf-home-swap {
+    background:
+        radial-gradient(820px 480px at 16% 22%, rgba(229, 107, 58, 0.075), transparent 72%);
+}
 
 .gf-home-swap::before {
     content: "";
@@ -2518,9 +2517,8 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    html:not([data-gf-motion='on']) .gf-home-env__value { animation: none; }
+    .gf-home-env__value { animation: none; }
 }
-html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-swap__after {
     display: grid;
@@ -2584,26 +2582,29 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     position: absolute;
     top: 18px;
     right: 18px;
-    color: rgba(199, 213, 255, 0.95);
+    color: rgba(151, 173, 255, 0.55);
     font-weight: 700;
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: opacity 160ms ease, transform 160ms ease;
+    transition: color 160ms ease, transform 160ms ease;
 }
 
-.gf-home-card:hover .gf-home-card__more,
-.gf-home-card:focus-visible .gf-home-card__more {
-    opacity: 1;
-    transform: translateX(0);
+.gf-home-card:hover .gf-home-card__more {
+    color: rgba(199, 213, 255, 0.95);
+    transform: translateX(2px);
 }
 
 /* --- generators section --- */
 
-
+.gf-home-gen {
+    background:
+        radial-gradient(720px 420px at 22% 30%, rgba(91, 115, 255, 0.08), transparent 70%);
+}
 
 /* --- operations section --- */
 
-
+.gf-home-ops {
+    background:
+        radial-gradient(780px 460px at 78% 24%, rgba(229, 107, 58, 0.065), transparent 72%);
+}
 
 .gf-home-ops__topology {
     display: grid;
@@ -2683,7 +2684,11 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 /* --- proof band --- */
 
-
+.gf-home-proof {
+    background:
+        radial-gradient(900px 480px at 50% 0%, rgba(91, 115, 255, 0.085), transparent 72%),
+        linear-gradient(180deg, rgba(26, 28, 35, 0.34), rgba(22, 23, 28, 0));
+}
 
 .gf-home-proof__stats {
     display: grid;
@@ -2790,7 +2795,9 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 /* --- closing --- */
 
 .gf-home-close {
-    padding-bottom: clamp(72px, 7.5vw, 116px);
+    padding-bottom: clamp(86px, 9vw, 150px);
+    background:
+        radial-gradient(880px 500px at 50% 100%, rgba(229, 107, 58, 0.08), transparent 74%);
 }
 
 .gf-home-close__paths {
@@ -2845,7 +2852,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-close__final {
     max-width: 640px;
-    margin: clamp(48px, 5.4vw, 76px) auto 0;
+    margin: clamp(56px, 6.4vw, 92px) auto 0;
     text-align: center;
 }
 
@@ -3035,215 +3042,4 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-motion-picker__value {
     font-weight: 750;
-}
-
-/* ============================================================
-   Landing elevation pass: reveals, accents, icons, count-up
-   ============================================================ */
-
-/* Bigger, Apple-scale section headlines. */
-.gf-home-h2 {
-    font-size: clamp(2.3rem, 3.6vw, 3.35rem);
-    letter-spacing: -0.05em;
-}
-
-.gf-home-h2 em {
-    font-style: normal;
-    background: linear-gradient(94deg, #ffc685 4%, #ff8a3d 96%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-/* Scroll reveals. The .gf-reveal-ready class is added by JS only
-   when motion is allowed, so reduced-motion users see everything
-   immediately with no hidden state. */
-.gf-home.gf-reveal-ready [data-reveal] {
-    opacity: 0;
-    transform: translateY(14px);
-    transition:
-        opacity 0.5s ease var(--reveal-delay, 0s),
-        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
-}
-
-.gf-home.gf-reveal-ready [data-reveal].is-inview {
-    opacity: 1;
-    transform: none;
-}
-
-html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-}
-
-/* Capability card icons. */
-.gf-home-card__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    margin-bottom: 13px;
-    border: 1px solid rgba(151, 173, 255, 0.18);
-    border-radius: 10px;
-    background: linear-gradient(180deg, rgba(106, 125, 255, 0.16), rgba(106, 125, 255, 0.05));
-    color: rgba(177, 194, 255, 0.92);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    transition: color 180ms ease, border-color 180ms ease, transform 180ms ease;
-}
-
-.gf-home-card__icon svg {
-    width: 17px;
-    height: 17px;
-}
-
-.gf-home-card:hover .gf-home-card__icon {
-    color: #ffffff;
-    border-color: rgba(177, 194, 255, 0.45);
-    transform: translateY(-1px);
-}
-
-/* Card top sheen on hover. */
-.gf-home-card {
-    overflow: hidden;
-}
-
-.gf-home-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 8%, rgba(177, 194, 255, 0.45), transparent 92%);
-    opacity: 0;
-    transition: opacity 200ms ease;
-}
-
-.gf-home-card:hover::before {
-    opacity: 1;
-}
-
-/* Count-up stats: stable digits while animating. */
-.gf-home-proof__stat strong {
-    font-variant-numeric: tabular-nums;
-}
-
-/* "0 lines of Go changed" moment in the driver swap section. */
-.gf-home-swap__zero {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.gf-home-swap__zero strong {
-    font-size: 2.4rem;
-    font-weight: 820;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    background: linear-gradient(94deg, #ffc685 4%, #ff8a3d 96%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-variant-numeric: tabular-nums;
-}
-
-.gf-home-swap__zero span {
-    color: rgba(203, 213, 225, 0.72);
-    font-size: 0.96rem;
-    font-weight: 650;
-}
-
-/* Glow behind the final call to action. */
-.gf-home-close__final {
-    position: relative;
-}
-
-.gf-home-close__final::before {
-    content: "";
-    position: absolute;
-    inset: -70px -140px;
-    background: radial-gradient(460px 260px at 50% 42%, rgba(106, 125, 255, 0.13), transparent 70%);
-    pointer-events: none;
-}
-
-.gf-home-close__final > * {
-    position: relative;
-}
-
-/* "Any shape" chips in the start section. */
-.gf-home-shapes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 20px 0 6px;
-}
-
-.gf-home-shapes span {
-    padding: 7px 14px;
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    border-radius: 999px;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(13, 16, 24, 0.5);
-    color: rgba(216, 224, 238, 0.8);
-    font-size: 0.83rem;
-    font-weight: 680;
-}
-
-/* Manifesto band. */
-.gf-home blockquote {
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-.gf-home-manifesto {
-    text-align: center;
-}
-
-.gf-home .gf-home-manifesto__quote {
-    max-width: 920px;
-    margin: 0 auto;
-}
-
-.gf-home-manifesto__quote p {
-    margin: 0;
-    color: rgba(236, 241, 250, 0.93);
-    font-size: clamp(1.42rem, 2.6vw, 2.05rem);
-    font-weight: 640;
-    line-height: 1.44;
-    letter-spacing: -0.022em;
-    text-wrap: balance;
-}
-
-.gf-home-manifesto__quote p em {
-    font-style: normal;
-    background: linear-gradient(94deg, #ffc685 4%, #ff8a3d 96%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.gf-home-manifesto__quote footer {
-    margin-top: 30px;
-}
-
-.gf-home-manifesto__quote footer strong {
-    display: block;
-    color: rgba(240, 244, 252, 0.92);
-    font-size: 0.98rem;
-    font-weight: 780;
-}
-
-.gf-home-manifesto__quote footer span {
-    display: block;
-    margin-top: 4px;
-    color: rgba(255, 154, 96, 0.78);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
 }

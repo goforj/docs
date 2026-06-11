@@ -49,6 +49,7 @@ This page groups the major variable families. Generated component READMEs and wo
 
 | Variable | Purpose |
 | --- | --- |
+| `FORJ_APP` | Selects the active app for source-mode Framework commands. Prefer `forj <app> <command>` in normal workflows. |
 | `FORJ_MAKE_OPEN` | Controls whether file-generating make commands open generated files. Values are `auto`, `always`, or `never`. |
 | `FORJ_EDITOR` | Optional editor command for opening generated files. Supports `{file}`, `{line}`, and `{location}` placeholders. |
 
@@ -88,6 +89,32 @@ Common metrics variables:
 | `METRICS_SCHEDULER_ENABLED` | Enable scheduler metrics when scheduler is rendered. |
 | `METRICS_MONITORING_ENABLED` | Enable demo monitoring metrics when the demo App is rendered. |
 
+## Named App Runtime Overrides
+
+The default app uses global runtime variables such as `PORT`, `API_HTTP_PORT`, and `METRICS_PORT`. Named apps use uppercase snake-case app prefixes so they do not accidentally bind the same ports.
+
+For an app named `billing`:
+
+| Variable | Purpose |
+| --- | --- |
+| `BILLING_PORT` | HTTP bind port for the billing app. |
+| `BILLING_API_HTTP_PORT` | HTTP bind port alias for the billing app. |
+| `BILLING_METRICS_PORT` | Shared metrics/runtime port override for the billing app. |
+| `BILLING_API_METRICS_PORT` | HTTP metrics port override. |
+| `BILLING_SCHEDULER_METRICS_PORT` | Scheduler metrics port override. |
+| `BILLING_WORKER_METRICS_PORT` | Worker metrics port override. |
+
+When these are omitted, generated metadata in `internal/runtime/apps.go` provides deterministic non-conflicting defaults.
+
+## Frontend
+
+Browser-visible frontend values opt in through frontend prefixes:
+
+| Variable | Purpose |
+| --- | --- |
+| `FRONTEND_*` | Applies to generated frontends. |
+| `<APP>_FRONTEND_*` | Applies to one named app frontend, such as `BILLING_FRONTEND_BACKEND_URL`. |
+
 ## Lighthouse and Inspects
 
 Common variables:
@@ -105,6 +132,7 @@ Common variables:
 | `LIGHTHOUSE_INSPECT_BUFFER_SIZE` | Lighthouse inspect flush buffer size. |
 | `LIGHTHOUSE_INSPECT_FLUSH_INTERVAL` | Lighthouse inspect flush interval. |
 | `LIGHTHOUSE_INSPECT_FLUSH_BATCH_SIZE` | Lighthouse inspect flush batch size. |
+| `APP_INSTANCE_ID` | Optional stable process or replica identity for Lighthouse and runtime visibility. |
 
 ## Auth
 

@@ -117,6 +117,7 @@ Avoid:
 - excessive admonitions
 - emojis
 - exclamation points
+- em dashes; use a plain hyphen with spaces instead
 - repeated slogans
 - stock explanatory phrases such as "why this matters", "this is why", and "that matters"
 

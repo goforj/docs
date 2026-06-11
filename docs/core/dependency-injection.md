@@ -1,13 +1,13 @@
 ---
 title: Dependency Injection
-description: How GoForj uses explicit provider functions and Wire to construct generated Apps.
+description: How GoForj uses explicit provider functions and app-local Wire graphs.
 ---
 
 # Dependency Injection
 
-GoForj uses explicit Go constructors and Google Wire to build generated Apps.
+GoForj uses explicit Go constructors and Wire-generated code. It does not use a runtime service locator.
 
-The dependency graph is generated and compiled. It is not a runtime reflection container.
+Each app has its own Wire graph.
 
 ## The Model
 
@@ -19,82 +19,60 @@ func NewService(repo *Repository) *Service {
 }
 ```
 
-The generated `wire` package assembles those constructors into the App graph.
+The app's Wire package assembles those constructors:
 
 ```text
-application package -> provider set -> wire/wire_gen.go -> App
+internal package -> app/wire provider set -> app/wire/wire_gen.go -> app
 ```
 
-Wire matches constructor parameters to provider return types. If a constructor needs `*reports.Repository`, some provider in the graph must return `*reports.Repository`.
-
-```mermaid
-flowchart LR
-  ctor["constructors: NewService, NewController"] --> providers["provider sets"]
-  providers --> wire["Wire graph"]
-  wire --> generated["wire/wire_gen.go"]
-  generated --> app["constructed App"]
-```
+For a named app, the graph lives under `app/<name>/wire`.
 
 ## Where It Lives
 
-The main wiring package is:
+Default app:
 
 ```text
-wire/
+app/wire/
+  wire.go
+  wire_gen.go
+  inject_cmd_app.go
+  inject_http_controllers_app.go
+  inject_services_app.go
 ```
 
-Common files include:
+Named app:
 
-- `wire/wire.go`
-- `wire/wire_gen.go`
-- `wire/app.go`
-- `wire/inject_app_services.go`
-- `wire/inject_cmd.go`
-- `wire/inject_http.go`
-- `wire/inject_queue.go`
-- `wire/inject_storage.go`
-- `wire/inject_cache.go`
-
-The generated entry point calls:
-
-```go
-app, err := wire.InitializeApplication()
+```text
+app/billing/wire/
+  wire.go
+  wire_gen.go
+  inject_cmd_app.go
+  inject_http_controllers_app.go
+  inject_services_app.go
 ```
+
+Generated files appear only when the selected components need them.
 
 ## Provider Sets
 
-Provider sets group constructors for a specific App surface.
+Provider sets group constructors for a specific app surface:
 
-Examples:
+- application services
+- repositories
+- HTTP controllers
+- commands
+- jobs
+- schedules
+- subscribers
+- framework managers
 
-- `appSet` provides application services and App-level dependencies.
-- `cmdSet` provides generated command dependencies.
-- HTTP, jobs, queue, cache, storage, database, mail, and auth sets appear when those components are enabled.
-
-The order inside `wire.NewSet` is not construction order. Wire reads the whole graph, matches types, and writes ordinary Go code to `wire/wire_gen.go`.
-
-Use [Wiring Recipes](/core/wiring-recipes) when you need to know which set to edit.
+The order inside `wire.NewSet` is not construction order. Wire reads the whole graph, matches types, and writes ordinary Go code to `wire_gen.go`.
 
 ## Construction Boundary
 
-Wire constructs the App. It does not run the App.
+Wire constructs the app. It does not start long-running runtime work.
 
-App construction can:
-
-- allocate services, adapters, managers, controllers, commands, and registries
-- validate required construction inputs
-- register framework and application hooks
-- return a complete App value
-
-Long-running runtime work still starts through commands and lifecycle execution.
-
-## Constructor Contracts
-
-Constructor parameters are dependencies.
-
-If a service requires a repository, queue, cache, manager, adapter, or gateway, make that dependency visible in the constructor signature. If behavior is optional, model that explicitly with configuration, a disabled implementation, or a clearly optional branch.
-
-Do not use package globals to hide dependencies from the graph.
+Construction can allocate services, adapters, managers, controllers, commands, and registries. HTTP servers, queue workers, and schedulers start when a command starts that runtime.
 
 ## Regenerate Wiring
 
@@ -104,25 +82,27 @@ Run the build pipeline after changing providers, generated components, or Wire s
 forj build
 ```
 
-`forj build` refreshes generated code, runs Wire, indexes APIs, and builds the App binary.
+For a named app:
+
+```bash
+forj billing build
+```
 
 ::: info Dev Loop
-`forj dev` normally runs that build path through its generated watcher.
+`forj dev` normally runs the build path through its watcher. In a multi-app Project, unqualified `forj dev` builds and runs discovered apps.
 :::
 
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not introduce a reflection container.
-- Do not use package globals to bypass Wire.
-- Do not make required dependencies look optional.
-- Do not edit `wire/wire_gen.go` by hand.
+- Do not use package globals to hide dependencies from Wire.
+- Do not edit `wire_gen.go` by hand.
+- Do not add nil guards around required constructor-injected dependencies.
 - Do not put business workflows in provider functions.
 :::
 
 ## Next Steps
 
 - [Providers](/core/providers) defines provider functions.
-- [Provider Patterns](/core/provider-patterns) shows practical provider shapes.
-- [Wiring Recipes](/core/wiring-recipes) shows where to register each kind of constructor.
-- [Reading Wire Errors](/core/reading-wire-errors) explains common Wire failure modes.
+- [Wiring Recipes](/core/wiring-recipes) shows which app-local file to edit.
+- [Reading Wire Errors](/core/reading-wire-errors) explains common Wire failures.

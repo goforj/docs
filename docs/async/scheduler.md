@@ -36,10 +36,10 @@ The scheduler should not become the place where business workflows accumulate.
 Schedule registration lives in:
 
 ```text
-internal/schedules/scheduler_registry.go
+app/schedules.go
 ```
 
-Keep the registry declarative.
+Keep the app schedule file declarative. Named apps use the same shape under `app/<name>/schedules.go`.
 
 Generate App-owned scheduled work with:
 
@@ -47,7 +47,7 @@ Generate App-owned scheduled work with:
 forj make:schedule reports:daily --every 24h
 ```
 
-This creates a colocated schedule such as `internal/reports/daily_schedule.go`, wires its provider into `wire/inject_scheduler_schedules.go`, and registers it with the stable `reports:daily` schedule name. The injector file is rendered once and preserved across re-renders.
+This creates a colocated schedule such as `internal/reports/daily_schedule.go`, wires its provider into `app/wire/inject_schedules_app.go`, and registers it with the stable `reports:daily` schedule name. The app-owned files are rendered once and preserved across re-renders.
 
 ```go
 func (s *Scheduler) Register() error {
@@ -69,6 +69,12 @@ Run the scheduler directly:
 
 ```bash
 forj scheduler
+```
+
+For a named app:
+
+```bash
+forj billing scheduler
 ```
 
 Run it with other enabled local runtimes:

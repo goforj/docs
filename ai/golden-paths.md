@@ -13,9 +13,10 @@ Teach one cohesive application architecture.
 The default path is:
 
 - generated app structure
+- one default app first
 - explicit constructors
 - Wire-backed dependency injection
-- generated registration surfaces
+- app-local registration surfaces
 - app services for business logic
 - thin HTTP controllers
 - named jobs, events, schedules, cache accessors, storage disks, and metrics
@@ -25,11 +26,17 @@ The default path is:
 
 ## Application Structure
 
-Use the generated app as the canonical structure.
+Use the generated Project as the canonical structure. Teach the default app first; introduce named apps only when the Project needs another runnable boundary.
 
 Typical ownership:
 
-- `internal/app`: lifecycle, runtime policy, root wiring, app-level timeouts
+- `cmd/app`: default app binary entrypoint
+- `app`: default app composition, route exposure, command exposure, lifecycle registration, schedule registration
+- `app/wire`: default app Wire graph and app-owned provider sets
+- `cmd/<app>`: named app binary entrypoint
+- `app/<app>`: named app composition
+- `app/<app>/wire`: named app Wire graph
+- `internal/runtime`: reusable runtime policy, lifecycle machinery, app metadata, timeouts
 - `internal/http`: HTTP server composition, route registration, readiness, route list, web runtime glue
 - `internal/cmd`: CLI commands and command registration
 - `internal/jobs`: job handlers, worker runtime, queue command surface
@@ -38,9 +45,9 @@ Typical ownership:
 - `internal/storages`: storage manager and named disk access
 - `internal/caches`: named cache accessors
 - `internal/metrics`: app metrics endpoint and framework instrumentation
-- `wire`: provider sets and generated dependency wiring
+- `internal`: shared application behavior, domain packages, controllers, services, jobs, subscribers, repositories
 
-Business packages may be organized by domain, but examples should keep ownership clear.
+Business packages may be organized by domain, but examples should keep ownership clear: `internal/` owns behavior; `app/` and `app/<app>/` own exposure.
 
 ## Build and Run Commands
 
@@ -49,6 +56,7 @@ Golden path for local development:
 - `forj dev` for the normal development loop
 - `forj build` for generation, Wire, API indexing, and binary build
 - `forj ...` for generated App commands when working inside a generated App
+- `forj <app> ...` for a named app command, such as `forj billing route:list`
 - `forj run ...` only when the docs need the explicit App-command path or collision escape hatch
 - `forj app` when intentionally running the combined generated App runtime
 
@@ -59,6 +67,7 @@ Golden path for built binaries:
 - `./bin/app worker` for queue workers
 - `./bin/app scheduler` for scheduler runtime
 - `./bin/app migrate` for migrations
+- `./bin/<app> ...` for named app binaries, such as `./bin/billing worker`
 
 When `forj build --auto-run` is used, `./bin/app` with no command launches the standalone App runtime. Treat this as build-time default launch behavior, not a separate runtime topology. Explicit commands still take precedence.
 
@@ -146,6 +155,7 @@ Golden path:
 - Use local `sync` or `workerpool` drivers for development and tests.
 - Use durable or broker-backed drivers when production requirements require them.
 - Use named queues for distinct operational classes such as `emails`, `reports`, or `critical`.
+- Keep queue names logical in app code. Named apps physicalize backend queue names with the app prefix, for example `billing_default`, while the app still dispatches to `default`.
 - Prioritize queues by worker allocation and process sizing, for example `QUEUE_EMAILS_WORKERS=6` versus `QUEUE_REPORTS_WORKERS=2`.
 - Use `worker --queue <name>` when a process should work only one named queue.
 - Treat retries as part of job design.
@@ -185,8 +195,8 @@ Golden path:
 
 - Use `forj make:schedule <name> --every <duration>` to create App-owned scheduled work.
 - Let grouped schedule names colocate with their domain package, for example `forj make:schedule reports:daily --every 24h` creates `internal/reports/daily_schedule.go`.
-- Wire App-owned schedule providers through `wire/inject_scheduler_schedules.go`, which is rendered once and preserved across re-renders.
-- Register schedules in `internal/schedules/scheduler_registry.go`.
+- Wire App-owned schedule providers through `app/wire/inject_schedules_app.go`, or `app/<app>/wire/inject_schedules_app.go` for a named app.
+- Register schedules in `app/schedules.go`, or `app/<app>/schedules.go` for a named app.
 - Keep the registry declarative.
 - Give every schedule a stable explicit name.
 - Call domain-owned methods directly from schedule entries.

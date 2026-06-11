@@ -64,10 +64,10 @@ This creates `internal/billing/reports/controller.go`, wires the controller cons
 Review what the make command created or updated:
 
 - `internal/users/controller.go` owns the controller type, constructor, handlers, and route list.
-- `wire/inject_http_controllers.go` provides the controller constructor.
-- `internal/router/routes_registry.go` includes the controller routes in the App route registry.
+- `app/wire/inject_http_controllers_app.go` provides the controller constructor.
+- `app/routes.go` includes the controller routes in the default app route registry.
 
-If the controller depends on a service, make sure the service constructor is wired from `wire/inject_app_services.go`. The make command wires the controller; the service provider still belongs in the app services set.
+If the controller depends on a service, make sure the service constructor is wired from `app/wire/inject_services_app.go`. The make command wires the controller; the service provider still belongs in the app services set.
 
 ```go
 var appSet = wire.NewSet(
@@ -93,6 +93,15 @@ forj route:list
 ```
 
 `forj build` verifies the generated graph. `route:list` verifies the controller routes are registered where the App can serve them.
+
+For a named app, run the make command through that app:
+
+```bash
+forj billing make:controller reports
+forj billing route:list
+```
+
+This updates `app/billing/routes.go` and `app/billing/wire/inject_http_controllers_app.go`.
 
 ## Responsibilities
 

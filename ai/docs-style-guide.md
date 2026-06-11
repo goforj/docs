@@ -365,6 +365,7 @@ Avoid:
 
 - raw HTML in Markdown unless VitePress requires it
 - decorative punctuation
+- em dashes anywhere in copy; use a plain hyphen with spaces
 - repeated bold emphasis
 - nested lists unless no alternative is clear
 - screenshots as the only source of truth

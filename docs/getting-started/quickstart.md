@@ -1,116 +1,86 @@
 ---
 title: Quickstart
-description: Create, build, and run a generated GoForj App.
+description: Create, build, and run a generated GoForj Project.
 ---
 
 # Quickstart
 
-This page installs the `forj` CLI, creates a generated GoForj App, builds it, and runs the local runtime.
+This page creates a GoForj Project, builds the default app, and runs it locally.
 
 ## Prerequisites
 
-- [Go 1.25 or newer installed](https://go.dev/dl/) for your platform.
-- [Docker](https://docs.docker.com/get-docker/) and the `docker-compose` command available if you select Docker-backed components in the project wizard. On macOS, [OrbStack](https://orbstack.dev/) is a recommended Docker-compatible option that is fast and lightweight.
+- Go 1.25 or newer.
+- Docker and `docker-compose` if you select Docker-backed components.
 
-## Install the CLI
-
-Install `forj` with Go:
+## Install The CLI
 
 ```bash
 go install github.com/goforj/goforj/cmd/forj@latest
 ```
 
-Make sure your Go binary directory is on your `PATH`. For most local Go installs, that means:
-
-```bash
-export PATH="$(go env GOPATH)/bin:$PATH"
-```
-
-Verify the CLI:
+Verify it:
 
 ```bash
 forj --help
 ```
 
-## Create An App
+## Create A Project
 
-Run the project wizard:
+Run the wizard:
 
 ```bash
 forj new
 ```
 
-For a deterministic first App, choose a small HTTP shape:
+For the first run, choose a small HTTP shape:
 
-- select `cli`
-- select `web_api`
-- leave `web_ui` disabled unless you want a frontend starter kit
-- leave database, jobs, scheduler, and distributed infrastructure disabled for the first run
+- enable `cli`
+- enable `web_api`
+- leave `web_ui`, jobs, scheduler, and database disabled unless you want them now
 
-If you keep the wizard defaults instead, the same commands below still apply as long as HTTP is enabled.
-
-The wizard asks for:
-
-- project name
-- Go module path
-- components to render
-- optional starter kit
-- project path
-
-The project name becomes `APP_NAME`. The module path becomes the Go module path used by imports in generated code.
-
-After the wizard completes, move into the generated App:
+After the wizard completes:
 
 ```bash
-cd path/to/your-app
+cd path/to/your-project
 ```
 
-## Build The App
-
-Run the framework build pipeline:
+## Build The Default App
 
 ```bash
 forj build
 ```
 
-`forj build` runs the generated-code pipeline, runs Wire, builds API index artifacts, and then runs `go build`. With no extra arguments, the app binary is written to:
+This refreshes generated code, runs Wire, indexes the API surface, and builds the default app binary:
 
 ```text
-./bin/app
+bin/app
 ```
 
-You should now have a generated Go project with files such as:
+The generated Project should include:
 
 ```text
 .goforj.yml
 .env
-main.go
-wire/
+cmd/app/main.go
+app/
+app/wire/
 internal/
 bin/app
 ```
 
-## Run The App
+## Run Locally
 
-Run the combined local runtime:
+Start the combined local runtime:
 
 ```bash
 forj app
 ```
 
-`app` is the generated App command alias for the combined runtime. It starts the enabled runtimes together in one local process.
+Depending on selected components, this can host HTTP, jobs, scheduler, metrics, and Lighthouse integration in one local process.
 
-Depending on the components you selected, the combined runtime can include:
+## Inspect Commands
 
-- HTTP server
-- queue workers
-- scheduler
-- metrics endpoint
-- Lighthouse agent/runtime integration
-
-## Inspect The App Commands
-
-Generated Apps expose their own command surface. Inside the App directory, run those commands through `forj`:
+List routes when HTTP is enabled:
 
 ```bash
 forj route:list
@@ -118,34 +88,26 @@ forj route:list
 
 Common generated commands include:
 
-- `app` starts enabled App runtimes together.
-- `api` starts only the HTTP server.
+- `app` starts enabled runtimes together.
+- `api` starts only the HTTP runtime.
 - `route:list` lists HTTP routes.
 - `worker` starts queue workers.
 - `scheduler` starts the scheduler.
 - `migrate` runs database migrations when database support is enabled.
 
-The available commands depend on the components selected in `.goforj.yml`.
+## Develop
 
-## Use Dev Mode
-
-For day-to-day local work, use:
+Use the watcher loop:
 
 ```bash
 forj dev
 ```
 
-`forj dev` reads `.goforj.yml`, runs configured pre-tasks, watches files, rebuilds the app, and restarts the generated binary when needed.
-
-If the generated project starts Docker resources, shut them down with:
-
-```bash
-forj down
-```
+`forj dev` reads `.goforj.yml`, runs configured setup tasks, watches files, rebuilds, and restarts the app when needed.
 
 ## Verify
 
-After starting the runtime, verify the HTTP surface if HTTP is enabled:
+If HTTP is enabled:
 
 ```bash
 curl http://localhost:3000/-/health
@@ -157,16 +119,8 @@ Expected response:
 {"status":"ok"}
 ```
 
-You can also list routes:
-
-```bash
-forj route:list
-```
-
-For an HTTP App, the route list should include framework routes such as `/-/health` and `/-/ready`. If the sample controller is enabled, it should also include a generated application route under `/api/v1`.
-
 ## Next Steps
 
-- [Project Structure](/getting-started/project-structure) explains where generated App code lives.
-- [Configuration](/getting-started/configuration) explains `.goforj.yml`, `.env`, and driver selection.
-- [Core Concepts](/core/) explains the App, runtime lifecycle, providers, and generated components.
+- [Project Structure](/getting-started/project-structure) explains the generated layout.
+- [Apps](/core/apps) explains the default app and named apps.
+- [Configuration](/getting-started/configuration) explains `.goforj.yml` and `.env`.

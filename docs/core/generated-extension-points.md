@@ -26,7 +26,7 @@ When in doubt, check file headers, generated comments, and local component READM
 Use:
 
 ```text
-internal/app/lifecycle_registry.go
+app/lifecycle.go
 ```
 
 Add startup and shutdown behavior here.
@@ -46,7 +46,7 @@ The registry is built by Wire, so it can receive injected services.
 Use generated route registration surfaces, usually under:
 
 ```text
-internal/router
+app/routes.go
 ```
 
 Controllers should live in feature packages. Route registries should compose routes; they should not become business-logic containers.
@@ -62,7 +62,7 @@ Use commands for explicit operator or developer actions. Avoid shell wrappers ar
 Use:
 
 ```text
-internal/schedules/scheduler_registry.go
+app/schedules.go
 ```
 
 Keep the scheduler registry declarative:

@@ -8,13 +8,35 @@ Use these terms consistently. Do not introduce synonyms unless the codebase alre
 
 ## Canonical Terms
 
+### Project
+
+A Project is the repository-level GoForj workspace created by `forj new`.
+
+Use Project when discussing `.goforj.yml`, selected components, shared internal packages, generated infrastructure, and the collection of one or more runnable apps.
+
+Do not use App for the whole repository when multi-app behavior matters.
+
 ### App
 
-An App is a generated GoForj application.
+An App is a runnable application boundary inside a GoForj Project.
 
-Use App when referring to the user's runnable project as a whole: its source tree, configuration, commands, runtime wiring, and generated structure.
+The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. Named apps such as `billing` or `reporting` live in `cmd/<app>`, `app/<app>`, and `app/<app>/wire`.
 
-Do not use App to mean a single package, service object, HTTP server, or deployment environment.
+Use App when referring to a generated command surface, binary, app composition files, app-local Wire graph, route exposure, and runtime defaults.
+
+Do not use App to mean a single package, service object, HTTP server, deployment environment, or the whole Project when multiple apps exist.
+
+### Default App
+
+The default app is the conventional app named `app`.
+
+It is the normal single-app path and should appear first in docs. The default app lives directly under `app/` rather than `app/app/`.
+
+### Named App
+
+A Named App is an additional app in the same Project, such as `billing` or `customer-portal`.
+
+Named apps are for meaningful ownership or deployment fan-out within one Project. They are not separate Go modules, separate repositories, or automatic microservices.
 
 ### Framework
 
@@ -38,7 +60,7 @@ Do not use Module to mean a runtime plugin, provider, or arbitrary folder unless
 
 ### Runtime
 
-The Runtime is the executing App process and the framework-managed components it starts.
+A Runtime is an execution surface inside an App.
 
 Examples:
 
@@ -48,7 +70,7 @@ Examples:
 - Lighthouse runtime
 - CLI command runtime
 
-Use Runtime when lifecycle, process ownership, startup, shutdown, or operational behavior matters.
+Use Runtime when lifecycle, process ownership, startup, shutdown, or operational behavior matters. Apps can expose multiple runtimes.
 
 ### Runtime Boundary
 
@@ -263,10 +285,12 @@ An Extension Point is a documented place where user code should customize genera
 
 Examples:
 
-- `internal/app/lifecycle_registry.go`
-- generated route registration surfaces
-- `internal/schedules/scheduler_registry.go`
-- generated command surfaces
+- `app/lifecycle.go`
+- `app/routes.go`
+- `app/commands.go`
+- `app/schedules.go`
+- `app/wire/...`
+- `app/<name>/...` for a named app
 - provider functions and Wire sets
 
 Docs should prefer extension points over ad hoc edits.
@@ -274,13 +298,16 @@ Docs should prefer extension points over ad hoc edits.
 ## Terminology Rules
 
 - Use Driver for backend implementations behind a stable primitive contract.
+- Use Project for the repository-level GoForj workspace.
+- Use App for a runnable boundary inside a Project.
+- Use default app and named app when distinguishing `app` from additional apps.
 - Use Provider for explicit dependency construction and wiring.
 - Use Service for application-owned behavior.
 - Use Runtime when discussing process or lifecycle behavior.
+- Do not use App target, runtime target, or target as GoForj domain terms.
 - Use Resource for named operational objects.
 - Use Inspect, not trace, for the product feature.
 - Use `trace_id` only when referring to the correlation field.
 - Use Lighthouse only for the operator/runtime visibility surface.
 - Use Stack when discussing the combined GoForj experience.
 - Use Framework when discussing GoForj-owned policy.
-

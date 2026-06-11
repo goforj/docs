@@ -1,122 +1,101 @@
 ---
 title: App
-description: The generated GoForj application model and the boundary between framework code and application code.
+description: The runnable application boundary inside a GoForj Project.
 ---
 
 # App
 
-An App is a generated GoForj application: its source tree, configuration, commands, runtime wiring, selected components, and application-owned code.
+A GoForj Project can contain one or more apps. An app is the runnable boundary: it has a binary, command surface, composition files, and runtime defaults.
 
-The App is the unit you build, run, test, deploy, and operate.
+Most Projects have one app. That default app is named `app`.
 
-## What The App Owns
+## Default App
 
-The App owns application behavior:
-
-- HTTP controllers and routes
-- application services
-- repositories and persistence choices
-- commands
-- jobs
-- events and subscribers
-- schedules
-- configuration values
-- lifecycle hooks
-- tests
-
-The framework provides the structure, generated runtime glue, conventions, and integration points. The App fills those surfaces with application behavior.
-
-## Root Shape
-
-Most generated Apps follow this shape:
+The default app uses the simplest layout:
 
 ```text
-cmd/
-internal/
-wire/
-.env
-.goforj.yml
+cmd/app/main.go
+app/
+app/wire/
 ```
 
-The root `main.go` stays small. It loads environment configuration, initializes the App through Wire, and calls the generated App runner.
+`cmd/app/main.go` is the binary entrypoint. It stays small.
 
-```mermaid
-flowchart LR
-  main["main.go"] --> wire["wire.InitializeApplication"]
-  wire --> app["App"]
-  app --> commands["generated commands"]
-  commands --> http["api/http:serve"]
-  commands --> worker["worker/queue:work"]
-  commands --> scheduler["scheduler/schedule:run"]
-  commands --> short["route:list and other short commands"]
+`app/` owns composition: routes, commands, schedules, lifecycle hooks, and app-level exposure.
+
+`app/wire/` owns the Wire graph for that app.
+
+Application behavior still belongs under `internal/`.
+
+## Named Apps
+
+Larger Projects can add named apps:
+
+```text
+cmd/billing/main.go
+app/billing/
+app/billing/wire/
 ```
 
-## App versus Framework
+Use named apps when the Project needs another runnable boundary, such as a billing app, reporting app, or customer portal. Do not add a named app just to organize packages. Normal application code still belongs in `internal/`.
+
+## App versus Runtime
+
+An app can expose multiple runtimes:
+
+- HTTP
+- jobs
+- scheduler
+- CLI commands
+
+For example, the `billing` app can run:
+
+```bash
+forj billing api
+forj billing worker
+forj billing scheduler
+```
+
+The app is the boundary. The runtime is the process role running inside that boundary.
+
+## App versus Project
 
 Use this distinction when deciding where code belongs:
 
 | Concern | Belongs In |
 | --- | --- |
-| Business behavior | App packages |
-| Route, job, event, and schedule registration | Generated App extension points |
-| Runtime lifecycle policy | `internal/app` |
-| Framework-wide template behavior | GoForj framework source |
-| Reusable primitive API | First-party library |
-| Backend implementation | Driver package |
+| Project configuration and selected components | `.goforj.yml` |
+| App composition | `app/` or `app/<name>/` |
+| App Wire graph | `app/wire/` or `app/<name>/wire/` |
+| Binary entrypoint | `cmd/app/` or `cmd/<name>/` |
+| Business behavior | `internal/...` |
+| Reusable runtime machinery | `internal/runtime`, `internal/http`, `internal/jobs`, `internal/schedules` |
 
-If rerendering should preserve a behavior change for all future Apps, the durable fix usually belongs in the framework templates or generators. If the behavior is application-specific, it belongs in the generated App.
-
-## App Construction
-
-The generated entry point calls:
-
-```go
-app, err := wire.InitializeApplication()
-```
-
-Wire resolves providers, constructs managers and services, registers framework hooks, registers application hooks, and returns the App.
-
-Construction should not start long-running runtime work. HTTP servers, queue workers, and schedulers start when a command or runtime boundary starts them.
-
-## App Execution
-
-The App runs through generated commands:
-
-```bash
-forj app
-forj api
-forj worker
-forj scheduler
-forj route:list
-```
-
-Each command has a clear runtime boundary. Some commands are short-lived. Others block until interrupted.
+If rerendering should preserve a behavior change for all future Projects, the durable fix belongs in GoForj templates or generators. If the behavior is application-specific, it belongs in the generated Project.
 
 ## Extension Points
 
-Common App-owned extension points include:
+Common app-owned extension points include:
 
-- `internal/app/lifecycle_registry.go` for startup and shutdown hooks
-- `internal/router/routes_registry.go` for application routes
-- `internal/schedules/scheduler_registry.go` for recurring work
-- generated command registration surfaces for custom commands
-- generated job registration surfaces for queued work
-- generated event files and subscriber registration surfaces for fan-out
+- `app/lifecycle.go` for startup and shutdown hooks
+- `app/routes.go` for route exposure
+- `app/commands.go` for command exposure
+- `app/schedules.go` for schedule exposure
+- `app/wire/...` for app-local provider registration
 
-Use these surfaces before editing framework-owned runtime glue.
+Named apps use the same files under `app/<name>/`.
 
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not put business workflows in `main.go`, `internal/http`, or runtime bootstrap files.
-- Do not bypass generated registration surfaces with package globals.
-- Do not edit generated files when a documented extension point exists.
-- Do not treat the App as a dependency injection container. It is the runnable application boundary.
-- Do not make business behavior depend on whether runtimes are hosted together or split.
+- Do not put business workflows in `cmd/<app>`, `app/`, or `internal/runtime`.
+- Do not create a named app when a package under `internal/` is enough.
+- Do not describe named apps as separate modules or microservices by default.
+- Do not bypass app composition files with package globals.
 :::
 
 ## Next Steps
 
+- [Apps](/core/apps) explains the multi-app model.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown.
-- [Providers](/core/providers) explains construction boundaries.
-- [Generated Extension Points](/core/generated-extension-points) explains where to add App behavior.
+- [Dependency Injection](/core/dependency-injection) explains app-local Wire graphs.

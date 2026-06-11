@@ -21,7 +21,7 @@ HTTP-related generated code usually lives in:
 
 ```text
 internal/http
-internal/router
+app/routes.go
 ```
 
 Application controllers live in application-owned packages, for example:
@@ -56,6 +56,13 @@ List registered routes:
 
 ```bash
 forj route:list
+```
+
+For a named app, prefix the app name:
+
+```bash
+forj billing api
+forj billing route:list
 ```
 
 ## Server Configuration
@@ -116,9 +123,9 @@ The exact response helpers available come from the `web` package. Use the genera
 
 ## Route Registration
 
-Generated Apps collect routes through `internal/router`.
+Generated apps collect routes through `app/routes.go`. Named apps use `app/<name>/routes.go`.
 
-The route registry builds public and protected route groups and mounts them under `/api/v1` by default.
+The route file builds public and protected route groups and mounts them under `/api/v1` by default.
 
 The generated shape is:
 

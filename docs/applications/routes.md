@@ -14,7 +14,7 @@ Generated GoForj Apps keep route registration explicit so HTTP behavior is disco
 Application route composition usually lives in:
 
 ```text
-internal/router/routes_registry.go
+app/routes.go
 ```
 
 Feature packages expose routes from controllers:
@@ -24,7 +24,11 @@ internal/users/controller.go
 internal/reports/controller.go
 ```
 
-The route registry composes those controller routes into route groups.
+The app route file composes those controller routes into route groups. Named apps use the same pattern under their app directory:
+
+```text
+app/billing/routes.go
+```
 
 ## Controller Routes
 
@@ -82,6 +86,12 @@ Use:
 
 ```bash
 forj route:list
+```
+
+For a named app, prefix the app name:
+
+```bash
+forj billing route:list
 ```
 
 Use `route:list` as the source of truth for what the App registered. Do not rely only on startup logs.

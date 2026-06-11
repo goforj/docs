@@ -80,7 +80,7 @@ onMounted(() => {
       entry.target.classList.add('is-inview')
       revealObserver.unobserve(entry.target)
     })
-  }, { rootMargin: '0px 0px 0px 0px', threshold: 0.05 })
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 })
   root.querySelectorAll('[data-reveal]').forEach((el) => revealObserver.observe(el))
   observers.push(revealObserver)
 
@@ -123,7 +123,7 @@ onBeforeUnmount(() => {
 <div class="gf-home-split__copy" data-reveal>
 <p class="gf-home-eyebrow">Start</p>
 <h2 class="gf-home-h2">A real application in <em>two commands</em></h2>
-<p class="gf-home-lead"><code>forj new</code> renders a complete Go project - the components you choose, nothing more. <code>forj dev</code> brings it alive.</p>
+<p class="gf-home-lead"><code>forj new</code> renders a complete Go project — the components you choose, nothing more. <code>forj dev</code> brings it alive.</p>
 <div class="gf-home-shapes" aria-label="What a GoForj App can be">
 <span>A focused CLI</span>
 <span>An API service</span>
@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
 <span>A full product with auth and a Vue frontend</span>
 </div>
 <ul class="gf-home-points">
-<li><strong>Components are choices.</strong> Auth, mail, database, metrics, Docker, frontend - picked at <code>forj new</code>, added later as the App grows.</li>
+<li><strong>Components are choices.</strong> Auth, mail, database, metrics, Docker, frontend — picked at <code>forj new</code>, added later as the App grows.</li>
 <li><strong>The structure is already there.</strong> Routes, wiring, lifecycle, configuration, and tests have a place before you write a line.</li>
 <li><strong>It runs before you configure anything.</strong> Local drivers back every primitive, so day one needs no cloud account and no docker-compose archaeology.</li>
 </ul>
@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
 <div class="gf-home-terminal" aria-label="Creating and running a GoForj App">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>photodrop · first run</em></div>
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>terminal</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>
 <span class="t-ok">✔</span> Project name <span class="t-dim">·</span> photodrop
 <span class="t-ok">✔</span> Components <span class="t-dim">·</span> cli, web_api, jobs, scheduler, database_sqlite, metrics
@@ -172,7 +172,7 @@ onBeforeUnmount(() => {
 </div>
 <div class="gf-home-swap__grid">
 <div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
-<p class="gf-home-swap__label">Your service - the same file in every environment</p>
+<p class="gf-home-swap__label">Your service — the same file in every environment</p>
 
 ```go
 // internal/photos/service.go
@@ -198,7 +198,7 @@ func (s *Service) Store(
 
 </div>
 <div class="gf-home-swap__env-col" data-reveal style="--reveal-delay: 0.16s">
-<p class="gf-home-swap__label">Your environment - the only thing that changes</p>
+<p class="gf-home-swap__label">Your environment — the only thing that changes</p>
 <div class="gf-home-swap__toggle" role="group" aria-label="Choose environment">
 <button type="button" :class="{ 'is-active': swapMode === 'local' }" @click="swapMode = 'local'">Local</button>
 <button type="button" :class="{ 'is-active': swapMode === 'production' }" @click="swapMode = 'production'">Production</button>
@@ -228,7 +228,7 @@ func (s *Service) Store(
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">The stack</p>
 <h2 class="gf-home-h2">Everything an application needs, in <em>one model</em></h2>
-<p class="gf-home-lead">The foundation teams rebuild in every service - already built, already coherent. One runtime, one configuration story, one operational surface.</p>
+<p class="gf-home-lead">The foundation teams rebuild in every service — already built, already coherent. One runtime, one configuration story, one operational surface.</p>
 </div>
 <div class="gf-home-grid">
 <a
@@ -268,7 +268,7 @@ func (s *Service) Store(
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
 <div class="gf-home-terminal" aria-label="Make commands and the package they build">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one feature · four entry points</em></div>
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one feature, four entry points</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:controller photos</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj make:job photos:thumbnail --queue media</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj make:schedule photos:digest --every 24h</span>
@@ -339,7 +339,7 @@ func (s *Service) Store(
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Tested foundation</p>
 <h2 class="gf-home-h2">Primitives that <em>prove themselves</em></h2>
-<p class="gf-home-lead">A driver should not only compile - it should prove its behavior against the backend it claims to support.</p>
+<p class="gf-home-lead">A driver should not only compile — it should prove its behavior against the backend it claims to support.</p>
 </div>
 <div class="gf-home-proof__stats">
 <div class="gf-home-proof__stat" data-reveal><strong data-count="2200" data-suffix="+">2,200+</strong><span>unit tests across the first-party libraries</span></div>
@@ -347,7 +347,7 @@ func (s *Service) Store(
 <div class="gf-home-proof__stat" data-reveal style="--reveal-delay: 0.16s"><strong data-count="40" data-suffix="+">40+</strong><span>interchangeable drivers across queue, events, cache, storage, database, and mail</span></div>
 <div class="gf-home-proof__stat" data-reveal style="--reveal-delay: 0.24s"><strong data-count="16" data-suffix="">16</strong><span>standalone libraries, each useful without the framework</span></div>
 </div>
-<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators.</p>
+<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators, not mocks of mocks.</p>
 </div>
 </section>
 
@@ -358,7 +358,7 @@ func (s *Service) Store(
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Verified scenarios</p>
 <h2 class="gf-home-h2">Learn it by <em>building it</em></h2>
-<p class="gf-home-lead">Seven scenarios grow one small App from a single route to a fully observable system. Each ships only after it executes against the current templates - the tutorial cannot drift from the framework.</p>
+<p class="gf-home-lead">Seven scenarios grow one small App from a single route to a fully observable system. Each ships only after it executes against the current templates — the tutorial cannot drift from the framework.</p>
 </div>
 <ol class="gf-home-path">
 <li
@@ -366,12 +366,12 @@ func (s *Service) Store(
   :key="s.href"
   class="gf-home-path__step"
   data-reveal
-  :style="{ '--reveal-delay': `${i * 0.045}s` }"
+  :style="{ '--reveal-delay': `${i * 0.07}s` }"
 >
 <a :href="s.href"><span class="gf-home-path__num">{{ i + 1 }}</span><span class="gf-home-path__label">{{ s.label }}</span></a>
 </li>
 </ol>
-<div class="gf-home-links gf-home-links--center" data-reveal style="--reveal-delay: 0.3s">
+<div class="gf-home-links gf-home-links--center" data-reveal style="--reveal-delay: 0.5s">
 <a href="/scenarios/">Start the scenario path →</a>
 </div>
 </div>
@@ -382,7 +382,7 @@ func (s *Service) Store(
 <section class="gf-home-section gf-home-manifesto">
 <div class="gf-home-section__inner" data-reveal>
 <blockquote class="gf-home-manifesto__quote">
-<p>I did not want to bring dynamic-language magic into Go. I wanted the full-stack experience I missed, built out of things that still feel like Go - explicit wiring, compiled binaries, small interfaces, readable control flow. <em>GoForj is the stack I always wanted.</em></p>
+<p>I did not want to bring dynamic-language magic into Go. I wanted the full-stack experience I missed, built out of things that still feel like Go — explicit wiring, compiled binaries, small interfaces, readable control flow. <em>GoForj is the stack I always wanted.</em></p>
 <footer>
 <strong>Chris Miles</strong>
 <span>Creator of GoForj</span>
@@ -402,13 +402,13 @@ func (s *Service) Store(
 <a class="gf-home-close__path" href="/getting-started/quickstart" data-reveal>
 <p class="gf-home-eyebrow">For your next application</p>
 <h3>Build a GoForj App</h3>
-<p>Runtime orchestration, explicit wiring, local-first drivers - and an optional Vue starter kit with auth, settings, and dashboard screens already shaped.</p>
+<p>Runtime orchestration, explicit wiring, local-first drivers — and an optional Vue starter kit with auth, settings, and dashboard screens already shaped.</p>
 <span class="gf-home-close__cta">Quickstart →</span>
 </a>
 <a class="gf-home-close__path" href="/libraries/" data-reveal style="--reveal-delay: 0.1s">
 <p class="gf-home-eyebrow">For your existing services</p>
 <h3>Adopt one library</h3>
-<p>Queue, events, cache, storage, web, mail, scheduler, and more - standalone Go packages with their own APIs, drivers, and test suites.</p>
+<p>Queue, events, cache, storage, web, mail, scheduler, and more — standalone Go packages with their own APIs, drivers, and test suites.</p>
 <span class="gf-home-close__cta">Browse libraries →</span>
 </a>
 </div>

@@ -25,15 +25,22 @@ These logical runtimes may run:
 
 Docs must not collapse these into one vague "app runtime".
 
+An app is the runnable boundary above these runtimes. A single Project may contain the default app plus named apps, and each app may expose HTTP, jobs, scheduler, CLI, or other runtimes.
+
 ## Commands
 
 Generated Apps expose both combined and leaf runtime commands:
 
 - `forj app`
+- `forj <app> app`
 - `forj api`
+- `forj <app> api`
 - `forj worker`
+- `forj <app> worker`
 - `forj scheduler`
+- `forj <app> scheduler`
 - `forj route:list`
+- `forj <app> route:list`
 
 The combined command is the normal local host path. Leaf commands remain important for production, explicit debugging, and distributed process layouts.
 
@@ -44,15 +51,20 @@ Built binaries should usually be documented with their direct command surface:
 - `./bin/app worker`
 - `./bin/app scheduler`
 - `./bin/app migrate`
+- `./bin/<app> worker`
+- `./bin/<app> scheduler`
+- `./bin/<app> migrate`
 
 Use `forj ...` when documenting developer CLI behavior inside a generated App. Use `forj run ...` only when documenting the explicit App-command path or a collision escape hatch. Use `./bin/app ...` when documenting deployment and process supervision.
 
 When explaining command execution, keep the surfaces distinct:
 
 - `forj <native-command>` runs Framework-owned commands.
-- `forj <app-command>` delegates to the generated App when no native command matches.
+- `forj <app-command>` delegates to the default app when no native command matches.
+- `forj <app> <command>` selects a named app when `<app>` matches a conventional app.
 - `forj run <app-command>` forces the source-aware App-command path.
 - `./bin/app <command>` runs the built binary and is the deployment/runtime surface.
+- `./bin/<app> <command>` runs a named app binary.
 
 Do not imply App-owned generation logic moved into the Framework CLI. `forj` may route commands, but App-owned generators and commands remain generated App code so they can use App configuration, dependencies, and wiring.
 
@@ -138,13 +150,16 @@ This nuance prevents two bad doc patterns:
 
 Runtime topology affects:
 
+- app identity
 - log component identity
 - metrics labels
 - Lighthouse agent identity
 - inspect source
 - health/readiness behavior
 
-Docs should preserve logical runtime labels such as `http`, `jobs`, `scheduler`, `cli`, and `startup` even when runtimes share one process.
+Docs should preserve app identity and logical runtime labels such as `http`, `jobs`, `scheduler`, `cli`, and `startup` even when runtimes share one process.
+
+Current generated scrape labels include `app`, `process`, `service`, and `environment`. Public prose may explain `process` as the runtime/process role, but examples should use source-confirmed labels.
 
 ## Documentation Requirements
 

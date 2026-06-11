@@ -26,7 +26,9 @@ Every runtime surface should answer:
 Document:
 
 - command: `forj api`
+- named app command: `forj <app> api`
 - built binary command: `./bin/app api`
+- named app binary command: `./bin/<app> api`
 - combined runtime command: `forj app`
 - built standalone command: `./bin/app run`
 - route registration
@@ -37,6 +39,7 @@ Document:
 - request inspects
 - graceful shutdown
 - route visibility through `forj route:list`
+- named app route visibility through `forj <app> route:list`
 
 Avoid:
 
@@ -48,7 +51,9 @@ Avoid:
 Document:
 
 - command: `forj worker`
+- named app command: `forj <app> worker`
 - built binary command: `./bin/app worker`
+- named app binary command: `./bin/<app> worker`
 - default queue behavior: no `--queue` starts every configured generated queue
 - queue selection: `--queue <name>` starts only the selected named queue; repeat for a subset
 - priority model: named queues plus worker allocation, for example `QUEUE_EMAILS_WORKERS=6` and `QUEUE_REPORTS_WORKERS=2`
@@ -60,6 +65,7 @@ Document:
 - job inspects
 - queue state visibility
 - production process supervision
+- app-prefixed backend queue names for named apps
 
 Explain that queue dispatch and queue work are separate concerns.
 
@@ -70,10 +76,14 @@ Keep backend-specific priority knobs secondary. The framework docs should lead w
 Document:
 
 - command: `forj scheduler`
+- named app command: `forj <app> scheduler`
 - built binary command: `./bin/app scheduler`
+- named app binary command: `./bin/<app> scheduler`
 - generated schedule command: `forj make:schedule <name> --every <duration>`
-- schedule registration in `internal/schedules/scheduler_registry.go`
-- App-owned schedule providers in `wire/inject_scheduler_schedules.go`
+- schedule registration in `app/schedules.go`
+- named app schedule registration in `app/<app>/schedules.go`
+- App-owned schedule providers in `app/wire/inject_schedules_app.go`
+- named app schedule providers in `app/<app>/wire/inject_schedules_app.go`
 - stable schedule names
 - overlap control
 - scheduler metrics
@@ -87,10 +97,12 @@ Document:
 Document:
 
 - generated command surfaces
-- `forj ...` as the normal generated App development surface inside a generated App
+- `forj ...` as the normal default app development surface inside a generated Project
+- `forj <app> ...` as the named app development surface
 - native `forj` commands taking precedence over delegated App commands
 - `forj run ...` as the explicit App-command path or collision escape hatch
 - `./bin/app ...` as the built App command surface
+- `./bin/<app> ...` as a named app built command surface
 - default-launch behavior from `forj build --auto-run` when relevant
 - command lifecycle
 - context cancellation
@@ -108,6 +120,8 @@ Document:
 - `/metrics` exposure
 - per-surface toggles
 - bounded labels
+- app identity labels
+- runtime/process labels
 - local scrape workflow
 - production scrape workflow
 - dashboard validation

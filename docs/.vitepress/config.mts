@@ -97,6 +97,7 @@ gtag('config', '${gaMeasurementId}');`]
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
 const codeVariantHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var key='goforjCodeVariant';var allowed={ink:1,obsidian:1,terminal:1,'desert-dusk':1,'retro-amber-crt':1,'sepia-noir':1,'mono-slate':1,paper:1,chrome:1,'rose-metal':1,'midnight-gold':1,halo:1,glass:1,amber:1,forest:1,sunset:1};var variant=localStorage.getItem(key)||'ink';document.documentElement.dataset.gfCodeVariant=allowed[variant]?variant:'ink';}catch(e){document.documentElement.dataset.gfCodeVariant='ink';}})();`]
 const searchHydrationHead: [string, Record<string, string>, string] = ['style', {}, `html:not(.gf-search-ready) .VPNavBarSearch{opacity:0}html.gf-search-ready .VPNavBarSearch{opacity:1;transition:opacity .12s ease}`]
+const motionPreferenceHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var v=localStorage.getItem('goforjMotion');if(v==='on'||v==='reduced'){document.documentElement.dataset.gfMotion=v;}}catch(e){}})();`]
 
 const pageUrl = (page: string) => {
   const cleanPath = page
@@ -152,6 +153,7 @@ export default defineConfig({
   head: [
     searchHydrationHead,
     codeVariantHead,
+    motionPreferenceHead,
     deferredHashHead,
     ['link', { rel: 'icon', type: 'image/png', sizes: '180x180', href: socialIcon }],
     ['link', { rel: 'icon', type: 'image/png', sizes: '96x96', href: socialIcon }],
@@ -284,6 +286,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/core/' },
           { text: 'App', link: '/core/app' },
+          { text: 'Apps', link: '/core/apps' },
           { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
           { text: 'Runtime Topology', link: '/core/runtime-topology' },
           { text: 'Dependency Injection', link: '/core/dependency-injection' },

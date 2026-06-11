@@ -1,30 +1,18 @@
 ---
 title: Runtime Topology
-description: Understand standalone and distributed runtime shapes in a generated GoForj App.
+description: Understand app and runtime process shapes in a GoForj Project.
 ---
 
 # Runtime Topology
 
-Runtime topology describes how enabled App runtimes are hosted: together in one process or split across explicit runtime commands.
+Runtime topology describes how an app's runtimes are hosted: together in one process or split across explicit commands.
 
-GoForj defaults to a local-first standalone topology while still making production process boundaries explicit.
+Apps and runtimes are different:
 
-## Modes
+- an app is the runnable boundary, such as `app` or `billing`
+- a runtime is a process role inside an app, such as HTTP, jobs, or scheduler
 
-Generated Apps model two runtime modes:
-
-| Mode | Meaning |
-| --- | --- |
-| `standalone` | Default. Enabled runtimes are hosted together in one process. |
-| `distributed` | Runtimes are expected to be launched through explicit runtime commands. |
-
-The runtime mode is resolved from:
-
-```text
-RUNTIME_MODE
-```
-
-## Standalone Runtime
+## Local Default
 
 The default local path is:
 
@@ -32,22 +20,17 @@ The default local path is:
 forj app
 ```
 
-This runs the generated App command alias `app`, which gathers enabled runtimes and hosts them together.
+This starts enabled runtimes together for the default app.
 
-Depending on selected components, the combined runtime can include:
+For a named app:
 
-- HTTP runtime
-- scheduler runtime
-- jobs runtime
-- metrics endpoint behavior
+```bash
+forj billing app
+```
 
-Standalone is useful for local development, onboarding, demos, and simple process models.
+## Split Runtimes
 
-For built binaries, production process commands, and `forj build --auto-run`, use [Standalone versus Distributed](/operations/standalone-vs-distributed).
-
-## Distributed Runtime
-
-Distributed topology uses explicit runtime commands:
+Run a specific runtime when you want separate process boundaries:
 
 ```bash
 forj api
@@ -55,67 +38,87 @@ forj worker
 forj scheduler
 ```
 
-Each command starts the App lifecycle and then runs the selected runtime boundary.
+For a named app:
 
-This is useful when an environment wants separate processes, containers, scaling rules, or restart policies for HTTP, workers, and scheduler.
+```bash
+forj billing api
+forj billing worker
+forj billing scheduler
+```
 
-This page uses `forj ...` because it explains the generated App model through the developer CLI. Deployment docs use `./bin/app ...` because they describe the built binary.
+The application behavior should not change when you split runtimes. Only process topology changes.
 
-## Runtime Host Behavior
+## Built Binaries
 
-The combined `app` command uses `internal/app.RuntimeHost`.
+Deployment docs use built binaries:
 
-The runtime host:
+```bash
+./bin/app run
+./bin/app api
+./bin/app worker
+./bin/app scheduler
+```
 
-- starts all configured runtimes
-- gives each runtime a shared cancellable context
-- cancels sibling runtimes when the first runtime fails
-- returns the first runtime failure with the runtime name
-- treats external context cancellation as graceful shutdown
+Named app binaries follow the app name:
 
-If no runtimes are configured, the host fails instead of silently doing nothing.
+```bash
+./bin/billing api
+./bin/billing worker
+```
 
-## Runtime Identities
+## Runtime Defaults
 
-Each hosted runtime has a logical identity.
+Generated `internal/runtime/apps.go` gives each app deterministic local defaults.
 
-Common identities are:
+| App | HTTP | Metrics | Scheduler metrics | Worker metrics |
+| --- | ---: | ---: | ---: | ---: |
+| `app` | `3000` | `10000` | `10001` | `10002` |
+| first named app | `3001` | `10010` | `10011` | `10012` |
 
-- `http`
-- `jobs`
-- `scheduler`
+Named apps do not consume default-app globals such as `PORT=3000`. Override one app with its uppercase app prefix:
 
-Runtime identities appear in errors, logs, metrics, and inspect records where relevant.
+```text
+BILLING_PORT=3100
+BILLING_METRICS_PORT=10110
+```
+
+## Observability Identity
+
+Operational data should preserve:
+
+- project identity
+- app identity
+- runtime or process role
+- instance identity when there are replicas
+
+Metrics scrape labels currently include `app`, `process`, `service`, and `environment`.
 
 ## Choosing A Topology
 
-Use standalone first:
+Use the combined runtime first for:
 
 - local development
-- quick demos
-- onboarding examples
-- simple process models
+- onboarding
+- simple deployments
 
-Use explicit runtime commands when:
+Use split runtimes when:
 
-- HTTP and workers need independent scaling
-- scheduler should run as a singleton process
+- HTTP and workers scale independently
+- scheduler should run as a singleton
 - queue workers need separate resource limits
-- production restart policy differs by runtime
-
-The App code should not need to change when topology changes.
+- process supervision differs by runtime
 
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not assume `forj app` is the only production shape.
-- Do not make business logic depend on whether HTTP, workers, and scheduler run in one process.
-- Do not hide runtime-specific startup in generic helpers when a runtime package owns that process boundary.
-- Do not run multiple scheduler processes unless the scheduler and deployment are configured for that behavior.
+- Do not create a named app just to split HTTP from workers.
+- Do not make business logic depend on whether runtimes run together or separately.
+- Do not expect process-local drivers to become shared infrastructure in distributed topology.
+- Do not run multiple scheduler replicas unless the scheduler and deployment are configured for it.
 :::
 
 ## Next Steps
 
+- [Apps](/core/apps) explains default and named apps.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown ordering.
 - [Runtime Processes](/operations/runtime-processes) explains production process deployment.
-- [Standalone versus Distributed](/operations/standalone-vs-distributed) explains built binary commands and default-launch binaries.

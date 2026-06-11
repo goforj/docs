@@ -19,7 +19,7 @@ Example layout:
 internal/billing/gateway.go
 internal/billing/provider.go
 internal/billing/service.go
-wire/inject_app_services.go
+app/wire/inject_services_app.go
 ```
 
 The application package owns the type the rest of the App should use:
@@ -97,10 +97,10 @@ func ProvideGateway() (*Gateway, error) {
 }
 ```
 
-Then the generated `wire` package imports the application package and adds its providers to the App graph:
+Then the app's `wire` package imports the application package and adds its providers to the app graph:
 
 ```go
-// wire/inject_app_services.go
+// app/wire/inject_services_app.go
 package wire
 
 import (
@@ -109,8 +109,8 @@ import (
 	"myapp/internal/billing"
 )
 
-var appSet = wire.NewSet(
-	// existing framework and app providers...
+var appServiceSet = wire.NewSet(
+	// existing app providers...
 	billing.ProvideGateway,
 	billing.NewService,
 )

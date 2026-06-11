@@ -26,7 +26,7 @@ internal/billing/invoice_paid_subscriber.go
 It also updates the App-owned subscriber injector:
 
 ```text
-wire/inject_event_subscribers.go
+app/wire/inject_subscribers_app.go
 ```
 
 Use `--bus` when the subscriber should attach to a named event bus:
@@ -51,7 +51,7 @@ Register subscribers through generated or documented App registration surfaces b
 
 Subscriber registration should be visible in App construction, not hidden in package `init` functions.
 
-Generated subscribers are registered in `wire/inject_event_subscribers.go`. The file is rendered once and preserved across re-renders, so App-owned subscriber wiring stays with the App.
+Generated subscribers are registered in `app/wire/inject_subscribers_app.go`. Named apps use `app/<name>/wire/inject_subscribers_app.go`. The file is rendered once and preserved across re-renders, so app-owned subscriber wiring stays with the app.
 
 The event type itself does not belong in the provider graph. The subscriber object or registrar does, because it may need services, repositories, queues, or publishers injected before it subscribes to the bus during App startup.
 

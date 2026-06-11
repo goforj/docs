@@ -41,7 +41,7 @@ Common framework-owned routes:
 - `/metrics` when metrics are enabled
 - Lighthouse routes when enabled
 
-Application routes should be registered through `internal/router`, not by editing framework route registration.
+Application routes should be registered through `app/routes.go` or `app/<name>/routes.go`, not by editing framework route registration.
 
 ## Route Visibility
 
@@ -54,6 +54,12 @@ Use:
 ```
 
 for the full route table.
+
+For a named app binary, use that app's binary:
+
+```bash
+./bin/billing route:list
+```
 
 ## Common Mistakes
 

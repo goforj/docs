@@ -1,165 +1,120 @@
 ---
 title: Runtime Lifecycle
-description: How a GoForj App starts, runs commands and runtimes, and shuts down.
+description: How a GoForj app starts, runs commands and runtimes, and shuts down.
 ---
 
 # Runtime Lifecycle
 
-The runtime lifecycle is the ordered path from App construction to startup, command execution, runtime work, and graceful shutdown.
+The runtime lifecycle is the ordered path from app construction to startup, command execution, runtime work, and graceful shutdown.
 
-GoForj keeps lifecycle behavior explicit so commands, HTTP servers, workers, schedulers, metrics, events, and storage all have a predictable place to start and stop.
+GoForj keeps this path explicit. Startup and shutdown behavior belongs in documented hooks, not package globals or hidden runtime registration.
 
-## When To Use Lifecycle Hooks
+## Start Here
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | App behavior must run at startup or shutdown with injected dependencies. |
-| Avoid this when | The behavior belongs to a request, job, schedule, command, constructor, or package `init` function. |
-| Start with | `internal/app/lifecycle_registry.go` and small service methods registered on the right phase. |
-| Upgrade to | Runtime-specific lifecycle policy only when the behavior is framework-owned or belongs to every generated App. |
+Use lifecycle hooks when app behavior must run at startup or shutdown with injected dependencies.
 
-## Why It Exists
+Default app:
 
-Go applications often accumulate startup behavior in `main.go`, package `init` functions, or hidden global state.
+```text
+app/lifecycle.go
+```
 
-GoForj avoids that. The generated App creates dependencies through Wire, registers lifecycle hooks explicitly, starts the App before command execution, and shuts it down through the lifecycle manager.
+Named app:
+
+```text
+app/billing/lifecycle.go
+```
+
+Do not use lifecycle hooks for ordinary request, job, schedule, command, or constructor work.
 
 ## Execution Flow
 
-The generated `main.go` keeps the entry point small:
+An app command follows this shape:
 
 1. load environment configuration
-2. handle skip-boot commands when applicable
-3. register embedded frontend assets when Web UI is enabled
-4. initialize the App through `wire.InitializeApplication()`
-5. call `app.Run(nil, args)`
-
-Inside `App.Run`, the App:
-
-1. parses generated CLI commands
-2. attaches a cancellable context
-3. begins an inspect record for command execution
-4. starts the App lifecycle
-5. runs the selected command
-6. shuts the App down with a bounded timeout
-7. finishes the inspect record
+2. initialize the app through its Wire graph
+3. parse the selected command
+4. start lifecycle phases
+5. run the command or runtime
+6. shut down with bounded timeouts
 
 ```mermaid
 flowchart LR
-  construct["construct App"] --> parse["parse command"]
-  parse --> inspect["begin inspect"]
-  inspect --> startup["BeforeStartup -> Startup -> AfterStartup"]
-  startup --> command["run selected command"]
+  entry["cmd/<app>/main.go"] --> wire["app/<app>/wire"]
+  wire --> startup["BeforeStartup -> Startup -> AfterStartup"]
+  startup --> command["run command or runtime"]
   command --> shutdown["BeforeShutdown -> Shutdown -> AfterShutdown"]
-  shutdown --> finish["finish inspect"]
 ```
 
-## Lifecycle Phases
+## Lifecycle Support
 
-Generated Apps use the lifecycle manager in `internal/app`.
+Reusable lifecycle machinery lives in:
 
-Startup phases run in registration order:
+```text
+internal/runtime
+```
 
-- `BeforeStartup`
-- `Startup`
-- `AfterStartup`
+Generated app metadata lives in:
 
-Shutdown phases run in reverse registration order:
+```text
+internal/runtime/apps.go
+```
 
-- `BeforeShutdown`
-- `Shutdown`
-- `AfterShutdown`
-
-Startup runs once. Shutdown runs only after startup has completed.
+App owners should edit `app/lifecycle.go`, not `internal/runtime`.
 
 ## Register Hooks
 
-The primary user extension point is:
-
-```text
-internal/app/lifecycle_registry.go
-```
-
-Use this file when application code needs startup or shutdown behavior.
+Example:
 
 ```go
 package app
 
 type LifecycleRegistry struct {
-	reportService *reports.Service
+	reports *reports.Service
 }
 
-func NewLifecycleRegistry(reportService *reports.Service) *LifecycleRegistry {
-	return &LifecycleRegistry{reportService: reportService}
+func NewLifecycleRegistry(reports *reports.Service) *LifecycleRegistry {
+	return &LifecycleRegistry{reports: reports}
 }
 
-func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
-	lifecycle.On(Startup, func(ctx context.Context) error {
-		return r.reportService.WarmCache(ctx)
-	})
+func (r *LifecycleRegistry) Startup(ctx context.Context) error {
+	return r.reports.WarmCache(ctx)
+}
 
-	lifecycle.On(Shutdown, func(ctx context.Context) error {
-		return r.reportService.Flush(ctx)
-	})
+func (r *LifecycleRegistry) Shutdown(ctx context.Context) error {
+	return r.reports.Flush(ctx)
 }
 ```
 
-`NewLifecycleRegistry` is built by Wire, so it can receive injected services and repositories.
-
-## Framework Hooks
-
-GoForj also registers framework-owned lifecycle hooks during App construction.
-
-Examples include:
-
-- event buses start during startup and close during shutdown
-- database connections close during shutdown
-- framework-owned queue job handlers are registered during App construction
-- cache observers record cache operations into inspects
-- event observers record events into inspects and metrics
-
-These hooks are registered explicitly in the generated App wiring. They are not hidden runtime registrations.
-
-App-owned handlers and subscribers should still be registered through documented App extension points before their runtime starts.
-
-## Shutdown Timeouts
-
-The App resolves timeout policy once near the root runtime.
-
-Important variables include:
-
-```text
-APP_SHUTDOWN_TIMEOUT=30s
-SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
-QUEUE_SHUTDOWN_TIMEOUT=10s
-```
-
-The scheduler subprocess path can use a scheduler-specific shutdown timeout. Normal App shutdown uses the App shutdown timeout.
+`NewLifecycleRegistry` is built by Wire, so it can receive services and repositories.
 
 ## Runtime Boundaries
 
-The lifecycle applies to every generated command, but not every command starts the same long-running work.
+The lifecycle applies to generated commands, but commands do different work:
 
-Examples:
+- `forj route:list` starts, lists routes, and shuts down.
+- `forj api` starts the HTTP runtime and blocks.
+- `forj worker` starts workers and blocks.
+- `forj scheduler` starts scheduler work and blocks.
+- `forj app` starts enabled runtimes together.
 
-- `forj route:list` starts the App lifecycle, lists routes, and shuts down.
-- `forj api` starts the HTTP runtime and blocks until interrupted.
-- `forj worker` starts worker runtime behavior and blocks until interrupted.
-- `forj scheduler` starts scheduler runtime behavior and blocks until interrupted.
-- `forj app` starts enabled runtimes together through the runtime host.
+Named apps use the same shape:
 
-Runtime-specific behavior belongs near the runtime package that owns it.
+```bash
+forj billing api
+forj billing worker
+```
 
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not put startup behavior in `main.go` when it belongs in `internal/app/lifecycle_registry.go`.
-- Do not make required dependencies appear optional. Construction and lifecycle behavior should expose invalid setup clearly.
-- Do not run long-lived runtime startup from random constructors.
-- Do not scatter shutdown behavior across package globals.
+- Do not put startup behavior in `cmd/<app>/main.go`.
+- Do not put app-specific startup behavior in `internal/runtime`.
+- Do not make required dependencies appear optional.
+- Do not start long-lived runtime work from constructors.
 :::
 
 ## Next Steps
 
-- [Runtime Topology](/core/runtime-topology) explains combined and split runtime process shapes.
+- [Runtime Topology](/core/runtime-topology) explains app and runtime process shapes.
 - [Project Structure](/getting-started/project-structure) explains where runtime packages live.

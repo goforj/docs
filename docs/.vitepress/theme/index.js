@@ -6,6 +6,7 @@ import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import GoForjHeroStack from './components/GoForjHeroStack.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
+import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -501,7 +502,7 @@ export default {
       'home-hero-before': () => h(GoForjHeroStack),
       'layout-top': () => h(DocsPreviewBanner),
       'doc-before': () => h(LibraryRepoHeader),
-      'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker)]
+      'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker), h(MotionPicker)]
     })
   },
   setup() {

@@ -5,30 +5,33 @@ description: How to add application commands to generated GoForj Apps.
 
 # Commands
 
-Commands are first-class App entry points for developer, operator, and application workflows.
+Commands are app entry points for developer, operator, and application workflows.
 
-They run through the generated App lifecycle, use injected dependencies, and are exposed through `forj`.
+They run through the generated app lifecycle, use injected dependencies, and are exposed through `forj` and the app binary.
 
 ## Running Commands
 
-Use:
-
-```bash
-forj <command>
-```
-
-Examples:
+Use the command name directly for the default app:
 
 ```bash
 forj route:list
-forj hello:world
+forj reports:reconcile
 forj worker
 forj scheduler
 ```
 
-Inside a generated App, native GoForj commands take precedence. If no native command matches, GoForj delegates to the generated App through the same source-aware path as `forj run <command>`. Use `forj run <command>` when you want to force App command execution explicitly, and use `./bin/app <command>` when running the built binary.
+Use the app name first for a named app:
 
-The command runs inside the generated App, not as an ad hoc shell script around it.
+```bash
+forj billing route:list
+forj billing reports:reconcile
+forj billing worker
+forj billing scheduler
+```
+
+Inside a generated Project, native GoForj commands take precedence. If no native command matches, GoForj delegates to the active app. Use `forj run <command>` when you want to force default app command execution explicitly, and use `./bin/<app> <command>` when running a built binary.
+
+The command runs inside the generated app, not as an ad hoc shell script around it.
 
 ## Command Shape
 
@@ -56,13 +59,19 @@ Inject services through the constructor. Keep command code focused on flags, inp
 
 ## Make Commands
 
-Use `forj make:command` when starting a new application command:
+Use `forj make:command` when starting a new default app command:
 
 ```bash
 forj make:command reports:reconcile
 ```
 
-The make command generates the command and injects it into the generated command wiring surfaces. In the normal flow, you do not hand-edit the command Wire set or command collection just to expose the new command.
+Use the app prefix for a named app command:
+
+```bash
+forj billing make:command reports:reconcile
+```
+
+The make command generates the command and injects it into the active app's command wiring surfaces. In the normal flow, you do not hand-edit the command Wire set or command collection just to expose the new command.
 
 Use `category:action` names for application commands:
 
@@ -70,7 +79,7 @@ Use `category:action` names for application commands:
 forj make:command reports:sync
 ```
 
-This creates `internal/reports/sync_cmd.go` and exposes the generated command through the App command tree. If the command belongs in a deeper package, keep the command name short and use `-d` for placement:
+This creates `internal/reports/sync_cmd.go` and exposes the generated command through the app command tree. If the command belongs in a deeper package, keep the command name short and use `-d` for placement:
 
 ```bash
 forj make:command reports:sync -d ./internal/billing/reports
@@ -81,10 +90,12 @@ See [Naming Conventions](/core/naming-conventions) for command naming rules and 
 Review what the make command created or updated:
 
 - the command type owns `Signature`, constructor, and `Run`
-- `internal/cmd/wire.go` provides the command constructor
-- `internal/cmd/app_commands.go` exposes the command through the generated command tree
+- `app/wire/inject_cmd_app.go` provides the command constructor
+- `app/commands.go` exposes the command through the default app command tree
 
-If the command delegates to an application service, make sure that service is wired through `wire/inject_app_services.go`. The make command wires the command; application services still belong in the app services set.
+For a named app, the same files live under `app/<name>/`.
+
+If the command delegates to an application service, make sure that service is wired through `app/wire/inject_services_app.go` or `app/<name>/wire/inject_services_app.go`. The make command wires the command; application services still belong in the app services set.
 
 Run:
 
@@ -93,9 +104,16 @@ forj build
 forj reports:reconcile
 ```
 
-`forj build` verifies the generated graph. Running the command verifies the generated `Signature` is exposed through the App command tree. Use the command name from the generated or edited `Signature`.
+For a named app, run:
 
-`forj make:command` checks the current GoForj and generated App command surfaces and rejects names that are already in use, such as `build`, `dev`, `new`, `generate`, and `run`. Choose an app-specific operator name such as `reports:sync` or `billing:reconcile`.
+```bash
+forj build
+forj billing reports:reconcile
+```
+
+`forj build` verifies the generated graph. Running the command verifies the generated `Signature` is exposed through the app command tree. Use the command name from the generated or edited `Signature`.
+
+`forj make:command` checks the current GoForj and generated app command surfaces and rejects names that are already in use, such as `build`, `dev`, `new`, `generate`, and `run`. Choose an app-specific operator name such as `reports:sync` or `billing:reconcile`.
 
 ## Registering Commands
 
@@ -103,65 +121,10 @@ forj reports:reconcile
 
 If you are reviewing generated output or wiring a command by hand, a command needs two registrations:
 
-- a constructor in the command Wire set
-- a field in the generated command collection
-
-First, expose the constructor from:
-
-```text
-internal/cmd/wire.go
-```
-
-Add the constructor to `AppCommandSet`:
-
-```go
-var AppCommandSet = wire.NewSet(
-	// existing command providers...
-	NewReconcileReportsCmd,
-)
-```
-
-If the command lives in another package, import that package and use its constructor:
-
-```go
-var AppCommandSet = wire.NewSet(
-	// existing command providers...
-	reports.NewReconcileReportsCmd,
-)
-```
+- a constructor in `app/wire/inject_cmd_app.go`
+- a field in `app/commands.go`
 
 The command constructor should receive application services as parameters. It should not create repositories, managers, clients, or services itself.
-
-Then expose the command through the generated App command collection:
-
-```text
-internal/cmd/app_commands.go
-```
-
-Add a field to `AppCommands`:
-
-```go
-type AppCommands struct {
-	// existing commands...
-	ReconcileReportsCmd ReconcileReportsCmd `cmd:""`
-}
-```
-
-Add the command to `NewAppCommands` so Wire can pass it into the command tree:
-
-```go
-func NewAppCommands(
-	// existing command parameters...
-	reconcileReportsCmd *ReconcileReportsCmd,
-) *AppCommands {
-	return &AppCommands{
-		// existing command assignments...
-		ReconcileReportsCmd: *reconcileReportsCmd,
-	}
-}
-```
-
-This makes `reports:reconcile` available through the generated App binary and through `forj reports:reconcile`.
 
 Run:
 

@@ -7,7 +7,7 @@ description: How to interpret missing provider, duplicate provider, wrong set, a
 
 Wire errors are compile-time graph errors.
 
-When `forj build` fails during Wire generation, the App graph could not be constructed from the provider sets. The fix is usually to add, remove, or move a provider. Do not edit `wire/wire_gen.go`.
+When `forj build` fails during Wire generation, the app graph could not be constructed from the provider sets. The fix is usually to add, remove, or move a provider. Do not edit `app/wire/wire_gen.go`.
 
 ## Read The Chain
 
@@ -27,7 +27,7 @@ This says:
 - Wire cannot find a provider that returns `*users.Service`.
 - The failing graph is the HTTP controller graph.
 
-The fix is not to edit `wire/wire_gen.go`. Add the missing service provider to the set that provides application services.
+The fix is not to edit `app/wire/wire_gen.go`. Add the missing service provider to the set that provides application services.
 
 ## Missing Provider
 
@@ -42,8 +42,8 @@ func NewController(service *users.Service) *Controller {
 Fix:
 
 ```go
-var appSet = wire.NewSet(
-	// existing framework and app providers...
+var appServiceSet = wire.NewSet(
+	// existing app providers...
 	users.NewService,
 )
 ```
@@ -67,10 +67,10 @@ Check the file names:
 
 | Value | Usually belongs in |
 | --- | --- |
-| Application service | `wire/inject_app_services.go` |
-| HTTP controller | `wire/inject_http_controllers.go` |
-| App command | `internal/cmd/wire.go` |
-| Job handler | `wire/inject_jobs_app.go` when jobs are enabled |
+| Application service | `app/wire/inject_services_app.go` |
+| HTTP controller | `app/wire/inject_http_controllers_app.go` |
+| App command | `app/wire/inject_cmd_app.go` and `app/commands.go` |
+| Job handler | `app/wire/inject_jobs_app.go` when jobs are enabled |
 
 If the error is about a controller, adding the service constructor to the controller set is usually the wrong fix. Controllers belong in the controller set; services belong in the app services set.
 
@@ -155,7 +155,7 @@ forj build
 Do not manually edit:
 
 ```text
-wire/wire_gen.go
+app/wire/wire_gen.go
 ```
 
 Change providers, constructors, or generated component inputs, then regenerate.

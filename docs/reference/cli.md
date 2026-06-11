@@ -13,22 +13,31 @@ Use workflow pages for full context.
 
 | Command | Purpose |
 | --- | --- |
-| `forj new` | Create a new generated GoForj App through the interactive wizard. |
+| `forj new` | Create a new GoForj Project through the interactive wizard. |
 | `forj build` | Run generation, Wire, API indexing, then `go build`. |
 | `forj run <app-command>` | Run generation, API indexing, then `go run . <app-command>`. |
 | `forj dev` | Run local development watchers from `.goforj.yml`. |
 | `forj generate` | Refresh generated component code and derived files. |
+| `forj make:app <name>` | Create a named app in the current Project. |
 | `forj make:controller <name>` | Generate an HTTP controller and wire it into HTTP. |
 | `forj make:command <name>` | Generate an application command and wire it into the App command tree. |
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
 
-Inside a generated App, `forj <command>` is the normal development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the generated App through the same source-aware path as `forj run <command>`.
+Inside a generated Project, `forj <command>` is the normal default-app development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the default app through the same source-aware path as `forj run <command>`.
+
+Named apps use an app prefix:
+
+```bash
+forj billing route:list
+forj billing build
+forj billing worker
+```
 
 Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands. Use `./bin/app <command>` for the built binary and deployment/runtime process supervision.
 
 ## Common App Commands
 
-Run these as `forj <command>` during development or directly through `./bin/app <command>` after build.
+Run these as `forj <command>` during development or directly through `./bin/app <command>` after build. For named apps, use `forj <app> <command>` or `./bin/<app> <command>`.
 
 Prefer the short aliases in day-to-day commands. The canonical command names remain available.
 
@@ -67,6 +76,9 @@ forj make:schedule reports:daily --every 24h
 ./bin/app scheduler
 ./bin/app db
 ./bin/app cache
+
+forj billing route:list
+./bin/billing worker
 ```
 
 These resolve to generated App commands through Kong aliases.
@@ -97,12 +109,20 @@ forj cache -- PING
 forj cache sessions -- GET user:1
 ```
 
-Controller, command, and migration generation are project-level `forj` commands:
+App and resource generation are project-level `forj` commands:
 
 ```bash
+forj make:app billing
 forj make:controller users
 forj make:command reports:reconcile
 forj make:migration create_users
+```
+
+To register generated code into a named app, prefix the command:
+
+```bash
+forj billing make:controller billing:invoices
+forj billing make:job billing:invoice-reminders --queue invoices
 ```
 
 File-generating make commands support `--open` / `-o` to open the generated file and `--no-open` to suppress opening. See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and `FORJ_MAKE_OPEN` configuration.

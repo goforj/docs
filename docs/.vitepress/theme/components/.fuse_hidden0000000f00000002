@@ -1273,6 +1273,11 @@ function adjustColor(color, amount) {
               <stop offset="55%" stop-color="#9ca3af" stop-opacity="0.04" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01" />
             </linearGradient>
+            <linearGradient id="gf-sweep" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="50%" stop-color="#ffffff" stop-opacity="0.16" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+            </linearGradient>
           </defs>
 
           <ellipse cx="438" cy="404" rx="214" ry="178" fill="url(#hero-ambient)" opacity="0.72" />
@@ -1501,6 +1506,10 @@ function adjustColor(color, amount) {
                 </g>
               </a>
             </template>
+          </g>
+
+          <g class="gf-light-sweep" aria-hidden="true">
+            <rect x="-280" y="20" width="240" height="880" fill="url(#gf-sweep)" transform="skewX(-18)" />
           </g>
 
           <ellipse
@@ -1879,6 +1888,21 @@ function adjustColor(color, amount) {
   filter: saturate(1) brightness(1.04);
 }
 
+/* Traveling light sweep across the stack. */
+.gf-light-sweep {
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  pointer-events: none;
+  animation: gfSweep 14s linear infinite 4s;
+}
+@keyframes gfSweep {
+  0% { transform: translateX(0); opacity: 0; }
+  2% { opacity: 1; }
+  16% { opacity: 1; }
+  20% { transform: translateX(1300px); opacity: 0; }
+  100% { transform: translateX(1300px); opacity: 0; }
+}
+
 /* Keyboard focus mirrors hover. */
 .gf-iso-item-wrapper:focus {
   outline: none;
@@ -1940,6 +1964,7 @@ function adjustColor(color, amount) {
   html:not([data-gf-motion='on']) .gf-loop-spark,
   html:not([data-gf-motion='on']) .gf-strike-ember,
   html:not([data-gf-motion='on']) .gf-strike-flash,
+  html:not([data-gf-motion='on']) .gf-light-sweep,
   html:not([data-gf-motion='on']) .gf-hero-svg.is-striking,
   html:not([data-gf-motion='on']) .is-striking .iso-stamp,
   html:not([data-gf-motion='on']) .gf-iso-item[data-block='assembly-input-left'],
@@ -1948,7 +1973,8 @@ function adjustColor(color, amount) {
     animation: none;
   }
   html:not([data-gf-motion='on']) .gf-ember,
-  html:not([data-gf-motion='on']) .gf-loop-spark {
+  html:not([data-gf-motion='on']) .gf-loop-spark,
+  html:not([data-gf-motion='on']) .gf-light-sweep {
     opacity: 0;
   }
 }
@@ -1959,6 +1985,7 @@ html[data-gf-motion='reduced'] .gf-ember,
 html[data-gf-motion='reduced'] .gf-loop-spark,
 html[data-gf-motion='reduced'] .gf-strike-ember,
 html[data-gf-motion='reduced'] .gf-strike-flash,
+html[data-gf-motion='reduced'] .gf-light-sweep,
 html[data-gf-motion='reduced'] .gf-hero-svg.is-striking,
 html[data-gf-motion='reduced'] .is-striking .iso-stamp,
 html[data-gf-motion='reduced'] .gf-iso-item[data-block='assembly-input-left'],
@@ -1967,7 +1994,8 @@ html[data-gf-motion='reduced'] .gf-iso-item[data-block='assembly-result'] {
   animation: none !important;
 }
 html[data-gf-motion='reduced'] .gf-ember,
-html[data-gf-motion='reduced'] .gf-loop-spark {
+html[data-gf-motion='reduced'] .gf-loop-spark,
+html[data-gf-motion='reduced'] .gf-light-sweep {
   opacity: 0;
 }
 .gf-iso-item {

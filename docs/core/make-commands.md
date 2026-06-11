@@ -9,6 +9,15 @@ Make commands create application resources and update the generated wiring surfa
 
 They are the normal starting point for controllers, commands, jobs, schedules, events, models, and migrations. Generate the resource, review the changed files, then add the product behavior that belongs to your App.
 
+In a multi-app Project, run make commands through the app that owns the resource:
+
+```bash
+forj billing make:controller reports
+forj billing make:command reports:sync
+```
+
+This keeps app composition in `app/billing/...` while shared domain code can still live under `internal/...`.
+
 ## Package Placement
 
 Make commands prefer colocated packages, but command names should stay operationally short.
@@ -45,7 +54,7 @@ See [Organizing Generated Code](/core/organizing-generated-code) for the broader
 | `forj make:model <table>` | Model and repository | `--package` controls the model package | repository set |
 | `forj make:migration <name>` | SQL migration files | writes to the migrations directory | none |
 
-Some make commands are native GoForj commands and some are generated App commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the App through the same source-aware path as `forj run`.
+Some make commands are native GoForj commands and some are generated app commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
 
 ## Opening Generated Files
 
@@ -146,7 +155,7 @@ Create a colocated schedule:
 forj make:schedule reports:daily --every 24h
 ```
 
-This creates `internal/reports/daily_schedule.go`, wires the schedule constructor into the App-owned `wire/inject_scheduler_schedules.go`, and registers it through the App schedule registry with the `reports:daily` schedule name. If `--every` is omitted, GoForj writes a valid `1h` starter interval that you can edit in the generated file.
+This creates `internal/reports/daily_schedule.go`, wires the schedule constructor into the app-owned `app/wire/inject_schedules_app.go`, and registers it through `app/schedules.go` with the `reports:daily` schedule name. If `--every` is omitted, GoForj writes a valid `1h` starter interval that you can edit in the generated file.
 
 Create a colocated event:
 
@@ -162,7 +171,7 @@ Create a subscriber for a colocated event:
 forj make:subscriber billing:invoice-paid
 ```
 
-This creates `internal/billing/invoice_paid_subscriber.go`, wires the subscriber constructor into the App-owned `wire/inject_event_subscribers.go`, and subscribes it to the default event bus. Use `--bus audit` to subscribe through a named event bus configured by `EVENTS_AUDIT_DRIVER`.
+This creates `internal/billing/invoice_paid_subscriber.go`, wires the subscriber constructor into the app-owned `app/wire/inject_subscribers_app.go`, and subscribes it to the default event bus. Use `--bus audit` to subscribe through a named event bus configured by `EVENTS_AUDIT_DRIVER`.
 
 Create a model in an explicit package:
 
@@ -204,8 +213,8 @@ Make commands update the framework-owned files that should not require hand edit
 - `make:command` adds the command provider and App command collection entry.
 - `make:job` adds the job provider.
 - `make:queue` updates `.env` queue resource keys.
-- `make:schedule` adds the schedule provider to `wire/inject_scheduler_schedules.go`, which is preserved across re-renders.
-- `make:subscriber` adds the subscriber provider and subscription to `wire/inject_event_subscribers.go`, which is preserved across re-renders.
+- `make:schedule` adds the schedule provider to `app/wire/inject_schedules_app.go` and the schedule registration to `app/schedules.go`, which are preserved across re-renders.
+- `make:subscriber` adds the subscriber provider and subscription to `app/wire/inject_subscribers_app.go`, which is preserved across re-renders.
 - `make:model` adds the repository provider.
 
 `make:event` and `make:migration` generate files that do not need a provider registration by default.

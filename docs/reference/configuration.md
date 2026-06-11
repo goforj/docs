@@ -16,7 +16,7 @@ The project file records render-time choices and local development workflow.
 
 | Key | Purpose |
 | --- | --- |
-| `project_name` | Generated App name. |
+| `project_name` | Generated Project display name. |
 | `module_name` | Go module path. |
 | `updated_at` | Timestamp written by rendering workflows. |
 | `render.components` | Selected framework components. |
@@ -24,6 +24,7 @@ The project file records render-time choices and local development workflow.
 | `render.queue_driver` | Initial queue driver selection. |
 | `render.goforj_version` | GoForj version recorded for the rendered App. |
 | `render.module_replaces` | Local module replacements for sibling repos. |
+| `apps` | Optional per-app component and starter-kit metadata for named apps. |
 | `dev.pre` | Development pre-tasks. |
 | `dev.down` | Development teardown tasks. |
 | `dev.watches` | `forj dev` watcher definitions. |
@@ -55,6 +56,28 @@ dev:
       watch: "-file=.go -xfile=_test.go ."
       exec: forj build
 ```
+
+## Apps
+
+Named apps are discovered from layout:
+
+```text
+cmd/billing/main.go
+app/billing/
+```
+
+When a named app has app-specific component choices, `.goforj.yml` records them under `apps`:
+
+```yaml
+apps:
+  billing:
+    components:
+      web_api: true
+      jobs: true
+    starter_kit: none
+```
+
+Project-level components describe the rendered support surface. `forj make:app` may promote app-safe capabilities into the project render set when a new app needs them.
 
 ## Component Names
 
