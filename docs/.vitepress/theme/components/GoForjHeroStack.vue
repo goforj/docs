@@ -107,6 +107,15 @@ const BLURBS = {
   'cache-dynamodb': 'DynamoDB-backed shared cache'
 }
 
+// On narrow screens, widen the viewBox to the artwork's true ink box
+// (measured 29..1067 x 38..1067) so the whole forge fits instead of
+// clipping its right side.
+const isNarrow = ref(false)
+let narrowQuery = null
+const onNarrowChange = (event) => {
+  isNarrow.value = event.matches
+}
+
 // Pointer parallax, hover tooltip, and strike state.
 const parallax = ref({ x: 0, y: 0 })
 const tooltipPos = ref({ x: 0, y: 0 })
@@ -202,6 +211,11 @@ function onGraphicLeave() {
 }
 
 onMounted(() => {
+  if (typeof window.matchMedia === 'function') {
+    narrowQuery = window.matchMedia('(max-width: 640px)')
+    isNarrow.value = narrowQuery.matches
+    narrowQuery.addEventListener('change', onNarrowChange)
+  }
   setTimeout(() => {
     isMounted.value = true
   }, 100)
@@ -212,6 +226,7 @@ onBeforeUnmount(() => {
   parallaxRaf = 0
   if (installCopyTimer) window.clearTimeout(installCopyTimer)
   if (strikeTimer) window.clearTimeout(strikeTimer)
+  if (narrowQuery) narrowQuery.removeEventListener('change', onNarrowChange)
 })
 
 // PROFESSIONAL SVG ICON PATHS
@@ -1123,7 +1138,7 @@ function adjustColor(color, amount) {
         <svg
           class="gf-hero-svg"
           :class="{ 'is-striking': strikeActive }"
-          viewBox="0 0 800 900"
+          :viewBox="isNarrow ? '20 30 1060 1050' : '0 0 800 900'"
           preserveAspectRatio="xMidYMid meet"
           :style="{ transform: `translate3d(${parallax.x.toFixed(2)}px, ${parallax.y.toFixed(2)}px, 0)` }"
         >
