@@ -323,9 +323,15 @@ function stickyOffset(extraPadding = 0) {
     getComputedStyle(document.documentElement).getPropertyValue('--vp-nav-height') || '',
     10
   ) || 64
+  const banner = document.querySelector('.gf-docs-preview-banner')
+  const bannerBottom = banner ? banner.getBoundingClientRect().bottom : 0
   const navFloor = Math.max(cssNavHeight, Math.ceil(navBarHeight))
   const navOffset = Math.max(navBottom > 0 ? navBottom : 0, navFloor)
-  const offset = Math.max(navOffset, localNavBottom > 0 ? localNavBottom : 0)
+  const offset = Math.max(
+    navOffset,
+    localNavBottom > 0 ? localNavBottom : 0,
+    bannerBottom > 0 ? bannerBottom : 0
+  )
   return Math.ceil(offset) + 16 + extraPadding
 }
 
@@ -433,6 +439,38 @@ function applyCodeVariantPreference() {
   document.documentElement.dataset.gfCodeVariant = variant
 }
 
+function flashHashTarget() {
+  if (typeof window === 'undefined' || !window.location.hash) return
+  const target = getHashTarget(window.location.hash)
+  if (!target) return
+  const heading = target.matches('h1, h2, h3, h4, h5, h6')
+    ? target
+    : target.querySelector('h1, h2, h3, h4, h5, h6')
+  if (!heading) return
+  heading.classList.remove('gf-hash-glow')
+  void heading.offsetWidth
+  heading.classList.add('gf-hash-glow')
+  window.setTimeout(() => heading.classList.remove('gf-hash-glow'), 1800)
+}
+
+function updateBannerOffsetVar() {
+  if (typeof document === 'undefined') return
+  const banner = document.querySelector('.gf-docs-preview-banner')
+  const height = banner ? Math.ceil(banner.getBoundingClientRect().height) : 0
+  document.documentElement.style.setProperty('--gf-banner-height', `${height}px`)
+}
+
+function replayDocEnter() {
+  if (typeof document === 'undefined') return
+  const el = document.documentElement
+  el.classList.remove('gf-doc-enter')
+  // Force a style flush so removing and re-adding the class restarts the animation.
+  // Synchronous on purpose: rAF is throttled in background tabs and the class
+  // would never come back.
+  void document.body.offsetHeight
+  el.classList.add('gf-doc-enter')
+}
+
 function revealNavbarSearch() {
   if (typeof document === 'undefined') return
   requestAnimationFrame(() => {
@@ -537,17 +575,25 @@ export default {
       })
     }
 
+    let onBannerResize = null
+
     onMounted(() => {
       applyCodeVariantPreference()
       revealNavbarSearch()
       initLightbox()
+      updateBannerOffsetVar()
+      onBannerResize = () => updateBannerOffsetVar()
+      window.addEventListener('resize', onBannerResize)
       refreshSoon()
+      nextTick().then(replayDocEnter)
       restoreDeferredInitialHash()
+      window.setTimeout(flashHashTarget, 700)
 
       onHashChange = () => {
         if (typeof window === 'undefined' || !window.location.hash) return
         routeHashTimers.forEach((id) => window.clearTimeout(id))
         routeHashTimers = []
+        flashHashTarget()
         // Same-page hash clicks/TOC jumps: avoid adding another smooth jump.
         scheduleHashSettlePasses(window.location.hash, routeHashTimers, {
           smoothFirst: false,
@@ -561,7 +607,9 @@ export default {
       applyCodeVariantPreference()
       resetOutlineScrollerPosition()
       refreshSoon()
+      nextTick().then(replayDocEnter)
       scheduleCrossPageHashCorrection()
+      window.setTimeout(flashHashTarget, 600)
     })
 
     onBeforeUnmount(() => {
@@ -569,6 +617,10 @@ export default {
       routeHashTimers = []
       if (onHashChange) {
         window.removeEventListener('hashchange', onHashChange)
+      }
+      if (onBannerResize) {
+        window.removeEventListener('resize', onBannerResize)
+        onBannerResize = null
       }
       const outlineState = getOutlineScrollState()
       if (outlineState?.observer) {

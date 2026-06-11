@@ -669,8 +669,8 @@ html[data-gf-code-variant='sepia-noir'] {
     border: 1px solid var(--gf-code-border);
     background: var(--gf-code-bg) !important;
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.02),
-        inset 0 0 0 1px rgba(255,255,255,0.01) !important;
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        inset 0 0 0 1px rgba(255,255,255,0.012) !important;
     padding: 10px 10px 8px !important;
     margin: 14px 0 !important;
 }
@@ -3350,4 +3350,303 @@ html[data-gf-motion='reduced'] .gf-starter-hero__visual img {
     border-color: rgba(113, 139, 255, 0.62);
     background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
     box-shadow: 0 16px 40px rgba(80, 98, 255, 0.22);
+}
+
+
+/* ============================================================
+   Docs view refinements: title accent, hairline rules,
+   page-enter motion, wayfinding polish
+   ============================================================ */
+
+/* Page title: small forge-accent rule under each doc h1. */
+.VPDoc.has-sidebar .vp-doc > div > h1:first-child::after {
+    content: "";
+    display: block;
+    width: 52px;
+    height: 2px;
+    margin-top: 16px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, rgba(255, 154, 96, 0.72), rgba(255, 154, 96, 0));
+}
+
+/* Section rules: left-weighted gradient hairlines instead of flat lines. */
+.VPDoc .vp-doc h2 {
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
+}
+
+.VPDoc .vp-doc hr {
+    border: none;
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
+}
+
+/* Page-enter: quiet fade + rise on doc navigation. Motion-gated. */
+@keyframes gf-doc-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html.gf-doc-enter:not([data-gf-motion='reduced']) .VPDoc .vp-doc {
+        animation: gf-doc-enter 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+}
+
+html.gf-doc-enter[data-gf-motion='on'] .VPDoc .vp-doc {
+    animation: gf-doc-enter 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Outline: kicker-style title, glowing marker, smooth link color. */
+.VPDocAsideOutline .outline-title {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(170, 182, 211, 0.62);
+}
+
+.VPDocAsideOutline .outline-marker {
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(126, 146, 255, 0.95), rgba(126, 146, 255, 0.35));
+    box-shadow: 0 0 10px rgba(106, 125, 255, 0.30);
+    transition: top 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+.VPDocAsideOutline .outline-link {
+    transition: color 0.18s ease;
+}
+
+/* Sidebar: gentle hover nudge and color transition. */
+.VPSidebarItem .link > .text {
+    transition: color 0.16s ease, transform 0.16s ease;
+}
+
+.VPSidebarItem .link:hover > .text {
+    transform: translateX(2px);
+}
+
+html[data-gf-motion='reduced'] .VPSidebarItem .link:hover > .text {
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html:not([data-gf-motion='on']) .VPSidebarItem .link:hover > .text {
+        transform: none;
+    }
+}
+
+
+/* ============================================================
+   Docs view refinements, round two: prev/next cards,
+   hash-landing glow, selection, scrollbars, links, tables
+   ============================================================ */
+
+/* Prev/next: quiet bordered cards with a directional nudge. */
+.VPDocFooter .prev-next {
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
+}
+
+.VPDocFooter .pager-link {
+    border: 1px solid rgba(148, 163, 204, 0.14);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.012);
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.VPDocFooter .pager-link:hover {
+    border-color: rgba(126, 146, 255, 0.45);
+    background: rgba(106, 125, 255, 0.05);
+}
+
+.VPDocFooter .pager-link .desc {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(170, 182, 211, 0.55);
+}
+
+.VPDocFooter .pager-link .title {
+    transition: color 0.18s ease;
+}
+
+.VPDocFooter .pager-link.next .title::after {
+    content: "\2192";
+    display: inline-block;
+    margin-left: 0.4em;
+    transition: transform 0.18s ease;
+}
+
+.VPDocFooter .pager-link.prev .title::before {
+    content: "\2190";
+    display: inline-block;
+    margin-right: 0.4em;
+    transition: transform 0.18s ease;
+}
+
+.VPDocFooter .pager-link.next:hover .title::after {
+    transform: translateX(3px);
+}
+
+.VPDocFooter .pager-link.prev:hover .title::before {
+    transform: translateX(-3px);
+}
+
+html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::after,
+html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html:not([data-gf-motion='on']) .VPDocFooter .pager-link:hover .title::after,
+    html:not([data-gf-motion='on']) .VPDocFooter .pager-link:hover .title::before {
+        transform: none;
+    }
+}
+
+/* Hash landing: brief ember underline on the heading you jumped to. */
+@keyframes gf-hash-glow {
+    0% {
+        box-shadow: inset 0 -2px 0 rgba(255, 154, 96, 0.55);
+    }
+
+    35% {
+        box-shadow: inset 0 -2px 0 rgba(255, 154, 96, 0.45);
+    }
+
+    100% {
+        box-shadow: inset 0 -2px 0 rgba(255, 154, 96, 0);
+    }
+}
+
+.vp-doc .gf-hash-glow {
+    animation: gf-hash-glow 1.6s ease-out both;
+}
+
+/* Branded text selection. */
+::selection {
+    background: rgba(106, 125, 255, 0.34);
+    color: #fff;
+}
+
+/* Slim scrollbars in sidebar, outline, and code blocks. */
+.VPSidebar,
+.VPDoc .aside-container,
+.vp-doc div[class*='language-'] pre {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 204, 0.22) transparent;
+}
+
+.VPSidebar::-webkit-scrollbar,
+.VPDoc .aside-container::-webkit-scrollbar,
+.vp-doc div[class*='language-'] pre::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.VPSidebar::-webkit-scrollbar-track,
+.VPDoc .aside-container::-webkit-scrollbar-track,
+.vp-doc div[class*='language-'] pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.VPSidebar::-webkit-scrollbar-thumb,
+.VPDoc .aside-container::-webkit-scrollbar-thumb,
+.vp-doc div[class*='language-'] pre::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(148, 163, 204, 0.18);
+}
+
+.VPSidebar::-webkit-scrollbar-thumb:hover,
+.VPDoc .aside-container::-webkit-scrollbar-thumb:hover,
+.vp-doc div[class*='language-'] pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 204, 0.32);
+}
+
+/* Heading anchors: fade in on heading hover instead of popping. */
+.vp-doc .header-anchor {
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.vp-doc :is(h1, h2, h3, h4, h5, h6):hover .header-anchor,
+.vp-doc .header-anchor:focus-visible {
+    opacity: 0.55;
+}
+
+.vp-doc .header-anchor:hover {
+    opacity: 1;
+}
+
+/* Content links: underline settles lower and brightens on hover. */
+.VPDoc .vp-doc :is(p, li, td) a:not(.header-anchor) {
+    text-decoration: underline;
+    text-decoration-color: rgba(126, 146, 255, 0.40);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 0.18s ease, text-decoration-color 0.18s ease, text-underline-offset 0.18s ease;
+}
+
+.VPDoc .vp-doc :is(p, li, td) a:not(.header-anchor):hover {
+    text-decoration-color: rgba(126, 146, 255, 0.95);
+    text-underline-offset: 4.5px;
+}
+
+/* Tables: hairline frame, header kicker, row hover instead of zebra. */
+.VPDoc .vp-doc table {
+    border: 1px solid rgba(148, 163, 204, 0.14);
+    border-radius: 10px;
+}
+
+.VPDoc .vp-doc th,
+.VPDoc .vp-doc td {
+    border: none;
+    border-bottom: 1px solid rgba(148, 163, 204, 0.10);
+}
+
+.VPDoc .vp-doc th {
+    border-bottom: 1px solid rgba(148, 163, 204, 0.20);
+    background: rgba(148, 163, 204, 0.05);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(190, 200, 226, 0.72);
+}
+
+.VPDoc .vp-doc th:first-child {
+    border-top-left-radius: 9px;
+}
+
+.VPDoc .vp-doc th:last-child {
+    border-top-right-radius: 9px;
+}
+
+.VPDoc .vp-doc tr:last-child td {
+    border-bottom: none;
+}
+
+.VPDoc .vp-doc tr {
+    background: transparent !important;
+    transition: background 0.15s ease;
+}
+
+.VPDoc .vp-doc tbody tr:hover {
+    background: rgba(106, 125, 255, 0.045) !important;
+}
+
+
+/* Hash targets clear the sticky nav + preview banner on native anchor jumps. */
+.vp-doc :is(h1, h2, h3, h4, h5, h6) {
+    scroll-margin-top: calc(var(--vp-nav-height, 64px) + var(--gf-banner-height, 40px) + 16px);
 }
