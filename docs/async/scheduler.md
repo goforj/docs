@@ -83,7 +83,7 @@ Run it with other enabled local runtimes:
 forj app
 ```
 
-## Target Shape
+## Recommended Shape
 
 Schedules should call domain-owned services, jobs, or command work.
 

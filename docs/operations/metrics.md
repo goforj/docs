@@ -56,14 +56,19 @@ Labels should be bounded and operator-facing.
 
 Prefer route patterns, queue names, job names, schedule names, cache names, disk names, bus names, and driver names.
 
-Generated scrape metadata includes bounded app and runtime identity, such as:
+Framework metric families emit `app` directly. Many runtime-aware families also emit `source`, which is the logical runtime surface such as `http`, `jobs`, `scheduler`, `cli`, `lighthouse`, or `app`.
+
+The local observability stack adds scrape-time metadata such as `process`, `service`, and `environment`:
 
 ```text
 app=billing
-process=worker
+source=jobs
+process=jobs
 service=Example
 environment=local
 ```
+
+Use `source` for logical runtime attribution and `process` for scrape topology.
 
 Avoid user IDs, emails, raw URLs, raw SQL, cache keys, filenames, request IDs, and arbitrary error strings.
 

@@ -355,7 +355,7 @@ func (s *Service) Store(
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
 <div class="gf-home-terminal" aria-label="Adding a named app to a GoForj Project">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one Project · many apps</em></div>
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one project · many apps</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app billing</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj billing route:list</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># orchestrates app + billing</span>

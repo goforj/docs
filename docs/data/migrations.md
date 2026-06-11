@@ -88,7 +88,7 @@ The `analytics` directory maps to `DB_ANALYTICS_*`.
 When a Project has multiple apps, migrations are grouped by app first and connection second:
 
 ```text
-migrations/default/default/
+migrations/app/default/
 migrations/billing/default/
 migrations/billing/analytics/
 ```

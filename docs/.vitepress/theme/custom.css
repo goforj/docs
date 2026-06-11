@@ -2550,8 +2550,11 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-card {
     position: relative;
-    display: block;
-    padding: 20px 20px 24px;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: center;
+    padding: 18px 20px 20px;
     border: 1px solid rgba(148, 163, 184, 0.13);
     border-radius: 16px;
     background:
@@ -2574,7 +2577,8 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 }
 
 .gf-home-card p {
-    margin-top: 8px !important;
+    grid-column: 1 / -1;
+    margin-top: 10px !important;
     color: rgba(203, 213, 225, 0.64);
     font-size: 0.84rem;
     line-height: 1.55;
@@ -3076,7 +3080,6 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     justify-content: center;
     width: 34px;
     height: 34px;
-    margin-bottom: 13px;
     border: 1px solid rgba(151, 173, 255, 0.18);
     border-radius: 10px;
     background: linear-gradient(180deg, rgba(106, 125, 255, 0.16), rgba(106, 125, 255, 0.05));
@@ -3303,4 +3306,12 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 .gf-home-swap__all strong {
     color: rgba(244, 246, 252, 0.95);
     font-weight: 780;
+}
+
+/* Phones: compact horizontal capability cards - icon beside title,
+   copy beneath. Halves the section height versus stacked desktop cards. */
+@media (max-width: 680px) {
+    .gf-home-card {
+        padding: 16px 18px;
+    }
 }

@@ -102,7 +102,7 @@ For an app named `billing`:
 | `BILLING_METRICS_PORT` | Shared metrics/runtime port override for the billing app. |
 | `BILLING_API_METRICS_PORT` | HTTP metrics port override. |
 | `BILLING_SCHEDULER_METRICS_PORT` | Scheduler metrics port override. |
-| `BILLING_WORKER_METRICS_PORT` | Worker metrics port override. |
+| `BILLING_WORKER_METRICS_PORT`, `BILLING_JOBS_METRICS_PORT`, `BILLING_METRICS_JOBS_PORT` | Jobs/worker metrics port override. |
 
 When these are omitted, generated metadata in `internal/runtime/apps.go` provides deterministic non-conflicting defaults.
 
