@@ -41,7 +41,7 @@ Development tasks use this shape:
 dev:
   pre:
     - name: frontend dependencies
-      cmd: cd frontend && npm install
+      cmd: cd cmd/app/frontend && npm install
   down:
     - name: stop containers
       cmd: docker-compose down

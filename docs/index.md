@@ -275,11 +275,11 @@ func (s *Service) Store(
 <span class="t-prompt">$</span> <span class="t-cmd">forj make:subscriber photos:photo-uploaded</span>
 <span></span>
 <span class="t-tree">internal/photos/</span>
-<span class="t-tree">├──</span> controller.go        <span class="t-dim"># HTTP entry point</span>
-<span class="t-tree">├──</span> thumbnail_job.go     <span class="t-dim"># queue entry point</span>
-<span class="t-tree">├──</span> digest_schedule.go   <span class="t-dim"># scheduler entry point</span>
+<span class="t-tree">├──</span> controller.go                 <span class="t-dim"># HTTP entry point</span>
+<span class="t-tree">├──</span> thumbnail_job.go              <span class="t-dim"># queue entry point</span>
+<span class="t-tree">├──</span> digest_schedule.go            <span class="t-dim"># scheduler entry point</span>
 <span class="t-tree">├──</span> photo_uploaded_subscriber.go  <span class="t-dim"># event entry point</span>
-<span class="t-tree">└──</span> service.go           <span class="t-hl"># your workflow code</span></code></pre>
+<span class="t-tree">└──</span> service.go                    <span class="t-hl"># your workflow code</span></code></pre>
 </div>
 </div>
 </div>
