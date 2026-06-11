@@ -144,8 +144,8 @@ Start with an HTTP controller:
 ```bash
 forj make:controller reports
 # creates internal/reports/controller.go
-# injects wire/inject_http_controllers.go
-# injects internal/router/routes_registry.go
+# injects app/wire/inject_http_controllers_app.go
+# updates app/routes.go
 ```
 
 Add an operator command:
@@ -154,8 +154,8 @@ Add an operator command:
 forj make:command reports:sync
 # creates internal/reports/sync_cmd.go
 # exposes reports:sync
-# injects internal/cmd/wire.go
-# injects internal/cmd/app_commands.go
+# injects app/wire/inject_cmd_app.go
+# updates app/commands.go
 ```
 
 Add a background job:
@@ -163,7 +163,7 @@ Add a background job:
 ```bash
 forj make:job reports:generate --queue reports
 # creates internal/reports/generate_job.go
-# injects wire/inject_jobs_app.go
+# injects app/wire/inject_jobs_app.go
 ```
 
 Add a schedule:
@@ -171,7 +171,8 @@ Add a schedule:
 ```bash
 forj make:schedule reports:daily --every 24h
 # creates internal/reports/daily_schedule.go
-# injects wire/inject_scheduler_schedules.go
+# injects app/wire/inject_schedules_app.go
+# updates app/schedules.go
 ```
 
 Add an event and subscriber:
@@ -182,7 +183,7 @@ forj make:event reports:report-generated
 
 forj make:subscriber reports:report-generated
 # creates internal/reports/report_generated_subscriber.go
-# injects wire/inject_event_subscribers.go
+# injects app/wire/inject_subscribers_app.go
 ```
 
 Add a model and repository:
@@ -190,7 +191,7 @@ Add a model and repository:
 ```bash
 forj make:model reports --package reports
 # creates internal/reports/report.go
-# wires ReportRepo in wire/inject_repositories.go
+# wires ReportRepo in app/wire/inject_repositories_app.go
 ```
 
 The package starts to look like this:

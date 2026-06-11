@@ -20,6 +20,15 @@ Each runtime starts through a command and participates in App startup and shutdo
 
 Both forms start the same App command. Use the built binary form for deployment and process supervision. Use the `forj <command>` development surface when you want GoForj to refresh generated code before running the App command. Use `forj run <command>` when you need to force App command execution explicitly.
 
+For a named app, use that app's binary or prefix the app name:
+
+| Process | Built binary | Development alias |
+| --- | --- | --- |
+| Combined runtime | `./bin/billing run` | `forj billing app` |
+| HTTP | `./bin/billing api` | `forj billing api` |
+| Queue workers | `./bin/billing worker` | `forj billing worker` |
+| Scheduler | `./bin/billing scheduler` | `forj billing scheduler` |
+
 ## Combined Runtime
 
 `run` starts enabled runtimes together.
@@ -34,7 +43,7 @@ Split runtime commands are useful when production needs:
 - separate restart policy
 - scheduler singleton control
 - queue worker resource isolation
-- source-specific metrics scrape targets
+- runtime-specific metrics scrape targets
 
 ## Shutdown
 

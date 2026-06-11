@@ -55,14 +55,14 @@ internal/uploads/controller.go
 **HTTP registration**
 
 ```text
-wire/inject_http_controllers.go
-internal/router/routes_registry.go
+app/wire/inject_http_controllers_app.go
+app/routes.go
 ```
 
 **App wiring**
 
 ```text
-wire/inject_app_services.go
+app/wire/inject_services_app.go
 ```
 
 The storage generator updates:
@@ -266,13 +266,13 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 5: Wire The Disk And Service
+## Step 5: Wire The Disk and Service
 
-Open `wire/inject_app_services.go`.
+Open `app/wire/inject_services_app.go`.
 
 The App can now provide `UploadService` with the named disk.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 import (
@@ -283,7 +283,7 @@ import (
 
 Add imports for the generated storage manager and uploads package.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 "your/module/internal/makecmd"
@@ -295,7 +295,7 @@ Update `wire/inject_app_services.go` so it includes:
 
 Add the named disk provider and upload service constructor.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 provideUploadsDisk,
@@ -307,7 +307,7 @@ provideUserProfileCache,
 
 `provideUploadsDisk` selects the generated named storage resource.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 func provideUploadsDisk(manager *storages.Manager) storage.Storage {
@@ -385,7 +385,7 @@ func TestServiceRejectsMissingFilename(t *testing.T) {
 }
 ```
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build

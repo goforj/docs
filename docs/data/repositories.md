@@ -29,6 +29,8 @@ func NewRepository(conns *database.Connections) (*Repository, error) {
 
 Use the database accessors generated for your App. Keep backend connection selection outside business logic.
 
+Register repository constructors through `app/wire/inject_repositories_app.go`. Named apps use `app/<name>/wire/inject_repositories_app.go`.
+
 ## Responsibilities
 
 Repositories should own:

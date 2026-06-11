@@ -19,7 +19,7 @@ The event announces that something happened. The subscriber reacts to it. Durabl
 - `internal/events.UserCreated` defines the typed event.
 - `UserService` publishes through a small application boundary.
 - `notifications.Subscribers` reacts to `users.created`.
-- `internal/app/lifecycle_registry.go` registers and closes the subscription.
+- `app/lifecycle.go` registers and closes the subscription.
 - A service test proves the event is published without starting the App runtime.
 
 ## Prerequisites
@@ -74,8 +74,8 @@ internal/notifications/subscribers.go
 **Lifecycle and wiring**
 
 ```text
-internal/app/lifecycle_registry.go
-wire/inject_app_services.go
+app/lifecycle.go
+app/wire/inject_services_app.go
 ```
 
 The event generator may update generated event manager files.
@@ -420,11 +420,11 @@ func (s *Subscribers) Register(ctx context.Context, bus events.Bus) (events.Subs
 
 ## Step 8: Register Subscribers In The Lifecycle
 
-Update `internal/app/lifecycle_registry.go`.
+Update `app/lifecycle.go`.
 
 This keeps subscriber registration in the App lifecycle, not in `init`, package globals, or controller constructors.
 
-Create or replace `internal/app/lifecycle_registry.go`:
+Create or replace `app/lifecycle.go`:
 
 ```go
 package app
@@ -543,11 +543,11 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 10: Wire The Event Boundary And Subscriber
+## Step 10: Wire The Event Boundary and Subscriber
 
 Add the event publisher and notification subscriber providers.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 "your/module/internal/makecmd"
@@ -558,7 +558,7 @@ Update `wire/inject_app_services.go` so it includes:
 
 `provideEventBus` exposes the generated default event bus to the application publisher.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 provideEventBus,
@@ -573,7 +573,7 @@ notifications.NewSubscribers,
 
 Wire can now satisfy `users.NewUserEventPublisher`.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 func provideEventBus(manager *events.Manager) events.Bus {
@@ -664,7 +664,7 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build

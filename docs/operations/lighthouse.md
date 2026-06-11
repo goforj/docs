@@ -28,6 +28,18 @@ Generated runtimes can connect as Lighthouse agents and expose capabilities such
 
 Capabilities depend on enabled App components.
 
+In a multi-app Project, Lighthouse should present the app first and the runtime beneath it:
+
+```text
+Platform
+  Billing
+    HTTP
+    Worker
+    Scheduler
+```
+
+Lighthouse payloads may still use implementation fields such as agent or source internally, but user-facing labels should stay close to the Project -> app -> runtime model.
+
 ## Inspects
 
 Lighthouse owns the retained recent inspect browsing window.

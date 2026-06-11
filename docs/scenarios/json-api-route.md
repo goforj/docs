@@ -46,19 +46,19 @@ internal/users/controller.go
 **HTTP registration**
 
 ```text
-wire/inject_http_controllers.go
-internal/router/routes_registry.go
+app/wire/inject_http_controllers_app.go
+app/routes.go
 ```
 
 **App wiring**
 
 ```text
-wire/inject_app_services.go
+app/wire/inject_services_app.go
 ```
 
 ## Step 1: Scaffold The Controller
 
-Start with the real make command. It creates `internal/users/controller.go`, wires the controller constructor into `wire/inject_http_controllers.go`, and adds the controller routes to `internal/router/routes_registry.go`.
+Start with the real make command. It creates `internal/users/controller.go`, wires the controller constructor into `app/wire/inject_http_controllers_app.go`, and adds the controller routes to `app/routes.go`.
 
 ```bash
 forj make:controller users
@@ -158,11 +158,11 @@ func (c *Controller) Show(ctx web.Context) error {
 
 ## Step 4: Provide The Service
 
-Open `wire/inject_app_services.go`.
+Open `app/wire/inject_services_app.go`.
 
 Wire can already construct the controller after the make command, but the controller now needs `*users.Service`. Add the users package to the imports, using your App module path.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 "your/module/internal/makecmd"
@@ -175,7 +175,7 @@ Add `users.NewService` to `appSet`.
 
 `Service` is now part of the compiled App dependency graph, and Wire can construct the controller because `appSet` provides `*users.Service`.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 users.NewService,
@@ -220,7 +220,7 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build
@@ -273,7 +273,7 @@ Operational notes:
 ::: warning Common mistakes
 - Do not put user lookup logic in `Show`.
 - Do not register routes directly in the HTTP server package.
-- Do not edit `wire/wire_gen.go` by hand.
+- Do not edit `app/wire/wire_gen.go` by hand.
 - Do not skip `forj build` after changing Wire providers.
 - Do not import the underlying HTTP engine in normal App controllers.
 :::

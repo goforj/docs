@@ -56,7 +56,7 @@ Before this scenario, the App has routes, cache, storage, events, jobs, workers,
 
 After this scenario, you should know where to prove each runtime boundary: route list for HTTP, logs for process behavior, metrics for bounded counters and timings, inspects for execution records, and Lighthouse for operator-facing runtime state.
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build

@@ -172,7 +172,7 @@ onBeforeUnmount(() => {
 </div>
 <div class="gf-home-swap__grid">
 <div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
-<p class="gf-home-swap__label">Your service - the same file in every environment</p>
+<p class="gf-home-swap__label">Your service · the same file in every environment</p>
 
 ```go
 // internal/photos/service.go
@@ -198,7 +198,7 @@ func (s *Service) Store(
 
 </div>
 <div class="gf-home-swap__env-col" data-reveal style="--reveal-delay: 0.16s">
-<p class="gf-home-swap__label">Your environment - the only thing that changes</p>
+<p class="gf-home-swap__label">Your environment · the only thing that changes</p>
 <div class="gf-home-swap__toggle" role="group" aria-label="Choose environment">
 <button type="button" :class="{ 'is-active': swapMode === 'local' }" @click="swapMode = 'local'">Local</button>
 <button type="button" :class="{ 'is-active': swapMode === 'production' }" @click="swapMode = 'production'">Production</button>
@@ -328,6 +328,44 @@ func (s *Service) Store(
 <div class="gf-home-links gf-home-links--center" data-reveal>
 <a href="/operations/">Operations guide →</a>
 <a href="/operations/lighthouse">Lighthouse →</a>
+</div>
+</div>
+</section>
+
+<!-- ============ SCALE: ONE APP TO MANY ============ -->
+
+<section class="gf-home-section gf-home-scale">
+<div class="gf-home-section__inner gf-home-split">
+<div class="gf-home-split__copy" data-reveal>
+<p class="gf-home-eyebrow">Scale</p>
+<h2 class="gf-home-h2">Start with one App. <em>Grow into many</em></h2>
+<p class="gf-home-lead">Most products live their whole life as a single App - and that is the golden path. When a Project outgrows it, one command adds another runnable app in the same repo: shared code, separate wiring, separate binaries, separate scaling.</p>
+<ul class="gf-home-points">
+<li><strong>Apps are boundaries, not microservices.</strong> Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
+<li><strong>Each app deploys on its own terms.</strong> Its own binary, ports, wiring, and runtime identity in logs, metrics, and Lighthouse - scale <code>billing</code> without touching the rest.</li>
+<li><strong>Nothing changes until you need it.</strong> A single-App Project never pays for this. Multi-app is a fan-out path for larger systems, teams, and monorepos - not a new architecture to learn on day one.</li>
+</ul>
+<div class="gf-home-links">
+<a href="/core/apps">Apps →</a>
+<a href="/core/runtime-topology">Runtime topology →</a>
+</div>
+</div>
+<div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
+<div class="gf-home-terminal" aria-label="Adding a named app to a GoForj Project">
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one Project · many apps</em></div>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app billing</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj billing route:list</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># orchestrates app + billing</span>
+<span></span>
+<span class="t-tree">photodrop/</span>
+<span class="t-tree">├──</span> cmd/app/         <span class="t-dim"># default app</span>
+<span class="t-tree">├──</span> cmd/billing/     <span class="t-dim"># named app</span>
+<span class="t-tree">├──</span> app/billing/     <span class="t-dim"># its routes, commands, wiring</span>
+<span class="t-tree">└──</span> internal/        <span class="t-hl"># shared behavior, one module</span>
+<span></span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/billing worker</span></code></pre>
+</div>
 </div>
 </div>
 </section>

@@ -27,7 +27,7 @@ The current first-party starter kit is:
 
 - [Vue Starter Kit](/frontend/vue-starter-kit)
 
-It creates a `frontend/` project for Apps with Web UI enabled.
+It creates an app-scoped frontend project for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/billing/frontend/` for a named app.
 
 ## Generated Ownership
 
@@ -42,7 +42,7 @@ Starter kits can add development setup tasks.
 For the Vue starter kit, generated dev setup can include:
 
 ```bash
-cd frontend && npm install
+cd cmd/app/frontend && npm install
 ```
 
 and a frontend watcher under `forj dev`.

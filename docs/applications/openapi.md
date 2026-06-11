@@ -17,6 +17,12 @@ The default OpenAPI path is:
 build/openapi.json
 ```
 
+Named apps write app-scoped OpenAPI output:
+
+```text
+build/billing/openapi.json
+```
+
 Run:
 
 ```bash
@@ -24,6 +30,12 @@ forj build
 ```
 
 to refresh generated components, Wire, API indexing, OpenAPI output, and the binary.
+
+For a named app, use the app prefix when refreshing that app directly:
+
+```bash
+forj billing api-index
+```
 
 ## Swagger/API Reference Route
 
@@ -55,6 +67,12 @@ The OpenAPI spec path can be overridden:
 
 ```text
 OPENAPI_SPEC_PATH=build/openapi.json
+```
+
+For a named app, point the runtime at that app's output when overriding the path:
+
+```text
+OPENAPI_SPEC_PATH=build/billing/openapi.json
 ```
 
 ## Validation

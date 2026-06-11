@@ -25,6 +25,8 @@ http://localhost:9101/metrics  # jobs
 http://localhost:9102/metrics  # scheduler
 ```
 
+Named apps get deterministic local defaults so app runtimes do not fight for the same ports. For example, a `billing` app may use the next app-specific block while the default app keeps the root ports.
+
 When HTTP metrics are enabled, the App may also expose:
 
 ```text
@@ -53,6 +55,15 @@ Disabled instrumentation should be absent or inert enough to make overhead decis
 Labels should be bounded and operator-facing.
 
 Prefer route patterns, queue names, job names, schedule names, cache names, disk names, bus names, and driver names.
+
+Generated scrape metadata includes bounded app and runtime identity, such as:
+
+```text
+app=billing
+process=worker
+service=Example
+environment=local
+```
 
 Avoid user IDs, emails, raw URLs, raw SQL, cache keys, filenames, request IDs, and arbitrary error strings.
 

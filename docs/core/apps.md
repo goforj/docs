@@ -148,7 +148,7 @@ BILLING_WORKER_METRICS_PORT=10112
 
 Default-app globals such as `PORT` and `METRICS_PORT` do not apply to named apps.
 
-## Queue And Migration Boundaries
+## Queue and Migration Boundaries
 
 App code uses logical queue names such as `default` or `reports`. Named apps physicalize backend queue names with the app prefix, such as `billing_default`, so multiple apps can share a queue backend safely.
 

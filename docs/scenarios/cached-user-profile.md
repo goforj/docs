@@ -59,7 +59,7 @@ internal/users/service_test.go
 **App wiring**
 
 ```text
-wire/inject_app_services.go
+app/wire/inject_services_app.go
 ```
 
 The cache generator updates:
@@ -218,13 +218,13 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 }
 ```
 
-## Step 4: Wire The Repository And Cache
+## Step 4: Wire The Repository and Cache
 
-Open `wire/inject_app_services.go`.
+Open `app/wire/inject_services_app.go`.
 
 The service depends only on `users.UserRepository`. The provider composes the source repository with the cached repository. The cached repository depends on `*cache.Cache`, not a Redis, file, or memory driver. Driver choice stays in configuration.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 import (
@@ -235,7 +235,7 @@ import (
 
 Add the source repository, cached repository provider, and named cache provider.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 provideUserProfileCache,
@@ -248,7 +248,7 @@ users.NewService,
 
 `provideUserProfileCache` selects the named resource. `provideUserRepository` keeps the service wired to the repository interface.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
@@ -331,7 +331,7 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build

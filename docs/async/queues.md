@@ -62,6 +62,8 @@ Use named queues when the App has distinct classes of work. For example, `emails
 
 One generated queue resource represents one queue. The resource name is the app-facing queue name, and by default it is also the backend queue name. Use `QUEUE_<NAME>_NAME` only when the backend queue name must differ.
 
+In a multi-app Project, app code still uses the logical queue name, such as `reports`. Named apps physicalize backend names with an app prefix by default so two apps do not collide on the same backend queue.
+
 ## Driver Configuration
 
 Compile-time support:
@@ -119,6 +121,13 @@ Start workers with:
 ```bash
 forj worker
 ./bin/app worker
+```
+
+For a named app:
+
+```bash
+forj billing worker
+./bin/billing worker
 ```
 
 Without `--queue`, the worker process starts workers for every configured generated queue. To run only one queue:

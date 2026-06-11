@@ -73,7 +73,7 @@ The root runtime coordinates long-lived components.
 
 Important concepts:
 
-- `internal/app` owns app-level lifecycle policy
+- `app/lifecycle.go` owns app-level lifecycle policy
 - lifecycle hooks register at documented extension points
 - root timeouts resolve once and are passed down
 - long-lived runtimes own their own start/stop behavior
@@ -245,4 +245,3 @@ Distributed drivers should be introduced as production or integration choices, n
 - Operator UI shaping belongs in Lighthouse integration files.
 - Business logic belongs in application services, jobs, subscribers, or domain-owned methods.
 - Runtime bootstrap belongs at runtime boundaries.
-

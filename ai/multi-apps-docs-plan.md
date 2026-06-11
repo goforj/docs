@@ -201,7 +201,7 @@ Key facts to document:
 
 Add the page to the Core Concepts sidebar after `App` or `Project Structure`, then link to it from `project-structure`, `runtime-topology`, `configuration`, `forj-dev`, `cli`, `generation-commands`, `migrations`, `queues`, and `metrics`.
 
-### Priority 3: Update Command And Generator Docs
+### Priority 3: Update Command and Generator Docs
 
 - `docs/reference/cli.md`
   - Add `forj make:app`.
@@ -236,7 +236,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
 - `docs/core/reading-wire-errors.md`
   - Update troubleshooting paths from root `wire/` to app-local `app/wire/`.
 
-### Priority 4: Update Configuration, Env Vars, And Generated File Reference
+### Priority 4: Update Configuration, Env Vars, and Generated File Reference
 
 - `docs/getting-started/configuration.md`
   - Add `apps` as the per-app component/starter-kit metadata key.
@@ -268,7 +268,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
   - Add `cmd/app/main.go`, `cmd/<app>/main.go`, `cmd/<app>/frontend`, `app/`, `app/<app>/`, `app/wire`, `app/<app>/wire`, and `internal/runtime/apps.go`.
   - Mark `internal/runtime/apps.go` as generated and not app-owner edited.
 
-### Priority 5: Update Dev, Build, API Index, And OpenAPI Pages
+### Priority 5: Update Dev, Build, API Index, and OpenAPI Pages
 
 - `docs/developer-tools/forj-dev.md`
   - Document multi-app behavior:
@@ -295,7 +295,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
 - `docs/operations/standalone-vs-distributed.md`
   - Clarify how default-launch binaries work per app.
 
-### Priority 6: Update Data, Queues, And Migrations
+### Priority 6: Update Data, Queues, and Migrations
 
 - `docs/data/migrations.md`
   - Document single-app migration layout versus multi-app migration layout.
@@ -319,7 +319,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
 - `docs/async/scheduler.md`
   - Update schedule registration paths to `app/schedules.go` and `app/<app>/schedules.go`.
 
-### Priority 7: Update Observability, Metrics, Lighthouse, And Operations
+### Priority 7: Update Observability, Metrics, Lighthouse, and Operations
 
 - `docs/operations/metrics.md`
   - Add `app` as a bounded metric/scrape label.
@@ -344,7 +344,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
 - `docs/operations/logging.md`
   - Add app/runtime/instance identity guidance if logs include those fields.
 
-### Priority 8: Update Frontend And Starter Kit Docs
+### Priority 8: Update Frontend and Starter Kit Docs
 
 - `docs/frontend/vue-starter-kit.md`
   - Replace root `frontend/` assumptions with `cmd/<app>/frontend` when Web UI is app-scoped.

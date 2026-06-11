@@ -55,7 +55,7 @@ internal/reports/service_test.go
 
 ```text
 internal/jobs/generate_job.go
-wire/inject_jobs_app.go
+app/wire/inject_jobs_app.go
 ```
 
 **Notifications**
@@ -67,7 +67,7 @@ internal/notifications/service.go
 **App wiring**
 
 ```text
-wire/inject_app_services.go
+app/wire/inject_services_app.go
 ```
 
 The queue and storage generators update generated manager and accessor files.
@@ -288,7 +288,7 @@ package reports
 
 Register the job constructor from `internal/jobs`.
 
-Update `wire/inject_jobs_app.go` so it includes:
+Update `app/wire/inject_jobs_app.go` so it includes:
 
 ```go
 
@@ -298,7 +298,7 @@ Update `wire/inject_jobs_app.go` so it includes:
 
 The App service set owns this job because notifications depend on its queueing interface.
 
-Update `wire/inject_jobs_app.go` so it includes:
+Update `app/wire/inject_jobs_app.go` so it includes:
 
 ```go
 
@@ -336,11 +336,11 @@ func (s *Service) SendWelcome(ctx context.Context, userID string, email string) 
 
 ## Step 11: Keep Lifecycle Subscriber Registration
 
-Update `internal/app/lifecycle_registry.go`.
+Update `app/lifecycle.go`.
 
 The lifecycle still owns subscriber registration. The subscriber dispatches durable work through the notification service.
 
-Create or replace `internal/app/lifecycle_registry.go`:
+Create or replace `app/lifecycle.go`:
 
 ```go
 package app
@@ -384,11 +384,11 @@ func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
 }
 ```
 
-## Step 12: Wire Reports And The Job
+## Step 12: Wire Reports and The Job
 
 Add the report storage provider and report service constructor.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 import (
@@ -399,7 +399,7 @@ import (
 
 Add imports for the report service and generated storage manager.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 "your/module/internal/jobs"
@@ -412,7 +412,7 @@ Update `wire/inject_app_services.go` so it includes:
 
 The report service receives the named `reports` storage disk.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 provideReportStorage,
@@ -426,7 +426,7 @@ provideEventBus,
 
 `provideReportStorage` selects the generated named storage resource.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 func provideReportStorage(manager *storages.Manager) storage.Storage {
@@ -495,7 +495,7 @@ func TestServiceRejectsMissingUserID(t *testing.T) {
 }
 ```
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build

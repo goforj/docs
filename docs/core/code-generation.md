@@ -82,7 +82,7 @@ Depending on selected components, generation can produce:
 - Wire provider sets and injectors
 - route indexes
 - API indexes
-- observability targets
+- app and runtime observability metadata
 - local component READMEs
 - command, job, event, and scheduler surfaces
 

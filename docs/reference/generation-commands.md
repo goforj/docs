@@ -84,7 +84,7 @@ Generated code should be refreshed after changing:
 - named caches, disks, queues, event buses, mailers, or DB connections
 - provider sets or Wire inputs
 - generated component selection
-- observability target configuration
+- app and runtime observability configuration
 - `.goforj.yml` render settings
 
 Use `forj build` when unsure.

@@ -74,7 +74,7 @@ internal/schedules/scheduler_registry.go
 **App wiring**
 
 ```text
-wire/inject_app_services.go
+app/wire/inject_services_app.go
 ```
 
 ## Step 1: Add A Daily Runner
@@ -238,7 +238,7 @@ s.DailyAt("04:00").
 
 Bind the existing report job to the small queueing interface and bind the user repository to daily target lookup.
 
-Update `wire/inject_app_services.go` so it includes:
+Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 reports.NewService,
@@ -295,7 +295,7 @@ func TestDailyRunnerQueuesReports(t *testing.T) {
 }
 ```
 
-## Build And Verify
+## Build and Verify
 
 ```bash
 forj build

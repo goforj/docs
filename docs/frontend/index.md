@@ -7,6 +7,8 @@ description: Frontend integration, starter kits, embedded assets, and generated 
 
 Frontend covers generated UI support, embedded frontend assets, and starter kits.
 
+Frontend source is app-scoped. The default app uses `cmd/app/frontend/`; named apps use `cmd/<app>/frontend/`.
+
 Start with [Vue Starter Kit](/frontend/vue-starter-kit) when using the first-party Vue frontend scaffold.
 
 ## Pages

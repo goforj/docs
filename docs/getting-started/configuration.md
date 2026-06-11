@@ -24,25 +24,30 @@ GoForj uses two main configuration layers: project configuration and runtime env
 | --- | --- | --- |
 | Project configuration | `.goforj.yml` | Component selection, rendering, dev watchers, Wire paths, module replacements |
 | Runtime environment | `.env`, `.env.local`, `.env.host`, process env | App name, ports, secrets, drivers, resource settings |
-| Generated code | `internal/*/*_gen.go`, `wire/wire_gen.go` | Derived accessors, driver imports, provider wiring |
+| Generated code | `internal/*/*_gen.go`, `app/wire/wire_gen.go` | Derived accessors, driver imports, provider wiring |
 | Build-time options | `forj build` flags | Optional compiled defaults, overrides, and default launch behavior |
 
 The important rule: change the correct layer for the behavior you want.
 
 ## `.goforj.yml`
 
-`.goforj.yml` is the render contract for the App.
+`.goforj.yml` is the render contract for the Project and its apps.
 
 It includes fields such as:
 
 ```yaml
 project_name: Example
 module_name: example.com/example
+apps:
+  billing:
+    components:
+      web_api: true
+      jobs: true
 dev:
   auto_migrate: true
   down_on_exit: true
   wire_paths:
-    - wire
+    - app/wire
 render:
   starter_kit: none
   queue_driver: redis
@@ -54,7 +59,7 @@ render:
     database_mysql: true
 ```
 
-Use `.goforj.yml` when you need to change the generated project shape, enabled components, local dev watchers, or module replacement behavior.
+Use `.goforj.yml` when you need to change the generated project shape, enabled app components, local dev watchers, or module replacement behavior.
 
 ## Environment Files
 
@@ -66,7 +71,7 @@ The generated project includes:
 - `.env.local` for local overrides.
 - `.env.host` for host-specific local infrastructure settings.
 
-The generated `main.go` calls the App environment loader before `wire.InitializeApplication()`.
+The generated app entrypoint loads the environment before the app Wire graph is initialized.
 
 Common variables include:
 

@@ -16,6 +16,13 @@ forj worker
 ./bin/app worker
 ```
 
+For a named app:
+
+```bash
+forj billing worker
+./bin/billing worker
+```
+
 or, in standalone mode:
 
 ```bash
@@ -65,6 +72,12 @@ Verify queue inventory before deploying a worker topology:
 
 ```bash
 ./bin/app about
+```
+
+For a named app:
+
+```bash
+./bin/billing about
 ```
 
 The queue section should show each queue, its driver, backend queue name, and worker count.

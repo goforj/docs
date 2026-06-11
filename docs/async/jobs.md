@@ -38,6 +38,12 @@ Stamp a generated dispatch helper with a named queue when the job belongs to a s
 forj make:job reports:generate --queue reports
 ```
 
+For a named app, run the make command through that app:
+
+```bash
+forj billing make:job reports:generate --queue reports
+```
+
 Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
 
 ## Job Shape
@@ -105,6 +111,7 @@ Return errors when the job should fail and let queue behavior handle retry polic
 Generated App construction registers framework-owned job handlers before workers start.
 
 App-owned jobs should be registered through generated or documented App extension points before workers start.
+Generated job providers live in `app/wire/inject_jobs_app.go`, or `app/<name>/wire/inject_jobs_app.go` for a named app.
 
 Do not register handlers after workers are already running.
 

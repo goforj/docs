@@ -151,7 +151,10 @@ Some generated files are intended for user customization after initial render.
 
 Examples:
 
-- `internal/app/lifecycle_registry.go`
+- `app/lifecycle.go`
+- `app/routes.go`
+- `app/commands.go`
+- `app/schedules.go`
 - application command registration surfaces
 - schedule registry surfaces
 - route/controller extension surfaces
@@ -167,7 +170,7 @@ Generated code should be refreshed after changing:
 - named cache, storage, queue, or event scopes
 - database driver support
 - provider sets or generated Wire inputs
-- observability target configuration
+- observability app and runtime configuration
 
 Use `forj build` when unsure.
 
