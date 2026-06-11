@@ -304,7 +304,7 @@ Goal: keep product storytelling, showcase pages, and future publishing surfaces 
 - [ ] Decide when to add a public `Showcase` section beyond individual top-level product pages.
 - [ ] Design the first Lighthouse showcase page as a product story, not API reference.
 - [x] Decide when a lightweight blog/news section has enough content to justify public navigation.
-- [ ] Verify the Starter Kits hero screenshot animation visibly runs on full page refresh.
+- [x] Verify the Starter Kits hero screenshot animation visibly runs on full page refresh. (Replaced the manual rAF reveal with CSS class-toggled transitions; verified on fresh load.)
 - [ ] Revisit whether VitePress is still the right platform if CMS workflows, complex demos, or separate marketing ownership become real constraints.
 
 Exit criteria:

@@ -1491,7 +1491,23 @@ html.gf-lightbox-open body {
     filter: none;
     clip-path: inset(0 100% 0 0 round 12px);
     transform: var(--gf-starter-card-tilt);
-    will-change: opacity, clip-path;
+    transition:
+        opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+        clip-path 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gf-starter-hero__visual.is-revealed img {
+    opacity: 1;
+    visibility: visible;
+    clip-path: inset(0 0 0 0 round 12px);
+}
+
+.gf-starter-hero__visual.is-revealed .gf-starter-hero__mini img:first-child {
+    transition-delay: 0.14s;
+}
+
+.gf-starter-hero__visual.is-revealed .gf-starter-hero__mini img:nth-child(2) {
+    transition-delay: 0.28s;
 }
 
 .gf-starter-hero__card--primary {
@@ -3312,4 +3328,26 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     .gf-home-card {
         padding: 16px 18px;
     }
+}
+
+
+/* Hero card reveal respects the motion system: snap visible, no fade. */
+@media (prefers-reduced-motion: reduce) {
+    html:not([data-gf-motion='on']) .gf-starter-hero__visual img {
+        transition: none;
+    }
+}
+
+html[data-gf-motion='reduced'] .gf-starter-hero__visual img {
+    transition: none;
+}
+
+.gf-starter-actions--center {
+    justify-content: center;
+}
+
+.gf-starter-actions--center a:first-child {
+    border-color: rgba(113, 139, 255, 0.62);
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
+    box-shadow: 0 16px 40px rgba(80, 98, 255, 0.22);
 }

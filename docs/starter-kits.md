@@ -116,6 +116,9 @@ noAutoTitle: true
       Starter kits provide a strong first shape. After generation, the code is yours: edit it,
       remove it, replace it, or evolve it into the product your App needs.
     </p>
-    <a href="/getting-started/starter-kits">Read how starter kits are generated</a>
+    <div class="gf-starter-actions gf-starter-actions--center">
+      <a href="/getting-started/quickstart">Create an App</a>
+      <a href="/getting-started/starter-kits">Read how starter kits are generated</a>
+    </div>
   </section>
 </section>
