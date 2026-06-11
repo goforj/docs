@@ -2733,7 +2733,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     max-width: 920px;
     margin-left: auto !important;
     margin-right: auto !important;
@@ -2747,13 +2747,6 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     margin: 0 !important;
     display: flex;
     align-items: center;
-}
-
-.gf-home-path__step + .gf-home-path__step::before {
-    content: "→";
-    margin-right: 10px;
-    color: rgba(148, 163, 184, 0.42);
-    font-weight: 700;
 }
 
 .gf-home-path__step a {
@@ -2931,7 +2924,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 @media (max-width: 960px) {
     .gf-home-split,
     .gf-home-split--reverse {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .gf-home-split--reverse .gf-home-split__copy {
@@ -2943,38 +2936,34 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     }
 
     .gf-home-swap__grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .gf-home-ops__topology {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
 @media (max-width: 680px) {
     .gf-home-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .gf-home-ops__surfaces {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .gf-home-proof__stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .gf-home-close__paths {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .gf-home-path {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .gf-home-path__step + .gf-home-path__step::before {
-        display: none;
     }
 
     .gf-home-path__step a {
@@ -3249,4 +3238,47 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+}
+
+
+/* Mobile code surfaces: smaller mono, and a right-edge fade that
+   signals horizontal scrollability instead of looking truncated. */
+@media (max-width: 680px) {
+    .gf-home-terminal {
+        position: relative;
+    }
+
+    .gf-home-terminal::after {
+        content: "";
+        position: absolute;
+        top: 42px;
+        right: 0;
+        bottom: 0;
+        width: 26px;
+        border-radius: 0 0 14px 0;
+        background: linear-gradient(to right, rgba(10, 11, 16, 0), rgba(10, 11, 16, 0.92));
+        pointer-events: none;
+    }
+
+    .gf-home-ops__shape {
+        position: relative;
+    }
+
+    .gf-home-ops__shape::after {
+        content: "";
+        position: absolute;
+        top: 38px;
+        right: 0;
+        bottom: 0;
+        width: 22px;
+        border-radius: 0 0 14px 0;
+        background: linear-gradient(to right, rgba(10, 11, 16, 0), rgba(10, 11, 16, 0.9));
+        pointer-events: none;
+    }
+
+    .gf-home-terminal__body,
+    .gf-home-ops__shape-body,
+    .gf-home-close__cmd {
+        font-size: 0.74rem;
+    }
 }

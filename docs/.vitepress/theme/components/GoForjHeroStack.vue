@@ -2054,6 +2054,12 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
     text-align: center;
     gap: 3rem;
     min-height: auto;
+    width: 100%;
+  }
+  .gf-hero-content,
+  .gf-hero-graphic {
+    min-width: 0;
+    max-width: 100%;
   }
   .gf-hero-title {
     font-size: 3.6rem;
@@ -2064,7 +2070,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
     margin-right: auto;
   }
   .gf-hero-principles {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     max-width: 34rem;
     margin-left: auto;
     margin-right: auto;
@@ -2092,9 +2098,19 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 @media (max-width: 640px) {
   .gf-home-hero {
     padding: calc(var(--vp-nav-height) + 1.5rem) 1.25rem 4rem;
+    overflow: hidden;
   }
   .gf-hero-title {
     font-size: 2.85rem;
+  }
+  .gf-hero-graphic {
+    transform: translate(0, 0);
+  }
+  .gf-hero-graphic.is-visible {
+    transform: translate(0, 0);
+  }
+  .gf-hero-install {
+    max-width: 100%;
   }
   .gf-hero-actions {
     flex-direction: column;

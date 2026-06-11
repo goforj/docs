@@ -4,6 +4,26 @@
 
 This plan covers documentation changes needed for the current `goforj` work on branch `cmilesio/feat-multi-app-p2`.
 
+## Execution Status
+
+This plan has been partially executed in `goforj-docs`.
+
+Completed in public docs:
+
+- Core Project/app/runtime mental model.
+- `docs/core/apps.md` and sidebar entry.
+- Default app and named app command examples.
+- App-local paths for routes, commands, lifecycle, schedules, and Wire.
+- CLI, config, env var, generated file, API index, OpenAPI, dev, async, data, operations, frontend, and starter kit docs.
+- Scenario markdown path cleanup for the app-local composition layout.
+- Heading connector cleanup for `And` -> `and`.
+
+Still recommended after the source branch stabilizes:
+
+- Update scenario specs in `../goforj/internal/scenarios/specs`.
+- Regenerate scenario markdown instead of relying on the direct docs path cleanup.
+- Re-run the source verification and scenario verification commands below.
+
 The requested base branch was `master`, but this checkout does not have a `master` ref. `origin/HEAD` points at `origin/main`, so this review used `main..HEAD`.
 
 Current branch state reviewed:
