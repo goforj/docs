@@ -15,14 +15,16 @@ const SWAP_ENV = {
     { key: 'CACHE_DRIVER', value: 'memory' },
     { key: 'STORAGE_PHOTOS_DRIVER', value: 'local' },
     { key: 'QUEUE_DRIVER', value: 'workerpool' },
-    { key: 'EVENTS_DRIVER', value: 'inproc' }
+    { key: 'EVENTS_DRIVER', value: 'inproc' },
+    { key: 'MAIL_DRIVER', value: 'log' }
   ],
   production: [
     { key: 'DB_DRIVER', value: 'postgres' },
     { key: 'CACHE_DRIVER', value: 'redis' },
     { key: 'STORAGE_PHOTOS_DRIVER', value: 's3' },
     { key: 'QUEUE_DRIVER', value: 'redis' },
-    { key: 'EVENTS_DRIVER', value: 'nats' }
+    { key: 'EVENTS_DRIVER', value: 'nats' },
+    { key: 'MAIL_DRIVER', value: 'smtp' }
   ]
 }
 
@@ -218,6 +220,7 @@ func (s *Service) Store(
 </div>
 </div>
 </div>
+<p class="gf-home-swap__all" data-reveal><strong>Every primitive works this way.</strong> Cache, storage, queue, events, database, mail - each runs on in-process or local drivers in a standalone binary, then swaps to real infrastructure in production. No code changes.</p>
 </div>
 </section>
 

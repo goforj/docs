@@ -3282,3 +3282,25 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
         font-size: 0.74rem;
     }
 }
+
+/* On phones, hide the code theme picker; keep Motion (accessibility control). */
+@media (max-width: 640px) {
+    .gf-code-variant-picker {
+        display: none;
+    }
+}
+
+/* The universality statement under the driver swap demo. */
+.gf-home-swap__all {
+    max-width: 720px;
+    margin: clamp(36px, 4vw, 52px) auto 0 !important;
+    text-align: center;
+    color: rgba(203, 213, 225, 0.66);
+    font-size: 1.02rem;
+    line-height: 1.65;
+}
+
+.gf-home-swap__all strong {
+    color: rgba(244, 246, 252, 0.95);
+    font-weight: 780;
+}

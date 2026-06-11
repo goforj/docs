@@ -2128,4 +2128,9 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
     font-size: 0.68rem;
   }
 }
+@media (max-width: 480px) {
+  .gf-hero-title {
+    font-size: 2.35rem;
+  }
+}
 </style>
