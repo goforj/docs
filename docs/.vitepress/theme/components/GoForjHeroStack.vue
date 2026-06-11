@@ -10,10 +10,16 @@ const INSTALL_COMMAND = 'go install github.com/goforj/goforj/cmd/forj@latest'
 
 let installCopyTimer = 0
 
+function trackEvent(eventName, params) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+  window.gtag('event', eventName, params)
+}
+
 async function copyInstallCommand() {
   try {
     await navigator.clipboard.writeText(INSTALL_COMMAND)
     installCopied.value = true
+    trackEvent('install_copy', { location: 'hero' })
     if (installCopyTimer) window.clearTimeout(installCopyTimer)
     installCopyTimer = window.setTimeout(() => {
       installCopied.value = false
@@ -153,6 +159,7 @@ function onBlockClick(item) {
   if (item.id !== 'core') return
   if (isMotionReduced() || strikeActive.value) return
   strikeActive.value = true
+  trackEvent('forge_strike', {})
   if (strikeTimer) window.clearTimeout(strikeTimer)
   strikeTimer = window.setTimeout(() => {
     strikeActive.value = false

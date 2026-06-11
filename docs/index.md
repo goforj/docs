@@ -30,6 +30,17 @@ const SWAP_ENV = {
 
 const swapEnv = computed(() => SWAP_ENV[swapMode.value])
 
+// GA4 helper: silent unless gtag is loaded (production only).
+function track(eventName, params) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+  window.gtag('event', eventName, params)
+}
+
+function setSwapMode(mode) {
+  if (swapMode.value !== mode) track('swap_toggle', { mode })
+  swapMode.value = mode
+}
+
 const CAPABILITIES = [
   { title: 'HTTP services', icon: 'globe', copy: 'Thin controllers, route groups, and middleware over the web abstraction. Health, readiness, and Swagger included.', href: '/applications/http-services' },
   { title: 'Commands', icon: 'terminal', copy: 'First-class CLI entry points with injected dependencies, not shell scripts around your binary.', href: '/applications/commands' },
@@ -72,7 +83,26 @@ const observers = []
 
 onMounted(() => {
   const root = document.querySelector('.gf-home')
-  if (!root || !motionAllowed() || typeof IntersectionObserver === 'undefined') return
+  if (!root || typeof IntersectionObserver === 'undefined') return
+
+  // Analytics: one section_view per section per pageload, fired once a
+  // section is meaningfully on screen (35% of it, or 60% of the viewport
+  // for sections taller than the screen). Runs regardless of motion mode.
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return
+      const deepEnough = entry.intersectionRatio >= 0.35
+        || entry.intersectionRect.height >= window.innerHeight * 0.6
+      if (!deepEnough) return
+      const cls = [...entry.target.classList].find((c) => c.startsWith('gf-home-') && c !== 'gf-home-section')
+      track('section_view', { section_id: cls ? cls.replace('gf-home-', '') : 'unknown' })
+      sectionObserver.unobserve(entry.target)
+    })
+  }, { threshold: [0.15, 0.25, 0.35, 0.5] })
+  root.querySelectorAll('.gf-home-section').forEach((el) => sectionObserver.observe(el))
+  observers.push(sectionObserver)
+
+  if (!motionAllowed()) return
 
   root.classList.add('gf-reveal-ready')
 
@@ -202,8 +232,8 @@ func (s *Service) Store(
 <div class="gf-home-swap__env-col" data-reveal style="--reveal-delay: 0.16s">
 <p class="gf-home-swap__label">Your environment · the only thing that changes</p>
 <div class="gf-home-swap__toggle" role="group" aria-label="Choose environment">
-<button type="button" :class="{ 'is-active': swapMode === 'local' }" @click="swapMode = 'local'">Local</button>
-<button type="button" :class="{ 'is-active': swapMode === 'production' }" @click="swapMode = 'production'">Production</button>
+<button type="button" :class="{ 'is-active': swapMode === 'local' }" @click="setSwapMode('local')">Local</button>
+<button type="button" :class="{ 'is-active': swapMode === 'production' }" @click="setSwapMode('production')">Production</button>
 </div>
 <div class="gf-home-env" :data-mode="swapMode">
 <div v-for="line in swapEnv" :key="line.key" class="gf-home-env__line">
