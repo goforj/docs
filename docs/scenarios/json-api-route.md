@@ -6,7 +6,7 @@ description: Build a JSON API route with a controller, service, Wire provider, r
 # JSON API Route
 
 ::: info Verified Scenario
-We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
 This scenario adds a `GET /api/v1/users/:id` endpoint to a generated GoForj App.

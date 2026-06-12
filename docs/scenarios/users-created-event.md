@@ -6,7 +6,7 @@ description: Publish a typed users.created event and handle it with a lifecycle-
 # Users Created Event
 
 ::: info Verified Scenario
-We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
 This scenario extends the user profile flow with a `POST /api/v1/users` endpoint that publishes a typed `users.created` event after a user is saved.

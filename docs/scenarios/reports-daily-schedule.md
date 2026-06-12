@@ -6,7 +6,7 @@ description: Schedule reports:daily recurring work that dispatches existing repo
 # Reports Daily Schedule
 
 ::: info Verified Scenario
-We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
 This scenario adds a `reports:daily` schedule that dispatches the existing `reports:generate` job.

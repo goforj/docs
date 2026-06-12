@@ -6,7 +6,7 @@ description: Dispatch durable reports:generate work from a users.created subscri
 # Reports Generate Job
 
 ::: info Verified Scenario
-We test this scenario against the current GoForj templates, including the generated files, wiring changes, commands, and verification steps.
+This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
 This scenario turns the `users.created` subscriber into a durable work dispatcher.
