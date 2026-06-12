@@ -97,6 +97,7 @@ In this example, both named queues use Redis. `emails` gets more worker capacity
 Use `about` to verify what the App will run:
 
 ```bash
+forj about
 ./bin/app about
 ```
 
@@ -140,6 +141,7 @@ forj worker --queue reports
 Repeat `--queue` to run a subset:
 
 ```bash
+forj worker --queue emails --queue reports
 ./bin/app worker --queue emails --queue reports
 ```
 

@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
 <div class="gf-home-split__copy" data-reveal>
 <p class="gf-home-eyebrow">Start</p>
 <h2 class="gf-home-h2">A real application in <em>two commands</em></h2>
-<p class="gf-home-lead"><code>forj new</code> renders a complete Go project - the components you choose, nothing more. <code>forj dev</code> brings it alive.</p>
+<p class="gf-home-lead"><code>forj new</code> renders a complete Go project - the components you choose, nothing more. <code>forj dev</code> brings it alive. Built for Go developers shipping services, workers, CLIs, and full products.</p>
 <div class="gf-home-shapes" aria-label="What a GoForj App can be">
 <span>A focused CLI</span>
 <span>An API service</span>
@@ -169,6 +169,7 @@ onBeforeUnmount(() => {
 </ul>
 <div class="gf-home-links">
 <a href="/getting-started/quickstart">Follow the Quickstart →</a>
+<span class="gf-home-links__note">a few minutes to a running App</span>
 </div>
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
@@ -183,7 +184,7 @@ onBeforeUnmount(() => {
 <span class="t-step">http</span>       listening on <span class="t-hl">:3000</span>
 <span class="t-step">jobs</span>       workers running
 <span class="t-step">scheduler</span>  schedules registered
-<span class="t-step">metrics</span>    <span class="t-hl">:9100/metrics</span>
+<span class="t-step">metrics</span>    <span class="t-hl">:10000/metrics</span>
 <span class="t-ready">ready</span> <span class="t-dim">· watching for changes</span>
 <span></span>
 <span class="t-prompt">$</span> <span class="t-cmd">curl localhost:3000/-/health</span>
@@ -330,14 +331,14 @@ func (s *Service) Store(
 <div class="gf-home-ops__topology">
 <div class="gf-home-ops__shape" data-reveal>
 <p class="gf-home-ops__shape-title">Standalone</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> ./bin/app run
+<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj app</span>  <span class="t-dim"># → ./bin/app run</span>
 <span class="t-dim">one process:</span> http <span class="t-dim">+</span> jobs <span class="t-dim">+</span> scheduler</code></pre>
 </div>
 <div class="gf-home-ops__shape" data-reveal style="--reveal-delay: 0.1s">
 <p class="gf-home-ops__shape-title">Distributed</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> ./bin/app api
-<span class="t-prompt">$</span> ./bin/app worker --queue media
-<span class="t-prompt">$</span> ./bin/app scheduler</code></pre>
+<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj api</span>  <span class="t-dim"># → ./bin/app api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj worker --queue media</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj scheduler</span></code></pre>
 </div>
 </div>
 <div class="gf-home-ops__surfaces">
@@ -396,8 +397,8 @@ func (s *Service) Store(
 <span class="t-tree">├──</span> app/billing/     <span class="t-dim"># its routes, commands, wiring</span>
 <span class="t-tree">└──</span> internal/        <span class="t-hl"># shared behavior, one module</span>
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/billing worker</span></code></pre>
+<span class="t-prompt">$</span> <span class="t-cmd">forj api</span>             <span class="t-dim"># → ./bin/app api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj billing worker</span>   <span class="t-dim"># → ./bin/billing worker</span></code></pre>
 </div>
 </div>
 </div>

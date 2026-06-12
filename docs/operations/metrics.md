@@ -14,15 +14,15 @@ Generated Apps expose Prometheus-compatible metrics through `github.com/goforj/m
 Standalone host mode prefers one shared metrics endpoint:
 
 ```text
-http://localhost:9100/metrics
+http://localhost:10000/metrics
 ```
 
 Direct runtime commands may expose source-specific listeners:
 
 ```text
-http://localhost:9100/metrics  # HTTP
-http://localhost:9101/metrics  # jobs
-http://localhost:9102/metrics  # scheduler
+http://localhost:10000/metrics  # HTTP
+http://localhost:10001/metrics  # scheduler
+http://localhost:10002/metrics  # workers
 ```
 
 Named apps get deterministic local defaults so app runtimes do not fight for the same ports. For example, a `billing` app may use the next app-specific block while the default app keeps the root ports.

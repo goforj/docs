@@ -121,14 +121,14 @@ Then check route output, process logs, metrics endpoints, inspect records, and L
 Check the shared local metrics endpoint:
 
 ```bash
-curl http://localhost:9100/metrics
+curl http://localhost:10000/metrics
 ```
 
 When split runtime commands expose source-specific listeners, also check:
 
 ```bash
-curl http://localhost:9101/metrics
-curl http://localhost:9102/metrics
+curl http://localhost:10001/metrics
+curl http://localhost:10002/metrics
 ```
 
 Look for bounded labels such as route name or pattern, queue name, job name, schedule name, source, and status. Do not expect user IDs, emails, raw URLs, or storage filenames to appear as labels.

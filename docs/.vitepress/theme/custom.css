@@ -2346,6 +2346,12 @@ html.gf-lightbox-open body {
     color: rgba(199, 213, 255, 1);
 }
 
+.gf-home-links__note {
+    color: rgba(203, 213, 225, 0.58);
+    font-size: 0.86rem;
+    align-self: center;
+}
+
 /* --- terminal panes --- */
 
 .gf-home-terminal {

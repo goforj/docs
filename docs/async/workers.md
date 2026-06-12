@@ -41,6 +41,7 @@ forj worker --queue reports
 Repeat the flag to work a subset:
 
 ```bash
+forj worker --queue emails --queue reports
 ./bin/app worker --queue emails --queue reports
 ```
 
