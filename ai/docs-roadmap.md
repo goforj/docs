@@ -313,6 +313,24 @@ Exit criteria:
 - [x] Product storytelling supports the docs learning path instead of competing with it.
 - [ ] Any future platform split is based on concrete constraints, not aesthetic preference alone.
 
+## Site Theme and Polish
+
+Goal: keep the docs reading experience deliberately designed, not default VitePress. Full system map lives in `ai/site-theme-system.md`.
+
+- [x] Landing page rebuild: continuous canvas, driver swap section, multi-app Scale section, GA4 section events, motion toggle, mobile audit.
+- [x] Docs view polish round one: h1 ember accent, gradient hairline rules, page-enter motion, TOC and sidebar wayfinding, code block sheen.
+- [x] Docs view polish round two: prev/next pager cards, hash-landing glow, branded selection, slim scrollbars, link underline behavior, table styling.
+- [x] Docs view polish round three: search modal styling, custom 404 page, code-group tabs, details disclosures.
+- [x] Fix hash targets hiding behind the sticky docs preview banner (stickyOffset + measured `--gf-banner-height` scroll margin).
+- [x] Scope all docs-content rules to `.VPDoc` so they cannot leak into the landing page, which also renders `.vp-doc`.
+- [ ] Commit `docs/assets/starter-kits/*` screenshots to git before the next production deploy; they currently render locally but are untracked and would 404 in production.
+- [ ] Consider styling remaining minor surfaces if they enter use: code-group and details styles exist but no content uses them yet.
+
+Exit criteria:
+
+- [x] Every reader-facing surface (article, sidebar, outline, footer, search, 404) carries deliberate styling consistent with the brand tokens.
+- [x] All motion respects the three-state motion system and OS reduce-motion.
+
 ## First Runnable Scenarios
 
 Status: first generated executable scenario set is implemented.

@@ -536,6 +536,15 @@ export default {
     const docsVersion = theme.value.docsVersion || 'v0.9'
 
     return h(DefaultTheme.Layout, null, {
+      'not-found': () => h('div', { class: 'gf-notfound' }, [
+        h('p', { class: 'gf-notfound__kicker' }, 'Page not found'),
+        h('h1', { class: 'gf-notfound__code' }, '404'),
+        h('p', { class: 'gf-notfound__text' }, 'This page does not exist or has moved. The links below lead back to solid ground.'),
+        h('div', { class: 'gf-notfound__actions' }, [
+          h('a', { class: 'gf-notfound__link is-primary', href: '/' }, 'Go to the docs home'),
+          h('a', { class: 'gf-notfound__link', href: '/getting-started/quickstart' }, 'Start the quickstart')
+        ])
+      ]),
       'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
       'home-hero-before': () => h(GoForjHeroStack),
       'layout-top': () => h(DocsPreviewBanner),

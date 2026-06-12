@@ -3370,12 +3370,12 @@ html[data-gf-motion='reduced'] .gf-starter-hero__visual img {
 }
 
 /* Section rules: left-weighted gradient hairlines instead of flat lines. */
-.VPDoc .vp-doc h2 {
+.VPDoc.has-sidebar .vp-doc h2 {
     border-top: 1px solid transparent;
     border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
 }
 
-.VPDoc .vp-doc hr {
+.VPDoc.has-sidebar .vp-doc hr {
     border: none;
     border-top: 1px solid transparent;
     border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
@@ -3649,4 +3649,235 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 /* Hash targets clear the sticky nav + preview banner on native anchor jumps. */
 .vp-doc :is(h1, h2, h3, h4, h5, h6) {
     scroll-margin-top: calc(var(--vp-nav-height, 64px) + var(--gf-banner-height, 40px) + 16px);
+}
+
+
+/* ============================================================
+   Docs view refinements, round three: search modal, 404,
+   code groups, details disclosures
+   ============================================================ */
+
+/* Search modal: glass panel, hairlines, indigo highlights. */
+:root {
+    --vp-local-search-bg: rgba(22, 23, 28, 0.97);
+    --vp-local-search-result-bg: rgba(255, 255, 255, 0.012);
+    --vp-local-search-result-border: rgba(148, 163, 204, 0.10);
+    --vp-local-search-result-selected-bg: rgba(106, 125, 255, 0.09);
+    --vp-local-search-result-selected-border: rgba(126, 146, 255, 0.52);
+    --vp-local-search-highlight-bg: rgba(106, 125, 255, 0.32);
+    --vp-local-search-highlight-text: #fff;
+}
+
+.VPLocalSearchBox .backdrop {
+    background: rgba(8, 9, 12, 0.68);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+.VPLocalSearchBox .shell {
+    border: 1px solid rgba(148, 163, 204, 0.15);
+    border-radius: 14px;
+    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+}
+
+.VPLocalSearchBox .search-bar {
+    border-radius: 10px;
+    border-color: rgba(148, 163, 204, 0.18);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.VPLocalSearchBox .search-bar:focus-within {
+    border-color: rgba(126, 146, 255, 0.55);
+    box-shadow: 0 0 0 3px rgba(106, 125, 255, 0.12);
+}
+
+.VPLocalSearchBox .result {
+    border-radius: 10px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.VPLocalSearchBox .titles {
+    font-size: 0.78rem;
+    color: rgba(170, 182, 211, 0.62);
+}
+
+.VPLocalSearchBox .title-icon {
+    color: rgba(255, 154, 96, 0.55);
+}
+
+.VPLocalSearchBox .search-keyboard-shortcuts kbd {
+    border: 1px solid rgba(148, 163, 204, 0.20);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* 404: forge-toned not-found with paths back. */
+.gf-notfound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - var(--vp-nav-height) - 200px);
+    padding: 96px 24px;
+    text-align: center;
+}
+
+.gf-notfound__kicker {
+    margin: 0 0 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 154, 96, 0.85);
+}
+
+.gf-notfound__code {
+    margin: 0;
+    font-size: clamp(5rem, 14vw, 8.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    background: linear-gradient(180deg, rgba(235, 240, 252, 0.95), rgba(150, 162, 196, 0.55));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.gf-notfound__code::after {
+    content: "";
+    display: block;
+    width: 52px;
+    height: 2px;
+    margin: 26px auto 0;
+    border-radius: 1px;
+    background: linear-gradient(90deg, rgba(255, 154, 96, 0), rgba(255, 154, 96, 0.72), rgba(255, 154, 96, 0));
+}
+
+.gf-notfound__text {
+    margin: 22px 0 0;
+    max-width: 420px;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: rgba(190, 200, 226, 0.78);
+}
+
+.gf-notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 34px;
+}
+
+.gf-notfound__link {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 22px;
+    border: 1px solid rgba(148, 163, 204, 0.22);
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: rgba(228, 234, 248, 0.92);
+    text-decoration: none;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.gf-notfound__link:hover {
+    border-color: rgba(148, 163, 204, 0.45);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.gf-notfound__link.is-primary {
+    border-color: rgba(113, 139, 255, 0.62);
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
+    color: #fff;
+}
+
+.gf-notfound__link.is-primary:hover {
+    border-color: rgba(140, 162, 255, 0.85);
+    background: linear-gradient(180deg, rgba(118, 136, 255, 0.98), rgba(90, 102, 235, 0.98));
+}
+
+/* Code groups: quiet tab strip that joins its block. */
+.vp-code-group .tabs {
+    border: 1px solid rgba(148, 163, 204, 0.10);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.vp-code-group .tabs label {
+    transition: color 0.18s ease;
+}
+
+.vp-code-group .tabs label::after {
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.vp-code-group input:checked + label::after {
+    background-color: rgba(255, 154, 96, 0.85);
+}
+
+.vp-code-group .blocks div[class*='language-'] {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Details: bordered disclosure with rotating chevron. */
+.VPDoc .vp-doc details.details {
+    border: 1px solid rgba(148, 163, 204, 0.12);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.012);
+    padding: 14px 18px;
+}
+
+.VPDoc .vp-doc details.details summary {
+    position: relative;
+    margin: 0;
+    padding-left: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.VPDoc .vp-doc details.details summary::-webkit-details-marker {
+    display: none;
+}
+
+.VPDoc .vp-doc details.details summary::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -5px;
+    border-right: 1.5px solid rgba(190, 200, 226, 0.80);
+    border-bottom: 1.5px solid rgba(190, 200, 226, 0.80);
+    transform: rotate(-45deg);
+    transition: transform 0.2s ease;
+}
+
+.VPDoc .vp-doc details.details[open] summary::before {
+    transform: rotate(45deg);
+}
+
+@keyframes gf-details-in {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html:not([data-gf-motion='reduced']) .VPDoc .vp-doc details.details[open] > *:not(summary) {
+        animation: gf-details-in 0.24s ease both;
+    }
+}
+
+html[data-gf-motion='on'] .VPDoc .vp-doc details.details[open] > *:not(summary) {
+    animation: gf-details-in 0.24s ease both;
 }
