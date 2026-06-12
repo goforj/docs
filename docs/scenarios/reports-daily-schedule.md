@@ -9,6 +9,8 @@ description: Schedule reports:daily recurring work that dispatches existing repo
 This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
+Scenario 6 of 7 in the [verified path](/scenarios/). Plan on about 15 minutes.
+
 This scenario adds a `reports:daily` schedule that dispatches the existing `reports:generate` job.
 
 The schedule decides when daily report work should begin. The queue still owns execution, retries, worker lifecycle, and failure visibility.

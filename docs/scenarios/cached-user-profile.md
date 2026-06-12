@@ -9,6 +9,8 @@ description: Add a repository and named cache resource to the JSON API route sce
 This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
+Scenario 2 of 7 in the [verified path](/scenarios/). Plan on about 15 minutes.
+
 This scenario extends the JSON API route with a repository and a named cache resource.
 
 The source repository remains the source of truth. A cached repository wrapper owns the cache-aside access pattern so the service can keep depending on the `UserRepository` contract.

@@ -1,0 +1,188 @@
+{
+  "generatedAt": "2026-06-12",
+  "totals": {
+    "unitTests": 810,
+    "integrationTests": 872,
+    "testFunctions": 2123,
+    "benchmarks": 52,
+    "drivers": 49,
+    "libraries": 16
+  },
+  "drivers": {
+    "queue": [
+      "null",
+      "sync",
+      "workerpool",
+      "mysql",
+      "postgres",
+      "sqlite",
+      "redis",
+      "nats",
+      "sqs",
+      "rabbitmq"
+    ],
+    "events": [
+      "sync",
+      "null",
+      "nats",
+      "jetstream",
+      "redis",
+      "kafka",
+      "sns",
+      "gcppubsub",
+      "sqs"
+    ],
+    "cache": [
+      "null",
+      "file",
+      "memory",
+      "memcached",
+      "redis",
+      "nats",
+      "dynamodb",
+      "sqlite",
+      "postgres",
+      "mysql"
+    ],
+    "storage": [
+      "local",
+      "memory",
+      "redis",
+      "ftp",
+      "sftp",
+      "s3",
+      "gcs",
+      "dropbox",
+      "rclone"
+    ],
+    "mail": [
+      "smtp",
+      "resend",
+      "postmark",
+      "mailgun",
+      "sendgrid",
+      "ses",
+      "log",
+      "fake"
+    ],
+    "database": [
+      "sqlite",
+      "postgres",
+      "mysql"
+    ]
+  },
+  "repos": [
+    {
+      "repo": "cache",
+      "unit": 189,
+      "integration": 113,
+      "testFns": 205,
+      "benchmarks": 1
+    },
+    {
+      "repo": "collection",
+      "unit": null,
+      "integration": null,
+      "testFns": 380,
+      "benchmarks": 0
+    },
+    {
+      "repo": "crypt",
+      "unit": null,
+      "integration": null,
+      "testFns": 50,
+      "benchmarks": 0
+    },
+    {
+      "repo": "env",
+      "unit": null,
+      "integration": null,
+      "testFns": 78,
+      "benchmarks": 0
+    },
+    {
+      "repo": "events",
+      "unit": 25,
+      "integration": 86,
+      "testFns": 106,
+      "benchmarks": 7
+    },
+    {
+      "repo": "execx",
+      "unit": null,
+      "integration": null,
+      "testFns": 79,
+      "benchmarks": 0
+    },
+    {
+      "repo": "godump",
+      "unit": null,
+      "integration": null,
+      "testFns": 105,
+      "benchmarks": 0
+    },
+    {
+      "repo": "httpx",
+      "unit": null,
+      "integration": null,
+      "testFns": 124,
+      "benchmarks": 0
+    },
+    {
+      "repo": "mail",
+      "unit": 80,
+      "integration": null,
+      "testFns": 65,
+      "benchmarks": 0
+    },
+    {
+      "repo": "metrics",
+      "unit": null,
+      "integration": null,
+      "testFns": 33,
+      "benchmarks": 4
+    },
+    {
+      "repo": "queue",
+      "unit": 274,
+      "integration": 552,
+      "testFns": 281,
+      "benchmarks": 6
+    },
+    {
+      "repo": "scheduler",
+      "unit": null,
+      "integration": null,
+      "testFns": 80,
+      "benchmarks": 0
+    },
+    {
+      "repo": "storage",
+      "unit": 29,
+      "integration": 121,
+      "testFns": 169,
+      "benchmarks": 1
+    },
+    {
+      "repo": "str",
+      "unit": null,
+      "integration": null,
+      "testFns": 101,
+      "benchmarks": 0
+    },
+    {
+      "repo": "web",
+      "unit": 213,
+      "integration": null,
+      "testFns": 135,
+      "benchmarks": 31
+    },
+    {
+      "repo": "wire",
+      "unit": null,
+      "integration": null,
+      "testFns": 132,
+      "benchmarks": 2
+    }
+  ]
+}

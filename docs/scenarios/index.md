@@ -11,17 +11,17 @@ Use these after the Quickstart when you want to build real application behavior 
 
 If you are learning GoForj for the first time, treat this section as the main guided tutorial after Getting Started. Feature pages explain one surface at a time; scenarios show how those surfaces compose inside a generated App.
 
-## Scenarios
+## The Path
 
-- [JSON API Route](/scenarios/json-api-route) builds a route, controller, service, Wire provider, route registration, and service test.
-- [Cached User Profile](/scenarios/cached-user-profile) adds a repository and named cache resource.
-- [File Upload To Storage](/scenarios/file-upload-storage) writes uploads to a named storage disk.
-- [Users Created Event](/scenarios/users-created-event) publishes a typed event and handles it with a lifecycle-registered subscriber.
-- [Reports Generate Job](/scenarios/reports-generate-job) dispatches durable work from an event subscriber and processes it with a worker.
-- [Reports Daily Schedule](/scenarios/reports-daily-schedule) schedules recurring report dispatch without duplicating job logic.
-- [Runtime Observability](/scenarios/runtime-observability) follows the workflow through routes, metrics, inspects, Lighthouse, and logs.
+Seven scenarios, in order, each adding one boundary to the same App. Plan on a bit over two hours end to end, or one scenario per sitting. By the end you have a fully observable system: a tested API with caching, file storage, events, durable jobs, a schedule, and operator visibility over all of it.
 
-Read them in order if you are learning the framework model. Each scenario builds on the same App shape and adds one new boundary.
+1. [JSON API Route](/scenarios/json-api-route) · about 15 minutes. A route, controller, service, Wire provider, and service test.
+2. [Cached User Profile](/scenarios/cached-user-profile) · about 15 minutes. A repository boundary and a named cache resource.
+3. [File Upload To Storage](/scenarios/file-upload-storage) · about 20 minutes. Uploads written to a named storage disk.
+4. [Users Created Event](/scenarios/users-created-event) · about 25 minutes. A typed event published and handled by a subscriber.
+5. [Reports Generate Job](/scenarios/reports-generate-job) · about 25 minutes. Durable work dispatched from the subscriber and processed by a worker.
+6. [Reports Daily Schedule](/scenarios/reports-daily-schedule) · about 15 minutes. The same job dispatched on a recurring cadence.
+7. [Runtime Observability](/scenarios/runtime-observability) · about 15 minutes. The whole workflow followed through routes, metrics, inspects, Lighthouse, and logs.
 
 ```mermaid
 flowchart LR
@@ -50,6 +50,14 @@ flowchart LR
 Each scenario uses the same small internal reporting app shape.
 
 The examples are intentionally local-first. Production drivers, distributed backends, and operational deployment notes appear only after the local path works.
+
+## After The Path
+
+Finishing all seven leaves you with the App this whole documentation set describes. From there:
+
+- [Production Checklist](/operations/production-checklist) when you want to ship it.
+- [Cookbook](/cookbook) when you come back with a specific task.
+- [Apps](/core/apps) when the Project outgrows a single app.
 
 ## Related Pages
 

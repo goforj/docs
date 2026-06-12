@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitepress'
+import fs from 'node:fs'
+import path from 'node:path'
 
 const headingRegex = /<h(\d*).*?>(.*?<a.*? href="#.*?".*?>.*?<\/a>)<\/h\1>/gi
 const headingContentRegex = /(.*?)<a.*? href="#(.*?)".*?>.*?<\/a>/i
@@ -108,6 +110,166 @@ const pageUrl = (page: string) => {
   return `${siteUrl}${cleanPath ? `/${cleanPath}` : '/'}`
 }
 
+const libraryRewrites: Record<string, string> = {
+  'libraries/collection.md': 'collection.md',
+  'libraries/strings.md': 'strings.md',
+  'libraries/web.md': 'web.md',
+  'libraries/httpx.md': 'httpx.md',
+  'libraries/mail.md': 'mail.md',
+  'libraries/metrics.md': 'metrics.md',
+  'libraries/execx.md': 'execx.md',
+  'libraries/godump.md': 'godump.md',
+  'libraries/env.md': 'env.md',
+  'libraries/scheduler.md': 'scheduler.md',
+  'libraries/queue.md': 'queue.md',
+  'libraries/events.md': 'events.md',
+  'libraries/cache.md': 'cache.md',
+  'libraries/crypt.md': 'crypt.md',
+  'libraries/storage.md': 'storage.md',
+  'libraries/wire.md': 'wire.md'
+}
+
+// --- llms.txt generation (https://llmstxt.org) ---
+// Emits llms.txt (a linked index) and llms-full.txt (the full docs corpus)
+// into the build output so AI tools can consume the docs directly.
+
+const llmsSectionOrder = [
+  'about.md',
+  'getting-started/',
+  'cookbook.md',
+  'drivers.md',
+  'core/',
+  'applications/',
+  'data/',
+  'async/',
+  'security/',
+  'frontend/',
+  'starter-kits.md',
+  'testing/',
+  'scenarios/',
+  'operations/',
+  'developer-tools/',
+  'libraries/',
+  'reference/',
+  'versions/',
+  'blog/'
+]
+
+const llmsSectionTitles: Record<string, string> = {
+  'about.md': 'About',
+  'getting-started/': 'Getting Started',
+  'cookbook.md': 'Cookbook',
+  'drivers.md': 'Drivers',
+  'core/': 'Core Concepts',
+  'applications/': 'Building Applications',
+  'data/': 'Data and Persistence',
+  'async/': 'Async and Workflows',
+  'security/': 'Security',
+  'frontend/': 'Frontend',
+  'starter-kits.md': 'Starter Kits',
+  'testing/': 'Testing',
+  'scenarios/': 'Verified Scenarios',
+  'operations/': 'Operations',
+  'developer-tools/': 'Developer Tools',
+  'libraries/': 'Libraries',
+  'reference/': 'Reference',
+  'versions/': 'Versions',
+  'blog/': 'Blog'
+}
+
+const llmsOrderIndex = (rel: string) => {
+  const index = llmsSectionOrder.findIndex((prefix) => rel === prefix || rel.startsWith(prefix))
+  return index === -1 ? llmsSectionOrder.length : index
+}
+
+const collectMarkdownFiles = (dir: string, base = ''): string[] => {
+  const files: string[] = []
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue
+    const rel = base ? `${base}/${entry.name}` : entry.name
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...collectMarkdownFiles(full, rel))
+    } else if (entry.name.endsWith('.md')) {
+      files.push(rel)
+    }
+  }
+  return files
+}
+
+const llmsFrontmatterField = (raw: string, field: string): string => {
+  const match = raw.match(/^---\n([\s\S]*?)\n---/)
+  if (!match) return ''
+  const line = match[1].split('\n').find((entry) => entry.startsWith(`${field}:`))
+  if (!line) return ''
+  return line.slice(field.length + 1).trim().replace(/^['"]+|['"]+$/g, '')
+}
+
+const llmsPageTitleFromBody = (raw: string): string => {
+  const heading = raw.match(/^# (.+)$/m)
+  return heading ? heading[1].trim() : ''
+}
+
+const llmsStripContent = (raw: string): string => {
+  let out = raw.replace(/^---\n[\s\S]*?\n---\n?/, '')
+  out = out.replace(/<script\b[\s\S]*?<\/script>\n?/gi, '')
+  out = out.replace(/<style\b[\s\S]*?<\/style>\n?/gi, '')
+  return out.trim()
+}
+
+const llmsPageUrl = (rel: string): string => {
+  const rewritten = libraryRewrites[rel] || rel
+  return pageUrl(rewritten)
+}
+
+async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string }) {
+  const files = collectMarkdownFiles(siteConfig.srcDir)
+    .filter((rel) => rel !== 'index.md')
+    .sort((a, b) => {
+      const orderDelta = llmsOrderIndex(a) - llmsOrderIndex(b)
+      if (orderDelta !== 0) return orderDelta
+      const aKey = a.endsWith('index.md') ? '' : a
+      const bKey = b.endsWith('index.md') ? '' : b
+      return aKey.localeCompare(bKey)
+    })
+
+  const preamble = [
+    '# GoForj',
+    '',
+    `> ${siteDescription}`,
+    '',
+    'GoForj renders complete Go applications from selected components: HTTP services, CLI commands, queues, events, a scheduler, database, cache, storage, mail, auth, and metrics. Generated code is ordinary Go owned by the application, wired with compile-time dependency injection. The stack is built from standalone libraries that are each useful without the framework.',
+    ''
+  ].join('\n')
+
+  const indexLines: string[] = [preamble]
+  const fullChunks: string[] = [preamble]
+  let currentSection = ''
+
+  for (const rel of files) {
+    const raw = fs.readFileSync(path.join(siteConfig.srcDir, rel), 'utf-8')
+    const title = llmsFrontmatterField(raw, 'title') || llmsPageTitleFromBody(raw) || rel
+    const description = llmsFrontmatterField(raw, 'description')
+    const url = llmsPageUrl(rel)
+
+    const sectionKey = llmsSectionOrder[llmsOrderIndex(rel)] || 'other'
+    if (sectionKey !== currentSection) {
+      if (currentSection) indexLines.push('')
+      currentSection = sectionKey
+      indexLines.push(`## ${llmsSectionTitles[sectionKey] || 'Other'}`, '')
+    }
+    indexLines.push(`- [${title}](${url})${description ? `: ${description}` : ''}`)
+
+    const body = llmsStripContent(raw)
+    if (body) {
+      fullChunks.push(`---\n\n# ${title}\n\nURL: ${url}\n\n${body}\n`)
+    }
+  }
+
+  fs.writeFileSync(path.join(siteConfig.outDir, 'llms.txt'), indexLines.join('\n') + '\n')
+  fs.writeFileSync(path.join(siteConfig.outDir, 'llms-full.txt'), fullChunks.join('\n') + '\n')
+}
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "GoForj",
@@ -131,24 +293,13 @@ export default defineConfig({
       }
     }
   },
-  rewrites: {
-    'libraries/collection.md': 'collection.md',
-    'libraries/strings.md': 'strings.md',
-    'libraries/web.md': 'web.md',
-    'libraries/httpx.md': 'httpx.md',
-    'libraries/mail.md': 'mail.md',
-    'libraries/metrics.md': 'metrics.md',
-    'libraries/execx.md': 'execx.md',
-    'libraries/godump.md': 'godump.md',
-    'libraries/env.md': 'env.md',
-    'libraries/scheduler.md': 'scheduler.md',
-    'libraries/queue.md': 'queue.md',
-    'libraries/events.md': 'events.md',
-    'libraries/cache.md': 'cache.md',
-    'libraries/crypt.md': 'crypt.md',
-    'libraries/storage.md': 'storage.md',
-    'libraries/wire.md': 'wire.md'
+  rewrites: libraryRewrites,
+
+  sitemap: {
+    hostname: siteUrl
   },
+
+  buildEnd: generateLlmsFiles,
 
   head: [
     searchHydrationHead,
@@ -193,6 +344,10 @@ export default defineConfig({
   themeConfig: {
     docsVersion,
     // https://vitepress.dev/reference/default-theme-config
+    editLink: {
+      pattern: 'https://github.com/goforj/docs/edit/main/docs/:path',
+      text: 'Edit this page on GitHub'
+    },
     search: {
       provider: 'local',
       options: {
@@ -232,6 +387,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/getting-started/' },
           { text: 'Quickstart', link: '/getting-started/quickstart' },
+          { text: 'Cookbook', link: '/cookbook' },
           { text: 'What is GoForj?', link: '/about' }
         ]
       },
@@ -255,7 +411,13 @@ export default defineConfig({
           { text: 'Developer Tools', link: '/developer-tools/' }
         ]
       },
-      { text: 'Libraries', link: '/libraries/' },
+      {
+        text: 'Libraries',
+        items: [
+          { text: 'Overview', link: '/libraries/' },
+          { text: 'Drivers', link: '/drivers' }
+        ]
+      },
       { text: 'Starter Kits', link: '/starter-kits' },
       { text: 'Blog', link: '/blog/' },
       { text: 'Reference', link: '/reference/' },
@@ -276,6 +438,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/getting-started/' },
           { text: 'Quickstart', link: '/getting-started/quickstart' },
+          { text: 'Cookbook', link: '/cookbook' },
           { text: 'Project Structure', link: '/getting-started/project-structure' },
           { text: 'Configuration', link: '/getting-started/configuration' },
           { text: 'Starter Kits', link: '/getting-started/starter-kits' }

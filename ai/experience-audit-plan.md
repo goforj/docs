@@ -144,6 +144,34 @@ READMEs and library pages are siloed per primitive. The framework's pitch is coh
 - [x] Verified Scenario banner strengthened from "We test this scenario against the current GoForj templates..." to explicit automation language: generated from an executable spec, fresh App rendered from current templates, every step applied in order, every verification command run, failure blocks publication. Changed in the renderer (`scenarios.go`) and hand-synced across all seven published pages. Wording verified against what `runScenario` actually does.
 - [ ] Run from the goforj repo to confirm parity and re-verify: `go test ./internal/scenarios`, then `forj scenario:generate --all --out-dir <docs repo>/docs/scenarios --check`, then `forj scenario:test --all`. The sandbox had no Go toolchain, so the renderer change is compile-checked by inspection only.
 
+2026-06-11 session, second pass (high-leverage builds):
+
+- [x] Cookbook shipped at `/cookbook`: an intent-based "how do I" index with ~60 entries across nine groups, linked from the Getting Started nav and sidebar. All links validated by the build's dead-link check.
+- [x] `llms.txt` and `llms-full.txt` now generate at build time (`buildEnd` in config.mts): a linked index with per-page descriptions, and the full docs corpus with frontmatter and Vue script blocks stripped, ordered to match the sidebar. Landing page excluded by design.
+- [x] Sitemap generation enabled (`sitemap.hostname`), and `editLink` added pointing at goforj/docs (verified public).
+- [x] Landing "Fit" section shipped between scenarios and manifesto: honest reach-for / reach-elsewhere cards plus the eject promise ("Stop running forj tomorrow and your application still builds, tests, and deploys"). New CSS mirrors the operations card language.
+
+- [x] Live terminal shipped on the landing start section (`GoForjLiveTerminal.vue`): types `forj new`, `forj dev`, and the health curl, replaying output with realistic pacing on a loop. Output lines follow verified command shapes from goforj source (`buildDevReadySummaryLines`: "✔ Dev ready" with App, Lighthouse, and Swagger links). SSR renders the full static transcript; reduced motion and the gfMotion override stay static; height is reserved before replay so layout never shifts. The sandbox could not run forj itself (go.dev and proxy.golang.org blocked), so the transcript is reconstructed from source, not captured. To replace with a live capture: record a real run, then update the LINES array in the component.
+
+2026-06-12 session, third pass:
+
+- [x] Proof stats generated, not written: `bin/collect-proof-stats.mjs` reads README executed-count badges plus mechanical `func Test` counts across the 16 libraries, writes `docs/.vitepress/data/proof-stats.json`, and the landing proof band renders from it. New `/numbers` page documents methodology, per-library detail, and the published collection and queue benchmark highlights, with honest footnotes (only 6 of 16 libraries publish badges today; the rest should add them).
+- [x] `/drivers` page: all 49 drivers across the six swap primitives in one matrix, count sourced from the same JSON as the landing.
+- [x] `/whats-new` page shipped, then removed by decision: two entries read as a graveyard, not a pulse. Bring it back once releases carry notes and there is a cadence to feed it. The numbers and performance pages were likewise removed; the generated proof band on the landing page, linking to the counting script, is the surviving form of that work.
+- [x] Scenario course treatment: specs and renderer now carry `path_position`, `path_total`, `estimated_minutes`; every scenario page opens with "Scenario N of 7 ... about M minutes" (estimates are drafts, verify against real runs); scenarios index reframed as a numbered path with total time and an "After The Path" handoff. Regenerate and `scenario:generate --check` from the goforj repo to confirm parity.
+
+Idea backlog (not yet executed, roughly ranked):
+
+- [ ] Show Lighthouse on the landing page: a real capture of an inspect timeline. Strongest unshipped conversion asset.
+- [x] Live terminal transcript replaced with a real captured run (2026-06-11, photodrop, Vue starter kit, full default components). Lines are verbatim from the capture; curation for pane width is documented in the component comment (condensed confirm panel, final compose count only, VictoriaMetrics link and two log-line tails omitted).
+- [ ] Changelog / What's New surface on the site; decide the public version story (docs say v0.9, framework tags say v0.1.x).
+- [ ] Queued launch posts: "How we test 40 drivers against real backends", "Inspects: visibility without an OpenTelemetry pilgrimage".
+- [ ] Proof-band stats generated from the repos so they cannot drift; link each stat to evidence.
+- [ ] Scenario path as a course: per-scenario time estimates, position indicator, completion handoff.
+- [ ] CLI errors print docs URLs for common failures (wire errors especially); optional `forj docs <topic>` command.
+- [ ] Funnel definition over existing GA events (install_copy to quickstart to scenario 1) and local-search query logging for gap mining.
+- [ ] Confirm force-dark is a deliberate brand decision.
+
 ## Evidence notes
 
 Kept brief; the full review lives in session history and can be regenerated.

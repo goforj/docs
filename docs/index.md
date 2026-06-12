@@ -6,22 +6,33 @@ description: The composable stack for building with Go. One cohesive runtime, ex
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import lucideIconsData from '@iconify-json/lucide/icons.json'
+import proofStats from './.vitepress/data/proof-stats.json'
+
+// Proof band numbers are generated, not written. See bin/collect-proof-stats.mjs
+// for methodology.
+const PROOF = [
+  { count: Math.floor(proofStats.totals.testFunctions / 100) * 100, suffix: '+', label: 'test functions across the first-party libraries' },
+  { count: Math.floor(proofStats.totals.integrationTests / 10) * 10, suffix: '+', label: 'integration test runs against real backends in containers' },
+  { count: proofStats.totals.drivers, suffix: '', label: 'interchangeable drivers across queue, events, cache, storage, database, and mail' },
+  { count: proofStats.totals.libraries, suffix: '', label: 'standalone libraries, each useful without the framework' }
+]
+const fmt = (n) => n.toLocaleString('en-US')
 
 const swapMode = ref('local')
 
 const SWAP_ENV = {
   local: [
+    { key: 'STORAGE_PHOTOS_DRIVER', value: 'local' },
     { key: 'DB_DRIVER', value: 'sqlite' },
     { key: 'CACHE_DRIVER', value: 'memory' },
-    { key: 'STORAGE_PHOTOS_DRIVER', value: 'local' },
     { key: 'QUEUE_DRIVER', value: 'workerpool' },
     { key: 'EVENTS_DRIVER', value: 'inproc' },
     { key: 'MAIL_DRIVER', value: 'log' }
   ],
   production: [
+    { key: 'STORAGE_PHOTOS_DRIVER', value: 's3' },
     { key: 'DB_DRIVER', value: 'postgres' },
     { key: 'CACHE_DRIVER', value: 'redis' },
-    { key: 'STORAGE_PHOTOS_DRIVER', value: 's3' },
     { key: 'QUEUE_DRIVER', value: 'redis' },
     { key: 'EVENTS_DRIVER', value: 'nats' },
     { key: 'MAIL_DRIVER', value: 'smtp' }
@@ -39,6 +50,23 @@ function track(eventName, params) {
 function setSwapMode(mode) {
   if (swapMode.value !== mode) track('swap_toggle', { mode })
   swapMode.value = mode
+}
+
+const SWAP_TABS = [
+  { id: 'storage', label: 'Storage', env: 'STORAGE_PHOTOS_DRIVER' },
+  { id: 'database', label: 'Database', env: 'DB_DRIVER' },
+  { id: 'cache', label: 'Cache', env: 'CACHE_DRIVER' },
+  { id: 'queue', label: 'Queue', env: 'QUEUE_DRIVER' },
+  { id: 'events', label: 'Events', env: 'EVENTS_DRIVER' },
+  { id: 'mail', label: 'Mail', env: 'MAIL_DRIVER' }
+]
+
+const swapTab = ref('storage')
+const activeSwapEnvKey = computed(() => SWAP_TABS.find((tab) => tab.id === swapTab.value)?.env)
+
+function setSwapTab(id) {
+  if (swapTab.value !== id) track('swap_primitive', { primitive: id })
+  swapTab.value = id
 }
 
 const CAPABILITIES = [
@@ -173,23 +201,7 @@ onBeforeUnmount(() => {
 </div>
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
-<div class="gf-home-terminal" aria-label="Creating and running a GoForj App">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>photodrop · first run</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>
-<span class="t-ok">✔</span> Project name <span class="t-dim">·</span> photodrop
-<span class="t-ok">✔</span> Components <span class="t-dim">·</span> cli, web_api, jobs, scheduler, database_sqlite, metrics
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">cd photodrop && forj dev</span>
-<span class="t-step">build</span>      generate → wire → api index → go build
-<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span>
-<span class="t-step">jobs</span>       workers running
-<span class="t-step">scheduler</span>  schedules registered
-<span class="t-step">metrics</span>    <span class="t-hl">:10000/metrics</span>
-<span class="t-ready">ready</span> <span class="t-dim">· watching for changes</span>
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">curl localhost:3000/-/health</span>
-<span class="t-json">{"status":"ok"}</span><span class="t-cursor"></span></code></pre>
-</div>
+<GoForjLiveTerminal />
 </div>
 </div>
 </section>
@@ -205,7 +217,22 @@ onBeforeUnmount(() => {
 </div>
 <div class="gf-home-swap__grid">
 <div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
+<div class="gf-home-swap__tabs" role="tablist" aria-label="Pick a primitive">
+<button
+  v-for="tab in SWAP_TABS"
+  :key="tab.id"
+  type="button"
+  role="tab"
+  :aria-selected="swapTab === tab.id"
+  :class="{ 'is-active': swapTab === tab.id }"
+  @click="setSwapTab(tab.id)"
+>{{ tab.label }}</button>
+</div>
 <p class="gf-home-swap__label">Your service · the same file in every environment</p>
+
+<div class="gf-home-swap__panels">
+
+<div :class="{ 'is-open': swapTab === 'storage' }" :aria-hidden="swapTab !== 'storage'" role="tabpanel">
 
 ```go
 // internal/photos/service.go
@@ -217,10 +244,7 @@ func NewService(disk storage.Storage) *Service {
 	return &Service{disk: disk}
 }
 
-func (s *Service) Store(
-	ctx context.Context,
-	in UploadInput,
-) (Photo, error) {
+func (s *Service) Store(ctx context.Context, in UploadInput) (Photo, error) {
 	path := photoPath(in)
 	if err := s.disk.WithContext(ctx).Put(path, in.Body); err != nil {
 		return Photo{}, fmt.Errorf("store photo: %w", err)
@@ -230,6 +254,132 @@ func (s *Service) Store(
 ```
 
 </div>
+
+<div :class="{ 'is-open': swapTab === 'database' }" :aria-hidden="swapTab !== 'database'" role="tabpanel">
+
+```go
+// internal/photos/repository.go
+type Repository struct {
+	db *gorm.DB
+}
+
+func NewRepository(conns *database.Connections) (*Repository, error) {
+	db, err := conns.Default()
+	if err != nil {
+		return nil, err
+	}
+	return &Repository{db: db}, nil
+}
+
+func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
+	var photos []Photo
+	err := r.db.WithContext(ctx).
+		Order("created_at desc").Limit(limit).Find(&photos).Error
+	return photos, err
+}
+```
+
+</div>
+
+<div :class="{ 'is-open': swapTab === 'cache' }" :aria-hidden="swapTab !== 'cache'" role="tabpanel">
+
+```go
+// internal/photos/feed.go
+type Feed struct {
+	cache *cache.Cache
+}
+
+func NewFeed(cache *cache.Cache) *Feed {
+	return &Feed{cache: cache}
+}
+
+func (f *Feed) Trending(ctx context.Context) ([]Photo, error) {
+	c := f.cache.WithContext(ctx)
+	photos, ok, err := cache.Get[[]Photo](c, "photos:trending")
+	if err != nil || ok {
+		return photos, err
+	}
+	photos = rankPhotos()
+	return photos, cache.Set(c, "photos:trending", photos, 5*time.Minute)
+}
+```
+
+</div>
+
+<div :class="{ 'is-open': swapTab === 'queue' }" :aria-hidden="swapTab !== 'queue'" role="tabpanel">
+
+```go
+// internal/photos/thumbnails.go
+type Thumbnails struct {
+	queues *queues.Manager
+}
+
+func NewThumbnails(queues *queues.Manager) *Thumbnails {
+	return &Thumbnails{queues: queues}
+}
+
+func (t *Thumbnails) Enqueue(ctx context.Context, photo Photo) error {
+	payload, err := json.Marshal(ThumbnailPayload{Path: photo.Path})
+	if err != nil {
+		return err
+	}
+	job := queue.NewJob("photos:thumbnail").
+		Payload(payload).OnQueue("media").Retry(3)
+	_, err = t.queues.WithContext(ctx).Dispatch(job)
+	return err
+}
+```
+
+</div>
+
+<div :class="{ 'is-open': swapTab === 'events' }" :aria-hidden="swapTab !== 'events'" role="tabpanel">
+
+```go
+// internal/photos/publisher.go
+type Publisher struct {
+	bus events.Bus
+}
+
+func NewPublisher(bus events.Bus) *Publisher {
+	return &Publisher{bus: bus}
+}
+
+func (p *Publisher) PhotoUploaded(ctx context.Context, photo Photo) error {
+	return p.bus.WithContext(ctx).Publish(events.PhotoUploaded{
+		Path:       photo.Path,
+		UploadedBy: photo.OwnerID,
+	})
+}
+```
+
+</div>
+
+<div :class="{ 'is-open': swapTab === 'mail' }" :aria-hidden="swapTab !== 'mail'" role="tabpanel">
+
+```go
+// internal/photos/welcome.go
+type Welcome struct {
+	mailer *mail.Mailer
+}
+
+func NewWelcome(mailer *mail.Mailer) *Welcome {
+	return &Welcome{mailer: mailer}
+}
+
+func (w *Welcome) Greet(ctx context.Context, user User) error {
+	return w.mailer.Message().
+		To(user.Email, user.Name).
+		Subject("Welcome to photodrop").
+		Text("Your photos have a home now.").
+		Send(ctx)
+}
+```
+
+</div>
+
+</div>
+
+</div>
 <div class="gf-home-swap__env-col" data-reveal style="--reveal-delay: 0.16s">
 <p class="gf-home-swap__label">Your environment · the only thing that changes</p>
 <div class="gf-home-swap__toggle" role="group" aria-label="Choose environment">
@@ -237,7 +387,7 @@ func (s *Service) Store(
 <button type="button" :class="{ 'is-active': swapMode === 'production' }" @click="setSwapMode('production')">Production</button>
 </div>
 <div class="gf-home-env" :data-mode="swapMode">
-<div v-for="line in swapEnv" :key="line.key" class="gf-home-env__line">
+<div v-for="line in swapEnv" :key="line.key" class="gf-home-env__line" :class="{ 'is-spotlit': line.key === activeSwapEnvKey }">
 <span class="gf-home-env__key">{{ line.key }}</span><span class="gf-home-env__eq">=</span><span class="gf-home-env__value" :key="line.key + ':' + line.value">{{ line.value }}</span>
 </div>
 </div>
@@ -414,12 +564,15 @@ func (s *Service) Store(
 <p class="gf-home-lead">A driver should not only compile - it should prove its behavior against the backend it claims to support.</p>
 </div>
 <div class="gf-home-proof__stats">
-<div class="gf-home-proof__stat" data-reveal><strong data-count="2200" data-suffix="+">2,200+</strong><span>unit tests across the first-party libraries</span></div>
-<div class="gf-home-proof__stat" data-reveal style="--reveal-delay: 0.08s"><strong data-count="870" data-suffix="+">870+</strong><span>integration tests against real backends in containers</span></div>
-<div class="gf-home-proof__stat" data-reveal style="--reveal-delay: 0.16s"><strong data-count="40" data-suffix="+">40+</strong><span>interchangeable drivers across queue, events, cache, storage, database, and mail</span></div>
-<div class="gf-home-proof__stat" data-reveal style="--reveal-delay: 0.24s"><strong data-count="16" data-suffix="">16</strong><span>standalone libraries, each useful without the framework</span></div>
+<div
+  v-for="(stat, i) in PROOF"
+  :key="stat.label"
+  class="gf-home-proof__stat"
+  data-reveal
+  :style="i ? { '--reveal-delay': `${i * 0.08}s` } : undefined"
+><strong :data-count="stat.count" :data-suffix="stat.suffix">{{ fmt(stat.count) }}{{ stat.suffix }}</strong><span>{{ stat.label }}</span></div>
 </div>
-<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators.</p>
+<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators. These numbers are generated from the repositories, not written by hand: <a href="https://github.com/goforj/docs/blob/main/bin/collect-proof-stats.mjs" target="_blank" rel="noreferrer noopener">see how they are counted →</a></p>
 </div>
 </section>
 
@@ -449,12 +602,46 @@ func (s *Service) Store(
 </div>
 </section>
 
+<!-- ============ FIT ============ -->
+
+<section class="gf-home-section gf-home-fit">
+<div class="gf-home-section__inner">
+<div class="gf-home-section__header" data-reveal>
+<p class="gf-home-eyebrow">Fit</p>
+<h2 class="gf-home-h2">Is GoForj <em>for you?</em></h2>
+<p class="gf-home-lead">A framework should say who it serves and who it does not. Here is the honest version.</p>
+</div>
+<div class="gf-home-fit__grid">
+<div class="gf-home-fit__card" data-reveal>
+<h3>Reach for GoForj when</h3>
+<ul>
+<li>You are building services, APIs, workers, schedulers, CLIs, or full products in Go.</li>
+<li>You want the foundation every service repeats, wiring, queues, cache, auth, observability, built and tested before day one.</li>
+<li>You want infrastructure to be a configuration decision instead of an architecture rewrite.</li>
+</ul>
+</div>
+<div class="gf-home-fit__card gf-home-fit__card--alt" data-reveal style="--reveal-delay: 0.1s">
+<h3>Reach for something else when</h3>
+<ul>
+<li>You want a thin router and nothing more. A minimal mux and hand-picked libraries will be lighter.</li>
+<li>Your team rules out code generation. GoForj's model is rendered code you own, and that is not negotiable.</li>
+<li>You are building a library, not an application. Use the <a href="/libraries/">standalone libraries</a> instead.</li>
+</ul>
+</div>
+</div>
+<div class="gf-home-fit__eject" data-reveal style="--reveal-delay: 0.18s">
+<h3>If you outgrow it, you keep everything</h3>
+<p>A rendered App is ordinary Go: explicit wiring, readable files, standard modules. Stop running <code>forj</code> tomorrow and your application still builds, tests, and deploys. The framework earns its place in your workflow, not in your lock-in.</p>
+</div>
+</div>
+</section>
+
 <!-- ============ MANIFESTO ============ -->
 
 <section class="gf-home-section gf-home-manifesto">
 <div class="gf-home-section__inner" data-reveal>
 <blockquote class="gf-home-manifesto__quote">
-<p>I did not want to bring dynamic-language magic into Go. I wanted the full-stack experience I missed, built out of things that still feel like Go - explicit wiring, compiled binaries, small interfaces, readable control flow. <em>GoForj is the stack I always wanted.</em></p>
+<p>I got tired of rebuilding the same foundation every time I started a Go service. I did not want magic, and I did not want a framework that fights the language. So GoForj is built from things that still feel like Go: explicit wiring, compiled binaries, small interfaces, readable control flow. <em>It is the stack I always wanted.</em></p>
 <footer>
 <strong>Chris Miles</strong>
 <span>Creator of GoForj</span>

@@ -9,6 +9,8 @@ description: Add an upload endpoint that writes files to a named GoForj storage 
 This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
+Scenario 3 of 7 in the [verified path](/scenarios/). Plan on about 20 minutes.
+
 This scenario adds a `POST /api/v1/uploads` endpoint that writes a file to a named `uploads` storage disk.
 
 The example uses a small JSON payload so the page can focus on the GoForj storage boundary. Multipart parsing, streaming uploads, and large object handling are separate HTTP concerns.

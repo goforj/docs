@@ -9,6 +9,8 @@ description: Publish a typed users.created event and handle it with a lifecycle-
 This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
+Scenario 4 of 7 in the [verified path](/scenarios/). Plan on about 25 minutes.
+
 This scenario extends the user profile flow with a `POST /api/v1/users` endpoint that publishes a typed `users.created` event after a user is saved.
 
 The event announces that something happened. The subscriber reacts to it. Durable background work, retries, and worker lifecycle belong in a job and queue, which the next scenario introduces.

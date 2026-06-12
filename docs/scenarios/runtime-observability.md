@@ -9,6 +9,8 @@ description: Follow a GoForj workflow through routes, logs, metrics, inspects, L
 This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
 :::
 
+Scenario 7 of 7 in the [verified path](/scenarios/). Plan on about 15 minutes.
+
 This scenario follows the same application behavior through the surfaces operators use to trust a running App.
 
 The goal is not to add new business behavior. The goal is to prove that HTTP requests, events, jobs, schedules, metrics, inspects, Lighthouse, and logs all describe the same runtime story.
