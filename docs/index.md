@@ -478,6 +478,34 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <h2 class="gf-home-h2">Run it your way. See <em>everything</em> it does</h2>
 <p class="gf-home-lead">One binary hosts everything locally, or splits into explicit processes when production needs to scale. Deployment is a file you copy. Your code never knows the difference.</p>
 </div>
+<div class="gf-home-ops__binary">
+<div class="gf-home-ops__binary-copy" data-reveal>
+<h3>Your entire App is one file</h3>
+<p>A focused CLI, an API service, a worker fleet, or a full product: whatever shape you select, <code>forj build</code> compiles it into one static binary. Size tracks your components and drivers: under 60 MB with everything enabled. No runtime to install, no interpreter, no dependency directory, no base image. Copy it, run it, done.</p>
+<div class="gf-home-shapes" aria-label="What ships inside the binary">
+<span>HTTP server</span>
+<span>Queue workers</span>
+<span>Scheduler</span>
+<span>CLI commands</span>
+<span>Migrations</span>
+<span>Drivers</span>
+<span>Health and metrics</span>
+<span>Lighthouse UI</span>
+</div>
+</div>
+<div class="gf-home-ops__binary-visual" data-reveal style="--reveal-delay: 0.1s">
+<div class="gf-home-terminal" aria-label="Deploying a GoForj App by copying one binary">
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · the deploy</em></div>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ls -lh bin/app</span>
+-rwxr-xr-x  1 you  staff  <span class="t-hl">57M</span>  bin/app
+<span></span>
+<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app run</span>
+<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span></code></pre>
+</div>
+</div>
+</div>
 <div class="gf-home-ops__topology">
 <div class="gf-home-ops__shape" data-reveal>
 <p class="gf-home-ops__shape-title">Standalone</p>

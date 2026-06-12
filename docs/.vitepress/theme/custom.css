@@ -2635,8 +2635,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
-    max-width: 880px;
-    margin: 0 auto;
+    margin-top: clamp(28px, 3.4vw, 42px);
 }
 
 .gf-home-ops__shape {
@@ -2705,6 +2704,43 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     color: rgba(203, 213, 225, 0.62);
     font-size: 0.83rem;
     line-height: 1.55;
+}
+
+/* --- ops binary block --- */
+
+.gf-home-ops__binary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+    margin-top: clamp(28px, 3.4vw, 42px);
+}
+
+.gf-home-ops__binary-copy {
+    padding-right: clamp(10px, 2vw, 30px);
+}
+
+.gf-home-ops__binary-copy h3 {
+    color: rgba(240, 244, 252, 0.95);
+    font-size: 1.15rem;
+    font-weight: 780;
+}
+
+.gf-home-ops__binary-copy p {
+    margin-top: 10px !important;
+    color: rgba(203, 213, 225, 0.66);
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+.gf-home-ops__binary-copy .gf-home-shapes {
+    margin-top: 16px;
+}
+
+@media (max-width: 860px) {
+    .gf-home-ops__binary {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* --- swap primitive tabs --- */

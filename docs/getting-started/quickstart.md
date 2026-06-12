@@ -9,8 +9,8 @@ This page takes you from nothing to a running GoForj App: one command to create 
 
 ## Prerequisites
 
-- Go 1.25 or newer.
-- Docker and `docker-compose` only if you select Docker-backed components. The default path below needs neither.
+- Go 1.25 or newer. [Install Go](https://go.dev/doc/install) if you do not have it, and check with `go version`.
+- Docker only if you select Docker-backed components. [Docker Desktop](https://docs.docker.com/get-started/get-docker/), [OrbStack](https://orbstack.dev/), and [Podman](https://podman.io/) all work. The default path below needs neither.
 
 ## Install the CLI
 
