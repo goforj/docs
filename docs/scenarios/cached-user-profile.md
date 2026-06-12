@@ -78,7 +78,6 @@ Add a named `profiles` cache to `.env`, then run the build pipeline so the gener
 Append to `.env`:
 
 ```dotenv
-
 CACHE_PROFILES_DRIVER=memory
 CACHE_PROFILES_DEFAULT_TTL_SECONDS=300
 CACHE_PROFILES_PREFIX=profiles

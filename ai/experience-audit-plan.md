@@ -140,6 +140,8 @@ READMEs and library pages are siloed per primitive. The framework's pitch is coh
 - [x] Metrics port drift fixed: stale `9100` block replaced with real `10000/10001/10002` defaults in `operations/metrics.md`, `operations/http-server.md`, `applications/http-services.md`, `scenarios/runtime-observability.md`, and the landing terminal. Source of truth: `project_renderer.go` (`RuntimeBase: 10000 + i*10`) and `templates/.env.tmpl`.
 - [ ] Open decision: heading convention. `tone.md` and `docs-style-guide.md` say sentence-style titles, but the site uses Title Case with lowercase connectors roughly 9:1. Recommendation: codify Title Case in the two governance files rather than rename ~700 headings and churn every anchor.
 - [ ] Re-verify `scenarios/runtime-observability.md` end to end since its metrics ports changed (scenarios ship only after execution).
+- [x] Scenario rendering bug found and fixed: `replace` steps with an empty `new` (deletions) rendered as "Update ... so it includes:" plus an empty code block (`reports-generate-job.md` steps 8 and 9). Renderer in `goforj/internal/scenarios/scenarios.go` now renders deletions as "Remove from `path`:" with the removed content. Stale `9100` ports also fixed in `specs/runtime-observability.yaml`. Generated pages hand-patched to match the fixed renderer.
+- [ ] Run from the goforj repo to confirm parity and re-verify: `go test ./internal/scenarios`, then `forj scenario:generate --all --out-dir <docs repo>/docs/scenarios --check`, then `forj scenario:test --all`. The sandbox had no Go toolchain, so the renderer change is compile-checked by inspection only.
 
 ## Evidence notes
 

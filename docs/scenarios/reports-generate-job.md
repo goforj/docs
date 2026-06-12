@@ -288,20 +288,20 @@ package reports
 
 Register the job constructor from `internal/jobs`.
 
-Update `app/wire/inject_jobs_app.go` so it includes:
+Remove from `app/wire/inject_jobs_app.go`:
 
 ```go
-
+"your/module/internal/reports"
 ```
 
 ## Step 9: Replace The Generated Job Provider
 
 The App service set owns this job because notifications depend on its queueing interface.
 
-Update `app/wire/inject_jobs_app.go` so it includes:
+Remove from `app/wire/inject_jobs_app.go`:
 
 ```go
-
+reports.NewGenerateJob,
 ```
 
 ## Step 10: Dispatch The Job From Notifications
