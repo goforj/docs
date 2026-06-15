@@ -28,10 +28,12 @@ Inside a generated Project, `forj <command>` is the normal default-app developme
 Named apps use an app prefix:
 
 ```bash
-forj billing route:list
-forj billing build
-forj billing worker
+forj marketplace route:list
+forj marketplace build
+forj marketplace worker
 ```
+
+The prefix is part of the ergonomics. It selects the active app for generated App commands and app-aware native commands without forcing you to change directories or pass an `--app` flag.
 
 Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands. Use `./bin/app <command>` for the built binary and deployment/runtime process supervision.
 
@@ -77,8 +79,8 @@ forj make:schedule reports:daily --every 24h
 ./bin/app db
 ./bin/app cache
 
-forj billing route:list
-./bin/billing worker
+forj marketplace route:list
+./bin/marketplace worker
 ```
 
 These resolve to generated App commands through Kong aliases.
@@ -112,7 +114,7 @@ forj cache sessions -- GET user:1
 App and resource generation are project-level `forj` commands:
 
 ```bash
-forj make:app billing
+forj make:app marketplace
 forj make:controller users
 forj make:command reports:reconcile
 forj make:migration create_users
@@ -121,9 +123,12 @@ forj make:migration create_users
 To register generated code into a named app, prefix the command:
 
 ```bash
-forj billing make:controller billing:invoices
-forj billing make:job billing:invoice-reminders --queue invoices
+forj marketplace make:controller checkout
+forj marketplace make:job sync-catalog --queue sync
+forj marketplace make:model order
 ```
+
+The prefix chooses the registration files. `forj marketplace make:controller checkout` creates `internal/checkout/controller.go`, then updates `app/marketplace/routes.go` and `app/marketplace/wire/inject_http_controllers_app.go`; unprefixed `forj make:controller users` creates `internal/users/controller.go`, then updates the default app's `app/routes.go` and `app/wire/inject_http_controllers_app.go`.
 
 File-generating make commands support `--open` / `-o` to open the generated file and `--no-open` to suppress opening. See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and `FORJ_MAKE_OPEN` configuration.
 

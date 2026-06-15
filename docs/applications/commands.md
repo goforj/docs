@@ -23,10 +23,10 @@ forj scheduler
 Use the app name first for a named app:
 
 ```bash
-forj billing route:list
-forj billing reports:reconcile
-forj billing worker
-forj billing scheduler
+forj marketplace route:list
+forj marketplace reports:reconcile
+forj marketplace worker
+forj marketplace scheduler
 ```
 
 Inside a generated Project, native GoForj commands take precedence. If no native command matches, GoForj delegates to the active app. Use `forj run <command>` when you want to force default app command execution explicitly, and use `./bin/<app> <command>` when running a built binary.
@@ -68,7 +68,7 @@ forj make:command reports:reconcile
 Use the app prefix for a named app command:
 
 ```bash
-forj billing make:command reports:reconcile
+forj marketplace make:command reports:reconcile
 ```
 
 The make command generates the command and injects it into the active app's command wiring surfaces. In the normal flow, you do not hand-edit the command Wire set or command collection just to expose the new command.
@@ -108,12 +108,12 @@ For a named app, run:
 
 ```bash
 forj build
-forj billing reports:reconcile
+forj marketplace reports:reconcile
 ```
 
 `forj build` verifies the generated graph. Running the command verifies the generated `Signature` is exposed through the app command tree. Use the command name from the generated or edited `Signature`.
 
-`forj make:command` checks the current GoForj and generated app command surfaces and rejects names that are already in use, such as `build`, `dev`, `new`, `generate`, and `run`. Choose an app-specific operator name such as `reports:sync` or `billing:reconcile`.
+`forj make:command` checks the current GoForj and generated app command surfaces and rejects names that are already in use, such as `build`, `dev`, `new`, `generate`, and `run`. Choose an app-specific operator name such as `reports:sync` or `catalog:rebuild`.
 
 ## Registering Commands
 

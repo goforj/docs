@@ -9,7 +9,7 @@ Runtime topology describes how an app's runtimes are hosted: together in one pro
 
 Apps and runtimes are different:
 
-- an app is the runnable boundary, such as `app` or `billing`
+- an app is the runnable boundary, such as `app` or `marketplace`
 - a runtime is a process role inside an app, such as HTTP, jobs, or scheduler
 
 ## Local Default
@@ -25,7 +25,7 @@ This starts enabled runtimes together for the default app.
 For a named app:
 
 ```bash
-forj billing app
+forj marketplace app
 ```
 
 ## Split Runtimes
@@ -41,9 +41,9 @@ forj scheduler
 For a named app:
 
 ```bash
-forj billing api
-forj billing worker
-forj billing scheduler
+forj marketplace api
+forj marketplace worker
+forj marketplace scheduler
 ```
 
 The application behavior should not change when you split runtimes. Only process topology changes.
@@ -62,8 +62,8 @@ Deployment docs use built binaries:
 Named app binaries follow the app name:
 
 ```bash
-./bin/billing api
-./bin/billing worker
+./bin/marketplace api
+./bin/marketplace worker
 ```
 
 ## Runtime Defaults
@@ -74,12 +74,13 @@ Generated `internal/runtime/apps.go` gives each app deterministic local defaults
 | --- | ---: | ---: | ---: | ---: |
 | `app` | `3000` | `10000` | `10001` | `10002` |
 | first named app | `3001` | `10010` | `10011` | `10012` |
+| second named app | `3002` | `10020` | `10021` | `10022` |
 
 Named apps do not consume default-app globals such as `PORT=3000`. Override one app with its uppercase app prefix:
 
 ```text
-BILLING_PORT=3100
-BILLING_METRICS_PORT=10110
+MARKETPLACE_PORT=3100
+MARKETPLACE_METRICS_PORT=10110
 ```
 
 ## Observability Identity
@@ -93,7 +94,7 @@ Operational data should preserve:
 
 Metrics scrape labels currently include `app`, `process`, `service`, and `environment`.
 
-## Choosing A Topology
+## Choosing a topology
 
 Use the combined runtime first for:
 

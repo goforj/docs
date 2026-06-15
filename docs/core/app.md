@@ -32,12 +32,12 @@ Application behavior still belongs under `internal/`.
 Larger Projects can add named apps:
 
 ```text
-cmd/billing/main.go
-app/billing/
-app/billing/wire/
+cmd/marketplace/main.go
+app/marketplace/
+app/marketplace/wire/
 ```
 
-Use named apps when the Project needs another runnable boundary, such as a billing app, reporting app, or customer portal. Do not add a named app just to organize packages. Normal application code still belongs in `internal/`.
+Use named apps when the Project needs another runnable boundary, such as a marketplace app, backstage app, or admin app. Do not add a named app just to organize packages. Normal application code still belongs in `internal/`.
 
 ## App versus Runtime
 
@@ -48,15 +48,23 @@ An app can expose multiple runtimes:
 - scheduler
 - CLI commands
 
-For example, the `billing` app can run:
+For example, the `marketplace` app can run:
 
 ```bash
-forj billing api
-forj billing worker
-forj billing scheduler
+forj marketplace api
+forj marketplace worker
+forj marketplace scheduler
 ```
 
 The app is the boundary. The runtime is the process role running inside that boundary.
+
+The same app prefix also applies to generated commands and app-aware native commands:
+
+```bash
+forj marketplace route:list
+forj marketplace make:controller checkout
+forj marketplace build
+```
 
 ## App versus Project
 

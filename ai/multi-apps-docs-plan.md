@@ -8,6 +8,15 @@ This plan covers documentation changes needed for the current `goforj` work on b
 
 This plan has been partially executed in `goforj-docs`.
 
+Latest audit on 2026-06-15 updated public docs to better showcase the stabilized multi-app model:
+
+- `forj <app> <command>` is now presented as the primary named-app workflow.
+- App-prefixed `make:*` commands are documented as routing generated registrations into the selected app's `app/<app>/...` and `app/<app>/wire/...` files.
+- Central examples now use `marketplace` and `backstage` for approachable named-app examples instead of treating `billing` and `reporting` as the canonical model.
+- App-scoped API index, OpenAPI, frontend, migration, queue, metric, Lighthouse, and runtime-process examples were refreshed.
+- Named app local env defaults now mention sequential app creation using the next available HTTP port, avoiding duplicate `3001` defaults.
+- `npm run build` passed from `docs/` after the documentation updates.
+
 Completed in public docs:
 
 - Core Project/app/runtime mental model.

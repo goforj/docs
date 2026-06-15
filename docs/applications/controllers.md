@@ -97,11 +97,11 @@ forj route:list
 For a named app, run the make command through that app:
 
 ```bash
-forj billing make:controller reports
-forj billing route:list
+forj marketplace make:controller checkout
+forj marketplace route:list
 ```
 
-This updates `app/billing/routes.go` and `app/billing/wire/inject_http_controllers_app.go`.
+This creates `internal/checkout/controller.go`, then updates `app/marketplace/routes.go` and `app/marketplace/wire/inject_http_controllers_app.go`.
 
 ## Responsibilities
 

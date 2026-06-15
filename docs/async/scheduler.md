@@ -74,7 +74,7 @@ forj scheduler
 For a named app:
 
 ```bash
-forj billing scheduler
+forj marketplace scheduler
 ```
 
 Run it with other enabled local runtimes:

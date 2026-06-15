@@ -69,6 +69,21 @@ function setSwapTab(id) {
   swapTab.value = id
 }
 
+const BIN_TABS = [
+  { id: 'cli', label: 'CLI tool', chips: ['CLI commands', 'Typed configuration', 'Structured logging'] },
+  { id: 'api', label: 'API service', chips: ['HTTP server', 'Routes and middleware', 'CLI commands', 'Health endpoints'] },
+  { id: 'web', label: 'Web app', chips: ['Vue frontend', 'HTTP server', 'API routes', 'CLI commands'] },
+  { id: 'full', label: 'API + Scheduler + Jobs', chips: ['HTTP server', 'Queue workers', 'Scheduler', 'CLI commands', 'Migrations', 'Drivers', 'Health and metrics', 'Lighthouse UI'] }
+]
+
+const binTab = ref('full')
+const activeBinChips = computed(() => BIN_TABS.find((tab) => tab.id === binTab.value)?.chips || [])
+
+function setBinTab(id) {
+  if (binTab.value !== id) track('binary_shape', { shape: id })
+  binTab.value = id
+}
+
 const CAPABILITIES = [
   { title: 'HTTP services', icon: 'globe', copy: 'Thin controllers, route groups, and middleware over the web abstraction. Health, readiness, and Swagger included.', href: '/applications/http-services' },
   { title: 'Commands', icon: 'terminal', copy: 'First-class CLI entry points with injected dependencies, not shell scripts around your binary.', href: '/applications/commands' },
@@ -479,31 +494,80 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <p class="gf-home-lead">One binary hosts everything locally, or splits into explicit processes when production needs to scale. Deployment is a file you copy. Your code never knows the difference.</p>
 </div>
 <div class="gf-home-ops__binary">
+<h3 class="gf-home-ops__binary-title" data-reveal>Your entire App is one file</h3>
+<div class="gf-home-swap__tabs gf-home-ops__binary-tabs" role="tablist" aria-label="Pick an App shape" data-reveal>
+<button
+  v-for="tab in BIN_TABS"
+  :key="tab.id"
+  type="button"
+  role="tab"
+  :aria-selected="binTab === tab.id"
+  :class="{ 'is-active': binTab === tab.id }"
+  @click="setBinTab(tab.id)"
+>{{ tab.label }}</button>
+</div>
 <div class="gf-home-ops__binary-copy" data-reveal>
-<h3>Your entire App is one file</h3>
-<p>A focused CLI, an API service, a worker fleet, or a full product: whatever shape you select, <code>forj build</code> compiles it into one static binary. Size tracks your components and drivers: under 60 MB with everything enabled. No runtime to install, no interpreter, no dependency directory, no base image. Copy it, run it, done.</p>
-<div class="gf-home-shapes" aria-label="What ships inside the binary">
-<span>HTTP server</span>
-<span>Queue workers</span>
-<span>Scheduler</span>
-<span>CLI commands</span>
-<span>Migrations</span>
-<span>Drivers</span>
-<span>Health and metrics</span>
-<span>Lighthouse UI</span>
+<p>Whatever shape you choose, <code>forj build</code> compiles it into one static binary: under 60 MB with everything enabled, nothing extra to install on the server. Copy it, run it, done.</p>
+<p class="gf-home-ops__binary-inside">Ships inside</p>
+<div class="gf-home-shapes gf-home-ops__binary-chips" :key="binTab" aria-label="What ships inside this binary shape">
+<span v-for="chip in activeBinChips" :key="chip">{{ chip }}</span>
 </div>
 </div>
 <div class="gf-home-ops__binary-visual" data-reveal style="--reveal-delay: 0.1s">
-<div class="gf-home-terminal" aria-label="Deploying a GoForj App by copying one binary">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · the deploy</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
+<div class="gf-home-swap__panels">
+<div :class="{ 'is-open': binTab === 'cli' }" :aria-hidden="binTab !== 'cli'" role="tabpanel">
+<div class="gf-home-terminal" aria-label="Shipping a CLI tool as one binary">
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · cli</em></div>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj make:command invoices:export</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
+<span></span>
+<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app ops:</span>  <span class="t-dim"># the entire deploy</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ssh ops ./app invoices:export --month 2026-05</span>
+<span class="t-ok">✔</span> invoices:export <span class="t-dim">· 1,204 invoices → exports/2026-05.csv</span></code></pre>
+</div>
+</div>
+<div :class="{ 'is-open': binTab === 'api' }" :aria-hidden="binTab !== 'api'" role="tabpanel">
+<div class="gf-home-terminal" aria-label="Shipping an API service as one binary">
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · api</em></div>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli, web_api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
+<span></span>
+<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app api</span>
+<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span></code></pre>
+</div>
+</div>
+<div :class="{ 'is-open': binTab === 'web' }" :aria-hidden="binTab !== 'web'" role="tabpanel">
+<div class="gf-home-terminal" aria-label="Shipping a web app with its frontend as one binary">
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · web</em></div>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli, web_api, web_ui · vue kit</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
+<span></span>
+<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app run</span>
+<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span>
+<span class="t-prompt">$</span> <span class="t-cmd">curl -sI prod:3000/ | head -1</span>
+<span class="t-json">HTTP/1.1 200 OK</span>  <span class="t-dim"># your frontend, served by the binary</span></code></pre>
+</div>
+</div>
+<div :class="{ 'is-open': binTab === 'full' }" :aria-hidden="binTab !== 'full'" role="tabpanel">
+<div class="gf-home-terminal" aria-label="Deploying a full GoForj App by copying one binary">
+<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · everything</em></div>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · all of them</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
 <span class="t-prompt">$</span> <span class="t-cmd">ls -lh bin/app</span>
 -rwxr-xr-x  1 you  staff  <span class="t-hl">57M</span>  bin/app
 <span></span>
 <span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
 <span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app run</span>
-<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span></code></pre>
+<span class="t-dim">23:51:32.256</span> <span class="t-step">Scheduler</span>  Scheduler started
+<span class="t-dim">23:51:32.256</span> <span class="t-step">Jobs</span>       Queue worker started <span class="t-dim">→ workers=30</span>
+<span class="t-dim">23:51:32.257</span> <span class="t-step">HTTP</span>       Listening <span class="t-dim">→ addr=</span><span class="t-hl">0.0.0.0:3000</span></code></pre>
 </div>
+</div>
+</div>
+<p class="gf-home-ops__binary-note">No Dockerfile, no registry, no base image. Rollback is the previous binary.</p>
 </div>
 </div>
 <div class="gf-home-ops__topology">
@@ -554,7 +618,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <p class="gf-home-lead">Most products live their whole life as a single App - and that is the golden path. When a Project outgrows it, one command adds another runnable app in the same repo: shared code, separate wiring, separate binaries, separate scaling.</p>
 <ul class="gf-home-points">
 <li><strong>Apps are boundaries, not microservices.</strong> Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
-<li><strong>Each app deploys on its own terms.</strong> Its own binary, ports, wiring, and runtime identity in logs, metrics, and Lighthouse - scale <code>billing</code> without touching the rest.</li>
+<li><strong>Each app deploys on its own terms.</strong> Its own binary, ports, wiring, and runtime identity in logs, metrics, and Lighthouse - scale <code>marketplace</code> without touching the rest.</li>
 <li><strong>Nothing changes until you need it.</strong> A single-App Project never pays for this. Multi-app is a fan-out path for larger systems, teams, and monorepos - not a new architecture to learn on day one.</li>
 </ul>
 <div class="gf-home-links">
@@ -565,18 +629,19 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
 <div class="gf-home-terminal" aria-label="Adding a named app to a GoForj Project">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one project · many apps</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app billing</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj billing route:list</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># orchestrates app + billing</span>
+<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app marketplace</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj marketplace make:controller checkout</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj marketplace route:list</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># orchestrates app + marketplace</span>
 <span></span>
 <span class="t-tree">photodrop/</span>
 <span class="t-tree">├──</span> cmd/app/         <span class="t-dim"># default app</span>
-<span class="t-tree">├──</span> cmd/billing/     <span class="t-dim"># named app</span>
-<span class="t-tree">├──</span> app/billing/     <span class="t-dim"># its routes, commands, wiring</span>
+<span class="t-tree">├──</span> cmd/marketplace/ <span class="t-dim"># named app binary</span>
+<span class="t-tree">├──</span> app/marketplace/ <span class="t-dim"># routes, commands, wiring</span>
 <span class="t-tree">└──</span> internal/        <span class="t-hl"># shared behavior, one module</span>
 <span></span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj api</span>             <span class="t-dim"># → ./bin/app api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj billing worker</span>   <span class="t-dim"># → ./bin/billing worker</span></code></pre>
+<span class="t-prompt">$</span> <span class="t-cmd">forj marketplace worker</span> <span class="t-dim"># → ./bin/marketplace worker</span></code></pre>
 </div>
 </div>
 </div>

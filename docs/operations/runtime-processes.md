@@ -24,10 +24,18 @@ For a named app, use that app's binary or prefix the app name:
 
 | Process | Built binary | Development alias |
 | --- | --- | --- |
-| Combined runtime | `./bin/billing run` | `forj billing app` |
-| HTTP | `./bin/billing api` | `forj billing api` |
-| Queue workers | `./bin/billing worker` | `forj billing worker` |
-| Scheduler | `./bin/billing scheduler` | `forj billing scheduler` |
+| Combined runtime | `./bin/marketplace run` | `forj marketplace app` |
+| HTTP | `./bin/marketplace api` | `forj marketplace api` |
+| Queue workers | `./bin/marketplace worker` | `forj marketplace worker` |
+| Scheduler | `./bin/marketplace scheduler` | `forj marketplace scheduler` |
+
+The app prefix is also how you run app-scoped commands during development:
+
+```bash
+forj marketplace route:list
+forj marketplace migrate
+forj marketplace make:job sync-catalog
+```
 
 ## Combined Runtime
 

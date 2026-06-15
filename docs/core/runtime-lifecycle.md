@@ -22,7 +22,7 @@ app/lifecycle.go
 Named app:
 
 ```text
-app/billing/lifecycle.go
+app/marketplace/lifecycle.go
 ```
 
 Do not use lifecycle hooks for ordinary request, job, schedule, command, or constructor work.
@@ -101,8 +101,8 @@ The lifecycle applies to generated commands, but commands do different work:
 Named apps use the same shape:
 
 ```bash
-forj billing api
-forj billing worker
+forj marketplace api
+forj marketplace worker
 ```
 
 ## Common Mistakes

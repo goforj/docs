@@ -20,7 +20,7 @@ forj migrate
 Run migrations for a named app with the app prefix:
 
 ```bash
-forj billing migrate
+forj marketplace migrate
 ```
 
 Generate a migration:
@@ -48,7 +48,7 @@ forj migrate:rollback
 For a named app:
 
 ```bash
-forj billing migrate:rollback
+forj marketplace migrate:rollback
 ```
 
 The generated migration command supports options such as step count, dry run, and connection selection.
@@ -89,11 +89,22 @@ When a Project has multiple apps, migrations are grouped by app first and connec
 
 ```text
 migrations/app/default/
-migrations/billing/default/
-migrations/billing/analytics/
+migrations/marketplace/default/
+migrations/marketplace/archive/
 ```
 
 This keeps each app's schema changes easy to review while preserving named connection ownership.
+
+App-prefixed commands scope execution to that app:
+
+```bash
+forj marketplace migrate
+forj marketplace migrate --connection archive
+```
+
+The first command runs every migration stream under `migrations/marketplace/*`. The second runs only `migrations/marketplace/archive`.
+
+If two apps share one physical database, pick one app to own that database's migration stream. Do not duplicate the same schema history under two app directories.
 
 ## Migration Table
 

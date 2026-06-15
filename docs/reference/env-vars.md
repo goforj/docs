@@ -93,18 +93,30 @@ Common metrics variables:
 
 The default app uses global runtime variables such as `PORT`, `API_HTTP_PORT`, and `METRICS_PORT`. Named apps use uppercase snake-case app prefixes so they do not accidentally bind the same ports.
 
-For an app named `billing`:
+For an app named `marketplace`:
 
 | Variable | Purpose |
 | --- | --- |
-| `BILLING_PORT` | HTTP bind port for the billing app. |
-| `BILLING_API_HTTP_PORT` | HTTP bind port alias for the billing app. |
-| `BILLING_METRICS_PORT` | Shared metrics/runtime port override for the billing app. |
-| `BILLING_API_METRICS_PORT` | HTTP metrics port override. |
-| `BILLING_SCHEDULER_METRICS_PORT` | Scheduler metrics port override. |
-| `BILLING_WORKER_METRICS_PORT`, `BILLING_JOBS_METRICS_PORT`, `BILLING_METRICS_JOBS_PORT` | Jobs/worker metrics port override. |
+| `MARKETPLACE_PORT` | HTTP bind port for the marketplace app. |
+| `MARKETPLACE_API_HTTP_PORT` | HTTP bind port alias for the marketplace app. |
+| `MARKETPLACE_METRICS_PORT` | Shared metrics/runtime port override for the marketplace app. |
+| `MARKETPLACE_API_METRICS_PORT` | HTTP metrics port override. |
+| `MARKETPLACE_SCHEDULER_METRICS_PORT` | Scheduler metrics port override. |
+| `MARKETPLACE_WORKER_METRICS_PORT`, `MARKETPLACE_JOBS_METRICS_PORT`, `MARKETPLACE_METRICS_JOBS_PORT` | Jobs/worker metrics port override. |
 
 When these are omitted, generated metadata in `internal/runtime/apps.go` provides deterministic non-conflicting defaults.
+
+`forj make:app` writes local `.env` defaults for named apps that expose HTTP. Sequential app creation uses the next available app HTTP port, so two named apps do not both receive `3001` by default:
+
+```text
+MARKETPLACE_APP_URL=http://localhost:3001
+MARKETPLACE_API_HTTP_PORT=3001
+
+BACKSTAGE_APP_URL=http://localhost:3002
+BACKSTAGE_API_HTTP_PORT=3002
+```
+
+If you edit these overrides manually, keep each app's HTTP and metrics ports unique when running apps together locally.
 
 ## Frontend
 
@@ -113,7 +125,7 @@ Browser-visible frontend values opt in through frontend prefixes:
 | Variable | Purpose |
 | --- | --- |
 | `FRONTEND_*` | Applies to generated frontends. |
-| `<APP>_FRONTEND_*` | Applies to one named app frontend, such as `BILLING_FRONTEND_BACKEND_URL`. |
+| `<APP>_FRONTEND_*` | Applies to one named app frontend, such as `MARKETPLACE_FRONTEND_BACKEND_URL`. |
 
 ## Lighthouse and Inspects
 

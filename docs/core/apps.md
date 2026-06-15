@@ -9,7 +9,7 @@ Start with one app. Add another only when the Project needs another runnable bou
 
 That rule keeps GoForj simple: one Project, shared application behavior under `internal/`, and clear app composition under `app/`.
 
-## The Default Shape
+## The default shape
 
 Every Project has a default app named `app`:
 
@@ -32,53 +32,56 @@ internal/
 
 The default app is enough for most Projects.
 
-## Add A Named App
+## Add a named app
 
 Use `make:app` when you need another app:
 
 ```bash
-forj make:app billing
+forj make:app marketplace
 ```
 
 That creates conventional app files:
 
 ```text
-cmd/billing/main.go
-app/billing/
-app/billing/wire/
+cmd/marketplace/main.go
+app/marketplace/
+app/marketplace/wire/
 ```
 
 You can choose the app surface explicitly:
 
 ```bash
-forj make:app billing --components web-api,jobs
-forj make:app portal --components web-api,web-ui --starter-kit vue
+forj make:app marketplace --components web-api,jobs
+forj make:app backstage --components web-api,scheduler --starter-kit vue
 ```
 
 Remove conventional generated app files with:
 
 ```bash
-forj make:app billing --remove
+forj make:app marketplace --remove
 ```
 
 Removal is conservative. It should not delete unknown app-owned files or migration history.
 
-## Run A Named App
+## Use an app as a command prefix
 
 Prefix the command with the app name:
 
 ```bash
-forj billing route:list
-forj billing api
-forj billing worker
-forj billing scheduler
+forj marketplace route:list
+forj marketplace api
+forj marketplace worker
+forj marketplace build
+
+forj backstage scheduler
+forj backstage dev
 ```
 
 Built binaries follow the same shape:
 
 ```bash
-./bin/billing api
-./bin/billing worker
+./bin/marketplace api
+./bin/marketplace worker
 ```
 
 Unqualified commands use the default app:
@@ -88,21 +91,55 @@ forj route:list
 forj api
 ```
 
+That means single-app Projects do not get a more complicated workflow. Multi-app Projects add one predictable prefix when you need it.
+
+## Generate into one app
+
+The app prefix also chooses the registration point for `make:*` commands.
+
+```bash
+forj marketplace make:controller checkout
+forj marketplace make:job sync-catalog
+forj marketplace make:model order
+```
+
+These commands create behavior under `internal/`, then wire exposure through the selected app. For the controller above, that means:
+
+```text
+internal/checkout/controller.go
+app/marketplace/routes.go
+app/marketplace/wire/inject_http_controllers_app.go
+```
+
+The job and model commands follow the same rule: generated behavior lives under `internal/...`, and the selected app receives the matching Wire registration in files such as `app/marketplace/wire/inject_jobs_app.go` or `app/marketplace/wire/inject_repositories_app.go`.
+
+Unprefixed make commands keep writing to the default app:
+
+```bash
+forj make:controller users
+```
+
+```text
+internal/users/controller.go
+app/routes.go
+app/wire/inject_http_controllers_app.go
+```
+
 ## What Belongs Where
 
 `internal/` owns behavior. Apps own exposure.
 
-For example, a billing controller can live in:
+For example, a checkout controller can live in:
 
 ```text
-internal/billing/invoices/controller.go
+internal/checkout/controller.go
 ```
 
-The `billing` app exposes it through:
+The `marketplace` app exposes it through:
 
 ```text
-app/billing/routes.go
-app/billing/wire/inject_http_controllers_app.go
+app/marketplace/routes.go
+app/marketplace/wire/inject_http_controllers_app.go
 ```
 
 This keeps the code reusable inside the Project without pretending each app is a separate repository.
@@ -120,11 +157,37 @@ app/<app>/
 
 ```yaml
 apps:
-  billing:
+  marketplace:
     components:
       web_api: true
       jobs: true
     starter_kit: none
+```
+
+## App-scoped output
+
+Outputs that used to assume one app are now app-aware where they need to be.
+
+API index and OpenAPI output stay simple for the default app:
+
+```text
+build/api_index.json
+build/openapi.json
+```
+
+Named apps write under their app name:
+
+```text
+build/marketplace/api_index.json
+build/marketplace/openapi.json
+```
+
+Frontend source and embedded assets follow the app entrypoint:
+
+```text
+cmd/app/frontend/
+cmd/marketplace/frontend/
+cmd/backstage/frontend/
 ```
 
 ## Runtime Defaults
@@ -142,23 +205,25 @@ Default ports are deterministic:
 Named app overrides use an uppercase app prefix:
 
 ```text
-BILLING_PORT=3100
-BILLING_WORKER_METRICS_PORT=10112
+MARKETPLACE_PORT=3100
+MARKETPLACE_WORKER_METRICS_PORT=10112
 ```
 
 Default-app globals such as `PORT` and `METRICS_PORT` do not apply to named apps.
 
+When `make:app` writes local env defaults, it uses the next available app HTTP port so sequential app creation does not make two named apps bind the same listener.
+
 ## Queue and Migration Boundaries
 
-App code uses logical queue names such as `default` or `reports`. Named apps physicalize backend queue names with the app prefix, such as `billing_default`, so multiple apps can share a queue backend safely.
+App code uses logical queue names such as `default` or `sync`. Named apps physicalize backend queue names with the app prefix, such as `marketplace_default`, so multiple apps can share a queue backend safely.
 
 Migrations are app-owned when a Project has multiple apps:
 
 ```text
 migrations/
   app/default/
-  billing/default/
-  billing/ledger/
+  marketplace/default/
+  marketplace/archive/
 ```
 
 If two apps share one physical database, choose one app to own that database's migration stream.

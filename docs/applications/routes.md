@@ -27,7 +27,7 @@ internal/reports/controller.go
 The app route file composes those controller routes into route groups. Named apps use the same pattern under their app directory:
 
 ```text
-app/billing/routes.go
+app/marketplace/routes.go
 ```
 
 ## Controller Routes
@@ -91,7 +91,7 @@ forj route:list
 For a named app, prefix the app name:
 
 ```bash
-forj billing route:list
+forj marketplace route:list
 ```
 
 Use `route:list` as the source of truth for what the App registered. Do not rely only on startup logs.

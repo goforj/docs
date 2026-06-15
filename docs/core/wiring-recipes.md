@@ -44,8 +44,8 @@ The make command is not just a file generator. It also injects the generated res
 Run the same flow through a named app when that app owns the resource:
 
 ```bash
-forj billing make:controller reports
-forj billing make:command reports:reconcile
+forj marketplace make:controller checkout
+forj marketplace make:command catalog:rebuild
 ```
 
 The wiring still matters because generated resources usually depend on application services. The make command wires the generated resource itself; you may still need to wire the application services it depends on.

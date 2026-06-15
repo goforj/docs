@@ -20,7 +20,7 @@ build/openapi.json
 Named apps write app-scoped OpenAPI output:
 
 ```text
-build/billing/openapi.json
+build/marketplace/openapi.json
 ```
 
 Run:
@@ -34,7 +34,7 @@ to refresh generated components, Wire, API indexing, OpenAPI output, and the bin
 For a named app, use the app prefix when refreshing that app directly:
 
 ```bash
-forj billing api-index
+forj marketplace api-index
 ```
 
 ## Swagger/API Reference Route
@@ -72,7 +72,7 @@ OPENAPI_SPEC_PATH=build/openapi.json
 For a named app, point the runtime at that app's output when overriding the path:
 
 ```text
-OPENAPI_SPEC_PATH=build/billing/openapi.json
+OPENAPI_SPEC_PATH=build/marketplace/openapi.json
 ```
 
 ## Validation

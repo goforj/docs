@@ -61,8 +61,8 @@ forj route:list
 For a named app, prefix the app name:
 
 ```bash
-forj billing api
-forj billing route:list
+forj marketplace api
+forj marketplace route:list
 ```
 
 ## Server Configuration

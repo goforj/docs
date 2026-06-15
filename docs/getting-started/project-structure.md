@@ -63,7 +63,7 @@ It should stay small. It starts the generated command surface for the app; it sh
 Named apps use the same pattern:
 
 ```text
-cmd/billing/main.go
+cmd/marketplace/main.go
 ```
 
 ## `app`
@@ -81,8 +81,8 @@ Common files include:
 Named apps compose through `app/<name>/`:
 
 ```text
-app/billing/routes.go
-app/billing/wire/
+app/marketplace/routes.go
+app/marketplace/wire/
 ```
 
 ## `internal`
@@ -101,7 +101,7 @@ Application-owned packages can be organized by domain:
 
 ```text
 internal/users
-internal/billing/invoices
+internal/checkout
 internal/reports
 ```
 
@@ -117,7 +117,7 @@ When Web UI is enabled, frontend source and embedded build output live next to t
 
 ```text
 cmd/app/frontend/
-cmd/billing/frontend/
+cmd/marketplace/frontend/
 ```
 
 This keeps each app's embedded assets local to the binary that serves them.

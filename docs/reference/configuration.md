@@ -62,15 +62,15 @@ dev:
 Named apps are discovered from layout:
 
 ```text
-cmd/billing/main.go
-app/billing/
+cmd/marketplace/main.go
+app/marketplace/
 ```
 
 When a named app has app-specific component choices, `.goforj.yml` records them under `apps`:
 
 ```yaml
 apps:
-  billing:
+  marketplace:
     components:
       web_api: true
       jobs: true

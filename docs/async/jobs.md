@@ -41,8 +41,10 @@ forj make:job reports:generate --queue reports
 For a named app, run the make command through that app:
 
 ```bash
-forj billing make:job reports:generate --queue reports
+forj marketplace make:job sync-catalog --queue sync
 ```
+
+The app prefix routes the generated provider into the selected app's Wire files. In this example, GoForj updates `app/marketplace/wire/inject_jobs_app.go` instead of the default app's `app/wire/inject_jobs_app.go`.
 
 Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
 

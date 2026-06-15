@@ -43,7 +43,7 @@ app/wire/
 Named app:
 
 ```text
-app/billing/wire/
+app/marketplace/wire/
   wire.go
   wire_gen.go
   inject_cmd_app.go
@@ -85,7 +85,7 @@ forj build
 For a named app:
 
 ```bash
-forj billing build
+forj marketplace build
 ```
 
 ::: info Dev Loop

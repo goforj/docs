@@ -44,6 +44,35 @@ forj generate --observability
 
 Running `forj generate` without flags refreshes available generators for the current App.
 
+## App Generation
+
+Create a named app when the Project needs another runnable boundary:
+
+```bash
+forj make:app marketplace
+forj make:app marketplace --components web-api,jobs
+forj make:app backstage --components web-api,scheduler --starter-kit vue
+forj make:app backstage --without web-ui --skip-wire
+```
+
+`make:app` creates the app entrypoint and composition files:
+
+```text
+cmd/marketplace/main.go
+app/marketplace/
+app/marketplace/wire/
+```
+
+It also records app component choices under `apps` in `.goforj.yml`, writes app-scoped local env defaults, and refreshes generated runtime app metadata.
+
+Remove conventional generated app files with:
+
+```bash
+forj make:app marketplace --remove
+```
+
+Removal is conservative. It removes conventional app files and metadata, but it does not delete app migrations or unknown files inside the command package.
+
 ## Make Command Removal
 
 Use `--remove` when you need to undo a resource created by a make command:
@@ -76,7 +105,7 @@ After removal, run `forj build` to catch any remaining App references to deleted
 
 Use it intentionally. Many App changes only need `forj build`.
 
-## When To Regenerate
+## When to regenerate
 
 Generated code should be refreshed after changing:
 

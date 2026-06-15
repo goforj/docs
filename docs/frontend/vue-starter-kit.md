@@ -28,7 +28,7 @@ cmd/app/frontend/
 For a named app, it writes under that app's binary directory:
 
 ```text
-cmd/billing/frontend/
+cmd/marketplace/frontend/
 ```
 
 Important files include:

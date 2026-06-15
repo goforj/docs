@@ -27,7 +27,7 @@ The current first-party starter kit is:
 
 - [Vue Starter Kit](/frontend/vue-starter-kit)
 
-It creates an app-scoped frontend project for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/billing/frontend/` for a named app.
+It creates an app-scoped frontend project for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for a named app.
 
 ## Generated Ownership
 

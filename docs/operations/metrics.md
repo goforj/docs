@@ -25,7 +25,23 @@ http://localhost:10001/metrics  # scheduler
 http://localhost:10002/metrics  # workers
 ```
 
-Named apps get deterministic local defaults so app runtimes do not fight for the same ports. For example, a `billing` app may use the next app-specific block while the default app keeps the root ports.
+Named apps get deterministic local defaults so app runtimes do not fight for the same ports.
+
+| App | HTTP metrics | Scheduler metrics | Worker metrics |
+| --- | ---: | ---: | ---: |
+| `app` | `10000` | `10001` | `10002` |
+| first named app | `10010` | `10011` | `10012` |
+| second named app | `10020` | `10021` | `10022` |
+
+When the HTTP runtime exposes `/metrics`, local scraping may use each app's HTTP port instead:
+
+| App | HTTP `/metrics` |
+| --- | ---: |
+| `app` | `3000` |
+| first named app | `3001` |
+| second named app | `3002` |
+ 
+Override named app ports with app-prefixed env vars such as `MARKETPLACE_API_HTTP_PORT`, `MARKETPLACE_METRICS_PORT`, `MARKETPLACE_SCHEDULER_METRICS_PORT`, and `MARKETPLACE_WORKER_METRICS_PORT`.
 
 When HTTP metrics are enabled, the App may also expose:
 
@@ -61,7 +77,7 @@ Framework metric families emit `app` directly. Many runtime-aware families also 
 The local observability stack adds scrape-time metadata such as `process`, `service`, and `environment`:
 
 ```text
-app=billing
+app=marketplace
 source=jobs
 process=jobs
 service=Example

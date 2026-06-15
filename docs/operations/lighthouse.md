@@ -31,14 +31,19 @@ Capabilities depend on enabled App components.
 In a multi-app Project, Lighthouse should present the app first and the runtime beneath it:
 
 ```text
-Platform
-  Billing
-    HTTP
-    Worker
-    Scheduler
+photodrop
+  marketplace
+    http
+    jobs
+
+  backstage
+    http
+    scheduler
 ```
 
-Lighthouse payloads may still use implementation fields such as agent or source internally, but user-facing labels should stay close to the Project -> app -> runtime model.
+Lighthouse payloads may still use implementation fields such as `agent` or `source` internally. Read `source` as the runtime surface, such as `http`, `jobs`, `scheduler`, `cli`, or `app`. User-facing labels should stay close to the Project -> app -> runtime model.
+
+Use `APP_INSTANCE_ID` when multiple replicas of the same app/runtime need stable operator identity.
 
 ## Inspects
 

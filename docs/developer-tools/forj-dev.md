@@ -45,10 +45,20 @@ For a multi-app Project, unqualified `forj dev` orchestrates discovered apps tog
 Use an app prefix to focus one app:
 
 ```bash
-forj billing dev
+forj marketplace dev
 ```
 
-Named apps get deterministic runtime ports from generated app metadata, so the default app and named apps can run together locally.
+Named apps get deterministic runtime ports from generated app metadata and app-scoped `.env` defaults, so the default app and named apps can run together locally.
+
+For example:
+
+```text
+app          HTTP 3000
+marketplace  HTTP 3001
+backstage    HTTP 3002
+```
+
+If you override app-specific ports in `.env`, keep them unique. Named apps do not consume default-app globals such as `PORT` or `API_HTTP_PORT`.
 
 ## Environment Changes
 

@@ -12,11 +12,14 @@ They are the normal starting point for controllers, commands, jobs, schedules, e
 In a multi-app Project, run make commands through the app that owns the resource:
 
 ```bash
-forj billing make:controller reports
-forj billing make:command reports:sync
+forj marketplace make:controller checkout
+forj marketplace make:job sync-catalog
+forj backstage make:schedule nightly-cleanup
 ```
 
-This keeps app composition in `app/billing/...` while shared domain code can still live under `internal/...`.
+The app prefix chooses the registration point. `forj marketplace make:*` creates the generated resource under `internal/...` and writes the registration and Wire changes into `app/marketplace/...`; unprefixed `forj make:*` creates the resource under `internal/...` and writes registration changes to the default app under `app/...`.
+
+This keeps app composition in the owning app while shared domain code can still live under `internal/...`.
 
 ## Package Placement
 
@@ -55,6 +58,34 @@ See [Organizing Generated Code](/core/organizing-generated-code) for the broader
 | `forj make:migration <name>` | SQL migration files | writes to the migrations directory | none |
 
 Some make commands are native GoForj commands and some are generated app commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
+
+For named apps, the command map is the same, but the registration files change:
+
+```bash
+forj marketplace make:controller checkout
+```
+
+updates:
+
+```text
+internal/checkout/controller.go
+app/marketplace/routes.go
+app/marketplace/wire/inject_http_controllers_app.go
+```
+
+while:
+
+```bash
+forj make:controller users
+```
+
+updates:
+
+```text
+internal/users/controller.go
+app/routes.go
+app/wire/inject_http_controllers_app.go
+```
 
 ## Opening Generated Files
 

@@ -58,7 +58,7 @@ for the full route table.
 For a named app binary, use that app's binary:
 
 ```bash
-./bin/billing route:list
+./bin/marketplace route:list
 ```
 
 ## Common Mistakes

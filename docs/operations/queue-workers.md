@@ -19,8 +19,8 @@ forj worker
 For a named app:
 
 ```bash
-forj billing worker
-./bin/billing worker
+forj marketplace worker
+./bin/marketplace worker
 ```
 
 or, in standalone mode:
@@ -77,7 +77,7 @@ Verify queue inventory before deploying a worker topology:
 For a named app:
 
 ```bash
-./bin/billing about
+./bin/marketplace about
 ```
 
 The queue section should show each queue, its driver, backend queue name, and worker count.

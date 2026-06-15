@@ -2720,14 +2720,77 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     padding-right: clamp(10px, 2vw, 30px);
 }
 
-.gf-home-ops__binary-copy h3 {
+.gf-home-ops__binary-tabs {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-bottom: 4px;
+}
+
+.gf-home-ops__binary-inside {
+    margin-top: 14px !important;
+    color: rgba(203, 213, 225, 0.45);
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.gf-home-ops__binary-chips {
+    min-height: 104px;
+    align-content: start;
+}
+
+.gf-home-ops__binary-note {
+    margin-top: 12px !important;
+    color: rgba(203, 213, 225, 0.5);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+/* Tab content swaps get a short fade so the recomposition reads as motion. */
+.gf-home-ops__binary-chips {
+    animation: gf-chips-in 200ms ease;
+}
+
+@keyframes gf-chips-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.gf-home-swap__panels > [role="tabpanel"] {
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+.gf-home-swap__panels > [role="tabpanel"].is-open {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gf-home-ops__binary-chips,
+    .gf-home-swap__panels > [role="tabpanel"] {
+        animation: none;
+        transition: none;
+    }
+}
+
+html[data-gf-motion='reduced'] .gf-home-ops__binary-chips,
+html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
+    animation: none;
+    transition: none;
+}
+
+.gf-home-ops__binary-title {
+    grid-column: 1 / -1;
     color: rgba(240, 244, 252, 0.95);
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     font-weight: 780;
+    margin-bottom: 2px;
 }
 
 .gf-home-ops__binary-copy p {
-    margin-top: 10px !important;
+    margin-top: 0 !important;
     color: rgba(203, 213, 225, 0.66);
     font-size: 0.95rem;
     line-height: 1.65;
