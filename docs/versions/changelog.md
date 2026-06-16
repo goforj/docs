@@ -5,9 +5,87 @@ description: Historical GoForj framework milestones and user-facing changes.
 
 # Changelog
 
-This changelog tracks framework-level GoForj milestones.
+This changelog tracks GoForj framework and first-party library milestones.
 
 GoForj is pre-`v1.0`, and several early versions were assigned retrospectively to real development milestones. They are included because they mark substantial framework layers, not because those points were broad public releases.
+
+## First-Party Library Ecosystem
+
+GoForj's framework depth comes from a set of standalone first-party libraries. These packages are not incidental helpers hidden behind the generator. They have their own repositories, version tags, docs, examples, tests, and integration contracts, and they can be used outside a generated GoForj App.
+
+That tag hygiene is intentional. The framework can move quickly because lower-level packages are versioned independently, and generated Apps can pin concrete package versions instead of depending on an untracked internal snapshot.
+
+### Library Release Lines
+
+The library ecosystem has its own release history:
+
+| Library | Current line | What it provides |
+| --- | --- | --- |
+| `wire` | `v1.2.0` | GoForj-maintained Wire fork with explicit dependency generation, watch workflow support, and a custom loader. |
+| `env` | `v2.4.0` | Layered environment loading, typed getters, scoped prefixes, app environment helpers, reload support, and container/runtime detection. |
+| `scheduler` | `v2.1.3` | Scheduled work primitives, cron/interval DSL, overlap protection, cache-backed locking, runtime controls, observers, and task context decorators. |
+| `collection` | `v2.0.2` | Fluent collection operations with explicit mutation semantics, benchmarked pipelines, map/set helpers, generated examples, and contract tests. |
+| `httpx` | `v2.0.1` | HTTP client helpers, request construction, auth helpers, browser profiles, tracing/debugging support, and frozen `v1` compatibility. |
+| `godump` | `v1.9.1` | Debug dumping, diff output, color controls, header controls, redaction, depth handling, stringer support, and doc generation. |
+| `execx` | `v1.1.0` | Command execution helpers, shadow printing, decoder pipes, and TTY/PTTY behavior for developer tooling. |
+| `str` | `v1.3.0` | Rune-safe string helpers, case-fold operations, matching/replacement helpers, plural/singular helpers, and generated API examples. |
+| `crypt` | `v1.1.0` | Encryption helpers, key generation, key rotation, and instanced crypt behavior. |
+| `web` | `v0.5.2` | Server-side HTTP abstractions, Echo adapter, middleware, route model, route indexing, WebSocket routes, testing helpers, and app-scoped route composition. |
+| `queue` | `v0.2.1` | Queue facade, worker runtime, retries, delays, chains, batches, observers, fake/test packages, and multi-backend driver modules. |
+| `events` | `v0.1.3` | Event facade, delivery context propagation, fake/test modules, examples, integration module, and transport-backed drivers. |
+| `cache` | `v0.3.0` | Cache facade, memory/file/null stores, SQL/Redis/NATS/Memcached/DynamoDB drivers, readiness, inspectors, locks, observers, and integration modules. |
+| `storage` | `v0.4.6` | Storage facade, named disks, local/memory/Redis/FTP/SFTP/S3/GCS/Dropbox/rclone drivers, fake/test modules, benchmarks, and capability matrices. |
+| `mail` | `v0.2.0` | Mail composition, defaults, attachments, fake/log drivers, SMTP, SES, Mailgun, Postmark, Resend, and SendGrid transports. |
+| `metrics` | `v0.1.0` | Counters, gauges, histograms, snapshots, units, names, and Prometheus-compatible export. |
+
+### Foundation Libraries
+
+The early standalone package work made the framework feel like a cohesive Go stack rather than a monolith.
+
+- `godump` started in May 2025 and grew through `v1.9.1`, adding writer output, stringer support, safe stringer recovery, hex dumping, parameter and return type printing, stack frame controls, diff support, no-color/no-header options, field redaction, max-depth fixes, and dependency-light examples.
+- `collection` reached `v2.0.2` with a large fluent API, explicit mutable/immutable operation labeling, map helpers, set operations, slicing/windowing, transformations, aggregation, benchmark notes, and generated examples that are tested.
+- `str` reached `v1.3.0` with string construction, matching, replacement, plural/singular helpers, trim wrappers, case-fold variants, alpha/alnum/numeric predicates, initials, common prefix/suffix helpers, and generated API docs.
+- `httpx` reached `v2.0.1` after freezing `v1`, then moved to clearer `v2` request helpers, auth helpers, browser profiles, client options, tracing, debugging, and generated examples.
+- `execx` reached `v1.1.0` with shadow printing, decoder pipelines, TTY passthrough, PTY behavior, and cleaner command-output ergonomics.
+- `crypt` reached `v1.1.0` with key generation, key rotation, and instanced methods so generated Apps can avoid global-only crypto helpers.
+- `env` reached `v2.4.0` with `.env` layering, `APP_ENV` helpers, typed getters, map/slice parsing, scoped child prefixes, multi-word child discovery, `Load` aliases, reload support, and container/runtime detection.
+- `wire` reached `v1.2.0` after GoForj forked the Google Wire lineage, added a watch workflow, and introduced a custom loader with major performance improvements while keeping explicit compile-time dependency injection.
+
+### Runtime Primitive Libraries
+
+The application primitives were built as reusable libraries before and alongside framework integration.
+
+- `scheduler` reached `v2.1.3` with cron and interval scheduling, overlap protection, hooks, command execution, named jobs, job listing, runtime controls, admin surface work, cache-backed locking, observers, and context decorators.
+- `web` reached `v0.5.2` after building an Echo-backed adapter, response helpers, cookie and real-IP helpers, WebSocket routes, core middleware, static/proxy/rewrite/security middleware, route models, route list rendering, server bootstrap, lifecycle handling, Prometheus telemetry, web tests, route indexing, and app-scoped route composition.
+- `queue` reached `v0.2.1` after adding payload binding, worker and dispatcher behavior, NATS/SQS/RabbitMQ/Redis/MySQL/Postgres/SQLite/SQL-core drivers, fake APIs, integration hardening, retry and recovery policies, chains, batches, workflow callbacks, observer events, context propagation, physical queue name inference, and multi-module release tags for each driver.
+- `events` reached `v0.1.3` with facade patterns, Redis/NATS/NATS JetStream/SNS/Kafka/GCP Pub/Sub drivers, fake/test packages, examples, integration modules, delivery context preservation, and driver-level context propagation.
+- `cache` reached `v0.3.0` with memory/file/null stores, SQL/Redis/NATS/Memcached/DynamoDB drivers, ready checks, lock support, cache inspectors, `WithContext` facade behavior, observer event payloads, examples, integration modules, and driver-specific release tags.
+- `storage` reached `v0.4.6` with local, memory, Redis, FTP, SFTP, S3, GCS, Dropbox, and rclone drivers; named disk management; deterministic listing; directory operations; file counting; context variants; fake/test packages; benchmarks; driver capability matrices; and per-driver tags.
+- `mail` reached `v0.2.0` with core message composition, defaults, attachments, fake/log drivers, SMTP, SES, Mailgun, Postmark, Resend, SendGrid, Gmail-over-SMTP guidance, driver capability docs, and package coverage badges across transports.
+- `metrics` reached `v0.1.0` with counters, gauges, histograms, snapshots, units, Prometheus export, and the primitive model used by generated App observability.
+
+### Driver and Test Hygiene
+
+The heavier infrastructure packages use separate module and tag lines for drivers, examples, integration suites, and test helpers.
+
+- `queue` publishes driver tags such as `driver/redisqueue`, `driver/postgresqueue`, `driver/mysqlqueue`, `driver/sqlitequeue`, `driver/sqsqueue`, `driver/rabbitmqqueue`, `driver/natsqueue`, plus `examples`, `integration`, and `docs` tags.
+- `events` publishes transport and helper tags such as `driver/redisevents`, `driver/natsevents`, `driver/natsjetstreamevents`, `driver/snsevents`, `driver/kafkaevents`, `driver/gcppubsubevents`, `eventscore`, `eventsfake`, `eventstest`, `examples`, and `integration`.
+- `cache` publishes driver and helper tags such as `driver/rediscache`, `driver/postgrescache`, `driver/mysqlcache`, `driver/sqlitecache`, `driver/natscache`, `driver/memcachedcache`, `driver/dynamocache`, `driver/sqlcore`, `cachecore`, `cachetest`, `examples`, and `integration`.
+- `storage` publishes driver and helper tags such as `driver/localstorage`, `driver/memorystorage`, `driver/redisstorage`, `driver/ftpstorage`, `driver/sftpstorage`, `driver/s3storage`, `driver/gcsstorage`, `driver/dropboxstorage`, `driver/rclonestorage`, `storagecore`, `storagetest`, `examples`, `integration`, and benchmark docs.
+- `mail` keeps provider transports split and tested, with coverage tracked across `mail`, `mailfake`, `maillog`, `mailsmtp`, `mailses`, `mailmailgun`, `mailpostmark`, `mailresend`, and `mailsendgrid`.
+
+That hygiene is what lets GoForj generated Apps choose only the drivers they need while still depending on tagged, tested package boundaries.
+
+### Docs and Example Discipline
+
+The libraries also carry documentation infrastructure that feeds the main docs site.
+
+- Many libraries generate README/API sections from public doc comments and runnable examples.
+- Example modules are often split out so examples do not bloat downstream dependency trees.
+- Example generation and compile checks are part of the maintenance workflow.
+- Test count, coverage, driver matrix, benchmark, and capability sections are embedded directly in library docs where they help users choose a primitive.
+
+The framework changelog below focuses on how those independently versioned libraries became a cohesive generated App experience.
 
 ## v0.18.0
 
@@ -33,6 +111,7 @@ Released June 16, 2026.
 - Added app-scoped migrations.
 - Added multi-app render and integration smoke coverage.
 - Reduced render dependency sync work by avoiding unnecessary `go get` calls.
+- Integrated `web v0.5.x` route composition support so route indexes and OpenAPI output can be scoped by App.
 
 ### Observability
 
@@ -133,6 +212,7 @@ Released May 2, 2026.
 ### Metrics and Observability
 
 - Added the metrics framework milestone.
+- Introduced the standalone `metrics` library release line.
 - Added database query fingerprinting.
 - Added per-surface instrumentation toggles.
 - Generated topology-aware metrics targets.
@@ -151,6 +231,7 @@ Released April 27, 2026.
 - Added login loading and feedback behavior.
 - Added starter kit auth strengthening.
 - Added Mailpit local development support.
+- Integrated `mail` library transport work into generated auth mail delivery.
 - Refined sidebar, command menu, scrolling, and route overlay behavior.
 - Added starter kit documentation and design context.
 
@@ -173,6 +254,7 @@ Released April 20, 2026.
 ### Web, Auth, Mail, and Lighthouse Foundations
 
 - Expanded generated web, auth, mail, and Lighthouse foundations.
+- Integrated the standalone `web`, `mail`, `queue`, `cache`, `storage`, and `scheduler` libraries into the generated App model.
 - Added generated auth implementation, including users, sessions, password reset, email verification, login attempts, and OAuth provider scaffolding.
 - Added generated auth commands for creating users and setting passwords.
 - Added generated mail support and auth delivery integration.
@@ -195,6 +277,7 @@ Released February 13, 2026.
 - Added startup and lifecycle hooks.
 - Added health and readiness probes.
 - Added queue and cache abstractions.
+- Adopted standalone `queue`, `events`, and `cache` package behavior for generated App primitives.
 - Added graceful workerpool and dispatcher shutdown behavior.
 - Ported database integration tests.
 - Added `test:openapi`.
@@ -213,6 +296,7 @@ Released February 10, 2026.
 - Added demo persistence and repository consolidation.
 - Added demo seeding and diagnostics pages.
 - Avoided embedding frontend node dependencies in rendered output.
+- Exercised the generated database, queue, scheduler, cache, storage, command, and frontend paths through a realistic generated product.
 
 ## v0.6.0
 
@@ -226,6 +310,7 @@ Released February 6, 2026.
 - Added command console coloring fixes.
 - Added `DEVCONSOLE_ENABLED` gating.
 - Overhauled `forj new` after the first dev console pass.
+- Built on the first standalone command execution and watcher utility work that later became part of the developer toolchain.
 
 ## v0.5.0
 
@@ -264,6 +349,7 @@ Released December 16, 2025.
 - Added route listing on boot.
 - Refined CLI help alignment and command grouping.
 - Moved environment and crypt packages toward first-party module ownership.
+- Established early use of `env`, `crypt`, `execx`, and `wire` as project-owned building blocks instead of hidden framework internals.
 
 ## v0.2.0
 
@@ -294,3 +380,4 @@ Released May 26 through December 6, 2025.
 - Moved `env` and `crypt` toward top-level package ownership.
 - Added the env runtime.
 - Iterated on Docker-in-Docker, render tests, and CI setup.
+- Started the first-party package strategy that later produced standalone libraries for collections, strings, HTTP utilities, dumps, execution, configuration, encryption, queues, events, cache, storage, scheduler, web, mail, metrics, and wiring.

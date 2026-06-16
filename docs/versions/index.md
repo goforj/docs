@@ -22,6 +22,7 @@ Earlier pre-`v1.0` versions include retrospective milestone tags. These tags are
 That matters because GoForj has evolved through several real layers:
 
 - renderer and generator foundation
+- standalone first-party libraries
 - project creation and command UX
 - database, migrations, repositories, and model generation
 - generated logging and local development runtime
@@ -31,6 +32,10 @@ That matters because GoForj has evolved through several real layers:
 - metrics, inspects, runtime attribution, and performance hardening
 - make command expansion and generated app ergonomics
 - multi-app project architecture
+
+The library ecosystem is part of the version story. GoForj is not only a renderer around one repository. It is backed by first-party packages for HTTP, queues, events, cache, storage, mail, scheduler, metrics, environment loading, cryptography, execution helpers, strings, collections, debugging output, and dependency wiring. Many of those packages have their own tagged release lines, driver module tags, examples, integration suites, and documentation generation workflows.
+
+The [Changelog](/versions/changelog) starts with a dedicated first-party library history before the framework milestone ledger.
 
 See [Changelog](/versions/changelog) for the detailed ledger.
 
