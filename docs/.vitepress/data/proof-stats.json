@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-06-12",
+  "generatedAt": "2026-06-16",
   "totals": {
     "unitTests": 810,
     "integrationTests": 872,
-    "testFunctions": 2123,
+    "testFunctions": 2158,
     "benchmarks": 52,
     "drivers": 49,
-    "libraries": 16
+    "libraries": 17
   },
   "drivers": {
     "queue": [
@@ -72,6 +72,13 @@
     ]
   },
   "repos": [
+    {
+      "repo": "atlas",
+      "unit": null,
+      "integration": null,
+      "testFns": 35,
+      "benchmarks": 0
+    },
     {
       "repo": "cache",
       "unit": 189,

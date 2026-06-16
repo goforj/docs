@@ -72,7 +72,7 @@ function setSwapTab(id) {
 const BIN_TABS = [
   { id: 'cli', label: 'CLI tool', chips: ['CLI commands', 'Typed configuration', 'Structured logging'] },
   { id: 'api', label: 'API service', chips: ['HTTP server', 'Routes and middleware', 'CLI commands', 'Health endpoints'] },
-  { id: 'web', label: 'Web app', chips: ['Vue frontend', 'HTTP server', 'API routes', 'CLI commands'] },
+  { id: 'web', label: 'Web app', chips: ['Vue / React / templ', 'HTTP server', 'API routes', 'CLI commands'] },
   { id: 'full', label: 'API + Scheduler + Jobs', chips: ['HTTP server', 'Queue workers', 'Scheduler', 'CLI commands', 'Migrations', 'Drivers', 'Health and metrics', 'Lighthouse UI'] }
 ]
 
@@ -203,7 +203,7 @@ onBeforeUnmount(() => {
 <span>A focused CLI</span>
 <span>An API service</span>
 <span>Workers and schedules</span>
-<span>A full product with auth and a Vue frontend</span>
+<span>A full product with auth and Vue, React, or templ</span>
 </div>
 <ul class="gf-home-points">
 <li><strong>Components are choices.</strong> Auth, mail, database, metrics, Docker, frontend - picked at <code>forj new</code>, added later as the App grows.</li>
@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
 <span class="gf-home-atlas__mark" aria-hidden="true">ATLAS</span>
 <span class="gf-home-atlas__body">
 <strong>Agent-aware from the first render</strong>
-<span><code>forj new</code> can install Atlas support for Codex, Claude Code, and GitHub Copilot, including project guidance, skills, and MCP context.</span>
+<span><code>forj new</code> can install Atlas support for Codex, Claude Code, GitHub Copilot, and Gemini CLI, including project guidance, skills, and MCP context.</span>
 </span>
 </a>
 </div>

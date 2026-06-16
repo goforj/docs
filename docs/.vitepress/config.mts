@@ -126,7 +126,8 @@ const libraryRewrites: Record<string, string> = {
   'libraries/cache.md': 'cache.md',
   'libraries/crypt.md': 'crypt.md',
   'libraries/storage.md': 'storage.md',
-  'libraries/wire.md': 'wire.md'
+  'libraries/wire.md': 'wire.md',
+  'libraries/atlas.md': 'atlas.md'
 }
 
 // --- llms.txt generation (https://llmstxt.org) ---
@@ -595,6 +596,7 @@ export default defineConfig({
           { text: 'Scheduler', link: '/scheduler' },
           { text: 'Metrics', link: '/metrics' },
           { text: 'Wire', link: '/wire' },
+          { text: 'Atlas', link: '/atlas' },
           { text: 'Env', link: '/env' },
           { text: 'Crypt', link: '/crypt' },
           { text: 'HTTPX', link: '/httpx' },

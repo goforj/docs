@@ -22,7 +22,7 @@ These block or shape several items below. Decide before executing Tier 1.
 
 - [ ] **Release state.** `goforj/README.md` is an 11-line placeholder saying the project is unreleased and private, while the landing page and hero tell visitors to run `go install github.com/goforj/goforj/cmd/forj@latest`. One of these is wrong for any given launch date. Decide the public story and make every surface match it.
 - [ ] **One positioning statement.** The org profile leads with "high-trust libraries" and "not a single framework." The site leads with "the composable stack for building with Go." Both are defensible. Pick one primary line and let the other surface restate it, not compete with it. `marketing-site-strategy.md` predates the current landing page and should be updated to whichever wins.
-- [ ] **Stat sourcing.** The landing proof band claims 2,200+ unit tests, 870+ integration tests, 40+ drivers, 16 libraries. Decide the canonical source for these numbers (ideally generated, not hand-maintained) so they cannot drift from the repos.
+- [ ] **Stat sourcing.** The landing proof band claims 2,200+ unit tests, 870+ integration tests, 40+ drivers, 17 libraries. Decide the canonical source for these numbers (ideally generated, not hand-maintained) so they cannot drift from the repos.
 
 ## Tier 1: quick wins
 
@@ -155,7 +155,7 @@ READMEs and library pages are siloed per primitive. The framework's pitch is coh
 
 2026-06-12 session, third pass:
 
-- [x] Proof stats generated, not written: `bin/collect-proof-stats.mjs` reads README executed-count badges plus mechanical `func Test` counts across the 16 libraries, writes `docs/.vitepress/data/proof-stats.json`, and the landing proof band renders from it. New `/numbers` page documents methodology, per-library detail, and the published collection and queue benchmark highlights, with honest footnotes (only 6 of 16 libraries publish badges today; the rest should add them).
+- [x] Proof stats generated, not written: `bin/collect-proof-stats.mjs` reads README executed-count badges plus mechanical `func Test` counts across the 17 libraries, writes `docs/.vitepress/data/proof-stats.json`, and the landing proof band renders from it. New `/numbers` page documents methodology, per-library detail, and the published collection and queue benchmark highlights, with honest footnotes (only 6 of 17 libraries publish badges today; the rest should add them).
 - [x] `/drivers` page: all 49 drivers across the six swap primitives in one matrix, count sourced from the same JSON as the landing.
 - [x] `/whats-new` page shipped, then removed by decision: two entries read as a graveyard, not a pulse. Bring it back once releases carry notes and there is a cadence to feed it. The numbers and performance pages were likewise removed; the generated proof band on the landing page, linking to the counting script, is the surviving form of that work.
 - [x] Scenario course treatment: specs and renderer now carry `path_position`, `path_total`, `estimated_minutes`; every scenario page opens with "Scenario N of 7 ... about M minutes" (estimates are drafts, verify against real runs); scenarios index reframed as a numbered path with total time and an "After The Path" handoff. Regenerate and `scenario:generate --check` from the goforj repo to confirm parity.

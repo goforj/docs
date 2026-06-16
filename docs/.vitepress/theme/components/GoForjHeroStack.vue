@@ -63,9 +63,11 @@ const STRIKE_SPARKS = [
 const BLURBS = {
   'frontend-vue': 'First-party Vue starter kit',
   'frontend-react': 'React frontends over the Web API',
+  'frontend-templ': 'Server-rendered Go UI with templ',
   'ai-openai': 'Model and agent integration',
   'ai-claude': 'Model and agent integration',
   'ai-gemini': 'Model and agent integration',
+  'ai-copilot': 'GitHub Copilot project guidance',
   'backend-core-libraries': 'Standalone Go utility libraries',
   'backend-queue': 'One queue API, many backends',
   'backend-events': 'Typed events, local or distributed',
@@ -149,6 +151,28 @@ const hoveredTooltip = computed(() => {
   const title = item.title || item.label
   if (!title) return null
   return { title, blurb: BLURBS[item.id] || item.summary || '' }
+})
+
+const tooltipStyle = computed(() => {
+  const container = graphicEl.value
+  const rect = container?.getBoundingClientRect()
+  const maxX = rect?.width || 0
+  const maxY = rect?.height || 0
+  const rich = Boolean(hoveredTooltip.value?.blurb)
+  const tooltipWidth = rich ? 230 : 150
+  const tooltipHeight = rich ? 66 : 38
+  const rightSide = maxX > 0 && tooltipPos.value.x + tooltipWidth + 28 > maxX
+  const x = rightSide
+    ? Math.max(8, tooltipPos.value.x - tooltipWidth - 16)
+    : Math.min(Math.max(8, tooltipPos.value.x + 16), Math.max(8, maxX - tooltipWidth - 8))
+  const y = maxY > 0
+    ? Math.min(Math.max(8, tooltipPos.value.y - 36), Math.max(8, maxY - tooltipHeight - 8))
+    : Math.max(8, tooltipPos.value.y - 36)
+
+  return {
+    transform: `translate(${x}px, ${y}px)`,
+    maxWidth: `${tooltipWidth}px`
+  }
 })
 
 function isRearItem(item) {
@@ -259,6 +283,7 @@ const BRAND_ICON_KEYS = {
   anthropic: 'anthropic',
   claude: 'claude',
   gemini: 'googlegemini',
+  copilot: 'githubcopilot',
   redis: 'redis',
   nats: 'natsdotio',
   jetstream: 'natsdotio',
@@ -294,7 +319,8 @@ const GROUP_CONFIG = [
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' }
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
+      { id: 'frontend-templ', icon: 'templ', color: '#f97316', textColor: '#ffffff', iconColor: '#ffffff', title: 'templ', href: 'https://templ.guide/' }
     ]
   },
     {
@@ -417,9 +443,10 @@ const GROUP_CONFIG = [
     title: 'AI agent providers',
     row: 'front',
     children: [
-      { id: 'ai-openai', icon: 'openai', color: '#818cf8', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
-      { id: 'ai-claude', icon: 'claude', color: '#a78bfa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude', href: 'https://www.anthropic.com/claude' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#60a5fa', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/' }
+      { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
+      { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude', href: 'https://www.anthropic.com/claude' },
+      { id: 'ai-gemini', icon: 'gemini', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/' },
+      { id: 'ai-copilot', icon: 'copilot', color: '#24292f', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot', href: 'https://github.com/features/copilot' }
     ]
   }
 ]
@@ -473,6 +500,9 @@ function getAdaptiveChildMetrics(count) {
   }
   if (count >= 5) {
     return { size: 0.4, gap: 0.06, height: 0.48, scale: 0.39, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
+  }
+  if (count === 4) {
+    return { size: LAYOUT.childSize, gap: 0.08, height: LAYOUT.childHeight, scale: 0.64, columns: 4, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 }
   }
   return {
     size: LAYOUT.childSize,
@@ -883,7 +913,7 @@ const scene = computed(() => {
       groupDepth: 0.84,
       groupHeight: 0.44,
       groupGap: 0.82,
-      childMetricsOverride: { size: 0.72, gap: 0.08, height: 0.78, scale: 0.62, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
+      childMetricsOverride: { size: 0.72, gap: 0.08, height: 0.78, scale: 0.62, columns: 4, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
       interactionZone: 'lower-shelf'
     })
   }
@@ -1442,7 +1472,16 @@ function adjustColor(color, amount) {
                           :transform="`translate(${getFrontIconPlacement(item).x}, ${getFrontIconPlacement(item).y}) scale(${getFrontIconPlacement(item).scale})`"
                           :style="{ color: item.iconColor || item.textColor }"
                         >
-                          <g v-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" />
+                          <text
+                            v-if="item.icon === 'templ'"
+                            x="10.8"
+                            y="14.6"
+                            text-anchor="middle"
+                            class="iso-templ-logo"
+                          >
+                            templ
+                          </text>
+                          <g v-else-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" />
                           <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
                           <path v-else :d="ICONS[item.icon]" :fill="item.iconColor || item.textColor" fill-opacity="0.98" />
                         </g>
@@ -1586,7 +1625,7 @@ function adjustColor(color, amount) {
           v-if="hoveredTooltip"
           class="gf-hero-tip"
           :class="{ 'gf-hero-tip--rich': hoveredTooltip.blurb }"
-          :style="{ transform: `translate(${tooltipPos.x + 16}px, ${tooltipPos.y - 36}px)` }"
+          :style="tooltipStyle"
         >
           <strong>{{ hoveredTooltip.title }}</strong>
           <span v-if="hoveredTooltip.blurb">{{ hoveredTooltip.blurb }}</span>
@@ -1935,18 +1974,19 @@ function adjustColor(color, amount) {
   pointer-events: none;
   padding: 5px 12px;
   border: 1px solid rgba(165, 185, 255, 0.3);
-  border-radius: 999px;
+  border-radius: 8px;
   background: rgba(9, 11, 17, 0.92);
   color: rgba(238, 242, 252, 0.96);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
 }
 .gf-hero-tip--rich {
   padding: 8px 13px;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 .gf-hero-tip span {
   color: rgba(189, 201, 222, 0.78);
@@ -2024,6 +2064,15 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   paint-order: stroke fill;
   stroke: rgba(79, 70, 229, 0.2);
   stroke-width: 1.4;
+}
+.iso-templ-logo {
+  fill: currentColor;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0;
+  pointer-events: none;
+  text-transform: none;
+  user-select: none;
 }
 .iso-label--core-kicker {
   font-size: 12px;

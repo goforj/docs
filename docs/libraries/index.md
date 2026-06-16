@@ -20,6 +20,7 @@ Each library page remains useful for standalone package users. Framework guides 
 - [Scheduler](/scheduler) provides scheduled work primitives.
 - [Metrics](/metrics) provides in-memory metrics primitives and Prometheus-compatible export.
 - [Wire](/wire) supports explicit dependency wiring.
+- [Atlas](/atlas) provides local agent context, skills, and MCP tooling for GoForj projects.
 
 ## Core Utilities
 

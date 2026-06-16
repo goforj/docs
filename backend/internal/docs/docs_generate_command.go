@@ -136,6 +136,13 @@ func (c *GenerateCommand) Run() error {
 			ReadmePath: "README.md",
 			RepoName:   "wire",
 		},
+		{
+			Slug:       "atlas",
+			Title:      "Atlas",
+			CloneURL:   "https://github.com/goforj/atlas.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "atlas.md"),
+		},
 	}
 	if c.Repo != "" {
 		filtered := make([]RepoConfig, 0, 1)

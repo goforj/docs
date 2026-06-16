@@ -53,6 +53,7 @@ Atlas copies those skills into each selected agent's native location:
 .agents/skills/checkout-rules/SKILL.md             # Codex
 .claude/skills/checkout-rules/SKILL.md             # Claude Code
 .github/instructions/checkout-rules.instructions.md # GitHub Copilot
+.gemini/skills/checkout-rules/GEMINI.md            # Gemini CLI
 ```
 
 Use project-owned skills for conventions that only exist in your repo: package boundaries, domain naming, deployment rules, generated file ownership, review expectations, or local testing habits.
@@ -90,7 +91,7 @@ When the wizard reaches `Atlas - Agent Support`, choose how much support to inst
 
 ```text
 Atlas - Agent Support
-Detected agents: Codex, Claude Code
+Detected agents: Codex, Claude Code, Gemini CLI
 Install: Recommended
 ```
 
@@ -107,7 +108,7 @@ forj atlas:install
 Choose individual agents and surfaces when you want a smaller or more explicit install:
 
 ```bash
-forj atlas:install --agent codex --agent copilot --guidelines --skills --mcp
+forj atlas:install --agent codex --agent copilot --agent gemini --guidelines --skills --mcp
 ```
 
 ## Supported agents
@@ -117,8 +118,18 @@ Atlas is designed around local project files and editor-readable instructions, s
 - Codex
 - Claude Code
 - GitHub Copilot
+- Gemini CLI
 
 If an agent is not detected, you can still choose it during custom installation.
+
+Atlas writes each agent's native project files:
+
+| Agent | Guidance | Skills | MCP config |
+| --- | --- | --- | --- |
+| Codex | `AGENTS.md` | `.agents/skills/*/SKILL.md` | `.codex/config.toml` |
+| Claude Code | `CLAUDE.md` | `.claude/skills/*/SKILL.md` | `.mcp.json` |
+| GitHub Copilot | `.github/copilot-instructions.md` | `.github/instructions/*.instructions.md` | `.vscode/mcp.json` |
+| Gemini CLI | `GEMINI.md` | `.gemini/skills/*/GEMINI.md` | `.gemini/settings.json` |
 
 ## MCP context
 
