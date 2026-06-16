@@ -34,12 +34,13 @@ Run the wizard:
 forj new
 ```
 
-The wizard asks for a project name and a component selection:
+The wizard asks for a project name, component selection, and optional Atlas agent support:
 
 ```text
 $ forj new
 ✔ Project name · photodrop
 ✔ Components · cli, web_api
+✔ Atlas - Agent Support · Recommended
 ```
 
 For the first run, choose a small HTTP shape:
@@ -49,6 +50,8 @@ For the first run, choose a small HTTP shape:
 - leave `web_ui`, jobs, scheduler, and database disabled unless you want them now
 
 Components are choices, not commitments. Everything you skip today can be added later as the App grows.
+
+Atlas is optional. If you enable it, GoForj installs local guidance for supported AI coding agents so they understand GoForj project structure, make commands, app registration points, and docs context. See [Atlas](/developer-tools/atlas) for details.
 
 When the wizard completes:
 

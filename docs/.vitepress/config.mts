@@ -578,6 +578,7 @@ export default defineConfig({
         text: 'Developer Tools',
         items: [
           { text: 'Overview', link: '/developer-tools/' },
+          { text: 'Atlas', link: '/developer-tools/atlas' },
           { text: 'forj dev', link: '/developer-tools/forj-dev' }
         ]
       },

@@ -212,8 +212,16 @@ onBeforeUnmount(() => {
 </ul>
 <div class="gf-home-links">
 <a href="/getting-started/quickstart">Follow the Quickstart →</a>
+<a href="/developer-tools/atlas">Atlas for agents →</a>
 <span class="gf-home-links__note">a few minutes to a running App</span>
 </div>
+<a class="gf-home-atlas" href="/developer-tools/atlas" data-reveal style="--reveal-delay: 0.08s" aria-label="Read the Atlas agent support guide">
+<span class="gf-home-atlas__mark" aria-hidden="true">ATLAS</span>
+<span class="gf-home-atlas__body">
+<strong>Agent-aware from the first render</strong>
+<span><code>forj new</code> can install Atlas support for Codex, Claude Code, and GitHub Copilot, including project guidance, skills, and MCP context.</span>
+</span>
+</a>
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
 <GoForjLiveTerminal />
