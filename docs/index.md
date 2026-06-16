@@ -491,7 +491,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Operations</p>
 <h2 class="gf-home-h2">Run it your way. See <em>everything</em> it does</h2>
-<p class="gf-home-lead">One binary hosts everything locally, or splits into explicit processes when production needs to scale. Deployment is a file you copy. Your code never knows the difference.</p>
+<p class="gf-home-lead">One binary hosts everything locally, or splits into explicit processes when production needs to scale. Build one artifact, then run the entry point your environment needs.</p>
 </div>
 <div class="gf-home-ops__binary">
 <h3 class="gf-home-ops__binary-title" data-reveal>Your entire App is one file</h3>
@@ -507,7 +507,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 >{{ tab.label }}</button>
 </div>
 <div class="gf-home-ops__binary-copy" data-reveal>
-<p>Whatever shape you choose, <code>forj build</code> compiles it into one static binary: under 60 MB with everything enabled, nothing extra to install on the server. Copy it, run it, done.</p>
+<p>Whatever shape you choose, <code>forj build</code> compiles it into one static binary: under 60 MB with everything enabled, nothing extra to install beside it.</p>
 <p class="gf-home-ops__binary-inside">Ships inside</p>
 <div class="gf-home-shapes gf-home-ops__binary-chips" :key="binTab" aria-label="What ships inside this binary shape">
 <span v-for="chip in activeBinChips" :key="chip">{{ chip }}</span>
@@ -516,58 +516,54 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-ops__binary-visual" data-reveal style="--reveal-delay: 0.1s">
 <div class="gf-home-swap__panels">
 <div :class="{ 'is-open': binTab === 'cli' }" :aria-hidden="binTab !== 'cli'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Shipping a CLI tool as one binary">
+<div class="gf-home-terminal" aria-label="Running a CLI tool from one binary">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · cli</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj make:command invoices:export</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app ops:</span>  <span class="t-dim"># the entire deploy</span>
-<span class="t-prompt">$</span> <span class="t-cmd">ssh ops ./app invoices:export --month 2026-05</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app invoices:export --month 2026-05</span>
 <span class="t-ok">✔</span> invoices:export <span class="t-dim">· 1,204 invoices → exports/2026-05.csv</span></code></pre>
 </div>
 </div>
 <div :class="{ 'is-open': binTab === 'api' }" :aria-hidden="binTab !== 'api'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Shipping an API service as one binary">
+<div class="gf-home-terminal" aria-label="Running an API service from one binary">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · api</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli, web_api</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
-<span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app api</span>
 <span class="t-step">http</span>       listening on <span class="t-hl">:3000</span></code></pre>
 </div>
 </div>
 <div :class="{ 'is-open': binTab === 'web' }" :aria-hidden="binTab !== 'web'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Shipping a web app with its frontend as one binary">
+<div class="gf-home-terminal" aria-label="Running a web app with its frontend from one binary">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · web</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli, web_api, web_ui · vue kit</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
+<span class="t-step">frontend</span>   built from <span class="t-hl">cmd/app/frontend</span>
+<span class="t-step">binary</span>     wrote <span class="t-hl">bin/app</span> with embedded assets
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
-<span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app run</span>
-<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span>
-<span class="t-prompt">$</span> <span class="t-cmd">curl -sI prod:3000/ | head -1</span>
-<span class="t-json">HTTP/1.1 200 OK</span>  <span class="t-dim"># your frontend, served by the binary</span></code></pre>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app run</span>
+<span class="t-step">http</span>       serving <span class="t-hl">/</span> and <span class="t-hl">/api</span> on <span class="t-hl">:3000</span>
+<span class="t-step">frontend</span>   Vue app served by the same process</code></pre>
 </div>
 </div>
 <div :class="{ 'is-open': binTab === 'full' }" :aria-hidden="binTab !== 'full'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Deploying a full GoForj App by copying one binary">
+<div class="gf-home-terminal" aria-label="Running a full GoForj App from one binary">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · everything</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · all of them</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
 <span class="t-prompt">$</span> <span class="t-cmd">ls -lh bin/app</span>
 -rwxr-xr-x  1 you  staff  <span class="t-hl">57M</span>  bin/app
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">scp bin/app prod:</span>  <span class="t-dim"># the entire deploy</span>
-<span class="t-prompt">$</span> <span class="t-cmd">ssh prod ./app run</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app run</span>
 <span class="t-dim">23:51:32.256</span> <span class="t-step">Scheduler</span>  Scheduler started
 <span class="t-dim">23:51:32.256</span> <span class="t-step">Jobs</span>       Queue worker started <span class="t-dim">→ workers=30</span>
 <span class="t-dim">23:51:32.257</span> <span class="t-step">HTTP</span>       Listening <span class="t-dim">→ addr=</span><span class="t-hl">0.0.0.0:3000</span></code></pre>
 </div>
 </div>
 </div>
-<p class="gf-home-ops__binary-note">No Dockerfile, no registry, no base image. Rollback is the previous binary.</p>
 </div>
 </div>
 <div class="gf-home-ops__topology">
@@ -734,7 +730,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <section class="gf-home-section gf-home-manifesto">
 <div class="gf-home-section__inner" data-reveal>
 <blockquote class="gf-home-manifesto__quote">
-<p>I got tired of rebuilding the same foundation every time I started a Go service. I did not want magic, and I did not want a framework that fights the language. So GoForj is built from things that still feel like Go: explicit wiring, compiled binaries, small interfaces, readable control flow. <em>It is the stack I always wanted.</em></p>
+<p>I love building in Go. I love how direct it feels, how simple it is to ship, and how long production services can stay understandable. But I got tired of rebuilding the same application foundation every time: commands, queues, schedules, cache, storage, mail, metrics, wiring, local dev. GoForj is the stack I wanted for complete Go applications: cohesive, explicit, compiled, and still recognizably Go.</p>
 <footer>
 <strong>Chris Miles</strong>
 <span>Creator of GoForj</span>

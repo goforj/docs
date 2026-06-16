@@ -2716,14 +2716,24 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     margin-top: clamp(28px, 3.4vw, 42px);
 }
 
+.gf-home-ops__binary-title,
+.gf-home-ops__binary-tabs,
+.gf-home-ops__binary-copy {
+    grid-column: 1;
+}
+
 .gf-home-ops__binary-copy {
     padding-right: clamp(10px, 2vw, 30px);
 }
 
 .gf-home-ops__binary-tabs {
-    grid-column: 1 / -1;
     justify-self: start;
     margin-bottom: 4px;
+}
+
+.gf-home-ops__binary-visual {
+    grid-column: 2;
+    grid-row: 1 / span 3;
 }
 
 .gf-home-ops__binary-inside {
@@ -2738,13 +2748,6 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 .gf-home-ops__binary-chips {
     min-height: 104px;
     align-content: start;
-}
-
-.gf-home-ops__binary-note {
-    margin-top: 12px !important;
-    color: rgba(203, 213, 225, 0.5);
-    font-size: 0.85rem;
-    line-height: 1.6;
 }
 
 /* Tab content swaps get a short fade so the recomposition reads as motion. */
@@ -2782,7 +2785,6 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-ops__binary-title {
-    grid-column: 1 / -1;
     color: rgba(240, 244, 252, 0.95);
     font-size: 1.3rem;
     font-weight: 780;
@@ -2803,6 +2805,14 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 @media (max-width: 860px) {
     .gf-home-ops__binary {
         grid-template-columns: 1fr;
+    }
+
+    .gf-home-ops__binary-title,
+    .gf-home-ops__binary-tabs,
+    .gf-home-ops__binary-copy,
+    .gf-home-ops__binary-visual {
+        grid-column: 1;
+        grid-row: auto;
     }
 }
 
