@@ -14,18 +14,34 @@ Local-first does not mean local-only. It means the first working path is small, 
 Start with:
 
 ```bash
-forj app
+forj app # or ./bin/app run
 ```
 
 The generated `app` command hosts enabled runtimes together in one process when `RUNTIME_MODE` is unset or `standalone`.
 
+For a named app, add the app name:
+
+```bash
+forj marketplace app # or ./bin/marketplace run
+```
+
 Use direct runtime commands when you need explicit process boundaries:
 
 ```bash
-forj api
-forj worker
-forj scheduler
+forj api       # or ./bin/app api
+forj worker    # or ./bin/app worker
+forj scheduler # or ./bin/app scheduler
 ```
+
+For a named app:
+
+```bash
+forj marketplace api       # or ./bin/marketplace api
+forj marketplace worker    # or ./bin/marketplace worker
+forj marketplace scheduler # or ./bin/marketplace scheduler
+```
+
+Named apps get deterministic local defaults, so the default app can listen on `3000`, the first named app on `3001`, and the next named app on `3002` without manual port edits.
 
 ## Local Drivers
 
@@ -72,12 +88,20 @@ Use `route:list`, health checks, readiness, metrics, inspects, and Lighthouse to
 
 ## Production Shape
 
-Production may run the same App in split processes:
+Production runs the built binary form of the same split process shape:
 
 ```bash
-forj api
-forj worker
-forj scheduler
+./bin/app api
+./bin/app worker
+./bin/app scheduler
+```
+
+Named apps use their own binaries:
+
+```bash
+./bin/marketplace api
+./bin/marketplace worker
+./bin/marketplace scheduler
 ```
 
 The App should not contain business logic that depends on whether these runtimes are hosted together or separately.

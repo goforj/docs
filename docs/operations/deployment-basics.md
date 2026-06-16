@@ -31,6 +31,15 @@ Common production commands:
 ./bin/app migrate
 ```
 
+Named apps use their own binaries:
+
+```bash
+./bin/marketplace api
+./bin/marketplace worker
+./bin/marketplace scheduler
+./bin/marketplace migrate
+```
+
 Use `run` for standalone topology. Use specific runtime commands when HTTP, workers, and scheduler should be separate processes.
 
 ## Environment

@@ -69,7 +69,7 @@ go test ./...
 ```
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Expected output includes:
@@ -81,13 +81,13 @@ Expected output includes:
 List the registered routes:
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Start the API, worker, and scheduler in separate terminals:
 
 ```bash
-forj api
+forj run api
 forj worker
 forj scheduler
 ```
@@ -168,7 +168,7 @@ Use `inspect` for the product surface. `trace_id` may still appear as a correlat
 Use logs to confirm lifecycle and failure behavior:
 
 ```bash
-forj api
+forj run api
 forj worker
 forj scheduler
 ```
@@ -208,7 +208,7 @@ Operational notes:
 
 ## Troubleshooting
 
-If no route appears, run `forj build` and then `forj route:list`.
+If no route appears, run `forj build` and then `forj run route:list`.
 
 If no job is processed, confirm the API and worker processes use a shared queue backend. `workerpool` is process-local; use Redis, SQL-backed queues, or another shared backend when API and worker run separately.
 

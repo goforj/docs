@@ -201,7 +201,7 @@ func safeSegment(value string) string {
 Use the generated App's make command to create the job file and add its constructor to job wiring.
 
 ```bash
-forj make:job reports:generate --output-dir ./internal/jobs
+forj run make:job reports:generate --output-dir ./internal/jobs
 ```
 
 ## Step 6: Replace The Generated Job
@@ -352,6 +352,7 @@ import (
 
 	"your/module/internal/events"
 	"your/module/internal/notifications"
+	"your/module/internal/runtime"
 )
 
 type LifecycleRegistry struct {
@@ -370,8 +371,8 @@ func NewLifecycleRegistry(
 	}
 }
 
-func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
-	lifecycle.On(Startup, func(ctx context.Context) error {
+func (r *LifecycleRegistry) Register(lifecycle *runtime.Lifecycle) {
+	lifecycle.On(runtime.Startup, func(ctx context.Context) error {
 		subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
 		if err != nil {
 			return err
@@ -386,7 +387,7 @@ func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
 }
 ```
 
-## Step 12: Wire Reports and The Job
+## Step 12: Wire Reports and the Job
 
 Add the report storage provider and report service constructor.
 
@@ -508,7 +509,7 @@ go test ./...
 ```
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Expected output includes:
@@ -526,7 +527,7 @@ forj worker
 Start the API in another terminal:
 
 ```bash
-forj api
+forj run api
 ```
 
 Create a user:
@@ -556,7 +557,7 @@ To use Redis in production, compile Redis queue support and select it:
 QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 QUEUE_DRIVER=redis
 QUEUE_ADDR=redis:6379
-QUEUE_NAME=default
+QUEUE_DEFAULT_QUEUE=default
 QUEUE_WORKERS=30
 ```
 

@@ -7,7 +7,12 @@ description: Operational behavior for generated scheduler runtimes.
 
 The scheduler runtime runs recurring work.
 
-Schedules should be named, declarative, and registered in `internal/schedules/scheduler_registry.go`.
+Schedules should be named, declarative, and registered through app-owned schedule composition:
+
+```text
+app/schedules.go
+app/<app>/schedules.go
+```
 
 ## Start
 
@@ -15,10 +20,22 @@ Schedules should be named, declarative, and registered in `internal/schedules/sc
 ./bin/app scheduler
 ```
 
+For a named app:
+
+```bash
+./bin/marketplace scheduler
+```
+
 or, in standalone mode:
 
 ```bash
 ./bin/app run
+```
+
+For a named app:
+
+```bash
+./bin/marketplace run
 ```
 
 ## Singleton Behavior

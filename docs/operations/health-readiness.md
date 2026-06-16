@@ -15,6 +15,12 @@ Health says the process is alive. Readiness says the App can serve traffic safel
 curl http://localhost:3000/-/health
 ```
 
+For a named app running on its generated local default:
+
+```bash
+curl http://localhost:3001/-/health
+```
+
 Generated Apps return a fixed `200` response:
 
 ```json
@@ -27,6 +33,12 @@ Health does not run dependency checks. Use it for container liveness and "is the
 
 ```bash
 curl http://localhost:3000/-/ready
+```
+
+For a named app:
+
+```bash
+curl http://localhost:3001/-/ready
 ```
 
 Generated Apps return:
@@ -72,6 +84,18 @@ Generated Apps include a `health` command that queries a live App without bootin
 ```
 
 The command defaults to `http://127.0.0.1:3000`, uses `ready` by default, and automatically sends `Authorization: Bearer $APP_DIAG_TOKEN` for readiness when the token is configured.
+
+For a named app, use that app's binary:
+
+```bash
+./bin/marketplace health --probe ready --fail
+```
+
+If you override the app's HTTP port, pass the matching base URL or full probe URL as the command's URL argument.
+
+```bash
+./bin/marketplace health http://127.0.0.1:3100 --probe ready --fail
+```
 
 ## What To Check
 

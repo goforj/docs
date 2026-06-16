@@ -41,7 +41,7 @@ Typical ownership:
 - `internal/cmd`: CLI commands and command registration
 - `internal/jobs`: job handlers, worker runtime, queue command surface
 - `internal/events`: event definitions, topics, bus integration
-- `internal/schedules`: schedule registration and scheduler runtime
+- `internal/schedules`: reusable scheduler runtime behavior
 - `internal/storages`: storage manager and named disk access
 - `internal/caches`: named cache accessors
 - `internal/metrics`: app metrics endpoint and framework instrumentation
@@ -56,7 +56,7 @@ Golden path for local development:
 - `forj dev` for the normal development loop
 - `forj build` for generation, Wire, API indexing, and binary build
 - `forj ...` for generated App commands when working inside a generated App
-- `forj <app> ...` for a named app command, such as `forj billing route:list`
+- `forj <app> ...` for a named app command, such as `forj marketplace route:list`
 - `forj run ...` only when the docs need the explicit App-command path or collision escape hatch
 - `forj app` when intentionally running the combined generated App runtime
 
@@ -67,7 +67,7 @@ Golden path for built binaries:
 - `./bin/app worker` for queue workers
 - `./bin/app scheduler` for scheduler runtime
 - `./bin/app migrate` for migrations
-- `./bin/<app> ...` for named app binaries, such as `./bin/billing worker`
+- `./bin/<app> ...` for named app binaries, such as `./bin/marketplace worker`
 
 When `forj build --auto-run` is used, `./bin/app` with no command launches the standalone App runtime. Treat this as build-time default launch behavior, not a separate runtime topology. Explicit commands still take precedence.
 

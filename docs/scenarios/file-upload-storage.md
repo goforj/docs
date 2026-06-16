@@ -268,7 +268,7 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 5: Wire The Disk and Service
+## Step 5: Wire the Disk and Service
 
 Open `app/wire/inject_services_app.go`.
 
@@ -398,7 +398,7 @@ go test ./...
 ```
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Expected output includes:
@@ -410,7 +410,7 @@ Expected output includes:
 Run the HTTP server:
 
 ```bash
-forj api
+forj run api
 ```
 
 Send a small upload:

@@ -68,19 +68,25 @@ Use `category:cadence` for cadence-oriented schedules such as `reports:daily`, o
 Run the scheduler directly:
 
 ```bash
-forj scheduler
+forj scheduler # or ./bin/app scheduler
 ```
 
 For a named app:
 
 ```bash
-forj marketplace scheduler
+forj marketplace scheduler # or ./bin/marketplace scheduler
 ```
 
 Run it with other enabled local runtimes:
 
 ```bash
-forj app
+forj app # or ./bin/app run
+```
+
+For a named app:
+
+```bash
+forj marketplace app # or ./bin/marketplace run
 ```
 
 ## Recommended Shape

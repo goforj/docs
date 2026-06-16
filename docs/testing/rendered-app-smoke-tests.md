@@ -30,6 +30,7 @@ Rendered smoke tests catch:
 - generated App compile failures
 - generated test failures
 - dependency replacement issues
+- multi-app wiring or binary-entrypoint regressions when the smoke target includes named apps
 
 If package-level tests pass but rendered smoke fails, inspect the rendered output.
 

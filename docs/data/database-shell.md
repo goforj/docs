@@ -29,6 +29,12 @@ The command is also available on the built App binary:
 ./bin/app db
 ```
 
+For a named app, use the app prefix during development or the named app binary after build:
+
+```bash
+forj marketplace db # or ./bin/marketplace db
+```
+
 ## Named Connections
 
 Pass a connection name when the App has multiple database connections:
@@ -36,6 +42,12 @@ Pass a connection name when the App has multiple database connections:
 ```bash
 forj db analytics
 forj db --connection analytics
+```
+
+For a named app:
+
+```bash
+forj marketplace db analytics # or ./bin/marketplace db analytics
 ```
 
 Connection names match the generated App resource names. For example, `DB_ANALYTICS_*` configuration maps to `analytics`.

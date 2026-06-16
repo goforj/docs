@@ -39,7 +39,7 @@ It includes fields such as:
 project_name: Example
 module_name: example.com/example
 apps:
-  billing:
+  marketplace:
     components:
       web_api: true
       jobs: true

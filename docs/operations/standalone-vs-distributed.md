@@ -26,7 +26,7 @@ Use it for:
 
 ## Default Launch Binaries
 
-For single-process deployments, `forj build --auto-run` can compile the standalone launch target into the binary:
+For single-process deployments, `forj build --auto-run` can compile standalone launch behavior into the binary:
 
 ```bash
 forj build --auto-run
@@ -44,7 +44,7 @@ This is equivalent to running:
 ./bin/app run
 ```
 
-Explicit commands still win. If a process supervisor starts `./bin/app api`, `./bin/app worker`, or any other command, the binary runs that command instead of the default launch target.
+Explicit commands still win. If a process supervisor starts `./bin/app api`, `./bin/app worker`, or any other command, the binary runs that command instead of the default launch behavior.
 
 Use this when the deployment unit should behave like a normal executable service. Do not use it to hide runtime topology decisions; distributed deployments should still start explicit runtime commands.
 
@@ -56,6 +56,14 @@ Distributed topology starts explicit runtime commands:
 ./bin/app api
 ./bin/app worker
 ./bin/app scheduler
+```
+
+Named apps use their own binaries:
+
+```bash
+./bin/marketplace api
+./bin/marketplace worker
+./bin/marketplace scheduler
 ```
 
 Use it for:

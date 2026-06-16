@@ -70,7 +70,7 @@ Do not imply App-owned generation logic moved into the Framework CLI. `forj` may
 
 ## Default Launch Binaries
 
-`forj build --auto-run` can compile a default launch target into the binary.
+`forj build --auto-run` can compile default launch behavior into the binary.
 
 When present, running the binary with no command starts the standalone App runtime:
 
@@ -84,7 +84,7 @@ This should be described as equivalent to the standalone launch command:
 ./bin/app run
 ```
 
-Explicit commands still win. If a supervisor runs `./bin/app api`, `./bin/app worker`, or another command, the binary runs that command instead of the default launch target.
+Explicit commands still win. If a supervisor runs `./bin/app api`, `./bin/app worker`, or another command, the binary runs that command instead of the default launch behavior.
 
 Docs should frame this as a packaging convenience for single-process services, not as a replacement for explaining topology.
 

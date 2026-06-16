@@ -14,15 +14,25 @@ They are long-running runtime processes with explicit startup, shutdown, metrics
 Run workers directly:
 
 ```bash
-forj worker
-./bin/app worker
+forj worker # or ./bin/app worker
+```
+
+For a named app, keep the same command shape and add the app name:
+
+```bash
+forj marketplace worker # or ./bin/marketplace worker
 ```
 
 Run workers with other enabled runtimes in local standalone mode:
 
 ```bash
-forj app
-./bin/app run
+forj app # or ./bin/app run
+```
+
+For a named app:
+
+```bash
+forj marketplace app # or ./bin/marketplace run
 ```
 
 ## Runtime Boundary
@@ -34,15 +44,19 @@ This makes workers a clear operational boundary separate from HTTP and scheduler
 By default, `worker` starts workers for every configured generated queue. Use `--queue` when a process should work only one named queue:
 
 ```bash
-forj worker --queue reports
-./bin/app worker --queue reports
+forj worker --queue reports # or ./bin/app worker --queue reports
+```
+
+For a named app:
+
+```bash
+forj marketplace worker --queue sync # or ./bin/marketplace worker --queue sync
 ```
 
 Repeat the flag to work a subset:
 
 ```bash
-forj worker --queue emails --queue reports
-./bin/app worker --queue emails --queue reports
+forj worker --queue emails --queue reports # or ./bin/app worker --queue emails --queue reports
 ```
 
 ## Configuration

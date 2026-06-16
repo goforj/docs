@@ -37,6 +37,8 @@ Commands such as `api`, `worker`, and `scheduler` are runtime boundaries.
 
 Prefer testing their owned runtime components directly unless the command wiring itself is the target.
 
+For named apps, the prefix is routing, not business behavior. Test command logic at the command type or service boundary; use a rendered smoke test only when you need confidence that `forj marketplace <command>` reaches the marketplace app command tree.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

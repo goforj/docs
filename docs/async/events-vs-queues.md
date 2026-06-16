@@ -133,13 +133,19 @@ The Scheduler defines recurring work.
 Schedules live in:
 
 ```text
-internal/schedules/scheduler_registry.go
+app/schedules.go
 ```
 
 Start the scheduler:
 
 ```bash
 forj scheduler
+```
+
+For a named app:
+
+```bash
+forj marketplace scheduler
 ```
 
 Schedules should have stable names and point to domain-owned methods or command work.

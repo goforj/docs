@@ -20,7 +20,7 @@ Do not use App for the whole repository when multi-app behavior matters.
 
 An App is a runnable application boundary inside a GoForj Project.
 
-The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. Named apps such as `billing` or `reporting` live in `cmd/<app>`, `app/<app>`, and `app/<app>/wire`.
+The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. Named apps such as `marketplace` or `backstage` live in `cmd/<app>`, `app/<app>`, and `app/<app>/wire`.
 
 Use App when referring to a generated command surface, binary, app composition files, app-local Wire graph, route exposure, and runtime defaults.
 
@@ -34,7 +34,7 @@ It is the normal single-app path and should appear first in docs. The default ap
 
 ### Named App
 
-A Named App is an additional app in the same Project, such as `billing` or `customer-portal`.
+A Named App is an additional app in the same Project, such as `marketplace` or `backstage`.
 
 Named apps are for meaningful ownership or deployment fan-out within one Project. They are not separate Go modules, separate repositories, or automatic microservices.
 

@@ -9,6 +9,8 @@ Logs should make runtime behavior understandable without creating noise.
 
 GoForj favors high-signal startup, shutdown, and degraded-state logs over large boot dumps.
 
+In multi-app Projects, logs should make the app identity visible. A line from `marketplace` should not be mistaken for the default app, especially when `forj dev` is running several apps together.
+
 ## Good Default Logs
 
 Good default-visible logs include:
@@ -43,6 +45,12 @@ Use:
 
 for complete route visibility.
 
+For a named app:
+
+```bash
+./bin/marketplace route:list
+```
+
 ## Timestamps
 
 Console timestamps are controlled by:
@@ -58,6 +66,7 @@ APP_LOG_TIME
 - Do not repeat the same optional-resource warning for every process.
 - Do not leak secrets or raw payloads into default logs.
 - Do not bury important degraded-state information at trace level.
+- Do not omit app identity from multi-app runtime logs.
 :::
 
 ## Next Steps

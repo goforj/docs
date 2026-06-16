@@ -12,22 +12,25 @@ Workers are long-running runtime processes with explicit startup, shutdown, queu
 ## Start
 
 ```bash
-forj worker
-./bin/app worker
+forj worker # or ./bin/app worker
 ```
 
 For a named app:
 
 ```bash
-forj marketplace worker
-./bin/marketplace worker
+forj marketplace worker # or ./bin/marketplace worker
 ```
 
 or, in standalone mode:
 
 ```bash
-forj app
-./bin/app run
+forj app # or ./bin/app run
+```
+
+For a named app in standalone mode:
+
+```bash
+forj marketplace app # or ./bin/marketplace run
 ```
 
 The built binary form is what supervisors usually run. The `forj` form is the development surface that refreshes generated code before running the App command.
@@ -35,8 +38,13 @@ The built binary form is what supervisors usually run. The `forj` form is the de
 Without flags, `worker` starts every configured generated queue. To dedicate a process to one queue:
 
 ```bash
-forj worker --queue reports
-./bin/app worker --queue reports
+forj worker --queue reports # or ./bin/app worker --queue reports
+```
+
+For a named app, the queue name remains logical from that app's point of view:
+
+```bash
+forj marketplace worker --queue sync # or ./bin/marketplace worker --queue sync
 ```
 
 Repeat the flag when one process should work a subset:

@@ -436,6 +436,7 @@ import (
 
 	"your/module/internal/events"
 	"your/module/internal/notifications"
+	"your/module/internal/runtime"
 )
 
 type LifecycleRegistry struct {
@@ -454,8 +455,8 @@ func NewLifecycleRegistry(
 	}
 }
 
-func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
-	lifecycle.On(Startup, func(ctx context.Context) error {
+func (r *LifecycleRegistry) Register(lifecycle *runtime.Lifecycle) {
+	lifecycle.On(runtime.Startup, func(ctx context.Context) error {
 		subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
 		if err != nil {
 			return err
@@ -545,7 +546,7 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 10: Wire The Event Boundary and Subscriber
+## Step 10: Wire the Event Boundary and Subscriber
 
 Add the event publisher and notification subscriber providers.
 
@@ -677,7 +678,7 @@ go test ./...
 ```
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Expected output includes:
@@ -689,7 +690,7 @@ Expected output includes:
 Run the HTTP server:
 
 ```bash
-forj api
+forj run api
 ```
 
 Create a user:

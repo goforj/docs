@@ -21,7 +21,7 @@ The endpoint is intentionally small. It establishes the normal shape for applica
 - `internal/users.Controller` translates HTTP into a service call.
 - `forj make:controller users` creates the controller wiring and route registration.
 - `wire/appSet` provides the service.
-- `forj route:list` shows the registered endpoint.
+- `forj run route:list` shows the registered endpoint.
 
 ## Prerequisites
 
@@ -233,7 +233,7 @@ go test ./...
 ```
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Expected output includes:
@@ -245,7 +245,7 @@ Expected output includes:
 Run the HTTP server:
 
 ```bash
-forj api
+forj run api
 ```
 
 Request the endpoint:

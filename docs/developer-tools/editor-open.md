@@ -14,6 +14,12 @@ forj make:controller users --open
 forj make:job reports:daily -o
 ```
 
+For a named app, use the same flag after the app prefix:
+
+```bash
+forj marketplace make:controller checkout --open
+```
+
 Use `--no-open` when you want to suppress editor opening for this run, even if the App is configured to open generated files automatically:
 
 ```bash

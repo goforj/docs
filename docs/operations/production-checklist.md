@@ -11,6 +11,7 @@ Use this checklist before production deployment.
 
 - Run `forj build`.
 - Confirm `.goforj.yml` matches intended components.
+- Confirm named apps listed under `apps` have the intended component choices.
 - Confirm `*_SUPPORTED_DRIVERS` includes all runtime drivers.
 - Confirm secrets are provided by the deployment environment.
 - Confirm `APP_ENV` and `APP_DEBUG` are production-safe.
@@ -19,12 +20,14 @@ Use this checklist before production deployment.
 
 - Choose standalone or split runtime processes.
 - Run HTTP, workers, and scheduler through explicit commands.
+- For named apps, run the app-specific binary such as `./bin/marketplace api`.
 - Ensure scheduler singleton or locking behavior is correct.
 - Set shutdown timeouts deliberately.
 
 ## Data
 
 - Run migrations intentionally.
+- In multi-app Projects, confirm which app owns each migration stream.
 - Verify database readiness.
 - Confirm cache is not source-of-truth storage.
 - Confirm storage disks and object storage permissions.
@@ -35,6 +38,7 @@ Use this checklist before production deployment.
 - Verify health and readiness endpoints.
 - Configure `APP_DIAG_TOKEN`.
 - Verify metrics scrape targets.
+- Confirm metrics, logs, inspects, and Lighthouse preserve app identity.
 - Confirm high-cardinality labels are not introduced.
 - Confirm logs are high-signal and secrets are not logged.
 - Enable Lighthouse only where appropriate.

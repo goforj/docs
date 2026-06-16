@@ -219,7 +219,7 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 }
 ```
 
-## Step 4: Wire The Repository and Cache
+## Step 4: Wire the Repository and Cache
 
 Open `app/wire/inject_services_app.go`.
 
@@ -343,7 +343,7 @@ go test ./...
 ```
 
 ```bash
-forj route:list
+forj run route:list
 ```
 
 Expected output includes:
@@ -355,7 +355,7 @@ Expected output includes:
 Run the HTTP server:
 
 ```bash
-forj api
+forj run api
 ```
 
 Request the profile twice:

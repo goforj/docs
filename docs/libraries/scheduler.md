@@ -43,7 +43,7 @@ Everything remains explicit, testable, and inspectable, while staying pleasant t
 
 ## Using With GoForj Apps
 
-Generated Apps configure schedules through `internal/schedules/scheduler_registry.go` and run them through the scheduler runtime command. Start with [Scheduler](/async/scheduler), [Scheduler Processes](/operations/scheduler-processes), and [Runtime Topology](/core/runtime-topology) when scheduling is part of a full App.
+Generated Apps configure schedules through app-owned composition files such as `app/schedules.go` or `app/<app>/schedules.go`, then run them through the scheduler runtime command. Start with [Scheduler](/async/scheduler), [Scheduler Processes](/operations/scheduler-processes), and [Runtime Topology](/core/runtime-topology) when scheduling is part of a full App.
 
 Use this page when you need standalone scheduler APIs, locking, filters, hooks, or lower-level runtime control.
 

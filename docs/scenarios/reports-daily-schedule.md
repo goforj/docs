@@ -18,7 +18,7 @@ The schedule decides when daily report work should begin. The queue still owns e
 ## What You Will Build
 
 - `internal/reports/daily.go` selects users that need daily reports.
-- `internal/schedules/scheduler_registry.go` registers a named `reports:daily` schedule.
+- `app/schedules.go` registers a named `reports:daily` schedule.
 - The schedule calls a domain-owned method instead of putting report logic in scheduler bootstrap.
 - The method dispatches `reports:generate` jobs, so workers continue to process report generation.
 
@@ -69,8 +69,7 @@ internal/users/repository.go
 **Scheduler**
 
 ```text
-internal/schedules/scheduler.go
-internal/schedules/scheduler_registry.go
+app/schedules.go
 ```
 
 **App wiring**
@@ -178,47 +177,47 @@ func (r *MemoryUserRepository) DueForDailyReport(ctx context.Context) ([]reports
 }
 ```
 
-## Step 4: Inject The Daily Runner Into Scheduler
+## Step 4: Import Reports Into The Schedule Registry
 
-Add the daily runner to the generated scheduler type.
+Add the daily runner package to the app-owned schedule registry.
 
-Update `internal/schedules/scheduler.go` so it includes:
+Update `app/schedules.go` so it includes:
 
 ```go
-"your/module/internal/inspects"
 "your/module/internal/reports"
+"your/module/internal/schedules"
 ```
 
-## Step 5: Add Scheduler Field
+## Step 5: Add Schedule Registry Field
 
-Store the injected runner on the scheduler.
+Store the injected runner on the app schedule registry.
 
-Update `internal/schedules/scheduler.go` so it includes:
+Update `app/schedules.go` so it includes:
 
 ```go
-inspectManager *inspects.Manager
+type ScheduleRegistry struct {
 dailyReports   *reports.DailyRunner
 ```
 
-## Step 6: Add Scheduler Constructor Parameter
+## Step 6: Add Schedule Registry Constructor Parameter
 
-Wire can now provide the runner to the scheduler.
+Wire can now provide the runner to the app schedule registry.
 
-Update `internal/schedules/scheduler.go` so it includes:
+Update `app/schedules.go` so it includes:
 
 ```go
-inspectManager *inspects.Manager,
+func NewScheduleRegistry(
 dailyReports *reports.DailyRunner,
 ```
 
-## Step 7: Assign Scheduler Runner
+## Step 7: Assign Schedule Registry Runner
 
-Preserve the generated scheduler wiring and add the new field assignment.
+Preserve generated schedule wiring and add the new field assignment.
 
-Update `internal/schedules/scheduler.go` so it includes:
+Update `app/schedules.go` so it includes:
 
 ```go
-inspectManager: inspectManager,
+return &ScheduleRegistry{
 dailyReports:   dailyReports,
 ```
 
@@ -226,14 +225,13 @@ dailyReports:   dailyReports,
 
 Keep the registry declarative. The registry names the schedule and points to the domain-owned method.
 
-Update `internal/schedules/scheduler_registry.go` so it includes:
+Update `app/schedules.go` so it includes:
 
 ```go
-s.registerJobObservers()
-
+func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
 s.DailyAt("04:00").
         Name("reports:daily").
-        Do(s.inspectTask("reports:daily", s.dailyReports.Run))
+        Do(s.InspectTask("reports:daily", r.dailyReports.Run))
 ```
 
 ## Step 9: Wire The Runner
@@ -326,7 +324,7 @@ For a fast local check, temporarily use a short interval while developing:
 ```go
 s.Every(30).Seconds().
   Name("reports:daily").
-  Do(s.inspectTask("reports:daily", s.dailyReports.Run))
+  Do(s.InspectTask("reports:daily", r.dailyReports.Run))
 ```
 
 Return to `DailyAt("04:00")` before treating the schedule as production-shaped.
