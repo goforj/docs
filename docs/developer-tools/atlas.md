@@ -21,6 +21,42 @@ Atlas installs lightweight project files that teach agents the GoForj way to bui
 
 The goal is not to make agents louder. The goal is to make them less surprising.
 
+## Project-owned skills
+
+Atlas ships with built-in GoForj skills, but your project can add its own.
+
+Put repo-owned skills under `.ai/skills`:
+
+```text
+.ai/
+  skills/
+    checkout-rules/
+      SKILL.md
+    support-runbook.md
+```
+
+Then sync Atlas skills:
+
+```bash
+forj atlas:update --skills
+```
+
+Atlas copies those skills into each selected agent's native location:
+
+```text
+.agents/skills/checkout-rules/SKILL.md             # Codex
+.claude/skills/checkout-rules/SKILL.md             # Claude Code
+.github/instructions/checkout-rules.instructions.md # GitHub Copilot
+```
+
+Use project-owned skills for conventions that only exist in your repo: package boundaries, domain naming, deployment rules, generated file ownership, review expectations, or local testing habits.
+
+Keep them short and specific. A good project skill tells the agent what to do differently in this codebase.
+
+Atlas guidance also tells agents to notice durable repo knowledge. When you teach an agent a convention, workflow, command, or review expectation that is likely to matter again, the agent should briefly ask whether it belongs in `.ai/skills/<name>/SKILL.md`.
+
+That suggestion should be rare and practical. It is for repeated project knowledge, not one-off preferences or temporary debugging steps.
+
 ## Install during project creation
 
 Run the wizard:
