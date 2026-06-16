@@ -81,7 +81,7 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.'
-const docsVersion = 'v0.9'
+const docsVersion = 'v0.18'
 const faviconVersion = '20260526'
 const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260527.jpg`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
@@ -135,6 +135,7 @@ const libraryRewrites: Record<string, string> = {
 
 const llmsSectionOrder = [
   'about.md',
+  'versions/',
   'getting-started/',
   'cookbook.md',
   'drivers.md',
@@ -151,12 +152,12 @@ const llmsSectionOrder = [
   'developer-tools/',
   'libraries/',
   'reference/',
-  'versions/',
   'blog/'
 ]
 
 const llmsSectionTitles: Record<string, string> = {
   'about.md': 'About',
+  'versions/': 'Versions',
   'getting-started/': 'Getting Started',
   'cookbook.md': 'Cookbook',
   'drivers.md': 'Drivers',
@@ -173,7 +174,6 @@ const llmsSectionTitles: Record<string, string> = {
   'developer-tools/': 'Developer Tools',
   'libraries/': 'Libraries',
   'reference/': 'Reference',
-  'versions/': 'Versions',
   'blog/': 'Blog'
 }
 
@@ -425,7 +425,8 @@ export default defineConfig({
         text: docsVersion,
         items: [
           { text: `${docsVersion} Current`, link: '/' },
-          { text: 'Version Policy', link: '/versions/' }
+          { text: 'Version Policy', link: '/versions/' },
+          { text: 'Changelog', link: '/versions/changelog' }
         ]
       }
     ],
@@ -617,7 +618,8 @@ export default defineConfig({
       {
         text: 'Versions',
         items: [
-          { text: `${docsVersion} Current`, link: '/versions/' }
+          { text: `${docsVersion} Current`, link: '/versions/' },
+          { text: 'Changelog', link: '/versions/changelog' }
         ]
       },
       {

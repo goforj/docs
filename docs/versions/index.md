@@ -1,41 +1,62 @@
 ---
 title: Versions
-description: Version policy for the GoForj documentation.
+description: Version policy and historical milestone model for GoForj.
 ---
 
 # Versions
 
-These docs currently describe GoForj `v0.9`.
+These docs currently describe GoForj `v0.18`.
 
-The root documentation site represents the current active documentation line. When a future stable line needs different documentation, the older line should be frozen under a versioned path before the root moves forward.
+GoForj is still pre-`v1.0`, but the project has a real development history. The version line is used to mark meaningful framework milestones: generated App structure, CLI behavior, runtime lifecycle, starter kits, observability, local development, and first-party library integration.
 
 ## Current Version
 
-`v0.9` is the current documentation line.
+`v0.18` is the current documentation line.
 
-Use these docs when you are building against the current GoForj framework, CLI, generated App structure, and first-party library integration model.
+Use these docs when you are building against the current GoForj framework, CLI, generated App structure, multi-app architecture, and first-party library integration model.
+
+## Historical Milestones
+
+Earlier pre-`v1.0` versions include retrospective milestone tags. These tags are not padded release marketing. They mark commits where substantial framework layers became coherent enough to describe as a versioned step in the project history.
+
+That matters because GoForj has evolved through several real layers:
+
+- renderer and generator foundation
+- project creation and command UX
+- database, migrations, repositories, and model generation
+- generated logging and local development runtime
+- dev console, Lighthouse, and operational visibility
+- queues, events, cache, storage, lifecycle hooks, API index, and OpenAPI
+- generated auth, mail, web, and frontend starter kits
+- metrics, inspects, runtime attribution, and performance hardening
+- make command expansion and generated app ergonomics
+- multi-app project architecture
+
+See [Changelog](/versions/changelog) for the detailed ledger.
 
 ## Versioning Model
 
-Framework docs are versioned when framework behavior changes.
+Framework versions are cut when user-facing framework behavior changes.
 
 This includes:
 
 - CLI commands
 - generated App structure
+- app composition and multi-app behavior
 - runtime lifecycle
 - provider and dependency injection behavior
 - driver selection and named resources
 - queue, event, scheduler, storage, cache, metrics, inspect, and Lighthouse integration
+- starter kit rendering and frontend ownership
 - deployment and operations guidance
 
 Library docs remain first-class documentation for standalone first-party Go packages. They can be referenced from framework guides, but they should not be duplicated into framework pages unless the behavior is specific to a generated GoForj App.
 
 ## Future Snapshots
 
-When a new documentation line is introduced, the previous line should be copied into a frozen versioned path such as `/versions/v0.9/`.
+The root documentation site represents the current active documentation line. When a future stable line needs different documentation, the older line should be frozen under a versioned path before the root moves forward.
 
-The frozen snapshot should preserve:
+A frozen snapshot should preserve:
 
 - framework guide pages
 - reference pages
@@ -49,4 +70,3 @@ The active root docs can then move to the next version.
 Pages should call out version-specific behavior only when it changes how a user builds, configures, runs, tests, or deploys an App.
 
 Do not add version noise for wording changes, formatting changes, or internal documentation maintenance.
-
