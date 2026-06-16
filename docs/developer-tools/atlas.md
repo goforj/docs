@@ -35,6 +35,12 @@ Put repo-owned skills under `.ai/skills`:
     support-runbook.md
 ```
 
+You can scaffold the directory and starter file:
+
+```bash
+forj atlas:make-skill checkout-rules
+```
+
 Then sync Atlas skills:
 
 ```bash
@@ -52,6 +58,21 @@ Atlas copies those skills into each selected agent's native location:
 Use project-owned skills for conventions that only exist in your repo: package boundaries, domain naming, deployment rules, generated file ownership, review expectations, or local testing habits.
 
 Keep them short and specific. A good project skill tells the agent what to do differently in this codebase.
+
+Example:
+
+```md
+# Checkout Rules
+
+Use this skill when changing checkout, cart, payment, or order creation code.
+
+Rules:
+
+- Keep payment provider calls behind `internal/checkout.PaymentGateway`.
+- Use `forj marketplace make:*` for generated marketplace entry points.
+- Run `forj marketplace test:checkout` before marking checkout work done.
+- Do not add direct provider SDK calls inside HTTP controllers.
+```
 
 Atlas guidance also tells agents to notice durable repo knowledge. When you teach an agent a convention, workflow, command, or review expectation that is likely to matter again, the agent should briefly ask whether it belongs in `.ai/skills/<name>/SKILL.md`.
 
@@ -132,6 +153,7 @@ Useful commands:
 forj atlas:install
 forj atlas:update
 forj atlas:list-skills
+forj atlas:make-skill checkout-rules
 forj atlas:mcp
 ```
 
