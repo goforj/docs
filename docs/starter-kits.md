@@ -24,7 +24,9 @@ noAutoTitle: true
     <StarterKitHeroScreens />
   </section>
 
-  <section class="gf-starter-section gf-starter-section--split gf-starter-section--no-rule">
+  <StarterKitOptions />
+
+  <section class="gf-starter-section gf-starter-section--split">
     <div>
       <h2>A frontend foundation that belongs to your App</h2>
       <p>

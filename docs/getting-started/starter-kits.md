@@ -21,13 +21,18 @@ Current important rule:
 - Web UI disabled: starter kit selection is skipped.
 - Demo App selected: the demo owns its generated frontend, so normal starter kit selection is cleared.
 
-## Current Starter Kit
+## Supported Starter Kits
 
-The current first-party starter kit is:
+The first-party starter kit choices are:
 
-- [Vue Starter Kit](/frontend/vue-starter-kit)
+| Starter kit | Stack | Use it when |
+| --- | --- | --- |
+| [Vue](/frontend/vue-starter-kit) | Vue 3, Vite, TypeScript, Tailwind, shadcn-vue | You want a client-side Vue application shell. |
+| React | React 19, Vite, TypeScript, Tailwind, shadcn/ui | You want a client-side React application shell. |
+| templ + htmx | templ, htmx, Tailwind | You want a Go-first server-rendered UI. |
+| None | Web UI placeholder | You want to bring your own frontend. |
 
-It creates an app-scoped frontend project for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for a named app.
+Starter kits create app-scoped frontend source for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for a named app.
 
 ## Generated Ownership
 
@@ -39,7 +44,7 @@ Use the generated code as a starting point. Do not treat starter kit files as im
 
 Starter kits can add development setup tasks.
 
-For the Vue starter kit, generated dev setup can include:
+For npm-backed starter kits, generated dev setup can include:
 
 ```bash
 cd cmd/app/frontend && npm install

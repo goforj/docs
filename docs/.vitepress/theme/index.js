@@ -6,6 +6,7 @@ import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import GoForjHeroStack from './components/GoForjHeroStack.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
+import StarterKitOptions from './components/StarterKitOptions.vue'
 import GoForjLiveTerminal from './components/GoForjLiveTerminal.vue'
 import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
@@ -531,6 +532,7 @@ export default {
   enhanceApp(ctx) {
     DefaultTheme.enhanceApp?.(ctx)
     ctx.app.component('StarterKitHeroScreens', StarterKitHeroScreens)
+    ctx.app.component('StarterKitOptions', StarterKitOptions)
     ctx.app.component('GoForjLiveTerminal', GoForjLiveTerminal)
   },
   Layout: () => {
