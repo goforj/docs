@@ -16,6 +16,27 @@ const escapeHtml = (value: string) => value
   .replace(/</g, '&lt;')
   .replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;')
+const decodeHtmlEntities = (value: string) => value
+  .replace(/&nbsp;/gi, ' ')
+  .replace(/&amp;/gi, '&')
+  .replace(/&lt;/gi, '<')
+  .replace(/&gt;/gi, '>')
+  .replace(/&quot;/gi, '"')
+  .replace(/&#39;/gi, "'")
+  .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+  .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+const normalizeText = (value: string) => decodeHtmlEntities(clearHtmlTags(value))
+  .replace(/\s+/g, ' ')
+  .trim()
+const truncateDescription = (value: string, max = 180) => {
+  const text = normalizeText(value)
+  if (text.length <= max) return text
+  const trimmed = text.slice(0, max + 1)
+  const sentence = trimmed.match(/^(.+?[.!?])\s/)
+  if (sentence && sentence[1].length >= 72) return sentence[1]
+  const wordBoundary = trimmed.lastIndexOf(' ')
+  return `${trimmed.slice(0, wordBoundary > 100 ? wordBoundary : max).trim()}...`
+}
 
 const getPageTitle = (path: string, html: string) => {
   const h1Match = h1Regex.exec(html)
@@ -108,6 +129,116 @@ const pageUrl = (page: string) => {
     .replace(/\/+$/, '')
 
   return `${siteUrl}${cleanPath ? `/${cleanPath}` : '/'}`
+}
+
+const absoluteUrl = (value: string, page: string) => {
+  if (!value) return ''
+  if (/^(https?:)?\/\//i.test(value)) {
+    return value.startsWith('//') ? `https:${value}` : value
+  }
+  if (value.startsWith('/')) return `${siteUrl}${value}`
+
+  const cleanPage = page.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')
+  const basePath = cleanPage.includes('/') ? cleanPage.split('/').slice(0, -1).join('/') : ''
+  const resolved = path.posix.normalize(`/${basePath}/${value}`)
+  return `${siteUrl}${resolved}`
+}
+
+const socialImageType = (value: string) => {
+  const clean = value.split(/[?#]/, 1)[0].toLowerCase()
+  if (clean.endsWith('.png')) return 'image/png'
+  if (clean.endsWith('.webp')) return 'image/webp'
+  if (clean.endsWith('.gif')) return 'image/gif'
+  if (clean.endsWith('.svg')) return 'image/svg+xml'
+  return 'image/jpeg'
+}
+
+const frontmatterString = (frontmatter: Record<string, unknown>, names: string[]) => {
+  for (const name of names) {
+    const value = frontmatter[name]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  return ''
+}
+
+const frontmatterNumber = (frontmatter: Record<string, unknown>, names: string[]) => {
+  for (const name of names) {
+    const value = frontmatter[name]
+    if (typeof value === 'number' && Number.isFinite(value)) return value
+    if (typeof value === 'string' && /^\d+$/.test(value.trim())) return Number(value.trim())
+  }
+  return undefined
+}
+
+const deriveDescription = (content: string) => {
+  const withoutNoise = content
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, '')
+    .replace(/<pre\b[\s\S]*?<\/pre>/gi, '')
+    .replace(/<table\b[\s\S]*?<\/table>/gi, '')
+    .replace(/<nav\b[\s\S]*?<\/nav>/gi, '')
+  const paragraphMatches = withoutNoise.matchAll(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/gi)
+  for (const match of paragraphMatches) {
+    const text = truncateDescription(match[1])
+    if (text.length >= 50 && !/^documentation preview$/i.test(text)) return text
+  }
+  const fallback = truncateDescription(withoutNoise)
+  return fallback.length >= 50 ? fallback : ''
+}
+
+const imageAltRegex = /alt=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
+const imageSrcRegex = /src=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
+const imageWidthRegex = /width=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
+const imageHeightRegex = /height=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
+const ignoredImagePattern = /(?:favicon|apple-touch-icon|web-app-manifest|goforj-v7|goforj-full|goforj-letters|goforj-hammer|logo(?:\.[a-z]+)?$)/i
+
+const imageDimensions = (html: string) => {
+  const width = html.match(imageWidthRegex)?.slice(1).find(Boolean)
+  const height = html.match(imageHeightRegex)?.slice(1).find(Boolean)
+  return {
+    width: width && /^\d+$/.test(width) ? Number(width) : undefined,
+    height: height && /^\d+$/.test(height) ? Number(height) : undefined
+  }
+}
+
+const deriveImage = (content: string, page: string) => {
+  const imageMatches = content.matchAll(/<img\b[^>]*>/gi)
+  for (const match of imageMatches) {
+    const img = match[0]
+    const rawSrc = img.match(imageSrcRegex)?.slice(1).find(Boolean)?.trim() || ''
+    if (!rawSrc || rawSrc.startsWith('data:')) continue
+    const src = decodeHtmlEntities(rawSrc)
+    if (ignoredImagePattern.test(src)) continue
+
+    const rawAlt = img.match(imageAltRegex)?.slice(1).find(Boolean)?.trim() || ''
+    return {
+      url: absoluteUrl(src, page),
+      alt: normalizeText(rawAlt) || 'GoForj documentation preview',
+      ...imageDimensions(img)
+    }
+  }
+
+  return { url: socialImage, alt: 'GoForj documentation preview', width: 1200, height: 630 }
+}
+
+const resolvePageSocialMetadata = (context: { page: string; description: string; content: string; pageData: { frontmatter?: Record<string, unknown> } }) => {
+  const frontmatter = context.pageData.frontmatter || {}
+  const frontmatterDescription = frontmatterString(frontmatter, ['description'])
+  const socialDescription = frontmatterDescription || deriveDescription(context.content) || context.description || siteDescription
+  const frontmatterImage = frontmatterString(frontmatter, ['image', 'ogImage', 'socialImage'])
+  const image = frontmatterImage
+    ? {
+        url: absoluteUrl(frontmatterImage, context.page),
+        alt: frontmatterString(frontmatter, ['imageAlt', 'ogImageAlt', 'socialImageAlt']) || 'GoForj documentation preview',
+        width: frontmatterNumber(frontmatter, ['imageWidth', 'ogImageWidth', 'socialImageWidth']),
+        height: frontmatterNumber(frontmatter, ['imageHeight', 'ogImageHeight', 'socialImageHeight'])
+      }
+    : deriveImage(context.content, context.page)
+
+  return {
+    description: socialDescription,
+    image
+  }
 }
 
 const libraryRewrites: Record<string, string> = {
@@ -317,9 +448,26 @@ export default defineConfig({
     ...analyticsHead
   ],
 
-  transformHead({ page, title, description }) {
+  transformHead(context) {
+    const { page, title } = context
     const socialTitle = title || 'GoForj'
-    const socialDescription = description || siteDescription
+    const socialMeta = resolvePageSocialMetadata(context)
+    const socialDescription = socialMeta.description
+    const socialImageUrl = socialMeta.image.url
+    const socialImageAlt = socialMeta.image.alt
+    const imageHead = [
+      ['meta', { property: 'og:image', content: socialImageUrl }],
+      ['meta', { property: 'og:image:secure_url', content: socialImageUrl }],
+      ['meta', { property: 'og:image:type', content: socialImageType(socialImageUrl) }]
+    ]
+
+    if (socialMeta.image.width) {
+      imageHead.push(['meta', { property: 'og:image:width', content: String(socialMeta.image.width) }])
+    }
+
+    if (socialMeta.image.height) {
+      imageHead.push(['meta', { property: 'og:image:height', content: String(socialMeta.image.height) }])
+    }
 
     return [
       ['link', { rel: 'canonical', href: pageUrl(page) }],
@@ -328,17 +476,13 @@ export default defineConfig({
       ['meta', { property: 'og:title', content: socialTitle }],
       ['meta', { property: 'og:description', content: socialDescription }],
       ['meta', { property: 'og:url', content: pageUrl(page) }],
-      ['meta', { property: 'og:image', content: socialImage }],
-      ['meta', { property: 'og:image:secure_url', content: socialImage }],
-      ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
-      ['meta', { property: 'og:image:width', content: '1200' }],
-      ['meta', { property: 'og:image:height', content: '630' }],
-      ['meta', { property: 'og:image:alt', content: 'GoForj documentation preview' }],
+      ...imageHead,
+      ['meta', { property: 'og:image:alt', content: socialImageAlt }],
       ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
       ['meta', { name: 'twitter:title', content: socialTitle }],
       ['meta', { name: 'twitter:description', content: socialDescription }],
-      ['meta', { name: 'twitter:image', content: socialImage }],
-      ['meta', { name: 'twitter:image:alt', content: 'GoForj documentation preview' }]
+      ['meta', { name: 'twitter:image', content: socialImageUrl }],
+      ['meta', { name: 'twitter:image:alt', content: socialImageAlt }]
     ]
   },
 
