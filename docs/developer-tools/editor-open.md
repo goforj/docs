@@ -47,7 +47,7 @@ The editor hook is available on make commands that create an editable source fil
 
 Generated Apps include:
 
-```env
+```dotenv
 FORJ_MAKE_OPEN=auto
 FORJ_EDITOR=
 ```
@@ -68,7 +68,7 @@ If automatic opening cannot find an editor, it silently does nothing. If you exp
 
 Set `FORJ_EDITOR` when you want a specific editor command:
 
-```env
+```dotenv
 FORJ_EDITOR="code --reuse-window --goto {location}"
 FORJ_EDITOR="goland --line {line} {file}"
 ```

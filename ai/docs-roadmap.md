@@ -245,8 +245,14 @@ Exit criteria:
 Goal: document larger framework capabilities that compose multiple primitives.
 
 - [x] `security/auth.md`
+- [x] `security/sessions-cookies.md`
+- [x] `security/oauth.md`
+- [x] `security/production-hardening.md`
 - [x] `getting-started/starter-kits.md`
 - [x] `frontend/vue-starter-kit.md`
+- [x] `frontend/react-starter-kit.md`
+- [x] `frontend/templ-htmx-starter-kit.md`
+- [x] `applications/mail.md`
 - [x] `applications/api-index.md`
 - [x] `applications/openapi.md`
 - [x] `developer-tools/forj-dev.md`
@@ -282,11 +288,11 @@ Exit criteria:
 
 Goal: tag the current documentation line and establish the versioning model before publishing.
 
-- [x] Expose the current docs version as `v0.9`.
+- [x] Expose the current docs version as `v0.20`.
 - [x] Add a nav version selector.
 - [x] Add `versions/index.md` with the public version policy.
 - [x] Add `ai/docs-versioning.md` with internal versioning governance.
-- [ ] Create a frozen `/versions/v0.9/` snapshot when a second active documentation line exists.
+- [ ] Create a frozen `/versions/v0.20/` snapshot when a second active documentation line exists.
 
 Exit criteria:
 
@@ -323,7 +329,7 @@ Goal: keep the docs reading experience deliberately designed, not default VitePr
 - [x] Docs view polish round three: search modal styling, custom 404 page, code-group tabs, details disclosures.
 - [x] Fix hash targets hiding behind the sticky docs preview banner (stickyOffset + measured `--gf-banner-height` scroll margin).
 - [x] Scope all docs-content rules to `.VPDoc` so they cannot leak into the landing page, which also renders `.vp-doc`.
-- [ ] Commit `docs/assets/starter-kits/*` screenshots to git before the next production deploy; they currently render locally but are untracked and would 404 in production.
+- [x] Commit `docs/assets/starter-kits/*` screenshots to git before the next production deploy.
 - [ ] Consider styling remaining minor surfaces if they enter use: code-group and details styles exist but no content uses them yet.
 
 Exit criteria:

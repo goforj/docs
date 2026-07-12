@@ -1,13 +1,13 @@
 ---
 title: Applications
-description: Build HTTP services, commands, controllers, middleware, and application services with GoForj.
+description: Build HTTP services, commands, controllers, middleware, mail delivery, and application services with GoForj.
 ---
 
 # Applications
 
 Applications covers normal product code inside a GoForj App.
 
-Use these pages when you are adding HTTP routes, controllers, services, commands, middleware, responses, and API documentation to a generated App.
+Use these pages when you are adding HTTP routes, controllers, services, commands, middleware, mail delivery, responses, and API documentation to a generated App.
 
 ## Recommended Path
 
@@ -16,7 +16,8 @@ Use these pages when you are adding HTTP routes, controllers, services, commands
 3. [Controllers](/applications/controllers) shows the HTTP boundary around services.
 4. [Application Services](/applications/services) explains where product behavior belongs.
 5. [HTTP Clients](/applications/http-clients) covers outbound HTTP dependencies.
-6. [Commands](/applications/commands) covers App-owned CLI entry points.
+6. [Mail](/applications/mail) covers generated mail wiring and delivery from App services.
+7. [Commands](/applications/commands) covers App-owned CLI entry points.
 
 ## All Application Pages
 
@@ -28,6 +29,7 @@ Use these pages when you are adding HTTP routes, controllers, services, commands
 - [Responses and Errors](/applications/responses-errors)
 - [Application Services](/applications/services)
 - [HTTP Clients](/applications/http-clients)
+- [Mail](/applications/mail)
 - [Commands](/applications/commands)
 - [API Index](/applications/api-index)
 - [OpenAPI](/applications/openapi)

@@ -38,7 +38,7 @@ repoUrl: https://github.com/goforj/mail
 
 ## Using With GoForj Apps
 
-Generated Apps resolve mail through the generated mail manager, provider wiring, auth delivery integration, metrics, and inspects. Start with [Auth](/security/auth), [Configuration](/getting-started/configuration), and [Environment Variables](/reference/env-vars) when mail is part of a full App.
+Generated Apps resolve mail through the generated mail manager, provider wiring, auth delivery integration, metrics, and inspects. Start with [Mail in generated Apps](/applications/mail), [Auth](/security/auth), and [Configuration](/getting-started/configuration) when mail is part of a full App.
 
 Use this page when you need standalone message composition, driver constructors, delivery behavior, or fakes for tests.
 

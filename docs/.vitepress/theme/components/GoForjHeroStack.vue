@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import simpleIconsData from '@iconify-json/simple-icons/icons.json'
-import lucideIconsData from '@iconify-json/lucide/icons.json'
+import { lucideIconBodies, simpleIconBodies } from 'virtual:goforj-icons'
 
 const isMounted = ref(false)
 const hoveredBlock = ref(null)
@@ -1059,11 +1058,11 @@ function getFrontIconPlacement(item) {
 function getBrandIconBody(icon) {
   const key = BRAND_ICON_KEYS[icon]
   if (!key) return ''
-  return simpleIconsData.icons?.[key]?.body || ''
+  return simpleIconBodies[key] || ''
 }
 
 function getGenericIconBody(icon) {
-  return lucideIconsData.icons?.[icon]?.body || ''
+  return lucideIconBodies[icon] || ''
 }
 
 function isExternalHref(href) {
@@ -1132,7 +1131,7 @@ function adjustColor(color, amount) {
           <span class="gf-hero-headline">The composable stack for building with Go</span>
         </h1>
         <p class="gf-hero-tagline">
-          One cohesive runtime. Explicit dependency wiring. Local-first drivers. Production-ready primitives for everything an application needs.
+          One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives for everything an application needs.
         </p>
         <div class="gf-hero-principles" aria-label="GoForj principles">
           <div class="gf-hero-principle">

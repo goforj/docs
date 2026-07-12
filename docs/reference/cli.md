@@ -15,7 +15,7 @@ Use workflow pages for full context.
 | --- | --- |
 | `forj new` | Create a new GoForj Project through the interactive wizard. |
 | `forj build` | Run generation, Wire, API indexing, then `go build`. |
-| `forj run <app-command>` | Run generation, API indexing, then `go run . <app-command>`. |
+| `forj run <app-command>` | Run generation, API indexing, then `go run ./cmd/app <app-command>`. |
 | `forj dev` | Run local development watchers from `.goforj.yml`. |
 | `forj generate` | Refresh generated component code and derived files. |
 | `forj make:app <name>` | Create a named app in the current Project. |

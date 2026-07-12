@@ -127,7 +127,7 @@ Inside a GoForj App, those same libraries can sit underneath framework abstracti
 Both paths are valid:
 
 - Use a library directly when you need one focused package.
-- Use a GoForj App when you want the cohesive runtime and conventions around the full application.
+- Use a GoForj App when you want the cohesive application model and conventions around the full application.
 
 If you only need one package, start with its library page. If you are building a full App, use the framework guides for configuration, wiring, lifecycle behavior, and runtime integration.
 

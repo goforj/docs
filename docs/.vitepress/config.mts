@@ -2,6 +2,82 @@ import { defineConfig } from 'vitepress'
 import fs from 'node:fs'
 import path from 'node:path'
 
+const lucideIconKeys = [
+  'activity',
+  'app-window',
+  'blocks',
+  'brain-circuit',
+  'clock',
+  'database',
+  'database-zap',
+  'file',
+  'git-branch',
+  'globe',
+  'hard-drive',
+  'key-round',
+  'mail',
+  'package-2',
+  'radar',
+  'radio',
+  'rows-3',
+  'server',
+  'shield-check',
+  'terminal',
+  'whole-word'
+]
+
+const simpleIconKeys = [
+  'vuedotjs',
+  'react',
+  'openai',
+  'anthropic',
+  'claude',
+  'googlegemini',
+  'githubcopilot',
+  'redis',
+  'natsdotio',
+  'apachekafka',
+  'rabbitmq',
+  'amazonsqs',
+  'buffer',
+  'sqlite',
+  'postgresql',
+  'mariadb',
+  'amazondynamodb',
+  'files',
+  'googlecloud',
+  'dropbox',
+  'rclone',
+  'filezilla',
+  'gnubash',
+  'ollama'
+]
+
+type IconCollection = {
+  icons: Record<string, { body: string }>
+}
+
+const iconSubset = (source: IconCollection, keys: string[]) => Object.fromEntries(
+  keys.flatMap((key) => source.icons[key] ? [[key, source.icons[key].body]] : [])
+)
+
+const iconSubsetPlugin = {
+  name: 'goforj-icon-subset',
+  resolveId(id: string) {
+    return id === 'virtual:goforj-icons' ? '\0virtual:goforj-icons' : undefined
+  },
+  load(id: string) {
+    if (id !== '\0virtual:goforj-icons') return undefined
+
+    const lucide = JSON.parse(fs.readFileSync(new URL('../node_modules/@iconify-json/lucide/icons.json', import.meta.url), 'utf8')) as IconCollection
+    const simple = JSON.parse(fs.readFileSync(new URL('../node_modules/@iconify-json/simple-icons/icons.json', import.meta.url), 'utf8')) as IconCollection
+    return [
+      `export const lucideIconBodies = ${JSON.stringify(iconSubset(lucide, lucideIconKeys))}`,
+      `export const simpleIconBodies = ${JSON.stringify(iconSubset(simple, simpleIconKeys))}`
+    ].join('\n')
+  }
+}
+
 const headingRegex = /<h(\d*).*?>(.*?<a.*? href="#.*?".*?>.*?<\/a>)<\/h\1>/gi
 const headingContentRegex = /(.*?)<a.*? href="#(.*?)".*?>.*?<\/a>/i
 const h1Regex = /<h1[^>]*>(.*?)<\/h1>/i
@@ -101,8 +177,8 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
   .replace(/^['"]+|['"]+$/g, '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
-const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.'
-const docsVersion = 'v0.18'
+const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.'
+const docsVersion = 'v0.20'
 const faviconVersion = '20260526'
 const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260527.jpg`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
@@ -408,6 +484,13 @@ export default defineConfig({
   description: siteDescription,
   cleanUrls: true,
   appearance: 'force-dark',
+  vite: {
+    plugins: [iconSubsetPlugin],
+    build: {
+      // The generated local-search index is intentionally the largest chunk; this budget still flags growth beyond the current corpus.
+      chunkSizeWarningLimit: 1600
+    }
+  },
   scrollOffset: {
     selector: '.VPNav',
     padding: 8
@@ -626,6 +709,7 @@ export default defineConfig({
           { text: 'Responses and Errors', link: '/applications/responses-errors' },
           { text: 'Application Services', link: '/applications/services' },
           { text: 'HTTP Clients', link: '/applications/http-clients' },
+          { text: 'Mail', link: '/applications/mail' },
           { text: 'Commands', link: '/applications/commands' },
           { text: 'API Index', link: '/applications/api-index' },
           { text: 'OpenAPI', link: '/applications/openapi' }
@@ -635,14 +719,19 @@ export default defineConfig({
         text: 'Security',
         items: [
           { text: 'Overview', link: '/security/' },
-          { text: 'Auth', link: '/security/auth' }
+          { text: 'Auth', link: '/security/auth' },
+          { text: 'Sessions and Cookies', link: '/security/sessions-cookies' },
+          { text: 'OAuth', link: '/security/oauth' },
+          { text: 'Production Hardening', link: '/security/production-hardening' }
         ]
       },
       {
         text: 'Frontend',
         items: [
           { text: 'Overview', link: '/frontend/' },
-          { text: 'Vue Starter Kit', link: '/frontend/vue-starter-kit' }
+          { text: 'Vue Starter Kit', link: '/frontend/vue-starter-kit' },
+          { text: 'React Starter Kit', link: '/frontend/react-starter-kit' },
+          { text: 'templ + htmx Starter Kit', link: '/frontend/templ-htmx-starter-kit' }
         ]
       },
       {
@@ -724,7 +813,9 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/developer-tools/' },
           { text: 'Atlas', link: '/developer-tools/atlas' },
-          { text: 'forj dev', link: '/developer-tools/forj-dev' }
+          { text: 'Atlas Debug Recipes', link: '/developer-tools/atlas-debug-recipes' },
+          { text: 'forj dev', link: '/developer-tools/forj-dev' },
+          { text: 'Opening Generated Files', link: '/developer-tools/editor-open' }
         ]
       },
       {

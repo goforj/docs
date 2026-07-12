@@ -12,7 +12,7 @@ Use this file with `docs-roadmap.md`. That file tracks page production. This fil
 
 - `ai/` governance layer (constitution, terminology, tone, templates, anti-patterns, roadmap)
 - `goforj/docs/context/` and `goforj/docs/designs/` (architecture, in-flight designs)
-- `docs/` site content: 122 pages across 13 sections, landing page, nav config, theme components
+- `docs/` site content: 134 public Markdown pages, landing page, nav config, and theme components (verified 2026-07-12)
 - READMEs: cache, collection, crypt, env, events, execx, godump, httpx, mail, metrics, null, queue, scheduler, storage, str, web, wgo, wire, goforj
 - `goforj.github/profile/README.md` (org profile)
 
@@ -21,8 +21,8 @@ Use this file with `docs-roadmap.md`. That file tracks page production. This fil
 These block or shape several items below. Decide before executing Tier 1.
 
 - [ ] **Release state.** `goforj/README.md` is an 11-line placeholder saying the project is unreleased and private, while the landing page and hero tell visitors to run `go install github.com/goforj/goforj/cmd/forj@latest`. One of these is wrong for any given launch date. Decide the public story and make every surface match it.
-- [ ] **One positioning statement.** The org profile leads with "high-trust libraries" and "not a single framework." The site leads with "the composable stack for building with Go." Both are defensible. Pick one primary line and let the other surface restate it, not compete with it. `marketing-site-strategy.md` predates the current landing page and should be updated to whichever wins.
-- [ ] **Stat sourcing.** The landing proof band claims 2,200+ unit tests, 870+ integration tests, 40+ drivers, 17 libraries. Decide the canonical source for these numbers (ideally generated, not hand-maintained) so they cannot drift from the repos.
+- [x] **One positioning statement.** The docs and marketing strategy lead with "the composable application stack for Go" and present standalone libraries as the second adoption path.
+- [x] **Stat sourcing.** `bin/collect-proof-stats.mjs` mechanically generates the landing proof-band data from sibling repositories.
 
 ## Tier 1: quick wins
 
@@ -49,9 +49,9 @@ The core repo README is the most likely click target from the site's GitHub butt
 
 ### 4. Production asset and link hygiene
 
-- [ ] Mark the starter-kit screenshot item in `docs-roadmap.md` as done. The screenshots are tracked in git now (verified 2026-06-11); the roadmap entry is stale.
-- [ ] Add an automated link check (internal links at minimum) to the docs build.
-- [ ] Verify the proof-band numbers against the repos once the canonical source exists.
+- [x] Mark the starter-kit screenshot item in `docs-roadmap.md` as done. The screenshots are tracked in git (verified 2026-07-12).
+- [x] Keep internal dead-link validation in the VitePress production build.
+- [x] Generate proof-band numbers from sibling repositories with `bin/collect-proof-stats.mjs`.
 
 ### 5. Quickstart hardening
 
@@ -79,10 +79,10 @@ There is a depth cliff between concept pages (100 to 160 lines) and library or s
 
 Security, Frontend, and Developer Tools have 2 to 3 pages each and read as unfinished sections rather than small sections.
 
-- [ ] Security: add planned pages (sessions, CSRF and cookies model, secrets and crypt usage, production hardening) or fold the section under Operations and Applications until the content exists.
-- [ ] Frontend: either expand beyond the Vue starter kit page (Web API consumption, serving strategy, React and templ status with honest timelines) or present it as a single starter-kit chapter.
-- [ ] Developer Tools: `forj dev` deserves a real page given the TUI design work; editor-open is minor. Expand or merge.
-- [ ] Rule: no top-level sidebar section with fewer than 4 substantive pages. Adjust IA accordingly.
+- [x] Security: add Auth, sessions and cookies, OAuth, and production hardening guides.
+- [x] Frontend: document the Vue, React, and templ + htmx starter kits and their serving models.
+- [x] Developer Tools: document Atlas, Atlas debugging, `forj dev`, and generated-file opening.
+- [x] Rule: no top-level sidebar section with fewer than 4 substantive pages.
 
 ### 8. Snippet verification and multi-app path sync
 
@@ -126,7 +126,7 @@ READMEs and library pages are siloed per primitive. The framework's pitch is coh
 
 ### 13. Deferred items
 
-- [ ] Versioning snapshot (`/versions/v0.9/`) when a second documentation line exists, per `docs-versioning.md`.
+- [ ] Versioning snapshot (`/versions/<version>/`) when a second documentation line exists, per `docs-versioning.md`.
 - [ ] Showcase section and blog cadence decision, per the open item in `docs-roadmap.md`.
 - [ ] Weak-tier README rebuilds (metrics, null, wire, wgo) to the standard layout: centered header, badge row, pitch, install, quick example. Lower priority than item 1 because traffic is lower, but metrics is a framework-facing primitive and currently reads as abandoned next to its siblings.
 
@@ -138,7 +138,7 @@ READMEs and library pages are siloed per primitive. The framework's pitch is coh
 - [x] Landing: audience line, time-to-success note, forj-primary command surfaces with `# → ./bin/app …` comments, metrics port corrected.
 - [x] Command convention swept: forj-first with binary shown beside it in dev contexts (`async/queues.md`, `async/workers.md`); production pages keep binary-first.
 - [x] Metrics port drift fixed: stale `9100` block replaced with real `10000/10001/10002` defaults in `operations/metrics.md`, `operations/http-server.md`, `applications/http-services.md`, `scenarios/runtime-observability.md`, and the landing terminal. Source of truth: `project_renderer.go` (`RuntimeBase: 10000 + i*10`) and `templates/.env.tmpl`.
-- [ ] Open decision: heading convention. `tone.md` and `docs-style-guide.md` say sentence-style titles, but the site uses Title Case with lowercase connectors roughly 9:1. Recommendation: codify Title Case in the two governance files rather than rename ~700 headings and churn every anchor.
+- [x] Heading convention: use Title Case with lowercase connector words. Codified in `tone.md`, `docs-style-guide.md`, and `review-checklists.md`.
 - [ ] Re-verify `scenarios/runtime-observability.md` end to end since its metrics ports changed (scenarios ship only after execution).
 - [x] Scenario rendering bug found and fixed: `replace` steps with an empty `new` (deletions) rendered as "Update ... so it includes:" plus an empty code block (`reports-generate-job.md` steps 8 and 9). Renderer in `goforj/internal/scenarios/scenarios.go` now renders deletions as "Remove from `path`:" with the removed content. Stale `9100` ports also fixed in `specs/runtime-observability.yaml`. Generated pages hand-patched to match the fixed renderer.
 - [x] Verified Scenario banner strengthened from "We test this scenario against the current GoForj templates..." to explicit automation language: generated from an executable spec, fresh App rendered from current templates, every step applied in order, every verification command run, failure blocks publication. Changed in the renderer (`scenarios.go`) and hand-synced across all seven published pages. Wording verified against what `runScenario` actually does.
@@ -164,10 +164,10 @@ Idea backlog (not yet executed, roughly ranked):
 
 - [ ] Show Lighthouse on the landing page: a real capture of an inspect timeline. Strongest unshipped conversion asset.
 - [x] Live terminal transcript replaced with a real captured run (2026-06-11, photodrop, Vue starter kit, full default components). Lines are verbatim from the capture; curation for pane width is documented in the component comment (condensed confirm panel, final compose count only, VictoriaMetrics link and two log-line tails omitted).
-- [ ] Changelog / What's New surface on the site; decide the public version story (docs say v0.9, framework tags say v0.1.x).
+- [x] Changelog and public version story: `/versions/changelog` records framework releases and the active docs line is `v0.20`.
 - [ ] Queued launch posts: "How we test 40 drivers against real backends", "Inspects: visibility without an OpenTelemetry pilgrimage".
-- [ ] Proof-band stats generated from the repos so they cannot drift; link each stat to evidence.
-- [ ] Scenario path as a course: per-scenario time estimates, position indicator, completion handoff.
+- [x] Proof-band stats generated from the repos so they cannot drift; link each stat to evidence.
+- [x] Scenario path as a course: per-scenario time estimates, position indicator, completion handoff.
 - [ ] CLI errors print docs URLs for common failures (wire errors especially); optional `forj docs <topic>` command.
 - [ ] Funnel definition over existing GA events (install_copy to quickstart to scenario 1) and local-search query logging for gap mining.
 - [ ] Confirm force-dark is a deliberate brand decision.
@@ -176,8 +176,8 @@ Idea backlog (not yet executed, roughly ranked):
 
 Kept brief; the full review lives in session history and can be regenerated.
 
-- Landing page: `docs/index.md` plus `GoForjHeroStack.vue`. Narrative arc is start, swap drivers, capability grid, generators, operations, scale, proof, scenarios, manifesto, closing. No audience qualifier, no time estimate, stats hand-maintained.
+- Landing page: `docs/index.md` plus `GoForjHeroStack.vue`. Narrative arc is start, swap drivers, capability grid, generators, operations, scale, proof, scenarios, manifesto, closing. Audience, time-to-success, and generated proof stats are present.
 - IA: `docs/.vitepress/config.mts`. Sidebar is coherent, library pages rewritten to root paths, no orphan pages found.
 - Depth cliff examples: `core/dependency-injection.md`, `core/runtime-lifecycle.md`, `applications/routes.md`, `applications/controllers.md` versus `libraries/cache.md` and the scenario pages.
-- Stub sections: `security/` (index plus auth), `frontend/` (index plus vue-starter-kit), `developer-tools/` (index, forj-dev, editor-open).
+- Product sections: `security/`, `frontend/`, and `developer-tools/` each expose at least four substantive pages in the sidebar.
 - README funnel: no README links to the docs site (str mentions goforj.dev only inside example code); org profile positioning differs from site; `goforj/README.md` is a placeholder; metrics and null lack the standard header and badges.

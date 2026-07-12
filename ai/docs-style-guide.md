@@ -147,7 +147,7 @@ Headings should be short and concrete:
 - Good: `## Worker Lifecycle`
 - Avoid: `## How You Can Start Thinking About Running Background Things`
 
-Use sentence-style titles for public docs navigation, page titles, sidebar labels, and headings.
+Use Title Case for public docs navigation, page titles, sidebar labels, and headings.
 
 Lowercase connector words unless they are proper nouns or fixed technical names:
 
@@ -355,7 +355,7 @@ Hide or defer implementation details when they are:
 Use:
 
 - sentence-case paragraphs
-- sentence-style headings and navigation labels
+- Title Case headings and navigation labels with lowercase connector words
 - backticks for code identifiers, commands, file paths, env vars, and package names
 - fenced code blocks with language identifiers
 - simple tables for bounded comparisons

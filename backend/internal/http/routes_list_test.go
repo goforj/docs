@@ -28,7 +28,7 @@ func TestGetRoutesListMergesMethodsAndMiddlewares(t *testing.T) {
 		entry := entries[0]
 		assert.Equal(t, "/api/users", entry.Path)
 		assert.ElementsMatch(t, []string{"GET", "POST"}, entry.Methods)
-		assert.Equal(t, "gm.testHandler", entry.Handler)
+		assert.Equal(t, "docs.testHandler", entry.Handler)
 		assert.Equal(t, []string{"http.mwGroup", "http.mwRoute"}, entry.Middlewares)
 	}
 }

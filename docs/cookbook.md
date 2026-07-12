@@ -66,7 +66,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 
 ## Email and Security
 
-- Send and preview email. [Mail](/mail)
+- Send and preview email. [Mail](/applications/mail)
 - Add login, sessions, and password reset. [Auth](/security/auth)
 - Encrypt values with key rotation. [Crypt](/crypt)
 

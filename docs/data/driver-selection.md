@@ -1,6 +1,6 @@
 ---
 title: Driver Selection
-description: How to choose local and production drivers for database, cache, storage, queue, and event infrastructure.
+description: How to choose local and production drivers for database, cache, storage, queue, event, and mail infrastructure.
 ---
 
 # Driver Selection
@@ -18,6 +18,7 @@ CACHE_SUPPORTED_DRIVERS=memory,redis
 STORAGE_SUPPORTED_DRIVERS=local,s3
 QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 EVENTS_SUPPORTED_DRIVERS=inproc,nats
+MAIL_SUPPORTED_DRIVERS=log,resend
 DB_SUPPORTED_DRIVERS=sqlite,postgres
 ```
 
@@ -28,6 +29,7 @@ CACHE_DRIVER=memory
 STORAGE_DRIVER=local
 QUEUE_DRIVER=workerpool
 EVENTS_DRIVER=inproc
+MAIL_DRIVER=log
 DB_DRIVER=sqlite
 ```
 
@@ -37,6 +39,7 @@ Named resources follow the same pattern:
 STORAGE_UPLOADS_DRIVER=s3
 QUEUE_CRITICAL_DRIVER=redis
 EVENTS_AUDIT_DRIVER=nats
+MAIL_TRANSACTIONAL_DRIVER=resend
 ```
 
 ## Local Defaults
@@ -45,13 +48,16 @@ Start local:
 
 | Primitive | Local Driver |
 | --- | --- |
-| Database | SQLite |
-| Cache | memory or file |
-| Storage | local or memory |
-| Queue | sync or workerpool |
-| Events | in-process |
+| Database | `sqlite` |
+| Cache | `memory` |
+| Storage | `local` |
+| Queue | `workerpool` |
+| Events | `inproc` |
+| Mail | `log` |
 
 This keeps onboarding and local development small while preserving the production architecture.
+
+These local drivers are generated fallbacks. An App without a `.env` file still constructs the generated default and named resources with the local fallback drivers, unless process environment or another loaded environment file selects a different supported driver.
 
 ## Decision Guide
 
@@ -64,6 +70,7 @@ Use the smallest driver that satisfies the runtime boundary you actually have.
 | Local cache for one process | memory cache | Multiple runtimes need shared values or locks |
 | Local file/blob work | local storage | More than one host needs the same files |
 | Local event fan-out | in-process events | Events must cross process boundaries |
+| Local mail inspection | log mailer | Real delivery, provider webhooks, or domain authentication matter |
 | Local relational state | SQLite | Production concurrency, managed backups, or multi-node writes matter |
 
 Do not choose a distributed driver because it sounds production-like. Choose it when the App needs the behavior: durability, shared state, cross-process delivery, managed operations, or independent scaling.
@@ -111,6 +118,7 @@ forj generate --cache
 forj generate --storage
 forj generate --queue
 forj generate --events
+forj generate --mail
 forj generate --db
 ```
 
@@ -124,6 +132,7 @@ Library pages own driver matrices, constructors, and low-level behavior:
 - [Storage](/storage)
 - [Queue](/queue)
 - [Events](/events)
+- [Mail](/mail)
 
 ## Common Mistakes
 

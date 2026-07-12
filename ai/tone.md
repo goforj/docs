@@ -123,7 +123,7 @@ Avoid:
 
 ## Title Tone
 
-Use calm sentence-style titles in public docs.
+Use calm Title Case in public docs while keeping connector words lowercase.
 
 Prefer:
 

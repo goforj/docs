@@ -81,6 +81,8 @@ Recommended public docs:
 
 - `getting-started/starter-kits.md`
 - `frontend/vue-starter-kit.md`
+- `frontend/react-starter-kit.md`
+- `frontend/templ-htmx-starter-kit.md`
 - `starter-kits.md`
 
 ## Lighthouse

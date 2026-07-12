@@ -164,8 +164,14 @@ Goal: document larger capabilities that compose multiple primitives.
 Pages:
 
 - Auth
+- Sessions and Cookies
+- OAuth
+- Production Hardening
 - Starter Kits
 - Vue Starter Kit
+- React Starter Kit
+- templ + htmx Starter Kit
+- Mail
 - API Index
 - OpenAPI
 - forj dev

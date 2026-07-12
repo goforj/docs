@@ -40,7 +40,7 @@ These principles apply across the framework, libraries, examples, and documentat
 - Application code should depend on framework resources and library interfaces
 - Local drivers should be useful before distributed infrastructure is required
 
-### Production-first
+### Production-aware
 - Examples mirror real usage, not toy snippets
 - APIs are designed for long-lived codebases
 - Cross-platform behavior is documented honestly

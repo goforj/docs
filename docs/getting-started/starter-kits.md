@@ -28,8 +28,8 @@ The first-party starter kit choices are:
 | Starter kit | Stack | Use it when |
 | --- | --- | --- |
 | [Vue](/frontend/vue-starter-kit) | Vue 3, Vite, TypeScript, Tailwind, shadcn-vue | You want a client-side Vue application shell. |
-| React | React 19, Vite, TypeScript, Tailwind, shadcn/ui | You want a client-side React application shell. |
-| templ + htmx | templ, htmx, Tailwind | You want a Go-first server-rendered UI. |
+| [React](/frontend/react-starter-kit) | React 19, Vite, TypeScript, Tailwind, shadcn/ui | You want a client-side React application shell. |
+| [templ + htmx](/frontend/templ-htmx-starter-kit) | templ, htmx, Tailwind | You want a Go-first server-rendered UI. |
 | None | Web UI placeholder | You want to bring your own frontend. |
 
 Starter kits create app-scoped frontend source for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for a named app.
@@ -70,5 +70,7 @@ When a starter kit requires Web UI, the generator should make that dependency ex
 ## Next Steps
 
 - [Vue Starter Kit](/frontend/vue-starter-kit)
+- [React Starter Kit](/frontend/react-starter-kit)
+- [templ + htmx Starter Kit](/frontend/templ-htmx-starter-kit)
 - [forj dev](/developer-tools/forj-dev)
 - [Project Structure](/getting-started/project-structure)

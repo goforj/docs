@@ -5,15 +5,15 @@ description: Version policy and historical milestone model for GoForj.
 
 # Versions
 
-These docs currently describe GoForj `v0.18`.
+These docs currently describe GoForj `v0.20`.
 
 GoForj is still pre-`v1.0`, but the project has a real development history. The version line is used to mark meaningful framework milestones: generated App structure, CLI behavior, runtime lifecycle, starter kits, observability, local development, and first-party library integration.
 
 ## Current Version
 
-`v0.18` is the current documentation line.
+`v0.20` is the current documentation line.
 
-Use these docs when you are building against the current GoForj framework, CLI, generated App structure, multi-app architecture, and first-party library integration model.
+Use these docs when you are building against the current GoForj framework, CLI, generated App structure, multi-app development model, Atlas integration, starter kits, and first-party library integration model.
 
 ## Historical Milestones
 

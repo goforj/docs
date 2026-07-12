@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 
 const starterCommand = 'forj new my-app --starter-kit <kit>'
+// Rendered as non-breaking tokens so the command wraps only at spaces on mobile
+// (keeps flags like "--starter-kit" intact); copy still uses the full string.
+const commandTokens = starterCommand.split(' ')
 const copiedStarterCommand = ref(false)
 let copyResetTimer
 
@@ -80,7 +83,7 @@ async function copyStarterCommand() {
         </div>
         <div class="gf-starter-command-card__command">
           <span aria-hidden="true">$</span>
-          <code>{{ starterCommand }}</code>
+          <code><template v-for="(token, i) in commandTokens" :key="i"><span class="gf-starter-command-card__token">{{ token }}</span>{{ ' ' }}</template></code>
           <button type="button" :aria-label="copiedStarterCommand ? 'Command copied' : 'Copy command'" @click="copyStarterCommand">
             {{ copiedStarterCommand ? 'Copied' : 'Copy' }}
           </button>
@@ -257,10 +260,10 @@ async function copyStarterCommand() {
                 <span>Best for</span>
               </span>
             </th>
-            <td>Rich client apps and dashboards</td>
-            <td>Vue-first teams and ecosystems</td>
-            <td>Go-first server-rendered Apps</td>
-            <td>Custom frontends or API-first Apps</td>
+            <td data-kit="React">Rich client apps and dashboards</td>
+            <td data-kit="Vue">Vue-first teams and ecosystems</td>
+            <td data-kit="templ + htmx">Go-first server-rendered Apps</td>
+            <td data-kit="None">Custom frontends or API-first Apps</td>
           </tr>
           <tr>
             <th>
@@ -272,10 +275,10 @@ async function copyStarterCommand() {
                 <span>Rendering model</span>
               </span>
             </th>
-            <td>Client-side SPA</td>
-            <td>Client-side SPA</td>
-            <td>Server-rendered</td>
-            <td>Your choice</td>
+            <td data-kit="React">Client-side SPA</td>
+            <td data-kit="Vue">Client-side SPA</td>
+            <td data-kit="templ + htmx">Server-rendered</td>
+            <td data-kit="None">Your choice</td>
           </tr>
           <tr>
             <th>
@@ -287,10 +290,10 @@ async function copyStarterCommand() {
                 <span>JavaScript required</span>
               </span>
             </th>
-            <td>Yes</td>
-            <td>Yes</td>
-            <td>Minimal</td>
-            <td>Your choice</td>
+            <td data-kit="React">Yes</td>
+            <td data-kit="Vue">Yes</td>
+            <td data-kit="templ + htmx">Minimal</td>
+            <td data-kit="None">Your choice</td>
           </tr>
           <tr>
             <th>
@@ -302,10 +305,10 @@ async function copyStarterCommand() {
                 <span>Go-centric</span>
               </span>
             </th>
-            <td>Medium</td>
-            <td>Medium</td>
-            <td>High</td>
-            <td>High</td>
+            <td data-kit="React">Medium</td>
+            <td data-kit="Vue">Medium</td>
+            <td data-kit="templ + htmx">High</td>
+            <td data-kit="None">High</td>
           </tr>
         </tbody>
       </table>

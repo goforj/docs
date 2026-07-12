@@ -30,13 +30,14 @@ The library ecosystem has its own release history:
 | `execx` | `v1.1.0` | Command execution helpers, shadow printing, decoder pipes, and TTY/PTTY behavior for developer tooling. |
 | `str` | `v1.3.0` | Rune-safe string helpers, case-fold operations, matching/replacement helpers, plural/singular helpers, and generated API examples. |
 | `crypt` | `v1.1.0` | Encryption helpers, key generation, key rotation, and instanced crypt behavior. |
-| `web` | `v0.5.2` | Server-side HTTP abstractions, Echo adapter, middleware, route model, route indexing, WebSocket routes, testing helpers, and app-scoped route composition. |
+| `web` | `v0.5.3` | Server-side HTTP abstractions, Echo adapter, middleware, route model, route indexing, WebSocket routes, testing helpers, and app-scoped route composition. |
 | `queue` | `v0.2.1` | Queue facade, worker runtime, retries, delays, chains, batches, observers, fake/test packages, and multi-backend driver modules. |
 | `events` | `v0.1.3` | Event facade, delivery context propagation, fake/test modules, examples, integration module, and transport-backed drivers. |
 | `cache` | `v0.3.0` | Cache facade, memory/file/null stores, SQL/Redis/NATS/Memcached/DynamoDB drivers, readiness, inspectors, locks, observers, and integration modules. |
 | `storage` | `v0.4.6` | Storage facade, named disks, local/memory/Redis/FTP/SFTP/S3/GCS/Dropbox/rclone drivers, fake/test modules, benchmarks, and capability matrices. |
 | `mail` | `v0.2.0` | Mail composition, defaults, attachments, fake/log drivers, SMTP, SES, Mailgun, Postmark, Resend, and SendGrid transports. |
 | `metrics` | `v0.1.0` | Counters, gauges, histograms, snapshots, units, names, and Prometheus-compatible export. |
+| `atlas` | `v0.3.0` | Project discovery, workflow skills, diagnostics, docs context, and local MCP integration for coding agents. |
 
 ### Foundation Libraries
 
@@ -86,6 +87,44 @@ The libraries also carry documentation infrastructure that feeds the main docs s
 - Test count, coverage, driver matrix, benchmark, and capability sections are embedded directly in library docs where they help users choose a primitive.
 
 The framework changelog below focuses on how those independently versioned libraries became a cohesive generated App experience.
+
+## v0.20.0
+
+Released June 27, 2026.
+
+### Multi-App Development Runtime
+
+- Reworked `forj dev` so discovered Apps use app-scoped build and runtime commands.
+- Preserved one coordinated development session while keeping each App's runtime identity, binary, and configured launch command explicit.
+- Honored configured development startup commands instead of replacing them with one hard-coded runtime shape.
+- Kept default-app commands unprefixed while named Apps continue to use `forj <app> <command>`.
+
+## v0.19.0
+
+Released June 24, 2026.
+
+### Atlas and Agent Support
+
+- Added first-class Atlas installation during project creation.
+- Added project diagnostics and framework-aware local agent context.
+- Added generated guidance and workflow skills for routes, jobs, schedules, events, data resources, Wire repair, runtime debugging, and multi-app changes.
+
+### Starter Kits
+
+- Added the React starter kit with React, Vite, TypeScript, Tailwind, and shadcn/ui.
+- Added the templ + htmx starter kit with app-owned Go templates, htmx behavior, Tailwind, Basecoat, controller wiring, and generated tests.
+- Preserved Vue as the existing client-side reference while giving all three kits the same generated ownership model.
+
+### Command Experience
+
+- Added configurable generated CLI help formats.
+- Fixed Atlas rendering and updated the Atlas dependency used by generated Projects.
+
+## v0.18.1
+
+Released June 20, 2026.
+
+- Fixed generated build-link behavior after the multi-app layout release.
 
 ## v0.18.0
 

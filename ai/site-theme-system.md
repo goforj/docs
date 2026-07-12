@@ -85,5 +85,5 @@ If the banner is ever removed, delete all three pieces together.
 
 ## Known Risks
 
-- `docs/assets/starter-kits/*` screenshots render locally but are untracked in git. A production deploy 404s every starter kit image until committed.
+- `docs/assets/starter-kits/*` screenshots are tracked in git and available to production builds.
 - Landing page and docs share `.vp-doc`; re-read the Critical Scoping Rule before adding any content-element rule.

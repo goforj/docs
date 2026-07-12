@@ -102,7 +102,7 @@ You have a running App. The structure for routes, wiring, lifecycle, configurati
 
 `forj dev` is the development loop. The other commands you will reach for:
 
-App commands delegate to the compiled binary, so `forj api` runs `./bin/app api` under the hood. Production runs the binary directly.
+Inside a source Project, App commands use the source-aware run path: GoForj refreshes generated code and the API index, then runs `go run ./cmd/app <command>`. Production and process supervisors run the built binary directly.
 
 - `forj build` builds without watching: generate, Wire, API index, `go build`. The binary lands at `bin/app`.
 - `forj app` starts the enabled runtimes together in one process, without the watcher.

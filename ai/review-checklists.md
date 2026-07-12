@@ -11,7 +11,7 @@ Use these checklists before publishing new docs, reviewing AI-generated drafts, 
 - The page has one primary purpose.
 - The first example follows the GoForj golden path.
 - Terminology matches `terminology.md`.
-- Titles, headings, nav labels, and sidebar labels use sentence-style capitalization.
+- Titles, headings, nav labels, and sidebar labels use Title Case with lowercase connector words.
 - The page uses a calm, direct voice.
 - The page avoids hype and vague claims.
 - The page identifies the generated App location when relevant.

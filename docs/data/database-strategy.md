@@ -35,6 +35,8 @@ DB_DRIVER=sqlite
 DB_DATABASE=./_data/sqlite/app.db
 ```
 
+If `DB_DRIVER` is unset, generated Apps use SQLite. If a SQLite connection does not set `DB_DATABASE`, the default connection uses `_data/sqlite/app.db`.
+
 For networked databases, the App can use host, database, username, password, port, pool, and query logging settings.
 
 ## Named Connections
@@ -48,6 +50,8 @@ DB_ANALYTICS_DATABASE=analytics
 DB_ANALYTICS_USERNAME=app
 DB_ANALYTICS_PASSWORD=secret
 ```
+
+If a named connection uses the SQLite fallback and no database path is configured, it uses `_data/sqlite/<name>.db`, such as `_data/sqlite/analytics.db`.
 
 After changing named connections or supported drivers, use the normal build path:
 

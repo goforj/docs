@@ -10,7 +10,7 @@ repoUrl: https://github.com/goforj/godump
 
 <p align="center">
     <a href="https://pkg.go.dev/github.com/goforj/godump"><img src="https://pkg.go.dev/badge/github.com/goforj/godump.svg" alt="Go Reference"></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+    <a href="https://github.com/goforj/godump/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/godump/actions"><img src="https://github.com/goforj/godump/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
     <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.18+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/godump?label=version&sort=semver" alt="Latest tag">
@@ -79,7 +79,7 @@ go get github.com/goforj/godump
 
 ## Basic Usage {#basic-usage}
 
-<p> <a href="./examples/basic/main.go"><strong>View Full Runnable Example →</strong></a> </p>
+<p> <a href="https://github.com/goforj/godump/blob/main/examples/basic/main.go"><strong>View Full Runnable Example →</strong></a> </p>
 
 ```go
 type User struct { Name string }
@@ -104,7 +104,7 @@ godump.DiffHTML(a, b) // diff two values as HTML
 
 ## Diff Usage {#diff-usage}
 
-<p> <a href="./examples/diff/main.go"><strong>View Diff Example →</strong></a> </p>
+<p> <a href="https://github.com/goforj/godump/blob/main/examples/diff/main.go"><strong>View Diff Example →</strong></a> </p>
 
 ```go
 type User struct {
@@ -119,7 +119,7 @@ godump.Diff(before, after)
 //   }
 ```
 
-<p> <a href="./examples/diffextended/main.go"><strong>View Diff Extended Example →</strong></a> </p>
+<p> <a href="https://github.com/goforj/godump/blob/main/examples/diffextended/main.go"><strong>View Diff Extended Example →</strong></a> </p>
 
 ## Builder Options Usage {#builder-options-usage}
 
@@ -127,7 +127,7 @@ godump.Diff(before, after)
 
 If you want to heavily customize the dumper behavior, you can create a `Dumper` instance with specific options:
 
-<p> <a href="./examples/builder/main.go"><strong>View Full Runnable Example →</strong></a> </p>
+<p> <a href="https://github.com/goforj/godump/blob/main/examples/builder/main.go"><strong>View Full Runnable Example →</strong></a> </p>
 
 ```go
 godump.NewDumper(

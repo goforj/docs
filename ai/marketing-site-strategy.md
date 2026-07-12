@@ -10,6 +10,8 @@ It is not user-facing copy. It exists to keep future site work coherent as GoFor
 
 Use VitePress as the unified public site until the marketing surface clearly exceeds what custom VitePress layouts can support.
 
+Lead with "the composable application stack for Go" as the primary positioning. Present the standalone libraries as the second adoption path into the same ecosystem, not as a competing description of what GoForj is.
+
 VitePress should own:
 
 - documentation

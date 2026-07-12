@@ -93,7 +93,12 @@ STORAGE_SUPPORTED_DRIVERS=local
 
 EVENTS_DRIVER=inproc
 EVENTS_SUPPORTED_DRIVERS=inproc
+
+MAIL_DRIVER=log
+MAIL_SUPPORTED_DRIVERS=log
 ```
+
+Apps can still start without a checked-in `.env` file. Generated local fallbacks construct usable resources for the default app shape, then process environment or environment files override them when present.
 
 ## Driver Configuration
 
@@ -121,6 +126,7 @@ This pattern appears across GoForj primitives:
 - `STORAGE_SUPPORTED_DRIVERS`, `STORAGE_DRIVER`, `STORAGE_<NAME>_DRIVER`
 - `QUEUE_SUPPORTED_DRIVERS`, `QUEUE_DRIVER`, `QUEUE_<NAME>_DRIVER`
 - `EVENTS_SUPPORTED_DRIVERS`, `EVENTS_DRIVER`, `EVENTS_<NAME>_DRIVER`
+- `MAIL_SUPPORTED_DRIVERS`, `MAIL_DRIVER`, `MAIL_<NAME>_DRIVER`
 - `DB_SUPPORTED_DRIVERS`, `DB_DRIVER`
 
 ## Regenerate After Driver Changes
@@ -151,13 +157,18 @@ forj generate --db
 
 ## Local-First Defaults
 
-Generated Apps prefer local defaults first:
+Generated Apps prefer local defaults first. If no environment file or process variable selects a driver, generated managers fall back to:
 
-- memory cache
-- local storage
-- in-process events
-- local or compose-backed databases
-- local queue drivers when selected
+| Primitive | Fallback |
+| --- | --- |
+| Database | `sqlite` |
+| Cache | `memory` |
+| Storage | `local` |
+| Queue | `workerpool` |
+| Events | `inproc` |
+| Mail | `log` |
+
+SQLite databases use `_data/sqlite/app.db` for the default connection and `_data/sqlite/<name>.db` for named connections when no database path is configured.
 
 Production deployments can swap drivers through environment and providers without rewriting application business logic.
 

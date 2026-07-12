@@ -175,6 +175,9 @@ Read:
 - `../goforj/docs/designs/completed/starter-kits-design.md`
 - `../goforj/templates/demo/frontend/README.md`
 - `../goforj/templates/starter-kits/vue/frontend`
+- `../goforj/templates/starter-kits/react/frontend`
+- `../goforj/templates/starter-kits/templ-htmx/frontend`
+- `../goforj/templates/starter-kits/templ-htmx/internal/starterui`
 - `../goforj/templates/demo/frontend/goforj.env.ts`
 
 Use for:

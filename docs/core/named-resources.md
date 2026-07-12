@@ -44,6 +44,9 @@ QUEUE_CRITICAL_DRIVER=redis
 
 EVENTS_DRIVER=inproc
 EVENTS_AUDIT_DRIVER=nats
+
+MAIL_DRIVER=log
+MAIL_TRANSACTIONAL_DRIVER=resend
 ```
 
 Default scopes use the base prefix. Named scopes use `_<NAME>_` between the primitive prefix and setting name.
@@ -67,6 +70,9 @@ app.Queues().Critical()
 
 app.Bus()
 app.Events().Audit()
+
+app.Mail()
+app.Mail().Transactional()
 ```
 
 Accessors are generated from configuration at generation time. After adding or renaming named resources, run `forj build` to refresh generated code.
@@ -79,7 +85,9 @@ During `forj dev`, the generated build watcher normally runs `forj build` for yo
 
 Named accessors represent generated invariants.
 
-If an accessor is present, the App expects the generated code and runtime environment to agree. If they do not agree, failing fast is better than silently returning nil or pretending a resource exists.
+If an accessor is present, the generated resource should be constructed even when `.env` is absent. Missing runtime driver settings use GoForj's local fallbacks, such as memory cache, local storage, workerpool queues, in-process events, log mail, and SQLite databases.
+
+If the generated code and runtime environment disagree in a way that cannot be satisfied, failing fast is better than silently returning nil or pretending a resource exists.
 
 This makes deployment mistakes visible early.
 

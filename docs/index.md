@@ -1,11 +1,11 @@
 ---
 layout: home
-description: The composable stack for building with Go. One cohesive runtime, explicit wiring, local-first drivers, and production-ready primitives.
+description: The composable stack for building with Go. One cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.
 ---
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import lucideIconsData from '@iconify-json/lucide/icons.json'
+import { lucideIconBodies } from 'virtual:goforj-icons'
 import proofStats from './.vitepress/data/proof-stats.json'
 
 // Proof band numbers are generated, not written. See bin/collect-proof-stats.mjs
@@ -93,7 +93,7 @@ const CAPABILITIES = [
   { title: 'Database', icon: 'database', copy: 'Generated connections, named resources, per-driver migrations, and a built-in db shell.', href: '/data/database-strategy' },
   { title: 'Cache', icon: 'database-zap', copy: 'Named accessors with explicit TTLs, locks, counters, and rate limits behind one contract.', href: '/data/cache-patterns' },
   { title: 'Storage', icon: 'hard-drive', copy: 'Named disks for files and blobs. Local in development, object storage in production.', href: '/data/storage-patterns' },
-  { title: 'Mail', icon: 'mail', copy: 'Fluent message composition with pluggable delivery: SMTP, Resend, Postmark, SES, and more.', href: '/mail' },
+  { title: 'Mail', icon: 'mail', copy: 'Fluent message composition with pluggable delivery: SMTP, Resend, Postmark, SES, and more.', href: '/applications/mail' },
   { title: 'Auth', icon: 'shield-check', copy: 'Server-authoritative sessions, HttpOnly cookies, refresh rotation, reset and verification flows.', href: '/security/auth' },
   { title: 'Metrics and inspects', icon: 'activity', copy: 'Prometheus-compatible metrics with bounded labels, plus execution records for every runtime.', href: '/operations/metrics' },
   { title: 'Lighthouse', icon: 'radar', copy: 'A first-party operator view over routes, inspects, schedules, queues, cache, and storage.', href: '/operations/lighthouse' }
@@ -110,7 +110,7 @@ const SCENARIOS = [
 ]
 
 function iconBody(name) {
-  return lucideIconsData.icons?.[name]?.body || ''
+  return lucideIconBodies[name] || ''
 }
 
 function motionAllowed() {

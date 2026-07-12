@@ -9,6 +9,7 @@ import (
 
 var markdownImageRegex = regexp.MustCompile(`!\[[^\]]*\]\(([^)]+)\)`)
 var htmlImageRegex = regexp.MustCompile(`(?i)<img[^>]+src=["']([^"']+)["']`)
+var htmlAnchorLinkRegex = regexp.MustCompile(`(?i)(<a\b[^>]*\bhref\s*=\s*["'])([^"']+)(["'])`)
 var headingAnchorRegex = regexp.MustCompile(`^(#{2,6}) <a id="([^"]+)"></a>\s*(.+)$`)
 var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
 var headingWithIDRegex = regexp.MustCompile(`^(#{2,6})\s+(.+?)\s+\{#([^}]+)\}\s*$`)
@@ -74,9 +75,21 @@ func rewriteMarkdownLinks(content string, repo RepoConfig) string {
 		if inCode {
 			continue
 		}
-		lines[i] = rewriteLineLinks(line, base, branch)
+		line = rewriteLineLinks(line, base, branch)
+		lines[i] = rewriteHTMLLineLinks(line, base, branch)
 	}
 	return strings.Join(lines, "\n")
+}
+
+// rewriteHTMLLineLinks rewrites repository-relative anchor targets embedded in raw HTML.
+func rewriteHTMLLineLinks(line string, base string, branch string) string {
+	return htmlAnchorLinkRegex.ReplaceAllStringFunc(line, func(match string) string {
+		parts := htmlAnchorLinkRegex.FindStringSubmatch(match)
+		if len(parts) != 4 {
+			return match
+		}
+		return parts[1] + rewriteLinkURL(parts[2], base, branch) + parts[3]
+	})
 }
 
 func rewriteLineLinks(line string, base string, branch string) string {
@@ -140,14 +153,27 @@ func rewriteLinkURL(url string, base string, branch string) string {
 		return trimmed
 	}
 
-	leaf := path.Base(pathPart)
-	isFile := strings.Contains(leaf, ".") && !strings.HasSuffix(pathPart, "/")
-	mode := "tree"
-	if isFile {
-		mode = "blob"
+	mode := repositoryLinkMode(pathPart)
+	return base + mode + "/" + branch + "/" + pathPart + anchor
+}
+
+// repositoryLinkMode recognizes conventional extensionless repository files because GitHub serves them through its blob route.
+func repositoryLinkMode(pathPart string) string {
+	if strings.HasSuffix(pathPart, "/") {
+		return "tree"
 	}
 
-	return base + mode + "/" + branch + "/" + pathPart + anchor
+	leaf := path.Base(pathPart)
+	if strings.Contains(leaf, ".") {
+		return "blob"
+	}
+
+	switch strings.ToLower(leaf) {
+	case "authors", "changelog", "code_of_conduct", "codeowners", "contributing", "dockerfile", "license", "licence", "makefile", "notice", "readme", "security":
+		return "blob"
+	default:
+		return "tree"
+	}
 }
 
 func rewriteHeadingAnchors(content string, pageTitle string) string {

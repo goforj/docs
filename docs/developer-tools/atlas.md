@@ -105,6 +105,13 @@ From a GoForj project:
 forj atlas:install
 ```
 
+Preview the files Atlas would manage without changing the project:
+
+```bash
+forj atlas:install --dry-run
+forj atlas:update --dry-run
+```
+
 Choose individual agents and surfaces when you want a smaller or more explicit install:
 
 ```bash
@@ -147,6 +154,101 @@ Atlas keeps the docs in a local cache and updates them from the GoForj docs repo
 GOFORJ_DOCS_PATH=/path/to/goforj-docs/docs forj atlas:mcp
 ```
 
+To use cached hosted docs from a branch, tag, or commit, select the repository and ref before starting MCP:
+
+```bash
+GOFORJ_ATLAS_DOCS_REPO=https://github.com/goforj/docs.git \
+GOFORJ_ATLAS_DOCS_REF=main \
+forj atlas:mcp
+```
+
+Use a tag or commit only when that ref exists in the docs repository. Framework release tags and docs repository refs are separate namespaces.
+
+Atlas reports the active docs version and revision through `application-info` and `docs-section-pack`, so an agent can tell which docs bundle it used.
+
+Use `version-alignment` when an agent needs to compare the project GoForj version, Atlas version, and active docs bundle before following docs from a branch or release.
+
+## Workflow skills
+
+Atlas installs workflow skills for high-leverage GoForj changes. They are short, task-focused guides that tell an agent which app owns the change, which `forj make:*` command to prefer, which generated files not to edit by hand, which docs sections to read, and which validation commands prove the work.
+
+Built-in workflow skills cover:
+
+- HTTP routes, controllers, and services
+- app-owned CLI commands
+- queued jobs and worker behavior
+- scheduler registrations
+- events and subscribers
+- repositories, migrations, caches, storage, and named data resources
+- Wire repair
+- runtime debugging with logs, routes, URLs, browser logs, metrics, and Lighthouse context
+- multi-app changes
+- validation planning
+
+Atlas also includes starter-kit overlays for Vue, React, and templ/htmx projects. When a frontend task touches pages, screens, dashboards, login, auth, or UI behavior, the workflow plan can point the agent at the matching starter-kit skill so edits stay in the owning app's frontend tree.
+
+## Agent workflow examples
+
+Agents should use Atlas tools together instead of reading the whole docs site or guessing from filenames.
+
+For a route change:
+
+```text
+workflow-plan task="add users route"
+docs-section-pack workflow_id="goforj-add-http-route"
+generated-file-policy path="app/routes.go"
+command-advice task="add users route" resource="users"
+validation-plan task="add users route"
+```
+
+That sequence gives the agent the preferred command, app registration points, focused route/controller/Wire docs, file ownership guidance, and the checks that prove the route is registered.
+
+For a named app job:
+
+```text
+workflow-plan app="marketplace" task="add sync catalog job"
+docs-section-pack workflow_id="goforj-add-job"
+resource-inventory
+command-advice app="marketplace" task="add sync catalog job" resource="sync-catalog"
+validation-plan app="marketplace" task="add sync catalog job"
+```
+
+That should lead to `forj marketplace make:job sync-catalog`, app-scoped Wire registration, small typed queue payloads, and worker validation rather than an untracked goroutine or anonymous queue callback.
+
+For a Wire failure:
+
+```text
+wire-diagnostics output="<forj build output>"
+registration-points
+docs-section-pack workflow_id="goforj-wire-repair"
+generated-file-policy path="app/wire/wire_gen.go"
+validation-plan task="fix wire missing provider"
+```
+
+That keeps the fix in the provider set that owns the dependency and reminds the agent not to edit `wire_gen.go` or hide required constructor dependencies behind nil guards.
+
+For runtime debugging:
+
+```text
+workflow-plan task="debug dashboard 500"
+resource-inventory
+runtime-snapshot app="app" runtime="http" path="/dashboard"
+debug-plan app="app" runtime="http" path="/dashboard"
+get-absolute-url app="app" path="/dashboard"
+read-log-entries app="app" limit=50
+last-error
+metrics-metadata app="app" runtime="http"
+browser-logs app="app" limit=50
+```
+
+That gives the agent app/runtime identity, local URLs, recent logs, metrics labels, browser errors, and known operator resources before code changes begin.
+
+For human-readable versions of common evidence loops, see [Atlas Debug Recipes](/developer-tools/atlas-debug-recipes).
+
+`runtime-snapshot` and `debug-plan` are evidence tools. They report missing logs, URLs, routes, browser entries, metrics targets, or resource links instead of inventing values.
+
+`generated-file-policy` reports classification, preferred action, and ownership for generated files, app-owned files, named-app files, migrations, frontend files, config, docs, and unknown paths. Projects can override ownership rules in `.goforj/atlas.json`.
+
 ## Daily use
 
 Most users do not need to run Atlas commands every day. Once installed, your agent reads the local guidance files and, when configured, asks the MCP server for focused docs context.
@@ -163,10 +265,13 @@ Useful commands:
 ```bash
 forj atlas:install
 forj atlas:update
+forj atlas:doctor
 forj atlas:list-skills
 forj atlas:make-skill checkout-rules
 forj atlas:mcp
 ```
+
+`forj atlas:doctor` reports whether Atlas is installed, which agents are configured, whether generated skills look stale, and which MCP/guidance files are present.
 
 ## Related
 

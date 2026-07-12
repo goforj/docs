@@ -2367,6 +2367,7 @@ html.gf-lightbox-open body {
     }
 
     .gf-starter-gallery--auth figure,
+    .gf-starter-gallery--auth figure:nth-child(n + 5),
     .gf-starter-gallery--wide figure:first-child,
     .gf-starter-gallery--wide figure:nth-child(2) {
         grid-column: auto;
@@ -2401,6 +2402,89 @@ html.gf-lightbox-open body {
 
     .gf-starter-kit-card:last-child {
         border-bottom: 0;
+    }
+
+    /* Command row: drop the Copy button onto its own line, and let the command
+       wrap instead of scroll so there's no clipped "<kit>" or stray scrollbar. */
+    .gf-starter-command-card__command {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .gf-starter-command-card__command button {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+
+    .gf-starter-command-card code {
+        white-space: normal;
+        overflow-x: visible;
+    }
+
+    /* Each command token is non-breaking, so wrapping only happens at the spaces
+       between tokens — flags like --starter-kit never split across lines. */
+    .gf-starter-command-card__token {
+        white-space: nowrap;
+    }
+
+    /* Five columns can't fit at phone widths, and horizontal scroll felt aimless.
+       Instead, stack the table: each metric row becomes its own card listing all
+       four kits, so nothing scrolls sideways or crushes. The kit name on each row
+       comes from the data-kit attribute on the <td>. */
+    .gf-starter-compare table,
+    .gf-starter-compare tbody,
+    .gf-starter-compare tbody tr,
+    .gf-starter-compare tbody th,
+    .gf-starter-compare tbody td {
+        display: block;
+        width: auto;
+    }
+
+    .gf-starter-compare thead {
+        display: none;
+    }
+
+    .gf-starter-compare table {
+        min-width: 0;
+        margin-top: 18px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .gf-starter-compare tbody tr {
+        margin-top: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .gf-starter-compare tbody tr th {
+        border: 0;
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(244, 244, 238, 0.92);
+        font-weight: 850;
+    }
+
+    .gf-starter-compare tbody tr td {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: baseline;
+        border: 0;
+        border-top: 1px solid rgba(148, 163, 184, 0.12);
+        color: rgba(226, 232, 240, 0.84);
+        text-align: right;
+    }
+
+    .gf-starter-compare tbody tr td::before {
+        content: attr(data-kit);
+        flex: 0 0 auto;
+        color: rgba(226, 232, 240, 0.55);
+        font-size: 0.78rem;
+        font-weight: 760;
+        text-align: left;
     }
 }
 

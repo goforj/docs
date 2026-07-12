@@ -266,9 +266,10 @@ func (c *GenerateCommand) Run() error {
 	return nil
 }
 
+// fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
 func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
 	sum := sha256.New()
-	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v1\n"))
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v2\n"))
 	_, _ = sum.Write([]byte(repo.Slug))
 	_, _ = sum.Write([]byte{'\n'})
 	_, _ = sum.Write([]byte(repo.Branch))
@@ -283,6 +284,7 @@ func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) strin
 	return hex.EncodeToString(sum.Sum(nil))
 }
 
+// shortFingerprint keeps generator logs readable while retaining enough hash material for diagnostics.
 func shortFingerprint(value string) string {
 	if len(value) <= 12 {
 		return value
