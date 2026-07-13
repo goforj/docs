@@ -15,7 +15,8 @@ import (
 // GenerateCommand pulls repo READMEs and generates docs pages.
 type GenerateCommand struct {
 	Repo   string `name:"repo" help:"Only generate docs for a single repo slug (e.g. cache, queue, str)"`
-	Fresh  bool   `name:"fresh" help:"Force fresh repo checkout and recompute examples (bypass example cache)"`
+	Source string `name:"source" type:"path" help:"Use a local repo checkout as the source (requires --repo)"`
+	Fresh  bool   `name:"fresh" help:"Refresh remote input and bypass the generated-page cache"`
 	logger *logger.AppLogger
 }
 
@@ -28,6 +29,11 @@ func NewDocsGenerateCommand(logger *logger.AppLogger) *GenerateCommand {
 
 // Run executes the docs generator.
 func (c *GenerateCommand) Run() error {
+	localSource, err := resolveLocalSource(c.Repo, c.Source)
+	if err != nil {
+		return err
+	}
+
 	repos := []RepoConfig{
 		{
 			Slug:       "collection",
@@ -192,20 +198,25 @@ func (c *GenerateCommand) Run() error {
 			errMu.Unlock()
 
 			repoDir := filepath.Join(tempRoot, repo.Slug)
-			if c.Fresh {
-				c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Removing cached repo for fresh run")
-				if err := os.RemoveAll(repoDir); err != nil {
-					setErr(fmt.Errorf("remove cached repo %s: %w", repo.Slug, err))
+			if localSource != "" {
+				repoDir = localSource
+				c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Using local repo source")
+			} else {
+				if c.Fresh {
+					c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Removing cached repo for fresh run")
+					if err := os.RemoveAll(repoDir); err != nil {
+						setErr(fmt.Errorf("remove cached repo %s: %w", repo.Slug, err))
+						return
+					}
+				}
+				c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Syncing repo")
+				action, err := cloneRepo(repo.CloneURL, repoDir, repo.Branch)
+				if err != nil {
+					setErr(fmt.Errorf("clone %s: %w", repo.Slug, err))
 					return
 				}
+				c.logger.Info().Any("repo", repo.Slug).Any("action", action).Msg("Repo synced")
 			}
-			c.logger.Info().Any("repo", repo.Slug).Any("dir", repoDir).Msg("Syncing repo")
-			action, err := cloneRepo(repo.CloneURL, repoDir, repo.Branch)
-			if err != nil {
-				setErr(fmt.Errorf("clone %s: %w", repo.Slug, err))
-				return
-			}
-			c.logger.Info().Any("repo", repo.Slug).Any("action", action).Msg("Repo synced")
 
 			readmeRelativePath := repo.ReadmePath
 			if readmeRelativePath == "" {
@@ -264,6 +275,30 @@ func (c *GenerateCommand) Run() error {
 	}
 
 	return nil
+}
+
+// resolveLocalSource validates the explicit local checkout before worker goroutines begin generation.
+func resolveLocalSource(repoSlug, source string) (string, error) {
+	if source == "" {
+		return "", nil
+	}
+	if repoSlug == "" {
+		return "", fmt.Errorf("--source requires --repo")
+	}
+
+	absolute, err := filepath.Abs(source)
+	if err != nil {
+		return "", fmt.Errorf("resolve local source %q: %w", source, err)
+	}
+	info, err := os.Stat(absolute)
+	if err != nil {
+		return "", fmt.Errorf("read local source %q: %w", source, err)
+	}
+	if !info.IsDir() {
+		return "", fmt.Errorf("local source %q is not a directory", source)
+	}
+
+	return absolute, nil
 }
 
 // fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
