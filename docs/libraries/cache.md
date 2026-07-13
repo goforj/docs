@@ -1397,3 +1397,9 @@ Notes:
 
 - The badge watcher runs real tests, so it is slower than API/example regeneration.
 - Fault/recovery integration tests run with the integration suite when container-backed fixtures are selected.
+
+## Using With GoForj {#using-with-goforj}
+
+Generated Apps expose named caches through generated accessors. Use those accessors in application services and keep backend selection in cache configuration.
+
+For generated App integration, see [Cache Patterns](/data/cache-patterns).

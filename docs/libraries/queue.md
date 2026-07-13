@@ -2444,3 +2444,9 @@ INTEGRATION_BACKEND=all go test -tags=integration ./integration/... -count=1
 ```
 
 Matrix status and backend integration notes are tracked in `docs/integration-scenarios.md`.
+
+## Using With GoForj {#using-with-goforj}
+
+Generated Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.
+
+For generated App integration, see [Queues](/async/queues).

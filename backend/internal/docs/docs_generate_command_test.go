@@ -42,3 +42,45 @@ func TestResolveLocalSource(t *testing.T) {
 		t.Fatal("resolveLocalSource() error = nil, want missing path error")
 	}
 }
+
+// TestFingerprintRepoReadmeIncludesGeneratedPageConfig verifies cache invalidation follows every setting that changes generated output or its destination.
+func TestFingerprintRepoReadmeIncludesGeneratedPageConfig(t *testing.T) {
+	t.Parallel()
+
+	repo := RepoConfig{
+		Slug:       "queue",
+		Title:      "Queue",
+		CloneURL:   "https://github.com/goforj/queue.git",
+		Branch:     "main",
+		OutputPath: "libraries/queue.md",
+		FrameworkGuide: FrameworkGuide{
+			Title:   "Queues",
+			Path:    "/async/queues",
+			Summary: "Queue integration.",
+		},
+	}
+	rawBase := "https://raw.githubusercontent.com/goforj/queue/main/"
+	readme := []byte("# Queue\n")
+	wantDifferentFrom := fingerprintRepoReadme(repo, rawBase, readme)
+
+	tests := []struct {
+		name   string
+		mutate func(*RepoConfig)
+	}{
+		{name: "title", mutate: func(repo *RepoConfig) { repo.Title = "Queues" }},
+		{name: "clone URL", mutate: func(repo *RepoConfig) { repo.CloneURL = "https://github.com/example/queue.git" }},
+		{name: "output path", mutate: func(repo *RepoConfig) { repo.OutputPath = "queue.md" }},
+		{name: "guide title", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Title = "Queue Apps" }},
+		{name: "guide path", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Path = "/applications/queues" }},
+		{name: "guide summary", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Summary = "Updated queue integration." }},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			changed := repo
+			test.mutate(&changed)
+			if got := fingerprintRepoReadme(changed, rawBase, readme); got == wantDifferentFrom {
+				t.Fatalf("fingerprintRepoReadme() did not change after updating %s", test.name)
+			}
+		})
+	}
+}

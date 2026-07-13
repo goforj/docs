@@ -4,13 +4,21 @@ import "strings"
 
 // RepoConfig describes a repo to pull docs from.
 type RepoConfig struct {
-	Slug       string
-	Title      string
-	CloneURL   string
-	Branch     string
-	OutputPath string
-	ReadmePath string
-	RepoName   string
+	Slug           string
+	Title          string
+	CloneURL       string
+	Branch         string
+	OutputPath     string
+	ReadmePath     string
+	RepoName       string
+	FrameworkGuide FrameworkGuide
+}
+
+// FrameworkGuide links a standalone library page to its canonical generated App guide.
+type FrameworkGuide struct {
+	Title   string
+	Path    string
+	Summary string
 }
 
 func webGithubBase(repo RepoConfig) string {

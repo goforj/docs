@@ -1712,3 +1712,9 @@ fmt.Println(ctx.Param("id"), ctx.Query("expand"))
 // 42 roles
 ```
 <!-- api:embed:end -->
+
+## Using With GoForj {#using-with-goforj}
+
+Generated Apps register web routes and controllers through the HTTP runtime. Keep server wiring in framework providers and inject application services into controllers.
+
+For generated App integration, see [HTTP Services](/applications/http-services).

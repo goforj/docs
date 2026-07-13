@@ -62,6 +62,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/web.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "web.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "HTTP Services",
+				Path:    "/applications/http-services",
+				Summary: "Generated Apps register web routes and controllers through the HTTP runtime. Keep server wiring in framework providers and inject application services into controllers.",
+			},
 		},
 		{
 			Slug:       "execx",
@@ -90,6 +95,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/scheduler.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "scheduler.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Scheduler",
+				Path:    "/async/scheduler",
+				Summary: "Generated Apps register schedules in the scheduler runtime and inject the jobs they run. Keep recurring business work in jobs instead of the schedule registry.",
+			},
 		},
 		{
 			Slug:       "queue",
@@ -97,6 +107,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/queue.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "queue.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Queues",
+				Path:    "/async/queues",
+				Summary: "Generated Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.",
+			},
 		},
 		{
 			Slug:       "events",
@@ -104,6 +119,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/events.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "events.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Events",
+				Path:    "/async/events",
+				Summary: "Generated Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.",
+			},
 		},
 		{
 			Slug:       "mail",
@@ -111,6 +131,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/mail.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "mail.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Mail",
+				Path:    "/applications/mail",
+				Summary: "Generated Apps expose named mailers through generated accessors. Send through those accessors and keep transport selection and credentials in configuration.",
+			},
 		},
 		{
 			Slug:       "cache",
@@ -118,6 +143,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/cache.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "cache.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Cache Patterns",
+				Path:    "/data/cache-patterns",
+				Summary: "Generated Apps expose named caches through generated accessors. Use those accessors in application services and keep backend selection in cache configuration.",
+			},
 		},
 		{
 			Slug:       "crypt",
@@ -132,6 +162,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:   "https://github.com/goforj/storage.git",
 			Branch:     "main",
 			OutputPath: filepath.Join("libraries", "storage.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Storage Patterns",
+				Path:    "/data/storage-patterns",
+				Summary: "Generated Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.",
+			},
 		},
 		{
 			Slug:       "wire",
@@ -304,17 +339,23 @@ func resolveLocalSource(repoSlug, source string) (string, error) {
 // fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
 func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
 	sum := sha256.New()
-	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v2\n"))
-	_, _ = sum.Write([]byte(repo.Slug))
-	_, _ = sum.Write([]byte{'\n'})
-	_, _ = sum.Write([]byte(repo.Branch))
-	_, _ = sum.Write([]byte{'\n'})
-	_, _ = sum.Write([]byte(repo.ReadmePath))
-	_, _ = sum.Write([]byte{'\n'})
-	_, _ = sum.Write([]byte(repo.RepoName))
-	_, _ = sum.Write([]byte{'\n'})
-	_, _ = sum.Write([]byte(rawBase))
-	_, _ = sum.Write([]byte{'\n'})
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v3\n"))
+	for _, value := range []string{
+		repo.Slug,
+		repo.Title,
+		repo.CloneURL,
+		repo.Branch,
+		repo.OutputPath,
+		repo.ReadmePath,
+		repo.RepoName,
+		repo.FrameworkGuide.Title,
+		repo.FrameworkGuide.Path,
+		repo.FrameworkGuide.Summary,
+		rawBase,
+	} {
+		_, _ = sum.Write([]byte(value))
+		_, _ = sum.Write([]byte{0})
+	}
 	_, _ = sum.Write(readme)
 	return hex.EncodeToString(sum.Sum(nil))
 }

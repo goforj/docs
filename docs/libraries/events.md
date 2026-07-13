@@ -647,3 +647,9 @@ Run the watcher to auto-regenerate docs on file changes:
 ```bash
 sh docs/watcher.sh
 ```
+
+## Using With GoForj {#using-with-goforj}
+
+Generated Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.
+
+For generated App integration, see [Events](/async/events).

@@ -19,7 +19,7 @@ repoUrl: https://github.com/goforj/storage
   <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
   <a href="https://codecov.io/gh/goforj/storage"><img src="https://codecov.io/gh/goforj/storage/graph/badge.svg?token=BPR5IIC5F9"/></a>
   <img src="https://img.shields.io/github/v/tag/goforj/storage?label=version&sort=semver&filter=%21driver%2A" alt="Latest tag">
-<a href="https://goreportcard.com/report/github.com/goforj/storage"><img src="https://goreportcard.com/badge/github.com/goforj/httpx/v2" alt="Go Report Card"></a>
+<a href="https://goreportcard.com/report/github.com/goforj/storage"><img src="https://goreportcard.com/badge/github.com/goforj/storage" alt="Go Report Card"></a>
 <!-- test-count:embed:start -->
   <img src="https://img.shields.io/badge/unit_tests-29-brightgreen" alt="Unit tests (executed count)">
   <img src="https://img.shields.io/badge/integration_tests-121-blue" alt="Integration tests (executed count)">
@@ -1335,3 +1335,9 @@ make coverage
 make integration
 make integration-driver gcs
 ```
+
+## Using With GoForj {#using-with-goforj}
+
+Generated Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.
+
+For generated App integration, see [Storage Patterns](/data/storage-patterns).

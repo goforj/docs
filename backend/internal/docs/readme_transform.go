@@ -19,8 +19,25 @@ var markdownHeadingRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s*$`)
 func transformReadme(readme string, repo RepoConfig, rawBase string) string {
 	updated := rewriteImageLinks(readme, rawBase)
 	updated = rewriteMarkdownLinks(updated, repo)
+	updated = appendFrameworkGuide(updated, repo.FrameworkGuide)
 	updated = rewriteHeadingAnchors(updated, repo.Title)
 	return withFrontmatter(repo, updated)
+}
+
+// appendFrameworkGuide keeps framework-specific guidance out of standalone source READMEs while preserving navigation in the docs projection.
+func appendFrameworkGuide(content string, guide FrameworkGuide) string {
+	if guide.Title == "" || guide.Path == "" || guide.Summary == "" || strings.Contains("\n"+content, "\n## Using With GoForj") {
+		return content
+	}
+
+	content = strings.TrimRight(content, "\n")
+	return fmt.Sprintf(
+		"%s\n\n## Using With GoForj\n\n%s\n\nFor generated App integration, see [%s](%s).\n",
+		content,
+		guide.Summary,
+		guide.Title,
+		guide.Path,
+	)
 }
 
 func rewriteImageLinks(content string, rawBase string) string {
