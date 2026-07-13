@@ -4699,7 +4699,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 .VPDoc .vp-doc .gf-table-scroll table {
     display: table;
-    width: max-content;
+    width: 100%;
     min-width: 100%;
     margin: 0;
     overflow: visible;
