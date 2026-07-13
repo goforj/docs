@@ -36,12 +36,6 @@ repoUrl: https://github.com/goforj/mail
 <!-- package-coverage:embed:end -->
 </p>
 
-## Using With GoForj Apps
-
-Generated Apps resolve mail through the generated mail manager, provider wiring, auth delivery integration, metrics, and inspects. Start with [Mail in generated Apps](/applications/mail), [Auth](/security/auth), and [Configuration](/getting-started/configuration) when mail is part of a full App.
-
-Use this page when you need standalone message composition, driver constructors, delivery behavior, or fakes for tests.
-
 ## Installation {#installation}
 
 ```bash
@@ -127,20 +121,20 @@ Notes:
 
 | Group | Functions |
 |------:|:-----------|
-| **Composition** | [Mailer.Message](#mailer-message) [MessageBuilder.Bcc](#messagebuilder-bcc) [MessageBuilder.Cc](#messagebuilder-cc) [MessageBuilder.From](#messagebuilder-from) [MessageBuilder.Message](#messagebuilder-message) [MessageBuilder.ReplyTo](#messagebuilder-replyto) [MessageBuilder.To](#messagebuilder-to) |
+| **Composition** | [Mailer.Message](#mailer-message) · [MessageBuilder.Bcc](#messagebuilder-bcc) · [MessageBuilder.Cc](#messagebuilder-cc) · [MessageBuilder.From](#messagebuilder-from) · [MessageBuilder.Message](#messagebuilder-message) · [MessageBuilder.ReplyTo](#messagebuilder-replyto) · [MessageBuilder.To](#messagebuilder-to) |
 | **Construction** | [New](#new) |
-| **Content** | [MessageBuilder.Attach](#messagebuilder-attach) [MessageBuilder.AttachFile](#messagebuilder-attachfile) [MessageBuilder.HTML](#messagebuilder-html) [MessageBuilder.Header](#messagebuilder-header) [MessageBuilder.Metadata](#messagebuilder-metadata) [MessageBuilder.Subject](#messagebuilder-subject) [MessageBuilder.Tag](#messagebuilder-tag) [MessageBuilder.Text](#messagebuilder-text) |
-| **Defaults** | [WithDefaultFrom](#withdefaultfrom) [WithDefaultHeader](#withdefaultheader) [WithDefaultMetadata](#withdefaultmetadata) [WithDefaultReplyTo](#withdefaultreplyto) [WithDefaultTag](#withdefaulttag) |
-| **Delivery** | [Mailer.Send](#mailer-send) [MessageBuilder.Build](#messagebuilder-build) [MessageBuilder.Send](#messagebuilder-send) |
-| **Logging** | [maillog.Driver.Send](#maillog-driver-send) [maillog.New](#maillog-new) [maillog.WithBodies](#maillog-withbodies) [maillog.WithNow](#maillog-withnow) |
-| **Mailgun** | [mailmailgun.Driver.Send](#mailmailgun-driver-send) [mailmailgun.New](#mailmailgun-new) |
-| **Message Model** | [AttachmentFromBytes](#attachmentfrombytes) [AttachmentFromPath](#attachmentfrompath) [Message.Clone](#message-clone) [Message.Validate](#message-validate) |
-| **Postmark** | [mailpostmark.Driver.Send](#mailpostmark-driver-send) [mailpostmark.New](#mailpostmark-new) |
-| **Resend** | [mailresend.Driver.Send](#mailresend-driver-send) [mailresend.New](#mailresend-new) |
-| **SES** | [mailses.Driver.Send](#mailses-driver-send) [mailses.New](#mailses-new) |
-| **SMTP** | [mailsmtp.Driver.Send](#mailsmtp-driver-send) [mailsmtp.New](#mailsmtp-new) [mailsmtp.Render](#mailsmtp-render) |
-| **SendGrid** | [mailsendgrid.Driver.Send](#mailsendgrid-driver-send) [mailsendgrid.New](#mailsendgrid-new) |
-| **Testing** | [mailfake.Driver.Last](#mailfake-driver-last) [mailfake.Driver.Messages](#mailfake-driver-messages) [mailfake.Driver.Reset](#mailfake-driver-reset) [mailfake.Driver.Send](#mailfake-driver-send) [mailfake.Driver.SentCount](#mailfake-driver-sentcount) [mailfake.Driver.SetError](#mailfake-driver-seterror) [mailfake.New](#mailfake-new) |
+| **Content** | [MessageBuilder.Attach](#messagebuilder-attach) · [MessageBuilder.AttachFile](#messagebuilder-attachfile) · [MessageBuilder.HTML](#messagebuilder-html) · [MessageBuilder.Header](#messagebuilder-header) · [MessageBuilder.Metadata](#messagebuilder-metadata) · [MessageBuilder.Subject](#messagebuilder-subject) · [MessageBuilder.Tag](#messagebuilder-tag) · [MessageBuilder.Text](#messagebuilder-text) |
+| **Defaults** | [WithDefaultFrom](#withdefaultfrom) · [WithDefaultHeader](#withdefaultheader) · [WithDefaultMetadata](#withdefaultmetadata) · [WithDefaultReplyTo](#withdefaultreplyto) · [WithDefaultTag](#withdefaulttag) |
+| **Delivery** | [Mailer.Send](#mailer-send) · [MessageBuilder.Build](#messagebuilder-build) · [MessageBuilder.Send](#messagebuilder-send) |
+| **Logging** | [maillog.Driver.Send](#maillog-driver-send) · [maillog.New](#maillog-new) · [maillog.WithBodies](#maillog-withbodies) · [maillog.WithNow](#maillog-withnow) |
+| **Mailgun** | [mailmailgun.Driver.Send](#mailmailgun-driver-send) · [mailmailgun.New](#mailmailgun-new) |
+| **Message Model** | [AttachmentFromBytes](#attachmentfrombytes) · [AttachmentFromPath](#attachmentfrompath) · [Message.Clone](#message-clone) · [Message.Validate](#message-validate) |
+| **Postmark** | [mailpostmark.Driver.Send](#mailpostmark-driver-send) · [mailpostmark.New](#mailpostmark-new) |
+| **Resend** | [mailresend.Driver.Send](#mailresend-driver-send) · [mailresend.New](#mailresend-new) |
+| **SES** | [mailses.Driver.Send](#mailses-driver-send) · [mailses.New](#mailses-new) |
+| **SMTP** | [mailsmtp.Driver.Send](#mailsmtp-driver-send) · [mailsmtp.New](#mailsmtp-new) · [mailsmtp.Render](#mailsmtp-render) |
+| **SendGrid** | [mailsendgrid.Driver.Send](#mailsendgrid-driver-send) · [mailsendgrid.New](#mailsendgrid-new) |
+| **Testing** | [mailfake.Driver.Last](#mailfake-driver-last) · [mailfake.Driver.Messages](#mailfake-driver-messages) · [mailfake.Driver.Reset](#mailfake-driver-reset) · [mailfake.Driver.Send](#mailfake-driver-send) · [mailfake.Driver.SentCount](#mailfake-driver-sentcount) · [mailfake.Driver.SetError](#mailfake-driver-seterror) · [mailfake.New](#mailfake-new) |
 
 
 ## API Reference {#api-reference}

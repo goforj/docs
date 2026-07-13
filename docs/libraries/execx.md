@@ -5,7 +5,7 @@ repoUrl: https://github.com/goforj/execx
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/execx/main/docs/images/logo.png?v=2" width="300" alt="str logo">
+  <img src="https://raw.githubusercontent.com/goforj/execx/main/docs/images/logo.png" width="300" alt="execx logo">
 </p>
 
 <p align="center">
@@ -16,11 +16,11 @@ repoUrl: https://github.com/goforj/execx
     <a href="https://pkg.go.dev/github.com/goforj/execx"><img src="https://pkg.go.dev/badge/github.com/goforj/execx.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/execx/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/execx/actions"><img src="https://github.com/goforj/execx/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.23+-blue?logo=go" alt="Go version"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/execx?label=version&sort=semver" alt="Latest tag"> 
     <a href="https://codecov.io/gh/goforj/execx" ><img src="https://codecov.io/github/goforj/execx/graph/badge.svg?token=RBB8T6WQ0U"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-142-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-101-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
     <a href="https://goreportcard.com/report/github.com/goforj/execx"><img src="https://goreportcard.com/badge/github.com/goforj/execx" alt="Go Report Card"></a>
 </p>
@@ -213,19 +213,20 @@ All public APIs are covered by runnable examples under `./examples`, and the tes
 |------:|:-----------|
 | **Arguments** | [Arg](#arg) |
 | **Construction** | [Command](#command) |
-| **Context** | [WithContext](#withcontext) [WithDeadline](#withdeadline) [WithTimeout](#withtimeout) |
-| **Debugging** | [Args](#args) [ShellEscaped](#shellescaped) [String](#string) |
-| **Decoding** | [Decode](#decode) [DecodeJSON](#decodejson) [DecodeWith](#decodewith) [DecodeYAML](#decodeyaml) [FromCombined](#fromcombined) [FromStderr](#fromstderr) [FromStdout](#fromstdout) [Into](#into) [Trim](#trim) |
-| **Environment** | [Env](#env) [EnvAppend](#envappend) [EnvInherit](#envinherit) [EnvList](#envlist) [EnvOnly](#envonly) |
-| **Errors** | [Error](#error) [Unwrap](#unwrap) |
-| **Execution** | [CombinedOutput](#combinedoutput) [Output](#output) [OutputBytes](#outputbytes) [OutputTrimmed](#outputtrimmed) [Run](#run) [Start](#start) [OnExecCmd](#onexeccmd) |
-| **Input** | [StdinBytes](#stdinbytes) [StdinFile](#stdinfile) [StdinReader](#stdinreader) [StdinString](#stdinstring) |
-| **OS Controls** | [CreationFlags](#creationflags) [HideWindow](#hidewindow) [Pdeathsig](#pdeathsig) [Setpgid](#setpgid) [Setsid](#setsid) |
-| **Pipelining** | [Pipe](#pipe) [PipeBestEffort](#pipebesteffort) [PipeStrict](#pipestrict) [PipelineResults](#pipelineresults) |
-| **Process** | [GracefulShutdown](#gracefulshutdown) [Interrupt](#interrupt) [KillAfter](#killafter) [Send](#send) [Terminate](#terminate) [Wait](#wait) |
-| **Results** | [IsExitCode](#isexitcode) [IsSignal](#issignal) [OK](#ok) |
-| **Shadow Print** | [ShadowOff](#shadowoff) [ShadowOn](#shadowon) [ShadowPrint](#shadowprint) [WithFormatter](#withformatter) [WithMask](#withmask) [WithPrefix](#withprefix) |
-| **Streaming** | [OnStderr](#onstderr) [OnStdout](#onstdout) [StderrWriter](#stderrwriter) [StdoutWriter](#stdoutwriter) [WithPTY](#withpty) |
+| **Context** | [WithContext](#withcontext) · [WithDeadline](#withdeadline) · [WithTimeout](#withtimeout) |
+| **Debugging** | [Args](#args) · [ShellEscaped](#shellescaped) · [String](#string) |
+| **Decoding** | [Decode](#decode) · [DecodeJSON](#decodejson) · [DecodeWith](#decodewith) · [DecodeYAML](#decodeyaml) · [FromCombined](#fromcombined) · [FromStderr](#fromstderr) · [FromStdout](#fromstdout) · [Into](#into) · [Trim](#trim) |
+| **Environment** | [Env](#env) · [EnvAppend](#envappend) · [EnvInherit](#envinherit) · [EnvList](#envlist) · [EnvOnly](#envonly) |
+| **Errors** | [Error](#error) · [Unwrap](#unwrap) |
+| **Execution** | [CombinedOutput](#combinedoutput) · [OnExecCmd](#onexeccmd) · [Output](#output) · [OutputBytes](#outputbytes) · [OutputTrimmed](#outputtrimmed) · [Run](#run) · [Start](#start) |
+| **Input** | [StdinBytes](#stdinbytes) · [StdinFile](#stdinfile) · [StdinReader](#stdinreader) · [StdinString](#stdinstring) |
+| **OS Controls** | [CreationFlags](#creationflags) · [HideWindow](#hidewindow) · [Pdeathsig](#pdeathsig) · [Setpgid](#setpgid) · [Setsid](#setsid) |
+| **Other** | [Write](#write) |
+| **Pipelining** | [Pipe](#pipe) · [PipeBestEffort](#pipebesteffort) · [PipeStrict](#pipestrict) · [PipelineResults](#pipelineresults) |
+| **Process** | [GracefulShutdown](#gracefulshutdown) · [Interrupt](#interrupt) · [KillAfter](#killafter) · [Send](#send) · [Terminate](#terminate) · [Wait](#wait) |
+| **Results** | [IsExitCode](#isexitcode) · [IsSignal](#issignal) · [OK](#ok) |
+| **Shadow Print** | [ShadowOff](#shadowoff) · [ShadowOn](#shadowon) · [ShadowPrint](#shadowprint) · [WithFormatter](#withformatter) · [WithMask](#withmask) · [WithPrefix](#withprefix) |
+| **Streaming** | [OnStderr](#onstderr) · [OnStdout](#onstdout) · [StderrWriter](#stderrwriter) · [StdoutWriter](#stdoutwriter) · [WithPTY](#withpty) |
 | **WorkingDir** | [Dir](#dir) |
 
 
@@ -575,6 +576,18 @@ fmt.Println(err == nil)
 // false
 ```
 
+### OnExecCmd {#onexeccmd}
+
+OnExecCmd registers a callback to mutate the underlying exec.Cmd before start.
+
+```go
+_, _ = execx.Command("printf", "hi").
+	OnExecCmd(func(cmd *exec.Cmd) {
+		cmd.SysProcAttr = &syscall.SysProcAttr{}
+	}).
+	Run()
+```
+
 ### Output {#output}
 
 Output executes the command and returns stdout and any error.
@@ -624,18 +637,6 @@ proc := execx.Command("go", "env", "GOOS").Start()
 res, _ := proc.Wait()
 fmt.Println(res.ExitCode == 0)
 // #bool true
-```
-
-### OnExecCmd {#onexeccmd}
-
-OnExecCmd registers a callback to mutate the underlying exec.Cmd before start.
-
-```go
-_, _ = execx.Command("printf", "hi").
-	OnExecCmd(func(cmd *exec.Cmd) {
-		cmd.Env = append(cmd.Env, "EXAMPLE=1")
-	}).
-	Run()
 ```
 
 ## Input {#input}
@@ -742,6 +743,12 @@ out, _ := execx.Command("printf", "ok").Setsid(true).Output()
 fmt.Print(out)
 // ok
 ```
+
+## Other {#other}
+
+### Write {#write}
+
+Write buffers output and emits completed lines to the callback.
 
 ## Pipelining {#pipelining-2}
 
@@ -1037,7 +1044,8 @@ _, _ = execx.Command("printf", "hi\n").
 
 StderrWriter sets a raw writer for stderr.
 
-When the writer is a terminal and no line callbacks or combined output are enabled, execx passes stderr through directly and does not buffer it for results.
+When the writer is a terminal and no line callbacks or combined output are enabled,
+execx passes stderr through directly and does not buffer it for results.
 
 ```go
 var out strings.Builder
@@ -1056,7 +1064,8 @@ fmt.Println(err == nil)
 
 StdoutWriter sets a raw writer for stdout.
 
-When the writer is a terminal and no line callbacks or combined output are enabled, execx passes stdout through directly and does not buffer it for results.
+When the writer is a terminal and no line callbacks or combined output are enabled,
+execx passes stdout through directly and does not buffer it for results.
 
 ```go
 var out strings.Builder
@@ -1071,7 +1080,8 @@ fmt.Print(out.String())
 
 WithPTY attaches stdout/stderr to a pseudo-terminal.
 
-Output is combined; OnStdout and OnStderr receive the same lines, and Result.Stderr remains empty.
+When enabled, stdout and stderr are merged into a single stream. OnStdout and
+OnStderr both receive the same lines, and Result.Stderr remains empty.
 Platforms without PTY support return an error when the command runs.
 
 ```go
@@ -1097,3 +1107,19 @@ fmt.Println(out == dir)
 // #bool true
 ```
 <!-- api:embed:end -->
+
+## Development {#development}
+
+`docs` and `examples` are separate Go modules, keeping their tooling and generated programs out of the library module download.
+
+Run the tests and rebuild the generated examples and README with:
+
+```sh
+go test ./...
+go -C docs test ./...
+go -C examples test ./...
+go -C docs run ./examplegen
+go -C docs run ./readme
+```
+
+Licensed under the [MIT License](https://github.com/goforj/execx/blob/main/LICENSE).

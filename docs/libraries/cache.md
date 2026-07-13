@@ -29,12 +29,6 @@ repoUrl: https://github.com/goforj/cache
  
 An explicit cache abstraction with a minimal Store interface and ergonomic Cache helpers. Drivers are chosen when you construct the store, so swapping backends is a dependency-injection change instead of a refactor.
 
-## Using With GoForj Apps
-
-Generated Apps resolve cache through `internal/caches`, named cache accessors, and provider wiring. Start with [Cache Patterns](/data/cache-patterns), [Named Resources](/core/named-resources), and [Generated Components](/core/generated-components) when cache is part of a full App.
-
-Use this page when you need standalone constructors, driver behavior, cache semantics, or testing helpers.
-
 ## Installation {#installation}
 
 ```bash
@@ -368,19 +362,19 @@ Many functions also provide `...Context` variants that accept an explicit `conte
 
 | Group | Functions |
 |------:|:-----------|
-| **Constructors** | [NewFileStore](#newfilestore) [NewFileStoreWithConfig](#newfilestorewithconfig) [NewMemoryStore](#newmemorystore) [NewMemoryStoreWithConfig](#newmemorystorewithconfig) [NewNullStore](#newnullstore) [NewNullStoreWithConfig](#newnullstorewithconfig) |
-| **Core** | [Driver](#cache-driver) [Inspector](#cache-inspector) [NewCache](#newcache) [NewCacheWithTTL](#newcachewithttl) [Ready](#cache-ready) [Store](#cache-store) [WithContext](#cache-withcontext) |
-| **Driver Configs** | [Shared BaseConfig](#driver-configs-shared-baseconfig) [DynamoDB Config](#driver-config-dynamocache) [Memcached Config](#driver-config-memcachedcache) [MySQL Config](#driver-config-mysqlcache) [NATS Config](#driver-config-natscache) [Postgres Config](#driver-config-postgrescache) [Redis Config](#driver-config-rediscache) [SQL Core Config](#driver-config-sqlcore) [SQLite Config](#driver-config-sqlitecache) |
-| **Invalidation** | [Delete](#cache-delete) [DeleteMany](#cache-deletemany) [Flush](#cache-flush) [Pull](#pull) [PullBytes](#cache-pullbytes) |
-| **Locking** | [Acquire](#lockhandle-acquire) [Block](#lockhandle-block) [Lock](#cache-lock) [LockHandle.Get](#lockhandle-get) [NewLockHandle](#cache-newlockhandle) [Release](#lockhandle-release) [TryLock](#cache-trylock) [Unlock](#cache-unlock) |
+| **Constructors** | [NewFileStore](#newfilestore) · [NewFileStoreWithConfig](#newfilestorewithconfig) · [NewMemoryStore](#newmemorystore) · [NewMemoryStoreWithConfig](#newmemorystorewithconfig) · [NewNullStore](#newnullstore) · [NewNullStoreWithConfig](#newnullstorewithconfig) |
+| **Core** | [Driver](#cache-driver) · [Inspector](#cache-inspector) · [NewCache](#newcache) · [NewCacheWithTTL](#newcachewithttl) · [Ready](#cache-ready) · [Store](#cache-store) · [WithContext](#cache-withcontext) |
+| **Driver Configs** | [Shared BaseConfig](#driver-configs-shared-baseconfig) · [DynamoDB Config](#driver-config-dynamocache) · [Memcached Config](#driver-config-memcachedcache) · [MySQL Config](#driver-config-mysqlcache) · [NATS Config](#driver-config-natscache) · [Postgres Config](#driver-config-postgrescache) · [Redis Config](#driver-config-rediscache) · [SQL Core Config](#driver-config-sqlcore) · [SQLite Config](#driver-config-sqlitecache) |
+| **Invalidation** | [Delete](#cache-delete) · [DeleteMany](#cache-deletemany) · [Flush](#cache-flush) · [Pull](#pull) · [PullBytes](#cache-pullbytes) |
+| **Locking** | [Acquire](#lockhandle-acquire) · [Block](#lockhandle-block) · [Lock](#cache-lock) · [LockHandle.Get](#lockhandle-get) · [NewLockHandle](#cache-newlockhandle) · [Release](#lockhandle-release) · [TryLock](#cache-trylock) · [Unlock](#cache-unlock) |
 | **Memoization** | [NewMemoStore](#newmemostore) |
-| **Observability** | [OnCacheOp](#observerfunc-oncacheop) [WithObserver](#cache-withobserver) |
+| **Observability** | [OnCacheOp](#observerfunc-oncacheop) · [WithObserver](#cache-withobserver) |
 | **Rate Limiting** | [RateLimit](#cache-ratelimit) |
-| **Read Through** | [Remember](#remember) [RememberBytes](#cache-rememberbytes) [RememberStale](#rememberstale) [RememberStaleBytes](#cache-rememberstalebytes) |
-| **Reads** | [BatchGetBytes](#cache-batchgetbytes) [Get](#get) [GetBytes](#cache-getbytes) [GetJSON](#getjson) [GetString](#cache-getstring) [ListPage](#listpage) |
-| **Refresh Ahead** | [RefreshAhead](#refreshahead) [RefreshAheadBytes](#cache-refreshaheadbytes) [RefreshAheadValueWithCodec](#refreshaheadvaluewithcodec) |
-| **Testing Helpers** | [AssertCalled](#fake-assertcalled) [AssertNotCalled](#fake-assertnotcalled) [AssertTotal](#fake-asserttotal) [Cache](#fake-cache) [Count](#fake-count) [New](#new) [Reset](#fake-reset) [Total](#fake-total) |
-| **Writes** | [Add](#cache-add) [BatchSetBytes](#cache-batchsetbytes) [Decrement](#cache-decrement) [Increment](#cache-increment) [Set](#set) [SetBytes](#cache-setbytes) [SetJSON](#setjson) [SetString](#cache-setstring) |
+| **Read Through** | [Remember](#remember) · [RememberBytes](#cache-rememberbytes) · [RememberStale](#rememberstale) · [RememberStaleBytes](#cache-rememberstalebytes) |
+| **Reads** | [BatchGetBytes](#cache-batchgetbytes) · [Get](#get) · [GetBytes](#cache-getbytes) · [GetJSON](#getjson) · [GetString](#cache-getstring) · [ListPage](#listpage) |
+| **Refresh Ahead** | [RefreshAhead](#refreshahead) · [RefreshAheadBytes](#cache-refreshaheadbytes) · [RefreshAheadValueWithCodec](#refreshaheadvaluewithcodec) |
+| **Testing Helpers** | [AssertCalled](#fake-assertcalled) · [AssertNotCalled](#fake-assertnotcalled) · [AssertTotal](#fake-asserttotal) · [Cache](#fake-cache) · [Count](#fake-count) · [New](#new) · [Reset](#fake-reset) · [Total](#fake-total) |
+| **Writes** | [Add](#cache-add) · [BatchSetBytes](#cache-batchsetbytes) · [Decrement](#cache-decrement) · [Increment](#cache-increment) · [Set](#set) · [SetBytes](#cache-setbytes) · [SetJSON](#setjson) · [SetString](#cache-setstring) |
 
 
 _Examples assume `ctx := context.Background()` and `c := cache.NewCache(cache.NewMemoryStore(ctx))` unless shown otherwise._
@@ -923,12 +917,12 @@ fmt.Println(c.Driver()) // memory
 OnCacheOp implements Observer.
 
 ```go
-obs := cache.ObserverFunc(func(ctx context.Context, op, key string, hit bool, err error, dur time.Duration, driver cachecore.Driver) {
-	fmt.Println(op, key, hit, err == nil, driver)
+obs := cache.ObserverFunc(func(ctx context.Context, event cache.CacheOpEvent) {
+	fmt.Println(event.Operation, event.Key, event.Hit, event.Err == nil, event.Driver)
 	_ = ctx
-	_ = dur
+	_ = event.Duration
 })
-obs.OnCacheOp(context.Background(), "get", "user:42", true, nil, time.Millisecond, cachecore.DriverMemory)
+obs.OnCacheOp(context.Background(), cache.CacheOpEvent{Operation: "get", Key: "user:42", Hit: true, Duration: time.Millisecond, Driver: cachecore.DriverMemory})
 ```
 
 ### WithObserver {#cache-withobserver}

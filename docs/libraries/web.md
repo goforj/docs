@@ -36,12 +36,6 @@ repoUrl: https://github.com/goforj/web
 
 `web` is built on top of [Echo](https://echo.labstack.com/), which is a fantastic HTTP framework with a fast router, strong middleware story, and a mature ecosystem. GoForj wraps it so applications can code against a smaller app-facing contract while still getting a high-quality underlying engine, reusable middleware packages, testing helpers, route indexing, and framework-owned integration points like Prometheus and generated wiring.
 
-## Using With GoForj Apps
-
-Generated Apps use `web` through controllers, route groups, middleware, route listing, metrics, and inspects. Start with [HTTP Services](/applications/http-services), [Routes](/applications/routes), and [Controllers](/applications/controllers) when you are building a full App.
-
-Use this page when you need standalone package APIs, adapter details, middleware primitives, or `webtest` helpers.
-
 ## Installation {#installation}
 
 ```bash
@@ -213,23 +207,23 @@ if err != nil {
 
 | Group | Functions |
 |------:|:-----------|
-| **Adapter** | [Adapter.Echo](#echoweb-adapter-echo) [Adapter.Router](#echoweb-adapter-router) [Adapter.ServeHTTP](#echoweb-adapter-servehttp) [New](#echoweb-new) [NewServer](#echoweb-newserver) [Server.Router](#echoweb-server-router) [Server.Serve](#echoweb-server-serve) [Server.ServeHTTP](#echoweb-server-servehttp) [UnwrapContext](#echoweb-unwrapcontext) [UnwrapWebSocketConn](#echoweb-unwrapwebsocketconn) [Wrap](#echoweb-wrap) |
+| **Adapter** | [Adapter.Echo](#echoweb-adapter-echo) · [Adapter.Router](#echoweb-adapter-router) · [Adapter.ServeHTTP](#echoweb-adapter-servehttp) · [New](#echoweb-new) · [NewServer](#echoweb-newserver) · [Server.Router](#echoweb-server-router) · [Server.Serve](#echoweb-server-serve) · [Server.ServeHTTP](#echoweb-server-servehttp) · [UnwrapContext](#echoweb-unwrapcontext) · [UnwrapWebSocketConn](#echoweb-unwrapwebsocketconn) · [Wrap](#echoweb-wrap) |
 | **Indexing** | [Run](#webindex-run) |
-| **Middleware<br>Auth** | [BasicAuth](#webmiddleware-basicauth) [BasicAuthWithConfig](#webmiddleware-basicauthwithconfig) [CSRF](#webmiddleware-csrf) [CSRFWithConfig](#webmiddleware-csrfwithconfig) [CreateExtractors](#webmiddleware-createextractors) [KeyAuth](#webmiddleware-keyauth) [KeyAuthWithConfig](#webmiddleware-keyauthwithconfig) |
-| **Middleware<br>Compression** | [Compress](#webmiddleware-compress) [Decompress](#webmiddleware-decompress) [DecompressWithConfig](#webmiddleware-decompresswithconfig) [Gzip](#webmiddleware-gzip) [GzipWithConfig](#webmiddleware-gzipwithconfig) |
-| **Middleware<br>Method Override** | [MethodFromForm](#webmiddleware-methodfromform) [MethodFromHeader](#webmiddleware-methodfromheader) [MethodFromQuery](#webmiddleware-methodfromquery) [MethodOverride](#webmiddleware-methodoverride) [MethodOverrideWithConfig](#webmiddleware-methodoverridewithconfig) |
-| **Middleware<br>Path Rewriting** | [AddTrailingSlash](#webmiddleware-addtrailingslash) [AddTrailingSlashWithConfig](#webmiddleware-addtrailingslashwithconfig) [RemoveTrailingSlash](#webmiddleware-removetrailingslash) [RemoveTrailingSlashWithConfig](#webmiddleware-removetrailingslashwithconfig) [Rewrite](#webmiddleware-rewrite) [RewriteWithConfig](#webmiddleware-rewritewithconfig) |
-| **Middleware<br>Payloads** | [BodyDump](#webmiddleware-bodydump) [BodyDumpWithConfig](#webmiddleware-bodydumpwithconfig) [BodyLimit](#webmiddleware-bodylimit) [BodyLimitWithConfig](#webmiddleware-bodylimitwithconfig) [ErrorBodyDump](#webmiddleware-errorbodydump) [ErrorBodyDumpWithConfig](#webmiddleware-errorbodydumpwithconfig) |
-| **Middleware<br>Proxying** | [NewRandomBalancer](#webmiddleware-newrandombalancer) [NewRoundRobinBalancer](#webmiddleware-newroundrobinbalancer) [Proxy](#webmiddleware-proxy) [ProxyWithConfig](#webmiddleware-proxywithconfig) |
-| **Middleware<br>Rate Limiting** | [NewRateLimiterMemoryStore](#webmiddleware-newratelimitermemorystore) [NewRateLimiterMemoryStoreWithConfig](#webmiddleware-newratelimitermemorystorewithconfig) [RateLimiter](#webmiddleware-ratelimiter) [RateLimiterMemoryStore.Allow](#webmiddleware-ratelimitermemorystore-allow) [RateLimiterWithConfig](#webmiddleware-ratelimiterwithconfig) |
-| **Middleware<br>Redirects** | [HTTPSNonWWWRedirect](#webmiddleware-httpsnonwwwredirect) [HTTPSNonWWWRedirectWithConfig](#webmiddleware-httpsnonwwwredirectwithconfig) [HTTPSRedirect](#webmiddleware-httpsredirect) [HTTPSRedirectWithConfig](#webmiddleware-httpsredirectwithconfig) [HTTPSWWWRedirect](#webmiddleware-httpswwwredirect) [HTTPSWWWRedirectWithConfig](#webmiddleware-httpswwwredirectwithconfig) [NonWWWRedirect](#webmiddleware-nonwwwredirect) [NonWWWRedirectWithConfig](#webmiddleware-nonwwwredirectwithconfig) [WWWRedirect](#webmiddleware-wwwredirect) [WWWRedirectWithConfig](#webmiddleware-wwwredirectwithconfig) |
-| **Middleware<br>Reliability** | [Recover](#webmiddleware-recover) [RecoverWithConfig](#webmiddleware-recoverwithconfig) |
-| **Middleware<br>Request Lifecycle** | [ContextTimeout](#webmiddleware-contexttimeout) [ContextTimeoutWithConfig](#webmiddleware-contexttimeoutwithconfig) [DefaultSkipper](#webmiddleware-defaultskipper) [RequestID](#webmiddleware-requestid) [RequestIDWithConfig](#webmiddleware-requestidwithconfig) [RequestLoggerWithConfig](#webmiddleware-requestloggerwithconfig) [Timeout](#webmiddleware-timeout) [TimeoutWithConfig](#webmiddleware-timeoutwithconfig) |
-| **Middleware<br>Security** | [CORS](#webmiddleware-cors) [CORSWithConfig](#webmiddleware-corswithconfig) [Secure](#webmiddleware-secure) [SecureWithConfig](#webmiddleware-securewithconfig) |
-| **Middleware<br>Static Files** | [Static](#webmiddleware-static) [StaticWithConfig](#webmiddleware-staticwithconfig) |
-| **Prometheus** | [Default](#webprometheus-default) [Handler](#webprometheus-handler) [Metrics.Handler](#webprometheus-metrics-handler) [Metrics.Middleware](#webprometheus-metrics-middleware) [Middleware](#webprometheus-middleware) [MustNew](#webprometheus-mustnew) [New](#webprometheus-new) [RunPushGatewayGatherer](#webprometheus-runpushgatewaygatherer) [WriteGatheredMetrics](#webprometheus-writegatheredmetrics) |
-| **Route Reporting** | [BuildRouteEntries](#buildrouteentries) [RenderRouteTable](#renderroutetable) |
-| **Routing** | [MountRouter](#mountrouter) [NewRoute](#newroute) [NewRouteGroup](#newroutegroup) [NewWebSocketRoute](#newwebsocketroute) [RegisterRoutes](#registerroutes) [Route.Handler](#route-handler) [Route.HandlerName](#route-handlername) [Route.IsWebSocket](#route-iswebsocket) [Route.Method](#route-method) [Route.MiddlewareNames](#route-middlewarenames) [Route.Middlewares](#route-middlewares) [Route.Path](#route-path) [Route.WebSocketHandler](#route-websockethandler) [Route.WithMiddlewareNames](#route-withmiddlewarenames) [RouteGroup.MiddlewareNames](#routegroup-middlewarenames) [RouteGroup.Middlewares](#routegroup-middlewares) [RouteGroup.RoutePrefix](#routegroup-routeprefix) [RouteGroup.Routes](#routegroup-routes) [RouteGroup.WithMiddlewareNames](#routegroup-withmiddlewarenames) |
+| **Middleware<br>Auth** | [BasicAuth](#webmiddleware-basicauth) · [BasicAuthWithConfig](#webmiddleware-basicauthwithconfig) · [CSRF](#webmiddleware-csrf) · [CSRFWithConfig](#webmiddleware-csrfwithconfig) · [CreateExtractors](#webmiddleware-createextractors) · [KeyAuth](#webmiddleware-keyauth) · [KeyAuthWithConfig](#webmiddleware-keyauthwithconfig) |
+| **Middleware<br>Compression** | [Compress](#webmiddleware-compress) · [Decompress](#webmiddleware-decompress) · [DecompressWithConfig](#webmiddleware-decompresswithconfig) · [Gzip](#webmiddleware-gzip) · [GzipWithConfig](#webmiddleware-gzipwithconfig) |
+| **Middleware<br>Method Override** | [MethodFromForm](#webmiddleware-methodfromform) · [MethodFromHeader](#webmiddleware-methodfromheader) · [MethodFromQuery](#webmiddleware-methodfromquery) · [MethodOverride](#webmiddleware-methodoverride) · [MethodOverrideWithConfig](#webmiddleware-methodoverridewithconfig) |
+| **Middleware<br>Path Rewriting** | [AddTrailingSlash](#webmiddleware-addtrailingslash) · [AddTrailingSlashWithConfig](#webmiddleware-addtrailingslashwithconfig) · [RemoveTrailingSlash](#webmiddleware-removetrailingslash) · [RemoveTrailingSlashWithConfig](#webmiddleware-removetrailingslashwithconfig) · [Rewrite](#webmiddleware-rewrite) · [RewriteWithConfig](#webmiddleware-rewritewithconfig) |
+| **Middleware<br>Payloads** | [BodyDump](#webmiddleware-bodydump) · [BodyDumpWithConfig](#webmiddleware-bodydumpwithconfig) · [BodyLimit](#webmiddleware-bodylimit) · [BodyLimitWithConfig](#webmiddleware-bodylimitwithconfig) · [ErrorBodyDump](#webmiddleware-errorbodydump) · [ErrorBodyDumpWithConfig](#webmiddleware-errorbodydumpwithconfig) |
+| **Middleware<br>Proxying** | [NewRandomBalancer](#webmiddleware-newrandombalancer) · [NewRoundRobinBalancer](#webmiddleware-newroundrobinbalancer) · [Proxy](#webmiddleware-proxy) · [ProxyWithConfig](#webmiddleware-proxywithconfig) |
+| **Middleware<br>Rate Limiting** | [NewRateLimiterMemoryStore](#webmiddleware-newratelimitermemorystore) · [NewRateLimiterMemoryStoreWithConfig](#webmiddleware-newratelimitermemorystorewithconfig) · [RateLimiter](#webmiddleware-ratelimiter) · [RateLimiterMemoryStore.Allow](#webmiddleware-ratelimitermemorystore-allow) · [RateLimiterWithConfig](#webmiddleware-ratelimiterwithconfig) |
+| **Middleware<br>Redirects** | [HTTPSNonWWWRedirect](#webmiddleware-httpsnonwwwredirect) · [HTTPSNonWWWRedirectWithConfig](#webmiddleware-httpsnonwwwredirectwithconfig) · [HTTPSRedirect](#webmiddleware-httpsredirect) · [HTTPSRedirectWithConfig](#webmiddleware-httpsredirectwithconfig) · [HTTPSWWWRedirect](#webmiddleware-httpswwwredirect) · [HTTPSWWWRedirectWithConfig](#webmiddleware-httpswwwredirectwithconfig) · [NonWWWRedirect](#webmiddleware-nonwwwredirect) · [NonWWWRedirectWithConfig](#webmiddleware-nonwwwredirectwithconfig) · [WWWRedirect](#webmiddleware-wwwredirect) · [WWWRedirectWithConfig](#webmiddleware-wwwredirectwithconfig) |
+| **Middleware<br>Reliability** | [Recover](#webmiddleware-recover) · [RecoverWithConfig](#webmiddleware-recoverwithconfig) |
+| **Middleware<br>Request Lifecycle** | [ContextTimeout](#webmiddleware-contexttimeout) · [ContextTimeoutWithConfig](#webmiddleware-contexttimeoutwithconfig) · [DefaultSkipper](#webmiddleware-defaultskipper) · [RequestID](#webmiddleware-requestid) · [RequestIDWithConfig](#webmiddleware-requestidwithconfig) · [RequestLoggerWithConfig](#webmiddleware-requestloggerwithconfig) · [Timeout](#webmiddleware-timeout) · [TimeoutWithConfig](#webmiddleware-timeoutwithconfig) |
+| **Middleware<br>Security** | [CORS](#webmiddleware-cors) · [CORSWithConfig](#webmiddleware-corswithconfig) · [Secure](#webmiddleware-secure) · [SecureWithConfig](#webmiddleware-securewithconfig) |
+| **Middleware<br>Static Files** | [Static](#webmiddleware-static) · [StaticWithConfig](#webmiddleware-staticwithconfig) |
+| **Prometheus** | [Default](#webprometheus-default) · [Handler](#webprometheus-handler) · [Metrics.Handler](#webprometheus-metrics-handler) · [Metrics.Middleware](#webprometheus-metrics-middleware) · [Middleware](#webprometheus-middleware) · [MustNew](#webprometheus-mustnew) · [New](#webprometheus-new) · [RunPushGatewayGatherer](#webprometheus-runpushgatewaygatherer) · [WriteGatheredMetrics](#webprometheus-writegatheredmetrics) |
+| **Route Reporting** | [BuildRouteEntries](#buildrouteentries) · [RenderRouteTable](#renderroutetable) |
+| **Routing** | [MountRouter](#mountrouter) · [NewRoute](#newroute) · [NewRouteGroup](#newroutegroup) · [NewWebSocketRoute](#newwebsocketroute) · [RegisterRoutes](#registerroutes) · [Route.Handler](#route-handler) · [Route.HandlerName](#route-handlername) · [Route.IsWebSocket](#route-iswebsocket) · [Route.Method](#route-method) · [Route.MiddlewareNames](#route-middlewarenames) · [Route.Middlewares](#route-middlewares) · [Route.Path](#route-path) · [Route.WebSocketHandler](#route-websockethandler) · [Route.WithMiddlewareNames](#route-withmiddlewarenames) · [RouteGroup.MiddlewareNames](#routegroup-middlewarenames) · [RouteGroup.Middlewares](#routegroup-middlewares) · [RouteGroup.RoutePrefix](#routegroup-routeprefix) · [RouteGroup.Routes](#routegroup-routes) · [RouteGroup.WithMiddlewareNames](#routegroup-withmiddlewarenames) |
 | **Testing** | [NewContext](#webtest-newcontext) |
 
 
@@ -346,14 +340,17 @@ UnwrapContext returns the underlying Echo context when the web.Context came from
 
 ```go
 adapter := echoweb.New()
+
 adapter.Router().GET("/healthz", func(c web.Context) error {
 	_, ok := echoweb.UnwrapContext(c)
 	fmt.Println(ok)
 	return c.NoContent(http.StatusOK)
 })
+
 rr := httptest.NewRecorder()
 req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 adapter.ServeHTTP(rr, req)
+
 // true
 ```
 
@@ -388,7 +385,9 @@ manifest, err := webindex.Run(context.Background(), webindex.IndexOptions{
 	Root:    ".",
 	OutPath: "webindex.json",
 })
+
 fmt.Println(err == nil, manifest.Version != "")
+
 // true true
 ```
 
@@ -1451,13 +1450,16 @@ MountRouter applies mount-style router configuration in declaration order.
 
 ```go
 adapter := echoweb.New()
+
 err := web.MountRouter(adapter.Router(), []web.RouterMount{
 	func(r web.Router) error {
 		r.GET("/healthz", func(c web.Context) error { return nil })
 		return nil
 	},
 })
+
 fmt.Println(err == nil)
+
 // true
 ```
 
@@ -1469,7 +1471,9 @@ NewRoute creates a new route using the app-facing web handler contract directly.
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error {
 	return c.NoContent(http.StatusOK)
 })
+
 fmt.Println(route.Method(), route.Path())
+
 // GET /healthz
 ```
 
@@ -1481,7 +1485,9 @@ NewRouteGroup wraps routes and their accompanied web middleware.
 group := web.NewRouteGroup("/api", []web.Route{
 	web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }),
 })
+
 fmt.Println(group.RoutePrefix(), len(group.Routes()))
+
 // /api 1
 ```
 
@@ -1493,7 +1499,9 @@ NewWebSocketRoute creates a websocket route using the app-facing websocket handl
 route := web.NewWebSocketRoute("/ws", func(c web.Context, conn web.WebSocketConn) error {
 	return nil
 })
+
 fmt.Println(route.IsWebSocket())
+
 // true
 ```
 
@@ -1503,13 +1511,16 @@ RegisterRoutes registers route groups onto a router.
 
 ```go
 adapter := echoweb.New()
+
 groups := []web.RouteGroup{
 	web.NewRouteGroup("/api", []web.Route{
 		web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }),
 	}),
 }
+
 err := web.RegisterRoutes(adapter.Router(), groups)
 fmt.Println(err == nil)
+
 // true
 ```
 
@@ -1521,9 +1532,11 @@ Handler returns the route handler.
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error {
 	return c.NoContent(http.StatusCreated)
 })
+
 ctx := webtest.NewContext(nil, nil, "/healthz", nil)
 _ = route.Handler()(ctx)
 fmt.Println(ctx.StatusCode())
+
 // 201
 ```
 
@@ -1534,6 +1547,7 @@ HandlerName returns the original handler name for route reporting.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil })
 fmt.Println(route.HandlerName() != "")
+
 // true
 ```
 
@@ -1544,6 +1558,7 @@ IsWebSocket reports whether this route upgrades to a websocket connection.
 ```go
 route := web.NewWebSocketRoute("/ws", func(c web.Context, conn web.WebSocketConn) error { return nil })
 fmt.Println(route.IsWebSocket())
+
 // true
 ```
 
@@ -1554,6 +1569,7 @@ Method returns the HTTP method.
 ```go
 route := web.NewRoute(http.MethodPost, "/users", func(c web.Context) error { return nil })
 fmt.Println(route.Method())
+
 // POST
 ```
 
@@ -1564,6 +1580,7 @@ MiddlewareNames returns original middleware names for route reporting.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }).WithMiddlewareNames("auth")
 fmt.Println(route.MiddlewareNames()[0])
+
 // auth
 ```
 
@@ -1573,12 +1590,15 @@ Middlewares returns the route middleware slice.
 
 ```go
 route := web.NewRoute(
-	http.MethodGet,
-	"/healthz",
-	func(c web.Context) error { return nil },
-	func(next web.Handler) web.Handler { return next },
+
+http.MethodGet,
+"/healthz",
+func(c web.Context) error { return nil },
+func(next web.Handler) web.Handler { return next },
+
 )
 fmt.Println(len(route.Middlewares()))
+
 // 1
 ```
 
@@ -1589,6 +1609,7 @@ Path returns the path of the route.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil })
 fmt.Println(route.Path())
+
 // /healthz
 ```
 
@@ -1601,9 +1622,11 @@ route := web.NewWebSocketRoute("/ws", func(c web.Context, conn web.WebSocketConn
 	c.Set("ready", true)
 	return nil
 })
+
 ctx := webtest.NewContext(nil, nil, "/ws", nil)
 err := route.WebSocketHandler()(ctx, nil)
 fmt.Println(err == nil, ctx.Get("ready"))
+
 // true true
 ```
 
@@ -1614,6 +1637,7 @@ WithMiddlewareNames attaches reporting-only middleware names to the route.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }).WithMiddlewareNames("auth", "trace")
 fmt.Println(len(route.MiddlewareNames()))
+
 // 2
 ```
 
@@ -1624,6 +1648,7 @@ MiddlewareNames returns original middleware names for route reporting.
 ```go
 group := web.NewRouteGroup("/api", nil).WithMiddlewareNames("auth")
 fmt.Println(group.MiddlewareNames()[0])
+
 // auth
 ```
 
@@ -1634,6 +1659,7 @@ Middlewares returns the middleware slice for the group.
 ```go
 group := web.NewRouteGroup("/api", nil, func(next web.Handler) web.Handler { return next })
 fmt.Println(len(group.Middlewares()))
+
 // 1
 ```
 
@@ -1644,6 +1670,7 @@ RoutePrefix returns the group prefix.
 ```go
 group := web.NewRouteGroup("/api", nil)
 fmt.Println(group.RoutePrefix())
+
 // /api
 ```
 
@@ -1655,7 +1682,9 @@ Routes returns the routes in the group.
 group := web.NewRouteGroup("/api", []web.Route{
 	web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }),
 })
+
 fmt.Println(len(group.Routes()))
+
 // 1
 ```
 
@@ -1666,6 +1695,7 @@ WithMiddlewareNames attaches reporting-only middleware names to the group.
 ```go
 group := web.NewRouteGroup("/api", nil).WithMiddlewareNames("auth", "trace")
 fmt.Println(len(group.MiddlewareNames()))
+
 // 2
 ```
 

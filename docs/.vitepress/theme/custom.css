@@ -4689,6 +4689,24 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 }
 
 /* Tables: hairline frame, header kicker, row hover instead of zebra. */
+.VPDoc .vp-doc .gf-table-scroll {
+    width: 100%;
+    margin: 20px 0;
+    overflow-x: auto;
+    border: 1px solid rgba(148, 163, 204, 0.14);
+    border-radius: 10px;
+}
+
+.VPDoc .vp-doc .gf-table-scroll table {
+    display: table;
+    width: max-content;
+    min-width: 100%;
+    margin: 0;
+    overflow: visible;
+    border: none;
+    border-radius: 0;
+}
+
 .VPDoc .vp-doc table {
     border: 1px solid rgba(148, 163, 204, 0.14);
     border-radius: 10px;

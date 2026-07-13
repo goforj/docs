@@ -506,6 +506,21 @@ export default defineConfig({
         }
         return defaultFence ? defaultFence(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
       }
+
+      const defaultTableOpen = md.renderer.rules.table_open
+      const defaultTableClose = md.renderer.rules.table_close
+      md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
+        const table = defaultTableOpen
+          ? defaultTableOpen(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options)
+        return `<div class="gf-table-scroll" tabindex="0">\n${table.replace(' tabindex="0"', '')}`
+      }
+      md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
+        const table = defaultTableClose
+          ? defaultTableClose(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options)
+        return `${table}</div>\n`
+      }
     }
   },
   rewrites: libraryRewrites,
