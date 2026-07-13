@@ -24,12 +24,7 @@ Writing that glue by hand is repetitive and easy to drift. GoForj generates the 
 ```yaml
 render:
   starter_kit: none
-  components:
-    cli: true
-    web_api: true
-    jobs: true
-    scheduler: true
-    database_mysql: true
+  components: [cli, web_api, jobs, scheduler, database_mysql]
 ```
 
 Changing component selection changes the generated App structure. The available packages, commands, Wire sets, and emitted environment entries depend on this contract.

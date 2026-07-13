@@ -158,9 +158,7 @@ app/<app>/
 ```yaml
 apps:
   marketplace:
-    components:
-      web_api: true
-      jobs: true
+    components: [web_api, jobs]
     starter_kit: none
 ```
 

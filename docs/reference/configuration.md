@@ -256,14 +256,14 @@ When a named app has App-specific render choices, `.goforj.yml` records them und
 ```yaml
 apps:
   marketplace:
-    components:
-      web_api: true
-      jobs: true
+    components: [web_api, jobs]
     starter_kit: none
     help_format: guided
 ```
 
 Project-level components describe the rendered support surface. `forj make:app` may promote App-safe capabilities into the Project render set when a new App needs them.
+
+Component lists contain enabled component names. Each name must match a supported component key and may appear only once. An empty list explicitly enables no components. Legacy boolean maps remain accepted and are migrated to the compact list form the next time you run `forj render`.
 
 ## Component Names
 

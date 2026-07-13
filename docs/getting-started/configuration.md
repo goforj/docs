@@ -40,9 +40,7 @@ project_name: Example
 module_name: example.com/example
 apps:
   marketplace:
-    components:
-      web_api: true
-      jobs: true
+    components: [web_api, jobs]
 dev:
   auto_migrate: true
   down_on_exit: true
@@ -61,15 +59,12 @@ dev:
     marketplace: true
 render:
   starter_kit: none
-  components:
-    cli: true
-    web_api: true
-    jobs: true
-    scheduler: true
-    database_mysql: true
+  components: [cli, web_api, jobs, scheduler, database_mysql]
 ```
 
 Top-level `apps` stores per-App render metadata. `dev.apps` selects the App lifecycles managed by `forj dev`; sibling `dev.watches` entries run independent custom commands.
+
+Component lists contain only enabled components. Legacy boolean component maps remain readable and are rewritten as compact lists the next time you run `forj render`.
 
 Use `.goforj.yml` when you need to change the generated Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
 
