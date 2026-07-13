@@ -14,8 +14,12 @@ The App code should not change when topology changes.
 Standalone hosts enabled runtimes together:
 
 ```bash
-./bin/app run
+./bin/app
 ```
+
+Runtime-capable generated App binaries default to `run` when launched without arguments, so this is equivalent to `./bin/app run`. No build flag is required.
+
+Explicit commands still win. If a process supervisor starts `./bin/app api`, `./bin/app worker`, or another command, the binary runs that command instead of selecting the standalone runtime. CLI-only App binaries retain root help behavior because they do not have a standalone runtime.
 
 Use it for:
 
@@ -24,29 +28,7 @@ Use it for:
 - small deployments
 - simple operational environments
 
-## Default Launch Binaries
-
-For single-process deployments, `forj build --auto-run` can compile standalone launch behavior into the binary:
-
-```bash
-forj build --auto-run
-```
-
-With that build option, launching the binary with no command starts the App runtime:
-
-```bash
-./bin/app
-```
-
-This is equivalent to running:
-
-```bash
-./bin/app run
-```
-
-Explicit commands still win. If a process supervisor starts `./bin/app api`, `./bin/app worker`, or any other command, the binary runs that command instead of the default launch behavior.
-
-Use this when the deployment unit should behave like a normal executable service. Do not use it to hide runtime topology decisions; distributed deployments should still start explicit runtime commands.
+The bare form is convenient when the deployment unit is one standalone service. Distributed deployments should still start explicit runtime commands so process ownership remains visible.
 
 ## Distributed
 

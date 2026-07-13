@@ -29,13 +29,13 @@ For a named app:
 or, in standalone mode:
 
 ```bash
-./bin/app run
+./bin/app
 ```
 
 For a named app:
 
 ```bash
-./bin/marketplace run
+./bin/marketplace
 ```
 
 ## Singleton Behavior

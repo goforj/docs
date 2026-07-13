@@ -153,7 +153,12 @@ Recommended internal artifact:
 
 Docs should cover:
 
-- watcher role
+- `dev.apps` as the App-aware build, SPA, and runtime lifecycle graph
+- `dev.watches` as independent custom commands
+- explicit generated commands, matchers, roots, and exclusions
+- App participation and CLI-only omission behavior
+- successful SPA build to App build to runtime replacement ordering
+- native list matchers and legacy scalar watcher compatibility
 - transcript-first output
 - hotkeys and footer
 - rebuild/restart semantics
@@ -162,6 +167,8 @@ Docs should cover:
 - common failure modes
 
 Do not document it as a full-screen TUI abstraction if the product intentionally remains transcript-first.
+
+Do not flatten `dev.apps` into generic watcher terminology. It owns process lifecycle and dependency edges in addition to filesystem subscriptions.
 
 ## Documentation Requirement
 

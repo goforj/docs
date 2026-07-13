@@ -89,7 +89,7 @@ forj marketplace build
 ```
 
 ::: info Dev Loop
-`forj dev` normally runs the build path through its watcher. In a multi-app Project, unqualified `forj dev` builds and runs discovered apps.
+`forj dev` normally runs the build path through each App lifecycle listed under `dev.apps`. In a multi-app Project, unqualified `forj dev` manages every listed App.
 :::
 
 ## Common Mistakes

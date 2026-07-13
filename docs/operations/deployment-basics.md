@@ -24,7 +24,7 @@ forj build
 Common production commands:
 
 ```bash
-./bin/app run
+./bin/app
 ./bin/app api
 ./bin/app worker
 ./bin/app scheduler
@@ -40,7 +40,7 @@ Named apps use their own binaries:
 ./bin/marketplace migrate
 ```
 
-Use `run` for standalone topology. Use specific runtime commands when HTTP, workers, and scheduler should be separate processes.
+Use the bare binary, or explicit `run`, for standalone topology. Use specific runtime commands when HTTP, workers, and scheduler should be separate processes.
 
 ## Environment
 

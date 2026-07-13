@@ -14,7 +14,7 @@ Local-first does not mean local-only. It means the first working path is small, 
 Start with:
 
 ```bash
-forj app # or ./bin/app run
+forj app # or ./bin/app
 ```
 
 The generated `app` command hosts enabled runtimes together in one process when `RUNTIME_MODE` is unset or `standalone`.
@@ -22,7 +22,7 @@ The generated `app` command hosts enabled runtimes together in one process when 
 For a named app, add the app name:
 
 ```bash
-forj marketplace app # or ./bin/marketplace run
+forj marketplace app # or ./bin/marketplace
 ```
 
 Use direct runtime commands when you need explicit process boundaries:

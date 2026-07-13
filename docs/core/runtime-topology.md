@@ -5,12 +5,12 @@ description: Understand app and runtime process shapes in a GoForj Project.
 
 # Runtime Topology
 
-Runtime topology describes how an app's runtimes are hosted: together in one process or split across explicit commands.
+Runtime topology describes how an App's runtimes are hosted: together in one process or split across explicit commands.
 
 Apps and runtimes are different:
 
-- an app is the runnable boundary, such as `app` or `marketplace`
-- a runtime is a process role inside an app, such as HTTP, jobs, or scheduler
+- an App is the runnable boundary, such as `app` or `marketplace`
+- a Runtime is a process role inside an App, such as HTTP, jobs, or scheduler
 
 ## Local Default
 
@@ -53,13 +53,15 @@ The application behavior should not change when you split runtimes. Only process
 Deployment docs use built binaries:
 
 ```bash
-./bin/app run
+./bin/app
 ./bin/app api
 ./bin/app worker
 ./bin/app scheduler
 ```
 
-Named app binaries follow the app name:
+For runtime-capable Apps, the bare binary defaults to `run` without a build flag and is equivalent to `./bin/app run`. Explicit commands still take precedence, and CLI-only binaries retain root help behavior when launched without a command.
+
+Named app binaries follow the App name:
 
 ```bash
 ./bin/marketplace api
@@ -120,6 +122,6 @@ Use split runtimes when:
 
 ## Next Steps
 
-- [Apps](/core/apps) explains default and named apps.
+- [Apps](/core/apps) explains the default app and named apps.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown ordering.
 - [Runtime Processes](/operations/runtime-processes) explains production process deployment.

@@ -308,9 +308,9 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
 - `docs/developer-tools/forj-dev.md`
   - Document multi-app behavior:
     - single-app `forj dev` remains the normal loop
-    - in a multi-app Project, unqualified `forj dev` builds and runs discovered apps
+    - in a multi-app Project, unqualified `forj dev` manages Apps listed under `dev.apps`
     - `forj <app> dev` scopes dev to one app
-  - Mention `.env` and app layout watchers.
+  - Mention supervisor-owned `.env` triggers and App lifecycle configuration.
   - Mention parallel shutdown behavior only if the page discusses process management details.
 - `docs/core/local-first-development.md`
   - Add app fan-out local development guidance and deterministic ports.
@@ -328,7 +328,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
 - `docs/operations/runtime-processes.md`
   - Add named-app binary examples such as `./bin/marketplace api`, `./bin/marketplace worker`, and `./bin/backstage scheduler`.
 - `docs/operations/standalone-vs-distributed.md`
-  - Clarify how default-launch binaries work per app.
+  - Clarify how bare runtime binaries default to `run` for each runtime-capable App.
 
 ### Priority 6: Update Data, Queues, and Migrations
 

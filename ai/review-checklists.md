@@ -83,7 +83,7 @@ Use these checklists before publishing new docs, reviewing AI-generated drafts, 
 
 - The process or command is named.
 - Development commands and built binary commands are not conflated.
-- Default-launch binary behavior is documented when topology pages discuss `forj build --auto-run`.
+- Bare runtime binary behavior is documented when topology pages discuss standalone App deployment.
 - Startup behavior is described.
 - Shutdown behavior is described.
 - Health or readiness behavior is described when relevant.

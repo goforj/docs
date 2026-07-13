@@ -16,7 +16,7 @@ Use workflow pages for full context.
 | `forj new` | Create a new GoForj Project through the interactive wizard. |
 | `forj build` | Run generation, Wire, API indexing, then `go build`. |
 | `forj run <app-command>` | Run generation, API indexing, then `go run ./cmd/app <app-command>`. |
-| `forj dev` | Run local development watchers from `.goforj.yml`. |
+| `forj dev` | Run App development lifecycles and custom watches from `.goforj.yml`. |
 | `forj generate` | Refresh generated component code and derived files. |
 | `forj make:app <name>` | Create a named app in the current Project. |
 | `forj make:controller <name>` | Generate an HTTP controller and wire it into HTTP. |
@@ -72,6 +72,7 @@ forj cache
 forj make:job reports:generate
 forj make:schedule reports:daily --every 24h
 
+./bin/app
 ./bin/app run
 ./bin/app api
 ./bin/app worker
@@ -83,7 +84,9 @@ forj marketplace route:list
 ./bin/marketplace worker
 ```
 
-These resolve to generated App commands through Kong aliases.
+For runtime-capable Apps, bare `./bin/app` selects `run`; CLI-only binaries print root help when no command is supplied. Passing `--help` or an explicit command retains normal CLI behavior.
+
+These reach the generated App command surface. Short command names use Kong aliases.
 
 Available commands depend on selected components.
 

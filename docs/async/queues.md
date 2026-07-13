@@ -145,7 +145,7 @@ forj worker --queue emails --queue reports # or ./bin/app worker --queue emails 
 In standalone local mode, workers can also be hosted with other enabled runtimes:
 
 ```bash
-forj app # or ./bin/app run
+forj app # or ./bin/app
 ```
 
 ## Regeneration

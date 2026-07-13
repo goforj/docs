@@ -1,13 +1,13 @@
 ---
 title: Developer Tools
-description: GoForj CLI tooling, development watchers, rendering, and generated App development workflows.
+description: GoForj CLI tooling, local App lifecycle orchestration, rendering, and generated App development workflows.
 ---
 
 # Developer Tools
 
 Developer Tools covers framework tooling used while building a GoForj App.
 
-Start with [forj dev](/developer-tools/forj-dev) for the local watcher workflow.
+Start with [forj dev](/developer-tools/forj-dev) for local App lifecycle orchestration and standalone custom watches.
 
 ## Pages
 

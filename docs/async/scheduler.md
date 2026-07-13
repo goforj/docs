@@ -80,13 +80,13 @@ forj marketplace scheduler # or ./bin/marketplace scheduler
 Run it with other enabled local runtimes:
 
 ```bash
-forj app # or ./bin/app run
+forj app # or ./bin/app
 ```
 
 For a named app:
 
 ```bash
-forj marketplace app # or ./bin/marketplace run
+forj marketplace app # or ./bin/marketplace
 ```
 
 ## Recommended Shape

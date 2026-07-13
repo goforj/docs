@@ -84,7 +84,7 @@ Startup, shutdown, workers, schedules, background processes, and runtime boundar
 
 Hidden lifecycle behavior erodes trust.
 
-Packaging conveniences such as default-launch binaries should be documented as build-time behavior, not as hidden runtime magic. A binary built with `forj build --auto-run` may launch the standalone runtime with no command, while explicit commands remain explicit.
+Runtime-capable generated binaries use a stable App-level default: launching the binary without arguments selects the standalone `run` runtime. Explicit commands remain explicit, and CLI-only binaries retain their normal root help behavior. Document this as part of the generated App definition, not as a build flag or hidden runtime discovery.
 
 ### Observability Is Core
 

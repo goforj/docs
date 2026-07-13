@@ -21,17 +21,22 @@ The project file records render-time choices and local development workflow.
 | `updated_at` | Timestamp written by rendering workflows. |
 | `render.components` | Selected framework components. |
 | `render.starter_kit` | Selected starter kit. |
-| `render.queue_driver` | Initial queue driver selection. |
+| `render.help_format` | Default app CLI help presentation. |
 | `render.goforj_version` | GoForj version recorded for the rendered App. |
 | `render.module_replaces` | Local module replacements for sibling repos. |
-| `apps` | Optional per-app component and starter-kit metadata for named apps. |
+| `apps` | Optional render metadata for named apps. |
 | `dev.pre` | Development pre-tasks. |
 | `dev.down` | Development teardown tasks. |
-| `dev.watches` | `forj dev` watcher definitions. |
+| `dev.apps` | App-aware build, run, and SPA lifecycle configuration. |
+| `dev.watches` | Independent custom watcher commands. |
 | `dev.auto_migrate` | Development auto-migrate behavior. |
 | `dev.down_on_exit` | Development cleanup behavior on exit. |
 | `dev.sound_on_watch_error` | Optional local feedback when a watcher command fails. |
 | `dev.wire_paths` | Wire paths used by development tooling. |
+
+Queue driver configuration is environment-backed rather than stored in `.goforj.yml`. When Jobs is selected, `forj new` uses the wizard choice to seed `QUEUE_DRIVER` and `QUEUE_SUPPORTED_DRIVERS` in `.env`. Change those environment variables after Project creation.
+
+The legacy `render.queue_driver` key remains accepted as migration input and is removed when GoForj next rewrites the Project configuration.
 
 ## Development Tasks
 
@@ -47,17 +52,197 @@ dev:
       cmd: docker-compose down
 ```
 
-Watchers use this shape:
+## App Development Lifecycles
+
+`dev.apps` is the modern allowlist for App-aware local development. Each listed App can own a build, a runtime process, and one or more frontend SPA builds:
+
+```yaml
+dev:
+  apps:
+    app:
+      build:
+        exec: forj build -o ./bin/app
+        watch: [.go, .env, .env.*]
+        ignore: [forj, _data, wire_gen.go, .git, .hg, .svn, .idea, .vscode, .settings, node_modules]
+        root: .
+        postpone: true
+      run:
+        exec: ./bin/app
+      spas:
+        frontend:
+          path: ./cmd/app/frontend
+          build: npm run build -s -- --logLevel silent
+          watch: [.ts, .tsx, .js, .jsx, .vue, .css, .html, package.json, package-lock.json]
+          ignore: [_data, node_modules, dist]
+```
+
+These are lifecycle graphs rather than flat watcher entries. A successful SPA build requests its owning App build, and a successful App build requests runtime replacement. Failures do not traverse those success edges. The generated bare-binary runtime uses validated executable snapshots so a failed build cannot replace a healthy process.
+
+### App Participation
+
+| Shape | Behavior |
+| --- | --- |
+| App omitted | Do not manage that App in the modern dev graph. |
+| `app: true` | Use the conventional build and runtime when the App has a runtime. |
+| `app: false` | Invalid. Omit the App instead. |
+| `dev.apps: {}` | Use native dev mode with no managed Apps. |
+| Entire `dev.apps` key omitted | Retain legacy discovery and watcher compatibility. |
+
+Runtime-capable means the App has Web API, Web UI, Scheduler, or Jobs support. Generated CLI-only Apps are omitted from `dev.apps` by default because they do not need a long-running runtime. Listing a CLI-only App with `true` enrolls its conventional build without starting a runtime; set `run` to a command string or mapping when the dev loop should invoke a specific command.
+
+App names must be safe lowercase slugs. `wire` is reserved by the generated layout.
+
+### Build and Run Commands
+
+`build` and `run` accept `true`, `false`, a command string, or an expanded mapping.
+
+| Shape | Build behavior | Run behavior |
+| --- | --- | --- |
+| Omitted or `true` | Use the conventional App build. | Run the bare App binary when runtime-capable. |
+| `false` | Disable the App build. | Keep the build graph but disable the runtime. |
+| String | Use the string as the complete build command. | Append the string as arguments to `./bin/<app>`. |
+| Mapping | Override build fields; `exec` may be omitted to retain the conventional command. | Use `exec` as the complete process command; `exec` is required. |
+
+Expanded command fields are:
+
+| Key | Purpose |
+| --- | --- |
+| `exec` | Shell command. |
+| `watch` | Native file matcher list. A non-empty build list replaces conventional include matchers. |
+| `ignore` | Exclusion matcher list. App build values extend conventional safety exclusions. |
+| `root` | Directory against which watch paths are resolved. |
+| `workdir` | Working directory for the command. A nested directory requires explicit `exec`. |
+| `env` | Command-specific environment values. |
+| `debounce` | Change coalescing duration, such as `300ms`. |
+| `poll` | A positive duration forces polling. Omission or `0s` uses filesystem notifications with polling fallback. |
+| `postpone` | Do not run this watcher node immediately when the watcher session starts. Build defaults to `true`; run defaults to `false`. The supervisor's startup build and reconciliation still run. |
+
+`restart`, `exit`, and `stdin` are custom-watch controls. They are not App build or run fields.
+
+Structured App build and run commands always receive the correct `FORJ_APP` and `FORJ_COMMAND_PREFIX`, overriding configured values for those reserved keys.
+
+Only a run mapping containing the exact generated `exec: ./bin/<app>` and no other controls retains managed binary snapshot behavior. Adding environment, matcher, path, or timing controls makes it a complete process override. A scalar run command remains the concise App-command form:
+
+```yaml
+dev:
+  apps:
+    app:
+      run: worker --queue reports
+```
+
+This runs `./bin/app worker --queue reports`.
+
+A mapped runtime gets a direct filesystem subscription only when `run.watch` is non-empty. Without it, `run.root`, `run.ignore`, `run.debounce`, and `run.poll` have no watcher effect, although `workdir`, `env`, and `postpone` still affect the process lifecycle. When the App has a managed build, a matcher equal to `./bin/<app>` is removed because successful build publication already owns that restart edge.
+
+### SPA Fields
+
+An SPA can be a conventional path string or an expanded mapping:
+
+```yaml
+dev:
+  apps:
+    app:
+      spas:
+        frontend: ./cmd/app/frontend
+        admin:
+          path: ./cmd/app/admin
+          build: npm run build
+          watch: [.ts, .css]
+          ignore: [node_modules, dist]
+```
+
+SPA map keys must be safe lowercase slugs. An SPA value accepts a path string or mapping; `false` is invalid. Remove the SPA key to exclude it from the lifecycle.
+
+Expanded SPAs support only `path`, `build`, `watch`, and `ignore`. `path` is required and is both the watch root and command working directory. An empty or omitted `build` selects the conventional build command. Empty or omitted `watch` and `ignore` lists use conventional SPA defaults; non-empty lists replace their respective defaults.
+
+## Custom Watches
+
+Use sibling `dev.watches` entries for arbitrary commands that do not own an App lifecycle:
 
 ```yaml
 dev:
   watches:
-    - name: app
-      watch: "-file=.go -xfile=_test.go ."
+    - name: Generate API Client
+      exec: go generate ./internal/client
+      watch: [.graphql, .json]
+      ignore: [generated, node_modules]
+      root: .
+      postpone: true
+```
+
+Custom watches coexist with `dev.apps` but have no implicit edge into an App build or runtime restart.
+
+Watch roots default to `.`. Every outermost physical root must exist, must be a directory, and must not be a symbolic link when the watcher starts. Native custom watches have no implicit exclusions for hidden paths, version-control metadata, editor metadata, or `node_modules`; list every exclusion the command needs.
+
+| Key | Purpose |
+| --- | --- |
+| `name` | Display name. Omission uses `Watch N`. |
+| `exec` | Required shell command. |
+| `watch` | Native matcher list. Omission accepts every non-excluded file. |
+| `include` | Compatibility alias for a native matcher list. Do not combine it with `watch`. |
+| `ignore` | File exclusions that also prune matching directories. |
+| `root` / `roots` | One watch root or a list of roots. Do not set both. |
+| `workdir` | Command working directory, independent of watch roots. |
+| `files.include` | Additional file inclusion matchers. |
+| `files.exclude` | Additional exclusions that also participate in directory pruning. |
+| `dirs.include` / `dirs.exclude` | Directory restrictions and exclusions. |
+| `env` | Command-specific environment values. |
+| `debounce` | Change coalescing duration. The default is `300ms`. |
+| `poll` | A positive duration forces polling. Omission or `0s` uses filesystem notifications with polling fallback. |
+| `postpone` | Do not run the custom command immediately; wait for the first matching change. This does not suppress supervisor startup build or reconciliation. |
+| `restart` | Interrupt an active custom command when another change arrives. |
+| `exit` | End the dev session when this command completes. |
+| `stdin` | Attach standard input to the command. |
+
+`debounce` and `poll` use Go duration syntax and reject invalid or negative values. An explicit `debounce: 0s` disables change coalescing. An omitted or empty native `watch` list watches every non-excluded file; it does not disable the watcher.
+
+### Native Matcher Syntax
+
+Matchers are relative to each configured root:
+
+| Value | Behavior |
+| --- | --- |
+| `.go` | Match a filename suffix. |
+| `.env` | Match the exact basename. |
+| `.env.*` | Match a basename prefix such as `.env.local`. |
+| `package.json` | Match the exact basename. |
+| `./schemas/api.json` | Match an exact root-relative path. |
+| `re:^schemas/.+\.json$` | Match an explicit Go regular expression. |
+
+Exclusions take precedence over inclusions. Empty string matcher elements and invalid regular expressions fail configuration compilation.
+
+Both compact flow sequences such as `watch: [.go, .env]` and block sequences are standard YAML and decode to the same string lists.
+
+### Legacy Watch Compatibility
+
+A scalar `watch` value selects GoForj's supported legacy wgo-style flag subset:
+
+```yaml
+dev:
+  watches:
+    - name: Legacy Build
+      watch: -file .go -xdir node_modules -postpone
       exec: forj build
 ```
 
-## Apps
+GoForj parses this syntax internally and does not invoke an external `wgo` process. Supported flags are `-root`, `-cd`, `-file`, `-dir`, `-xfile`, `-xdir`, `-debounce`, `-poll`, `-postpone`, `-exit`, `-stdin`, `-verbose`, `-exec-log`, `-exec-msg`, and `-log-prefix`. Unsupported flags fail configuration compilation.
+
+With a scalar `watch`, the scalar grammar owns matcher, root, working-directory, timing, and process controls. Do not mix it with native `include`, `ignore`, `root`, `roots`, `workdir`, `files`, `dirs`, `debounce`, `poll`, `postpone`, `restart`, `exit`, or `stdin` fields. The entry's `name`, `exec`, and `env` fields still apply. Use list-shaped `watch` values for new configuration.
+
+Legacy custom watcher commands always use restart-on-change behavior: a new event interrupts an active command. There is no supported scalar `-restart` flag.
+
+Historical `dev.run` maps remain accepted as legacy App-command allowlists. New configuration should express participation and commands under `dev.apps`.
+
+During render, GoForj conservatively migrates a complete, recognized, unmodified historical `Build App` and `Run App` pair when its legacy `dev.run` map is valid. Otherwise, it leaves the legacy lifecycle untouched. Modified and custom entries are preserved.
+
+## Render Metadata for Apps
+
+Top-level `apps` and `dev.apps` have different responsibilities:
+
+| Key | Responsibility |
+| --- | --- |
+| `apps` | Per-App render components, starter kit, and help-format metadata. |
+| `dev.apps` | Participation and lifecycle behavior under `forj dev`. |
 
 Named apps are discovered from layout:
 
@@ -66,7 +251,7 @@ cmd/marketplace/main.go
 app/marketplace/
 ```
 
-When a named app has app-specific component choices, `.goforj.yml` records them under `apps`:
+When a named app has App-specific render choices, `.goforj.yml` records them under `apps`:
 
 ```yaml
 apps:
@@ -75,9 +260,10 @@ apps:
       web_api: true
       jobs: true
     starter_kit: none
+    help_format: guided
 ```
 
-Project-level components describe the rendered support surface. `forj make:app` may promote app-safe capabilities into the project render set when a new app needs them.
+Project-level components describe the rendered support surface. `forj make:app` may promote App-safe capabilities into the Project render set when a new App needs them.
 
 ## Component Names
 

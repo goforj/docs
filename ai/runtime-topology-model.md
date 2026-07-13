@@ -46,7 +46,7 @@ The combined command is the normal local host path. Leaf commands remain importa
 
 Built binaries should usually be documented with their direct command surface:
 
-- `./bin/app run`
+- `./bin/app` for the standalone runtime (`./bin/app run` is equivalent)
 - `./bin/app api`
 - `./bin/app worker`
 - `./bin/app scheduler`
@@ -68,11 +68,9 @@ When explaining command execution, keep the surfaces distinct:
 
 Do not imply App-owned generation logic moved into the Framework CLI. `forj` may route commands, but App-owned generators and commands remain generated App code so they can use App configuration, dependencies, and wiring.
 
-## Default Launch Binaries
+## Default Runtime Launch
 
-`forj build --auto-run` can compile default launch behavior into the binary.
-
-When present, running the binary with no command starts the standalone App runtime:
+Running a runtime-capable generated App binary with no command starts the standalone App runtime:
 
 ```bash
 ./bin/app
@@ -84,9 +82,9 @@ This should be described as equivalent to the standalone launch command:
 ./bin/app run
 ```
 
-Explicit commands still win. If a supervisor runs `./bin/app api`, `./bin/app worker`, or another command, the binary runs that command instead of the default launch behavior.
+No build flag is required. Explicit commands still win. If a supervisor runs `./bin/app api`, `./bin/app worker`, or another command, the binary runs that command instead of selecting the standalone runtime.
 
-Docs should frame this as a packaging convenience for single-process services, not as a replacement for explaining topology.
+CLI-only binaries retain root help behavior because they do not have a standalone runtime. Docs should frame the bare launch as an App-level default for single-process services, not as a replacement for explaining topology.
 
 ## Standalone versus Distributed
 

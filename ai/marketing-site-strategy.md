@@ -99,7 +99,7 @@ Do not show planned or placeholder posts on the public blog index. Empty future-
 Current internal topic backlog:
 
 - Lighthouse and operational visibility: inspections, health, metrics, runtime state, and operator-facing confidence without hiding production behavior.
-- Runtime topology for local and production systems: standalone binaries, distributed runtime commands, `forj build --auto-run`, and the relationship between local development and process boundaries.
+- Runtime topology for local and production systems: bare standalone App binaries, explicit distributed runtime commands, and the relationship between local development and process boundaries.
 - Migration strategy across database dialects: raw SQL, dialect variants, translation, validation, and testcontainer-backed correctness checks for multi-dialect teams.
 
 The visual card treatment used for future-topic cards can be reused later for real posts, series landing pages, or related-post blocks. Do not expose it as "planned" content.

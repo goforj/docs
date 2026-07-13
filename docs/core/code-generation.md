@@ -17,7 +17,7 @@ The primary project rendering contract is:
 .goforj.yml
 ```
 
-This file records selected components, starter kit choices, module path, development watchers, Wire paths, and module replacements.
+This file records selected components, starter kit choices, module path, App development lifecycles, custom watches, Wire paths, and module replacements.
 
 Environment variables also influence generation for driver support and named resources.
 

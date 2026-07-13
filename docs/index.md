@@ -552,7 +552,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <span class="t-step">frontend</span>   built from <span class="t-hl">cmd/app/frontend</span>
 <span class="t-step">binary</span>     wrote <span class="t-hl">bin/app</span> with embedded assets
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app run</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
 <span class="t-step">http</span>       serving <span class="t-hl">/</span> and <span class="t-hl">/api</span> on <span class="t-hl">:3000</span>
 <span class="t-step">frontend</span>   Vue app served by the same process</code></pre>
 </div>
@@ -565,7 +565,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <span class="t-prompt">$</span> <span class="t-cmd">ls -lh bin/app</span>
 -rwxr-xr-x  1 you  staff  <span class="t-hl">57M</span>  bin/app
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app run</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
 <span class="t-dim">23:51:32.256</span> <span class="t-step">Scheduler</span>  Scheduler started
 <span class="t-dim">23:51:32.256</span> <span class="t-step">Jobs</span>       Queue worker started <span class="t-dim">→ workers=30</span>
 <span class="t-dim">23:51:32.257</span> <span class="t-step">HTTP</span>       Listening <span class="t-dim">→ addr=</span><span class="t-hl">0.0.0.0:3000</span></code></pre>
@@ -577,7 +577,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-ops__topology">
 <div class="gf-home-ops__shape" data-reveal>
 <p class="gf-home-ops__shape-title">Standalone</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj app</span>  <span class="t-dim"># → ./bin/app run</span>
+<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj app</span>  <span class="t-dim"># → ./bin/app</span>
 <span class="t-dim">one process:</span> http <span class="t-dim">+</span> jobs <span class="t-dim">+</span> scheduler</code></pre>
 </div>
 <div class="gf-home-ops__shape" data-reveal style="--reveal-delay: 0.1s">

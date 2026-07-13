@@ -26,13 +26,13 @@ forj marketplace worker # or ./bin/marketplace worker
 Run workers with other enabled runtimes in local standalone mode:
 
 ```bash
-forj app # or ./bin/app run
+forj app # or ./bin/app
 ```
 
 For a named app:
 
 ```bash
-forj marketplace app # or ./bin/marketplace run
+forj marketplace app # or ./bin/marketplace
 ```
 
 ## Runtime Boundary

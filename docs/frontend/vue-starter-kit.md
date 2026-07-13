@@ -57,7 +57,7 @@ Generated dev configuration can add a pre-task:
 cd cmd/app/frontend && npm install
 ```
 
-and a frontend watcher when Web UI is enabled.
+and an App-owned SPA build under `dev.apps.<app>.spas` when Web UI is enabled. That lifecycle builds frontend assets before the owning App build and reruns after matching source changes.
 
 Use:
 
@@ -65,7 +65,7 @@ Use:
 forj dev
 ```
 
-for the generated local watcher workflow.
+for the generated local App lifecycle.
 
 ## Serving Assets
 

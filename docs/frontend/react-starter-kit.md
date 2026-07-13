@@ -57,9 +57,9 @@ Use the normal Project loop:
 forj dev
 ```
 
-Generated development tasks install frontend dependencies, run Vite, rebuild the Go binary, and restart the selected App when required.
+Generated development tasks install frontend dependencies. The App-owned SPA lifecycle builds frontend assets, then rebuilds the Go binary and restarts the selected App after successful changes.
 
-To work on the frontend directly:
+The current generated App lifecycle does not start the Vite development server. Run it directly when you want Vite-specific development behavior; a custom `dev.watches` entry can manage it when needed:
 
 ```bash
 cd cmd/app/frontend

@@ -212,7 +212,7 @@ forj route:list
 For rendered App binaries, prefer production-shaped commands:
 
 ```bash
-./bin/app run
+./bin/app
 ./bin/app api
 ./bin/app worker
 ./bin/app scheduler
@@ -224,12 +224,12 @@ When an operations page lists common runtime processes, show both forms side by 
 
 | Process | Built binary | Development alias |
 | --- | --- | --- |
-| Combined runtime | `./bin/app run` | `forj app` |
+| Combined runtime | `./bin/app` or `./bin/app run` | `forj app` |
 | HTTP | `./bin/app api` | `forj api` |
 | Queue workers | `./bin/app worker` | `forj worker` |
 | Scheduler | `./bin/app scheduler` | `forj scheduler` |
 
-When documenting `forj build --auto-run`, describe it as a build-time default launch setting: launching `./bin/app` with no command starts the App runtime, while explicit commands still take precedence.
+When documenting bare binaries, state that runtime-capable Apps default to `run` without requiring a build flag. Explicit commands still take precedence, and CLI-only binaries retain root help behavior when no command is supplied.
 
 When showing Go commands in internal maintainer docs, use the GoForj cache environment:
 

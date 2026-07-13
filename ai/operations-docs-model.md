@@ -30,7 +30,7 @@ Document:
 - built binary command: `./bin/app api`
 - named app binary command: `./bin/<app> api`
 - combined runtime command: `forj app`
-- built standalone command: `./bin/app run`
+- built standalone command: `./bin/app` or `./bin/app run`
 - route registration
 - middleware stack
 - health and readiness routes
@@ -103,7 +103,7 @@ Document:
 - `forj run ...` as the explicit App-command path or collision escape hatch
 - `./bin/app ...` as the built App command surface
 - `./bin/<app> ...` as a named app built command surface
-- default-launch behavior from `forj build --auto-run` when relevant
+- bare runtime launch behavior for runtime-capable App binaries when relevant
 - command lifecycle
 - context cancellation
 - logging
@@ -175,7 +175,7 @@ Use these sections for long-running runtimes:
 
 Skip sections that truly do not apply, but do not omit lifecycle, configuration, or failure modes for long-running processes.
 
-For topology pages, include a short section for default-launch binaries when the page discusses standalone process deployment. State that `forj build --auto-run` makes `./bin/app` launch the standalone runtime with no arguments, while explicit runtime commands continue to behave normally.
+For topology pages, include a short section for bare binaries when the page discusses standalone process deployment. State that runtime-capable Apps make `./bin/app` equivalent to `./bin/app run` without a build flag, while explicit runtime commands continue to behave normally. Note that CLI-only binaries retain root help behavior.
 
 ## Failure Mode Language
 

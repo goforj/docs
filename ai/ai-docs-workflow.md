@@ -74,7 +74,7 @@ When choosing command wording:
 - Use `forj ...` for generated App commands during development.
 - Use `forj run ...` only when documenting the explicit App-command path or collision escape hatch.
 - Use `./bin/app ...` for built binary, deployment, and process-supervision docs.
-- Mention `forj build --auto-run` only where default-launch binary behavior matters.
+- Mention bare `./bin/app` launch behavior only where standalone runtime ownership matters.
 
 For primitives, verify in sibling repos:
 

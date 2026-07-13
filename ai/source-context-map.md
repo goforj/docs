@@ -221,6 +221,26 @@ Use for:
 - native command precedence
 - source-aware app command execution
 
+### Local Development Orchestration
+
+Read:
+
+- `../goforj/project/config.go`
+- `../goforj/project/config_dev.go`
+- `../goforj/internal/forj/project_renderer.go`
+- `../goforj/internal/forj/project_dev_config.go`
+- `../goforj/internal/forj/dev_watcher_spec.go`
+- `../goforj/internal/forj/dev_watcher_runner.go`
+- `../goforj/internal/devwatch`
+
+Use for:
+
+- `dev.apps` App lifecycle configuration
+- standalone `dev.watches` configuration
+- native matcher semantics and legacy watcher compatibility
+- build, SPA, and runtime dependency edges
+- rebuild, publication, and runtime replacement behavior
+
 ## Context Loading Rule
 
 Load the smallest set of files that answers the task.

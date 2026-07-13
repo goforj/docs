@@ -24,7 +24,6 @@ Writing that glue by hand is repetitive and easy to drift. GoForj generates the 
 ```yaml
 render:
   starter_kit: none
-  queue_driver: redis
   components:
     cli: true
     web_api: true
@@ -33,7 +32,9 @@ render:
     database_mysql: true
 ```
 
-Changing component selection changes the generated App structure. The available packages, commands, Wire sets, and environment defaults depend on this contract.
+Changing component selection changes the generated App structure. The available packages, commands, Wire sets, and emitted environment entries depend on this contract.
+
+When Jobs is enabled, the new-Project wizard seeds `QUEUE_DRIVER` and `QUEUE_SUPPORTED_DRIVERS` in `.env`. Queue driver configuration is environment-backed state, not part of the durable render contract.
 
 ## Build-Time Generation
 

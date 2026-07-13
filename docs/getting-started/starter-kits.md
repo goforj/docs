@@ -50,7 +50,7 @@ For npm-backed starter kits, generated dev setup can include:
 cd cmd/app/frontend && npm install
 ```
 
-and a frontend watcher under `forj dev`.
+and an App-owned SPA build under `dev.apps.<app>.spas` for `forj dev`.
 
 ## Compatibility
 

@@ -164,6 +164,8 @@ apps:
     starter_kit: none
 ```
 
+This top-level `apps` metadata is separate from `dev.apps`, which selects the App lifecycles managed by `forj dev`.
+
 ## App-scoped output
 
 Outputs that used to assume one app are now app-aware where they need to be.
@@ -240,5 +242,6 @@ If two apps share one physical database, choose one app to own that database's m
 ## Next Steps
 
 - [Project Structure](/getting-started/project-structure) shows the generated tree.
+- [forj dev](/developer-tools/forj-dev) explains App lifecycle orchestration and custom watches.
 - [Runtime Topology](/core/runtime-topology) explains app and runtime process shapes.
 - [Migrations](/data/migrations) explains app-owned migration streams.

@@ -24,13 +24,13 @@ forj marketplace worker # or ./bin/marketplace worker
 or, in standalone mode:
 
 ```bash
-forj app # or ./bin/app run
+forj app # or ./bin/app
 ```
 
 For a named app in standalone mode:
 
 ```bash
-forj marketplace app # or ./bin/marketplace run
+forj marketplace app # or ./bin/marketplace
 ```
 
 The built binary form is what supervisors usually run. The `forj` form is the development surface that refreshes generated code before running the App command.

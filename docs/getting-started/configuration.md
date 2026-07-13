@@ -7,7 +7,7 @@ description: Understand GoForj render-time configuration, runtime environment, a
 
 GoForj uses two main configuration layers: project configuration and runtime environment configuration.
 
-`.goforj.yml` describes what the App is and how local development should run. `.env` files describe how the App behaves when it starts.
+`.goforj.yml` describes the generated Project shape and local development lifecycles. `.env` files describe how each App behaves when it starts.
 
 ## When To Change Configuration
 
@@ -22,16 +22,16 @@ GoForj uses two main configuration layers: project configuration and runtime env
 
 | Layer | File or source | Purpose |
 | --- | --- | --- |
-| Project configuration | `.goforj.yml` | Component selection, rendering, dev watchers, Wire paths, module replacements |
+| Project configuration | `.goforj.yml` | Component selection, rendering, App development lifecycles, custom watches, Wire paths, module replacements |
 | Runtime environment | `.env`, `.env.local`, `.env.host`, process env | App name, ports, secrets, drivers, resource settings |
 | Generated code | `internal/*/*_gen.go`, `app/wire/wire_gen.go` | Derived accessors, driver imports, provider wiring |
-| Build-time options | `forj build` flags | Optional compiled defaults, overrides, and default launch behavior |
+| Build-time options | `forj build` flags | Optional compiled environment defaults and overrides |
 
 The important rule: change the correct layer for the behavior you want.
 
 ## `.goforj.yml`
 
-`.goforj.yml` is the render contract for the Project and its apps.
+`.goforj.yml` is the render contract for the Project and its Apps.
 
 It includes fields such as:
 
@@ -48,9 +48,19 @@ dev:
   down_on_exit: true
   wire_paths:
     - app/wire
+  apps:
+    app:
+      build:
+        exec: forj build -o ./bin/app
+        watch: [.go, .env, .env.*]
+        ignore: [forj, _data, wire_gen.go, .git, .hg, .svn, .idea, .vscode, .settings, node_modules]
+        root: .
+        postpone: true
+      run:
+        exec: ./bin/app
+    marketplace: true
 render:
   starter_kit: none
-  queue_driver: redis
   components:
     cli: true
     web_api: true
@@ -59,7 +69,9 @@ render:
     database_mysql: true
 ```
 
-Use `.goforj.yml` when you need to change the generated project shape, enabled app components, local dev watchers, or module replacement behavior.
+Top-level `apps` stores per-App render metadata. `dev.apps` selects the App lifecycles managed by `forj dev`; sibling `dev.watches` entries run independent custom commands.
+
+Use `.goforj.yml` when you need to change the generated Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
 
 ## Environment Files
 
@@ -71,7 +83,7 @@ The generated project includes:
 - `.env.local` for local overrides.
 - `.env.host` for host-specific local infrastructure settings.
 
-The generated app entrypoint loads the environment before the app Wire graph is initialized.
+The generated App entrypoint loads the environment before the App Wire graph is initialized.
 
 Common variables include:
 
@@ -96,7 +108,12 @@ EVENTS_SUPPORTED_DRIVERS=inproc
 
 MAIL_DRIVER=log
 MAIL_SUPPORTED_DRIVERS=log
+
+QUEUE_DRIVER=redis
+QUEUE_SUPPORTED_DRIVERS=redis
 ```
+
+The queue-driver choice in `forj new` is a one-time seed for these `.env` values. It is not retained in `.goforj.yml`, and an existing `.env` remains authoritative on later renders.
 
 Apps can still start without a checked-in `.env` file. Generated local fallbacks construct usable resources for the default app shape, then process environment or environment files override them when present.
 
@@ -215,6 +232,7 @@ These options are useful for packaging, but most local development should use `.
 - Do not add a runtime driver without also including it in `*_SUPPORTED_DRIVERS` when generated code needs that driver compiled in.
 - Do not edit generated managers by hand to add resources. Change environment configuration and regenerate.
 - Do not put business behavior in `.goforj.yml`; it is a project and development configuration file.
+- Do not persist queue selection under `render`; change `QUEUE_DRIVER` and `QUEUE_SUPPORTED_DRIVERS` in the environment.
 - Do not use cache as durable business storage.
 :::
 

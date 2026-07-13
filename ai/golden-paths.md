@@ -59,17 +59,19 @@ Golden path for local development:
 - `forj <app> ...` for a named app command, such as `forj marketplace route:list`
 - `forj run ...` only when the docs need the explicit App-command path or collision escape hatch
 - `forj app` when intentionally running the combined generated App runtime
+- `dev.apps` for App-aware build, SPA, and runtime lifecycle ownership
+- `dev.watches` for independent custom commands outside an App lifecycle
 
 Golden path for built binaries:
 
-- `./bin/app run` for standalone runtime
+- `./bin/app` or `./bin/app run` for the standalone runtime of a runtime-capable App
 - `./bin/app api` for HTTP/API runtime
 - `./bin/app worker` for queue workers
 - `./bin/app scheduler` for scheduler runtime
 - `./bin/app migrate` for migrations
 - `./bin/<app> ...` for named app binaries, such as `./bin/marketplace worker`
 
-When `forj build --auto-run` is used, `./bin/app` with no command launches the standalone App runtime. Treat this as build-time default launch behavior, not a separate runtime topology. Explicit commands still take precedence.
+For runtime-capable Apps, `./bin/app` and `./bin/app run` are equivalent. Explicit commands still take precedence, while CLI-only binaries keep their root help behavior when no command is supplied.
 
 ## Configuration
 

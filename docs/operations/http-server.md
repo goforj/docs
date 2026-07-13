@@ -16,7 +16,7 @@ The HTTP runtime serves application routes and framework routes through the gene
 or, in standalone mode:
 
 ```bash
-./bin/app run
+./bin/app
 ```
 
 ## Configuration
