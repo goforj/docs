@@ -337,6 +337,54 @@ const libraryRewrites: Record<string, string> = {
   'libraries/atlas.md': 'atlas.md'
 }
 
+const preloadBadgeImagePattern = /(?:shields\.io|pkg\.go\.dev\/badge|goreportcard\.com\/badge|codecov\.io\/[^\s)"']*badge|github\.com\/[^\s)"']*\/actions\/workflows\/[^\s)"']*badge)/i
+
+const resolvePreloadImageUrl = (value: string, page: string) => {
+  const src = decodeHtmlEntities(value.trim())
+  if (!src || src.startsWith('data:')) return ''
+  if (/^https?:\/\//i.test(src)) return src
+  if (src.startsWith('//')) return `https:${src}`
+  if (src.startsWith('/')) return src
+
+  const route = page.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')
+  const routeDir = route.includes('/') ? route.split('/').slice(0, -1).join('/') : ''
+  return path.posix.normalize(`/${routeDir}/${src}`)
+}
+
+const firstLibraryPreloadImage = (source: string, page: string) => {
+  const file = new URL(`../${source}`, import.meta.url)
+  if (!fs.existsSync(file)) return ''
+
+  const markdown = fs.readFileSync(file, 'utf8')
+  const firstSection = markdown.search(/^##\s/m)
+  const intro = firstSection === -1 ? markdown : markdown.slice(0, firstSection)
+  const candidates: { index: number; src: string }[] = []
+
+  for (const match of intro.matchAll(/<img\b[^>]*>/gi)) {
+    const src = match[0].match(imageSrcRegex)?.slice(1).find(Boolean)?.trim() || ''
+    if (src) candidates.push({ index: match.index, src })
+  }
+  for (const match of intro.matchAll(/!\[[^\]]*\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g)) {
+    candidates.push({ index: match.index, src: match[1] })
+  }
+
+  candidates.sort((left, right) => left.index - right.index)
+  for (const candidate of candidates) {
+    const src = resolvePreloadImageUrl(candidate.src, page)
+    if (src && !preloadBadgeImagePattern.test(src)) return src
+  }
+  return ''
+}
+
+const pageImagePreloads = Object.fromEntries(
+  Object.entries(libraryRewrites).flatMap(([source, page]) => {
+    const src = firstLibraryPreloadImage(source, page)
+    if (!src) return []
+    const route = `/${page.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '').replace(/^\/+|\/+$/g, '')}`
+    return [[route === '/' ? route : route.replace(/\/+$/, ''), [src]]]
+  })
+)
+
 // --- llms.txt generation (https://llmstxt.org) ---
 // Emits llms.txt (a linked index) and llms-full.txt (the full docs corpus)
 // into the build output so AI tools can consume the docs directly.
@@ -553,6 +601,8 @@ export default defineConfig({
     const socialDescription = socialMeta.description
     const socialImageUrl = socialMeta.image.url
     const socialImageAlt = socialMeta.image.alt
+    const preloadRoute = `/${page.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '').replace(/^\/+|\/+$/g, '')}`
+    const preloadImage = pageImagePreloads[preloadRoute]?.[0]
     const imageHead = [
       ['meta', { property: 'og:image', content: socialImageUrl }],
       ['meta', { property: 'og:image:secure_url', content: socialImageUrl }],
@@ -569,6 +619,7 @@ export default defineConfig({
 
     return [
       ['link', { rel: 'canonical', href: pageUrl(page) }],
+      ...(preloadImage ? [['link', { rel: 'preload', as: 'image', href: preloadImage, fetchpriority: 'high' }]] : []),
       ['meta', { property: 'og:type', content: 'website' }],
       ['meta', { property: 'og:site_name', content: 'GoForj' }],
       ['meta', { property: 'og:title', content: socialTitle }],
@@ -586,6 +637,7 @@ export default defineConfig({
 
   themeConfig: {
     docsVersion,
+    pageImagePreloads,
     // https://vitepress.dev/reference/default-theme-config
     editLink: {
       pattern: 'https://github.com/goforj/docs/edit/main/docs/:path',

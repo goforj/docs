@@ -16,6 +16,72 @@ const CODE_VARIANT_KEY = 'goforjCodeVariant'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
 const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
 const MERMAID_KEY = '__goforjMermaidState'
+const PAGE_IMAGE_PRELOAD_INTENT_MS = 80
+const attemptedPageImagePreloads = new Set()
+const retainedPageImagePreloads = new Map()
+
+function allowsPageImagePreloads() {
+  if (typeof navigator === 'undefined') return false
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+  if (!connection) return true
+  if (connection.saveData) return false
+  return !String(connection.effectiveType || '').toLowerCase().includes('2g')
+}
+
+function preloadPageImage(src) {
+  if (!src || attemptedPageImagePreloads.has(src) || typeof Image === 'undefined') return
+  attemptedPageImagePreloads.add(src)
+
+  const image = new Image()
+  image.decoding = 'async'
+  image.fetchPriority = 'high'
+  retainedPageImagePreloads.set(src, image)
+
+  image.addEventListener('load', () => {
+    const decoded = typeof image.decode === 'function' ? image.decode() : Promise.resolve()
+    decoded.catch(() => {}).finally(() => {
+      window.setTimeout(() => retainedPageImagePreloads.delete(src), 30_000)
+    })
+  }, { once: true })
+  image.addEventListener('error', () => {
+    retainedPageImagePreloads.delete(src)
+  }, { once: true })
+  image.src = src
+}
+
+function sidebarLinkFromEvent(event) {
+  const target = event.target
+  if (!(target instanceof Element)) return null
+  const link = target.closest('#VPSidebarNav a[href]')
+  return link instanceof HTMLAnchorElement ? link : null
+}
+
+function pageRouteForSidebarLink(link) {
+  if (typeof window === 'undefined') return ''
+  const url = new URL(link.href, window.location.href)
+  if (url.origin !== window.location.origin) return ''
+
+  let pathname = url.pathname
+  const base = String(import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
+  if (base && base !== '/' && pathname === base) {
+    pathname = '/'
+  } else if (base && base !== '/' && pathname.startsWith(`${base}/`)) {
+    pathname = pathname.slice(base.length)
+  }
+
+  pathname = pathname
+    .replace(/\/index(?:\.html)?$/, '/')
+    .replace(/\.html$/, '')
+    .replace(/\/+$/, '')
+  return pathname || '/'
+}
+
+function preloadSidebarLinkImages(link, manifest) {
+  if (!allowsPageImagePreloads() || !manifest) return
+  const images = manifest[pageRouteForSidebarLink(link)]
+  if (!Array.isArray(images)) return
+  images.forEach(preloadPageImage)
+}
 
 function DocsPreviewBanner() {
   return h('div', { class: 'gf-docs-preview-banner', role: 'note' }, [
@@ -558,8 +624,38 @@ export default {
   },
   setup() {
     const route = useRoute()
+    const { theme } = useData()
     let routeHashTimers = []
     let onHashChange = null
+    let sidebarImageIntentTimer = 0
+    let sidebarImageIntentLink = null
+    let onSidebarPointerOver = null
+    let onSidebarPointerOut = null
+    let onSidebarPointerDown = null
+    let onSidebarFocusIn = null
+
+    const clearSidebarImageIntent = () => {
+      if (sidebarImageIntentTimer) {
+        window.clearTimeout(sidebarImageIntentTimer)
+        sidebarImageIntentTimer = 0
+      }
+      sidebarImageIntentLink = null
+    }
+
+    const preloadForSidebarLink = (link) => {
+      preloadSidebarLinkImages(link, theme.value.pageImagePreloads)
+    }
+
+    const scheduleSidebarImagePreload = (link) => {
+      if (sidebarImageIntentLink === link && sidebarImageIntentTimer) return
+      clearSidebarImageIntent()
+      sidebarImageIntentLink = link
+      sidebarImageIntentTimer = window.setTimeout(() => {
+        sidebarImageIntentTimer = 0
+        sidebarImageIntentLink = null
+        preloadForSidebarLink(link)
+      }, PAGE_IMAGE_PRELOAD_INTENT_MS)
+    }
 
     const refreshSoon = async () => {
       await nextTick()
@@ -614,6 +710,35 @@ export default {
         })
       }
       window.addEventListener('hashchange', onHashChange)
+
+      onSidebarPointerOver = (event) => {
+        if (event.pointerType === 'touch') return
+        const link = sidebarLinkFromEvent(event)
+        if (!link || (event.relatedTarget instanceof Node && link.contains(event.relatedTarget))) return
+        scheduleSidebarImagePreload(link)
+      }
+      onSidebarPointerOut = (event) => {
+        const link = sidebarLinkFromEvent(event)
+        if (!link || (event.relatedTarget instanceof Node && link.contains(event.relatedTarget))) return
+        if (sidebarImageIntentLink === link) clearSidebarImageIntent()
+      }
+      onSidebarPointerDown = (event) => {
+        const link = sidebarLinkFromEvent(event)
+        if (!link) return
+        clearSidebarImageIntent()
+        preloadForSidebarLink(link)
+      }
+      onSidebarFocusIn = (event) => {
+        const link = sidebarLinkFromEvent(event)
+        if (!link) return
+        clearSidebarImageIntent()
+        preloadForSidebarLink(link)
+      }
+
+      document.addEventListener('pointerover', onSidebarPointerOver, { passive: true })
+      document.addEventListener('pointerout', onSidebarPointerOut, { passive: true })
+      document.addEventListener('pointerdown', onSidebarPointerDown, { passive: true })
+      document.addEventListener('focusin', onSidebarFocusIn)
     })
 
     watch(() => route.path, () => {
@@ -626,6 +751,7 @@ export default {
     })
 
     onBeforeUnmount(() => {
+      clearSidebarImageIntent()
       routeHashTimers.forEach((id) => window.clearTimeout(id))
       routeHashTimers = []
       if (onHashChange) {
@@ -634,6 +760,18 @@ export default {
       if (onBannerResize) {
         window.removeEventListener('resize', onBannerResize)
         onBannerResize = null
+      }
+      if (onSidebarPointerOver) {
+        document.removeEventListener('pointerover', onSidebarPointerOver)
+      }
+      if (onSidebarPointerOut) {
+        document.removeEventListener('pointerout', onSidebarPointerOut)
+      }
+      if (onSidebarPointerDown) {
+        document.removeEventListener('pointerdown', onSidebarPointerDown)
+      }
+      if (onSidebarFocusIn) {
+        document.removeEventListener('focusin', onSidebarFocusIn)
       }
       const outlineState = getOutlineScrollState()
       if (outlineState?.observer) {
