@@ -78,6 +78,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - See what a request, job, or schedule run actually did. [Inspects](/operations/inspects)
 - Watch the App from a first-party UI. [Lighthouse](/operations/lighthouse)
 - Configure logging. [Logging](/operations/logging)
+- Back up and restore durable App data. [Backup and Restore](/operations/backups)
 - Keep workers healthy in production. [Queue Workers](/operations/queue-workers)
 - Ship a binary to a server. [Deployment Basics](/operations/deployment-basics)
 - Check readiness before launch. [Production Checklist](/operations/production-checklist)

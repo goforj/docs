@@ -4,9 +4,9 @@ This file defines how GoForj documentation versions should work.
 
 ## Current State
 
-The public docs describe the current `v0.20` framework line.
+The latest tagged framework release is `v0.20.0`. The root public docs follow the active development line and may include implemented behavior recorded under Unreleased in the changelog.
 
-The root site is the active documentation line. It should be treated as the current version until the project needs multiple simultaneously published documentation lines.
+The root site is the active documentation line. It should be treated as current source behavior until the project needs multiple simultaneously published documentation lines.
 
 The version label must be checked against the latest framework release before publication. Internal plans, the VitePress navigation, `/versions/`, and the changelog must not carry different current-version values.
 

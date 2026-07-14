@@ -30,7 +30,7 @@ The library ecosystem has its own release history:
 | `execx` | `v1.1.0` | Command execution helpers, shadow printing, decoder pipes, and TTY/PTTY behavior for developer tooling. |
 | `str` | `v1.3.0` | Rune-safe string helpers, case-fold operations, matching/replacement helpers, plural/singular helpers, and generated API examples. |
 | `crypt` | `v1.1.0` | Encryption helpers, key generation, key rotation, and instanced crypt behavior. |
-| `web` | `v0.5.3` | Server-side HTTP abstractions, Echo adapter, middleware, route model, route indexing, WebSocket routes, testing helpers, and app-scoped route composition. |
+| `web` | `v0.6.0` | Server-side HTTP abstractions, Echo adapter, middleware, route model, WebSocket routes, testing helpers, and typed App-scoped API contract generation. |
 | `queue` | `v0.2.1` | Queue facade, worker runtime, retries, delays, chains, batches, observers, fake/test packages, and multi-backend driver modules. |
 | `events` | `v0.1.3` | Event facade, delivery context propagation, fake/test modules, examples, integration module, and transport-backed drivers. |
 | `cache` | `v0.3.0` | Cache facade, memory/file/null stores, SQL/Redis/NATS/Memcached/DynamoDB drivers, readiness, inspectors, locks, observers, and integration modules. |
@@ -57,7 +57,7 @@ The early standalone package work made the framework feel like a cohesive Go sta
 The application primitives were built as reusable libraries before and alongside framework integration.
 
 - `scheduler` reached `v2.1.3` with cron and interval scheduling, overlap protection, hooks, command execution, named jobs, job listing, runtime controls, admin surface work, cache-backed locking, observers, and context decorators.
-- `web` reached `v0.5.2` after building an Echo-backed adapter, response helpers, cookie and real-IP helpers, WebSocket routes, core middleware, static/proxy/rewrite/security middleware, route models, route list rendering, server bootstrap, lifecycle handling, Prometheus telemetry, web tests, route indexing, and app-scoped route composition.
+- `web` reached `v0.6.0` after building an Echo-backed adapter, response helpers, cookie and real-IP helpers, WebSocket routes, core middleware, static/proxy/rewrite/security middleware, route models, route list rendering, server bootstrap, lifecycle handling, Prometheus telemetry, and hardened source indexing with typed schemas, deterministic OpenAPI projection, diagnostics, build-context parity, and coordinated artifact publication.
 - `queue` reached `v0.2.1` after adding payload binding, worker and dispatcher behavior, NATS/SQS/RabbitMQ/Redis/MySQL/Postgres/SQLite/SQL-core drivers, fake APIs, integration hardening, retry and recovery policies, chains, batches, workflow callbacks, observer events, context propagation, physical queue name inference, and multi-module release tags for each driver.
 - `events` reached `v0.1.3` with facade patterns, Redis/NATS/NATS JetStream/SNS/Kafka/GCP Pub/Sub drivers, fake/test packages, examples, integration modules, delivery context preservation, and driver-level context propagation.
 - `cache` reached `v0.3.0` with memory/file/null stores, SQL/Redis/NATS/Memcached/DynamoDB drivers, ready checks, lock support, cache inspectors, `WithContext` facade behavior, observer event payloads, examples, integration modules, and driver-specific release tags.
@@ -87,6 +87,31 @@ The libraries also carry documentation infrastructure that feeds the main docs s
 - Test count, coverage, driver matrix, benchmark, and capability sections are embedded directly in library docs where they help users choose a primitive.
 
 The framework changelog below focuses on how those independently versioned libraries became a cohesive generated App experience.
+
+## Unreleased
+
+The root documentation follows the active development line. These changes are implemented after the latest tagged framework release, `v0.20.0`.
+
+### Development and Runtime
+
+- Replaced external watcher execution with a native App lifecycle supervisor while retaining supported legacy scalar watcher configuration.
+- Added explicit `dev.apps` build, run, and SPA lifecycle graphs alongside independent `dev.watches`.
+- Made `dev.apps` a sparse participation list so omitted CLI-only or intentionally inactive Apps are not rebuilt or run.
+- Made runtime-capable App binaries select `run` when launched without arguments while preserving explicit commands, `--help`, and CLI-only root help.
+- Compacted Project and App component configuration into enabled-name lists, with legacy boolean maps migrated by render-backed config rewrites.
+
+### Build and API Contracts
+
+- Made API index, diagnostics, and OpenAPI output App-scoped, staged, and coordinated with publication rollback.
+- Added Manifest v2 operations, typed schemas, metadata, deterministic diagnostics, strict CI policy, and build-tag parity through `web v0.6.0`.
+- Preserved the last successful API artifact generation until a new build compiles or the source-run process-start boundary succeeds.
+- Added coordinated publication locking and stale artifact cleanup for known Apps without Web API support.
+
+### Operations and Defaults
+
+- Added framework-owned backup planning, creation, verification, restore, listing, pruning, freshness, portable SQL transfer, and S3-compatible repository workflows.
+- Made generated database, cache, storage, queue, event, and mail resources use local fallbacks when environment files are absent.
+- Added client IP fields and compact, color-aware console formatting to HTTP access logs while retaining structured JSON and sink fields.
 
 ## v0.20.0
 

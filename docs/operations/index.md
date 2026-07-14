@@ -15,7 +15,8 @@ Use these pages when you need to run, split, observe, deploy, or troubleshoot an
 2. [Standalone versus Distributed](/operations/standalone-vs-distributed) explains topology choices.
 3. [Health and Readiness](/operations/health-readiness) explains probes and diagnostics.
 4. [Logging](/operations/logging), [Metrics](/operations/metrics), and [Inspects](/operations/inspects) explain runtime visibility.
-5. [Production Checklist](/operations/production-checklist) collects deployment checks.
+5. [Backup and Restore](/operations/backups) covers durable App data and recovery.
+6. [Production Checklist](/operations/production-checklist) collects deployment checks.
 
 ## All Operations Pages
 
@@ -29,6 +30,7 @@ Use these pages when you need to run, split, observe, deploy, or troubleshoot an
 - [Metrics](/operations/metrics)
 - [Inspects](/operations/inspects)
 - [Lighthouse](/operations/lighthouse)
+- [Backup and Restore](/operations/backups)
 - [Standalone versus Distributed](/operations/standalone-vs-distributed)
 - [Production Checklist](/operations/production-checklist)
 

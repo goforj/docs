@@ -59,12 +59,12 @@ dev:
     marketplace: true
 render:
   starter_kit: none
-  components: [cli, web_api, jobs, scheduler, database_mysql]
+  components: [cli, web_api, database_mysql, scheduler, jobs]
 ```
 
 Top-level `apps` stores per-App render metadata. `dev.apps` selects the App lifecycles managed by `forj dev`; sibling `dev.watches` entries run independent custom commands.
 
-Component lists contain only enabled components. Legacy boolean component maps remain readable and are rewritten as compact lists the next time you run `forj render`.
+Component lists contain only explicitly enabled components. Dependencies are resolved for rendering without expanding the persisted list. Legacy boolean component maps remain readable and are rewritten as compact lists the next time a render-backed workflow rewrites the configuration, including `forj render`.
 
 Use `.goforj.yml` when you need to change the generated Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
 
@@ -154,7 +154,7 @@ forj build
 `forj build` runs generation, Wire, API indexing, and `go build`.
 
 ::: info Dev Loop
-During local development, `forj dev` normally runs the generated build watcher for you, so saving the relevant configuration or source changes will flow through `forj build`.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you, so saving relevant configuration or source changes flows through the complete build.
 :::
 
 Use focused generation only when you intentionally want to refresh one generated surface without running the full build:

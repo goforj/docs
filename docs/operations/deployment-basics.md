@@ -63,10 +63,11 @@ Typical order:
 
 1. build the App
 2. configure environment
-3. run migrations when database schema changed
-4. start runtime processes
-5. verify health and readiness
-6. verify metrics and logs
+3. verify a current backup and recovery plan
+4. run migrations when database schema changed
+5. start runtime processes
+6. verify health and readiness
+7. verify metrics and logs
 
 ## Common Mistakes
 
@@ -80,5 +81,6 @@ Typical order:
 ## Next Steps
 
 - [Runtime Processes](/operations/runtime-processes)
+- [Backup and Restore](/operations/backups)
 - [Standalone versus Distributed](/operations/standalone-vs-distributed)
 - [Production Checklist](/operations/production-checklist)

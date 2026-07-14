@@ -33,9 +33,15 @@ Check file headers and local package READMEs before editing.
 | `internal/events/*_gen.go` | Generated event bus accessors and config. |
 | `internal/database/*_gen.go` | Generated DB accessors and config. |
 | `build/api_index.json` | Default app API index output. |
+| `build/api_index.diagnostics.json` | Default app API index diagnostics. |
 | `build/openapi.json` | Default app OpenAPI output. |
+| `build/.webindex-artifacts.lock` | Publication lock coordinating the default app artifact set. |
 | `build/<app>/api_index.json` | Named app API index output. |
+| `build/<app>/api_index.diagnostics.json` | Named app API index diagnostics. |
 | `build/<app>/openapi.json` | Named app OpenAPI output. |
+| `build/<app>/.webindex-artifacts.lock` | Publication lock coordinating one named app artifact set. |
+| `.goforj/backups/<set>/manifest.json` | Local backup set inventory. |
+| `.goforj/backups/<set>/checksums.txt` | Checksums for backup artifacts. |
 
 ## Ownership Rules
 
@@ -43,6 +49,7 @@ Check file headers and local package READMEs before editing.
 - Render-once files are App-owned extension points.
 - `internal/` owns behavior; `app/` owns exposure.
 - Framework-wide changes belong in GoForj templates or generators, not only in a rendered Project.
+- API artifacts and publication locks are tool-owned. Backup sets are operator-owned data and must not be committed.
 
 ## Related Pages
 
@@ -50,3 +57,4 @@ Check file headers and local package READMEs before editing.
 - [Generated Components](/core/generated-components)
 - [Generated Extension Points](/core/generated-extension-points)
 - [Code Generation](/core/code-generation)
+- [Backup and Restore](/operations/backups)

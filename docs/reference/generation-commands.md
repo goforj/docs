@@ -27,12 +27,13 @@ Runs:
 The normal regeneration path is `forj build`.
 
 ::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 
 Use focused generation when you intentionally want to refresh one generated surface without a full build:
 
 ```bash
+forj build:api-index
 forj generate --cache
 forj generate --storage
 forj generate --queue
@@ -44,16 +45,24 @@ forj generate --observability
 
 Running `forj generate` without flags refreshes available generators for the current App.
 
+`forj build:api-index` is the focused API contract command. It publishes the API index, diagnostics, and OpenAPI document together. Use `--strict` in CI and prefix the command for a named App:
+
+```bash
+forj marketplace build:api-index --strict
+```
+
 ## App Generation
 
 Create a named app when the Project needs another runnable boundary:
 
 ```bash
 forj make:app marketplace
-forj make:app marketplace --components web-api,jobs
+forj make:app billing --components web-api,jobs --dev-run run
 forj make:app backstage --components web-api,scheduler --starter-kit vue
-forj make:app backstage --without web-ui --skip-wire
+forj make:app customer-portal --without web-ui --skip-wire
 ```
+
+These are alternative creation shapes. Each App name can be created only once.
 
 `make:app` creates the app entrypoint and composition files:
 
@@ -63,7 +72,9 @@ app/marketplace/
 app/marketplace/wire/
 ```
 
-It also records app component choices under `apps` in `.goforj.yml`, writes app-scoped local env defaults, and refreshes generated runtime app metadata.
+It also records App component choices under `apps` in `.goforj.yml`, writes App-scoped local env defaults, and refreshes generated runtime App metadata.
+
+The interactive wizard asks whether `forj dev` should run the App. Runtime-capable wizard Apps default to `run`; CLI-only or disabled Apps remain absent from `dev.apps`. For noninteractive creation, pass `--dev-run run` explicitly when the App should participate in the dev lifecycle.
 
 Remove conventional generated app files with:
 

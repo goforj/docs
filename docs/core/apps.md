@@ -51,9 +51,13 @@ app/marketplace/wire/
 You can choose the app surface explicitly:
 
 ```bash
-forj make:app marketplace --components web-api,jobs
+forj make:app billing --components web-api,jobs --dev-run run
 forj make:app backstage --components web-api,scheduler --starter-kit vue
 ```
+
+The interactive wizard includes a Dev Run choice. Runtime-capable wizard Apps default to the conventional `run` lifecycle, while CLI-only or explicitly disabled Apps remain absent from `dev.apps`.
+
+When scripting `make:app` with flags, use `--dev-run run` to enroll the App in `forj dev`. Use another App command, such as `--dev-run queue:work`, only when that is the intended long-running process.
 
 Remove conventional generated app files with:
 

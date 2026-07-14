@@ -24,7 +24,7 @@ Writing that glue by hand is repetitive and easy to drift. GoForj generates the 
 ```yaml
 render:
   starter_kit: none
-  components: [cli, web_api, jobs, scheduler, database_mysql]
+  components: [cli, web_api, database_mysql, scheduler, jobs]
 ```
 
 Changing component selection changes the generated App structure. The available packages, commands, Wire sets, and emitted environment entries depend on this contract.
@@ -53,7 +53,7 @@ Use this when you want the App and binary to be current.
 The normal path is still `forj build`.
 
 ::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 
 Use focused generation only when you intentionally want to refresh one resource family without running the full build:
@@ -171,7 +171,7 @@ Generated code should be refreshed after changing:
 Use `forj build` when unsure.
 
 ::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 
 ## Common Mistakes

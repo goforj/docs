@@ -164,7 +164,7 @@ Idea backlog (not yet executed, roughly ranked):
 
 - [ ] Show Lighthouse on the landing page: a real capture of an inspect timeline. Strongest unshipped conversion asset.
 - [x] Live terminal transcript replaced with a real captured run (2026-06-11, photodrop, Vue starter kit, full default components). Lines are verbatim from the capture; curation for pane width is documented in the component comment (condensed confirm panel, final compose count only, VictoriaMetrics link and two log-line tails omitted).
-- [x] Changelog and public version story: `/versions/changelog` records framework releases and the active docs line is `v0.20`.
+- [x] Changelog and public version story: `/versions/changelog` records framework releases, `v0.20.0` is the latest tag, and the root docs include implemented Unreleased behavior.
 - [ ] Queued launch posts: "How we test 40 drivers against real backends", "Inspects: visibility without an OpenTelemetry pilgrimage".
 - [x] Proof-band stats generated from the repos so they cannot drift; link each stat to evidence.
 - [x] Scenario path as a course: per-scenario time estimates, position indicator, completion handoff.

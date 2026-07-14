@@ -15,7 +15,8 @@ Use workflow pages for full context.
 | --- | --- |
 | `forj new` | Create a new GoForj Project through the interactive wizard. |
 | `forj build` | Run generation, Wire, API indexing, then `go build`. |
-| `forj run <app-command>` | Run generation, API indexing, then `go run ./cmd/app <app-command>`. |
+| `forj build:api-index` | Build the active App's API index, diagnostics, and OpenAPI artifacts. |
+| `forj run [<app-command>]` | Build an exact temporary App binary, start it with the optional command, then publish prepared API artifacts after the process-start boundary. |
 | `forj dev` | Run App development lifecycles and custom watches from `.goforj.yml`. |
 | `forj generate` | Refresh generated component code and derived files. |
 | `forj make:app <name>` | Create a named app in the current Project. |
@@ -36,6 +37,8 @@ forj marketplace worker
 The prefix is part of the ergonomics. It selects the active app for generated App commands and app-aware native commands without forcing you to change directories or pass an `--app` flag.
 
 Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands. Use `./bin/app <command>` for the built binary and deployment/runtime process supervision.
+
+`build:api-index --strict` rejects warnings as well as errors. Complete `build` and `run` commands use `--api-index-strict`. See [API Index](/applications/api-index) for build-tag and publication behavior.
 
 ## Common App Commands
 
@@ -89,6 +92,32 @@ For runtime-capable Apps, bare `./bin/app` selects `run`; CLI-only binaries prin
 These reach the generated App command surface. Short command names use Kong aliases.
 
 Available commands depend on selected components.
+
+## Backup Commands
+
+Backup commands are framework-owned operator commands. They use the selected App's resource contract and environment:
+
+| Command | Purpose |
+| --- | --- |
+| `forj backup:plan` | Show the database and storage backup plan. |
+| `forj backup:create` | Create a native manifest-backed backup set. |
+| `forj backup:list` | List completed local or configured remote backup sets. |
+| `forj backup:verify --from <source>` | Verify the manifest and every artifact checksum. |
+| `forj backup:restore --from <source> --dry-run` | Print the restore plan without changing data. |
+| `forj backup:restore --from <source> --confirm restore-production` | Perform an explicitly confirmed destructive restore. |
+| `forj backup:prune` | Remove completed sets outside the retention policy. |
+| `forj backup:status` | Report the newest local backup and its age. |
+
+Prefix the command to operate on a named App:
+
+```bash
+forj marketplace backup:plan
+forj marketplace backup:create
+```
+
+Use `--resource` to select one database or storage resource. `backup:create --portable` and `backup:restore --portable` provide database-neutral SQL transfer when a same-driver native restore is not appropriate.
+
+See [Backup and Restore](/operations/backups) before automating or performing a restore.
 
 Database shell examples:
 
@@ -161,5 +190,6 @@ These are mainly for framework contributors:
 - [Make Commands](/core/make-commands)
 - [Opening Generated Files](/developer-tools/editor-open)
 - [Database Shell](/data/database-shell)
+- [Backup and Restore](/operations/backups)
 - [forj dev](/developer-tools/forj-dev)
 - [Generation Commands](/reference/generation-commands)

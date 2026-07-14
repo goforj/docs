@@ -36,6 +36,7 @@ This page groups the major variable families. Generated component READMEs and wo
 | --- | --- |
 | `API_HTTP_HOST` | HTTP bind host. |
 | `API_HTTP_PORT` | HTTP bind port. |
+| `HTTP_ACCESS_LOG_ENABLED` | Enables generated HTTP access log events. |
 | `API_SWAGGER_ENABLED` | Enables generated API reference routes. |
 | `OPENAPI_SPEC_PATH` | Overrides the served OpenAPI JSON path. |
 
@@ -49,11 +50,30 @@ This page groups the major variable families. Generated component READMEs and wo
 
 | Variable | Purpose |
 | --- | --- |
-| `FORJ_APP` | Selects the active app for source-mode Framework commands. Prefer `forj <app> <command>` in normal workflows. |
+| `FORJ_APP` | Selects the active App for source-mode framework commands and its default served OpenAPI artifact. Prefer `forj <app> <command>` in normal workflows. |
 | `FORJ_MAKE_OPEN` | Controls whether file-generating make commands open generated files. Values are `auto`, `always`, or `never`. |
 | `FORJ_EDITOR` | Optional editor command for opening generated files. Supports `{file}`, `{line}`, and `{location}` placeholders. |
 
 See [Opening Generated Files](/developer-tools/editor-open) for editor detection and examples.
+
+## Backups
+
+| Variable | Purpose |
+| --- | --- |
+| `BACKUP_PATH` | Default local backup root. Defaults to `.goforj/backups`. |
+| `APP_BACKUP_DRIVER` | Backup repository driver: `local`, `s3`, or `b2-s3`. |
+| `APP_BACKUP_S3_BUCKET` | S3-compatible backup repository bucket. |
+| `APP_BACKUP_S3_ENDPOINT` | Optional S3-compatible endpoint. |
+| `APP_BACKUP_S3_REGION` | S3-compatible repository region. |
+| `APP_BACKUP_S3_ACCESS_KEY_ID` | Backup repository access key. |
+| `APP_BACKUP_S3_SECRET_ACCESS_KEY` | Backup repository secret key. |
+| `APP_BACKUP_S3_USE_PATH_STYLE` | Enable path-style S3 addressing. |
+| `APP_BACKUP_S3_PREFIX` | Object prefix for completed backup sets. |
+| `APP_BACKUP_KEEP_DAILY` | Maximum completed sets per recent daily bucket. Defaults to `14` when calendar retention is enabled. |
+| `APP_BACKUP_KEEP_WEEKLY` | Maximum completed sets per weekly bucket. Defaults to `4` when calendar retention is enabled. |
+| `APP_BACKUP_KEEP_MONTHLY` | Maximum completed sets per monthly bucket. Defaults to `6` when calendar retention is enabled. |
+
+See [Backup and Restore](/operations/backups) for repository behavior, native and portable formats, and restore safety.
 
 ## Driver Families
 

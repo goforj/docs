@@ -76,7 +76,7 @@ This should be a configuration and provider-support change, not a business-logic
 
 ## Development Workflow
 
-Use `forj dev` for watcher-driven local development when the project is configured for it.
+Use `forj dev` for watcher-driven local development. Each entry under `dev.apps` controls that App's managed build and runtime participation; sibling `dev.watches` remain independent.
 
 Use `forj build` before relying on generated code or binaries:
 

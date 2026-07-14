@@ -263,7 +263,7 @@ apps:
 
 Project-level components describe the rendered support surface. `forj make:app` may promote App-safe capabilities into the Project render set when a new App needs them.
 
-Component lists contain enabled component names. Each name must match a supported component key and may appear only once. An empty list explicitly enables no components. Legacy boolean maps remain accepted and are migrated to the compact list form the next time you run `forj render`.
+Component lists contain explicitly enabled component names. Each name must match a supported component key and may appear only once. At Project render scope, an empty list enables no components. At named App scope, it records no raw selections, but effective App normalization still adds mandatory `cli`. Dependencies are resolved for the effective render without expanding the persisted raw selection. Legacy boolean maps remain accepted and are migrated to the compact list form the next time a render-backed workflow rewrites the configuration, including `forj render`.
 
 ## Component Names
 
@@ -287,9 +287,7 @@ Render component keys include:
 | `database_sqlite` | SQLite database support. |
 | `scheduler` | Scheduler runtime and registration surface. |
 | `jobs` | Queue worker runtime and job support. |
-| `stress_test` | Synthetic queue stress tooling. |
-
-Component dependencies are resolved by the renderer. For example, auth requires `web_api` and a database component.
+Catalog dependencies are resolved in memory by the renderer. For example, metrics enables `web_api`, and auth enables mail. Those effective dependencies are not added to the saved list. Render-contract validation still requires an auth selection to include `web_api` and one database component explicitly.
 
 ## Module Replaces
 

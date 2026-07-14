@@ -32,6 +32,8 @@ Use this checklist before production deployment.
 - Confirm cache is not source-of-truth storage.
 - Confirm storage disks and object storage permissions.
 - Verify `forj build` has refreshed generated named resources.
+- Run `forj backup:plan` and confirm every discovered database and storage resource has the intended strategy.
+- Verify a recent backup and test its restore path in an isolated environment.
 
 ## Observability
 
@@ -59,9 +61,11 @@ Use this checklist before production deployment.
 - Validate one readiness check.
 - Validate metrics output.
 - Validate expected runtime processes start and stop cleanly.
+- Confirm backup creation, verification, retention, and freshness monitoring are automated.
 
 ## Next Steps
 
 - [Deployment Basics](/operations/deployment-basics)
+- [Backup and Restore](/operations/backups)
 - [Runtime Processes](/operations/runtime-processes)
 - [Testing Overview](/testing/overview)

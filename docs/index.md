@@ -636,7 +636,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app marketplace</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj marketplace make:controller checkout</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj marketplace route:list</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># orchestrates app + marketplace</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># manages Apps listed in dev.apps</span>
 <span></span>
 <span class="t-tree">photodrop/</span>
 <span class="t-tree">├──</span> cmd/app/         <span class="t-dim"># default app</span>

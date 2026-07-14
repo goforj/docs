@@ -42,7 +42,7 @@ forj build
 ```
 
 ::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 
 Use focused generation only when you intentionally want to refresh cache code without a full build:

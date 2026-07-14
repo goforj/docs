@@ -48,7 +48,7 @@ It records:
 - Go module path
 - selected project components
 - optional starter kit
-- dev tasks and watches
+- App dev lifecycles and independent custom watches
 - optional local module replacements
 - per-app component metadata under `apps` when named apps exist
 

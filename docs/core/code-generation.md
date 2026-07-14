@@ -43,7 +43,7 @@ This is the safest command when you want source and binary output to agree.
 The normal path is `forj build`.
 
 ::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 
 Use focused generation only when you intentionally want to refresh one generated component family without running the full build:
@@ -115,7 +115,7 @@ Generated code should be refreshed after changing:
 Use `forj build` when unsure.
 
 ::: info Dev Loop
-During `forj dev`, the generated build watcher normally runs `forj build` for you.
+When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 
 ## Common Mistakes

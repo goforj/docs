@@ -62,16 +62,36 @@ Start with:
 
 Likely causes:
 
-- route/controller shape cannot be inferred
-- generated output path unavailable
-- OpenAPI diagnostics need review
-- unusual dynamic route behavior
+- strict mode promoted an inference warning to a failure
+- the selected Web API App has no conventional route composition file
+- duplicate operations claim the same method and path
+- source or build flags cannot be mirrored safely
+- an artifact path or publication lock is unavailable
+- unusual dynamic route or response behavior cannot be inferred
 
 Start with:
 
 - [API Index](/applications/api-index)
 - [OpenAPI](/applications/openapi)
 - [Routes](/applications/routes)
+
+## Backup and Restore Errors
+
+Likely causes:
+
+- native MySQL, MariaDB, or PostgreSQL client tools are missing
+- a selected durable resource uses an unsupported driver
+- the manifest or an artifact checksum does not verify
+- native source and target database drivers differ
+- a portable archive does not match the target migrations or schema
+- an S3 App storage backup contains metadata only and cannot restore objects
+- destructive restore is missing `--confirm restore-production`
+
+Start with:
+
+- [Backup and Restore](/operations/backups)
+- [Driver Selection](/data/driver-selection)
+- [Environment Variables](/reference/env-vars)
 
 ## Dev Watcher Errors
 

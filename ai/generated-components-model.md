@@ -85,7 +85,7 @@ This pattern deserves first-class documentation. It is central to GoForj's "swap
 
 When documenting regeneration, prefer `forj build` as the normal path.
 
-Focused generation commands are valid reference material, but public workflow pages should not imply developers must run them manually during normal development. During `forj dev`, the generated build watcher normally runs `forj build` for the developer.
+Focused generation commands are valid reference material, but public workflow pages should not imply developers must run them manually during normal development. When an App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for the developer.
 
 ## Named Resource Pattern
 

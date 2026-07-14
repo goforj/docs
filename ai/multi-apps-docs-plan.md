@@ -319,7 +319,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
     - default app: `build/api_index.json`
     - named app: `build/<app>/api_index.json`
   - Explain status output such as `app billing`.
-  - Use `forj marketplace api-index` if the public command remains available after final verification.
+  - Use the verified public command `forj marketplace build:api-index`.
 - `docs/applications/openapi.md`
   - Document app-scoped OpenAPI output:
     - default app: `build/openapi.json`

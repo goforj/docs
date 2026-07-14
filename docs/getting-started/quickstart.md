@@ -65,16 +65,18 @@ cd photodrop
 forj dev
 ```
 
-`forj dev` runs the initial build for you: it refreshes generated code, runs Wire, indexes the API surface, and compiles the app. Then it starts the enabled runtimes and watches for changes.
+`forj dev` runs the initial build for every App listed under `dev.apps` whose build lifecycle is enabled: it refreshes generated code, runs Wire, indexes the API surface, and compiles the App. The new-Project wizard lists the runtime-capable default App with its conventional build and run lifecycles, so the normal quickstart starts it and watches for changes.
 
 ```text
 $ forj dev
-build      generate → wire → api index → go build
-http       listening on :3000
-ready      · watching for changes
+· Building app
+  Built app in 2.7s
+...
+✔ Dev ready
+  → App: http://localhost:3000
 ```
 
-Edit a file and save it. The app rebuilds and restarts on its own.
+Exact setup and service lines depend on selected components. Edit a watched file and save it. The owning App lifecycle rebuilds and replaces its runtime after a successful build.
 
 ## Verify
 
@@ -102,7 +104,7 @@ You have a running App. The structure for routes, wiring, lifecycle, configurati
 
 `forj dev` is the development loop. The other commands you will reach for:
 
-Inside a source Project, App commands use the source-aware run path: GoForj refreshes generated code and the API index, then runs `go run ./cmd/app <command>`. Production and process supervisors run the built binary directly.
+Inside a source Project, App commands use the source-aware run path: GoForj refreshes generated code, prepares the API artifacts, compiles an exact temporary App binary, starts it with the command, and publishes the artifacts after the OS accepts the process start. Production and process supervisors run the built binary directly.
 
 - `forj build` builds without watching: generate, Wire, API index, `go build`. The binary lands at `bin/app`.
 - `forj app` starts the enabled runtimes together in one process, without the watcher.

@@ -178,7 +178,7 @@ const gaMeasurementId = (process.env.GA_MEASUREMENT_ID || '')
 const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.'
-const docsVersion = 'v0.20'
+const docsVersion = 'Unreleased'
 const faviconVersion = '20260526'
 const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260527.jpg`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
@@ -719,7 +719,8 @@ export default defineConfig({
       {
         text: docsVersion,
         items: [
-          { text: `${docsVersion} Current`, link: '/' },
+          { text: 'Active development', link: '/' },
+          { text: 'Latest tag v0.20.0', link: '/versions/changelog' },
           { text: 'Version Policy', link: '/versions/' },
           { text: 'Changelog', link: '/versions/changelog' }
         ]
@@ -871,6 +872,7 @@ export default defineConfig({
           { text: 'Metrics', link: '/operations/metrics' },
           { text: 'Inspects', link: '/operations/inspects' },
           { text: 'Lighthouse', link: '/operations/lighthouse' },
+          { text: 'Backup and Restore', link: '/operations/backups' },
           { text: 'Standalone versus Distributed', link: '/operations/standalone-vs-distributed' },
           { text: 'Production Checklist', link: '/operations/production-checklist' }
         ]
@@ -923,7 +925,8 @@ export default defineConfig({
       {
         text: 'Versions',
         items: [
-          { text: `${docsVersion} Current`, link: '/versions/' },
+          { text: 'Active development', link: '/versions/' },
+          { text: 'Latest tag v0.20.0', link: '/versions/changelog' },
           { text: 'Changelog', link: '/versions/changelog' }
         ]
       },

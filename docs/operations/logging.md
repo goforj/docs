@@ -51,6 +51,20 @@ For a named app:
 ./bin/marketplace route:list
 ```
 
+## HTTP Access Logs
+
+Generated HTTP runtimes enable access logs by default. Control them with:
+
+```text
+HTTP_ACCESS_LOG_ENABLED=true
+```
+
+Each request event retains named fields for URI, method, status, latency, and client IP. Logger configuration carries App identity, while request context can add runtime source and inspect identity.
+
+Console output uses a compact value-oriented line with status-aware color. JSON output and registered log sinks retain the structured field names, so machine processing does not depend on console formatting.
+
+Disable access logs for a runtime where request volume would hide higher-signal events, then rely on metrics and inspects for the intended visibility.
+
 ## Timestamps
 
 Console timestamps are controlled by:
