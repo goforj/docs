@@ -17,7 +17,7 @@ Start with:
 forj app # or ./bin/app
 ```
 
-The generated `app` command hosts enabled runtimes together in one process when `RUNTIME_MODE` is unset or `standalone`.
+The generated `app` command hosts enabled runtimes together in one process. Topology comes from the command you launch, not an environment mode switch.
 
 For a named app, add the app name:
 
@@ -58,7 +58,7 @@ Examples:
 | Database | SQLite when SQL is enabled |
 | Mail | log or local SMTP tooling |
 
-The application code should not change when a production driver replaces a local one.
+The application code should not change when a production driver replaces a local one. If that driver is already included in `*_SUPPORTED_DRIVERS`, the switch needs runtime configuration and a restart rather than regenerated business code.
 
 ## Upgrade Path
 
@@ -72,7 +72,7 @@ Examples:
 - NATS, Redis, Kafka, Pub/Sub, or SNS events for cross-process fan-out
 - Postgres or MySQL for production SQL storage
 
-This should be a configuration and provider-support change, not a business-logic rewrite.
+This should be a configuration and provider-support change, not a business-logic rewrite. Adding a driver that is not already supported also requires regeneration and a new build.
 
 ## Development Workflow
 
@@ -128,6 +128,6 @@ Local-first docs should avoid:
 
 ## Next Steps
 
-- [Runtime Topology](/core/runtime-topology) explains standalone and distributed runtime modes.
+- [Runtime Topology](/core/runtime-topology) explains combined and split process shapes.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains driver selection.
 - [Generated Components](/core/generated-components) explains how driver support is compiled into the App.

@@ -50,7 +50,6 @@ Important areas:
 
 - `APP_ENV`
 - `APP_SHUTDOWN_TIMEOUT`
-- `RUNTIME_MODE`
 - HTTP host and port
 - supported and selected drivers
 - secrets

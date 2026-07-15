@@ -34,7 +34,7 @@ The project file records render-time choices and local development workflow.
 | `dev.sound_on_watch_error` | Optional local feedback when a watcher command fails. |
 | `dev.wire_paths` | Wire paths used by development tooling. |
 
-Queue driver configuration is environment-backed rather than stored in `.goforj.yml`. When Jobs is selected, `forj new` uses the wizard choice to seed `QUEUE_DRIVER` and `QUEUE_SUPPORTED_DRIVERS` in `.env`. Change those environment variables after Project creation.
+Driver configuration is environment-backed rather than stored in `.goforj.yml`. `forj new` derives active and supported drivers from the selected components without adding a separate driver screen. When Background Jobs is selected, it starts with `QUEUE_DRIVER=workerpool` and compiles workerpool and Redis support. Change those environment variables after Project creation.
 
 The legacy `render.queue_driver` key remains accepted as migration input and is removed when GoForj next rewrites the Project configuration.
 
@@ -46,7 +46,7 @@ Development tasks use this shape:
 dev:
   pre:
     - name: frontend dependencies
-      cmd: cd cmd/app/frontend && npm install
+      cmd: cd cmd/app/frontend && npm install --no-audit --no-fund --loglevel=error
   down:
     - name: stop containers
       cmd: docker-compose down
@@ -265,6 +265,8 @@ Project-level components describe the rendered support surface. `forj make:app` 
 
 Component lists contain explicitly enabled component names. Each name must match a supported component key and may appear only once. At Project render scope, an empty list enables no components. At named App scope, it records no raw selections, but effective App normalization still adds mandatory `cli`. Dependencies are resolved for the effective render without expanding the persisted raw selection. Legacy boolean maps remain accepted and are migrated to the compact list form the next time a render-backed workflow rewrites the configuration, including `forj render`.
 
+When an older component contract is migrated, GoForj enables Cache, Events, and File Storage to preserve resources that were implicit before those components became optional.
+
 ## Component Names
 
 Render component keys include:
@@ -286,8 +288,11 @@ Render component keys include:
 | `database_postgres` | PostgreSQL database support. |
 | `database_sqlite` | SQLite database support. |
 | `scheduler` | Scheduler runtime and registration surface. |
+| `cache` | Generated cache manager, accessors, and drivers. |
+| `events` | Generated event bus manager, accessors, and drivers. |
+| `storage` | Generated file and object storage manager, accessors, and drivers. |
 | `jobs` | Queue worker runtime and job support. |
-Catalog dependencies are resolved in memory by the renderer. For example, metrics enables `web_api`, and auth enables mail. Those effective dependencies are not added to the saved list. Render-contract validation still requires an auth selection to include `web_api` and one database component explicitly.
+Catalog dependencies are resolved in memory by the renderer. For example, metrics enables `web_api`, while auth enables mail, web API, and cache. Those effective dependencies are not added to the saved list. Render-contract validation still requires an auth selection to include one database component explicitly.
 
 ## Module Replaces
 

@@ -56,16 +56,18 @@ Use it for:
 - process-specific metrics
 - separate resource limits
 
-## Configuration
+## Choosing the Topology
 
-Topology is selected with:
+Topology is selected by the commands your process manager starts:
 
-```text
-RUNTIME_MODE=standalone
-RUNTIME_MODE=distributed
+```bash
+./bin/app           # enabled runtimes together
+./bin/app api       # HTTP only
+./bin/app worker    # workers only
+./bin/app scheduler # scheduler only
 ```
 
-Unknown or empty values normalize to `standalone`.
+Driver configuration is a separate decision. When API and worker processes need to share cache, queue, events, or files, select backends that cross process boundaries. Changing the process command alone does not make process-local drivers distributed.
 
 ## Common Mistakes
 

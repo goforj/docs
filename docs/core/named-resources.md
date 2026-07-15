@@ -27,7 +27,7 @@ Use stable names because they appear in logs, metrics, inspects, route lists, wo
 
 ## Default and Named Scopes
 
-Generated Apps usually provide a default resource and optional named resources.
+Generated Apps usually provide a default resource and optional named resources when the owning component is enabled. A Project without Cache, File Storage, Background Jobs, or Events does not render accessors for that resource family.
 
 Examples:
 
@@ -85,7 +85,7 @@ When this App is listed in `dev.apps`, its build lifecycle normally runs `forj b
 
 Named accessors represent generated invariants.
 
-If an accessor is present, the generated resource should be constructed even when `.env` is absent. Missing runtime driver settings use GoForj's local fallbacks, such as memory cache, local storage, workerpool queues, in-process events, log mail, and SQLite databases.
+If an accessor is present, its generated resource is required. Missing runtime driver settings use local fallbacks only when the fallback driver is built into the App. New Projects write explicit active selections, and a selected MySQL-only or Postgres-only database must receive its environment configuration.
 
 If the generated code and runtime environment disagree in a way that cannot be satisfied, failing fast is better than silently returning nil or pretending a resource exists.
 

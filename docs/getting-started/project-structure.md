@@ -97,6 +97,15 @@ Runtime support packages include:
 - `internal/schedules` for scheduler runtime behavior
 - `internal/metrics` and `internal/observability` for runtime visibility
 
+Resource packages appear only when their components are enabled:
+
+- `internal/database` for a selected database engine
+- `internal/caches` for Cache
+- `internal/events` for Events
+- `internal/storages` for File Storage
+- `internal/queues` and `internal/jobs` for Background Jobs
+- `internal/mail` for Mail
+
 Application-owned packages can be organized by domain:
 
 ```text

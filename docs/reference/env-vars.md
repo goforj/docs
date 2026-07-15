@@ -79,6 +79,8 @@ See [Backup and Restore](/operations/backups) for repository behavior, native an
 
 GoForj separates compile-time support from runtime selection.
 
+These families are emitted only when their owning component is enabled. Queue configuration belongs to the Background Jobs component.
+
 | Family | Compile-Time Support | Runtime Selection |
 | --- | --- | --- |
 | Cache | `CACHE_SUPPORTED_DRIVERS` | `CACHE_DRIVER`, `CACHE_<NAME>_DRIVER` |

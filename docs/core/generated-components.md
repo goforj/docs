@@ -29,7 +29,18 @@ render:
 
 Changing component selection changes the generated App structure. The available packages, commands, Wire sets, and emitted environment entries depend on this contract.
 
-When Jobs is enabled, the new-Project wizard seeds `QUEUE_DRIVER` and `QUEUE_SUPPORTED_DRIVERS` in `.env`. Queue driver configuration is environment-backed state, not part of the durable render contract.
+Resource components own their complete generated surface:
+
+| Component | Generated Surface |
+| --- | --- |
+| Cache | Cache manager, accessors, providers, drivers, and environment entries. |
+| Events | Event bus manager, accessors, providers, drivers, and environment entries. |
+| File Storage | Storage manager, accessors, providers, drivers, and environment entries. |
+| Background Jobs | Queue manager, job and worker runtime, providers, drivers, and environment entries. |
+
+Disabled components do not leave placeholder resource packages behind. Higher-level components may require them; for example, Auth includes Cache as a dependency.
+
+`forj new` derives resource drivers from this component selection. Driver state remains in the environment rather than the durable render contract. Background Jobs therefore owns the Queue resource, but its active `QUEUE_DRIVER` is still an environment choice.
 
 ## Build-Time Generation
 
@@ -69,9 +80,11 @@ forj generate --observability
 
 Running `forj generate` without flags runs the available generators for the current App.
 
+An explicit focused command for a disabled component fails instead of recreating a resource outside the Project contract.
+
 ## Generated Managers
 
-Generated managers provide stable App access to infrastructure resources selected for the project.
+Generated managers provide stable App access to infrastructure resources selected for the Project. Each example below exists only when its owning component is enabled.
 
 Examples:
 

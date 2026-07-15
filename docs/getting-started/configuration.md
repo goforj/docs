@@ -66,6 +66,8 @@ Top-level `apps` stores per-App render metadata. `dev.apps` selects the App life
 
 Component lists contain only explicitly enabled components. Dependencies are resolved for rendering without expanding the persisted list. Legacy boolean component maps remain readable and are rewritten as compact lists the next time a render-backed workflow rewrites the configuration, including `forj render`.
 
+Components gate generated code. If Cache, Events, File Storage, or Background Jobs is absent, GoForj does not render that resource package, its providers, or its environment entries. Background Jobs owns the Queue resource and worker runtime. Some higher-level components add required dependencies; for example, Auth requires Mail, Web API, Cache, and a selected database engine.
+
 Use `.goforj.yml` when you need to change the generated Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
 
 ## Environment Files
@@ -93,24 +95,24 @@ API_HTTP_HOST=0.0.0.0
 API_HTTP_PORT=3000
 
 CACHE_DRIVER=memory
-CACHE_SUPPORTED_DRIVERS=memory
+CACHE_SUPPORTED_DRIVERS=memory,redis
 
 STORAGE_DRIVER=local
 STORAGE_SUPPORTED_DRIVERS=local
 
 EVENTS_DRIVER=inproc
-EVENTS_SUPPORTED_DRIVERS=inproc
+EVENTS_SUPPORTED_DRIVERS=inproc,redis
 
 MAIL_DRIVER=log
-MAIL_SUPPORTED_DRIVERS=log
+MAIL_SUPPORTED_DRIVERS=log,smtp
 
-QUEUE_DRIVER=redis
-QUEUE_SUPPORTED_DRIVERS=redis
+QUEUE_DRIVER=workerpool
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 ```
 
-The queue-driver choice in `forj new` is a one-time seed for these `.env` values. It is not retained in `.goforj.yml`, and an existing `.env` remains authoritative on later renders.
+`forj new` derives these values from the selected components. There is no separate driver-selection screen. It selects the chosen database engine, starts Cache in memory, Background Jobs on workerpool, Events in-process, and File Storage locally. Mail starts with SMTP when Docker is enabled and log output otherwise. An existing `.env` remains authoritative when rendering into an existing directory.
 
-Apps can still start without a checked-in `.env` file. Generated local fallbacks construct usable resources for the default app shape, then process environment or environment files override them when present.
+Apps that use only built-in local fallbacks can start without a checked-in `.env` file. When a selected resource differs from its fallback, such as a MySQL database, provide its active driver and connection values through an environment file or process environment.
 
 ## Driver Configuration
 
@@ -141,6 +143,8 @@ This pattern appears across GoForj primitives:
 - `MAIL_SUPPORTED_DRIVERS`, `MAIL_DRIVER`, `MAIL_<NAME>_DRIVER`
 - `DB_SUPPORTED_DRIVERS`, `DB_DRIVER`
 
+New Projects compile both the local driver and Redis for Cache, Queue, and Events. Moving one of those resources to Redis later usually means provisioning Redis, changing its active `*_DRIVER`, and restarting the App. Selecting a driver outside the supported list still requires adding it to `*_SUPPORTED_DRIVERS` and rebuilding.
+
 ## Regenerate After Driver Changes
 
 Changing supported drivers can change imports, managers, and generated accessors.
@@ -167,9 +171,11 @@ forj generate --events
 forj generate --db
 ```
 
-## Local-First Defaults
+Only enabled components participate. An explicit focused command for a disabled component fails with a message that points back to `.goforj.yml`.
 
-Generated Apps prefer local defaults first. If no environment file or process variable selects a driver, generated managers fall back to:
+## Generated Fallbacks
+
+Generated managers retain local fallbacks when no environment value selects a driver:
 
 | Primitive | Fallback |
 | --- | --- |
@@ -179,6 +185,8 @@ Generated Apps prefer local defaults first. If no environment file or process va
 | Queue | `workerpool` |
 | Events | `inproc` |
 | Mail | `log` |
+
+The fallback must be included in the generated driver's supported set. New Projects write explicit active selections so a MySQL-only or Postgres-only App does not rely on the SQLite fallback.
 
 SQLite databases use `_data/sqlite/app.db` for the default connection and `_data/sqlite/<name>.db` for named connections when no database path is configured.
 
@@ -234,5 +242,5 @@ These options are useful for packaging, but most local development should use `.
 ## Next Steps
 
 - [Project Structure](/getting-started/project-structure) explains where generated configuration is used.
-- `core/drivers-and-adapters.md` will explain swappable infrastructure in more depth.
+- [Drivers and Adapters](/core/drivers-and-adapters) explains swappable infrastructure in more depth.
 - [Libraries](/libraries/) links to standalone driver matrices and package APIs.

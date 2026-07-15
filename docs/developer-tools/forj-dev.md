@@ -154,6 +154,17 @@ dev:
 
 Startup first runs configured App bootstrap builds so pre-tasks can call built App commands. It then runs `dev.pre`, performs configured database setup and auto-migration, and runs any generated tasks deliberately ordered after migration. Finally, it builds App-owned SPAs, rebuilds their Apps, and starts persistent watcher and runtime processes.
 
+For npm-backed starter kits, new Projects generate this dependency setup task:
+
+```yaml
+dev:
+  pre:
+    - name: Install Frontend Dependencies
+      cmd: cd cmd/app/frontend && npm install --no-audit --no-fund --loglevel=error
+```
+
+The flags keep routine funding, audit, and warning noise out of a successful startup. Command output still streams when npm reports an error, and `forj dev` repeats the final output lines with the task failure.
+
 On interrupt, GoForj stops watcher processes and runs down tasks when `dev.down_on_exit` is enabled.
 
 ## Multi-App Projects

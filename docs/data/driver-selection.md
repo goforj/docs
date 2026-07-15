@@ -42,9 +42,22 @@ EVENTS_AUDIT_DRIVER=nats
 MAIL_TRANSACTIONAL_DRIVER=resend
 ```
 
-## Local Defaults
+`forj new` does not add another wizard screen for these decisions. It derives a starting plan from the selected components:
 
-Start local:
+| Resource | Active Driver | Supported Drivers |
+| --- | --- | --- |
+| Database | Selected MySQL, Postgres, or SQLite component | Selected engine |
+| Cache | `memory` | `memory,redis` |
+| File Storage | `local` | `local` |
+| Queue for Background Jobs | `workerpool` | `workerpool,redis` |
+| Events | `inproc` | `inproc,redis` |
+| Mail | `smtp` with Docker, otherwise `log` | `log,smtp` |
+
+This keeps the first run local while compiling the most common shared-infrastructure transition for Cache, Queue, and Events.
+
+## Local Choices
+
+When you want a self-contained App, start local:
 
 | Primitive | Local Driver |
 | --- | --- |
@@ -55,9 +68,9 @@ Start local:
 | Events | `inproc` |
 | Mail | `log` |
 
-This keeps onboarding and local development small while preserving the production architecture.
+This keeps onboarding and local development small while preserving the production architecture. Database selection is still explicit in the Components screen, so a Project can remain otherwise self-contained while using MySQL or Postgres.
 
-These local drivers are generated fallbacks. An App without a `.env` file still constructs the generated default and named resources with the local fallback drivers, unless process environment or another loaded environment file selects a different supported driver.
+These local drivers are generated fallbacks when the corresponding driver is built into the App. New Projects also write explicit active selections. A MySQL-only or Postgres-only App must receive its selected driver and connection configuration from an environment file or process environment rather than falling back to SQLite.
 
 ## Decision Guide
 
@@ -89,13 +102,24 @@ Move to production drivers for concrete operational reasons:
 
 Do not introduce distributed infrastructure before the App needs the behavior.
 
-The normal upgrade sequence is:
+First check whether the destination driver is already in `*_SUPPORTED_DRIVERS`. New Projects normally include Redis alongside the local Cache, Queue, and Events drivers.
+
+When it is already supported:
+
+1. provision the destination backend
+2. configure any required connection values
+3. choose it with `*_DRIVER`
+4. restart or redeploy the App
+
+When it is not already supported:
 
 1. keep the application service code unchanged
 2. add the production driver to `*_SUPPORTED_DRIVERS`
 3. choose the driver with environment variables
 4. run `forj build`
 5. verify the runtime with metrics, inspects, logs, and smoke commands
+
+Database switches also require compatible migrations and an explicit data-movement plan. Swapping drivers avoids a business-logic rewrite, but it does not remove operational migration work.
 
 ## Regeneration
 

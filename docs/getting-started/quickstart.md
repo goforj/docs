@@ -10,7 +10,7 @@ This page takes you from nothing to a running GoForj App: one command to create 
 ## Prerequisites
 
 - Go 1.25 or newer. [Install Go](https://go.dev/doc/install) if you do not have it, and check with `go version`.
-- Docker only if you select Docker-backed components. [Docker Desktop](https://docs.docker.com/get-started/get-docker/), [OrbStack](https://orbstack.dev/), and [Podman](https://podman.io/) all work. The default path below needs neither.
+- Docker only if you select components that use generated Docker services. [Docker Desktop](https://docs.docker.com/get-started/get-docker/), [OrbStack](https://orbstack.dev/), and [Podman](https://podman.io/) all work. The small HTTP path below needs neither.
 
 ## Install the CLI
 
@@ -34,22 +34,18 @@ Run the wizard:
 forj new
 ```
 
-The wizard asks for a project name, component selection, and optional Atlas agent support:
+The wizard collects the Project name and module path, the App components you want, presentation choices, the destination path, and optional Atlas agent support.
+
+The Components screen starts with GoForj's common full-stack selection. For this first run, press `c` to clear it back to the required CLI, then enable Web API with the space bar:
 
 ```text
 $ forj new
 ✔ Project name · photodrop
-✔ Components · cli, web_api
+✔ Components · CLI, Web API
 ✔ Atlas - Agent Support · Recommended
 ```
 
-For the first run, choose a small HTTP shape:
-
-- enable `cli`
-- enable `web_api`
-- leave `web_ui`, jobs, scheduler, and database disabled unless you want them now
-
-Components are choices, not commitments. Everything you skip today can be added later as the App grows.
+Database engines, Cache, Events, File Storage, and Background Jobs are component choices on the same screen. GoForj chooses sensible starting drivers for enabled resources, so the wizard does not ask you to design infrastructure. Components and drivers can both change later as the App grows.
 
 Atlas is optional. If you enable it, GoForj installs local guidance for supported AI coding agents so they understand GoForj project structure, make commands, app registration points, and docs context. See [Atlas](/developer-tools/atlas) for details.
 
