@@ -261,11 +261,15 @@ apps:
     help_format: guided
 ```
 
-Project-level components describe the rendered support surface. `forj make:app` may promote App-safe capabilities into the Project render set when a new App needs them.
+`render.components` describes the default App and Project-owned tooling. Named App selections stay under `apps`; when shared generated packages need the combined capability set, the renderer derives that union in memory without rewriting the default App selection.
 
-Component lists contain explicitly enabled component names. Each name must match a supported component key and may appear only once. At Project render scope, an empty list enables no components. At named App scope, it records no raw selections, but effective App normalization still adds mandatory `cli`. Dependencies are resolved for the effective render without expanding the persisted raw selection. Legacy boolean maps remain accepted and are migrated to the compact list form the next time a render-backed workflow rewrites the configuration, including `forj render`.
+Component lists contain explicitly enabled component names. Each name must match a supported component key and may appear only once. Short lists use compact sequence syntax; long lists are written as multiline YAML. At Project render scope, an empty list enables no components. At named App scope, it records no raw selections, but effective App normalization still adds mandatory `cli`. Dependencies are resolved for the effective render without expanding the persisted raw selection.
 
-When an older component contract is migrated, GoForj enables Cache, Events, and File Storage to preserve resources that were implicit before those components became optional.
+Modern configuration does not need or write `component_contract`. GoForj still reads the retired marker and legacy boolean component maps long enough to migrate them, then writes only the component sequence. Migrating a versionless boolean map enables Cache, Events, and File Storage to preserve resources that were implicit before those components became optional.
+
+`forj new` starts with Cache, Events, File Storage, and Background Jobs selected. It also starts with MySQL as the one selected database engine. These are saved as ordinary component names, so deselecting one has the same meaning as omitting it from the list.
+
+Adding a component and rerendering creates its framework-owned support. Removing a component is conservative: the renderer deletes only verified framework output, refuses unsafe transitions before mutation, and does not delete runtime or resource data. Reconcile the path named by the error before retrying. Active and supported drivers remain environment configuration rather than component names.
 
 ## Component Names
 
@@ -291,7 +295,7 @@ Render component keys include:
 | `cache` | Generated cache manager, accessors, and drivers. |
 | `events` | Generated event bus manager, accessors, and drivers. |
 | `storage` | Generated file and object storage manager, accessors, and drivers. |
-| `jobs` | Queue worker runtime and job support. |
+| `jobs` | Queue manager, job support, and worker runtime. |
 Catalog dependencies are resolved in memory by the renderer. For example, metrics enables `web_api`, while auth enables mail, web API, and cache. Those effective dependencies are not added to the saved list. Render-contract validation still requires an auth selection to include one database component explicitly.
 
 ## Module Replaces

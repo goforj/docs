@@ -36,9 +36,11 @@ Resource components own their complete generated surface:
 | Cache | Cache manager, accessors, providers, drivers, and environment entries. |
 | Events | Event bus manager, accessors, providers, drivers, and environment entries. |
 | File Storage | Storage manager, accessors, providers, drivers, and environment entries. |
-| Background Jobs | Queue manager, job and worker runtime, providers, drivers, and environment entries. |
+| Background Jobs | Queue manager, job support, worker runtime, providers, drivers, and environment entries. |
 
-Disabled components do not leave placeholder resource packages behind. Higher-level components may require them; for example, Auth includes Cache as a dependency.
+All four resource components start selected in `forj new`, and all four can be deselected. Database remains a separate, concrete component choice between MySQL, Postgres, and SQLite.
+
+Components disabled across every App do not leave placeholder resource packages behind. Shared support is derived from all App selections, while each App receives only its selected APIs and wiring. Higher-level components may require dependencies; for example, Auth includes Cache.
 
 `forj new` derives resource drivers from this component selection. Driver state remains in the environment rather than the durable render contract. Background Jobs therefore owns the Queue resource, but its active `QUEUE_DRIVER` is still an environment choice.
 

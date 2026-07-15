@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
 <span>A full product with auth and Vue, React, or templ</span>
 </div>
 <ul class="gf-home-points">
-<li><strong>Components are choices.</strong> Auth, mail, database, metrics, Docker, frontend - picked at <code>forj new</code>, added later as the App grows.</li>
+<li><strong>Components are choices.</strong> Database, Cache, Events, File Storage, Background Jobs, auth, frontend, observability - picked at <code>forj new</code>, changed later as the App grows.</li>
 <li><strong>The structure is already there.</strong> Routes, wiring, lifecycle, configuration, and tests have a place before you write a line.</li>
 <li><strong>It runs before you configure anything.</strong> Local drivers back every primitive, so day one needs no cloud account and no docker-compose archaeology.</li>
 </ul>

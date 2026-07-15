@@ -42,7 +42,7 @@ EVENTS_AUDIT_DRIVER=nats
 MAIL_TRANSACTIONAL_DRIVER=resend
 ```
 
-`forj new` does not add another wizard screen for these decisions. It derives a starting plan from the selected components:
+`forj new` starts with Cache, Events, File Storage, and Background Jobs selected, while keeping each one optional. Database remains a concrete component choice. The wizard does not add another screen for drivers; it derives a starting plan from the enabled components:
 
 | Resource | Active Driver | Supported Drivers |
 | --- | --- | --- |

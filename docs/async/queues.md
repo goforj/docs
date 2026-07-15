@@ -116,6 +116,10 @@ When generating a job, pass `--queue` to stamp the generated dispatch helper:
 forj make:job reports:generate --queue reports
 ```
 
+Generated jobs dispatch through the Queue manager. For manual dispatch, pass the logical name such as `reports` to `Manager.Dispatch`; the manager selects that generated runtime and applies its configured physical backend name, including the App prefix for a named App.
+
+Named accessors such as `app.Queues().Reports()` expose the direct runtime handle for worker lifecycle, readiness, and driver inspection. If low-level code dispatches through that handle, omit `OnQueue` so the handle uses its configured physical default. Supplying the logical name directly to the low-level handle bypasses App namespace translation.
+
 ## Workers
 
 Start workers with:

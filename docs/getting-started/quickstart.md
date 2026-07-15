@@ -45,7 +45,9 @@ $ forj new
 ✔ Atlas - Agent Support · Recommended
 ```
 
-Database engines, Cache, Events, File Storage, and Background Jobs are component choices on the same screen. GoForj chooses sensible starting drivers for enabled resources, so the wizard does not ask you to design infrastructure. Components and drivers can both change later as the App grows.
+Cache, Events, File Storage, and Background Jobs start selected, but each remains a normal component choice. Background Jobs includes the Queue resource, job support, and worker runtime. Database stays explicit on this same screen: MySQL starts selected, and you can choose Postgres or SQLite instead.
+
+GoForj chooses sensible starting drivers for enabled resources, so the wizard does not ask you to design infrastructure. Disable components you do not need now; component and driver choices can both change later as the App grows.
 
 Atlas is optional. If you enable it, GoForj installs local guidance for supported AI coding agents so they understand GoForj project structure, make commands, app registration points, and docs context. See [Atlas](/developer-tools/atlas) for details.
 

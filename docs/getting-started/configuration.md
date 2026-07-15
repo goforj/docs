@@ -64,9 +64,13 @@ render:
 
 Top-level `apps` stores per-App render metadata. `dev.apps` selects the App lifecycles managed by `forj dev`; sibling `dev.watches` entries run independent custom commands.
 
-Component lists contain only explicitly enabled components. Dependencies are resolved for rendering without expanding the persisted list. Legacy boolean component maps remain readable and are rewritten as compact lists the next time a render-backed workflow rewrites the configuration, including `forj render`.
+Modern configuration stores only the enabled component names in a YAML sequence. Short selections stay compact, such as `components: [cli, web_api]`; longer selections use normal multiline YAML. No `component_contract` field is needed or written. Legacy boolean component maps remain readable and are rewritten as sequences the next time a render-backed workflow rewrites the configuration, including `forj render`.
 
-Components gate generated code. If Cache, Events, File Storage, or Background Jobs is absent, GoForj does not render that resource package, its providers, or its environment entries. Background Jobs owns the Queue resource and worker runtime. Some higher-level components add required dependencies; for example, Auth requires Mail, Web API, Cache, and a selected database engine.
+Component lists contain only explicitly enabled components. Dependencies are resolved for rendering without expanding the saved list. `forj new` starts with Cache, Events, File Storage, and Background Jobs enabled, while keeping each one selectable. It also keeps the database concrete: MySQL starts selected, and Postgres and SQLite are alternatives on the same Components screen.
+
+Components gate generated code. If Cache, Events, File Storage, or Background Jobs is absent from every App selection, GoForj does not render that resource package, its providers, or its environment entries. A named App receives only the APIs and App-prefixed defaults for its own selections. Background Jobs owns the Queue resource, job support, and worker runtime. Some higher-level components add required dependencies; for example, Auth requires Mail, Web API, Cache, and a selected database engine.
+
+You can add a component later by adding its name and running `forj render`. Removing a name is deliberately not an uninstall command: GoForj removes only output it can prove is framework-owned, refuses before writing when source or configuration still depends on the component, and never deletes cache state, stored files, queued work, or event history. Driver changes remain separate environment choices and usually do not require changing components.
 
 Use `.goforj.yml` when you need to change the generated Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
 

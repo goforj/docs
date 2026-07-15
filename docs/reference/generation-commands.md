@@ -45,7 +45,7 @@ forj generate --observability
 
 Running `forj generate` without flags refreshes available generators for the current App.
 
-Availability comes from the component contract in `.goforj.yml`. Cache, Storage, Events, and Queue generation run only when Cache, File Storage, Events, and Background Jobs are enabled. An explicit flag for a disabled component returns an error rather than recreating a package outside that contract.
+Availability comes from the selected components in `.goforj.yml`. Cache, Storage, Events, and Queue generation run only when Cache, File Storage, Events, and Background Jobs are enabled. An explicit flag for a disabled component returns an error rather than recreating a package outside that selection.
 
 `forj build:api-index` is the focused API contract command. It publishes the API index, diagnostics, and OpenAPI document together. Use `--strict` in CI and prefix the command for a named App:
 

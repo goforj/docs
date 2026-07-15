@@ -110,10 +110,9 @@ Return errors when the job should fail and let queue behavior handle retry polic
 
 ## Registration
 
-Generated App construction registers framework-owned job handlers before workers start.
+Generated App construction registers job handlers before workers start. `forj make:job` adds both the constructor and its handler registration to `app/wire/inject_jobs_app.go`, or `app/<name>/wire/inject_jobs_app.go` for a named App. The App-owned `registerJobHandlers` function is the extension point for a manually written job.
 
-App-owned jobs should be registered through generated or documented App extension points before workers start.
-Generated job providers live in `app/wire/inject_jobs_app.go`, or `app/<name>/wire/inject_jobs_app.go` for a named app.
+Projects created before this registration seam may already contain custom job constructors that were never registered. Rerender migrates known framework jobs but does not guess whether an arbitrary provider is a job. Add each older custom job as a typed `registerJobHandlers` parameter and register its type name with `queueManager.Register`; future `make:job` calls maintain both entries automatically.
 
 Do not register handlers after workers are already running.
 
