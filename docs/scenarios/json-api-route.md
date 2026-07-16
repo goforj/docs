@@ -1,6 +1,6 @@
 ---
-title: JSON API Route
-description: Build a JSON API route with a controller, service, Wire provider, route registration, and test.
+title: "JSON API Route"
+description: "Build a JSON API route with a controller, service, Wire provider, route registration, and test."
 ---
 
 # JSON API Route
@@ -20,8 +20,8 @@ The endpoint is intentionally small. It establishes the normal shape for applica
 - `internal/users.Service` owns user lookup behavior.
 - `internal/users.Controller` translates HTTP into a service call.
 - `forj make:controller users` creates the controller wiring and route registration.
-- `wire/appSet` provides the service.
-- `forj run route:list` shows the registered endpoint.
+- `appSet` in `app/wire` provides the service.
+- `forj route:list` shows the registered endpoint.
 
 ## Prerequisites
 
@@ -58,7 +58,7 @@ app/routes.go
 app/wire/inject_services_app.go
 ```
 
-## Step 1: Scaffold The Controller
+## Step 1: Scaffold the Controller
 
 Start with the real make command. It creates `internal/users/controller.go`, wires the controller constructor into `app/wire/inject_http_controllers_app.go`, and adds the controller routes to `app/routes.go`.
 
@@ -66,7 +66,7 @@ Start with the real make command. It creates `internal/users/controller.go`, wir
 forj make:controller users
 ```
 
-## Step 2: Add The Service
+## Step 2: Add the Service
 
 Create `internal/users/service.go`.
 
@@ -75,6 +75,7 @@ The service owns application behavior. This first version is intentionally simpl
 Create or replace `internal/users/service.go`:
 
 ```go
+// Package users keeps user behavior independent from HTTP and infrastructure details.
 package users
 
 import (
@@ -82,21 +83,26 @@ import (
 	"errors"
 )
 
+// ErrUserNotFound lets transports handle missing users without depending on repository details.
 var ErrUserNotFound = errors.New("user not found")
 
+// User keeps the application response independent from transport and persistence models.
 type User struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
 
+// Service keeps user lookup rules outside the HTTP controller.
 type Service struct{}
 
+// NewService keeps construction explicit so Wire and tests use the same entry point.
 func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) Find(ctx context.Context, id string) (User, error) {
+// Find centralizes lookup rules so transports do not duplicate input behavior.
+func (*Service) Find(_ context.Context, id string) (User, error) {
 	if id == "" {
 		return User{}, ErrUserNotFound
 	}
@@ -109,7 +115,7 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 }
 ```
 
-## Step 3: Replace The Starter Controller
+## Step 3: Replace the Starter Controller
 
 Replace `internal/users/controller.go`.
 
@@ -120,6 +126,7 @@ The controller only reads HTTP input, calls the service, and writes the HTTP res
 Create or replace `internal/users/controller.go`:
 
 ```go
+// Package users keeps HTTP translation separate from user lookup behavior.
 package users
 
 import (
@@ -129,20 +136,24 @@ import (
 	"github.com/goforj/web"
 )
 
+// Controller keeps HTTP translation separate from user lookup behavior.
 type Controller struct {
 	service *Service
 }
 
+// NewController makes the service dependency explicit for Wire and focused tests.
 func NewController(service *Service) *Controller {
 	return &Controller{service: service}
 }
 
+// Routes keeps the users HTTP surface discoverable by the App router.
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
 		web.NewRoute(http.MethodGet, "/users/:id", c.Show),
 	}
 }
 
+// Show translates the service result into the public HTTP contract.
 func (c *Controller) Show(ctx web.Context) error {
 	user, err := c.service.Find(ctx.Context(), ctx.Param("id"))
 	if errors.Is(err, ErrUserNotFound) {
@@ -158,7 +169,7 @@ func (c *Controller) Show(ctx web.Context) error {
 }
 ```
 
-## Step 4: Provide The Service
+## Step 4: Provide the Service
 
 Open `app/wire/inject_services_app.go`.
 
@@ -167,11 +178,11 @@ Wire can already construct the controller after the make command, but the contro
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-"your/module/internal/makecmd"
-        "your/module/internal/users"
+	"your/module/internal/runtime"
+	"your/module/internal/users"
 ```
 
-## Step 5: Add The Service Provider
+## Step 5: Add the Service Provider
 
 Add `users.NewService` to `appSet`.
 
@@ -184,7 +195,7 @@ users.NewService,
 app.NewLifecycleRegistry,
 ```
 
-## Step 6: Add A Service Test
+## Step 6: Add a Service Test
 
 Create `internal/users/service_test.go`.
 
@@ -193,31 +204,40 @@ The service test does not start HTTP. It proves the business behavior directly.
 Create or replace `internal/users/service_test.go`:
 
 ```go
+// Package users keeps lookup behavior testable without starting the HTTP runtime.
 package users
 
 import (
 	"context"
+	"errors"
 	"testing"
 )
 
+// TestServiceFindsUser protects lookup behavior without involving HTTP wiring.
 func TestServiceFindsUser(t *testing.T) {
 	service := NewService()
+	want := User{
+		ID:    "42",
+		Name:  "Ada Lovelace",
+		Email: "ada@example.test",
+	}
 
 	user, err := service.Find(context.Background(), "42")
 	if err != nil {
 		t.Fatalf("find user: %v", err)
 	}
-	if user.ID != "42" {
-		t.Fatalf("user id = %q, want %q", user.ID, "42")
+	if user != want {
+		t.Fatalf("user = %+v, want %+v", user, want)
 	}
 }
 
+// TestServiceRejectsEmptyID keeps missing identifiers from becoming valid lookups.
 func TestServiceRejectsEmptyID(t *testing.T) {
 	service := NewService()
 
 	_, err := service.Find(context.Background(), "")
-	if err == nil {
-		t.Fatal("expected error")
+	if !errors.Is(err, ErrUserNotFound) {
+		t.Fatalf("find user error = %v, want %v", err, ErrUserNotFound)
 	}
 }
 ```
@@ -233,19 +253,19 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Expected output includes:
 
 - `/api/v1/users/:id`
 
-## Try The Route
+## Try the Route
 
 Run the HTTP server:
 
 ```bash
-forj run api
+forj api
 ```
 
 Request the endpoint:

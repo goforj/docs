@@ -1,6 +1,6 @@
 ---
-title: Runtime Observability
-description: Follow a GoForj workflow through routes, logs, metrics, inspects, Lighthouse, workers, and scheduler runs.
+title: "Runtime Observability"
+description: "Follow a GoForj workflow through routes, logs, metrics, inspects, Lighthouse, workers, and scheduler runs."
 ---
 
 # Runtime Observability
@@ -45,7 +45,7 @@ Complete these scenarios first:
 
 1. [JSON API Route](/scenarios/json-api-route)
 2. [Cached User Profile](/scenarios/cached-user-profile)
-3. [File Upload To Storage](/scenarios/file-upload-storage)
+3. [File Upload to Storage](/scenarios/file-upload-storage)
 4. [Users Created Event](/scenarios/users-created-event)
 5. [Reports Generate Job](/scenarios/reports-generate-job)
 6. [Reports Daily Schedule](/scenarios/reports-daily-schedule)
@@ -69,35 +69,54 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+grep -Fx LIGHTHOUSE_INSPECT_ENABLED=true .env.local
+```
+
+Expected output includes:
+
+- `LIGHTHOUSE_INSPECT_ENABLED=true`
+
+```bash
+forj route:list
 ```
 
 Expected output includes:
 
 - `/api/v1/users`
+- `/metrics`
 
-## Trigger The Workflow
+## Trigger the Workflow
 
 List the registered routes:
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
-Start the API, worker, and scheduler in separate terminals:
+With the default process-local `workerpool` driver, start the combined App so API, Jobs, and scheduler runtimes share one process:
 
 ```bash
-forj run api
+forj app
+```
+
+The built binary uses the same combined topology:
+
+```bash
+./bin/app
+```
+
+To run API, workers, and scheduler as separate processes, first select a shared queue driver as described in [Reports Generate Job](/scenarios/reports-generate-job#swap-the-driver). Each command is a long-running process, so run one in each of three terminals:
+
+```bash
+forj api
+```
+
+```bash
 forj worker
-forj scheduler
 ```
 
-In production, use the built binary equivalents:
-
 ```bash
-./bin/app api
-./bin/app worker
-./bin/app scheduler
+forj scheduler
 ```
 
 Create a user:
@@ -120,33 +139,37 @@ Then check route output, process logs, metrics endpoints, inspect records, and L
 
 ## Check Metrics
 
-Check the shared local metrics endpoint:
+The combined local App exposes one shared metrics endpoint:
+
+```bash
+curl http://localhost:3000/metrics
+```
+
+In a split topology using a shared queue backend, each direct runtime owns a dedicated process metrics endpoint:
 
 ```bash
 curl http://localhost:10000/metrics
-```
-
-When split runtime commands expose source-specific listeners, also check:
-
-```bash
 curl http://localhost:10001/metrics
 curl http://localhost:10002/metrics
 ```
 
-Look for bounded labels such as route name or pattern, queue name, job name, schedule name, source, and status. Do not expect user IDs, emails, raw URLs, or storage filenames to appear as labels.
+These are the API, scheduler, and worker metrics listeners, respectively. The API still serves `GET /metrics` on port `3000`, while the dedicated port keeps scrape traffic separate from application requests.
 
-Useful evidence includes:
+Look for bounded labels such as registered route, event topic, queue name, job name, scheduler job name, source, and status. Do not expect user IDs, emails, raw URLs, or storage filenames to appear as labels.
+
+Useful evidence across the different metric families includes:
 
 ```text
 route="/api/v1/users"
+topic="users.created"
 job_name="reports:generate"
-schedule_name="reports:daily"
+job_name="reports:daily"
 queue="default"
 source="jobs"
 source="scheduler"
 ```
 
-Metric names can evolve with the metrics package and generated App version. The content that must remain stable is the label discipline: bounded operational names, not user-controlled data.
+Scheduler metrics use the bounded `job_name` label for the registered schedule name. Metric names can evolve with the metrics package and generated App version, but the label discipline must remain stable: bounded operational names, not user-controlled data.
 
 ## Check Inspects
 
@@ -168,10 +191,10 @@ Use `inspect` for the product surface. `trace_id` may still appear as a correlat
 Use logs to confirm lifecycle and failure behavior:
 
 ```bash
-forj run api
-forj worker
-forj scheduler
+forj app
 ```
+
+When using a shared queue backend and separate processes, inspect the output from `forj api`, `forj worker`, and `forj scheduler` individually.
 
 Good logs should answer:
 
@@ -183,9 +206,9 @@ Good logs should answer:
 
 Logs should not be the only way to discover registered routes, queue depth, or scheduler state. Use route lists, metrics, inspects, and Lighthouse for those surfaces.
 
-## Follow The Schedule
+## Follow the Schedule
 
-Run the scheduler with the temporary short interval from [Reports Daily Schedule](/scenarios/reports-daily-schedule) when testing locally.
+Run the combined App with the temporary short interval from [Reports Daily Schedule](/scenarios/reports-daily-schedule) when testing locally. Separate scheduler and worker processes require a shared queue backend.
 
 Expected evidence:
 
@@ -202,13 +225,14 @@ This proves the schedule dispatches queued work instead of performing report gen
 Operational notes:
 
 - Use `route:list` as the HTTP source of truth.
+- Use `forj app` for the normal local `workerpool` topology; split runtimes only after selecting a shared queue backend.
 - Use metrics for bounded counters and timings; do not put user IDs, raw URLs, emails, request IDs, or filenames in labels.
 - Use inspect records and Lighthouse to follow request, job, scheduler, and CLI execution stories.
 - Use logs to confirm lifecycle and failure behavior, not as the only route or queue inventory.
 
 ## Troubleshooting
 
-If no route appears, run `forj build` and then `forj run route:list`.
+If no route appears, run `forj build` and then `forj route:list`.
 
 If no job is processed, confirm the API and worker processes use a shared queue backend. `workerpool` is process-local; use Redis, SQL-backed queues, or another shared backend when API and worker run separately.
 
@@ -221,7 +245,7 @@ METRICS_EVENTS_ENABLED=true
 METRICS_SCHEDULER_ENABLED=true
 ```
 
-If Lighthouse has no inspect records, confirm Lighthouse is enabled and the inspect buffer is not saturated.
+Local Apps enable inspect capture with `LIGHTHOUSE_INSPECT_ENABLED=true` in `.env.local`. If Lighthouse has no inspect records, confirm that setting is still active, Lighthouse is enabled, and the inspect buffer is not saturated.
 
 ## Common Mistakes
 

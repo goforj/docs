@@ -1,6 +1,6 @@
 ---
-title: Reports Generate Job
-description: Dispatch durable reports:generate work from a users.created subscriber and process it with a queue worker.
+title: "Reports Generate Job"
+description: "Dispatch reports:generate work from a users.created subscriber and process it with a queue worker."
 ---
 
 # Reports Generate Job
@@ -11,16 +11,16 @@ This page is generated from an executable spec. An automated suite renders a fre
 
 Scenario 5 of 7 in the [verified path](/scenarios/). Plan on about 25 minutes.
 
-This scenario turns the `users.created` subscriber into a durable work dispatcher.
+This scenario turns the `users.created` subscriber into a queue-backed work dispatcher.
 
-The event still announces that a user was created. The subscriber now queues `reports:generate`, and a worker process generates a small report artifact. This keeps fan-out and durable work separate.
+The event still announces that a user was created. The subscriber now queues `reports:generate`, and a queue worker generates a small report artifact. This keeps event fan-out separate from work that can gain persistence, retries, and cross-process delivery through a durable queue driver.
 
 ## What You Will Build
 
 - `QUEUE_*` config selects the queue backend used by API and worker processes.
 - `STORAGE_REPORTS_*` defines a named disk for generated report artifacts.
 - `reports.Service` writes a report file to storage.
-- `jobs.GenerateJob` owns the queue payload, dispatch shape, and handler.
+- `reports.GenerateJob` owns the queue payload, dispatch shape, and handler.
 - `notifications.Service` dispatches the job from the `users.created` subscriber.
 - Wire binds the job to a small queueing interface used by notifications.
 
@@ -34,7 +34,7 @@ The generated App should have queues, jobs, events, and storage enabled.
 
 Before this scenario, `users.created` is an in-process fact with a subscriber reaction.
 
-After this scenario, the subscriber dispatches named durable work, workers process `reports:generate`, and generated report files land on the named `reports` storage disk. Event fan-out and job execution are now separate boundaries.
+After this scenario, the subscriber dispatches named background work, workers process `reports:generate`, and generated report files land on the named `reports` storage disk. Event fan-out and job execution are now separate boundaries, while the selected queue driver determines whether jobs survive process failure and cross process boundaries.
 
 ## Files
 
@@ -56,7 +56,8 @@ internal/reports/service_test.go
 **Jobs**
 
 ```text
-internal/jobs/generate_job.go
+internal/reports/generate_job.go
+internal/reports/generate_job_test.go
 app/wire/inject_jobs_app.go
 ```
 
@@ -84,7 +85,7 @@ Do not edit generated queue or storage files by hand.
 
 ## Step 1: Configure Report Storage
 
-Use a named local storage disk for report artifacts. Keep the queue driver shared between API and worker processes.
+Use a named local storage disk for report artifacts. The default workerpool queue stays inside the App process; a separate worker requires the shared driver described below.
 
 Append to `.env`:
 
@@ -94,14 +95,14 @@ STORAGE_REPORTS_ROOT=storage/app/reports
 STORAGE_REPORTS_PREFIX=
 ```
 
-## Step 2: Enable Memory Storage For Tests
+## Step 2: Enable the Sync Queue for Tests
 
-Compile memory storage support for service tests.
+Compile the synchronous queue driver so the handler test can exercise payload binding deterministically without starting external infrastructure.
 
 Update `.env` so it includes:
 
 ```dotenv
-STORAGE_SUPPORTED_DRIVERS=local,memory
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis,sync
 ```
 
 ## Step 3: Refresh Generated Resources
@@ -112,7 +113,7 @@ Run the build pipeline so the generated App exposes `app.Queue()` and `app.Stora
 forj build
 ```
 
-## Step 4: Add The Report Service
+## Step 4: Add the Report Service
 
 Create `internal/reports/service.go`.
 
@@ -121,6 +122,7 @@ The service writes through `storage.Storage`, not a local filesystem or cloud SD
 Create or replace `internal/reports/service.go`:
 
 ```go
+// Package reports owns report generation and the queue boundary used to request it.
 package reports
 
 import (
@@ -136,30 +138,38 @@ import (
 )
 
 var (
+	// ErrUserIDRequired identifies an invalid report request before storage is touched.
 	ErrUserIDRequired = errors.New("user id is required")
-	ErrEmailRequired  = errors.New("email is required")
+	// ErrEmailRequired identifies an invalid report request before storage is touched.
+	ErrEmailRequired = errors.New("email is required")
 )
 
+// Service writes report artifacts through a configured storage disk rather than a concrete backend.
 type Service struct {
 	disk storage.Storage
 }
 
+// ReportQueue keeps report requesters independent of queue payloads and dispatch policy.
 type ReportQueue interface {
+	// Queue moves report generation behind the configured worker lifecycle.
 	Queue(ctx context.Context, userID string, email string) error
 }
 
+// UserReport is the stable artifact stored by the runnable report workflow.
 type UserReport struct {
 	UserID      string    `json:"user_id"`
 	Email       string    `json:"email"`
 	GeneratedAt time.Time `json:"generated_at"`
 }
 
+// NewService requires the named report disk because successful generation must persist an artifact.
 func NewService(disk storage.Storage) *Service {
 	return &Service{disk: disk}
 }
 
+// GenerateForUser validates path and identity data before writing one deterministic report location.
 func (s *Service) GenerateForUser(ctx context.Context, userID string, email string) (string, error) {
-	userID = safeSegment(userID)
+	userID = reportPathSegment(userID)
 	if userID == "" {
 		return "", ErrUserIDRequired
 	}
@@ -188,7 +198,8 @@ func (s *Service) GenerateForUser(ctx context.Context, userID string, email stri
 	return reportPath, nil
 }
 
-func safeSegment(value string) string {
+// reportPathSegment prevents an external identifier from escaping the named report disk prefix.
+func reportPathSegment(value string) string {
 	value = strings.TrimSpace(value)
 	value = path.Base(strings.ReplaceAll(value, "\\", "/"))
 	value = strings.Trim(value, ".")
@@ -196,24 +207,25 @@ func safeSegment(value string) string {
 }
 ```
 
-## Step 5: Generate The Job
+## Step 5: Generate the Job
 
 Use the generated App's make command to create the job file and add its constructor to job wiring.
 
 ```bash
-forj run make:job reports:generate --output-dir ./internal/jobs
+forj make:job reports:generate --output-dir ./internal/jobs
 ```
 
-## Step 6: Replace The Generated Job
+## Step 6: Replace the Generated Job
 
-Replace `internal/jobs/generate_job.go`.
+Replace `internal/reports/generate_job.go`.
 
-The job owns the queue payload and dispatch options. The handler binds the message and delegates business behavior to `reports.Service`.
+The grouped generator keeps the job beside the report service. The job owns the queue payload and dispatch options, while its handler delegates report behavior to `Service`.
 
-Create or replace `internal/jobs/generate_job.go`:
+Create or replace `internal/reports/generate_job.go`:
 
 ```go
-package jobs
+// Package reports owns report generation and the queue boundary used to request it.
+package reports
 
 import (
 	"context"
@@ -224,35 +236,39 @@ import (
 	"github.com/goforj/queue"
 
 	"your/module/internal/queues"
-	"your/module/internal/reports"
 )
 
+// GenerateJobTypeName is the stable queue identity shared by dispatchers and workers.
 const GenerateJobTypeName = "reports:generate"
 
+// GeneratePayload keeps queued data small so report artifacts remain in storage rather than the queue.
 type GeneratePayload struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
 }
 
+// GenerateJob owns report dispatch policy and translates queue messages into service calls.
 type GenerateJob struct {
 	queues  *queues.Manager
-	reports *reports.Service
+	service *Service
 }
 
-func NewGenerateJob(queues *queues.Manager, reports *reports.Service) *GenerateJob {
+// NewGenerateJob requires both queue and report collaborators because it serves producer and worker paths.
+func NewGenerateJob(queues *queues.Manager, service *Service) *GenerateJob {
 	return &GenerateJob{
 		queues:  queues,
-		reports: reports,
+		service: service,
 	}
 }
 
+// Queue serializes the stable payload and applies retry and timeout policy at the job boundary.
 func (j *GenerateJob) Queue(ctx context.Context, userID string, email string) error {
 	payload, err := json.Marshal(GeneratePayload{
 		UserID: userID,
 		Email:  email,
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("encode generate report payload: %w", err)
 	}
 
 	_, err = j.queues.WithContext(ctx).Dispatch(
@@ -262,43 +278,29 @@ func (j *GenerateJob) Queue(ctx context.Context, userID string, email string) er
 			Retry(3).
 			Timeout(2 * time.Minute),
 	)
-	return err
+	if err != nil {
+		return fmt.Errorf("dispatch %s job: %w", GenerateJobTypeName, err)
+	}
+	return nil
 }
 
+// HandleTask binds only the queue contract before delegating report generation to the service.
 func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
 	var payload GeneratePayload
 	if err := msg.Bind(&payload); err != nil {
 		return fmt.Errorf("bind generate report payload: %w", err)
 	}
 
-	_, err := j.reports.GenerateForUser(ctx, payload.UserID, payload.Email)
-	return err
+	if _, err := j.service.GenerateForUser(ctx, payload.UserID, payload.Email); err != nil {
+		return fmt.Errorf("generate user report: %w", err)
+	}
+	return nil
 }
 ```
 
-## Step 7: Remove The Grouped Job Stub
+## Step 7: Share the Job with App Services
 
-The generator used the grouped name for package placement. Keep the public job in `internal/jobs` so queue wiring does not create an import cycle with application services.
-
-Create or replace `internal/reports/generate_job.go`:
-
-```go
-package reports
-```
-
-## Step 8: Point Job Wiring At The Jobs Package
-
-Register the job constructor from `internal/jobs`.
-
-Remove from `app/wire/inject_jobs_app.go`:
-
-```go
-"your/module/internal/reports"
-```
-
-## Step 9: Replace The Generated Job Provider
-
-The App service set owns this job because notifications depend on its queueing interface.
+Handler registration remains in `app/wire/inject_jobs_app.go`, but the App service set owns construction so Wire can bind `GenerateJob` to the smaller `ReportQueue` interface used by notifications.
 
 Remove from `app/wire/inject_jobs_app.go`:
 
@@ -306,15 +308,16 @@ Remove from `app/wire/inject_jobs_app.go`:
 reports.NewGenerateJob,
 ```
 
-## Step 10: Dispatch The Job From Notifications
+## Step 8: Dispatch the Job from Notifications
 
 Replace `internal/notifications/service.go`.
 
-The method name is still intentionally application-facing. The implementation now queues durable work instead of doing it inside the event subscriber.
+The application-facing method remains stable while its implementation moves work behind the queue boundary.
 
 Create or replace `internal/notifications/service.go`:
 
 ```go
+// Package notifications owns reactions to application facts without coupling publishers to their effects.
 package notifications
 
 import (
@@ -323,28 +326,32 @@ import (
 	"your/module/internal/reports"
 )
 
+// Service keeps event reactions application-facing while report execution moves behind a queue.
 type Service struct {
 	generateReport reports.ReportQueue
 }
 
+// NewService requires the report queue because user-created reactions now dispatch background work.
 func NewService(generateReport reports.ReportQueue) *Service {
 	return &Service{generateReport: generateReport}
 }
 
-func (s *Service) SendWelcome(ctx context.Context, userID string, email string) error {
+// HandleUserCreated dispatches report work without making the event subscriber understand queue details.
+func (s *Service) HandleUserCreated(ctx context.Context, userID string, email string) error {
 	return s.generateReport.Queue(ctx, userID, email)
 }
 ```
 
-## Step 11: Keep Lifecycle Subscriber Registration
+## Step 9: Keep Lifecycle Subscriber Registration
 
 Update `app/lifecycle.go`.
 
-The lifecycle still owns subscriber registration. The subscriber dispatches durable work through the notification service.
+The lifecycle still owns subscriber registration. The subscriber dispatches queue-backed work through the notification service.
 
 Create or replace `app/lifecycle.go`:
 
 ```go
+// Package app owns application composition and lifecycle hooks.
 package app
 
 import (
@@ -355,12 +362,14 @@ import (
 	"your/module/internal/runtime"
 )
 
+// LifecycleRegistry keeps subscription ownership aligned with App startup and shutdown ordering.
 type LifecycleRegistry struct {
 	eventManager             *events.Manager
 	notificationSubscribers  *notifications.Subscribers
 	notificationSubscription events.Subscription
 }
 
+// NewLifecycleRegistry requires the generated event manager and the App's subscriber collection.
 func NewLifecycleRegistry(
 	eventManager *events.Manager,
 	notificationSubscribers *notifications.Subscribers,
@@ -371,75 +380,69 @@ func NewLifecycleRegistry(
 	}
 }
 
+// Register starts subscriptions after event buses and closes them before those buses shut down.
 func (r *LifecycleRegistry) Register(lifecycle *runtime.Lifecycle) {
-	lifecycle.On(runtime.Startup, func(ctx context.Context) error {
-		subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
-		if err != nil {
-			return err
-		}
-		r.notificationSubscription = subscription
-		return nil
-	})
+	lifecycle.On(runtime.Startup, r.Startup)
+	lifecycle.On(runtime.Shutdown, r.Shutdown)
+}
 
-	lifecycle.On(Shutdown, func(ctx context.Context) error {
-		return r.notificationSubscription.Close()
-	})
+// Startup retains the subscription handle so shutdown can release the exact registered consumer.
+func (r *LifecycleRegistry) Startup(ctx context.Context) error {
+	subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
+	if err != nil {
+		return err
+	}
+	r.notificationSubscription = subscription
+	return nil
+}
+
+// Shutdown closes the subscriber before the generated lifecycle stops its event bus.
+func (r *LifecycleRegistry) Shutdown(_ context.Context) error {
+	return r.notificationSubscription.Close()
 }
 ```
 
-## Step 12: Wire Reports and the Job
+## Step 10: Add Report Imports
 
-Add the report storage provider and report service constructor.
-
-Update `app/wire/inject_services_app.go` so it includes:
-
-```go
-import (
-        "github.com/goforj/storage"
-```
-
-## Step 13: Add Report Imports
-
-Add imports for the report service and generated storage manager.
+Add the report service import. The generated storage manager was already introduced by the upload scenario.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-"your/module/internal/jobs"
 "your/module/internal/notifications"
 "your/module/internal/reports"
-"your/module/internal/storages"
 ```
 
-## Step 14: Add Report Storage Providers
+## Step 11: Add Report Providers
 
-The report service receives the named `reports` storage disk.
+The report service receives the named `reports` storage disk without adding another unqualified `storage.Storage` provider to Wire.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-provideReportStorage,
-reports.NewService,
-jobs.NewGenerateJob,
-wire.Bind(new(reports.ReportQueue), new(*jobs.GenerateJob)),
+provideReportService,
+reports.NewGenerateJob,
+wire.Bind(new(reports.ReportQueue), new(*reports.GenerateJob)),
 provideEventBus,
 ```
 
-## Step 15: Add The Report Storage Provider
+## Step 12: Add the Report Service Provider
 
-`provideReportStorage` selects the generated named storage resource.
+`provideReportService` selects the generated named disk at the composition root.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-func provideReportStorage(manager *storages.Manager) storage.Storage {
-        return manager.Reports()
+// provideReportService selects the named disk where dependencies are composed instead of inside report behavior.
+func provideReportService(manager *storages.Manager) *reports.Service {
+        return reports.NewService(manager.Reports())
 }
 
+// provideEventBus exposes the default generated bus without coupling the publisher to its manager.
 func provideEventBus(manager *events.Manager) events.Bus {
 ```
 
-## Step 16: Add A Report Service Test
+## Step 13: Add a Report Service Test
 
 Create `internal/reports/service_test.go`.
 
@@ -448,23 +451,50 @@ This test verifies the report behavior without starting the queue worker.
 Create or replace `internal/reports/service_test.go`:
 
 ```go
+// Package reports owns report generation and the queue boundary used to request it.
 package reports
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"testing"
 
 	"github.com/goforj/storage"
 	"github.com/goforj/storage/driver/memorystorage"
 )
 
-func TestServiceGeneratesUserReport(t *testing.T) {
-	ctx := context.Background()
+// newTestDisk keeps test setup focused on report behavior while failing immediately on invalid storage wiring.
+func newTestDisk(t *testing.T) storage.Storage {
+	t.Helper()
+
 	disk, err := storage.Build(memorystorage.Config{})
 	if err != nil {
 		t.Fatalf("build storage: %v", err)
 	}
+	return disk
+}
 
+// readTestReport keeps artifact decoding consistent across service and handler tests.
+func readTestReport(t *testing.T, disk storage.Storage, reportPath string) UserReport {
+	t.Helper()
+
+	body, err := disk.WithContext(context.Background()).Get(reportPath)
+	if err != nil {
+		t.Fatalf("read report: %v", err)
+	}
+
+	var report UserReport
+	if err := json.Unmarshal(body, &report); err != nil {
+		t.Fatalf("decode report: %v", err)
+	}
+	return report
+}
+
+// TestServiceGeneratesUserReport verifies both the stable storage path and the artifact contract.
+func TestServiceGeneratesUserReport(t *testing.T) {
+	ctx := context.Background()
+	disk := newTestDisk(t)
 	service := NewService(disk)
 	reportPath, err := service.GenerateForUser(ctx, "42", "ada@example.test")
 	if err != nil {
@@ -474,26 +504,110 @@ func TestServiceGeneratesUserReport(t *testing.T) {
 		t.Fatalf("report path = %q", reportPath)
 	}
 
-	body, err := disk.WithContext(ctx).Get(reportPath)
-	if err != nil {
-		t.Fatalf("read report: %v", err)
+	report := readTestReport(t, disk, reportPath)
+	if report.UserID != "42" {
+		t.Fatalf("report user id = %q, want %q", report.UserID, "42")
 	}
-	if len(body) == 0 {
-		t.Fatal("expected report body")
+	if report.Email != "ada@example.test" {
+		t.Fatalf("report email = %q, want %q", report.Email, "ada@example.test")
+	}
+	if report.GeneratedAt.IsZero() {
+		t.Fatal("expected report generation time")
 	}
 }
 
-func TestServiceRejectsMissingUserID(t *testing.T) {
+// TestServiceRejectsInvalidReports keeps malformed identity data from reaching storage.
+func TestServiceRejectsInvalidReports(t *testing.T) {
 	ctx := context.Background()
-	disk, err := storage.Build(memorystorage.Config{})
-	if err != nil {
-		t.Fatalf("build storage: %v", err)
+	service := NewService(newTestDisk(t))
+	tests := []struct {
+		name    string
+		userID  string
+		email   string
+		wantErr error
+	}{
+		{
+			name:    "missing user id",
+			email:   "ada@example.test",
+			wantErr: ErrUserIDRequired,
+		},
+		{
+			name:    "missing email",
+			userID:  "42",
+			wantErr: ErrEmailRequired,
+		},
 	}
 
-	service := NewService(disk)
-	_, err = service.GenerateForUser(ctx, "", "ada@example.test")
-	if err == nil {
-		t.Fatal("expected error")
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := service.GenerateForUser(ctx, test.userID, test.email)
+			if !errors.Is(err, test.wantErr) {
+				t.Fatalf("GenerateForUser() error = %v, want %v", err, test.wantErr)
+			}
+		})
+	}
+}
+```
+
+## Step 14: Add a Generate Job Handler Test
+
+Create `internal/reports/generate_job_test.go`.
+
+The synchronous queue supplies the real `queue.Message` contract, so the test proves payload binding and delegation without testing private fields or starting external infrastructure.
+
+Create or replace `internal/reports/generate_job_test.go`:
+
+```go
+// Package reports owns report generation and the queue boundary used to request it.
+package reports
+
+import (
+	"context"
+	"testing"
+
+	"github.com/goforj/queue"
+
+	"your/module/internal/queues"
+)
+
+// TestGenerateJobHandlesPayload proves a queue message is bound and delegated to report generation.
+func TestGenerateJobHandlesPayload(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("QUEUE_DRIVER", "sync")
+
+	queueManager, err := queues.NewManager()
+	if err != nil {
+		t.Fatalf("build queue manager: %v", err)
+	}
+	runtimeQueue := queueManager.Default()
+	t.Cleanup(func() {
+		if err := runtimeQueue.Shutdown(context.Background()); err != nil {
+			t.Errorf("shutdown queue: %v", err)
+		}
+	})
+
+	disk := newTestDisk(t)
+	job := NewGenerateJob(queueManager, NewService(disk))
+	queueManager.Register(GenerateJobTypeName, job.HandleTask)
+	if err := runtimeQueue.StartWorkers(ctx); err != nil {
+		t.Fatalf("start queue workers: %v", err)
+	}
+
+	_, err = queueManager.WithContext(ctx).Dispatch(
+		queue.NewJob(GenerateJobTypeName).
+			Payload([]byte(`{"user_id":"42","email":"ada@example.test"}`)).
+			OnQueue("default"),
+	)
+	if err != nil {
+		t.Fatalf("dispatch generate report job: %v", err)
+	}
+
+	report := readTestReport(t, disk, "users/42/profile.json")
+	if report.UserID != "42" {
+		t.Fatalf("report user id = %q, want %q", report.UserID, "42")
+	}
+	if report.Email != "ada@example.test" {
+		t.Fatalf("report email = %q, want %q", report.Email, "ada@example.test")
 	}
 }
 ```
@@ -509,25 +623,19 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Expected output includes:
 
 - `/api/v1/users`
 
-## Try The Route
+## Try the Route
 
-Start a worker in one terminal:
-
-```bash
-forj worker
-```
-
-Start the API in another terminal:
+The default `workerpool` driver is process-local, so start the combined App to keep the API and Jobs runtime together:
 
 ```bash
-forj run api
+forj app
 ```
 
 Create a user:
@@ -538,26 +646,37 @@ curl -X POST http://localhost:3000/api/v1/users \
   -d '{"name":"Grace Hopper","email":"grace@example.test"}'
 ```
 
-The API publishes `users.created`. The subscriber dispatches `reports:generate`. The worker consumes the job and writes `storage/app/reports/users/43/profile.json`.
+The API publishes `users.created`. The subscriber dispatches `reports:generate`. The in-process worker consumes the job and writes `storage/app/reports/users/43/profile.json`.
+
+To run API and worker as separate processes, first select a shared queue driver such as Redis using the configuration below. Then start the API and worker in separate terminals:
+
+```bash
+forj api
+```
+
+```bash
+forj worker
+```
 
 ## Operations
 
 Operational notes:
 
-- Queued jobs can be retried and processed outside the HTTP request path.
+- Queued jobs leave the HTTP request path and can use retry, delay, timeout, and worker lifecycle policies.
+- Durability and cross-process delivery come from the selected queue driver; `workerpool` remains process-local.
 - Use this boundary for work that sends email, generates reports, calls external APIs, or may need operational recovery.
 - The job can appear in queue metrics, inspect records, Lighthouse queue views, worker logs, and driver backend state.
 - Keep job payloads stable and small. Store large artifacts in storage, not inside queue payloads.
 
-## Swap The Driver
+## Swap the Driver
 
-To use Redis in production, compile Redis queue support and select it:
+To use Redis in production, compile Redis queue support and select it. Keep `sync` compiled because the handler test selects it explicitly:
 
 ```dotenv
-QUEUE_SUPPORTED_DRIVERS=workerpool,redis
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis,sync
 QUEUE_DRIVER=redis
 QUEUE_ADDR=redis:6379
-QUEUE_DEFAULT_QUEUE=default
+QUEUE_NAME=default
 QUEUE_WORKERS=30
 ```
 

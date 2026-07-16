@@ -1,9 +1,9 @@
 ---
-title: File Upload To Storage
-description: Add an upload endpoint that writes files to a named GoForj storage disk.
+title: "File Upload to Storage"
+description: "Add an upload endpoint that writes files to a named GoForj storage disk."
 ---
 
-# File Upload To Storage
+# File Upload to Storage
 
 ::: info Verified Scenario
 This page is generated from an executable spec. An automated suite renders a fresh App from the current GoForj templates, applies every step below in order, and runs every verification command. If any step fails, the page does not ship.
@@ -19,9 +19,9 @@ The example uses a small JSON payload so the page can focus on the GoForj storag
 
 - `STORAGE_UPLOADS_*` defines a named storage disk.
 - `app.Storage().Uploads()` exposes the generated disk accessor.
-- `UploadService` validates and writes files.
-- `UploadController` binds request input and returns the stored path.
-- Wire provides the named disk and service.
+- `uploads.Service` validates and writes files.
+- `uploads.Controller` binds request input and returns the stored path.
+- `provideUploadsService` selects the named disk while Wire provides the service.
 - A service test uses memory storage and does not start HTTP.
 
 ## Prerequisites
@@ -76,7 +76,7 @@ internal/storages/manager_gen.go
 
 Do not edit generated storage files by hand.
 
-## Step 1: Add A Named Storage Disk
+## Step 1: Add a Named Storage Disk
 
 Add a named `uploads` disk to `.env`, then run the build pipeline so the generated App exposes `app.Storage().Uploads()`.
 
@@ -98,7 +98,7 @@ STORAGE_SUPPORTED_DRIVERS=local,memory
 forj build
 ```
 
-## Step 2: Scaffold The Controller
+## Step 2: Scaffold the Controller
 
 Start with the real make command. It creates the uploads controller, wires the constructor, and registers its routes.
 
@@ -106,7 +106,7 @@ Start with the real make command. It creates the uploads controller, wires the c
 forj make:controller uploads
 ```
 
-## Step 3: Add The Service
+## Step 3: Add the Service
 
 Create `internal/uploads/service.go`.
 
@@ -115,6 +115,7 @@ The service receives `storage.Storage`, not a local filesystem or S3 client.
 Create or replace `internal/uploads/service.go`:
 
 ```go
+// Package uploads keeps upload policy independent of the configured storage driver.
 package uploads
 
 import (
@@ -122,6 +123,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	"path"
 	"strings"
 	"time"
@@ -132,43 +134,59 @@ import (
 const maxUploadBytes = 2 * 1024 * 1024
 
 var (
+	// ErrFilenameRequired prevents uploads from being stored without a safe final path segment.
 	ErrFilenameRequired = errors.New("filename is required")
-	ErrBodyRequired     = errors.New("body is required")
-	ErrUploadTooLarge   = errors.New("upload is too large")
+
+	// ErrBodyRequired prevents empty objects from being persisted as successful uploads.
+	ErrBodyRequired = errors.New("body is required")
+
+	// ErrBodyInvalid keeps malformed transport encoding distinguishable from storage failures.
+	ErrBodyInvalid = errors.New("body must be valid base64")
+
+	// ErrUploadTooLarge keeps memory use and storage writes within the endpoint's documented limit.
+	ErrUploadTooLarge = errors.New("upload is too large")
 )
 
+// Service keeps upload validation independent of the selected storage driver.
 type Service struct {
 	disk storage.Storage
 }
 
+// StoreInput keeps transport fields separate from the storage driver's byte-oriented contract.
 type StoreInput struct {
 	Filename    string
 	ContentType string
 	BodyBase64  string
 }
 
+// StoredUpload returns the bounded metadata callers need without exposing driver-specific details.
 type StoredUpload struct {
 	Path        string `json:"path"`
 	ContentType string `json:"content_type"`
 	Size        int    `json:"size"`
 }
 
+// NewService requires the named disk at construction so invalid wiring fails before requests arrive.
 func NewService(disk storage.Storage) *Service {
 	return &Service{disk: disk}
 }
 
+// Store validates one upload before writing it beneath the application-owned incoming prefix.
 func (s *Service) Store(ctx context.Context, input StoreInput) (StoredUpload, error) {
 	filename := safeFilename(input.Filename)
 	if filename == "" {
 		return StoredUpload{}, ErrFilenameRequired
 	}
-	if strings.TrimSpace(input.BodyBase64) == "" {
+
+	encodedBody := strings.TrimSpace(input.BodyBase64)
+	if encodedBody == "" {
 		return StoredUpload{}, ErrBodyRequired
 	}
 
-	body, err := base64.StdEncoding.DecodeString(input.BodyBase64)
+	decoder := base64.NewDecoder(base64.StdEncoding, strings.NewReader(encodedBody))
+	body, err := io.ReadAll(io.LimitReader(decoder, maxUploadBytes+1))
 	if err != nil {
-		return StoredUpload{}, fmt.Errorf("decode upload body: %w", err)
+		return StoredUpload{}, fmt.Errorf("%w: %v", ErrBodyInvalid, err)
 	}
 	if len(body) == 0 {
 		return StoredUpload{}, ErrBodyRequired
@@ -194,6 +212,7 @@ func (s *Service) Store(ctx context.Context, input StoreInput) (StoredUpload, er
 	}, nil
 }
 
+// safeFilename reduces user-controlled names to one segment so they cannot escape the managed prefix.
 func safeFilename(name string) string {
 	name = strings.TrimSpace(name)
 	name = path.Base(strings.ReplaceAll(name, "\\", "/"))
@@ -202,7 +221,7 @@ func safeFilename(name string) string {
 }
 ```
 
-## Step 4: Replace The Starter Controller
+## Step 4: Replace the Starter Controller
 
 Replace `internal/uploads/controller.go`.
 
@@ -211,6 +230,7 @@ The controller owns request binding and HTTP status decisions. The service owns 
 Create or replace `internal/uploads/controller.go`:
 
 ```go
+// Package uploads keeps HTTP translation independent from portable storage behavior.
 package uploads
 
 import (
@@ -220,26 +240,31 @@ import (
 	"github.com/goforj/web"
 )
 
+// Controller keeps HTTP binding and response policy outside the storage service.
 type Controller struct {
 	service *Service
 }
 
+// StoreRequest represents the JSON boundary without coupling it to storage driver types.
 type StoreRequest struct {
 	Filename    string `json:"filename"`
 	ContentType string `json:"content_type"`
 	BodyBase64  string `json:"body_base64"`
 }
 
+// NewController requires the upload service so route registration cannot hide incomplete wiring.
 func NewController(service *Service) *Controller {
 	return &Controller{service: service}
 }
 
+// Routes keeps the upload endpoint owned by the feature that handles it.
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
 		web.NewRoute(http.MethodPost, "/uploads", c.Store),
 	}
 }
 
+// Store translates HTTP input failures while allowing unexpected storage failures to reach middleware.
 func (c *Controller) Store(ctx web.Context) error {
 	var req StoreRequest
 	if err := ctx.Bind(&req); err != nil {
@@ -253,14 +278,15 @@ func (c *Controller) Store(ctx web.Context) error {
 		ContentType: req.ContentType,
 		BodyBase64:  req.BodyBase64,
 	})
-	if errors.Is(err, ErrFilenameRequired) ||
-		errors.Is(err, ErrBodyRequired) ||
-		errors.Is(err, ErrUploadTooLarge) {
+	switch {
+	case errors.Is(err, ErrFilenameRequired),
+		errors.Is(err, ErrBodyRequired),
+		errors.Is(err, ErrBodyInvalid),
+		errors.Is(err, ErrUploadTooLarge):
 		return ctx.JSON(http.StatusBadRequest, map[string]string{
 			"error": err.Error(),
 		})
-	}
-	if err != nil {
+	case err != nil:
 		return err
 	}
 
@@ -268,58 +294,46 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 5: Wire the Disk and Service
-
-Open `app/wire/inject_services_app.go`.
-
-The App can now provide `UploadService` with the named disk.
-
-Update `app/wire/inject_services_app.go` so it includes:
-
-```go
-import (
-        "github.com/goforj/storage"
-```
-
-## Step 6: Add Upload Imports
+## Step 5: Add Upload Imports
 
 Add imports for the generated storage manager and uploads package.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-"your/module/internal/makecmd"
+"your/module/internal/runtime"
 "your/module/internal/storages"
 "your/module/internal/uploads"
 ```
 
-## Step 7: Add Upload Providers
+## Step 6: Add Upload Providers
 
-Add the named disk provider and upload service constructor.
+Add the upload service provider, which selects its named disk at the composition root.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-provideUploadsDisk,
-uploads.NewService,
+provideUploadsService,
 provideUserProfileCache,
 ```
 
-## Step 8: Add The Disk Provider
+## Step 7: Add the Upload Service Provider
 
-`provideUploadsDisk` selects the generated named storage resource.
+`provideUploadsService` keeps named disk selection out of application behavior without exporting an ambiguous `storage.Storage` to Wire.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-func provideUploadsDisk(manager *storages.Manager) storage.Storage {
-        return manager.Uploads()
+// provideUploadsService selects the named disk where dependencies are composed instead of inside upload behavior.
+func provideUploadsService(manager *storages.Manager) *uploads.Service {
+        return uploads.NewService(manager.Uploads())
 }
 
+// provideUserRepository preserves the service boundary while Wire composes its concrete cache-aside implementation.
 func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
 ```
 
-## Step 9: Add A Service Test
+## Step 8: Add a Service Test
 
 Create `internal/uploads/service_test.go`.
 
@@ -328,25 +342,45 @@ The test uses memory storage. It does not create local files and does not requir
 Create or replace `internal/uploads/service_test.go`:
 
 ```go
+// Package uploads keeps storage behavior testable through the portable driver contract.
 package uploads
 
 import (
 	"context"
+	"encoding/base64"
+	"errors"
+	"strings"
 	"testing"
 
 	"github.com/goforj/storage"
 	"github.com/goforj/storage/driver/memorystorage"
 )
 
-func TestServiceStoresUpload(t *testing.T) {
-	ctx := context.Background()
+// serviceFixture keeps the service and its observable memory disk together for behavior-focused tests.
+type serviceFixture struct {
+	service *Service
+	disk    storage.Storage
+}
+
+// newServiceFixture creates an isolated in-memory boundary so tests never depend on local files or cloud services.
+func newServiceFixture(t *testing.T) serviceFixture {
+	t.Helper()
+
 	disk, err := storage.Build(memorystorage.Config{})
 	if err != nil {
 		t.Fatalf("build storage: %v", err)
 	}
+	return serviceFixture{
+		service: NewService(disk),
+		disk:    disk,
+	}
+}
 
-	service := NewService(disk)
-	upload, err := service.Store(ctx, StoreInput{
+// TestServiceStoresUpload proves path sanitization and persistence through the portable storage contract.
+func TestServiceStoresUpload(t *testing.T) {
+	ctx := context.Background()
+	fixture := newServiceFixture(t)
+	upload, err := fixture.service.Store(ctx, StoreInput{
 		Filename:    "../hello.txt",
 		ContentType: "text/plain",
 		BodyBase64:  "aGVsbG8=",
@@ -354,14 +388,17 @@ func TestServiceStoresUpload(t *testing.T) {
 	if err != nil {
 		t.Fatalf("store upload: %v", err)
 	}
-	if upload.Path == "" {
-		t.Fatal("expected stored path")
+	if !strings.HasSuffix(upload.Path, "/hello.txt") {
+		t.Fatalf("upload path = %q, want a sanitized hello.txt path", upload.Path)
+	}
+	if upload.ContentType != "text/plain" {
+		t.Fatalf("content type = %q, want %q", upload.ContentType, "text/plain")
 	}
 	if upload.Size != 5 {
 		t.Fatalf("upload size = %d, want 5", upload.Size)
 	}
 
-	body, err := disk.WithContext(ctx).Get(upload.Path)
+	body, err := fixture.disk.WithContext(ctx).Get(upload.Path)
 	if err != nil {
 		t.Fatalf("read upload: %v", err)
 	}
@@ -370,19 +407,50 @@ func TestServiceStoresUpload(t *testing.T) {
 	}
 }
 
-func TestServiceRejectsMissingFilename(t *testing.T) {
-	ctx := context.Background()
-	disk, err := storage.Build(memorystorage.Config{})
-	if err != nil {
-		t.Fatalf("build storage: %v", err)
+// TestServiceRejectsInvalidUpload keeps validation cases explicit without repeating storage setup.
+func TestServiceRejectsInvalidUpload(t *testing.T) {
+	oversizedBody := base64.StdEncoding.EncodeToString(make([]byte, maxUploadBytes+1))
+	tests := []struct {
+		name    string
+		input   StoreInput
+		wantErr error
+	}{
+		{
+			name:    "missing filename",
+			input:   StoreInput{BodyBase64: "aGVsbG8="},
+			wantErr: ErrFilenameRequired,
+		},
+		{
+			name:    "missing body",
+			input:   StoreInput{Filename: "hello.txt"},
+			wantErr: ErrBodyRequired,
+		},
+		{
+			name: "invalid body",
+			input: StoreInput{
+				Filename:   "hello.txt",
+				BodyBase64: "not base64",
+			},
+			wantErr: ErrBodyInvalid,
+		},
+		{
+			name: "body exceeds limit",
+			input: StoreInput{
+				Filename:   "hello.txt",
+				BodyBase64: oversizedBody,
+			},
+			wantErr: ErrUploadTooLarge,
+		},
 	}
 
-	service := NewService(disk)
-	_, err = service.Store(ctx, StoreInput{
-		BodyBase64: "aGVsbG8=",
-	})
-	if err == nil {
-		t.Fatal("expected error")
+	fixture := newServiceFixture(t)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := fixture.service.Store(context.Background(), test.input)
+			if !errors.Is(err, test.wantErr) {
+				t.Fatalf("Store() error = %v, want %v", err, test.wantErr)
+			}
+		})
 	}
 }
 ```
@@ -398,19 +466,19 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Expected output includes:
 
 - `/api/v1/uploads`
 
-## Try The Route
+## Try the Route
 
 Run the HTTP server:
 
 ```bash
-forj run api
+forj api
 ```
 
 Send a small upload:
@@ -437,7 +505,7 @@ Operational notes:
 - Storage operation metrics, inspect records, and Lighthouse views can use the named disk.
 - Store ownership, metadata, content type, and retention policy in durable application state when those values matter.
 
-## Swap The Driver
+## Swap the Driver
 
 To use S3 in production, compile S3 support and select it for the named disk:
 
@@ -461,7 +529,7 @@ Business code does not change. The service still receives `storage.Storage`.
 
 ::: warning Common mistakes
 - Do not trust raw user filenames as storage paths.
-- Do not import S3, GCS, or local driver packages into `UploadService`.
+- Do not import S3, GCS, or local driver packages into `uploads.Service`.
 - Do not edit generated storage accessors by hand.
 - Do not forget `forj build` after adding `STORAGE_UPLOADS_*`.
 - Do not store ownership, authorization, or lifecycle rules only in object paths.

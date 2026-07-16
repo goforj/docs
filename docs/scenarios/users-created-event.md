@@ -1,6 +1,6 @@
 ---
-title: Users Created Event
-description: Publish a typed users.created event and handle it with a lifecycle-registered subscriber.
+title: "Users Created Event"
+description: "Publish a typed users.created event and handle it with a lifecycle-registered subscriber."
 ---
 
 # Users Created Event
@@ -19,14 +19,14 @@ The event announces that something happened. The subscriber reacts to it. Durabl
 
 - `EVENTS_*` config selects the local event driver.
 - `internal/events.UserCreated` defines the typed event.
-- `UserService` publishes through a small application boundary.
-- `notifications.Subscribers` reacts to `users.created`.
+- `users.Service` publishes through a small application boundary.
+- `notifications.Subscribers` delivers `users.created` through a small handler interface.
 - `app/lifecycle.go` registers and closes the subscription.
-- A service test proves the event is published without starting the App runtime.
+- Focused tests prove service publication, in-process subscriber delivery, and POST route registration.
 
 ## Prerequisites
 
-Complete [Cached User Profile](/scenarios/cached-user-profile) first.
+Complete [File Upload to Storage](/scenarios/file-upload-storage) first.
 
 The generated App should have event support enabled. Verify that the generated event package exists:
 
@@ -36,9 +36,9 @@ internal/events
 
 ## Golden Path State
 
-Before this scenario, user profile behavior is synchronous: HTTP calls the controller, the controller calls the service, and the service reads application state through the cached repository.
+Before this scenario, the App can read cached user profiles and store uploads, but user creation has no application event boundary.
 
-After this scenario, creating a user also publishes a typed `users.created` fact. A subscriber reacts to the event through lifecycle-registered wiring, but durable work is still left for the next job scenario.
+After this scenario, creating a user also publishes a typed `users.created` fact. A subscriber reacts to the event through lifecycle-registered wiring, but queue-backed work is still left for the next job scenario.
 
 ## Files
 
@@ -64,6 +64,7 @@ internal/users/events.go
 internal/users/service.go
 internal/users/service_test.go
 internal/users/controller.go
+internal/users/controller_test.go
 ```
 
 **Notifications**
@@ -71,6 +72,7 @@ internal/users/controller.go
 ```text
 internal/notifications/service.go
 internal/notifications/subscribers.go
+internal/notifications/subscribers_test.go
 ```
 
 **Lifecycle and wiring**
@@ -103,7 +105,7 @@ EVENTS_INPROC_WORKERS=0
 forj build
 ```
 
-## Step 2: Add The Event
+## Step 2: Add the Event
 
 Create `internal/events/user_created_event.go`.
 
@@ -112,21 +114,25 @@ Events should be small typed facts. They should not carry full domain objects, r
 Create or replace `internal/events/user_created_event.go`:
 
 ```go
+// Package events defines application events without exposing driver-specific details.
 package events
 
+// UserCreatedTopic keeps publishers and subscribers on one stable routing key.
 const UserCreatedTopic = "users.created"
 
+// UserCreated carries only the identity needed by downstream reactions so the event remains portable across drivers.
 type UserCreated struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
 }
 
+// Topic binds UserCreated to its routing key without adding transport metadata to the payload.
 func (UserCreated) Topic() string {
 	return UserCreatedTopic
 }
 ```
 
-## Step 3: Extend The Repository
+## Step 3: Extend the Repository
 
 Replace `internal/users/repository.go`.
 
@@ -135,6 +141,7 @@ The repository still owns source-of-truth storage and cache-aside reads. This ex
 Create or replace `internal/users/repository.go`:
 
 ```go
+// Package users keeps user behavior independent from HTTP and infrastructure details.
 package users
 
 import (
@@ -147,19 +154,25 @@ import (
 	"github.com/goforj/cache"
 )
 
+// profileCacheTTL bounds how long this runnable example can serve a profile without consulting its source of truth.
 const profileCacheTTL = 5 * time.Minute
 
+// UserRepository keeps persistence replaceable while the service owns user workflows.
 type UserRepository interface {
+	// Find keeps source-of-truth reads behind the repository boundary.
 	Find(ctx context.Context, id string) (User, error)
+	// Save keeps ID assignment and persistence behind the repository boundary.
 	Save(ctx context.Context, user User) (User, error)
 }
 
+// MemoryUserRepository keeps the scenario runnable without requiring a database service.
 type MemoryUserRepository struct {
-	mu     sync.Mutex
+	mu     sync.RWMutex
 	nextID int
 	users  map[string]User
 }
 
+// NewMemoryUserRepository seeds the profile used by earlier steps while reserving the next ID for creation.
 func NewMemoryUserRepository() *MemoryUserRepository {
 	return &MemoryUserRepository{
 		nextID: 43,
@@ -173,9 +186,10 @@ func NewMemoryUserRepository() *MemoryUserRepository {
 	}
 }
 
-func (r *MemoryUserRepository) Find(ctx context.Context, id string) (User, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+// Find permits concurrent reads while protecting the map from HTTP writes in the runnable App.
+func (r *MemoryUserRepository) Find(_ context.Context, id string) (User, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 
 	user, ok := r.users[id]
 	if !ok {
@@ -184,7 +198,8 @@ func (r *MemoryUserRepository) Find(ctx context.Context, id string) (User, error
 	return user, nil
 }
 
-func (r *MemoryUserRepository) Save(ctx context.Context, user User) (User, error) {
+// Save serializes ID assignment with persistence so concurrent requests cannot claim the same ID.
+func (r *MemoryUserRepository) Save(_ context.Context, user User) (User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -196,11 +211,13 @@ func (r *MemoryUserRepository) Save(ctx context.Context, user User) (User, error
 	return user, nil
 }
 
+// CachedUserRepository adds cache-aside reads without leaking cache concerns into the user service.
 type CachedUserRepository struct {
 	source       UserRepository
 	profileCache *cache.Cache
 }
 
+// NewCachedUserRepository requires both the source of truth and cache because neither dependency is optional.
 func NewCachedUserRepository(source UserRepository, profileCache *cache.Cache) *CachedUserRepository {
 	return &CachedUserRepository{
 		source:       source,
@@ -208,6 +225,7 @@ func NewCachedUserRepository(source UserRepository, profileCache *cache.Cache) *
 	}
 }
 
+// Find falls back to the source of truth on a cache miss and repopulates the bounded profile entry.
 func (r *CachedUserRepository) Find(ctx context.Context, id string) (User, error) {
 	key := profileCacheKey(id)
 
@@ -231,6 +249,7 @@ func (r *CachedUserRepository) Find(ctx context.Context, id string) (User, error
 	return user, nil
 }
 
+// Save writes through to the source before refreshing the cache so failed persistence is never cached.
 func (r *CachedUserRepository) Save(ctx context.Context, user User) (User, error) {
 	user, err := r.source.Save(ctx, user)
 	if err != nil {
@@ -242,12 +261,13 @@ func (r *CachedUserRepository) Save(ctx context.Context, user User) (User, error
 	return user, nil
 }
 
+// profileCacheKey namespaces profile entries so user IDs cannot collide with other cache data.
 func profileCacheKey(id string) string {
 	return "users:" + id + ":profile"
 }
 ```
 
-## Step 4: Add An Event Publisher Boundary
+## Step 4: Add an Event Publisher Boundary
 
 Create `internal/users/events.go`.
 
@@ -256,6 +276,7 @@ The service will depend on `UserEvents`, not on global App state. That keeps tes
 Create or replace `internal/users/events.go`:
 
 ```go
+// Package users keeps user behavior independent from HTTP and infrastructure details.
 package users
 
 import (
@@ -264,18 +285,23 @@ import (
 	"your/module/internal/events"
 )
 
+// UserEvents keeps user workflows independent of generated App state and event drivers.
 type UserEvents interface {
+	// PublishCreated announces a persisted user only after the source-of-truth write succeeds.
 	PublishCreated(ctx context.Context, user User) error
 }
 
+// UserEventPublisher translates user workflow results into the application's event contract.
 type UserEventPublisher struct {
 	bus events.Bus
 }
 
+// NewUserEventPublisher requires the application bus because publishing is part of successful user creation.
 func NewUserEventPublisher(bus events.Bus) *UserEventPublisher {
 	return &UserEventPublisher{bus: bus}
 }
 
+// PublishCreated keeps the event payload small so subscribers do not depend on the full User model.
 func (p *UserEventPublisher) PublishCreated(ctx context.Context, user User) error {
 	return p.bus.WithContext(ctx).Publish(events.UserCreated{
 		UserID: user.ID,
@@ -284,7 +310,7 @@ func (p *UserEventPublisher) PublishCreated(ctx context.Context, user User) erro
 }
 ```
 
-## Step 5: Publish From The Service
+## Step 5: Publish from the Service
 
 Replace `internal/users/service.go`.
 
@@ -293,6 +319,7 @@ The service owns the application workflow: validate, save, publish. The reposito
 Create or replace `internal/users/service.go`:
 
 ```go
+// Package users keeps user behavior independent from HTTP and infrastructure details.
 package users
 
 import (
@@ -303,27 +330,34 @@ import (
 )
 
 var (
-	ErrUserNotFound  = errors.New("user not found")
-	ErrNameRequired  = errors.New("name is required")
+	// ErrUserNotFound lets transports map a missing user without parsing an error message.
+	ErrUserNotFound = errors.New("user not found")
+	// ErrNameRequired distinguishes invalid creation input from repository failures.
+	ErrNameRequired = errors.New("name is required")
+	// ErrEmailRequired distinguishes invalid creation input from repository failures.
 	ErrEmailRequired = errors.New("email is required")
 )
 
+// User is the stable application representation shared by service and transport boundaries.
 type User struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
 
+// CreateUserInput keeps transport payloads out of the service API.
 type CreateUserInput struct {
 	Name  string
 	Email string
 }
 
+// Service owns user validation, persistence, and post-save event publication as one explicit workflow.
 type Service struct {
 	repo       UserRepository
 	userEvents UserEvents
 }
 
+// NewService requires persistence and event collaborators because creation is incomplete without either boundary.
 func NewService(repo UserRepository, userEvents UserEvents) *Service {
 	return &Service{
 		repo:       repo,
@@ -331,6 +365,7 @@ func NewService(repo UserRepository, userEvents UserEvents) *Service {
 	}
 }
 
+// Find rejects an empty identifier before asking the repository for application state.
 func (s *Service) Find(ctx context.Context, id string) (User, error) {
 	if id == "" {
 		return User{}, ErrUserNotFound
@@ -339,6 +374,7 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 	return s.repo.Find(ctx, id)
 }
 
+// Create publishes only after persistence succeeds so subscribers never observe an unsaved user.
 func (s *Service) Create(ctx context.Context, input CreateUserInput) (User, error) {
 	name := strings.TrimSpace(input.Name)
 	if name == "" {
@@ -366,37 +402,44 @@ func (s *Service) Create(ctx context.Context, input CreateUserInput) (User, erro
 }
 ```
 
-## Step 6: Add The Subscriber
+## Step 6: Add the Notification Handler
 
-Create `internal/notifications/service.go` and `internal/notifications/subscribers.go`.
+Create `internal/notifications/service.go`.
 
-The subscriber reacts to a typed fact. It should not become a hidden replacement for explicit service orchestration.
+The notification service owns the application reaction. Event delivery should not become a hidden replacement for explicit service orchestration.
 
 Create or replace `internal/notifications/service.go`:
 
 ```go
+// Package notifications owns reactions to application facts without coupling publishers to their effects.
 package notifications
 
 import "context"
 
+// Service is the application boundary for reactions that may evolve independently of event delivery.
 type Service struct{}
 
+// NewService constructs the reaction boundary that later scenarios can move onto queue-backed work.
 func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) SendWelcome(ctx context.Context, userID string, email string) error {
+// HandleUserCreated keeps the subscriber thin while leaving background execution to a queue-backed implementation.
+func (s *Service) HandleUserCreated(_ context.Context, _ string, _ string) error {
 	return nil
 }
 ```
 
 ## Step 7: Add Subscriber Registration
 
-`Subscribers.Register` subscribes to the typed `users.created` event.
+Create `internal/notifications/subscribers.go`.
+
+`Subscribers.Register` subscribes to the typed `users.created` event and delegates through `UserCreatedHandler`, keeping transport registration separate from the concrete reaction.
 
 Create or replace `internal/notifications/subscribers.go`:
 
 ```go
+// Package notifications owns reactions to application facts without coupling publishers to their effects.
 package notifications
 
 import (
@@ -405,22 +448,114 @@ import (
 	"your/module/internal/events"
 )
 
+// UserCreatedHandler keeps event delivery independent from the reaction's concrete implementation.
+type UserCreatedHandler interface {
+	// HandleUserCreated receives the stable identity carried by the application event.
+	HandleUserCreated(ctx context.Context, userID string, email string) error
+}
+
+// Subscribers owns event registration so subscription lifetime remains part of the App lifecycle.
 type Subscribers struct {
-	service *Service
+	handler UserCreatedHandler
 }
 
-func NewSubscribers(service *Service) *Subscribers {
-	return &Subscribers{service: service}
+// NewSubscribers requires a handler because every received event must have an explicit destination.
+func NewSubscribers(handler UserCreatedHandler) *Subscribers {
+	return &Subscribers{handler: handler}
 }
 
+// Register translates the typed event into the application-facing user-created reaction.
 func (s *Subscribers) Register(ctx context.Context, bus events.Bus) (events.Subscription, error) {
 	return bus.WithContext(ctx).Subscribe(func(ctx context.Context, event events.UserCreated) error {
-		return s.service.SendWelcome(ctx, event.UserID, event.Email)
+		return s.handler.HandleUserCreated(ctx, event.UserID, event.Email)
 	})
 }
 ```
 
-## Step 8: Register Subscribers In The Lifecycle
+## Step 8: Test Subscriber Delivery
+
+Create `internal/notifications/subscribers_test.go`.
+
+The test publishes through the generated in-process bus and proves the typed event reaches the application handler. It does not start HTTP or the full App runtime.
+
+Create or replace `internal/notifications/subscribers_test.go`:
+
+```go
+// Package notifications verifies typed event delivery without starting the App runtime.
+package notifications
+
+import (
+	"context"
+	"testing"
+
+	"your/module/internal/events"
+)
+
+// recordingUserCreatedHandler records the application-facing values delivered by the subscriber.
+type recordingUserCreatedHandler struct {
+	calls  int
+	userID string
+	email  string
+}
+
+// HandleUserCreated captures one delivery without introducing notification behavior into the subscriber test.
+func (handler *recordingUserCreatedHandler) HandleUserCreated(_ context.Context, userID string, email string) error {
+	handler.calls++
+	handler.userID = userID
+	handler.email = email
+	return nil
+}
+
+// TestSubscribersDeliverUserCreated proves the generated in-process bus reaches the registered application handler.
+func TestSubscribersDeliverUserCreated(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("EVENTS_DRIVER", "inproc")
+
+	manager, err := events.NewManagerWithContext(ctx)
+	if err != nil {
+		t.Fatalf("build event manager: %v", err)
+	}
+	bus := manager.Default()
+	if err := bus.Start(ctx); err != nil {
+		t.Fatalf("start event bus: %v", err)
+	}
+	t.Cleanup(func() {
+		if err := bus.Close(context.Background()); err != nil {
+			t.Errorf("close event bus: %v", err)
+		}
+	})
+
+	received := &recordingUserCreatedHandler{}
+	subscription, err := NewSubscribers(received).Register(ctx, bus)
+	if err != nil {
+		t.Fatalf("register subscribers: %v", err)
+	}
+	t.Cleanup(func() {
+		if err := subscription.Close(); err != nil {
+			t.Errorf("close subscription: %v", err)
+		}
+	})
+
+	if err := bus.WithContext(ctx).Publish(events.UserCreated{
+		UserID: "43",
+		Email:  "grace@example.test",
+	}); err != nil {
+		t.Fatalf("publish user created: %v", err)
+	}
+
+	if received.calls != 1 {
+		t.Fatalf("handler calls = %d, want 1", received.calls)
+	}
+	if received.userID != "43" {
+		t.Fatalf("handler user id = %q, want %q", received.userID, "43")
+	}
+	if received.email != "grace@example.test" {
+		t.Fatalf("handler email = %q, want %q", received.email, "grace@example.test")
+	}
+}
+```
+
+## Step 9: Register Subscribers in the Lifecycle
 
 Update `app/lifecycle.go`.
 
@@ -429,6 +564,7 @@ This keeps subscriber registration in the App lifecycle, not in `init`, package 
 Create or replace `app/lifecycle.go`:
 
 ```go
+// Package app owns application composition and lifecycle hooks.
 package app
 
 import (
@@ -439,12 +575,14 @@ import (
 	"your/module/internal/runtime"
 )
 
+// LifecycleRegistry keeps subscription ownership aligned with App startup and shutdown ordering.
 type LifecycleRegistry struct {
 	eventManager             *events.Manager
 	notificationSubscribers  *notifications.Subscribers
 	notificationSubscription events.Subscription
 }
 
+// NewLifecycleRegistry requires the generated event manager and the App's subscriber collection.
 func NewLifecycleRegistry(
 	eventManager *events.Manager,
 	notificationSubscribers *notifications.Subscribers,
@@ -455,29 +593,36 @@ func NewLifecycleRegistry(
 	}
 }
 
+// Register starts subscriptions after event buses and closes them before those buses shut down.
 func (r *LifecycleRegistry) Register(lifecycle *runtime.Lifecycle) {
-	lifecycle.On(runtime.Startup, func(ctx context.Context) error {
-		subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
-		if err != nil {
-			return err
-		}
-		r.notificationSubscription = subscription
-		return nil
-	})
+	lifecycle.On(runtime.Startup, r.Startup)
+	lifecycle.On(runtime.Shutdown, r.Shutdown)
+}
 
-	lifecycle.On(Shutdown, func(ctx context.Context) error {
-		return r.notificationSubscription.Close()
-	})
+// Startup retains the subscription handle so shutdown can release the exact registered consumer.
+func (r *LifecycleRegistry) Startup(ctx context.Context) error {
+	subscription, err := r.notificationSubscribers.Register(ctx, r.eventManager.Default())
+	if err != nil {
+		return err
+	}
+	r.notificationSubscription = subscription
+	return nil
+}
+
+// Shutdown closes the subscriber before the generated lifecycle stops its event bus.
+func (r *LifecycleRegistry) Shutdown(_ context.Context) error {
+	return r.notificationSubscription.Close()
 }
 ```
 
-## Step 9: Update The Controller
+## Step 10: Update the Controller
 
 Update `internal/users/controller.go` so it supports both `GET /users/:id` and `POST /users`.
 
 Create or replace `internal/users/controller.go`:
 
 ```go
+// Package users keeps user behavior independent from HTTP and infrastructure details.
 package users
 
 import (
@@ -487,19 +632,23 @@ import (
 	"github.com/goforj/web"
 )
 
+// Controller translates HTTP requests into user service calls without owning workflow behavior.
 type Controller struct {
 	service *Service
 }
 
-type CreateRequest struct {
+// createRequest limits the transport payload to fields accepted by the creation workflow.
+type createRequest struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
 
+// NewController requires the service because every route delegates to the application workflow.
 func NewController(service *Service) *Controller {
 	return &Controller{service: service}
 }
 
+// Routes keeps read and creation endpoints discoverable by generated HTTP registration.
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
 		web.NewRoute(http.MethodGet, "/users/:id", c.Show),
@@ -507,6 +656,7 @@ func (c *Controller) Routes() []web.Route {
 	}
 }
 
+// Show maps a missing domain record to HTTP while leaving unexpected failures to middleware.
 func (c *Controller) Show(ctx web.Context) error {
 	user, err := c.service.Find(ctx.Context(), ctx.Param("id"))
 	if errors.Is(err, ErrUserNotFound) {
@@ -521,8 +671,9 @@ func (c *Controller) Show(ctx web.Context) error {
 	return ctx.JSON(http.StatusOK, user)
 }
 
+// Store keeps request decoding and HTTP status mapping outside the user service.
 func (c *Controller) Store(ctx web.Context) error {
-	var req CreateRequest
+	var req createRequest
 	if err := ctx.Bind(&req); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{
 			"error": "invalid payload",
@@ -546,20 +697,21 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 10: Wire the Event Boundary and Subscriber
+## Step 11: Wire the Event Boundary and Subscriber
 
 Add the event publisher and notification subscriber providers.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
-"your/module/internal/makecmd"
+"your/module/internal/events"
 "your/module/internal/notifications"
+"your/module/internal/runtime"
 ```
 
-## Step 11: Add Event Providers
+## Step 12: Add Event Providers
 
-`provideEventBus` exposes the generated default event bus to the application publisher.
+`provideEventBus` exposes the generated default event bus to the application publisher. Wire also binds `notifications.Service` to the handler interface required by subscriber registration.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
@@ -569,30 +721,34 @@ users.NewUserEventPublisher,
 wire.Bind(new(users.UserEvents), new(*users.UserEventPublisher)),
 users.NewService,
 notifications.NewService,
+wire.Bind(new(notifications.UserCreatedHandler), new(*notifications.Service)),
 notifications.NewSubscribers,
 ```
 
-## Step 12: Add The Event Bus Provider
+## Step 13: Add the Event Bus Provider
 
 Wire can now satisfy `users.NewUserEventPublisher`.
 
 Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
+// provideEventBus exposes the default generated bus without coupling the publisher to its manager.
 func provideEventBus(manager *events.Manager) events.Bus {
         return manager.Default()
 }
 
+// provideUserRepository preserves the service boundary while Wire composes its concrete cache-aside implementation.
 func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
 ```
 
-## Step 13: Update The Service Test
+## Step 14: Update the Service Test
 
 The test uses a small event boundary fake. It does not need to start the event bus or the App runtime.
 
 Create or replace `internal/users/service_test.go`:
 
 ```go
+// Package users keeps user behavior independent from HTTP and infrastructure details.
 package users
 
 import (
@@ -602,21 +758,28 @@ import (
 	"github.com/goforj/cache"
 )
 
+// recordingUserEvents records published users so service tests stay independent of event runtime startup.
 type recordingUserEvents struct {
 	created []User
 }
 
-func (r *recordingUserEvents) PublishCreated(ctx context.Context, user User) error {
+// PublishCreated captures the application fact without introducing transport behavior into the service test.
+func (r *recordingUserEvents) PublishCreated(_ context.Context, user User) error {
 	r.created = append(r.created, user)
 	return nil
 }
 
+// newTestService keeps repository construction consistent while each test controls its event collaborator.
+func newTestService(ctx context.Context, userEvents UserEvents) *Service {
+	source := NewMemoryUserRepository()
+	profileCache := cache.NewCache(cache.NewMemoryStore(ctx))
+	return NewService(NewCachedUserRepository(source, profileCache), userEvents)
+}
+
+// TestServiceFindsUser preserves the synchronous profile lookup while creation gains event publication.
 func TestServiceFindsUser(t *testing.T) {
 	ctx := context.Background()
-	service := NewService(
-		NewCachedUserRepository(NewMemoryUserRepository(), cache.NewCache(cache.NewMemoryStore(ctx))),
-		&recordingUserEvents{},
-	)
+	service := newTestService(ctx, &recordingUserEvents{})
 
 	user, err := service.Find(ctx, "42")
 	if err != nil {
@@ -627,13 +790,11 @@ func TestServiceFindsUser(t *testing.T) {
 	}
 }
 
+// TestServicePublishesUserCreatedEvent proves persistence completes before one typed fact leaves the workflow.
 func TestServicePublishesUserCreatedEvent(t *testing.T) {
 	ctx := context.Background()
-	events := &recordingUserEvents{}
-	service := NewService(
-		NewCachedUserRepository(NewMemoryUserRepository(), cache.NewCache(cache.NewMemoryStore(ctx))),
-		events,
-	)
+	published := &recordingUserEvents{}
+	service := newTestService(ctx, published)
 
 	user, err := service.Create(ctx, CreateUserInput{
 		Name:  "Grace Hopper",
@@ -645,25 +806,60 @@ func TestServicePublishesUserCreatedEvent(t *testing.T) {
 	if user.ID == "" {
 		t.Fatal("expected saved user id")
 	}
-	if len(events.created) != 1 {
-		t.Fatalf("created events = %d, want 1", len(events.created))
+	if len(published.created) != 1 {
+		t.Fatalf("created events = %d, want 1", len(published.created))
 	}
-	if events.created[0].Email != "grace@example.test" {
-		t.Fatalf("created event email = %q", events.created[0].Email)
+
+	created := published.created[0]
+	if created.ID != user.ID {
+		t.Fatalf("created event user id = %q, want %q", created.ID, user.ID)
+	}
+	if created.Email != "grace@example.test" {
+		t.Fatalf("created event email = %q, want %q", created.Email, "grace@example.test")
 	}
 }
 
+// TestServiceRejectsEmptyID proves invalid lookup state does not reach injected dependencies.
 func TestServiceRejectsEmptyID(t *testing.T) {
 	ctx := context.Background()
-	service := NewService(
-		NewCachedUserRepository(NewMemoryUserRepository(), cache.NewCache(cache.NewMemoryStore(ctx))),
-		&recordingUserEvents{},
-	)
+	service := newTestService(ctx, &recordingUserEvents{})
 
 	_, err := service.Find(ctx, "")
 	if err == nil {
 		t.Fatal("expected error")
 	}
+}
+```
+
+## Step 15: Test User Route Registration
+
+Create `internal/users/controller_test.go`.
+
+This focused contract test prevents the inherited GET route from hiding an accidental loss of the user creation route.
+
+Create or replace `internal/users/controller_test.go`:
+
+```go
+// Package users verifies the feature's HTTP contract without starting the HTTP runtime.
+package users
+
+import (
+	"context"
+	"net/http"
+	"testing"
+)
+
+// TestControllerRoutesIncludeUserCreation protects the method and feature-local path used by App route registration.
+func TestControllerRoutesIncludeUserCreation(t *testing.T) {
+	controller := NewController(newTestService(context.Background(), &recordingUserEvents{}))
+
+	for _, route := range controller.Routes() {
+		if route.Method() == http.MethodPost && route.Path() == "/users" {
+			return
+		}
+	}
+
+	t.Fatal("POST /users route is not registered")
 }
 ```
 
@@ -678,19 +874,19 @@ go test ./...
 ```
 
 ```bash
-forj run route:list
+forj route:list
 ```
 
 Expected output includes:
 
 - `/api/v1/users`
 
-## Try The Route
+## Try the Route
 
 Run the HTTP server:
 
 ```bash
-forj run api
+forj api
 ```
 
 Create a user:
@@ -718,7 +914,7 @@ Operational notes:
 - Use a queue and job when work needs retries, delay, timeout, worker lifecycle, or operational replay.
 - Published events and subscriber deliveries can appear in metrics, inspect records, Lighthouse runtime views, and driver configuration.
 
-## Swap The Driver
+## Swap the Driver
 
 To publish through Redis in production, compile Redis event support and select it:
 
@@ -749,4 +945,4 @@ Business code does not change. The service still publishes through `UserEvents`,
 
 ## Next Steps
 
-- Next, dispatch durable work from an event subscriber with [Reports Generate Job](/scenarios/reports-generate-job).
+- Next, dispatch queue-backed work from an event subscriber with [Reports Generate Job](/scenarios/reports-generate-job).
