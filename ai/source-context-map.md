@@ -193,13 +193,27 @@ Read:
 - `../goforj/docs/designs/forj-extension-design.md`
 - `../goforj/docs/designs/forj-api-index-design.md`
 - `../goforj/docs/designs/forj-dev-tui-design.md`
-- `../goforj/docs/designs/console-package-handoff.md`
 
 Use for:
 
 - proposed features
 - future docs planning
 - not current public behavior unless implementation exists
+
+### Console and CLI Presentation
+
+Read:
+
+- `../console/README.md`
+- `../goforj/docs/designs/console-package-handoff.md`
+- `../goforj/go.mod`
+
+Use for:
+
+- standalone semantic output, layout, prompts, loaders, and progress
+- GoForj CLI adoption of `github.com/goforj/console`
+- distinguishing reusable line-oriented presentation from logging pipelines and dev TUI state
+- preserving the separate generated App `internal/console` ownership boundary
 
 ### Command Surface
 

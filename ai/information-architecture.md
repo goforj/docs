@@ -66,13 +66,17 @@ Pages:
 - Cache
 - Storage
 - Metrics
+- Mail
 - Env
 - Crypt
 - Wire
 - Collection
 - Strings
+- HTTPX
 - ExecX
+- Console
 - GoDump
+- Atlas
 
 Library pages may be generated from READMEs and should remain useful outside the framework. Framework workflow pages should link into them for deeper primitive APIs, driver matrices, and standalone examples.
 

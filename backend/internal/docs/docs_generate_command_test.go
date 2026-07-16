@@ -70,6 +70,7 @@ func TestFingerprintRepoReadmeIncludesGeneratedPageConfig(t *testing.T) {
 		{name: "title", mutate: func(repo *RepoConfig) { repo.Title = "Queues" }},
 		{name: "clone URL", mutate: func(repo *RepoConfig) { repo.CloneURL = "https://github.com/example/queue.git" }},
 		{name: "output path", mutate: func(repo *RepoConfig) { repo.OutputPath = "queue.md" }},
+		{name: "auto title", mutate: func(repo *RepoConfig) { repo.NoAutoTitle = true }},
 		{name: "guide title", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Title = "Queue Apps" }},
 		{name: "guide path", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Path = "/applications/queues" }},
 		{name: "guide summary", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Summary = "Updated queue integration." }},

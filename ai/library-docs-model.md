@@ -33,13 +33,17 @@ Examples:
 - `scheduler`
 - `web`
 - `metrics`
+- `mail`
 - `env`
 - `crypt`
 - `collection`
 - `str`
+- `httpx`
 - `execx`
+- `console`
 - `godump`
 - `wire`
+- `atlas`
 
 The docs should respect that a user may adopt one library without adopting the full GoForj framework.
 
@@ -79,7 +83,7 @@ Library examples may show direct constructors and driver packages because that i
 
 Framework pages should link to library pages for deeper primitive detail.
 
-Library pages should link back to framework pages for generated App integration.
+Library pages should link back to framework pages when a generated App integration exists.
 
 Examples:
 
@@ -90,6 +94,7 @@ Examples:
 - `data/cache-patterns.md` links to `libraries/cache.md`.
 - `data/storage-patterns.md` links to `libraries/storage.md`.
 - `operations/metrics.md` links to `libraries/metrics.md`.
+- `applications/commands.md` links to `libraries/console.md` for standalone command-output tooling.
 
 The link text should make the projection clear:
 
@@ -109,13 +114,13 @@ Readme-slurped library pages can remain strong standalone pages, but should conv
 7. Testing
 8. Production notes
 9. API reference
-10. GoForj framework integration link
+10. GoForj framework integration link when one exists
 
 Do not force every library page into application-guide structure.
 
 ## Framework Integration Sections
 
-Each major library page should eventually include a short "Using With GoForj" section.
+Each major library page with a generated App integration should eventually include a short "Using With GoForj" section.
 
 That section should be concise and should not duplicate framework docs.
 
@@ -126,15 +131,18 @@ It should say:
 - driver selection belongs in configuration and provider wiring
 - link to the relevant framework workflow page
 
+Standalone developer tooling can be discovered from the closest framework workflow without inventing a reverse App wiring contract. For example, the Commands guide links to `console`, while generated Apps still own their emitted `internal/console` package.
+
 ## Library Nav
 
 Libraries should be a top-level navigation section.
 
 Recommended groups:
 
-- Application primitives: `web`, `queue`, `events`, `scheduler`, `cache`, `storage`, `metrics`
+- Application primitives: `web`, `queue`, `events`, `scheduler`, `cache`, `storage`, `metrics`, `mail`
 - Foundation utilities: `env`, `crypt`, `wire`
-- Go utility libraries: `collection`, `str`, `execx`, `godump`
+- Go utility libraries: `collection`, `str`, `httpx`, `execx`, `console`, `godump`
+- Developer tooling: `atlas`
 
 The current slurped README pages should remain available under Libraries and should be linked from framework pages as needed.
 

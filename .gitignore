@@ -11,7 +11,8 @@
 !/docs/**/*.md
 
 backend/frontend/dist/
-bin/
+/bin/*
+!/bin/collect-proof-stats.mjs
 _data/
 
 # Local env file

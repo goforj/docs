@@ -28,6 +28,7 @@ The library ecosystem has its own release history:
 | `httpx` | `v2.0.1` | HTTP client helpers, request construction, auth helpers, browser profiles, tracing/debugging support, and frozen `v1` compatibility. |
 | `godump` | `v1.9.1` | Debug dumping, diff output, color controls, header controls, redaction, depth handling, stringer support, and doc generation. |
 | `execx` | `v1.1.0` | Command execution helpers, shadow printing, decoder pipes, and TTY/PTTY behavior for developer tooling. |
+| `console` | `v0.1.1` | Semantic messages, ANSI-aware text, layout, tables, trees, prompts, loaders, progress, and injectable runtime policy for line-oriented CLIs. |
 | `str` | `v1.3.0` | Rune-safe string helpers, case-fold operations, matching/replacement helpers, plural/singular helpers, and generated API examples. |
 | `crypt` | `v1.1.0` | Encryption helpers, key generation, key rotation, and instanced crypt behavior. |
 | `web` | `v0.6.0` | Server-side HTTP abstractions, Echo adapter, middleware, route model, WebSocket routes, testing helpers, and typed App-scoped API contract generation. |
@@ -48,6 +49,7 @@ The early standalone package work made the framework feel like a cohesive Go sta
 - `str` reached `v1.3.0` with string construction, matching, replacement, plural/singular helpers, trim wrappers, case-fold variants, alpha/alnum/numeric predicates, initials, common prefix/suffix helpers, and generated API docs.
 - `httpx` reached `v2.0.1` after freezing `v1`, then moved to clearer `v2` request helpers, auth helpers, browser profiles, client options, tracing, debugging, and generated examples.
 - `execx` reached `v1.1.0` with shadow printing, decoder pipelines, TTY passthrough, PTY behavior, and cleaner command-output ergonomics.
+- `console` reached `v0.1.1` with global and isolated APIs for semantic output, ANSI-aware layout, tables, trees, prompts, loaders, progress, and generated examples with verified output.
 - `crypt` reached `v1.1.0` with key generation, key rotation, and instanced methods so generated Apps can avoid global-only crypto helpers.
 - `env` reached `v2.4.0` with `.env` layering, `APP_ENV` helpers, typed getters, map/slice parsing, scoped child prefixes, multi-word child discovery, `Load` aliases, reload support, and container/runtime detection.
 - `wire` reached `v1.2.0` after GoForj forked the Google Wire lineage, added a watch workflow, and introduced a custom loader with major performance improvements while keeping explicit compile-time dependency injection.
@@ -99,6 +101,7 @@ The root documentation follows the active development line. These changes are im
 - Made `dev.apps` a sparse participation list so omitted CLI-only or intentionally inactive Apps are not rebuilt or run.
 - Made runtime-capable App binaries select `run` when launched without arguments while preserving explicit commands, `--help`, and CLI-only root help.
 - Compacted Project and App component configuration into enabled-name lists, with legacy boolean maps migrated by render-backed config rewrites.
+- Moved the GoForj CLI's semantic output onto `github.com/goforj/console` and replaced its build and project-creation spinners with redirect-safe loaders, while keeping the private dev-TUI progress protocol framework-owned.
 
 ### Build and API Contracts
 

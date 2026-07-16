@@ -20,7 +20,7 @@ func transformReadme(readme string, repo RepoConfig, rawBase string) string {
 	updated := rewriteImageLinks(readme, rawBase)
 	updated = rewriteMarkdownLinks(updated, repo)
 	updated = appendFrameworkGuide(updated, repo.FrameworkGuide)
-	updated = rewriteHeadingAnchors(updated, repo.Title)
+	updated = rewriteHeadingAnchors(updated)
 	return withFrontmatter(repo, updated)
 }
 
@@ -193,19 +193,18 @@ func repositoryLinkMode(pathPart string) string {
 	}
 }
 
-func rewriteHeadingAnchors(content string, pageTitle string) string {
+// rewriteHeadingAnchors gives source-owned IDs priority so API links keep targeting declaration examples when a section has the same name.
+func rewriteHeadingAnchors(content string) string {
 	lines := strings.Split(content, "\n")
-	used := map[string]int{}
-	if anchor := defaultAnchor(pageTitle); anchor != "" {
-		// VitePress generates an implicit anchor for the page title/frontmatter H1.
-		used[anchor] = 1
-	}
+	explicitAnchors := explicitHeadingAnchorCounts(lines)
+	used := map[string]struct{}{}
 	for i, line := range lines {
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
 			level := matches[1]
 			anchor := matches[2]
 			title := strings.TrimSpace(matches[3])
-			unique := uniqueAnchor(anchor, used)
+			explicitAnchors[anchor]--
+			unique := claimHeadingAnchor(anchor, used, explicitAnchors, true)
 			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
 			continue
 		}
@@ -213,7 +212,8 @@ func rewriteHeadingAnchors(content string, pageTitle string) string {
 			level := matches[1]
 			title := strings.TrimSpace(matches[2])
 			anchor := matches[3]
-			unique := uniqueAnchor(anchor, used)
+			explicitAnchors[anchor]--
+			unique := claimHeadingAnchor(anchor, used, explicitAnchors, true)
 			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
 			continue
 		}
@@ -221,27 +221,49 @@ func rewriteHeadingAnchors(content string, pageTitle string) string {
 			level := matches[1]
 			title := strings.TrimSpace(matches[2])
 			anchor := defaultAnchor(title)
-			unique := uniqueAnchor(anchor, used)
+			unique := claimHeadingAnchor(anchor, used, explicitAnchors, false)
 			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
 		}
 	}
 	return strings.Join(lines, "\n")
 }
 
-func uniqueAnchor(anchor string, used map[string]int) string {
+// explicitHeadingAnchorCounts reserves source-owned IDs before implicit Markdown headings are assigned their anchors.
+func explicitHeadingAnchorCounts(lines []string) map[string]int {
+	counts := map[string]int{}
+	for _, line := range lines {
+		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
+			counts[matches[2]]++
+			continue
+		}
+		if matches := headingWithIDRegex.FindStringSubmatch(line); len(matches) == 4 {
+			counts[matches[3]]++
+		}
+	}
+	return counts
+}
+
+// claimHeadingAnchor keeps the preferred explicit ID when possible and otherwise selects the first unclaimed, unreserved suffix.
+func claimHeadingAnchor(anchor string, used map[string]struct{}, reserved map[string]int, explicit bool) string {
 	if anchor == "" {
 		return anchor
 	}
-	count := used[anchor]
-	if count == 0 {
-		used[anchor] = 1
+	if _, exists := used[anchor]; !exists && (explicit || reserved[anchor] == 0) {
+		used[anchor] = struct{}{}
 		return anchor
 	}
-	count++
-	used[anchor] = count
-	return fmt.Sprintf("%s-%d", anchor, count)
+
+	for suffix := 2; ; suffix++ {
+		candidate := fmt.Sprintf("%s-%d", anchor, suffix)
+		_, exists := used[candidate]
+		if !exists && reserved[candidate] == 0 {
+			used[candidate] = struct{}{}
+			return candidate
+		}
+	}
 }
 
+// defaultAnchor mirrors the simple heading normalization used by the imported README pages.
 func defaultAnchor(title string) string {
 	lower := strings.ToLower(strings.TrimSpace(title))
 	lower = strings.ReplaceAll(lower, "·", "")
@@ -253,17 +275,23 @@ func defaultAnchor(title string) string {
 	return strings.Trim(lower, "-")
 }
 
+// withFrontmatter records source-repository metadata and optional presentation policy for the generated page.
 func withFrontmatter(repo RepoConfig, content string) string {
 	title := repo.Title
 	if title == "" {
 		title = repo.Slug
 	}
 	repoURL := strings.TrimSuffix(repo.CloneURL, ".git")
+	autoTitle := ""
+	if repo.NoAutoTitle {
+		autoTitle = "noAutoTitle: true\n"
+	}
 	frontmatter := fmt.Sprintf(
-		"---\ntitle: %s\nrepoSlug: %s\nrepoUrl: %s\n---\n\n",
+		"---\ntitle: %s\nrepoSlug: %s\nrepoUrl: %s\n%s---\n\n",
 		title,
 		repo.Slug,
 		repoURL,
+		autoTitle,
 	)
 	return frontmatter + content
 }

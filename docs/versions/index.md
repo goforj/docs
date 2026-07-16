@@ -33,7 +33,7 @@ That matters because GoForj has evolved through several real layers:
 - make command expansion and generated app ergonomics
 - multi-app project architecture
 
-The library ecosystem is part of the version story. GoForj is not only a renderer around one repository. It is backed by first-party packages for HTTP, queues, events, cache, storage, mail, scheduler, metrics, environment loading, cryptography, execution helpers, strings, collections, debugging output, and dependency wiring. Many of those packages have their own tagged release lines, driver module tags, examples, integration suites, and documentation generation workflows.
+The library ecosystem is part of the version story. GoForj is not only a renderer around one repository. It is backed by first-party packages for HTTP, queues, events, cache, storage, mail, scheduler, metrics, environment loading, cryptography, command execution, console presentation, strings, collections, debugging output, dependency wiring, and local agent tooling. Many of those packages have their own tagged release lines, driver module tags, examples, integration suites, and documentation generation workflows.
 
 The [Changelog](/versions/changelog) starts with a dedicated first-party library history before the framework milestone ledger.
 

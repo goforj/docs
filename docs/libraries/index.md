@@ -31,6 +31,7 @@ Each library page remains useful for standalone package users. Framework guides 
 
 ## Developer Ergonomics
 
+- [Console](/console) provides semantic messages, ANSI-aware layout, tables, trees, prompts, loaders, and progress for line-oriented CLI experiences.
 - [Collection](/collection) provides fluent collection helpers.
 - [Strings](/strings) provides string utilities.
 - [GoDump](/godump) provides debugging and inspection helpers.

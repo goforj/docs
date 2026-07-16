@@ -76,6 +76,14 @@ func (c *GenerateCommand) Run() error {
 			OutputPath: filepath.Join("libraries", "execx.md"),
 		},
 		{
+			Slug:        "console",
+			Title:       "Console",
+			CloneURL:    "https://github.com/goforj/console.git",
+			Branch:      "main",
+			OutputPath:  filepath.Join("libraries", "console.md"),
+			NoAutoTitle: true,
+		},
+		{
 			Slug:       "godump",
 			Title:      "GoDump",
 			CloneURL:   "https://github.com/goforj/godump.git",
@@ -339,7 +347,7 @@ func resolveLocalSource(repoSlug, source string) (string, error) {
 // fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
 func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
 	sum := sha256.New()
-	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v3\n"))
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v4\n"))
 	for _, value := range []string{
 		repo.Slug,
 		repo.Title,
@@ -348,6 +356,7 @@ func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) strin
 		repo.OutputPath,
 		repo.ReadmePath,
 		repo.RepoName,
+		fmt.Sprintf("%t", repo.NoAutoTitle),
 		repo.FrameworkGuide.Title,
 		repo.FrameworkGuide.Path,
 		repo.FrameworkGuide.Summary,

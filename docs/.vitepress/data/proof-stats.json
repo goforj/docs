@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-06-16",
+  "generatedAt": "2026-07-16",
   "totals": {
-    "unitTests": 810,
-    "integrationTests": 872,
-    "testFunctions": 2158,
-    "benchmarks": 52,
+    "unitTests": 975,
+    "integrationTests": 877,
+    "testFunctions": 2558,
+    "benchmarks": 66,
     "drivers": 49,
-    "libraries": 17
+    "libraries": 18
   },
   "drivers": {
     "queue": [
@@ -76,15 +76,15 @@
       "repo": "atlas",
       "unit": null,
       "integration": null,
-      "testFns": 35,
+      "testFns": 78,
       "benchmarks": 0
     },
     {
       "repo": "cache",
-      "unit": 189,
-      "integration": 113,
-      "testFns": 205,
-      "benchmarks": 1
+      "unit": 354,
+      "integration": 118,
+      "testFns": 212,
+      "benchmarks": 5
     },
     {
       "repo": "collection",
@@ -94,11 +94,18 @@
       "benchmarks": 0
     },
     {
+      "repo": "console",
+      "unit": null,
+      "integration": null,
+      "testFns": 211,
+      "benchmarks": 0
+    },
+    {
       "repo": "crypt",
       "unit": null,
       "integration": null,
       "testFns": 50,
-      "benchmarks": 0
+      "benchmarks": 3
     },
     {
       "repo": "env",
@@ -118,8 +125,8 @@
       "repo": "execx",
       "unit": null,
       "integration": null,
-      "testFns": 79,
-      "benchmarks": 0
+      "testFns": 119,
+      "benchmarks": 2
     },
     {
       "repo": "godump",
@@ -174,15 +181,15 @@
       "repo": "str",
       "unit": null,
       "integration": null,
-      "testFns": 101,
-      "benchmarks": 0
+      "testFns": 89,
+      "benchmarks": 4
     },
     {
       "repo": "web",
       "unit": 213,
       "integration": null,
-      "testFns": 135,
-      "benchmarks": 31
+      "testFns": 246,
+      "benchmarks": 32
     },
     {
       "repo": "wire",

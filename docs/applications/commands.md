@@ -173,3 +173,4 @@ Runtime commands such as HTTP, queue workers, and scheduler processes already us
 - [Wiring Recipes](/core/wiring-recipes) shows the command wiring flow.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains command startup and shutdown.
 - [Testing Overview](/testing/overview) explains command test direction.
+- [Console](/console) provides standalone messages, ANSI-aware layout, tables, prompts, loaders, and progress for command output.

@@ -325,6 +325,7 @@ const libraryRewrites: Record<string, string> = {
   'libraries/mail.md': 'mail.md',
   'libraries/metrics.md': 'metrics.md',
   'libraries/execx.md': 'execx.md',
+  'libraries/console.md': 'console.md',
   'libraries/godump.md': 'godump.md',
   'libraries/env.md': 'env.md',
   'libraries/scheduler.md': 'scheduler.md',
@@ -905,6 +906,7 @@ export default defineConfig({
           { text: 'Crypt', link: '/crypt' },
           { text: 'HTTPX', link: '/httpx' },
           { text: 'ExecX', link: '/execx' },
+          { text: 'Console', link: '/console' },
           { text: 'Collection', link: '/collection' },
           { text: 'Strings', link: '/strings' },
           { text: 'GoDump', link: '/godump' }

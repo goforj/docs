@@ -343,7 +343,8 @@ const GROUP_CONFIG = [
           { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
           { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/httpx' },
           { id: 'core-env', icon: 'shield-check', color: '#06b6d4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
-          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' }
+          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
+          { id: 'core-console', icon: 'terminal', color: '#0284c7', textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
         ]
       },
       {

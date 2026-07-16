@@ -108,3 +108,47 @@ func TestAppendFrameworkGuidePreservesExistingSection(t *testing.T) {
 		t.Fatalf("appendFrameworkGuide() changed existing guidance:\n%s", got)
 	}
 }
+
+// TestTransformReadmePreservesConsoleAPIExampleLinks verifies generated local API links continue to target explicit VitePress heading IDs.
+func TestTransformReadmePreservesConsoleAPIExampleLinks(t *testing.T) {
+	repo := RepoConfig{
+		Slug:        "console",
+		Title:       "Console",
+		CloneURL:    "https://github.com/goforj/console.git",
+		Branch:      "main",
+		NoAutoTitle: true,
+	}
+	input := strings.Join([]string{
+		"## API index",
+		"",
+		"[Loader.Start](#loader-start) · [Progress](#progress) · [Console](#console) · [Marks](#marks)",
+		"",
+		`#### <a id="loader-start"></a>Loader.Start`,
+		"",
+		"### Progress",
+		"",
+		`#### <a id="progress"></a>Progress`,
+		"",
+		`#### <a id="console"></a>Console`,
+		"",
+		"### Marks",
+		"",
+		`#### <a id="marks"></a>Marks`,
+	}, "\n")
+
+	got := transformReadme(input, repo, "https://raw.githubusercontent.com/goforj/console/main/")
+	for _, want := range []string{
+		"noAutoTitle: true",
+		"[Loader.Start](#loader-start) · [Progress](#progress) · [Console](#console) · [Marks](#marks)",
+		"#### Loader.Start {#loader-start}",
+		"### Progress {#progress-2}",
+		"#### Progress {#progress}",
+		"#### Console {#console}",
+		"### Marks {#marks-2}",
+		"#### Marks {#marks}",
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("transformReadme() missing %q in:\n%s", want, got)
+		}
+	}
+}
