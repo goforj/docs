@@ -11,7 +11,6 @@ type RepoConfig struct {
 	OutputPath     string
 	ReadmePath     string
 	RepoName       string
-	NoAutoTitle    bool
 	FrameworkGuide FrameworkGuide
 }
 

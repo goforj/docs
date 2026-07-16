@@ -10,9 +10,9 @@ import (
 var markdownImageRegex = regexp.MustCompile(`!\[[^\]]*\]\(([^)]+)\)`)
 var htmlImageRegex = regexp.MustCompile(`(?i)<img[^>]+src=["']([^"']+)["']`)
 var htmlAnchorLinkRegex = regexp.MustCompile(`(?i)(<a\b[^>]*\bhref\s*=\s*["'])([^"']+)(["'])`)
-var headingAnchorRegex = regexp.MustCompile(`^(#{2,6}) <a id="([^"]+)"></a>\s*(.+)$`)
+var headingAnchorRegex = regexp.MustCompile(`^(#{1,6}) <a id="([^"]+)"></a>\s*(.+)$`)
 var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
-var headingWithIDRegex = regexp.MustCompile(`^(#{2,6})\s+(.+?)\s+\{#([^}]+)\}\s*$`)
+var headingWithIDRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s+\{#([^}]+)\}\s*$`)
 
 var markdownHeadingRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s*$`)
 
@@ -275,7 +275,7 @@ func defaultAnchor(title string) string {
 	return strings.Trim(lower, "-")
 }
 
-// withFrontmatter records source-repository metadata and optional presentation policy for the generated page.
+// withFrontmatter suppresses the synthetic search title when imported content already owns that anchor.
 func withFrontmatter(repo RepoConfig, content string) string {
 	title := repo.Title
 	if title == "" {
@@ -283,7 +283,7 @@ func withFrontmatter(repo RepoConfig, content string) string {
 	}
 	repoURL := strings.TrimSuffix(repo.CloneURL, ".git")
 	autoTitle := ""
-	if repo.NoAutoTitle {
+	if hasHeadingAnchor(content, defaultAnchor(title)) {
 		autoTitle = "noAutoTitle: true\n"
 	}
 	frontmatter := fmt.Sprintf(
@@ -294,4 +294,18 @@ func withFrontmatter(repo RepoConfig, content string) string {
 		autoTitle,
 	)
 	return frontmatter + content
+}
+
+// hasHeadingAnchor detects title ownership after heading IDs have been normalized for VitePress.
+func hasHeadingAnchor(content string, anchor string) bool {
+	if anchor == "" {
+		return false
+	}
+	for _, line := range strings.Split(content, "\n") {
+		matches := headingWithIDRegex.FindStringSubmatch(line)
+		if len(matches) == 4 && matches[3] == anchor {
+			return true
+		}
+	}
+	return false
 }

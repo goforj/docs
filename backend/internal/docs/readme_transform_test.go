@@ -112,11 +112,10 @@ func TestAppendFrameworkGuidePreservesExistingSection(t *testing.T) {
 // TestTransformReadmePreservesConsoleAPIExampleLinks verifies generated local API links continue to target explicit VitePress heading IDs.
 func TestTransformReadmePreservesConsoleAPIExampleLinks(t *testing.T) {
 	repo := RepoConfig{
-		Slug:        "console",
-		Title:       "Console",
-		CloneURL:    "https://github.com/goforj/console.git",
-		Branch:      "main",
-		NoAutoTitle: true,
+		Slug:     "console",
+		Title:    "Console",
+		CloneURL: "https://github.com/goforj/console.git",
+		Branch:   "main",
 	}
 	input := strings.Join([]string{
 		"## API index",
@@ -150,5 +149,35 @@ func TestTransformReadmePreservesConsoleAPIExampleLinks(t *testing.T) {
 		if !strings.Contains(got, want) {
 			t.Fatalf("transformReadme() missing %q in:\n%s", want, got)
 		}
+	}
+}
+
+// TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed verifies ordinary library pages retain their configured search title.
+func TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed(t *testing.T) {
+	repo := RepoConfig{
+		Slug:     "str",
+		Title:    "Strings",
+		CloneURL: "https://github.com/goforj/str.git",
+		Branch:   "main",
+	}
+
+	got := transformReadme("## Usage\n", repo, "https://raw.githubusercontent.com/goforj/str/main/")
+	if strings.Contains(got, "noAutoTitle: true") {
+		t.Fatalf("transformReadme() disabled the unclaimed automatic title:\n%s", got)
+	}
+}
+
+// TestTransformReadmeSuppressesDuplicateSearchTitle verifies a declaration matching the page title does not collide with VitePress local search.
+func TestTransformReadmeSuppressesDuplicateSearchTitle(t *testing.T) {
+	repo := RepoConfig{
+		Slug:     "queue",
+		Title:    "Queue",
+		CloneURL: "https://github.com/goforj/queue.git",
+		Branch:   "main",
+	}
+
+	got := transformReadme(`#### <a id="queue"></a>Queue`, repo, "https://raw.githubusercontent.com/goforj/queue/main/")
+	if !strings.Contains(got, "noAutoTitle: true") {
+		t.Fatalf("transformReadme() kept a conflicting automatic title:\n%s", got)
 	}
 }

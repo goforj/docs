@@ -7,6 +7,25 @@ import (
 	"testing"
 )
 
+// TestGeneratedPageMatches verifies cache reuse requires the output file to contain the current transformation.
+func TestGeneratedPageMatches(t *testing.T) {
+	t.Parallel()
+
+	outputPath := filepath.Join(t.TempDir(), "console.md")
+	if err := os.WriteFile(outputPath, []byte("current"), 0o644); err != nil {
+		t.Fatalf("write generated page: %v", err)
+	}
+	if !generatedPageMatches(outputPath, "current") {
+		t.Fatal("generatedPageMatches() = false, want true for current output")
+	}
+	if generatedPageMatches(outputPath, "stale") {
+		t.Fatal("generatedPageMatches() = true, want false for stale output")
+	}
+	if generatedPageMatches(filepath.Join(t.TempDir(), "missing.md"), "current") {
+		t.Fatal("generatedPageMatches() = true, want false for missing output")
+	}
+}
+
 // TestResolveLocalSource verifies that local generation is explicit and limited to existing directories.
 func TestResolveLocalSource(t *testing.T) {
 	t.Parallel()
@@ -70,7 +89,6 @@ func TestFingerprintRepoReadmeIncludesGeneratedPageConfig(t *testing.T) {
 		{name: "title", mutate: func(repo *RepoConfig) { repo.Title = "Queues" }},
 		{name: "clone URL", mutate: func(repo *RepoConfig) { repo.CloneURL = "https://github.com/example/queue.git" }},
 		{name: "output path", mutate: func(repo *RepoConfig) { repo.OutputPath = "queue.md" }},
-		{name: "auto title", mutate: func(repo *RepoConfig) { repo.NoAutoTitle = true }},
 		{name: "guide title", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Title = "Queue Apps" }},
 		{name: "guide path", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Path = "/applications/queues" }},
 		{name: "guide summary", mutate: func(repo *RepoConfig) { repo.FrameworkGuide.Summary = "Updated queue integration." }},

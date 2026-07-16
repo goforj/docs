@@ -76,12 +76,11 @@ func (c *GenerateCommand) Run() error {
 			OutputPath: filepath.Join("libraries", "execx.md"),
 		},
 		{
-			Slug:        "console",
-			Title:       "Console",
-			CloneURL:    "https://github.com/goforj/console.git",
-			Branch:      "main",
-			OutputPath:  filepath.Join("libraries", "console.md"),
-			NoAutoTitle: true,
+			Slug:       "console",
+			Title:      "Console",
+			CloneURL:   "https://github.com/goforj/console.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "console.md"),
 		},
 		{
 			Slug:       "godump",
@@ -273,11 +272,13 @@ func (c *GenerateCommand) Run() error {
 			}
 
 			rawBase := rawGithubBase(repo, repo.Branch)
+			transformed := transformReadme(string(readmeBytes), repo, rawBase)
+			outputPath := filepath.Join(docsRoot, repo.OutputPath)
 			fingerprint := fingerprintRepoReadme(repo, rawBase, readmeBytes)
 			fingerprintPath := filepath.Join(fingerprintRoot, repo.Slug+".sha256")
 			if !c.Fresh {
 				prev, err := os.ReadFile(fingerprintPath)
-				if err == nil && string(prev) == fingerprint {
+				if err == nil && string(prev) == fingerprint && generatedPageMatches(outputPath, transformed) {
 					c.logger.Info().
 						Any("repo", repo.Slug).
 						Any("fingerprint", shortFingerprint(fingerprint)).
@@ -286,8 +287,6 @@ func (c *GenerateCommand) Run() error {
 				}
 			}
 
-			transformed := transformReadme(string(readmeBytes), repo, rawBase)
-			outputPath := filepath.Join(docsRoot, repo.OutputPath)
 			if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
 				setErr(fmt.Errorf("ensure output dir for %s: %w", repo.Slug, err))
 				return
@@ -320,6 +319,12 @@ func (c *GenerateCommand) Run() error {
 	return nil
 }
 
+// generatedPageMatches prevents a shared fingerprint cache from accepting stale output copied into a fresh build context.
+func generatedPageMatches(outputPath string, transformed string) bool {
+	output, err := os.ReadFile(outputPath)
+	return err == nil && string(output) == transformed
+}
+
 // resolveLocalSource validates the explicit local checkout before worker goroutines begin generation.
 func resolveLocalSource(repoSlug, source string) (string, error) {
 	if source == "" {
@@ -347,7 +352,7 @@ func resolveLocalSource(repoSlug, source string) (string, error) {
 // fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
 func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
 	sum := sha256.New()
-	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v4\n"))
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v5\n"))
 	for _, value := range []string{
 		repo.Slug,
 		repo.Title,
@@ -356,7 +361,6 @@ func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) strin
 		repo.OutputPath,
 		repo.ReadmePath,
 		repo.RepoName,
-		fmt.Sprintf("%t", repo.NoAutoTitle),
 		repo.FrameworkGuide.Title,
 		repo.FrameworkGuide.Path,
 		repo.FrameworkGuide.Summary,
