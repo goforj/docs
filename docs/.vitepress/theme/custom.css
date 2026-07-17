@@ -37,6 +37,22 @@
     -webkit-backdrop-filter: none;
 }
 
+/* The full docs menu is wider than VitePress's default 768px breakpoint. */
+@media (min-width: 768px) and (max-width: 1399px) {
+    .VPNavBarMenu,
+    .VPNavBarExtra {
+        display: none !important;
+    }
+
+    .VPNavBarHamburger {
+        display: flex !important;
+    }
+
+    .VPNavScreen {
+        display: block !important;
+    }
+}
+
 .content-body {
     background: rgba(27,27,31, 0.25) !important;
 }
@@ -163,6 +179,12 @@
 @media (min-width: 960px) {
     .Layout:has(.VPSidebar) .gf-docs-preview-banner {
         padding-left: calc(var(--vp-sidebar-width) + 32px);
+    }
+}
+
+@media (max-width: 1399px) {
+    .gf-docs-preview-banner {
+        position: static;
     }
 }
 
@@ -2945,9 +2967,8 @@ html.gf-lightbox-open body {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     color: var(--vp-c-text-1);
-    /* One continuous light field for the whole page. Glows alternate
-       hue and side in a gentle S-curve and never end at a section
-       boundary, so scrolling reads as one canvas instead of boxes. */
+    /* A continuous atmospheric field sits behind restrained section
+       seams, preserving flow while keeping each chapter legible. */
     background:
         radial-gradient(1100px 700px at 82% 4%, rgba(91, 115, 255, 0.07), transparent 70%),
         radial-gradient(1000px 720px at 14% 16%, rgba(229, 107, 58, 0.055), transparent 72%),
@@ -2979,10 +3000,25 @@ html.gf-lightbox-open body {
 .gf-home-section {
     position: relative;
     padding: clamp(48px, 5.5vw, 80px) clamp(22px, 5vw, 96px);
+    border-top: 1px solid rgba(148, 163, 184, 0.11);
+    background: linear-gradient(180deg, rgba(10, 14, 22, 0.2), transparent 132px);
+}
+
+.gf-home-section::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: min(1180px, calc(100% - 44px));
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(174, 190, 224, 0.24) 18%, rgba(174, 190, 224, 0.24) 82%, transparent);
+    transform: translateX(-50%);
+    pointer-events: none;
 }
 
 .gf-home-section__inner {
     position: relative;
+    z-index: 1;
     max-width: 1180px;
     margin: 0 auto;
 }
@@ -3976,6 +4012,23 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     color: inherit;
 }
 
+.gf-home-close__version {
+    margin-top: 13px !important;
+    color: rgba(148, 163, 184, 0.6);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.gf-home-close__version a {
+    color: rgba(151, 173, 255, 0.9);
+    font-weight: 700;
+}
+
+.gf-home-close__version code {
+    color: rgba(203, 213, 225, 0.78);
+    font-size: 0.95em;
+}
+
 .gf-home-close__actions {
     display: flex;
     flex-wrap: wrap;
@@ -4046,6 +4099,10 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     .gf-home-ops__topology {
         grid-template-columns: minmax(0, 1fr);
     }
+
+    .gf-home .gf-home-close__final::before {
+        inset: -50px -22px;
+    }
 }
 
 @media (max-width: 680px) {
@@ -4073,6 +4130,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     .gf-home-path__step a {
         width: 100%;
     }
+
 }
 
 /* ============================================================

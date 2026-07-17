@@ -1,15 +1,16 @@
 import DefaultTheme from 'vitepress/theme'
 import { useData, useRoute } from 'vitepress'
-import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
+import { defineAsyncComponent, h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
-import GoForjHeroStack from './components/GoForjHeroStack.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
 import StarterKitOptions from './components/StarterKitOptions.vue'
-import GoForjLiveTerminal from './components/GoForjLiveTerminal.vue'
 import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
+
+const GoForjHeroStack = defineAsyncComponent(() => import('./components/GoForjHeroStack.vue'))
+const GoForjLiveTerminal = defineAsyncComponent(() => import('./components/GoForjLiveTerminal.vue'))
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
 const CODE_VARIANT_KEY = 'goforjCodeVariant'

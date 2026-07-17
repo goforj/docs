@@ -1,13 +1,18 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useRouter } from 'vitepress'
 import { lucideIconBodies, simpleIconBodies } from 'virtual:goforj-icons'
 
+const router = useRouter()
 const isMounted = ref(false)
+const motionReduced = ref(false)
 const hoveredBlock = ref(null)
 const installCopied = ref(false)
+const installCopyStatus = ref('')
 const INSTALL_COMMAND = 'go install github.com/goforj/goforj/cmd/forj@latest'
 
 let installCopyTimer = 0
+let mountTimer = 0
 
 function trackEvent(eventName, params) {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
@@ -18,13 +23,16 @@ async function copyInstallCommand() {
   try {
     await navigator.clipboard.writeText(INSTALL_COMMAND)
     installCopied.value = true
+    installCopyStatus.value = 'Install command copied to the clipboard.'
     trackEvent('install_copy', { location: 'hero' })
     if (installCopyTimer) window.clearTimeout(installCopyTimer)
     installCopyTimer = window.setTimeout(() => {
       installCopied.value = false
+      installCopyStatus.value = ''
     }, 1800)
   } catch {
-    // Clipboard access denied; leave the command selectable.
+    installCopied.value = false
+    installCopyStatus.value = 'Clipboard access is unavailable. Select and copy the displayed command.'
   }
 }
 
@@ -63,10 +71,10 @@ const BLURBS = {
   'frontend-vue': 'First-party Vue starter kit',
   'frontend-react': 'React frontends over the Web API',
   'frontend-templ': 'Server-rendered Go UI with templ',
-  'ai-openai': 'Model and agent integration',
-  'ai-claude': 'Model and agent integration',
-  'ai-gemini': 'Model and agent integration',
-  'ai-copilot': 'GitHub Copilot project guidance',
+  'ai-openai': 'Atlas project guidance for Codex',
+  'ai-claude': 'Atlas project guidance for Claude Code',
+  'ai-gemini': 'Atlas project guidance for Gemini CLI',
+  'ai-copilot': 'Atlas project guidance for GitHub Copilot',
   'backend-core-libraries': 'Standalone Go utility libraries',
   'backend-queue': 'One queue API, many backends',
   'backend-events': 'Typed events, local or distributed',
@@ -114,11 +122,13 @@ const BLURBS = {
   'cache-dynamodb': 'DynamoDB-backed shared cache'
 }
 
-// On narrow screens, widen the viewBox to the artwork's true ink box
+// On stacked layouts, widen the viewBox to the artwork's true ink box
 // (measured 29..1067 x 38..1067) so the whole forge fits instead of
 // clipping its right side.
 const isNarrow = ref(false)
 let narrowQuery = null
+let motionQuery = null
+let motionObserver = null
 const onNarrowChange = (event) => {
   isNarrow.value = event.matches
 }
@@ -141,6 +151,16 @@ function isMotionReduced() {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function syncMotionPreference() {
+  motionReduced.value = isMotionReduced()
+  if (!motionReduced.value) return
+  parallaxTarget = { x: 0, y: 0 }
+  parallax.value = { x: 0, y: 0 }
+  if (parallaxRaf) cancelAnimationFrame(parallaxRaf)
+  parallaxRaf = 0
+}
+
+const animateIntro = computed(() => isMounted.value && !motionReduced.value)
 const TOOLTIP_TIERS = new Set(['category', 'category-subgroup', 'category-choice'])
 
 const hoveredTooltip = computed(() => {
@@ -178,7 +198,32 @@ function isRearItem(item) {
   return item.interactionZone === 'upper-shelf' || item.id === 'rear-shelf' || item.id === 'rear-support'
 }
 
-function onBlockClick(item) {
+function isExternalHref(href) {
+  return /^https?:\/\//i.test(href)
+}
+
+function blockAriaLabel(item) {
+  if (!item.href) return undefined
+  const label = item.title || item.label
+  return isExternalHref(item.href) ? `${label} (opens in a new tab)` : label
+}
+
+function followBlockLink(item, event) {
+  const modifierClick = event?.metaKey || event?.ctrlKey || event?.shiftKey || event?.altKey
+  if (isExternalHref(item.href) || modifierClick) {
+    window.open(item.href, '_blank', 'noopener,noreferrer')
+    return
+  }
+  void router.go(item.href)
+}
+
+function onBlockClick(item, event) {
+  if (item.href) {
+    if (event?.button !== undefined && event.button !== 0) return
+    trackEvent('forge_link', { block: item.id })
+    followBlockLink(item, event)
+    return
+  }
   if (item.id !== 'core') return
   if (isMotionReduced() || strikeActive.value) return
   strikeActive.value = true
@@ -187,6 +232,13 @@ function onBlockClick(item) {
   strikeTimer = window.setTimeout(() => {
     strikeActive.value = false
   }, 950)
+}
+
+function onBlockKeydown(item, event) {
+  if (!item.href || (event.key !== 'Enter' && event.key !== ' ')) return
+  event.preventDefault()
+  trackEvent('forge_link', { block: item.id })
+  followBlockLink(item, event)
 }
 
 function onBlockFocus(item, event) {
@@ -242,11 +294,22 @@ function onGraphicLeave() {
 
 onMounted(() => {
   if (typeof window.matchMedia === 'function') {
-    narrowQuery = window.matchMedia('(max-width: 640px)')
+    narrowQuery = window.matchMedia('(max-width: 1024px)')
     isNarrow.value = narrowQuery.matches
     narrowQuery.addEventListener('change', onNarrowChange)
+
+    motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    motionQuery.addEventListener('change', syncMotionPreference)
   }
-  setTimeout(() => {
+  if (typeof MutationObserver !== 'undefined') {
+    motionObserver = new MutationObserver(syncMotionPreference)
+    motionObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-gf-motion']
+    })
+  }
+  syncMotionPreference()
+  mountTimer = window.setTimeout(() => {
     isMounted.value = true
   }, 100)
 })
@@ -254,9 +317,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (parallaxRaf) cancelAnimationFrame(parallaxRaf)
   parallaxRaf = 0
+  if (mountTimer) window.clearTimeout(mountTimer)
   if (installCopyTimer) window.clearTimeout(installCopyTimer)
   if (strikeTimer) window.clearTimeout(strikeTimer)
   if (narrowQuery) narrowQuery.removeEventListener('change', onNarrowChange)
+  if (motionQuery) motionQuery.removeEventListener('change', syncMotionPreference)
+  if (motionObserver) motionObserver.disconnect()
 })
 
 // PROFESSIONAL SVG ICON PATHS
@@ -315,6 +381,7 @@ const GROUP_CONFIG = [
     color: '#4f7ec9',
     summary: 'UI surfaces and client delivery',
     title: 'Frontend choices',
+    href: '/frontend/',
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
@@ -329,6 +396,7 @@ const GROUP_CONFIG = [
     color: '#5b6574',
     summary: 'Queue, events, cache, and storage backends',
     title: 'Backend libraries and infrastructure',
+    href: '/drivers',
     row: 'back',
     subgroups: [
       {
@@ -337,7 +405,7 @@ const GROUP_CONFIG = [
         icon: 'package-2',
         color: '#0ea5a4',
         title: 'Core libraries',
-        href: '/collection',
+        href: '/libraries/',
         children: [
           { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/collection' },
           { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
@@ -405,6 +473,7 @@ const GROUP_CONFIG = [
         icon: 'database',
         color: '#5f6b7a',
         title: 'Database backends',
+        href: '/drivers',
         childMetrics: { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
         children: [
           { id: 'database-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
@@ -436,17 +505,18 @@ const GROUP_CONFIG = [
   },
   {
     id: 'ai-agents',
-    label: 'AI AGENTS',
+    label: 'ATLAS',
     icon: 'brain-circuit',
     color: '#7b74d6',
-    summary: 'Agent orchestration and model execution',
-    title: 'AI agent providers',
+    summary: 'Local guidance, skills, and MCP context for coding agents',
+    title: 'Atlas coding-agent support',
+    href: '/developer-tools/atlas',
     row: 'front',
     children: [
-      { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'OpenAI', href: 'https://openai.com/' },
-      { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude', href: 'https://www.anthropic.com/claude' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini', href: 'https://deepmind.google/technologies/gemini/' },
-      { id: 'ai-copilot', icon: 'copilot', color: '#24292f', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot', href: 'https://github.com/features/copilot' }
+      { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'Codex' },
+      { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude Code' },
+      { id: 'ai-gemini', icon: 'gemini', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
+      { id: 'ai-copilot', icon: 'copilot', color: '#24292f', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
     ]
   }
 ]
@@ -1066,10 +1136,6 @@ function getGenericIconBody(icon) {
   return lucideIconBodies[icon] || ''
 }
 
-function isExternalHref(href) {
-  return typeof href === 'string' && /^https?:\/\//.test(href)
-}
-
 function catchesForgeGlow(item) {
   if (item.type !== 'block') return false
   if (item.id === 'core' || item.id === 'runtime' || item.id === 'ground' || item.id === 'platform-shelf') return false
@@ -1128,41 +1194,50 @@ function adjustColor(color, amount) {
   <div class="gf-home-hero">
     <div class="gf-hero-container">
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
+        <p class="gf-hero-eyebrow">Generated Go applications you own</p>
         <h1 class="gf-hero-title">
           <span class="gf-hero-headline">The composable stack for building with Go</span>
         </h1>
         <p class="gf-hero-tagline">
-          One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives for everything an application needs.
+          One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives across the application stack.
         </p>
-        <div class="gf-hero-principles" aria-label="GoForj principles">
-          <div class="gf-hero-principle">
-            <strong>Driver swappable</strong>
-            <span>Change infrastructure without rewriting application code.</span>
-          </div>
-          <div class="gf-hero-principle">
-            <strong>Explicit runtime</strong>
-            <span>Generated wiring and lifecycle behavior stay inspectable.</span>
-          </div>
-          <div class="gf-hero-principle">
-            <strong>Local first</strong>
-            <span>Start locally, then move to production topology when needed.</span>
-          </div>
-        </div>
         <div class="gf-hero-actions">
-          <a href="/getting-started/quickstart" class="gf-hero-btn gf-hero-btn--primary">Get started</a>
-          <a href="/libraries/" class="gf-hero-btn gf-hero-btn--secondary">Explore libraries</a>
+          <a href="/getting-started/quickstart" class="gf-hero-btn gf-hero-btn--primary">Build a GoForj App</a>
+          <a href="/libraries/" class="gf-hero-btn gf-hero-btn--secondary">Use a standalone library</a>
         </div>
         <button
           type="button"
           class="gf-hero-install"
           :class="{ 'is-copied': installCopied }"
-          :aria-label="installCopied ? 'Command copied' : 'Copy install command'"
+          :aria-label="`Copy install command: ${INSTALL_COMMAND}`"
           @click="copyInstallCommand"
         >
           <span class="gf-hero-install__prompt" aria-hidden="true">$</span>
-          <code class="gf-hero-install__cmd">{{ INSTALL_COMMAND }}</code>
+          <code class="gf-hero-install__cmd">
+            <span>go install</span><span class="gf-hero-install__package">github.com/goforj/goforj/cmd/forj@latest</span>
+          </code>
           <span class="gf-hero-install__state">{{ installCopied ? 'copied' : 'copy' }}</span>
         </button>
+        <span class="gf-sr-only" role="status" aria-live="polite">{{ installCopyStatus }}</span>
+        <p class="gf-hero-version">
+          <a href="/versions/">Unreleased documentation</a>
+          <span aria-hidden="true">·</span>
+          <span><code>@latest</code> installs the latest tagged release</span>
+        </p>
+        <div class="gf-hero-principles" aria-label="GoForj application model">
+          <div class="gf-hero-principle">
+            <strong>App-owned composition</strong>
+            <span>Generated code keeps application boundaries and extension points explicit.</span>
+          </div>
+          <div class="gf-hero-principle">
+            <strong>Explicit Runtimes</strong>
+            <span>Run together locally, then split into production processes.</span>
+          </div>
+          <div class="gf-hero-principle">
+            <strong>Swap drivers, not business logic</strong>
+            <span>Move between local and production infrastructure behind the same APIs.</span>
+          </div>
+        </div>
       </div>
 
       <div
@@ -1177,8 +1252,11 @@ function adjustColor(color, amount) {
           :class="{ 'is-striking': strikeActive }"
           :viewBox="isNarrow ? '20 30 1060 1050' : '0 0 800 900'"
           preserveAspectRatio="xMidYMid meet"
+          aria-labelledby="gf-forge-title gf-forge-description"
           :style="{ transform: `translate3d(${parallax.x.toFixed(2)}px, ${parallax.y.toFixed(2)}px, 0)` }"
         >
+          <title id="gf-forge-title">The GoForj application forge</title>
+          <desc id="gf-forge-description">One GoForj App composes frontend choices, libraries, infrastructure drivers, Atlas coding-agent support, and explicit Runtimes into Go source you own.</desc>
           <defs>
             <template v-for="item in scene.tower" :key="`grads-${item.id}`">
               <linearGradient :id="`grad-top-${item.id}`" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1333,32 +1411,31 @@ function adjustColor(color, amount) {
 
           <g class="gf-iso-group">
             <template v-for="item in scene.tower" :key="item.id">
-              <a
+              <g
                 class="gf-iso-item-wrapper"
                 :class="{ 'gf-iso-rear': isRearItem(item) }"
-                :href="item.href || undefined"
-                :target="item.href ? '_blank' : undefined"
-                :rel="item.href ? 'noreferrer noopener' : undefined"
-                :aria-label="item.title || item.label || undefined"
+                :role="item.href ? 'link' : undefined"
+                :tabindex="item.href ? 0 : undefined"
+                :aria-label="blockAriaLabel(item)"
                 @mouseenter="hoveredBlock = item.id"
                 @mouseleave="hoveredBlock = null"
-                @click="onBlockClick(item)"
+                @click="onBlockClick(item, $event)"
+                @keydown="onBlockKeydown(item, $event)"
                 @focus="onBlockFocus(item, $event)"
                 @blur="onBlockBlur"
                 :style="{
                   opacity: isMounted ? (item.opacity || 1) : 0,
-                  transition: 'transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease',
-                  willChange: 'transform, opacity',
+                  transition: motionReduced ? 'none' : 'transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease',
                   transform: getHoverTransform(item)
                 }">
                 <g
                   class="gf-iso-item"
                   :class="{ 'gf-iso-item--link': !!item.href }"
                   :data-block="item.id"
-                  opacity="0"
-                  transform="translate(0 90)">
+                  :opacity="motionReduced ? 1 : 0"
+                  :transform="motionReduced ? 'translate(0 0)' : 'translate(0 90)'">
                   <animate
-                    v-if="isMounted"
+                    v-if="animateIntro"
                     attributeName="opacity"
                     from="0"
                     to="1"
@@ -1367,7 +1444,7 @@ function adjustColor(color, amount) {
                     fill="freeze"
                   />
                   <animateTransform
-                    v-if="isMounted"
+                    v-if="animateIntro"
                     attributeName="transform"
                     type="translate"
                     from="0 90"
@@ -1560,7 +1637,7 @@ function adjustColor(color, amount) {
                     </g>
                   </template>
                 </g>
-              </a>
+              </g>
             </template>
           </g>
 
@@ -1664,6 +1741,14 @@ function adjustColor(color, amount) {
   opacity: 1;
   transform: translateY(0);
 }
+.gf-hero-eyebrow {
+  margin: 0 0 0.85rem;
+  color: rgba(165, 180, 252, 0.9);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
 .gf-hero-title {
   font-size: clamp(4rem, 4.6vw, 4.6rem);
   font-weight: 780;
@@ -1684,7 +1769,7 @@ function adjustColor(color, amount) {
   line-height: 1.62;
   color: var(--vp-c-text-2);
   max-width: 42rem;
-  margin-bottom: 1.05rem;
+  margin-bottom: 1.15rem;
   font-weight: 430;
 }
 .gf-hero-principles {
@@ -1692,11 +1777,11 @@ function adjustColor(color, amount) {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.65rem;
   max-width: 43rem;
-  margin: 0 0 1.7rem;
+  margin: 1.35rem 0 0;
 }
 .gf-hero-principle {
-  min-height: 6.2rem;
-  padding: 0.85rem;
+  min-height: 5.6rem;
+  padding: 0.78rem;
   border: 1px solid rgba(148, 163, 184, 0.13);
   border-radius: 16px;
   background:
@@ -1708,14 +1793,14 @@ function adjustColor(color, amount) {
   display: block;
   margin-bottom: 0.35rem;
   color: rgba(245, 248, 255, 0.92);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
 .gf-hero-principle span {
   display: block;
   color: rgba(203, 213, 225, 0.72);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 520;
   line-height: 1.38;
 }
@@ -1728,7 +1813,7 @@ function adjustColor(color, amount) {
 }
 .gf-hero-actions {
   display: flex;
-  gap: 1.25rem;
+  gap: 0.8rem;
 }
 .gf-hero-install {
   display: inline-flex;
@@ -1760,6 +1845,10 @@ function adjustColor(color, amount) {
   letter-spacing: -0.01em;
   background: transparent;
   padding: 0;
+  user-select: all;
+}
+.gf-hero-install__package::before {
+  content: ' ';
 }
 .gf-hero-install__state {
   padding: 0.14rem 0.5rem;
@@ -1775,14 +1864,47 @@ function adjustColor(color, amount) {
   border-color: rgba(125, 211, 160, 0.5);
   color: rgba(157, 235, 192, 0.92);
 }
+.gf-hero-version {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0.55rem 0 0;
+  color: rgba(148, 163, 184, 0.68);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+.gf-hero-version a {
+  color: rgba(165, 180, 252, 0.86);
+  text-decoration: none;
+}
+.gf-hero-version a:hover {
+  color: rgba(199, 210, 254, 1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.gf-hero-version code {
+  color: inherit;
+  font-size: inherit;
+}
+.gf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .gf-hero-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.78rem 2.05rem;
+  padding: 0.78rem 1.5rem;
   border-radius: 9999px;
   font-weight: 700;
-  font-size: 1.08rem;
+  font-size: 0.98rem;
   transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.24s ease, background-color 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 .gf-hero-btn--primary {
@@ -1995,6 +2117,8 @@ function adjustColor(color, amount) {
   letter-spacing: 0.01em;
 }
 @media (prefers-reduced-motion: reduce) {
+  html:not([data-gf-motion='on']) .gf-hero-content,
+  html:not([data-gf-motion='on']) .gf-hero-graphic,
   html:not([data-gf-motion='on']) .gf-forge-heat,
   html:not([data-gf-motion='on']) .gf-seam-glow,
   html:not([data-gf-motion='on']) .gf-result-heat,
@@ -2009,11 +2133,18 @@ function adjustColor(color, amount) {
   html:not([data-gf-motion='on']) .gf-iso-item[data-block='assembly-result'] {
     animation: none;
   }
+  html:not([data-gf-motion='on']) .gf-hero-content,
+  html:not([data-gf-motion='on']) .gf-hero-graphic {
+    transition: none;
+    will-change: auto;
+  }
   html:not([data-gf-motion='on']) .gf-ember,
   html:not([data-gf-motion='on']) .gf-loop-spark {
     opacity: 0;
   }
 }
+html[data-gf-motion='reduced'] .gf-hero-content,
+html[data-gf-motion='reduced'] .gf-hero-graphic,
 html[data-gf-motion='reduced'] .gf-forge-heat,
 html[data-gf-motion='reduced'] .gf-seam-glow,
 html[data-gf-motion='reduced'] .gf-result-heat,
@@ -2028,14 +2159,20 @@ html[data-gf-motion='reduced'] .gf-iso-item[data-block='assembly-input-right'],
 html[data-gf-motion='reduced'] .gf-iso-item[data-block='assembly-result'] {
   animation: none !important;
 }
+html[data-gf-motion='reduced'] .gf-hero-content,
+html[data-gf-motion='reduced'] .gf-hero-graphic {
+  transition: none !important;
+  will-change: auto;
+}
 html[data-gf-motion='reduced'] .gf-ember,
 html[data-gf-motion='reduced'] .gf-loop-spark {
   opacity: 0;
 }
 .gf-iso-item {
-  cursor: pointer;
+  cursor: default;
 }
-.gf-iso-item--link {
+.gf-iso-item--link,
+.gf-iso-item[data-block='core'] {
   cursor: pointer;
 }
 @keyframes forgePulse {
@@ -2118,7 +2255,8 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 }
 @media (max-width: 1024px) {
   .gf-home-hero {
-    padding-top: calc(var(--vp-nav-height) + 2rem);
+    padding-top: 2rem;
+    overflow: hidden;
   }
   .gf-hero-container {
     flex-direction: column;
@@ -2141,8 +2279,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
     margin-right: auto;
   }
   .gf-hero-principles {
-    grid-template-columns: minmax(0, 1fr);
-    max-width: 34rem;
+    max-width: 43rem;
     margin-left: auto;
     margin-right: auto;
     text-align: left;
@@ -2168,40 +2305,101 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 }
 @media (max-width: 640px) {
   .gf-home-hero {
-    padding: calc(var(--vp-nav-height) + 1.5rem) 1.25rem 4rem;
+    padding: 1.15rem 1.25rem 3rem;
     overflow: hidden;
   }
+  .gf-hero-container {
+    gap: 1.65rem;
+  }
+  .gf-hero-eyebrow {
+    margin-bottom: 0.65rem;
+    font-size: 0.68rem;
+  }
   .gf-hero-title {
-    font-size: 2.85rem;
+    margin-bottom: 0.9rem;
+    font-size: 2.6rem;
+    line-height: 1;
+  }
+  .gf-hero-tagline {
+    margin-bottom: 0.9rem;
+    font-size: 0.97rem;
+    line-height: 1.5;
+  }
+  .gf-hero-principles {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.45rem;
+    margin-top: 1rem;
+  }
+  .gf-hero-principle {
+    min-height: 0;
+    padding: 0.68rem 0.78rem;
+  }
+  .gf-hero-principle strong {
+    margin-bottom: 0.22rem;
   }
   .gf-hero-graphic {
+    width: 100%;
+    height: 18rem;
+    max-width: 28rem;
+    overflow: hidden;
     transform: translate(0, 0);
   }
   .gf-hero-graphic.is-visible {
     transform: translate(0, 0);
   }
-  .gf-hero-install {
-    max-width: 100%;
+  .gf-hero-svg {
+    width: 100%;
+    height: 100%;
+    max-height: 18rem;
   }
   .gf-hero-actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.6rem;
+  }
+  .gf-hero-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.94rem;
   }
   .gf-hero-install {
     width: 100%;
-    justify-content: space-between;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    margin-top: 0.75rem;
+    text-align: left;
     min-width: 0;
   }
   .gf-hero-install__cmd {
-    overflow: hidden;
+    min-width: 0;
+    white-space: normal;
+    font-size: 0.62rem;
+    line-height: 1.35;
+  }
+  .gf-hero-install__package {
+    display: block;
     white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 0.68rem;
+  }
+  .gf-hero-install__package::before {
+    content: none;
+  }
+  .gf-hero-version {
+    justify-content: center;
+  }
+  .gf-hero-version > [aria-hidden='true'] {
+    display: none;
   }
 }
 @media (max-width: 480px) {
   .gf-hero-title {
-    font-size: 2.35rem;
+    font-size: 2.25rem;
+  }
+  .gf-hero-graphic {
+    height: 14rem;
+  }
+  .gf-hero-svg {
+    max-height: 14rem;
   }
 }
 </style>

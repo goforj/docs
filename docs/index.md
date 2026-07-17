@@ -1,6 +1,6 @@
 ---
 layout: home
-description: The composable stack for building with Go. One cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.
+description: The composable stack for building with Go. One cohesive application model, explicit wiring, local-first drivers, and production-oriented tooling.
 ---
 
 <script setup>
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Infrastructure</p>
 <h2 class="gf-home-h2">Swap drivers, <em>not business logic</em></h2>
-<p class="gf-home-lead">Services depend on contracts. Configuration selects the backend. When infrastructure changes, your code does not.</p>
+<p class="gf-home-lead">Services depend on stable contracts. Configuration selects among the drivers compiled into the App, so a supported backend change leaves business logic alone.</p>
 </div>
 <div class="gf-home-swap__grid">
 <div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
@@ -772,6 +772,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <h2 class="gf-home-h2"><em>Start building</em></h2>
 <pre class="gf-home-close__cmd"><code><span class="t-prompt">$</span> go install github.com/goforj/goforj/cmd/forj@latest
 <span class="t-prompt">$</span> forj new</code></pre>
+<p class="gf-home-close__version"><a href="/versions/">Unreleased documentation</a><span aria-hidden="true"> · </span><code>@latest</code> installs the latest tagged release.</p>
 <div class="gf-home-close__actions">
 <a class="gf-home-btn gf-home-btn--primary" href="/getting-started/quickstart">Read the Quickstart</a>
 <a class="gf-home-btn" href="/about">What is GoForj?</a>
