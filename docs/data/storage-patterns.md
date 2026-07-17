@@ -128,4 +128,5 @@ When a workflow creates both database rows and storage objects, decide:
 
 - [Named Resources](/core/named-resources) explains named disks.
 - [Driver Selection](/data/driver-selection) explains backend choices.
+- [Environment Reference](/reference/env-vars#file-storage) lists disk and driver settings.
 - [Storage](/storage) covers standalone package behavior.

@@ -44,12 +44,6 @@ After this scenario, creating a user also publishes a typed `users.created` fact
 
 This scenario edits or creates:
 
-**Configuration**
-
-```text
-.env
-```
-
 **Events**
 
 ```text
@@ -91,15 +85,9 @@ internal/events/manager_gen.go
 
 Do not edit generated event files by hand.
 
-## Step 1: Configure Events
+## Step 1: Refresh Event Resources
 
-Use the in-process event driver for local development. The generated App exposes `app.Bus()` and `app.Events()`.
-
-Update `.env` so it includes:
-
-```dotenv
-EVENTS_INPROC_WORKERS=0
-```
+The generated environment already selects the in-process event driver for local development. Run the build pipeline so the generated App exposes `app.Bus()` and `app.Events()`.
 
 ```bash
 forj build

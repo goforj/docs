@@ -12,7 +12,7 @@ Use reference pages after you know the workflow and need exact command names, en
 ## Reference Pages
 
 - [CLI Reference](/reference/cli)
-- [Environment Variables](/reference/env-vars)
+- [Environment Reference](/reference/env-vars)
 - [Configuration Reference](/reference/configuration)
 - [Generated Files](/reference/generated-files)
 - [Generation Commands](/reference/generation-commands)

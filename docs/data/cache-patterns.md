@@ -142,4 +142,5 @@ Use [Cache](/cache) for the full package-level driver matrix.
 
 - [Named Resources](/core/named-resources) explains named accessors.
 - [Driver Selection](/data/driver-selection) explains backend choices.
+- [Environment Reference](/reference/env-vars#cache) lists cache and driver settings.
 - [Cache](/cache) covers standalone package behavior.

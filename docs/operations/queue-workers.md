@@ -126,4 +126,5 @@ Design operational workflows around the backend you deploy, and expose unsupport
 
 - [Workers](/async/workers)
 - [Retries and Idempotency](/async/retries-idempotency)
+- [Environment Reference](/reference/env-vars#queue)
 - [Queue](/queue)

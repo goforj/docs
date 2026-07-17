@@ -245,6 +245,7 @@ These options are useful for packaging, but most local development should use `.
 
 ## Next Steps
 
+- [Environment Reference](/reference/env-vars) lists every public runtime and local-service setting.
 - [Project Structure](/getting-started/project-structure) explains where generated configuration is used.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains swappable infrastructure in more depth.
 - [Libraries](/libraries/) links to standalone driver matrices and package APIs.

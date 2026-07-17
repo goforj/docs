@@ -85,4 +85,5 @@ Queue actions depend on the selected queue backend. The queue contract defines a
 
 - [Inspects](/operations/inspects)
 - [Metrics](/operations/metrics)
+- [Environment Reference](/reference/env-vars#lighthouse-and-inspects)
 - [Generated Extension Points](/core/generated-extension-points)

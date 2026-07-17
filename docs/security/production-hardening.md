@@ -23,7 +23,7 @@ Use [Crypt](/crypt) for application encryption and key-rotation primitives. Do n
 
 - Terminate HTTPS at a trusted proxy or in the App's deployment boundary.
 - Set `AUTH_COOKIE_SECURE=true` in production.
-- Keep `AUTH_COOKIE_DOMAIN` unset unless parent-domain sharing is intentional.
+- Keep generated auth cookies host-scoped.
 - Preserve `HttpOnly` and `SameSite` protections.
 - Configure trusted proxy and real-IP behavior so rate limits and audit metadata use the real client boundary.
 

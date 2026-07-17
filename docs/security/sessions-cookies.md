@@ -66,11 +66,10 @@ Generated auth cookies use:
 - `HttpOnly: true`
 - `SameSite: Lax`
 - `Secure` from `AUTH_COOKIE_SECURE`
-- optional domain scope from `AUTH_COOKIE_DOMAIN`
 
 Use `AUTH_COOKIE_SECURE=true` behind production HTTPS. `auto` is useful when the same generated App must support plain-HTTP local development and HTTPS deployment.
 
-Keep cookie scope as narrow as the product permits. Broad parent-domain cookies increase the number of hosts that participate in the security boundary.
+Generated auth cookies remain host-scoped. This keeps sibling hosts outside the authentication boundary.
 
 ## CSRF Boundary
 

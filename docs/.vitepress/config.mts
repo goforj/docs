@@ -130,15 +130,23 @@ const splitIntoSections = (path: string, html: string) => {
   const result = html.split(headingRegex)
   result.shift()
   let parentTitles: string[] = []
+  let hasPageTitleSection = false
   const sections: { anchor: string; titles: string[]; text: string }[] = []
   for (let i = 0; i < result.length; i += 3) {
     const level = parseInt(result[i], 10) - 1
     const heading = result[i + 1]
     const headingResult = headingContentRegex.exec(heading)
     const title = clearHtmlTags(headingResult?.[1] ?? '').trim()
-    const anchor = headingResult?.[2] ?? ''
+    const anchor = decodeHtmlEntities(headingResult?.[2] ?? '')
     const content = result[i + 2]
     if (!title || !content) continue
+
+    if (level === 0 && pageTitle && normalizeTitle(title) === normalizeTitle(pageTitle)) {
+      sections.push({ anchor: '', titles: [pageTitle], text: clearHtmlTags(content) })
+      parentTitles = [title]
+      hasPageTitleSection = true
+      continue
+    }
 
     let titles = parentTitles.slice(0, level)
     titles[level] = title
@@ -161,7 +169,7 @@ const splitIntoSections = (path: string, html: string) => {
     }
   }
 
-  if (pageTitle) {
+  if (pageTitle && !hasPageTitleSection) {
     sections.unshift({
       anchor: '',
       titles: [pageTitle],
@@ -267,6 +275,7 @@ const imageSrcRegex = /src=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
 const imageWidthRegex = /width=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
 const imageHeightRegex = /height=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
 const ignoredImagePattern = /(?:favicon|apple-touch-icon|web-app-manifest|goforj-v7|goforj-full|goforj-letters|goforj-hammer|logo(?:\.[a-z]+)?$)/i
+const badgeImagePattern = /(?:shields\.io|pkg\.go\.dev\/badge|codecov\.io\/[^\s)"']*badge|github\.com\/[^\s)"']*\/actions\/workflows\/[^\s)"']*badge)/i
 
 const imageDimensions = (html: string) => {
   const width = html.match(imageWidthRegex)?.slice(1).find(Boolean)
@@ -284,7 +293,8 @@ const deriveImage = (content: string, page: string) => {
     const rawSrc = img.match(imageSrcRegex)?.slice(1).find(Boolean)?.trim() || ''
     if (!rawSrc || rawSrc.startsWith('data:')) continue
     const src = decodeHtmlEntities(rawSrc)
-    if (ignoredImagePattern.test(src)) continue
+    const imagePath = src.replace(/[?#].*$/, '')
+    if (ignoredImagePattern.test(imagePath) || badgeImagePattern.test(imagePath)) continue
 
     const rawAlt = img.match(imageAltRegex)?.slice(1).find(Boolean)?.trim() || ''
     return {
@@ -338,8 +348,6 @@ const libraryRewrites: Record<string, string> = {
   'libraries/atlas.md': 'atlas.md'
 }
 
-const preloadBadgeImagePattern = /(?:shields\.io|pkg\.go\.dev\/badge|codecov\.io\/[^\s)"']*badge|github\.com\/[^\s)"']*\/actions\/workflows\/[^\s)"']*badge)/i
-
 const resolvePreloadImageUrl = (value: string, page: string) => {
   const src = decodeHtmlEntities(value.trim())
   if (!src || src.startsWith('data:')) return ''
@@ -372,7 +380,7 @@ const firstLibraryPreloadImage = (source: string, page: string) => {
   candidates.sort((left, right) => left.index - right.index)
   for (const candidate of candidates) {
     const src = resolvePreloadImageUrl(candidate.src, page)
-    if (src && !preloadBadgeImagePattern.test(src)) return src
+    if (src && !badgeImagePattern.test(src.replace(/[?#].*$/, ''))) return src
   }
   return ''
 }
@@ -559,10 +567,23 @@ export default defineConfig({
       const defaultTableOpen = md.renderer.rules.table_open
       const defaultTableClose = md.renderer.rules.table_close
       md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
+        let headerColumn = 0
+        let variableColumn = 0
+        for (let tokenIndex = idx + 1; tokenIndex < tokens.length; tokenIndex += 1) {
+          const candidate = tokens[tokenIndex]
+          if (candidate.type === 'thead_close' || candidate.type === 'table_close') break
+          if (candidate.type !== 'th_open') continue
+          headerColumn += 1
+          const content = tokens[tokenIndex + 1]
+          if (content?.type === 'inline' && /\bvariables?\b/i.test(normalizeText(content.content))) {
+            variableColumn = headerColumn
+          }
+        }
         const table = defaultTableOpen
           ? defaultTableOpen(tokens, idx, options, env, self)
           : self.renderToken(tokens, idx, options)
-        return `<div class="gf-table-scroll" tabindex="0">\n${table.replace(' tabindex="0"', '')}`
+        const variableColumnClass = variableColumn > 0 ? ` gf-table-variable-column-${variableColumn}` : ''
+        return `<div class="gf-table-scroll${variableColumnClass}" tabindex="0">\n${table.replace(' tabindex="0"', '')}`
       }
       md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
         const table = defaultTableClose
@@ -650,12 +671,17 @@ export default defineConfig({
         _render: (src, env, md) => {
           const frontmatterMatch = src.match(/^---\n[\s\S]*?\n---\n?/)
           let title = ''
+          let description = ''
           let noAutoTitle = false
           if (frontmatterMatch) {
             noAutoTitle = /^noAutoTitle:\s*true\s*$/m.test(frontmatterMatch[0])
             const titleMatch = frontmatterMatch[0].match(/^title:\s*(.+)$/m)
             if (titleMatch) {
-              title = titleMatch[1].trim()
+              title = titleMatch[1].trim().replace(/^['"]+|['"]+$/g, '')
+            }
+            const descriptionMatch = frontmatterMatch[0].match(/^description:\s*(.+)$/m)
+            if (descriptionMatch) {
+              description = descriptionMatch[1].trim().replace(/^['"]+|['"]+$/g, '')
             }
             src = src.slice(frontmatterMatch[0].length)
           }
@@ -666,9 +692,26 @@ export default defineConfig({
           }
           if (title && !noAutoTitle) {
             title = title.charAt(0).toUpperCase() + title.slice(1)
-            src = `# ${title}\n\n${src}`
           }
-          return md.render(src, env)
+
+          let html = md.render(src, env)
+          const renderedH1 = h1Regex.exec(html)
+          const renderedTitle = renderedH1 ? clearHtmlTags(renderedH1[1]).trim() : ''
+          if (title && !noAutoTitle && normalizeTitle(renderedTitle) !== normalizeTitle(title)) {
+            src = `# ${title}\n\n${src}`
+            html = md.render(src, env)
+          }
+          if (description) {
+            const descriptionHtml = `<p>${escapeHtml(description)}</p>`
+            const h1End = html.search(/<\/h1>/i)
+            if (h1End >= 0) {
+              const insertAt = h1End + '</h1>'.length
+              html = `${html.slice(0, insertAt)}\n${descriptionHtml}${html.slice(insertAt)}`
+            } else {
+              html = `${descriptionHtml}\n${html}`
+            }
+          }
+          return html
         },
         miniSearch: {
           _splitIntoSections: splitIntoSections
@@ -917,7 +960,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/reference/' },
           { text: 'CLI Reference', link: '/reference/cli' },
-          { text: 'Environment Variables', link: '/reference/env-vars' },
+          { text: 'Environment Reference', link: '/reference/env-vars' },
           { text: 'Configuration Reference', link: '/reference/configuration' },
           { text: 'Generated Files', link: '/reference/generated-files' },
           { text: 'Generation Commands', link: '/reference/generation-commands' },

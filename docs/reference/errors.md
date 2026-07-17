@@ -56,7 +56,7 @@ Start with:
 
 - [Health and Readiness](/operations/health-readiness)
 - [Driver Selection](/data/driver-selection)
-- [Environment Variables](/reference/env-vars)
+- [Environment Reference](/reference/env-vars)
 
 ## API Index and OpenAPI Errors
 
@@ -91,7 +91,7 @@ Start with:
 
 - [Backup and Restore](/operations/backups)
 - [Driver Selection](/data/driver-selection)
-- [Environment Variables](/reference/env-vars)
+- [Environment Reference](/reference/env-vars)
 
 ## Dev Watcher Errors
 

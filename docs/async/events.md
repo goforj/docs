@@ -83,11 +83,9 @@ Runtime selection:
 ```text
 EVENTS_DRIVER=inproc
 EVENTS_AUDIT_DRIVER=redis
-EVENTS_INPROC_WORKERS=0
-EVENTS_INPROC_BUFFER=1024
 ```
 
-`inproc` is process-local and non-durable. Use distributed drivers when events need to cross process boundaries.
+`inproc` is process-local, non-durable, and needs no transport settings. Use distributed drivers when events need to cross process boundaries. See [Environment Reference](/reference/env-vars#events) for each driver's settings.
 
 ## Regeneration
 
@@ -121,5 +119,6 @@ forj generate --events
 
 - [Event Subscribers](/async/event-subscribers) explains handlers.
 - [Events versus Queues](/async/events-vs-queues) explains boundary decisions.
+- [Environment Reference](/reference/env-vars#events) lists driver settings.
 - [Naming Conventions](/core/naming-conventions) defines stable event topics.
 - [Events](/events) covers standalone package details.

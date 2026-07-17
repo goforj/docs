@@ -58,6 +58,7 @@ METRICS_HTTP_ENABLED=true
 METRICS_CACHE_ENABLED=true
 METRICS_STORAGE_ENABLED=true
 METRICS_EVENTS_ENABLED=true
+METRICS_MAIL_ENABLED=true
 METRICS_QUEUE_ENABLED=true
 METRICS_DATABASE_ENABLED=true
 METRICS_AUTH_ENABLED=true
@@ -65,6 +66,8 @@ METRICS_SCHEDULER_ENABLED=true
 ```
 
 Disabled instrumentation should be absent or inert enough to make overhead decisions honest.
+
+The generated demo App also uses `METRICS_MONITORING_ENABLED` for its monitoring surface. See [Environment Reference](/reference/env-vars#metrics-and-runtime-ports) for port precedence and the complete toggle list.
 
 ## Labels
 
@@ -106,5 +109,6 @@ This keeps metric names, labels, and dashboards honest.
 ## Next Steps
 
 - [Metrics Library](/metrics)
+- [Environment Reference](/reference/env-vars#metrics-and-runtime-ports)
 - [Inspects](/operations/inspects)
 - [Lighthouse](/operations/lighthouse)

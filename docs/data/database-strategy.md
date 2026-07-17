@@ -180,3 +180,4 @@ Do not use cache as the source of truth. Do not use object storage as a replacem
 - [Migrations](/data/migrations) explains schema changes.
 - [Repositories](/data/repositories) explains persistence boundaries.
 - [Driver Selection](/data/driver-selection) explains local and production driver choices.
+- [Environment Reference](/reference/env-vars#database) lists connection and driver settings.

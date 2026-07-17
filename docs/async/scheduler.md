@@ -141,5 +141,6 @@ Do not scale scheduler processes the same way as stateless HTTP or queue workers
 
 - [Retries and Idempotency](/async/retries-idempotency) explains safe recurring work.
 - [Runtime Topology](/core/runtime-topology) explains process boundaries.
+- [Environment Reference](/reference/env-vars#scheduler-and-process-shutdown) lists scheduler timeouts.
 - [Naming Conventions](/core/naming-conventions) defines stable schedule names.
 - [Scheduler](/scheduler) covers standalone package details.

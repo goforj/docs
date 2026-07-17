@@ -78,7 +78,7 @@ HTTP_ACCESS_LOG_ENABLED=true
 When metrics are enabled, the dedicated API metrics endpoint can use:
 
 ```text
-METRICS_API_PORT=10000
+METRICS_PORT=10000
 ```
 
 ## Controller Shape

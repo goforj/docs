@@ -184,4 +184,5 @@ forj generate --queue
 
 - [Jobs](/async/jobs) explains job definitions.
 - [Workers](/async/workers) explains worker lifecycle.
+- [Environment Reference](/reference/env-vars#queue) lists queue and driver settings.
 - [Queue](/queue) covers standalone package details.

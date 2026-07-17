@@ -4807,6 +4807,26 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     background: rgba(106, 125, 255, 0.045) !important;
 }
 
+/* The environment reference stays compact without losing inline code semantics. */
+.env-vars-reference .VPDoc .vp-doc :not(pre) > code {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 0.9em;
+}
+
+.env-vars-reference .VPDoc .vp-doc table code {
+    color: var(--vp-c-text-1);
+    white-space: nowrap;
+}
+
+.env-vars-reference .VPDoc .vp-doc .gf-table-variable-column-1 td:nth-child(1) code,
+.env-vars-reference .VPDoc .vp-doc .gf-table-variable-column-2 td:nth-child(2) code {
+    color: var(--vp-c-brand-1);
+    font-weight: 500;
+}
+
 
 /* Hash targets clear the sticky nav + preview banner on native anchor jumps. */
 .vp-doc :is(h1, h2, h3, h4, h5, h6) {

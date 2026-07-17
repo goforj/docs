@@ -133,7 +133,7 @@ Supported framework drivers include:
 - `sendgrid`
 - `ses`
 
-Use the [Mail library page](/mail) for transport capabilities and provider-specific settings.
+Use the [Mail library page](/mail) for transport capabilities and [Environment Reference](/reference/env-vars#mail) for every generated provider setting.
 
 ## Testing
 
@@ -169,6 +169,7 @@ In production:
 ## Next Steps
 
 - [Mail Library](/mail) covers message composition and transport APIs.
+- [Environment Reference](/reference/env-vars#mail) lists sender, driver, and provider settings.
 - [Named Resources](/core/named-resources) explains generated accessors.
 - [Driver Selection](/data/driver-selection) explains compile-time support and runtime selection.
 - [Auth](/security/auth) explains generated account email flows.

@@ -60,11 +60,9 @@ Event backends are configured with:
 ```text
 EVENTS_SUPPORTED_DRIVERS=inproc
 EVENTS_DRIVER=inproc
-EVENTS_INPROC_WORKERS=0
-EVENTS_INPROC_BUFFER=1024
 ```
 
-`inproc` is the local-first default. It is process-local and non-durable.
+`inproc` is the local-first default. It is process-local, non-durable, and needs no transport settings.
 
 ## Queues and Jobs
 

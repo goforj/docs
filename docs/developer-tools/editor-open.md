@@ -101,4 +101,4 @@ GoForj prefers a running editor before launching a different editor from `PATH`.
 
 - [Make Commands](/core/make-commands)
 - [CLI Reference](/reference/cli)
-- [Environment Variables](/reference/env-vars)
+- [Environment Reference](/reference/env-vars)

@@ -116,7 +116,7 @@ AUTH_LOGIN_RATE_LIMIT_DURATION=15m
 
 `API_JWT_SECRET_KEY` must be an unpredictable deployment secret outside generated local defaults. `AUTH_COOKIE_SECURE=auto` enables secure cookies for HTTPS while preserving plain-HTTP local development.
 
-Password policy, reset and verification TTLs, bootstrap users, token return behavior, and OAuth providers have additional settings in the generated `internal/auth/README.md` and [Environment Variables](/reference/env-vars).
+Password policy, reset and verification TTLs, bootstrap users, token return behavior, and OAuth providers have additional settings in the generated `internal/auth/README.md` and [Environment Reference](/reference/env-vars).
 
 ## Scheduled Cleanup
 

@@ -12,7 +12,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Create a new Project: `forj new`. [Quickstart](/getting-started/quickstart)
 - Understand the generated layout. [Project Structure](/getting-started/project-structure)
 - Add or remove components after the first render. [Configuration](/getting-started/configuration)
-- Change ports, drivers, or settings. [Configuration](/getting-started/configuration) and [Environment Variables](/reference/env-vars)
+- Change ports, drivers, or settings. [Configuration](/getting-started/configuration) and [Environment Reference](/reference/env-vars)
 - Start with a frontend included. [Starter Kits](/getting-started/starter-kits)
 - Add another runnable app: `forj make:app marketplace`. [Apps](/core/apps)
 

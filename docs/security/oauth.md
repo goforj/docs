@@ -30,16 +30,16 @@ Generated adapters are available for:
 
 Each provider remains disabled until its required credentials are configured.
 
-Provider environment variables use prefixes such as:
+Add credentials only for providers the App enables:
 
-```dotenv
-AUTH_OAUTH_GITHUB_CLIENT_ID=
-AUTH_OAUTH_GITHUB_CLIENT_SECRET=
-AUTH_OAUTH_GOOGLE_CLIENT_ID=
-AUTH_OAUTH_GOOGLE_CLIENT_SECRET=
-```
+| Provider | Required Variables |
+| --- | --- |
+| GitHub | `AUTH_OAUTH_GITHUB_CLIENT_ID`, `AUTH_OAUTH_GITHUB_CLIENT_SECRET` |
+| Google | `AUTH_OAUTH_GOOGLE_CLIENT_ID`, `AUTH_OAUTH_GOOGLE_CLIENT_SECRET` |
+| Microsoft | `AUTH_OAUTH_MICROSOFT_CLIENT_ID`, `AUTH_OAUTH_MICROSOFT_CLIENT_SECRET` |
+| Apple | `AUTH_OAUTH_APPLE_CLIENT_ID`, `AUTH_OAUTH_APPLE_TEAM_ID`, `AUTH_OAUTH_APPLE_KEY_ID`, `AUTH_OAUTH_APPLE_PRIVATE_KEY` |
 
-Use the generated `internal/auth/README.md` for the exact settings emitted by the selected component version.
+The generated `.env` intentionally omits empty credential stubs. See [Environment Reference](/reference/env-vars#oauth) for state lifetime, Microsoft tenant selection, and advanced provider endpoint overrides.
 
 ## HTTP Flow
 
@@ -103,3 +103,4 @@ Monitor callback failures by bounded provider and outcome values. Do not use ema
 - [Auth](/security/auth) explains the account and session core.
 - [Sessions and Cookies](/security/sessions-cookies) explains issued browser state.
 - [Production Hardening](/security/production-hardening) covers secrets and HTTPS.
+- [Environment Reference](/reference/env-vars#oauth) lists every OAuth setting.
