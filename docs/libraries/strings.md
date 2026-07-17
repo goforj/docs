@@ -20,9 +20,8 @@ repoUrl: https://github.com/goforj/str
     <img src="https://img.shields.io/github/v/tag/goforj/str?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/str"><img src="https://codecov.io/github/goforj/str/graph/badge.svg?token=9KT46ZORP3" alt="Coverage"></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-264-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-281-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
-    <a href="https://goreportcard.com/report/github.com/goforj/str/v2"><img src="https://goreportcard.com/badge/github.com/goforj/str/v2" alt="Go Report Card"></a>
 </p>
 
 `str` wraps a Go string so cleanup and transformation steps can be chained from left to right. Method names follow the standard library where possible, and operations that count, slice, or pad text work in runes rather than bytes.
@@ -134,6 +133,27 @@ filename := exportFilename("Q3 Sales & Returns — North America")
 ```
 
 `str` uses the standard library underneath and has no dependencies. Use whichever version makes the rules easiest to see.
+
+<!-- performance:embed:start -->
+
+## Performance {#performance}
+
+These comparisons measure equivalent standard-library and `str` operations. Each cell reports the median of 10 samples as `ns/op · B/op · allocs/op`.
+
+Recorded with `go1.26.1` on `linux/arm64` using `-cpu=1` (`GOMAXPROCS=1`).
+
+| Workload | Standard library | `str` chain |
+| --- | ---: | ---: |
+| Trim | 3.2 ns/op · 0 B/op · 0 allocs/op | 3.2 ns/op · 0 B/op · 0 allocs/op |
+| ToLower | 61.2 ns/op · 32 B/op · 1 allocs/op | 63.0 ns/op · 32 B/op · 1 allocs/op |
+| NormalizeSpace (Fields + Join) | 191.6 ns/op · 208 B/op · 2 allocs/op | 185.2 ns/op · 80 B/op · 1 allocs/op |
+| Trim → ToLower | 71.8 ns/op · 32 B/op · 1 allocs/op | 69.3 ns/op · 32 B/op · 1 allocs/op |
+| ReplaceAll × 3 | 136.6 ns/op · 96 B/op · 3 allocs/op | 133.1 ns/op · 96 B/op · 3 allocs/op |
+
+Timing is machine-specific; use it to understand the scale of these operations, not as a universal speed claim. Treat small timing differences within the raw sample spread as noise. Allocation counts are less sensitive to machine speed and show how much heap work each composition performs. In these workloads, wrapping and unwrapping added no heap allocations; allocations came from transformations that produced new text. `NormalizeSpace` is algorithmically different: the standard-library composition builds a field slice before joining it, while `str` uses one builder pass.
+
+The [benchmark source](https://github.com/goforj/str/blob/main/string_benchmark_test.go) and [committed raw output](https://github.com/goforj/str/blob/main/docs/readme/benchmarks.txt) record exactly what ran, including the Go version and command. Refresh the measurements explicitly with `go -C docs run ./readme -record-benchmarks`; ordinary README generation only renders that frozen snapshot.
+<!-- performance:embed:end -->
 
 <!-- api:embed:start -->
 
@@ -655,9 +675,9 @@ println(v)
 // #string gop***********.com
 ```
 
-### Match {#match}
+### Match {#match-2}
 
-#### Match {#match-2}
+#### Match {#match}
 
 Match reports whether the entire string matches pattern using [path.Match] syntax.
 A malformed pattern returns an error, and wildcards do not match a slash.
@@ -943,9 +963,9 @@ println(v)
 // #int 11
 ```
 
-### Slug {#slug}
+### Slug {#slug-2}
 
-#### Slug {#slug-2}
+#### Slug {#slug}
 
 Slug returns a lowercase Unicode slug separated by hyphens.
 Unicode letters and digits are preserved, while every other run is collapsed
@@ -972,7 +992,7 @@ println(v.String())
 // #string ...is my na...
 ```
 
-### Split {#split}
+### Split {#split-2}
 
 #### Lines {#lines}
 
@@ -985,7 +1005,7 @@ fmt.Println(v)
 // #[]string [a b c]
 ```
 
-#### Split {#split-2}
+#### Split {#split}
 
 Split splits the string by the given separator.
 
@@ -1167,7 +1187,7 @@ println(v)
 // #string evïan
 ```
 
-### Words {#words}
+### Words {#words-2}
 
 #### FirstWord {#firstword}
 
@@ -1237,7 +1257,7 @@ println(v)
 // #int 2
 ```
 
-#### Words {#words-2}
+#### Words {#words}
 
 Words limits the string to count words, preserving the source through the
 selected word boundary and appending suffix if truncated.

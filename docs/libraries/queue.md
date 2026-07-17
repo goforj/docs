@@ -2,6 +2,7 @@
 title: Queue
 repoSlug: queue
 repoUrl: https://github.com/goforj/queue
+noAutoTitle: true
 ---
 
 <p align="center">
@@ -18,7 +19,6 @@ repoUrl: https://github.com/goforj/queue
     <a href="https://github.com/goforj/queue/actions"><img src="https://github.com/goforj/queue/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
     <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.23+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/queue?label=version&sort=semver" alt="Latest tag">
-    <a href="https://goreportcard.com/report/github.com/goforj/queue"><img src="https://goreportcard.com/badge/github.com/goforj/queue" alt="Go Report Card"></a>
     <a href="https://codecov.io/gh/goforj/queue"><img src="https://codecov.io/gh/goforj/queue/graph/badge.svg?token=40Z5UQATME"/></a>
 <!-- test-count:embed:start -->
     <img src="https://img.shields.io/badge/unit_tests-274-brightgreen" alt="Unit tests (executed count)">
@@ -1382,7 +1382,7 @@ jobs (for example, "bus:job") whose payload embeds the real application job
 type. When possible, this helper unwraps that payload so dashboards and
 metrics reflect the user-facing job type instead of the transport wrapper.
 
-#### Queue {#queue-2}
+#### Queue {#queue}
 
 #### Batch {#queue-queue-batch}
 

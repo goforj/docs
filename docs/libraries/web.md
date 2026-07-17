@@ -9,40 +9,31 @@ repoUrl: https://github.com/goforj/web
 </p>
 
 <p align="center">
-  Minimal app-facing HTTP abstractions, middleware, adapters, and route indexing for GoForj.
+  App-facing HTTP contracts with an Echo-backed runtime for GoForj applications.
 </p>
 
 <p align="center">
   <a href="https://pkg.go.dev/github.com/goforj/web"><img src="https://pkg.go.dev/badge/github.com/goforj/web.svg" alt="Go Reference"></a>
+  <a href="https://github.com/goforj/web/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://github.com/goforj/web/actions/workflows/ci.yml"><img src="https://github.com/goforj/web/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.25+-blue?logo=go" alt="Go version"></a>
-  <img src="https://img.shields.io/github/v/tag/goforj/web?label=version&sort=semver" alt="Latest tag">
-  <a href="https://goreportcard.com/report/github.com/goforj/web"><img src="https://goreportcard.com/badge/github.com/goforj/web" alt="Go Report Card"></a>
-  <a href="https://codecov.io/gh/goforj/web"><img src="https://codecov.io/gh/goforj/web/graph/badge.svg?token=Q0S6BVOM7R" alt="Codecov"></a>
-<!-- test-count:embed:start -->
-<img src="https://img.shields.io/badge/unit_tests-213-brightgreen" alt="Unit tests (executed count)">
-<!-- test-count:embed:end -->
-<!-- package-coverage:embed:start -->
-<p align="center">
-<img src="https://img.shields.io/badge/web-94.3%25-4c9a2a" alt="web coverage">
-<img src="https://img.shields.io/badge/adapter--echoweb-90.0%25-4c9a2a" alt="adapter/echoweb coverage">
-<img src="https://img.shields.io/badge/webindex-90.3%25-4c9a2a" alt="webindex coverage">
-<img src="https://img.shields.io/badge/webmiddleware-89.2%25-4c9a2a" alt="webmiddleware coverage">
-<img src="https://img.shields.io/badge/webprometheus-91.4%25-4c9a2a" alt="webprometheus coverage">
-<img src="https://img.shields.io/badge/webtest-100.0%25-4c9a2a" alt="webtest coverage">
-</p>
-<!-- package-coverage:embed:end -->
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.25%2B-blue?logo=go" alt="Go 1.25 or newer"></a>
+  <a href="https://github.com/goforj/web/releases"><img src="https://img.shields.io/github/v/tag/goforj/web?label=version&sort=semver" alt="Latest release"></a>
+  <a href="https://codecov.io/gh/goforj/web"><img src="https://codecov.io/gh/goforj/web/graph/badge.svg?token=Q0S6BVOM7R" alt="Coverage"></a>
 </p>
 
-`web` is built on top of [Echo](https://echo.labstack.com/), which is a fantastic HTTP framework with a fast router, strong middleware story, and a mature ecosystem. GoForj wraps it so applications can code against a smaller app-facing contract while still getting a high-quality underlying engine, reusable middleware packages, testing helpers, route indexing, and framework-owned integration points like Prometheus and generated wiring.
+`web` keeps application handlers behind focused `Context`, `Router`, and middleware contracts while Echo stays at the HTTP boundary. It includes an Echo adapter, route declarations, common middleware, WebSockets, Prometheus instrumentation, handler test helpers, and source-aware route and OpenAPI indexing.
+
+The contracts deliberately expose less than Echo. Applications can stay on the smaller surface for ordinary HTTP work and use explicit Echo escape hatches when an integration needs the underlying engine or context.
 
 ## Installation {#installation}
 
-```bash
+Requires Go 1.25 or newer.
+
+```sh
 go get github.com/goforj/web
 ```
 
-## Quick Start {#quick-start}
+## Quick start {#quick-start}
 
 ```go
 package main
@@ -67,138 +58,226 @@ func main() {
 	)
 
 	router.GET("/healthz", func(c web.Context) error {
-		// GET /healthz -> 200 ok
-		return c.Text(200, "ok")
+		return c.Text(http.StatusOK, "ok")
 	})
 
 	router.GET("/users/:id", func(c web.Context) error {
-		// GET /users/42 -> 200 {"id":"42","name":"user-42"}
-		return c.JSON(200, map[string]any{
-			"id":   c.Param("id"),
-			"name": fmt.Sprintf("user-%s", c.Param("id")),
+		id := c.Param("id")
+		return c.JSON(http.StatusOK, map[string]any{
+			"id":   id,
+			"name": fmt.Sprintf("user-%s", id),
 		})
 	})
 
-	// Boot the HTTP server with the adapter as the final handler.
 	log.Fatal(http.ListenAndServe(":8080", adapter))
 }
 ```
 
-## Common Patterns {#common-patterns}
+Start the server with `go run .`, then make requests from another shell:
 
-### Route Groups {#route-groups}
+```console
+$ curl -s http://localhost:8080/healthz
+ok
+$ curl -s http://localhost:8080/users/42
+{"id":"42","name":"user-42"}
+```
+
+The quick start owns the `http.Server` directly to keep the first example small. For cancellation-aware graceful shutdown, use [`echoweb.NewServer`](#graceful-server-lifecycle).
+
+## Choose an entry point {#choose-an-entry-point}
+
+| Start with | Use it when |
+| --- | --- |
+| `echoweb.New()` and `router.GET(...)` | Routes are registered directly and your application owns the `http.Server`. |
+| `web.NewRouteGroup(...)` and `web.RegisterRoutes(...)` | Routes should be reusable declarations for reporting, indexing, or generated application composition. |
+| `echoweb.NewServer(...)` | The adapter should register route groups and own graceful HTTP shutdown. |
+| `echoweb.Wrap(engine)` | An existing Echo engine needs to expose the app-facing `web.Router` contract. |
+
+## Package map {#package-map}
+
+| Package | Purpose |
+| --- | --- |
+| [`web`](https://pkg.go.dev/github.com/goforj/web) | Handler, context, router, route declaration, WebSocket, and route-reporting contracts. |
+| [`adapter/echoweb`](https://pkg.go.dev/github.com/goforj/web/adapter/echoweb) | Echo adapter, native escape hatches, and server lifecycle. |
+| [`webmiddleware`](https://pkg.go.dev/github.com/goforj/web/webmiddleware) | Authentication, security, routing, payload, compression, timeout, proxy, and rate-limit middleware. |
+| [`webprometheus`](https://pkg.go.dev/github.com/goforj/web/webprometheus) | HTTP metrics middleware, scrape handlers, and Pushgateway support. |
+| [`webindex`](https://pkg.go.dev/github.com/goforj/web/webindex) | Source-aware route manifests, diagnostics, schemas, and OpenAPI documents. |
+| [`webtest`](https://pkg.go.dev/github.com/goforj/web/webtest) | Lightweight contexts for isolated handler tests. |
+
+## Common workflows {#common-workflows}
+
+The quick start above is a complete program. The following recipes are focused excerpts; complete generated programs are available in [`examples`](https://github.com/goforj/web/tree/main/examples).
+
+### Declarative route groups {#declarative-route-groups}
+
+Route values keep registration data available for route reporting and source-aware tooling instead of burying every route in adapter calls.
 
 ```go
 adapter := echoweb.New()
-router := adapter.Router()
 
 routes := []web.Route{
 	web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error {
-		// GET /api/healthz -> 204
-		return c.NoContent(http.StatusOK)
+		return c.NoContent(http.StatusNoContent)
 	}),
 	web.NewRoute(http.MethodGet, "/users", func(c web.Context) error {
-		// GET /api/users -> 200 [{"id":1}]
 		return c.JSON(http.StatusOK, []map[string]any{{"id": 1}})
 	}),
 }
 
 group := web.NewRouteGroup("/api", routes)
-
-if err := web.RegisterRoutes(router, []web.RouteGroup{group}); err != nil {
-	panic(err)
+if err := web.RegisterRoutes(adapter.Router(), []web.RouteGroup{group}); err != nil {
+	log.Fatal(err)
 }
 ```
 
-### Use Middleware {#use-middleware}
+### Middleware phases {#middleware-phases}
+
+Use `Pre` for middleware that must change the request method or path before route matching. Method override, rewrite, and trailing-slash middleware belong in this phase. Use `Use` for middleware that wraps the matched request handler.
 
 ```go
-adapter := echoweb.New()
-router := adapter.Router()
+router := echoweb.New().Router()
+
+router.Pre(
+	webmiddleware.MethodOverride(),
+	webmiddleware.RemoveTrailingSlash(),
+)
 
 store := webmiddleware.NewRateLimiterMemoryStore(rate.Every(time.Second))
-
 router.Use(
 	webmiddleware.Recover(),
 	webmiddleware.RequestID(),
 	webmiddleware.RateLimiter(store),
 )
-
-router.GET("/api/messages", func(c web.Context) error {
-	// GET /api/messages -> 200 [{"id":1,"subject":"Welcome"}]
-	// Requests over the configured rate limit return 429.
-	return c.JSON(200, []map[string]any{
-		{"id": 1, "subject": "Welcome"},
-	})
-})
 ```
 
-### Test A Route {#test-a-route}
+Middleware runs in registration order, so put recovery and request identity near the outside of the chain and keep a shared rate-limit store for the lifetime of the application.
+
+### Graceful server lifecycle {#graceful-server-lifecycle}
+
+`Server.Serve` listens until its context is cancelled, then shuts down with the configured timeout.
 
 ```go
-func TestHealthRoute(t *testing.T) {
-	adapter := echoweb.New()
-	router := adapter.Router()
+ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+defer stop()
 
-	router.GET("/healthz", func(c web.Context) error {
-		return c.Text(200, "ok")
-	})
-
-	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
-	rec := httptest.NewRecorder()
-
-	adapter.ServeHTTP(rec, req)
-
-	if rec.Code != 200 {
-		t.Fatalf("expected 200, got %d", rec.Code)
-	}
-	if strings.TrimSpace(rec.Body.String()) != "ok" {
-		t.Fatalf("expected ok, got %q", rec.Body.String())
-	}
-	// rec.Code -> 200
-	// rec.Body -> ok
+server, err := echoweb.NewServer(echoweb.ServerConfig{
+	Addr: ":8080",
+	RouteGroups: []web.RouteGroup{
+		web.NewRouteGroup("/api", []web.Route{
+			web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error {
+				return c.NoContent(http.StatusNoContent)
+			}),
+		}),
+	},
+	ShutdownTimeout: 10 * time.Second,
+})
+if err != nil {
+	log.Fatal(err)
+}
+if err := server.Serve(ctx); err != nil {
+	log.Fatal(err)
 }
 ```
 
-### Expose Prometheus Metrics {#expose-prometheus-metrics}
+### Test a handler {#test-a-handler}
+
+`webtest.NewContext` runs an isolated handler without booting a router or listener. Use the Echo adapter with `httptest` when the route mapping itself is part of the behavior under test.
+
+```go
+func TestHealthHandler(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
+	rec := httptest.NewRecorder()
+	ctx := webtest.NewContext(req, rec, "/healthz", nil)
+
+	handler := func(c web.Context) error {
+		return c.Text(http.StatusOK, "ok")
+	}
+	if err := handler(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected %d, got %d", http.StatusOK, rec.Code)
+	}
+	if rec.Body.String() != "ok" {
+		t.Fatalf("expected ok, got %q", rec.Body.String())
+	}
+}
+```
+
+### Expose Prometheus metrics {#expose-prometheus-metrics}
+
+Use one metrics instance for both middleware and scraping. An explicit registry keeps collector ownership local to the application.
+
+```go
+registry := prometheus.NewRegistry()
+metrics := webprometheus.MustNew(webprometheus.Config{
+	Namespace:  "app",
+	Registerer: registry,
+	Gatherer:   registry,
+})
+
+router := echoweb.New().Router()
+router.Use(metrics.Middleware())
+router.GET("/metrics", metrics.Handler())
+router.GET("/users", func(c web.Context) error {
+	return c.JSON(http.StatusOK, []map[string]any{{"id": 1}})
+})
+```
+
+### Generate a route manifest and OpenAPI document {#generate-a-route-manifest-and-openapi-document}
+
+Set `RouteCompositionPath` to the source file that assembles the application route groups. Scoping the index to that composition keeps unrelated fixtures and unused providers out of the published contract.
+
+```go
+manifest, err := webindex.Run(context.Background(), webindex.IndexOptions{
+	Root:                 ".",
+	RouteCompositionPath: "internal/http/routes.go",
+	OutPath:              "build/webindex.json",
+	DiagnosticsPath:      "build/webindex.diagnostics.json",
+	OpenAPIPath:           "build/openapi.json",
+	Strict:                true,
+})
+if err != nil {
+	log.Fatal(err)
+}
+log.Printf("indexed %d operations", len(manifest.Operations))
+```
+
+`Strict` promotes unresolved source evidence into an error instead of publishing an ambiguous contract. The returned manifest still contains structured diagnostics for reporting.
+
+### Add a WebSocket route {#add-a-websocket-route}
+
+WebSocket handlers use the same app-facing context plus a small connection contract.
+
+```go
+router := echoweb.New().Router()
+router.GETWS("/ws", func(c web.Context, conn web.WebSocketConn) error {
+	var message map[string]any
+	if err := conn.ReadJSON(&message); err != nil {
+		return err
+	}
+	return conn.WriteJSON(map[string]any{"echo": message})
+})
+```
+
+## Echo escape hatches {#echo-escape-hatches}
+
+Use [`echoweb.Wrap`](https://pkg.go.dev/github.com/goforj/web/adapter/echoweb#Wrap) to adapt an existing Echo engine. `Adapter.Echo`, `echoweb.UnwrapContext`, and `Context.Native` expose the underlying implementation when a framework-specific integration genuinely needs it.
+
+If an application only needs Echo and benefits from its full native API everywhere, using Echo directly is reasonable. `web` earns its place when the smaller handler contract, route declarations, shared middleware surface, testing helpers, metrics, or source-aware indexing are useful application boundaries.
+
+## Client IP trust {#client-ip-trust}
+
+For backward compatibility, the Echo adapter initializes Echo's legacy IP extractor when an engine does not already have one. That extractor trusts forwarding headers without proxy checks, so configure it deliberately before using `Context.RealIP` for security, rate limiting, or auditing.
+
+For a server reached directly by clients, use the network peer address:
 
 ```go
 adapter := echoweb.New()
-router := adapter.Router()
-
-metrics := webprometheus.MustNew(webprometheus.Config{Namespace: "app"})
-
-router.Use(metrics.Middleware())
-
-router.GET("/users", func(c web.Context) error {
-	// GET /users -> 204
-	return c.NoContent(http.StatusOK)
-})
-router.GET("/metrics", metrics.Handler())
-// GET /metrics -> Prometheus text exposition
+adapter.Echo().IPExtractor = echo.ExtractIPDirect()
 ```
 
-### Generate A Route Index {#generate-a-route-index}
-
-```go
-_, err := webindex.Run(context.Background(), webindex.IndexOptions{
-	Root:    ".",
-	OutPath: "webindex.json",
-})
-if err != nil {
-	panic(err)
-}
-// Writes webindex.json.
-```
-
-## Packages {#packages}
-
-- `web`: app-facing interfaces, route registration, route reporting helpers
-- `adapter/echoweb`: Echo-backed adapter and server bootstrap
-- `webmiddleware`: grouped HTTP middleware for auth, routing, payloads, rate limiting, and more
-- `webprometheus`: Prometheus middleware and scrape handler
-- `webindex`: route manifest and OpenAPI index generation
-- `webtest`: lightweight handler testing context
+Behind a trusted proxy, configure `echo.ExtractIPFromXFFHeader` or `echo.ExtractIPFromRealIPHeader` with trust options that match the deployment, and ensure the edge proxy removes client-supplied forwarding headers before adding its own.
 
 ## API {#api}
 
@@ -259,7 +338,7 @@ ServeHTTP exposes the adapter as a standard http.Handler.
 
 ```go
 adapter := echoweb.New()
-adapter.Router().GET("/healthz", func(c web.Context) error { return c.NoContent(http.StatusOK) })
+adapter.Router().GET("/healthz", func(c web.Context) error { return c.NoContent(http.StatusNoContent) })
 rr := httptest.NewRecorder()
 req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 adapter.ServeHTTP(rr, req)
@@ -285,10 +364,11 @@ NewServer creates an Echo-backed server from web route groups and mounts.
 server, err := echoweb.NewServer(echoweb.ServerConfig{
 	RouteGroups: []web.RouteGroup{
 		web.NewRouteGroup("/api", []web.Route{
-			web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return c.NoContent(http.StatusOK) }),
+			web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return c.NoContent(http.StatusNoContent) }),
 		}),
 	},
 })
+
 fmt.Println(err == nil, server.Router() != nil)
 // true true
 ```
@@ -323,10 +403,11 @@ ServeHTTP exposes the server as an http.Handler for tests and local probing.
 server, _ := echoweb.NewServer(echoweb.ServerConfig{
 	RouteGroups: []web.RouteGroup{
 		web.NewRouteGroup("/api", []web.Route{
-			web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return c.NoContent(http.StatusOK) }),
+			web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return c.NoContent(http.StatusNoContent) }),
 		}),
 	},
 })
+
 rr := httptest.NewRecorder()
 req := httptest.NewRequest(http.MethodGet, "/api/healthz", nil)
 server.ServeHTTP(rr, req)
@@ -350,7 +431,6 @@ adapter.Router().GET("/healthz", func(c web.Context) error {
 rr := httptest.NewRecorder()
 req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 adapter.ServeHTTP(rr, req)
-
 // true
 ```
 
@@ -387,7 +467,6 @@ manifest, err := webindex.Run(context.Background(), webindex.IndexOptions{
 })
 
 fmt.Println(err == nil, manifest.Version != "")
-
 // true true
 ```
 
@@ -583,7 +662,7 @@ MethodFromForm gets an override method from a form field.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
+router.Pre(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
 	Getter: webmiddleware.MethodFromForm("_method"),
 }))
 ```
@@ -595,7 +674,7 @@ MethodFromHeader gets an override method from a request header.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
+router.Pre(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
 	Getter: webmiddleware.MethodFromHeader("X-HTTP-Method-Override"),
 }))
 ```
@@ -607,7 +686,7 @@ MethodFromQuery gets an override method from a query parameter.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
+router.Pre(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
 	Getter: webmiddleware.MethodFromQuery("_method"),
 }))
 ```
@@ -618,7 +697,7 @@ MethodOverride returns method override middleware.
 
 ```go
 router := echoweb.New().Router()
-router.Use(webmiddleware.MethodOverride())
+router.Pre(webmiddleware.MethodOverride())
 
 router.PATCH("/articles/:id", func(c web.Context) error {
 	return c.NoContent(204)
@@ -632,7 +711,7 @@ MethodOverrideWithConfig returns method override middleware with config.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
+router.Pre(webmiddleware.MethodOverrideWithConfig(webmiddleware.MethodOverrideConfig{
 	Getter: webmiddleware.MethodFromQuery("_method"),
 }))
 
@@ -649,7 +728,7 @@ AddTrailingSlash adds a trailing slash to the request path.
 
 ```go
 router := echoweb.New().Router()
-router.Use(webmiddleware.AddTrailingSlash())
+router.Pre(webmiddleware.AddTrailingSlash())
 
 router.GET("/docs/", func(c web.Context) error {
 	return c.Text(200, "docs")
@@ -663,7 +742,7 @@ AddTrailingSlashWithConfig returns trailing-slash middleware with config.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.AddTrailingSlashWithConfig(webmiddleware.TrailingSlashConfig{
+router.Pre(webmiddleware.AddTrailingSlashWithConfig(webmiddleware.TrailingSlashConfig{
 	RedirectCode: 308,
 }))
 
@@ -678,7 +757,7 @@ RemoveTrailingSlash removes the trailing slash from the request path.
 
 ```go
 router := echoweb.New().Router()
-router.Use(webmiddleware.RemoveTrailingSlash())
+router.Pre(webmiddleware.RemoveTrailingSlash())
 
 router.GET("/docs", func(c web.Context) error {
 	return c.Text(200, "docs")
@@ -692,7 +771,7 @@ RemoveTrailingSlashWithConfig returns remove-trailing-slash middleware with conf
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.RemoveTrailingSlashWithConfig(webmiddleware.TrailingSlashConfig{
+router.Pre(webmiddleware.RemoveTrailingSlashWithConfig(webmiddleware.TrailingSlashConfig{
 	RedirectCode: 308,
 }))
 
@@ -708,7 +787,7 @@ Rewrite rewrites the request path using wildcard rules.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.Rewrite(map[string]string{
+router.Pre(webmiddleware.Rewrite(map[string]string{
 	"/old/*": "/new/$1",
 }))
 
@@ -724,7 +803,7 @@ RewriteWithConfig rewrites the request path using wildcard and regex rules.
 ```go
 router := echoweb.New().Router()
 
-router.Use(webmiddleware.RewriteWithConfig(webmiddleware.RewriteConfig{
+router.Pre(webmiddleware.RewriteWithConfig(webmiddleware.RewriteConfig{
 	Rules: map[string]string{"/old/*": "/v2/$1"},
 }))
 
@@ -840,7 +919,6 @@ NewRandomBalancer creates a random proxy balancer.
 target, _ := url.Parse("http://localhost:8080")
 balancer := webmiddleware.NewRandomBalancer([]*webmiddleware.ProxyTarget{{URL: target}})
 fmt.Println(balancer.Next(nil).URL.Host)
-
 // localhost:8080
 ```
 
@@ -852,7 +930,6 @@ NewRoundRobinBalancer creates a round-robin proxy balancer.
 target, _ := url.Parse("http://localhost:8080")
 balancer := webmiddleware.NewRoundRobinBalancer([]*webmiddleware.ProxyTarget{{URL: target}})
 fmt.Println(balancer.Next(nil).URL.Host)
-
 // localhost:8080
 ```
 
@@ -897,7 +974,6 @@ store := webmiddleware.NewRateLimiterMemoryStore(rate.Every(time.Second))
 allowed1, _ := store.Allow("192.0.2.1")
 allowed2, _ := store.Allow("192.0.2.1")
 fmt.Println(allowed1, allowed2)
-
 // true false
 ```
 
@@ -909,7 +985,6 @@ NewRateLimiterMemoryStoreWithConfig creates an in-memory rate limiter store with
 store := webmiddleware.NewRateLimiterMemoryStoreWithConfig(webmiddleware.RateLimiterMemoryStoreConfig{Rate: rate.Every(time.Second)})
 allowed, _ := store.Allow("192.0.2.1")
 fmt.Println(allowed)
-
 // true
 ```
 
@@ -936,7 +1011,6 @@ Allow checks whether the given identifier is allowed through.
 store := webmiddleware.NewRateLimiterMemoryStore(rate.Every(time.Second))
 allowed, err := store.Allow("127.0.0.1")
 fmt.Println(err == nil, allowed)
-
 // true true
 ```
 
@@ -1459,7 +1533,6 @@ err := web.MountRouter(adapter.Router(), []web.RouterMount{
 })
 
 fmt.Println(err == nil)
-
 // true
 ```
 
@@ -1473,7 +1546,6 @@ route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error {
 })
 
 fmt.Println(route.Method(), route.Path())
-
 // GET /healthz
 ```
 
@@ -1487,7 +1559,6 @@ group := web.NewRouteGroup("/api", []web.Route{
 })
 
 fmt.Println(group.RoutePrefix(), len(group.Routes()))
-
 // /api 1
 ```
 
@@ -1501,7 +1572,6 @@ route := web.NewWebSocketRoute("/ws", func(c web.Context, conn web.WebSocketConn
 })
 
 fmt.Println(route.IsWebSocket())
-
 // true
 ```
 
@@ -1520,7 +1590,6 @@ groups := []web.RouteGroup{
 
 err := web.RegisterRoutes(adapter.Router(), groups)
 fmt.Println(err == nil)
-
 // true
 ```
 
@@ -1536,7 +1605,6 @@ route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error {
 ctx := webtest.NewContext(nil, nil, "/healthz", nil)
 _ = route.Handler()(ctx)
 fmt.Println(ctx.StatusCode())
-
 // 201
 ```
 
@@ -1547,7 +1615,6 @@ HandlerName returns the original handler name for route reporting.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil })
 fmt.Println(route.HandlerName() != "")
-
 // true
 ```
 
@@ -1558,7 +1625,6 @@ IsWebSocket reports whether this route upgrades to a websocket connection.
 ```go
 route := web.NewWebSocketRoute("/ws", func(c web.Context, conn web.WebSocketConn) error { return nil })
 fmt.Println(route.IsWebSocket())
-
 // true
 ```
 
@@ -1569,7 +1635,6 @@ Method returns the HTTP method.
 ```go
 route := web.NewRoute(http.MethodPost, "/users", func(c web.Context) error { return nil })
 fmt.Println(route.Method())
-
 // POST
 ```
 
@@ -1580,7 +1645,6 @@ MiddlewareNames returns original middleware names for route reporting.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }).WithMiddlewareNames("auth")
 fmt.Println(route.MiddlewareNames()[0])
-
 // auth
 ```
 
@@ -1598,7 +1662,6 @@ func(next web.Handler) web.Handler { return next },
 
 )
 fmt.Println(len(route.Middlewares()))
-
 // 1
 ```
 
@@ -1609,7 +1672,6 @@ Path returns the path of the route.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil })
 fmt.Println(route.Path())
-
 // /healthz
 ```
 
@@ -1626,7 +1688,6 @@ route := web.NewWebSocketRoute("/ws", func(c web.Context, conn web.WebSocketConn
 ctx := webtest.NewContext(nil, nil, "/ws", nil)
 err := route.WebSocketHandler()(ctx, nil)
 fmt.Println(err == nil, ctx.Get("ready"))
-
 // true true
 ```
 
@@ -1637,7 +1698,6 @@ WithMiddlewareNames attaches reporting-only middleware names to the route.
 ```go
 route := web.NewRoute(http.MethodGet, "/healthz", func(c web.Context) error { return nil }).WithMiddlewareNames("auth", "trace")
 fmt.Println(len(route.MiddlewareNames()))
-
 // 2
 ```
 
@@ -1648,7 +1708,6 @@ MiddlewareNames returns original middleware names for route reporting.
 ```go
 group := web.NewRouteGroup("/api", nil).WithMiddlewareNames("auth")
 fmt.Println(group.MiddlewareNames()[0])
-
 // auth
 ```
 
@@ -1659,7 +1718,6 @@ Middlewares returns the middleware slice for the group.
 ```go
 group := web.NewRouteGroup("/api", nil, func(next web.Handler) web.Handler { return next })
 fmt.Println(len(group.Middlewares()))
-
 // 1
 ```
 
@@ -1670,7 +1728,6 @@ RoutePrefix returns the group prefix.
 ```go
 group := web.NewRouteGroup("/api", nil)
 fmt.Println(group.RoutePrefix())
-
 // /api
 ```
 
@@ -1684,7 +1741,6 @@ group := web.NewRouteGroup("/api", []web.Route{
 })
 
 fmt.Println(len(group.Routes()))
-
 // 1
 ```
 
@@ -1695,7 +1751,6 @@ WithMiddlewareNames attaches reporting-only middleware names to the group.
 ```go
 group := web.NewRouteGroup("/api", nil).WithMiddlewareNames("auth", "trace")
 fmt.Println(len(group.MiddlewareNames()))
-
 // 2
 ```
 

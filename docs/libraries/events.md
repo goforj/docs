@@ -16,9 +16,8 @@ repoUrl: https://github.com/goforj/events
     <a href="https://pkg.go.dev/github.com/goforj/events"><img src="https://pkg.go.dev/badge/github.com/goforj/events.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/events/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/events/actions"><img src="https://github.com/goforj/events/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.25+-blue?logo=go" alt="Go version"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/events?label=version&sort=semver" alt="Latest tag">
-    <a href="https://goreportcard.com/report/github.com/goforj/events"><img src="https://goreportcard.com/badge/github.com/goforj/events" alt="Go Report Card"></a>
     <a href="https://codecov.io/gh/goforj/events"><img src="https://codecov.io/gh/goforj/events/graph/badge.svg?token=07N6F71OXM" alt="Codecov"></a>
 <!-- test-count:embed:start -->
   <img src="https://img.shields.io/badge/unit_tests-25-brightgreen" alt="Unit tests (executed count)">
@@ -37,6 +36,8 @@ It lets applications publish and subscribe to events using normal Go types, with
 ```bash
 go get github.com/goforj/events
 ```
+
+All published modules support Go 1.24 and newer.
 
 ## Quick Start {#quick-start}
 
@@ -74,7 +75,7 @@ type UserCreated struct {
 func (UserCreated) Topic() string { return "users.created" }
 ```
 
-## Drivers {#drivers}
+## Driver Matrix {#driver-matrix}
 
 Optional distributed backends are separate modules. Keep dependencies lean and install only what you use:
 
@@ -87,7 +88,7 @@ go get github.com/goforj/events/driver/gcppubsubevents
 go get github.com/goforj/events/driver/snsevents
 ```
 
-## Drivers {#drivers-2}
+## Drivers {#drivers}
 
 |                                                                                                Driver / Backend | Mode | Fan-out | Durable | Queue Semantics | Notes |
 |----------------------------------------------------------------------------------------------------------------:| :--- | :---: | :---: | :---: | :--- |
@@ -156,13 +157,13 @@ These charts compare one publish-plus-delivery round trip for `sync` and each en
 
 Note: `sns` and `gcppubsub` run through local emulators in this repo, so read those results as development approximations rather than direct managed-service latency comparisons.
 
-![Events backend latency chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ns.svg?v=1773131451)
+![Events backend latency chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ns.svg?v=f602b04ec5e9d5ce)
 
-![Events backend throughput chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ops.svg?v=1773131451)
+![Events backend throughput chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_ops.svg?v=f602b04ec5e9d5ce)
 
-![Events backend bytes chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_bytes.svg?v=1773131451)
+![Events backend bytes chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_bytes.svg?v=f602b04ec5e9d5ce)
 
-![Events backend allocations chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_allocs.svg?v=1773131451)
+![Events backend allocations chart](https://raw.githubusercontent.com/goforj/events/main/docs/bench/benchmarks_allocs.svg?v=f602b04ec5e9d5ce)
 <!-- bench:embed:end -->
 
 These checks are for obvious regression detection, not for noisy micro-optimism
@@ -180,7 +181,7 @@ or hard CI performance gates.
 | **Driver Constructors** | [gcppubsubevents.New](#gcppubsubevents-new) · [kafkaevents.New](#kafkaevents-new) · [natsevents.New](#natsevents-new) · [natsjetstreamevents.New](#natsjetstreamevents-new) · [redisevents.New](#redisevents-new) · [snsevents.New](#snsevents-new) |
 | **Lifecycle** | [Close](#driver-close) |
 | **Options** | [Option](#events-option) · [WithCodec](#events-withcodec) |
-| **Publish** | [Publish](#bus-publish) · [TopicEvent](#events-topicevent) |
+| **Publish** | [Publish](#bus-publish) · [TopicEvent](#events-topicevent) · [TopicEvent.Topic](#topicevent-topic) |
 | **Subscribe** | [Subscribe](#bus-subscribe) · [Subscription](#events-subscription) |
 | **Testing** | [Fake](#events-fake) · [Fake.Bus](#fake-bus) · [Fake.Count](#fake-count) · [Fake.Records](#fake-records) · [Fake.Reset](#fake-reset) · [NewFake](#events-newfake) · [Record](#events-record) |
 
@@ -503,6 +504,10 @@ _ = bus.Publish(UserCreated{ID: "123"})
 ### TopicEvent {#events-topicevent}
 
 TopicEvent overrides the derived topic for an event.
+
+### TopicEvent.Topic {#topicevent-topic}
+
+Topic returns the stable routing key shared by publishers and subscribers.
 
 ## Subscribe {#subscribe}
 
