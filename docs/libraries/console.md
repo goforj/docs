@@ -20,7 +20,6 @@ noAutoTitle: true
   <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.24%2B-blue?logo=go" alt="Go 1.24 or newer"></a>
   <img src="https://img.shields.io/github/v/tag/goforj/console?label=version&sort=semver" alt="Latest tag">
   <a href="https://codecov.io/gh/goforj/console"><img src="https://codecov.io/github/goforj/console/graph/badge.svg" alt="Coverage"></a>
-  <a href="https://goreportcard.com/report/github.com/goforj/console"><img src="https://goreportcard.com/badge/github.com/goforj/console" alt="Go Report Card"></a>
 </p>
 
 `console` is a small toolkit for the output layer shared by command-line applications: semantic messages, coordinated writers, ANSI-aware text, composable layout, bordered and compact tables, trees, prompts, loaders, and progress. It is deliberately not a full-screen TUI framework. There is no event loop, raw-mode ownership, command parser, subprocess runner, or logging pipeline to adopt.
@@ -79,8 +78,8 @@ console.SetDefault(console.New(console.Config{
 	UnicodeEnabled: &unicode,
 }))
 console.Success("ANSI styling is forced")
-fmt.Printf("%q\n", output.String())
-// "\x1b[32m✔\x1b[0m ANSI styling is forced\n"
+fmt.Printf("%q\n", strings.TrimSuffix(output.String(), "\n"))
+// "\x1b[32m✔\x1b[0m ANSI styling is forced"
 ```
 
 ## What it provides {#what-it-provides}
@@ -196,8 +195,8 @@ console.SetDefault(console.New(console.Config{
 }))
 
 confirmed, err := console.Confirm("Deploy now", false)
-fmt.Printf("%q\n", output.String())
-// "› Deploy now [y/N]: "
+fmt.Println(strings.TrimSpace(output.String()))
+// › Deploy now [y/N]:
 fmt.Println(confirmed, err)
 // true <nil>
 ```
@@ -1192,8 +1191,8 @@ console.SetDefault(console.New(console.Config{
 	UnicodeEnabled:     &unicode,
 }))
 name, err := console.Ask("Name")
-fmt.Printf("%q\n", output.String())
-// "› Name: "
+fmt.Println(strings.TrimSpace(output.String()))
+// › Name:
 fmt.Println(name, err)
 // Ada <nil>
 ```
@@ -1213,8 +1212,8 @@ console.SetDefault(console.New(console.Config{
 	UnicodeEnabled:     &unicode,
 }))
 environment, err := console.AskDefault("Environment", "production")
-fmt.Printf("%q\n", output.String())
-// "› Environment [production]: "
+fmt.Println(strings.TrimSpace(output.String()))
+// › Environment [production]:
 fmt.Println(environment, err)
 // production <nil>
 ```
@@ -1236,8 +1235,8 @@ console.SetDefault(console.New(console.Config{
 	},
 }))
 secret, err := console.AskSecret("API token")
-fmt.Printf("%q\n", output.String())
-// "› API token: \n"
+fmt.Println(strings.TrimSpace(output.String()))
+// › API token:
 fmt.Println(len(secret), err)
 // 11 <nil>
 ```
@@ -1257,8 +1256,11 @@ console.SetDefault(console.New(console.Config{
 	UnicodeEnabled:     &unicode,
 }))
 channel, err := console.Choose("Release channel", []string{"stable", "beta"}, 0)
-fmt.Printf("%q\n", output.String())
-// "Release channel\n1. stable\n2. beta\n› Choose [1-2, default 1]: "
+fmt.Println(strings.TrimSpace(output.String()))
+// Release channel
+// 1. stable
+// 2. beta
+// › Choose [1-2, default 1]:
 fmt.Println(channel, err)
 // beta <nil>
 ```
@@ -1278,8 +1280,11 @@ console.SetDefault(console.New(console.Config{
 	UnicodeEnabled:     &unicode,
 }))
 index, err := console.ChooseIndex("Release channel", []string{"stable", "beta"}, 0)
-fmt.Printf("%q\n", output.String())
-// "Release channel\n1. stable\n2. beta\n› Choose [1-2, default 1]: "
+fmt.Println(strings.TrimSpace(output.String()))
+// Release channel
+// 1. stable
+// 2. beta
+// › Choose [1-2, default 1]:
 fmt.Println(index, err)
 // 1 <nil>
 ```
@@ -1299,8 +1304,8 @@ console.SetDefault(console.New(console.Config{
 	UnicodeEnabled:     &unicode,
 }))
 confirmed, err := console.Confirm("Deploy now", false)
-fmt.Printf("%q\n", output.String())
-// "› Deploy now [y/N]: "
+fmt.Println(strings.TrimSpace(output.String()))
+// › Deploy now [y/N]:
 fmt.Println(confirmed, err)
 // true <nil>
 ```
@@ -1787,8 +1792,9 @@ Indent prefixes every line in value with prefix.
 Empty input remains empty.
 
 ```go
-fmt.Printf("%q\n", console.Indent("one\ntwo", "> "))
-// "> one\n> two"
+fmt.Println(console.Indent("one\ntwo", "> "))
+// > one
+// > two
 ```
 
 #### PadCenter {#padcenter}
@@ -1875,8 +1881,9 @@ Breakable whitespace at the beginning or end of a resulting line is removed.
 Values less than one are returned unchanged.
 
 ```go
-fmt.Printf("%q\n", console.Wrap("ship the release", 8))
-// "ship the\nrelease"
+fmt.Println(console.Wrap("ship the release", 8))
+// ship the
+// release
 ```
 
 
@@ -2138,10 +2145,16 @@ console.SetDefault(console.New(console.Config{
 }))
 
 name, _ := console.Ask("Name")
+fmt.Println(strings.TrimSpace(output.String()))
+// › Name:
+output.Reset()
 environment, _ := console.AskDefault("Environment", "production")
+fmt.Println(strings.TrimSpace(output.String()))
+// › Environment [production]:
+output.Reset()
 confirmed, _ := console.Confirm("Deploy now", false)
-fmt.Printf("%q\n", output.String())
-// "› Name: › Environment [production]: › Deploy now [y/N]: "
+fmt.Println(strings.TrimSpace(output.String()))
+// › Deploy now [y/N]:
 fmt.Println(name, environment, confirmed)
 // Ada production true
 ```
@@ -2165,9 +2178,15 @@ console.SetDefault(console.New(console.Config{
 }))
 
 channel, _ := console.Choose("Release channel", []string{"stable", "beta"}, 0)
+fmt.Println(strings.TrimSpace(output.String()))
+// Release channel
+// 1. stable
+// 2. beta
+// › Choose [1-2, default 1]:
+output.Reset()
 secret, _ := console.AskSecret("API token")
-fmt.Printf("%q\n", output.String())
-// "Release channel\n1. stable\n2. beta\n› Choose [1-2, default 1]: \n› API token: \n"
+fmt.Println(strings.TrimSpace(output.String()))
+// › API token:
 fmt.Println(channel, len(secret))
 // beta 11
 ```
@@ -2268,10 +2287,14 @@ console.SetDefault(console.New(console.Config{
 
 fmt.Fprintln(console.StdoutWriter(), `{"artifact":"app.tar.gz","status":"ready"}`)
 fmt.Fprintln(console.StderrWriter(), "status: uploading app.tar.gz")
-fmt.Printf("stdout: %q\n", machineOutput.String())
-// stdout: "{\"artifact\":\"app.tar.gz\",\"status\":\"ready\"}\n"
-fmt.Printf("stderr: %q\n", statusOutput.String())
-// stderr: "status: uploading app.tar.gz\n"
+fmt.Println("stdout:")
+// stdout:
+fmt.Print(machineOutput.String())
+// {"artifact":"app.tar.gz","status":"ready"}
+fmt.Println("stderr:")
+// stderr:
+fmt.Print(statusOutput.String())
+// status: uploading app.tar.gz
 ```
 
 ### Isolated console instances {#isolated-console-instances}

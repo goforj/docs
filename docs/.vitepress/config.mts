@@ -338,7 +338,7 @@ const libraryRewrites: Record<string, string> = {
   'libraries/atlas.md': 'atlas.md'
 }
 
-const preloadBadgeImagePattern = /(?:shields\.io|pkg\.go\.dev\/badge|goreportcard\.com\/badge|codecov\.io\/[^\s)"']*badge|github\.com\/[^\s)"']*\/actions\/workflows\/[^\s)"']*badge)/i
+const preloadBadgeImagePattern = /(?:shields\.io|pkg\.go\.dev\/badge|codecov\.io\/[^\s)"']*badge|github\.com\/[^\s)"']*\/actions\/workflows\/[^\s)"']*badge)/i
 
 const resolvePreloadImageUrl = (value: string, page: string) => {
   const src = decodeHtmlEntities(value.trim())

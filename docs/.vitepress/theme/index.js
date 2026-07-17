@@ -138,7 +138,6 @@ function isBadgeImage(img) {
     src.includes('shields.io') ||
     src.includes('/badge/') ||
     src.includes('pkg.go.dev/badge') ||
-    src.includes('goreportcard.com/badge') ||
     src.includes('codecov.io')
   )
 }

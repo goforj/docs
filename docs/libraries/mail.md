@@ -15,24 +15,23 @@ repoUrl: https://github.com/goforj/mail
 <p align="center">
   <a href="https://pkg.go.dev/github.com/goforj/mail"><img src="https://pkg.go.dev/badge/github.com/goforj/mail.svg" alt="Go Reference"></a>
   <a href="https://github.com/goforj/mail/actions/workflows/ci.yml"><img src="https://github.com/goforj/mail/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.25+-blue?logo=go" alt="Go version"></a>
+  <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
   <img src="https://img.shields.io/github/v/tag/goforj/mail?label=version&sort=semver&filter=%21mailses%2A" alt="Latest tag">
-  <a href="https://goreportcard.com/report/github.com/goforj/mail"><img src="https://goreportcard.com/badge/github.com/goforj/mail" alt="Go Report Card"></a>
   <a href="https://codecov.io/gh/goforj/mail"><img src="https://codecov.io/gh/goforj/mail/graph/badge.svg?token=PJJVA66P5X" alt="Codecov"></a>
 <!-- test-count:embed:start -->
-<img src="https://img.shields.io/badge/unit_tests-80-brightgreen" alt="Unit tests (executed count)">
+<img src="https://img.shields.io/badge/unit_tests-118-brightgreen" alt="Unit tests (executed count)">
 <!-- test-count:embed:end -->
 <!-- package-coverage:embed:start -->
 <br>
-<img src="https://img.shields.io/badge/mail-100.0%25-4c9a2a" alt="mail coverage">
-<img src="https://img.shields.io/badge/mailfake-100.0%25-4c9a2a" alt="mailfake coverage">
-<img src="https://img.shields.io/badge/maillog-94.7%25-4c9a2a" alt="maillog coverage">
-<img src="https://img.shields.io/badge/mailmailgun-84.2%25-4c9a2a" alt="mailmailgun coverage">
-<img src="https://img.shields.io/badge/mailpostmark-95.3%25-4c9a2a" alt="mailpostmark coverage">
-<img src="https://img.shields.io/badge/mailresend-95.5%25-4c9a2a" alt="mailresend coverage">
-<img src="https://img.shields.io/badge/mailsendgrid-97.5%25-4c9a2a" alt="mailsendgrid coverage">
-<img src="https://img.shields.io/badge/mailses-92.7%25-4c9a2a" alt="mailses coverage">
-<img src="https://img.shields.io/badge/mailsmtp-87.8%25-4c9a2a" alt="mailsmtp coverage">
+<img src="https://img.shields.io/badge/mail-95.2%25-4c9a2a" alt="mail coverage">
+<img src="https://img.shields.io/badge/mailfake-91.2%25-4c9a2a" alt="mailfake coverage">
+<img src="https://img.shields.io/badge/maillog-86.1%25-4c9a2a" alt="maillog coverage">
+<img src="https://img.shields.io/badge/mailmailgun-83.7%25-4c9a2a" alt="mailmailgun coverage">
+<img src="https://img.shields.io/badge/mailpostmark-91.3%25-4c9a2a" alt="mailpostmark coverage">
+<img src="https://img.shields.io/badge/mailresend-94.6%25-4c9a2a" alt="mailresend coverage">
+<img src="https://img.shields.io/badge/mailsendgrid-96.1%25-4c9a2a" alt="mailsendgrid coverage">
+<img src="https://img.shields.io/badge/mailses-93.0%25-4c9a2a" alt="mailses coverage">
+<img src="https://img.shields.io/badge/mailsmtp-88.4%25-4c9a2a" alt="mailsmtp coverage">
 <!-- package-coverage:embed:end -->
 </p>
 
@@ -114,6 +113,48 @@ Notes:
 | maillog | ✓ | ✓ | x | x | ✓ | Local/dev inspection only; logs the composed message. |
 | mailfake | ✓ | ✓ | ✓ | ✓ | ✓ | Test helper; captures the full portable message. |
 
+## Delivery Contract {#delivery-contract}
+
+Every message is validated before a bundled driver performs I/O. A deliverable message requires:
+
+- a `From` recipient (either explicit or supplied by `WithDefaultFrom`);
+- at least one `To`, `Cc`, or `Bcc` recipient;
+- a subject and at least one text or HTML body;
+- single-address recipient fields, safe custom headers, valid provider metadata keys, and valid attachment MIME metadata.
+
+`mail.New` requires a driver and panics for a nil or typed-nil driver. This is a construction invariant: use `mailfake.New()` when a test needs a harmless driver. The zero-value `MessageBuilder` remains useful for standalone composition and `Build`; calling `Send` on an unbound builder returns `mail.ErrMissingMailer`.
+
+Custom headers cannot replace envelope-owned fields such as `From`, `To`, `Subject`, `Content-Type`, or `MIME-Version`, and names must be unique without regard to case. Header, subject, attachment, and metadata validation rejects control characters before data reaches SMTP or multipart encoders.
+
+API-backed drivers return an exported, provider-specific `ResponseError` for non-2xx responses. It exposes the HTTP status and a safe request ID when the provider supplies one. Provider response bodies are bounded and deliberately omitted from error strings so logs cannot accidentally capture credentials or message content.
+
+## SMTP TLS Policy {#smtp-tls-policy}
+
+`mailsmtp` uses opportunistic STARTTLS when the server advertises it. Set `ForceTLS: true` for implicit TLS, commonly used on port 465.
+
+TLS defaults are explicit:
+
+- certificate and hostname verification are enabled;
+- `ServerName` defaults to `Config.Host`;
+- the minimum protocol version defaults to TLS 1.2;
+- a supplied `TLSConfig` is cloned during construction, so later caller mutation cannot change a running driver.
+
+Use `TLSConfig` for a private CA or a stricter minimum version. Disabling verification is not recommended.
+
+## Unreleased Compatibility Notes {#unreleased-compatibility-notes}
+
+This quality pass deliberately tightens the pre-v1 contract:
+
+- `Message.Validate` now returns `ErrMissingFrom` when no sender remains after defaults;
+- `mail.New(nil)` and `maillog.New(nil)` now fail fast by panicking;
+- direct `mailfake` and `maillog` sends now honor cancellation and use the same validation contract as network drivers;
+- malformed custom HTTP endpoints fail during driver construction instead of the first send;
+- SMTP rejects negative or out-of-range ports, preserves body whitespace, safely encodes Unicode subjects and filenames, and emits quoted-printable text bodies;
+- SendGrid headers and custom arguments are emitted only inside `personalizations`, matching its API schema.
+- The root module and `mailses` are staged as a coordinated v0.3.0 release; publish the root tag before `mailses/v0.3.0` so the SES module never depends on a local replacement. The checksum-staging sequence is documented in [scripts/RELEASE.md](https://github.com/goforj/mail/blob/main/scripts/RELEASE.md).
+
+GoForj-generated mailers already configure `WithDefaultFrom`, so their normal send shape is unchanged.
+
 ## API {#api}
 
 <!-- api:embed:start -->
@@ -127,13 +168,13 @@ Notes:
 | **Defaults** | [WithDefaultFrom](#withdefaultfrom) · [WithDefaultHeader](#withdefaultheader) · [WithDefaultMetadata](#withdefaultmetadata) · [WithDefaultReplyTo](#withdefaultreplyto) · [WithDefaultTag](#withdefaulttag) |
 | **Delivery** | [Mailer.Send](#mailer-send) · [MessageBuilder.Build](#messagebuilder-build) · [MessageBuilder.Send](#messagebuilder-send) |
 | **Logging** | [maillog.Driver.Send](#maillog-driver-send) · [maillog.New](#maillog-new) · [maillog.WithBodies](#maillog-withbodies) · [maillog.WithNow](#maillog-withnow) |
-| **Mailgun** | [mailmailgun.Driver.Send](#mailmailgun-driver-send) · [mailmailgun.New](#mailmailgun-new) |
+| **Mailgun** | [mailmailgun.Driver.Send](#mailmailgun-driver-send) · [mailmailgun.New](#mailmailgun-new) · [mailmailgun.ResponseError.Error](#mailmailgun-responseerror-error) |
 | **Message Model** | [AttachmentFromBytes](#attachmentfrombytes) · [AttachmentFromPath](#attachmentfrompath) · [Message.Clone](#message-clone) · [Message.Validate](#message-validate) |
-| **Postmark** | [mailpostmark.Driver.Send](#mailpostmark-driver-send) · [mailpostmark.New](#mailpostmark-new) |
-| **Resend** | [mailresend.Driver.Send](#mailresend-driver-send) · [mailresend.New](#mailresend-new) |
+| **Postmark** | [mailpostmark.Driver.Send](#mailpostmark-driver-send) · [mailpostmark.New](#mailpostmark-new) · [mailpostmark.ResponseError.Error](#mailpostmark-responseerror-error) |
+| **Resend** | [mailresend.Driver.Send](#mailresend-driver-send) · [mailresend.New](#mailresend-new) · [mailresend.ResponseError.Error](#mailresend-responseerror-error) |
 | **SES** | [mailses.Driver.Send](#mailses-driver-send) · [mailses.New](#mailses-new) |
 | **SMTP** | [mailsmtp.Driver.Send](#mailsmtp-driver-send) · [mailsmtp.New](#mailsmtp-new) · [mailsmtp.Render](#mailsmtp-render) |
-| **SendGrid** | [mailsendgrid.Driver.Send](#mailsendgrid-driver-send) · [mailsendgrid.New](#mailsendgrid-new) |
+| **SendGrid** | [mailsendgrid.Driver.Send](#mailsendgrid-driver-send) · [mailsendgrid.New](#mailsendgrid-new) · [mailsendgrid.ResponseError.Error](#mailsendgrid-responseerror-error) |
 | **Testing** | [mailfake.Driver.Last](#mailfake-driver-last) · [mailfake.Driver.Messages](#mailfake-driver-messages) · [mailfake.Driver.Reset](#mailfake-driver-reset) · [mailfake.Driver.Send](#mailfake-driver-send) · [mailfake.Driver.SentCount](#mailfake-driver-sentcount) · [mailfake.Driver.SetError](#mailfake-driver-seterror) · [mailfake.New](#mailfake-new) |
 
 
@@ -165,6 +206,7 @@ Bcc appends one blind-carbon-copy recipient.
 
 ```go
 msg, _ := mail.New(mailfake.New()).Message().
+	From("no-reply@example.com", "Example").
 	To("alice@example.com", "Alice").
 	Bcc("audit@example.com", "Audit").
 	Subject("Welcome").
@@ -180,6 +222,7 @@ Cc appends one carbon-copy recipient.
 
 ```go
 msg, _ := mail.New(mailfake.New()).Message().
+	From("no-reply@example.com", "Example").
 	To("alice@example.com", "Alice").
 	Cc("manager@example.com", "Manager").
 	Subject("Welcome").
@@ -224,6 +267,7 @@ ReplyTo appends one reply-to recipient.
 
 ```go
 msg, _ := mail.New(mailfake.New()).Message().
+	From("no-reply@example.com", "Example").
 	To("alice@example.com", "Alice").
 	ReplyTo("support@example.com", "Support").
 	Subject("Welcome").
@@ -239,6 +283,7 @@ To appends one primary recipient.
 
 ```go
 msg, _ := mail.New(mailfake.New()).Message().
+	From("no-reply@example.com", "Example").
 	To("alice@example.com", "Alice").
 	Subject("Welcome").
 	Text("hello world").
@@ -252,6 +297,7 @@ fmt.Println(len(msg.To))
 #### New {#new}
 
 New creates a Mailer backed by the provided driver.
+New panics when driver is nil because a Mailer cannot deliver without its required collaborator.
 
 ```go
 fake := mailfake.New()
@@ -285,6 +331,7 @@ AttachFile loads one attachment from disk and appends it to the message.
 _ = os.WriteFile("report.txt", []byte("hello world"), 0o644)
 defer os.Remove("report.txt")
 msg, _ := mail.New(mailfake.New()).Message().
+	From("no-reply@example.com", "Example").
 	To("alice@example.com", "Alice").
 	Subject("Welcome").
 	Text("hello world").
@@ -314,6 +361,7 @@ Header sets or replaces one message header.
 
 ```go
 message, _ := mail.New(mailfake.New()).Message().
+	From("no-reply@example.com", "Example").
 	To("alice@example.com", "Alice").
 	Subject("Welcome").
 	Text("hello world").
@@ -405,6 +453,7 @@ WithDefaultHeader configures a header applied when a message omits that header k
 ```go
 msg, _ := mail.New(
 	mailfake.New(),
+	mail.WithDefaultFrom("no-reply@example.com", "Example"),
 	mail.WithDefaultHeader("X-App", "goforj"),
 ).Message().
 	To("alice@example.com", "Alice").
@@ -422,6 +471,7 @@ WithDefaultMetadata configures metadata applied when a message omits that metada
 ```go
 msg, _ := mail.New(
 	mailfake.New(),
+	mail.WithDefaultFrom("no-reply@example.com", "Example"),
 	mail.WithDefaultMetadata("tenant_id", "tenant_123"),
 ).Message().
 	To("alice@example.com", "Alice").
@@ -439,6 +489,7 @@ WithDefaultReplyTo configures the default reply-to recipients applied when a mes
 ```go
 mailer := mail.New(
 	mailfake.New(),
+	mail.WithDefaultFrom("no-reply@example.com", "Example"),
 	mail.WithDefaultReplyTo(mail.Recipient{Email: "support@example.com", Name: "Support"}),
 )
 msg, _ := mailer.Message().
@@ -457,6 +508,7 @@ WithDefaultTag configures a tag prepended to every message sent by the mailer.
 ```go
 msg, _ := mail.New(
 	mailfake.New(),
+	mail.WithDefaultFrom("no-reply@example.com", "Example"),
 	mail.WithDefaultTag("transactional"),
 ).Message().
 	To("alice@example.com", "Alice").
@@ -521,11 +573,12 @@ fmt.Println(fake.SentCount())
 
 #### maillog.Driver.Send {#maillog-driver-send}
 
-Send writes one JSON log record for the message.
+Send validates the message and writes one JSON log record.
 
 ```go
 var out bytes.Buffer
 _ = maillog.New(&out).Send(context.Background(), mail.Message{
+	From:    &mail.Recipient{Email: "no-reply@example.com"},
 	To:      []mail.Recipient{{Email: "alice@example.com"}},
 	Subject: "Welcome",
 	Text:    "hello world",
@@ -537,6 +590,7 @@ fmt.Println(strings.Contains(out.String(), "\"subject\":\"Welcome\""))
 #### maillog.New {#maillog-new}
 
 New creates a log mail driver that writes one JSON record per sent message.
+New panics when writer is nil because output is the driver's required collaborator.
 
 ```go
 var out bytes.Buffer
@@ -621,6 +675,10 @@ driver, _ := mailmailgun.New(mailmailgun.Config{
 fmt.Println(driver != nil)
 // true
 ```
+
+#### mailmailgun.ResponseError.Error {#mailmailgun-responseerror-error}
+
+Error formats the provider status and safe correlation identifier without including response content.
 
 ### Message Model {#message-model}
 
@@ -710,6 +768,10 @@ fmt.Println(driver != nil)
 // true
 ```
 
+#### mailpostmark.ResponseError.Error {#mailpostmark-responseerror-error}
+
+Error formats provider codes and a safe correlation identifier without including response content.
+
 ### Resend {#resend}
 
 #### mailresend.Driver.Send {#mailresend-driver-send}
@@ -742,6 +804,10 @@ driver, _ := mailresend.New(mailresend.Config{
 fmt.Println(driver != nil)
 // true
 ```
+
+#### mailresend.ResponseError.Error {#mailresend-responseerror-error}
+
+Error formats the provider status and safe correlation identifier without including response content.
 
 ### SES {#ses}
 
@@ -804,6 +870,7 @@ fmt.Println(err == nil)
 #### mailsmtp.New {#mailsmtp-new}
 
 New creates an SMTP mail driver from the given config.
+TLS defaults to the configured host for ServerName, a minimum of TLS 1.2, and normal certificate verification.
 
 ```go
 driver, _ := mailsmtp.New(mailsmtp.Config{
@@ -875,6 +942,10 @@ fmt.Println(driver != nil)
 // true
 ```
 
+#### mailsendgrid.ResponseError.Error {#mailsendgrid-responseerror-error}
+
+Error formats the provider status and safe correlation identifier without including response content.
+
 ### Testing {#testing}
 
 #### mailfake.Driver.Last {#mailfake-driver-last}
@@ -917,6 +988,7 @@ Reset clears recorded messages and any configured send error.
 ```go
 fake := mailfake.New()
 _ = fake.Send(context.Background(), mail.Message{
+	From:    &mail.Recipient{Email: "no-reply@example.com"},
 	To:      []mail.Recipient{{Email: "alice@example.com"}},
 	Subject: "Welcome",
 	Text:    "hello world",
@@ -928,11 +1000,12 @@ fmt.Println(fake.SentCount())
 
 #### mailfake.Driver.Send {#mailfake-driver-send}
 
-Send records the message and returns the configured error when set.
+Send validates and records the message, returning the configured delivery error when set.
 
 ```go
 fake := mailfake.New()
 _ = fake.Send(context.Background(), mail.Message{
+	From:    &mail.Recipient{Email: "no-reply@example.com"},
 	To:      []mail.Recipient{{Email: "alice@example.com"}},
 	Subject: "Welcome",
 	Text:    "hello world",
@@ -948,6 +1021,7 @@ SentCount reports the number of recorded messages.
 ```go
 fake := mailfake.New()
 _ = fake.Send(context.Background(), mail.Message{
+	From:    &mail.Recipient{Email: "no-reply@example.com"},
 	To:      []mail.Recipient{{Email: "alice@example.com"}},
 	Subject: "Welcome",
 	Text:    "hello world",
@@ -964,6 +1038,7 @@ SetError configures the error returned by future sends.
 fake := mailfake.New()
 fake.SetError(errors.New("boom"))
 err := fake.Send(context.Background(), mail.Message{
+	From:    &mail.Recipient{Email: "no-reply@example.com"},
 	To:      []mail.Recipient{{Email: "alice@example.com"}},
 	Subject: "Welcome",
 	Text:    "hello world",
