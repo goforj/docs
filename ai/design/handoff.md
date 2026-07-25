@@ -44,17 +44,26 @@ Secondary findings:
 
 | File | What it is |
 | --- | --- |
-| `ai/design/forge-riffs.html` | **The main artifact.** Eight directions, four syntax palettes, two inline-code treatments, two code surfaces, light/dark, plus a full component showcase. Open in a browser. |
-| `ai/design/brand-directions.html` | The first-round exploration (Forge Iron / Blueprint / Molten). Superseded but kept for the reasoning. |
+| `docs/public/design-spec.html` | **The main artifact.** Eight directions, four syntax palettes, two inline-code treatments, two code surfaces, light/dark, plus a full component showcase. Served at `/design-spec.html`. |
 
-`forge-riffs.html` has five independent switchers in the header — direction, mode, syntax,
+Formerly `ai/design/forge-riffs.html`. It now lives in `docs/public/` and ships with the site, so
+it can be linked and shared rather than passed around as a local file. It carries a
+`robots: noindex, nofollow` tag: it is a real public URL, but not a docs page.
+
+There is no second copy — `docs/public/design-spec.html` is the only one. Do not reintroduce a
+mirror under `ai/design/`; the two will drift.
+
+`ai/design/brand-directions.html` (the first-round Forge Iron / Blueprint / Molten exploration) is
+referenced in older notes but is no longer in the tree.
+
+`design-spec.html` has five independent switchers in the header — direction, mode, syntax,
 inline code, code surface. They compose, so any direction can be viewed with any combination.
 
 **Every switcher is in the URL**, so a specific combination is a shareable address and this file
 works as a long-term reference base:
 
 ```
-ai/design/forge-riffs.html#dir=temper&mode=dark&syn=warm&code=warm&well=lifted
+/design-spec.html#dir=temper&mode=dark&syn=warm&code=warm&well=lifted
 ```
 
 There is a **Copy link** button top right. The file opens on the decided combination: Temper,
@@ -65,9 +74,14 @@ Under the palette there is a **plane-separation readout** showing both WCAG rati
 every surface against the page ground. It exists because those two metrics disagree, and the
 disagreement matters — see *Verification method*.
 
-Both files are standalone HTML with no build step. They load fonts from Google Fonts, so they
-need network access. They are **not** served by VitePress and must not be moved into
-`docs/public/` — that would ship them to production.
+It is standalone HTML with no build step — VitePress copies `docs/public/` verbatim, so there is
+nothing to wire up. It loads fonts from Google Fonts, so it needs network access.
+
+**This was deliberately reversed.** An earlier version of this note said these files must never be
+moved into `docs/public/` because that would ship them to production. Shipping it is now the
+point: a design reference nobody can open is a design reference nobody reads. What still holds is
+the reason behind the old rule — it is a public URL with no auth on it, so treat anything written
+in that file as published.
 
 ---
 

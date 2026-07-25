@@ -558,7 +558,10 @@ const LAYOUT = {
   runtimeZ: 0.1,
   coreInsetX: 0.52,
   coreInsetY: 0.4,
-  coreHeight: 1.92,
+  /* Was 1.92. That spent roughly half the frame on an object carrying
+     no information; the vertical space belongs to the tower, which is
+     where the content is. */
+  coreHeight: 1.4,
   platformHeight: 0.1,
   rearShelfInsetX: 0.12,
   rearShelfDepth: 1.34,
@@ -761,7 +764,11 @@ const scene = computed(() => {
       label: 'RUNTIME',
       icon: 'go',
       labelFace: 'left',
-      color: '#1C1524',
+      /* The plinth was #1C1524, about one step off the #0C0A0E ground,
+         so the base of the composition was effectively invisible and
+         the whole tower read as hovering. It needs enough separation
+         to be an object the rest of the scene stands on. */
+      color: '#332A40',
       textColor: '#FF5E3A',
       labelSize: 18,
       iconScale: 1.32,
@@ -834,7 +841,7 @@ const scene = computed(() => {
       d: 0.66,
       h: 0.68
     }
-  )
+    )
 
   const placeLane = (laneGroups, shelf, options = {}) => {
     const {
@@ -1167,6 +1174,10 @@ function getGenericIconBody(icon) {
   return lucideIconBodies[icon] || ''
 }
 
+const heroViewBox = computed(() =>
+  isNarrow.value ? '14 146 1070 1020' : '0 0 800 900'
+)
+
 function catchesForgeGlow(item) {
   if (item.type !== 'block') return false
   if (item.id === 'core' || item.id === 'runtime' || item.id === 'ground' || item.id === 'platform-shelf') return false
@@ -1281,7 +1292,7 @@ function adjustColor(color, amount) {
         <svg
           class="gf-hero-svg"
           :class="{ 'is-striking': strikeActive }"
-          :viewBox="isNarrow ? '20 30 1060 1050' : '0 0 800 900'"
+          :viewBox="heroViewBox"
           preserveAspectRatio="xMidYMid meet"
           aria-labelledby="gf-forge-title gf-forge-description"
           :style="{ transform: `translate3d(${parallax.x.toFixed(2)}px, ${parallax.y.toFixed(2)}px, 0)` }"
@@ -1359,11 +1370,15 @@ function adjustColor(color, amount) {
               <stop offset="0%" stop-color="#ffe0ba" stop-opacity="0.22" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
+            <!-- Two stops, not four. This previously ran #ff9a47 to
+                 #43100f — close to the full lightness range — while every
+                 tile top face in the scene spans about 35 points. That
+                 mismatch made the largest surface in the drawing read as a
+                 vignette rather than a hot plate, and sent the far end of
+                 the slab to near-black for no reason an object would. -->
             <linearGradient id="forge-core-top" x1="10%" y1="10%" x2="90%" y2="90%">
-              <stop offset="0%" stop-color="#ff9a47" />
-              <stop offset="28%" stop-color="#c5341c" />
-              <stop offset="72%" stop-color="#781710" />
-              <stop offset="100%" stop-color="#43100f" />
+              <stop offset="0%" stop-color="#ff8a3d" />
+              <stop offset="100%" stop-color="#c04a20" />
             </linearGradient>
             <linearGradient id="forge-core-right" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="#b92b19" />
@@ -1600,18 +1615,18 @@ function adjustColor(color, amount) {
                     <g :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
                       <g :transform="MATRIX_DOWN_RIGHT">
                         <template v-if="item.stampLabel">
-                           <text
-                             y="-24"
-                             text-anchor="middle"
-                             :fill="item.textColor"
-                             class="iso-label iso-label--core-kicker"
-                           >
-                             GOFORJ CORE
-                           </text>
+                           <!-- The GOFORJ CORE kicker was removed: it sat
+                                directly above the embossed GOFORJ stamp on the
+                                same centre axis, one repeating the other, so
+                                neither read as the mark. -->
+                           <!-- The stamp sat at y +18.5 to balance a GOFORJ CORE kicker
+                                that used to sit above it at y -24. With the kicker
+                                gone it needs to centre on the face itself; these
+                                offsets are now the emboss deltas only. -->
                            <g class="iso-stamp">
                              <text
                                x="-0.62"
-                               y="17.7"
+                               y="-0.85"
                                text-anchor="middle"
                                class="iso-stamp__highlight"
                              >
@@ -1619,7 +1634,7 @@ function adjustColor(color, amount) {
                              </text>
                              <text
                                x="1.18"
-                               y="19.7"
+                               y="1.15"
                                text-anchor="middle"
                                class="iso-stamp__depth"
                              >
@@ -1627,21 +1642,21 @@ function adjustColor(color, amount) {
                              </text>
                              <text
                                x="0.74"
-                               y="19.15"
+                               y="0.6"
                                text-anchor="middle"
                                class="iso-stamp__shadow"
                              >
                                {{ item.stampLabel }}
                              </text>
                              <text
-                               y="18.55"
+                               y="0.0"
                                text-anchor="middle"
                                class="iso-stamp__cut"
                              >
                                {{ item.stampLabel }}
                              </text>
                              <text
-                               y="18.55"
+                               y="0.0"
                                text-anchor="middle"
                                class="iso-stamp__face"
                              >
@@ -1970,11 +1985,15 @@ function adjustColor(color, amount) {
   opacity: 0;
   transition: transform 1.8s ease, opacity 1.8s ease;
   will-change: transform, opacity;
-  transform: translate3d(-80px, -10px, 0);
+  /* The scene is drawn 1038 units wide inside an 800-unit viewBox and
+     bleeds past the right edge on purpose. These offsets pull it back
+     toward the centre of the row so the slab's right end stays on
+     screen at common widths. */
+  transform: translate3d(-140px, -10px, 0);
 }
 .gf-hero-graphic.is-visible {
   opacity: 1;
-  transform: translate3d(-90px, -10px, 0);
+  transform: translate3d(-150px, -10px, 0);
 }
 .gf-hero-svg {
   width: 100%;
@@ -2214,6 +2233,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 .gf-iso-item[data-block='core'] {
   cursor: pointer;
 }
+
 @keyframes forgePulse {
   0% { opacity: 0.45; transform: translateY(0); }
   100% { opacity: 1; transform: translateY(-3px); }
@@ -2226,6 +2246,19 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 }
 .gf-block-edge--top {
   stroke: rgba(255, 255, 255, 0.18);
+}
+
+/* The base blocks carry the same hairline as every tile, but 0.12
+   white cannot survive on faces that bottom out near #2a0d0d — so
+   the largest object in the frame had no readable silhouette. The
+   base gets a stronger edge; the tiles keep the standard one. */
+.gf-iso-item[data-block='core'] .gf-block-edge,
+.gf-iso-item[data-block='runtime'] .gf-block-edge {
+  stroke: rgba(255, 255, 255, 0.30);
+}
+.gf-iso-item[data-block='core'] .gf-block-edge--top,
+.gf-iso-item[data-block='runtime'] .gf-block-edge--top {
+  stroke: rgba(255, 226, 190, 0.42);
 }
 .iso-label {
   user-select: none;
@@ -2378,11 +2411,16 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   .gf-hero-principle strong {
     margin-bottom: 0.22rem;
   }
+  /* The narrow viewBox is all but square, so pinning a landscape box
+     (28rem x 18rem) made preserveAspectRatio fit to HEIGHT — the
+     drawing rendered about 288px wide inside a 448px container with
+     dead margins either side. Sizing by width instead lets it fill
+     the column. */
   .gf-hero-graphic {
     width: 100%;
-    height: 18rem;
-    max-width: 28rem;
-    overflow: hidden;
+    max-width: none;
+    height: auto;
+    overflow: visible;
     transform: translate(0, 0);
   }
   .gf-hero-graphic.is-visible {
@@ -2390,8 +2428,8 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   }
   .gf-hero-svg {
     width: 100%;
-    height: 100%;
-    max-height: 18rem;
+    height: auto;
+    max-height: none;
   }
   .gf-hero-actions {
     flex-direction: column;
@@ -2436,11 +2474,9 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   .gf-hero-title {
     font-size: 2.25rem;
   }
+  /* Still width-driven at the smallest sizes; no height cap. */
   .gf-hero-graphic {
-    height: 14rem;
-  }
-  .gf-hero-svg {
-    max-height: 14rem;
+    height: auto;
   }
 }
 </style>
