@@ -373,6 +373,37 @@ const BRAND_ICON_KEYS = {
   ollama: 'ollama'
 }
 
+/* ============================================================
+   TILE PALETTE
+   ------------------------------------------------------------
+   Every tile whose vendor identity is cool used to be blue, and
+   a bulk sweep flattened all of them onto the action orange
+   (#FF5E3A). Twenty-two tiles ended up sharing one hex, which
+   cost the tower its readability and turned the action colour
+   into decoration — precisely the erosion the design handoff's
+   closing caution warns about.
+
+   The fix follows the Ember syntax palette's thesis rather than
+   inventing a new one: WARM-DOMINANT, WITH A SINGLE COOL ANCHOR.
+   Ember anchors on --s-type #9BD7C4; COOL_* is that mint carried
+   down to tile weight, where a white glyph still reads (~2.4:1
+   at the light end, matching the untouched #42b883 Vue tile).
+   Five steps so neighbouring tiles in a row never share a value.
+
+   Warm secondaries come from Ember's --s-func (#FFC24D) and
+   --s-string (#D9CE7A), same treatment.
+
+   Rule: --gf-accent stays reserved for GoForj's own primitives
+   (Env, Local Storage). Vendors carry a hue of their own.
+   ============================================================ */
+const COOL_1 = '#4FB8A6'
+const COOL_2 = '#2F9A8B'
+const COOL_3 = '#2A8A93'
+const COOL_4 = '#2E7A8E'
+const COOL_5 = '#2C6478'
+const GOLD = '#C98F2B'
+const KHAKI = '#9E9440'
+
 const GROUP_CONFIG = [
   {
     id: 'frontend',
@@ -385,7 +416,7 @@ const GROUP_CONFIG = [
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
+      { id: 'frontend-react', icon: 'react', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
       { id: 'frontend-templ', icon: 'templ', color: '#f97316', textColor: '#ffffff', iconColor: '#ffffff', title: 'templ', href: 'https://templ.guide/' }
     ]
   },
@@ -411,8 +442,8 @@ const GROUP_CONFIG = [
           { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
           { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/httpx' },
           { id: 'core-env', icon: 'shield-check', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
-          { id: 'core-crypt', icon: 'key-round', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
-          { id: 'core-console', icon: 'terminal', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
+          { id: 'core-crypt', icon: 'key-round', color: GOLD, textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
+          { id: 'core-console', icon: 'terminal', color: KHAKI, textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
         ]
       },
       {
@@ -425,7 +456,7 @@ const GROUP_CONFIG = [
         children: [
           { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Queue', href: 'https://redis.io/' },
           { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff', title: 'RabbitMQ Queue', href: 'https://www.rabbitmq.com/' },
-          { id: 'queue-nats', icon: 'nats', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
+          { id: 'queue-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
           { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SQS Queue', href: 'https://aws.amazon.com/sqs/' },
           { id: 'queue-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
           { id: 'queue-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
@@ -440,12 +471,12 @@ const GROUP_CONFIG = [
         title: 'Events library',
         href: '/events',
         children: [
-          { id: 'events-nats', icon: 'nats', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
-          { id: 'events-jetstream', icon: 'jetstream', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
+          { id: 'events-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
+          { id: 'events-jetstream', icon: 'jetstream', color: COOL_1, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
           { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Events', href: 'https://redis.io/' },
           { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff', title: 'Kafka Events', href: 'https://kafka.apache.org/' },
           { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SNS Events', href: 'https://aws.amazon.com/sns/' },
-          { id: 'events-gcppubsub', icon: 'gcs', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
+          { id: 'events-gcppubsub', icon: 'gcs', color: COOL_4, textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
         ]
       },
       {
@@ -460,11 +491,11 @@ const GROUP_CONFIG = [
           { id: 'storage-memory', icon: 'memory', color: '#766D7E', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
           { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Storage', href: 'https://redis.io/' },
           { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff', title: 'FTP Storage', href: 'https://filezilla-project.org/' },
-          { id: 'storage-sftp', icon: 'sftp', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
+          { id: 'storage-sftp', icon: 'sftp', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
           { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon S3 Storage', href: 'https://aws.amazon.com/s3/' },
-          { id: 'storage-gcs', icon: 'gcs', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
-          { id: 'storage-dropbox', icon: 'dropbox', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
-          { id: 'storage-rclone', icon: 'rclone', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
+          { id: 'storage-gcs', icon: 'gcs', color: COOL_4, textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
+          { id: 'storage-dropbox', icon: 'dropbox', color: COOL_5, textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
+          { id: 'storage-rclone', icon: 'rclone', color: COOL_1, textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
         ]
       },
       {
@@ -489,15 +520,15 @@ const GROUP_CONFIG = [
         title: 'Cache library',
         href: '/cache',
         children: [
-          { id: 'cache-file', icon: 'file', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
+          { id: 'cache-file', icon: 'file', color: GOLD, textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
           { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/cache' },
-          { id: 'cache-memcached', icon: 'memcached', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
+          { id: 'cache-memcached', icon: 'memcached', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
           { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Cache', href: 'https://redis.io/' },
-          { id: 'cache-nats', icon: 'nats', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
+          { id: 'cache-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
           { id: 'cache-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
           { id: 'cache-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
           { id: 'cache-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
-          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
+          { id: 'cache-dynamodb', icon: 'dynamodb', color: COOL_5, textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
         ]
       }
     ],
@@ -515,7 +546,7 @@ const GROUP_CONFIG = [
     children: [
       { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'Codex' },
       { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude Code' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
+      { id: 'ai-gemini', icon: 'gemini', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
       { id: 'ai-copilot', icon: 'copilot', color: '#2A262D', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
     ]
   }
@@ -1744,36 +1775,35 @@ function adjustColor(color, amount) {
   opacity: 1;
   transform: translateY(0);
 }
-.gf-hero-eyebrow {
-  margin: 0 0 0.85rem;
-  color: rgba(255, 194, 77, 0.9);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
+/* Eyebrow, install chip and principle cards are styled by the
+   "TEMPER — hero" block in custom.css. They are deliberately NOT
+   restyled here: scoped rules compile to `.class[data-v-hash]`,
+   which outranks a single-class global, so anything declared in
+   this file silently wins over the token layer. Only layout that
+   the Temper block does not own belongs in these rules. */
+
 .gf-hero-title {
   font-size: clamp(4rem, 4.6vw, 4.6rem);
-  font-weight: 780;
+  font-weight: 700;
   line-height: 0.96;
-  letter-spacing: -0.048em;
-  color: var(--vp-c-text-1);
+  letter-spacing: -0.045em;
+  color: var(--gf-ink);
   max-width: 12ch;
   text-wrap: balance;
   margin-bottom: 1.45rem;
 }
-.gf-hero-headline {
-  background: linear-gradient(to bottom right, var(--vp-c-text-1) 30%, var(--vp-c-text-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-}
+/* .gf-hero-headline carries no colour of its own — the flat ink of
+   .gf-hero-title, with the <em> lifted to --gf-accent by custom.css.
+   It previously held a background-clip:text gradient with no
+   -webkit-text-fill-color, so it painted nothing and contradicted
+   Temper's flat-ink spec at the same time. */
 .gf-hero-tagline {
   font-size: 1.14rem;
   line-height: 1.62;
-  color: var(--vp-c-text-2);
+  color: var(--gf-ink-2);
   max-width: 42rem;
   margin-bottom: 1.15rem;
-  font-weight: 430;
+  font-weight: 400;
 }
 .gf-hero-principles {
   display: grid;
@@ -1782,35 +1812,20 @@ function adjustColor(color, amount) {
   max-width: 43rem;
   margin: 1.35rem 0 0;
 }
+/* Surface, hairline, radius, padding and type all come from the
+   Temper block. Only the equal-height floor stays local. The inset
+   white top-highlight is gone: Temper cards are a flat surface and
+   a hairline, with no simulated lighting. */
 .gf-hero-principle {
   min-height: 5.6rem;
-  padding: 0.78rem;
-  border: 1px solid rgba(166, 156, 176, 0.13);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
-    rgba(21, 18, 24, 0.32);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
-}
-.gf-hero-principle strong {
-  display: block;
-  margin-bottom: 0.35rem;
-  color: rgba(250, 248, 252, 0.92);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
 }
 .gf-hero-principle span {
   display: block;
-  color: rgba(214, 208, 220, 0.72);
-  font-size: 0.74rem;
-  font-weight: 520;
-  line-height: 1.38;
 }
 .gf-hero-story {
   max-width: 560px;
   margin: 0 0 3rem;
-  color: rgba(233, 229, 237, 0.72);
+  color: var(--gf-ink-2);
   font-size: 0.98rem;
   line-height: 1.7;
 }
@@ -1818,32 +1833,24 @@ function adjustColor(color, amount) {
   display: flex;
   gap: 0.8rem;
 }
+/* Border, surface, radius, padding, mono face and ink are Temper's.
+   The chip was on a 12px radius against a system scale of 6/8/12
+   and a bespoke translucent ground; both are now the token values. */
 .gf-hero-install {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
   margin-top: 1.05rem;
-  padding: 0.5rem 0.95rem;
-  border: 1px solid rgba(166, 156, 176, 0.18);
-  border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    rgba(14, 12, 16, 0.62);
-  color: rgba(233, 229, 237, 0.84);
   cursor: pointer;
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 .gf-hero-install:hover {
-  border-color: rgba(227, 214, 240, 0.34);
+  border-color: var(--gf-line-strong);
 }
 .gf-hero-install__prompt {
-  color: rgba(255, 154, 96, 0.92);
-  font-family: var(--vp-font-family-mono);
+  font-family: var(--gf-font-mono);
   font-size: 0.82rem;
   font-weight: 700;
 }
 .gf-hero-install__cmd {
-  font-family: var(--vp-font-family-mono);
+  font-family: var(--gf-font-mono);
   font-size: 0.8rem;
   letter-spacing: -0.01em;
   background: transparent;
@@ -1862,31 +1869,36 @@ function adjustColor(color, amount) {
   border: 0;
   border-left: 1px solid var(--gf-line);
   border-radius: 0;
-  color: var(--gf-ink-3);
+  /* --gf-ink-3 is AA-large only (3.6:1 here) and the handoff limits
+     it to decorative text. COPY is an affordance label people have
+     to read, so it sits on --gf-ink-2 (7.0:1). */
+  color: var(--gf-ink-2);
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+/* Status is Temper's third system, not action or navigation: --tip. */
 .gf-hero-install.is-copied .gf-hero-install__state {
-  border-color: rgba(125, 211, 160, 0.5);
-  color: rgba(157, 235, 192, 0.92);
+  border-color: rgba(95, 207, 168, 0.5);
+  color: #5fcfa8;
 }
 .gf-hero-version {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 0.5rem;
   margin: 0.55rem 0 0;
-  color: rgba(166, 156, 176, 0.68);
+  color: var(--gf-ink-2);
   font-size: 0.7rem;
   line-height: 1.4;
 }
+/* These are real links, so navigation gold is the correct role here. */
 .gf-hero-version a {
-  color: rgba(255, 194, 77, 0.86);
+  color: var(--gf-nav);
   text-decoration: none;
 }
 .gf-hero-version a:hover {
-  color: rgba(226, 214, 239, 1);
+  color: var(--gf-nav-hi);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -2119,25 +2131,28 @@ function adjustColor(color, amount) {
   gap: 2px;
   pointer-events: none;
   padding: 5px 12px;
-  border: 1px solid rgba(255, 194, 77, 0.3);
-  border-radius: 8px;
-  background: rgba(13, 11, 15, 0.92);
-  color: rgba(245, 242, 248, 0.96);
+  /* Was a gold hairline. Nothing about a tooltip is navigation, and
+     Temper's gold is reserved for links and line-form nav marks. A
+     tooltip is "neither" — surface plus a neutral hairline. */
+  border: 1px solid var(--gf-line-strong);
+  border-radius: var(--gf-radius);
+  background: var(--gf-surface-2);
+  color: var(--gf-ink);
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
   overflow-wrap: anywhere;
   white-space: normal;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 .gf-hero-tip--rich {
   padding: 8px 13px;
-  border-radius: 8px;
+  border-radius: var(--gf-radius);
 }
 .gf-hero-tip span {
-  color: rgba(206, 196, 215, 0.78);
+  color: var(--gf-ink-2);
   font-size: 0.7rem;
-  font-weight: 550;
+  font-weight: 400;
   letter-spacing: 0.01em;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2335,9 +2350,11 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   .gf-hero-container {
     gap: 1.65rem;
   }
+  /* One step under the Temper block's 11px, not a rem value that
+     no longer relates to it. */
   .gf-hero-eyebrow {
     margin-bottom: 0.65rem;
-    font-size: 0.68rem;
+    font-size: 10px;
   }
   .gf-hero-title {
     margin-bottom: 0.9rem;
