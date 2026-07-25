@@ -1150,11 +1150,15 @@ html.gf-lightbox-open body {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
+/* Temper: was the whole command in navigation gold at weight
+   900. Gold means "this takes you somewhere"; a shell command
+   is code. Plain Ember ink, normal weight — the $ and the
+   binary get their own colours below. */
 .gf-starter-command-card__command span {
-    color: rgba(255, 194, 77, 0.92);
-    font-family: var(--vp-font-family-mono);
+    color: #E4DDE8;
+    font-family: var(--gf-font-mono);
     font-size: 0.88rem;
-    font-weight: 900;
+    font-weight: 400;
 }
 
 .gf-starter-command-card code {
@@ -5937,4 +5941,388 @@ body,
 }
 @media (max-width: 959px) {
     .VPDoc { border-left: 0; }
+}
+
+/* ============================================================
+   TEMPER — buttons rendered from markdown links
+   ------------------------------------------------------------
+   ROOT CAUSE, and it was mine. `.VPDoc .vp-doc a { color: nav }`
+   was painting these gold — they are markdown links that happen
+   to be styled as buttons, so a rule written for prose links
+   caught them. The result was NAVIGATION gold ink sitting on an
+   ACTION orange fill: both roles at once, and 2.2:1 to boot.
+
+   This is the same class of leak site-theme-system.md warns
+   about for .vp-doc on the home layout, just pointed the other
+   way — the selector is correctly scoped to docs, but "a link
+   inside prose" and "a button inside prose" are not the same
+   thing and one selector cannot serve both.
+
+   Fix in two parts: exclude action containers from the prose
+   link colour, then give those containers the real button
+   treatment from the mock (.m-btn).
+   ============================================================ */
+.VPDoc .vp-doc .gf-starter-actions a,
+.VPDoc .vp-doc .gf-starter-support-cta a,
+.VPDoc .vp-doc .gf-home-links a,
+.VPDoc .vp-doc .gf-hero-btn,
+.VPDoc .vp-doc .gf-home-btn {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* --- The button treatment, shared ------------------------
+   .m-btn: 14.5px / 600, padding 12px 22px, radius 8px.
+   First action is PRIMARY — filled accent, on-accent ink.
+   The rest are ghosts — transparent, ink, line-strong edge. */
+.gf-starter-actions a,
+.gf-starter-support-cta a,
+.gf-home-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--gf-font-body);
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 12px 22px;
+    height: auto;
+    border-radius: var(--gf-radius);
+    background: transparent;
+    border: 1px solid var(--gf-line-strong);
+    color: var(--gf-ink);
+    box-shadow: none;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.gf-starter-actions a:hover,
+.gf-starter-support-cta a:hover,
+.gf-home-links a:hover {
+    background: transparent;
+    border-color: var(--gf-ink-3);
+    transform: none;
+}
+.gf-starter-actions a:first-child,
+.gf-starter-support-cta a:first-child,
+.gf-home-links a:first-child {
+    background: var(--gf-accent);
+    border-color: var(--gf-accent);
+    color: var(--gf-on-accent);
+    box-shadow: none;
+}
+.gf-starter-actions a:first-child:hover,
+.gf-starter-support-cta a:first-child:hover,
+.gf-home-links a:first-child:hover {
+    background: var(--gf-accent-hi);
+    border-color: var(--gf-accent-hi);
+    box-shadow: none;
+}
+
+/* --- Marketing eyebrows ----------------------------------
+   Same treatment as the hero: accent, mono, leading rule.
+   inline-flex so centred sections still centre it. */
+.gf-starter-eyebrow,
+.gf-starter-hero__eyebrow,
+.gf-blog-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--gf-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--gf-accent);
+}
+.gf-starter-eyebrow::before,
+.gf-starter-hero__eyebrow::before,
+.gf-blog-eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: var(--gf-accent);
+    flex: none;
+}
+
+/* --- Button ink, at the right specificity ----------------
+   The exclusion above set `color: inherit` at (0,4,0) to stop
+   the prose-link gold, which then outranked the button rules
+   at (0,2,0) and left the primary white on orange — 3.04:1,
+   the exact failure the exclusion existed to prevent.
+
+   Setting the colours at the same depth as the exclusion
+   instead of trying to out-general it. */
+.VPDoc .vp-doc .gf-starter-actions a,
+.VPDoc .vp-doc .gf-starter-support-cta a,
+.VPDoc .vp-doc .gf-home-links a {
+    color: var(--gf-ink);
+}
+.VPDoc .vp-doc .gf-starter-actions a:first-child,
+.VPDoc .vp-doc .gf-starter-support-cta a:first-child,
+.VPDoc .vp-doc .gf-home-links a:first-child {
+    color: var(--gf-on-accent);   /* 6.62:1 on the accent fill */
+}
+
+/* ============================================================
+   TEMPER — starter kit cards
+   ------------------------------------------------------------
+   Every card was tinted with its framework's brand colour, fed
+   from --gf-starter-kit-accent into the card wash, the mark
+   box, the subtitle, the tags and the shadow.
+
+   That is a FIFTH meaning for colour in a system that allows
+   four, and it collides with three of them outright:
+
+     React  rgba(255,194,77)  = Temper's NAVIGATION gold exactly
+     Vue    rgb(66,184,131)   ~ Temper's TIP green
+     templ  rgb(255,154,96)   ~ Temper's ACTION orange
+
+   So the React card was reading as a link, the Vue card as a
+   success state, and the templ card as a button. Not a taste
+   problem — three cards were claiming reserved roles.
+
+   Cards are NEITHER: neutral surface, hairline, no colour.
+
+   The one exception is the LOGO GLYPH. A framework's mark is
+   identity rather than system state, and a logo is the place a
+   foreign brand colour is legitimate — it is an image, not a
+   signal. So the glyph keeps its colour and everything around
+   it goes neutral, which is also what makes the marks read as
+   logos instead of as status chips.
+   ============================================================ */
+.gf-starter-kit-card {
+    background: var(--gf-surface);
+    border: 1px solid var(--gf-line);
+    box-shadow: none;
+}
+.gf-starter-kit-card::before {
+    background: none;
+}
+.gf-starter-kit-card:hover {
+    border-color: var(--gf-line-strong);
+    box-shadow: none;
+}
+/* Mark: neutral tile, glyph keeps the framework colour. */
+.gf-starter-kit-card__mark {
+    border: 1px solid var(--gf-line-strong);
+    background: var(--gf-surface-2);
+    box-shadow: none;
+}
+/* Subtitle was the framework colour; it is a label, so it is ink. */
+.gf-starter-kit-card strong {
+    color: var(--gf-ink);
+}
+/* Tag pills: neutral surface, muted ink. */
+.gf-starter-kit-card code {
+    background: var(--gf-surface-2);
+    border: 1px solid var(--gf-line);
+    color: var(--gf-ink-2);
+}
+
+/* --- Card planes on the deep marketing ground -------------
+   --gf-surface (#2C2734, L* 16.7) was calibrated against the
+   docs COLUMN at L* 8.11, where it is a +8.6 step. On the
+   marketing pages the ground is #0C0A0E at L* 2.95, so the same
+   token becomes a +13.7 step — 1.6x the intended lift, across a
+   very large area. That is why the cards read as pale blocks
+   rather than as panels: the value was right, the ground it was
+   measured from was not.
+
+   Re-derived against the deep ground by reusing the column
+   value. Content sits at #1A1620 everywhere — as a column in
+   the docs, as a card on the marketing pages — and takes the
+   same +5.16 step in both. One number, one relationship.
+
+   Nested surfaces inside a card step up from there, so the
+   ladder still climbs where it needs to. */
+/* NOTE: .gf-starter-pillars > * was in this list and should not
+   have been. Those items have padding:0 and radius:0 because
+   they were never cards — they are icon-and-label facts. Giving
+   them a border and a fill turned four three-word notes into
+   four boxes with no interior space. Removed; styled as facts
+   further down. A rule that says "cards on the deep ground"
+   should name cards, not every direct child of a container. */
+.gf-home:not(.VPDoc) .gf-starter-kit-card,
+.gf-starter-page .gf-starter-kit-card,
+.gf-starter-page .gf-starter-command-card,
+.gf-home-card,
+.gf-hero-principle {
+    background: var(--gf-ground);
+    border: 1px solid var(--gf-line);
+}
+.gf-starter-page .gf-starter-kit-card__mark,
+.gf-starter-page .gf-starter-kit-card code {
+    background: var(--gf-surface);
+    border-color: var(--gf-line-strong);
+}
+
+/* ============================================================
+   TEMPER — navigation gold used as emphasis
+   ------------------------------------------------------------
+   Audit found gold on a run of elements that are not links:
+
+     .gf-starter-pillars strong   "Source first", "No lock-in"...
+     .gf-starter-command-card__token   the whole shell command
+     the Copy button's border
+
+   Navigation is "always text or line" — but the rule that
+   matters is the OTHER half of it: gold means this thing takes
+   you somewhere. Using it for bold emphasis is the erosion
+   handoff.md predicts, because it is the easiest mistake to
+   make: gold reads as "important", and important is not a role.
+
+   A pillar heading is emphasis -> ink.
+   A shell command is code -> the code well and syntax colours.
+   Copy is an action -> filled, or a neutral ghost. Never gold.
+   ============================================================ */
+
+/* --- Pillars: emphasis is weight and ink, not colour ----- */
+.gf-starter-pillars strong,
+.gf-starter-pillars b {
+    color: var(--gf-ink);
+    font-weight: 600;
+}
+/* The icon beside it is decoration, so it can stay warm — but
+   as the ACTION accent, which is what a mark is, not gold. */
+.gf-starter-pillars svg,
+.gf-starter-pillars [class*='icon'] {
+    color: var(--gf-accent);
+}
+
+/* --- The command block is a code well -------------------
+   It was a translucent panel with the entire command in gold
+   at weight 900. Code goes in the well, at the well's depth,
+   in the syntax palette. */
+.gf-starter-command-card__command {
+    background: var(--gf-code-well);
+    border: 1px solid var(--gf-line);
+    border-radius: var(--gf-radius);
+    box-shadow:
+        inset 0 2px 5px -3px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+.gf-starter-command-card__command,
+.gf-starter-command-card__token {
+    font-family: var(--gf-font-mono);
+    font-weight: 400;
+    color: #E4DDE8;                    /* Ember plain */
+}
+/* $ prompt is the one accent mark in the block. */
+.gf-starter-command-card__command > span:first-child,
+.gf-starter-command-card__prompt {
+    color: var(--gf-accent);
+    font-weight: 500;
+}
+/* The binary reads as the function; flags and placeholders sit
+   back — same relationships the Ember palette uses in fenced
+   code, so a command looks the same wherever it appears. */
+.gf-starter-command-card__token:nth-of-type(1) { color: #FFC24D; }
+.gf-starter-command-card__token { color: #E4DDE8; }
+.gf-starter-command-card__token[class*='flag'],
+.gf-starter-command-card__token[class*='arg'] { color: #9089A0; }
+
+/* --- Copy is an action ---------------------------------- */
+.gf-starter-command-card button,
+.gf-starter-command-card__copy {
+    background: var(--gf-surface);
+    border: 1px solid var(--gf-line-strong);
+    color: var(--gf-ink-2);
+    border-radius: var(--gf-radius-sm);
+    font-family: var(--gf-font-body);
+    font-weight: 500;
+}
+.gf-starter-command-card button:hover,
+.gf-starter-command-card__copy:hover {
+    background: var(--gf-surface-2);
+    border-color: var(--gf-ink-3);
+    color: var(--gf-ink);
+}
+
+/* Command tokens, at the depth of the original rule. */
+.gf-starter-command-card__command span.gf-starter-command-card__prompt,
+.gf-starter-command-card__command > span:first-child {
+    color: var(--gf-accent);
+    font-weight: 500;
+}
+.gf-starter-command-card__command span.gf-starter-command-card__token:first-of-type {
+    color: #FFC24D;                 /* the binary, as Ember paints a function */
+}
+
+/* --- Pillars: facts, not cards ---------------------------
+   Four items of three words each. At 145px wide inside a
+   bordered box they wrapped to three lines with no padding, so
+   the box was mostly edge. They read better as a row of plain
+   facts: accent mark, ink label, muted line under it, and a
+   single hairline above the row to group them.
+
+   auto-fit rather than a fixed 4-up so they reflow instead of
+   crushing when the column narrows. */
+.gf-starter-pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 22px 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gf-line);
+}
+.gf-starter-pillars > * {
+    background: none;
+    border: 0;
+    padding: 0;
+    display: block;
+}
+.gf-starter-pillars strong,
+.gf-starter-pillars b {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gf-ink);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+.gf-starter-pillars svg,
+.gf-starter-pillars [class*='icon'] {
+    color: var(--gf-accent);
+    flex: none;
+    width: 15px;
+    height: 15px;
+}
+.gf-starter-pillars > * > *:not(strong):not(b) {
+    color: var(--gf-ink-2);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* --- Headline emphasis, generalised ----------------------
+   The hero already did this via .gf-hero-headline em. Making
+   it the rule for every marketing headline rather than a
+   one-off, so <em> in a headline consistently means "the
+   accent lands here".
+
+   font-style:normal because the accent IS the emphasis —
+   italicising as well would be saying it twice. And it stays
+   an ACTION colour used as a filled mark on type, never gold,
+   so a headline can never be mistaken for a link. */
+.gf-starter-page h1 em,
+.gf-starter-page h2 em,
+.gf-starter-hero h1 em,
+.gf-starter-support-hero h2 em,
+.gf-home-h2 em,
+.gf-home h1 em,
+.gf-home h2 em,
+.gf-hero-headline em,
+.gf-hero-title em,
+.gf-blog-card-title em {
+    font-style: normal;
+    color: var(--gf-accent);
+}
+
+/* --- Pillars: 2x2 rather than 3+1 ------------------------
+   auto-fit at minmax(148px) resolved to three columns in a
+   629px container, which left a single orphan on row two.
+   Two columns gives each fact enough width for a one-line
+   description and reads as a deliberate block. */
+.gf-starter-pillars {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 28px;
+}
+@media (max-width: 640px) {
+    .gf-starter-pillars { grid-template-columns: 1fr; }
 }

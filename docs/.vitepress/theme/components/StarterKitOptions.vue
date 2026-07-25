@@ -44,7 +44,7 @@ async function copyStarterCommand() {
     <div class="gf-starter-support-hero">
       <div>
         <p class="gf-starter-eyebrow">Supported Starter Kits</p>
-        <h2>Choose how you want to build your App</h2>
+        <h2>Choose how you want to <em>build your App</em></h2>
         <p>
           Different teams, different preferences. Every starter kit generates source code directly
           into your App, so the starting point is useful without becoming a hidden runtime.

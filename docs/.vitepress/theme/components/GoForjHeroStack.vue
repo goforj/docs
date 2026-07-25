@@ -1718,9 +1718,12 @@ function adjustColor(color, amount) {
   width: 100%;
   padding: 1.35rem 2rem 5rem;
   overflow: visible;
-  background:
-    radial-gradient(circle at 76% 32%, rgba(255, 94, 58, 0.12) 0%, transparent 34%),
-    radial-gradient(circle at 66% 42%, rgba(214, 53, 26, 0.06) 0%, transparent 28%);
+  /* Temper's --glow token geometry, verbatim from the prototype:
+     top-anchored ambient heat over the whole hero, not a bloom
+     centred on the illustration. The old pair of gradients sat at
+     76%/32% and 66%/42%, which stacked warm light directly behind
+     the tower — the warmest object on the page already. */
+  background: radial-gradient(58% 46% at 68% -5%, rgba(255, 94, 58, 0.18), transparent 70%);
 }
 .gf-hero-container {
   max-width: 1280px;
