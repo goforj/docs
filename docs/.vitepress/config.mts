@@ -843,52 +843,81 @@ export default defineConfig({
     logo: '/assets/goforj-v7.png',
 
     nav: [
+      // Four entries plus the version menu, arrived at by MERGING rather
+      // than deleting — nothing here became unreachable.
+      //
+      // The navbar competes with the sidebar, which already shows the full
+      // tree for whatever section you are in. So the navbar's job is not to
+      // expose structure, it is to switch MODE: I'm new / I'm building
+      // something specific / I need a package API / I need to look something
+      // up. Four modes, four entries.
+      //
+      // What changed and why:
+      //   Build + Runtime -> Guides. Neither was a destination anyone asks
+      //     for; they were shelves. "Build" also reads as `forj build`, and
+      //     "Runtime" collided with the Runtime Lifecycle and Runtime
+      //     Topology pages inside Core Concepts. Merged into one dropdown,
+      //     grouped, so the labels people actually search for — Security,
+      //     Testing, Async — are visible at the top level instead of two
+      //     clicks down behind an abstraction.
+      //   Starter Kits -> inside Getting Started. It is a first-visit
+      //     destination, and that is exactly the mode Getting Started owns.
+      //   What is GoForj? -> promoted to first. It is what someone reads
+      //     BEFORE the quickstart; it was sitting last.
+      //   Blog -> footer. Low frequency, and the version menu already
+      //     carries the "what changed" signal.
       {
         text: 'Getting Started',
         items: [
+          { text: 'What is GoForj?', link: '/about' },
           { text: 'Overview', link: '/getting-started/' },
           { text: 'Quickstart', link: '/getting-started/quickstart' },
-          { text: 'Cookbook', link: '/cookbook' },
-          { text: 'What is GoForj?', link: '/about' }
+          { text: 'Starter Kits', link: '/starter-kits' },
+          { text: 'Cookbook', link: '/cookbook' }
         ]
       },
       { text: 'Core Concepts', link: '/core/' },
       {
-        text: 'Build',
+        text: 'Guides',
         items: [
-          { text: 'Applications', link: '/applications/' },
-          { text: 'Runnable Scenarios', link: '/scenarios/' },
-          { text: 'Data and Persistence', link: '/data/' },
-          { text: 'Security', link: '/security/' },
-          { text: 'Frontend', link: '/frontend/' },
-          { text: 'Testing', link: '/testing/' }
-        ]
-      },
-      {
-        text: 'Runtime',
-        items: [
-          { text: 'Async', link: '/async/' },
-          { text: 'Operations', link: '/operations/' },
-          { text: 'Developer Tools', link: '/developer-tools/' }
+          {
+            text: 'Build',
+            items: [
+              { text: 'Applications', link: '/applications/' },
+              { text: 'Runnable Scenarios', link: '/scenarios/' },
+              { text: 'Data and Persistence', link: '/data/' },
+              { text: 'Security', link: '/security/' },
+              { text: 'Frontend', link: '/frontend/' },
+              { text: 'Testing', link: '/testing/' }
+            ]
+          },
+          {
+            text: 'Operate',
+            items: [
+              { text: 'Async', link: '/async/' },
+              { text: 'Operations', link: '/operations/' },
+              { text: 'Developer Tools', link: '/developer-tools/' }
+            ]
+          }
         ]
       },
       {
         text: 'Libraries',
         items: [
-          { text: 'Overview', link: '/libraries/' },
+          { text: 'All libraries', link: '/libraries/' },
           { text: 'Drivers', link: '/drivers' }
         ]
       },
-      { text: 'Starter Kits', link: '/starter-kits' },
-      { text: 'Blog', link: '/blog/' },
       { text: 'Reference', link: '/reference/' },
       {
+        // Was: 'Latest tag v0.20.0' and 'Changelog' both pointed at
+        // /versions/changelog, and 'Active development' pointed at the
+        // homepage. Three entries, two of them duplicates, one wrong.
         text: docsVersion,
         items: [
-          { text: 'Active development', link: '/' },
-          { text: 'Latest tag v0.20.0', link: '/versions/changelog' },
-          { text: 'Version Policy', link: '/versions/' },
-          { text: 'Changelog', link: '/versions/changelog' }
+          { text: 'Version policy', link: '/versions/' },
+          { text: 'Changelog', link: '/versions/changelog' },
+          { text: 'Blog', link: '/blog/' }
         ]
       }
     ],

@@ -524,10 +524,14 @@
     background: rgba(53, 45, 61, 0.56);
 }
 
+/* Sits at bottom: 14px now, matching the motion picker on the
+   left. It was pushed up to 52px to clear the code theme
+   selector that used to occupy the bottom-right corner; with
+   that gone it was floating above nothing. */
 .gf-api-index-jump {
     position: fixed;
     right: 14px;
-    bottom: 52px;
+    bottom: 14px;
     z-index: 59;
 }
 
@@ -604,7 +608,7 @@
 
     .gf-api-index-jump {
         right: 10px;
-        bottom: 46px;
+        bottom: 10px;
     }
 
 }
@@ -5876,4 +5880,61 @@ body:has(.gf-home) .VPContent {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+}
+
+/* ============================================================
+   TEMPER — docs planes, matched to the landing
+   ------------------------------------------------------------
+   Side by side with the landing the docs read grey, because the
+   canvas and all the chrome were sitting on --ground-alt while
+   the landing sits on the deep ground.
+
+   Rather than pulling the reading column back down — which
+   would undo the warmth and put the code well back on the floor
+   with nowhere to recess to — drop everything AROUND the column
+   to the landing's ground and leave the column lifted.
+
+     canvas / sidebar / nav   #0C0A0E   L*  2.95   (= landing)
+     reading column           #1A1620   L*  8.11   (+5.16)
+     code well                #0C0A0E   L*  2.95   (-5.16)
+     cards in the column      #2C2734   L* 17.14
+
+   The column becomes a lit surface on a dark page instead of the
+   whole page being lifted, so the site is as dark as the landing
+   everywhere except where you are actually reading.
+
+   The tidy part: the well lands exactly back on the canvas
+   value. Code is literally a hole through the column to the
+   page ground underneath — same depth it would have had if the
+   column were never raised.
+   ============================================================ */
+body,
+.Layout {
+    background-color: var(--gf-ground-deep);
+}
+.VPSidebar,
+.VPLocalNav {
+    background: var(--gf-ground-deep) !important;
+    border-right-color: var(--gf-line) !important;
+}
+.VPNav,
+.VPNavBar,
+.VPNavBar .wrapper,
+.VPNavBar.has-sidebar .curtain {
+    background-color: var(--gf-ground-deep);
+}
+/* The reading column stays lifted — this is the plane the
+   content, the cards and the code well are all measured from. */
+.VPContent,
+.VPContent.has-sidebar,
+.VPDoc {
+    background: var(--gf-ground);
+}
+/* Hairline where the column meets the canvas, so the step reads
+   as deliberate rather than as a rendering seam. */
+.VPDoc {
+    border-left: 1px solid var(--gf-line);
+}
+@media (max-width: 959px) {
+    .VPDoc { border-left: 0; }
 }
