@@ -10,8 +10,8 @@
         filter:
                 drop-shadow(0 0 8px rgba(0, 0, 0, 1))
                 drop-shadow(0 0 22px rgba(0, 0, 0, 0.1))
-                drop-shadow(0 0 45px rgba(255, 94, 58, 0.18))
-                drop-shadow(0 0 85px rgba(214, 53, 26, 0.14));
+                drop-shadow(0 0 45px rgba(140, 80, 255, 0.18))
+                drop-shadow(0 0 85px rgba(90, 0, 180, 0.14));
 
         will-change: filter;
     }
@@ -26,7 +26,7 @@
 
 /* Keep the navbar glass as one continuous layer. */
 .VPNavBar {
-    background: rgba(29, 28, 30, 0.42) !important;
+    background: rgba(27, 27, 31, 0.42) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -54,7 +54,7 @@
 }
 
 .content-body {
-    background: rgba(29, 28, 30, 0.25) !important;
+    background: rgba(27,27,31, 0.25) !important;
 }
 
 .VPHome .VPHero .container {
@@ -75,45 +75,34 @@
     overflow: hidden;
 }
 
-/* The forj aura.
-
-   The 88px blueprint grid is gone. It was a second texture
-   competing with the code wells for attention, and a grid says
-   "schematic" where Temper's whole premise is heat — steel
-   announcing its temperature by colour.
-
-   What is left is the heat itself: an ember bloom off the top
-   of the page, a cooler violet wash trailing behind it, and a
-   thin accent seam along the very top edge. Two hues, both from
-   the palette, no geometry.
-
-   Kept very low: this sits under the reading column, so it has
-   to be felt rather than seen. The accent stops at 5%. */
 .VPDoc::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 420px;
+    height: 460px;
     z-index: 0;
     pointer-events: none;
     background:
-        linear-gradient(180deg, rgba(255, 94, 58, 0.16), transparent 3px),
-        radial-gradient(700px 280px at 34% -6%, rgba(255, 94, 58, 0.050), transparent 70%),
-        radial-gradient(520px 240px at 76% -2%, rgba(255, 194, 77, 0.026), transparent 74%),
-        radial-gradient(900px 380px at 55% -10%, rgba(160, 138, 182, 0.030), transparent 76%);
+        radial-gradient(620px 260px at 42% 0%, rgba(92, 125, 255, 0.060), transparent 72%),
+        radial-gradient(480px 220px at 78% 2%, rgba(110, 190, 210, 0.030), transparent 76%),
+        linear-gradient(rgba(122, 147, 198, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(122, 147, 198, 0.020) 1px, transparent 1px);
+    background-size:
+        auto,
+        auto,
+        88px 88px,
+        88px 88px;
     mask-image:
-        linear-gradient(180deg, black 0, black 48%, rgba(0, 0, 0, 0.38) 70%, transparent 100%);
+        linear-gradient(180deg, black 0, black 54%, rgba(0, 0, 0, 0.42) 72%, transparent 100%);
     -webkit-mask-image:
-        linear-gradient(180deg, black 0, black 48%, rgba(0, 0, 0, 0.38) 70%, transparent 100%);
+        linear-gradient(180deg, black 0, black 54%, rgba(0, 0, 0, 0.42) 72%, transparent 100%);
 }
 
-/* Temper: --gf-ground-alt (#1D1923). Was a hardcoded near-black
-   behind !important, which is why the token had no effect. */
 .VPSidebar {
-    border-right: 1px solid var(--gf-line) !important;
-    background: var(--gf-ground-alt) !important;
+    border-right: 1px solid rgba(148, 163, 184, 0.08) !important;
+    background: rgba(19, 20, 24, 0.985) !important;
 }
 
 .VPDoc > .container {
@@ -127,17 +116,94 @@
     height: 20px;
     margin-left: 10px;
     padding: 0 8px;
-    border: 1px solid rgba(255, 194, 77, 0.24);
+    border: 1px solid rgba(140, 188, 255, 0.24);
     border-radius: 999px;
     background:
-        linear-gradient(180deg, rgba(255, 94, 58, 0.13), rgba(255, 94, 58, 0.055));
-    color: rgba(238, 230, 245, 0.82);
+        linear-gradient(180deg, rgba(117, 182, 255, 0.13), rgba(117, 182, 255, 0.055));
+    color: rgba(220, 236, 255, 0.82);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.02em;
     line-height: 1;
     white-space: nowrap;
 }
+
+.gf-docs-preview-banner {
+    position: sticky;
+    top: var(--vp-nav-height);
+    z-index: 21;
+    padding: 8px 32px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+    background:
+        linear-gradient(90deg, rgba(117, 182, 255, 0.040), rgba(255, 176, 96, 0.026) 42%, rgba(255, 255, 255, 0.008)),
+        rgba(25, 26, 31, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.gf-docs-preview-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 30px;
+    max-width: 1064px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+    color: rgba(226, 232, 240, 0.74);
+    font-size: 12.5px;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.gf-docs-preview-banner-label {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 7px;
+    border: 1px solid rgba(135, 184, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(135, 184, 255, 0.07);
+    color: rgba(225, 238, 255, 0.88);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.gf-docs-preview-banner-text {
+    color: rgba(226, 232, 240, 0.72);
+}
+
+@media (min-width: 960px) {
+    .Layout:has(.VPSidebar) .gf-docs-preview-banner {
+        padding-left: calc(var(--vp-sidebar-width) + 32px);
+    }
+}
+
+@media (max-width: 1399px) {
+    .gf-docs-preview-banner {
+        position: static;
+    }
+}
+
+@media (max-width: 760px) {
+    .gf-docs-preview-banner {
+        position: static;
+        padding: 8px 18px 0;
+    }
+
+    .gf-docs-preview-banner-inner {
+        min-height: 0;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        text-align: left;
+    }
+}
+
+
 
 .vp-code {
     font-size: .95rem !important;
@@ -158,13 +224,13 @@
     height: 30px !important;
     top: 10px !important;
     right: 10px !important;
-    border-radius: 6px !important;
+    border-radius: 4px !important;
     background-size: 16px !important;
 }
 
 .vp-doc [class*='language-'] > button.copy.copied,
 .vp-doc [class*='language-'] > button.copy:hover.copied {
-    border-radius: 0 6px 6px 0 !important;
+    border-radius: 0 4px 4px 0 !important;
 }
 
 .vp-doc [class*='language-'] > button.copy.copied::before,
@@ -173,7 +239,7 @@
     min-height: 30px !important;
     padding: 0 8px !important;
     font-size: 11px !important;
-    border-radius: 6px 0 0 6px !important;
+    border-radius: 4px 0 0 4px !important;
 }
 
 .vp-doc .gf-mermaid {
@@ -181,10 +247,10 @@
     padding: 14px;
     overflow: auto;
     max-height: 460px;
-    border: 1px solid rgba(166, 156, 176, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.18);
     border-radius: 8px;
     background:
-        linear-gradient(180deg, rgba(34, 27, 42, 0.78), rgba(28, 21, 36, 0.62));
+        linear-gradient(180deg, rgba(21, 31, 48, 0.78), rgba(15, 23, 42, 0.62));
     white-space: pre;
 }
 
@@ -210,23 +276,23 @@
 
 :root {
     --gf-code-radius: 12px;
-    --gf-code-border: rgba(158, 147, 168, 0.18);
+    --gf-code-border: rgba(138, 149, 177, 0.18);
     --gf-code-bg:
-        linear-gradient(180deg, rgba(14, 13, 16, 0.994), rgba(10, 9, 11, 0.997));
+        linear-gradient(180deg, rgba(12, 13, 17, 0.994), rgba(8, 9, 12, 0.997));
     --gf-code-shadow:
         inset 0 1px 0 rgba(255,255,255,0.006),
         0 8px 24px rgba(0, 0, 0, 0.18);
     --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.001), transparent 10%);
-    --gf-code-lang: rgba(225, 219, 231, 0.58);
+    --gf-code-lang: rgba(214, 220, 236, 0.58);
     --gf-code-line-gutter-bg: rgba(255,255,255,0.01);
     --gf-code-line-gutter-border: rgba(255, 255, 255, 0.05);
-    --gf-info-border: rgba(255, 194, 77, 0.20);
-    --gf-info-accent: rgba(255, 194, 77);
-    --gf-info-text: rgba(237, 232, 242, 0.86);
-    --gf-info-title: rgba(250, 248, 252, 0.94);
+    --gf-info-border: rgba(135, 184, 255, 0.20);
+    --gf-info-accent: rgb(135, 184, 255);
+    --gf-info-text: rgba(226, 234, 248, 0.86);
+    --gf-info-title: rgba(245, 248, 255, 0.94);
     --gf-info-bg:
-        linear-gradient(90deg, rgba(255, 94, 58, 0.095), rgba(255, 255, 255, 0.018) 38%, rgba(255, 255, 255, 0.010)),
-        rgba(34, 30, 38, 0.74);
+        linear-gradient(90deg, rgba(86, 154, 255, 0.095), rgba(255, 255, 255, 0.018) 38%, rgba(255, 255, 255, 0.010)),
+        rgba(26, 31, 42, 0.74);
     --gf-info-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.040),
         0 10px 24px rgba(0, 0, 0, 0.12);
@@ -240,6 +306,383 @@
     --gf-warning-shadow:
         inset 0 1px 0 rgba(255, 248, 230, 0.040),
         0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+html[data-gf-code-variant='glass'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(210, 226, 255, 0.16);
+    --gf-code-bg:
+        radial-gradient(1000px 220px at 15% -5%, rgba(125, 186, 255, 0.06), transparent 54%),
+        linear-gradient(180deg, rgba(22, 28, 39, 0.72), rgba(16, 20, 28, 0.68));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 14px 36px rgba(0, 0, 0, 0.20);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.012), transparent 16%);
+    --gf-code-lang: rgba(228, 235, 250, 0.68);
+}
+
+html[data-gf-code-variant='ink'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(138, 149, 177, 0.18);
+    --gf-code-bg:
+        linear-gradient(180deg, rgba(12, 13, 17, 0.994), rgba(8, 9, 12, 0.997));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.006),
+        0 8px 24px rgba(0, 0, 0, 0.18);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.001), transparent 10%);
+    --gf-code-lang: rgba(214, 220, 236, 0.58);
+    --gf-code-line-gutter-bg: rgba(255,255,255,0.01);
+}
+
+html[data-gf-code-variant='electric'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(116, 211, 255, 0.26);
+    --gf-code-bg:
+        radial-gradient(1100px 240px at 8% 0%, rgba(0, 153, 255, 0.09), transparent 52%),
+        radial-gradient(800px 220px at 92% 5%, rgba(0, 255, 224, 0.06), transparent 58%),
+        linear-gradient(180deg, rgba(10, 16, 25, 0.99), rgba(8, 11, 18, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.07),
+        inset 0 0 0 1px rgba(255,255,255,0.02),
+        0 0 0 1px rgba(0, 186, 255, 0.10),
+        0 12px 34px rgba(0, 0, 0, 0.24),
+        0 0 34px rgba(0, 153, 255, 0.12);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.018), transparent 16%);
+    --gf-code-lang: rgba(196, 240, 255, 0.70);
+    --gf-code-line-gutter-border: rgba(116, 211, 255, 0.10);
+}
+
+html[data-gf-code-variant='uv-glow'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(140, 80, 255, 0.22);
+    --gf-code-bg:
+        radial-gradient(1100px 240px at 10% 0%, rgba(140, 80, 255, 0.10), transparent 52%),
+        radial-gradient(900px 220px at 92% 6%, rgba(90, 0, 180, 0.08), transparent 58%),
+        linear-gradient(180deg, rgba(17, 16, 28, 0.992), rgba(10, 10, 17, 0.996));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        inset 0 0 0 1px rgba(255,255,255,0.018),
+        0 0 0 1px rgba(140, 80, 255, 0.08),
+        0 10px 34px rgba(0, 0, 0, 0.22);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.012), transparent 14%);
+    --gf-code-lang: rgba(224, 210, 255, 0.74);
+    --gf-code-line-gutter-border: rgba(140, 80, 255, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(140, 80, 255, 0.02), rgba(90, 0, 180, 0.01));
+}
+
+html[data-gf-code-variant='amber'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(255, 196, 96, 0.22);
+    --gf-code-bg:
+        radial-gradient(1000px 180px at 10% 0%, rgba(255, 176, 64, 0.05), transparent 46%),
+        radial-gradient(900px 140px at 90% 10%, rgba(255, 120, 60, 0.02), transparent 50%),
+        linear-gradient(180deg, rgba(28, 21, 15, 0.99), rgba(16, 12, 10, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 246, 220, 0.06),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.015),
+        0 10px 30px rgba(0, 0, 0, 0.24),
+        0 0 26px rgba(255, 145, 60, 0.10);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 226, 173, 0.018), transparent 16%);
+    --gf-code-lang: rgba(255, 225, 180, 0.72);
+    --gf-code-line-gutter-border: rgba(255, 196, 96, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(255, 196, 96, 0.03), rgba(255, 196, 96, 0.01));
+}
+
+html[data-gf-code-variant='forest'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(126, 223, 168, 0.18);
+    --gf-code-bg:
+        radial-gradient(900px 180px at 12% 0%, rgba(20, 180, 120, 0.04), transparent 48%),
+        radial-gradient(700px 160px at 88% 8%, rgba(96, 210, 120, 0.015), transparent 52%),
+        linear-gradient(180deg, rgba(15, 24, 20, 0.99), rgba(10, 16, 13, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(230, 255, 244, 0.05),
+        0 10px 28px rgba(0, 0, 0, 0.20),
+        0 0 24px rgba(45, 190, 125, 0.08);
+    --gf-code-overlay: linear-gradient(180deg, rgba(220, 255, 240, 0.012), transparent 14%);
+    --gf-code-lang: rgba(205, 240, 220, 0.66);
+    --gf-code-line-gutter-border: rgba(126, 223, 168, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(126, 223, 168, 0.025), rgba(126, 223, 168, 0.01));
+}
+
+html[data-gf-code-variant='terminal'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(78, 201, 120, 0.20);
+    --gf-code-bg:
+        linear-gradient(180deg, rgba(8, 14, 10, 0.995), rgba(5, 10, 7, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(180, 255, 200, 0.03),
+        0 8px 20px rgba(0, 0, 0, 0.22),
+        0 0 22px rgba(56, 190, 95, 0.06);
+    --gf-code-overlay: linear-gradient(180deg, rgba(120, 255, 170, 0.02), transparent 12%);
+    --gf-code-lang: rgba(152, 238, 176, 0.72);
+    --gf-code-line-gutter-border: rgba(78, 201, 120, 0.07);
+    --gf-code-line-gutter-bg: rgba(78, 201, 120, 0.012);
+}
+
+html[data-gf-code-variant='plasma'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(198, 128, 255, 0.22);
+    --gf-code-bg:
+        radial-gradient(900px 210px at 6% -2%, rgba(174, 82, 255, 0.10), transparent 50%),
+        radial-gradient(900px 220px at 96% 8%, rgba(255, 74, 216, 0.06), transparent 56%),
+        linear-gradient(180deg, rgba(20, 13, 28, 0.99), rgba(11, 8, 18, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 235, 255, 0.06),
+        inset 0 0 0 1px rgba(255,255,255,0.015),
+        0 0 0 1px rgba(170, 74, 255, 0.08),
+        0 12px 34px rgba(0, 0, 0, 0.24),
+        0 0 30px rgba(208, 86, 255, 0.11);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 220, 255, 0.014), transparent 16%);
+    --gf-code-lang: rgba(240, 206, 255, 0.72);
+    --gf-code-line-gutter-border: rgba(198, 128, 255, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(198, 128, 255, 0.02), rgba(198, 128, 255, 0.01));
+}
+
+html[data-gf-code-variant='sunset'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(255, 154, 102, 0.20);
+    --gf-code-bg:
+        radial-gradient(1000px 190px at 5% -4%, rgba(255, 99, 132, 0.06), transparent 46%),
+        radial-gradient(900px 170px at 95% 6%, rgba(255, 186, 86, 0.04), transparent 52%),
+        linear-gradient(180deg, rgba(25, 14, 22, 0.99), rgba(12, 10, 18, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 231, 223, 0.05),
+        0 12px 30px rgba(0, 0, 0, 0.24),
+        0 0 26px rgba(255, 126, 96, 0.10);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 214, 201, 0.008), transparent 14%);
+    --gf-code-lang: rgba(248, 208, 192, 0.64);
+    --gf-code-line-gutter-border: rgba(255, 154, 102, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(255, 154, 102, 0.025), rgba(255, 154, 102, 0.01));
+}
+
+html[data-gf-code-variant='paper'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(214, 202, 173, 0.18);
+    --gf-code-bg:
+        radial-gradient(900px 180px at 12% 0%, rgba(222, 206, 160, 0.06), transparent 58%),
+        linear-gradient(180deg, rgba(28, 25, 21, 0.985), rgba(19, 17, 14, 0.985));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 247, 229, 0.05),
+        inset 0 0 0 1px rgba(255,255,255,0.012),
+        0 8px 22px rgba(0, 0, 0, 0.18);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 246, 220, 0.02), transparent 14%);
+    --gf-code-lang: rgba(233, 224, 200, 0.64);
+    --gf-code-line-gutter-border: rgba(214, 202, 173, 0.06);
+    --gf-code-line-gutter-bg: rgba(214, 202, 173, 0.01);
+}
+
+html[data-gf-code-variant='chrome'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(200, 212, 236, 0.22);
+    --gf-code-bg:
+        linear-gradient(180deg, rgba(26, 30, 38, 0.99), rgba(15, 18, 24, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 0 -1px 0 rgba(255,255,255,0.03),
+        inset 0 0 0 1px rgba(255,255,255,0.02),
+        0 10px 24px rgba(0, 0, 0, 0.20);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01) 22%, transparent 28%);
+    --gf-code-lang: rgba(228, 235, 248, 0.72);
+    --gf-code-line-gutter-border: rgba(200, 212, 236, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+}
+
+html[data-gf-code-variant='obsidian'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(255, 94, 94, 0.16);
+    --gf-code-bg:
+        radial-gradient(1000px 220px at 8% 0%, rgba(255, 70, 70, 0.08), transparent 58%),
+        linear-gradient(180deg, rgba(13, 13, 16, 0.995), rgba(8, 8, 10, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 10px 28px rgba(0, 0, 0, 0.28),
+        0 0 24px rgba(255, 70, 70, 0.06);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.015), transparent 12%);
+    --gf-code-lang: rgba(230, 214, 214, 0.62);
+    --gf-code-line-gutter-border: rgba(255, 94, 94, 0.05);
+    --gf-code-line-gutter-bg: rgba(255, 94, 94, 0.008);
+}
+
+html[data-gf-code-variant='frost'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(186, 228, 255, 0.20);
+    --gf-code-bg:
+        radial-gradient(1100px 230px at 8% -8%, rgba(120, 214, 255, 0.09), transparent 52%),
+        radial-gradient(900px 200px at 94% 8%, rgba(168, 233, 255, 0.06), transparent 58%),
+        linear-gradient(180deg, rgba(16, 22, 34, 0.985), rgba(10, 14, 22, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(241, 252, 255, 0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.018),
+        0 12px 30px rgba(0, 0, 0, 0.22),
+        0 0 30px rgba(94, 205, 255, 0.10);
+    --gf-code-overlay: linear-gradient(180deg, rgba(244, 251, 255, 0.018), transparent 16%);
+    --gf-code-lang: rgba(212, 238, 250, 0.76);
+    --gf-code-line-gutter-border: rgba(186, 228, 255, 0.09);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(186, 228, 255, 0.03), rgba(186, 228, 255, 0.01));
+}
+
+html[data-gf-code-variant='midnight-gold'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(232, 192, 94, 0.20);
+    --gf-code-bg:
+        radial-gradient(900px 220px at 12% 0%, rgba(255, 205, 92, 0.08), transparent 58%),
+        radial-gradient(800px 200px at 92% 10%, rgba(170, 122, 46, 0.07), transparent 62%),
+        linear-gradient(180deg, rgba(17, 19, 28, 0.995), rgba(10, 12, 18, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 242, 210, 0.05),
+        inset 0 0 0 1px rgba(255,255,255,0.012),
+        0 10px 28px rgba(0, 0, 0, 0.24),
+        0 0 24px rgba(232, 192, 94, 0.07);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 236, 184, 0.028), transparent 16%);
+    --gf-code-lang: rgba(243, 221, 161, 0.72);
+    --gf-code-line-gutter-border: rgba(232, 192, 94, 0.06);
+    --gf-code-line-gutter-bg: rgba(232, 192, 94, 0.012);
+}
+
+html[data-gf-code-variant='desert-dusk'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(205, 151, 117, 0.18);
+    --gf-code-bg:
+        radial-gradient(1100px 240px at 8% -4%, rgba(200, 118, 88, 0.11), transparent 56%),
+        radial-gradient(900px 240px at 96% 8%, rgba(117, 90, 154, 0.10), transparent 62%),
+        linear-gradient(180deg, rgba(28, 20, 24, 0.99), rgba(16, 13, 17, 0.99));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(250, 228, 214, 0.045),
+        0 10px 28px rgba(0, 0, 0, 0.24),
+        0 0 26px rgba(159, 108, 177, 0.07);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 219, 198, 0.025), transparent 18%);
+    --gf-code-lang: rgba(226, 206, 197, 0.68);
+    --gf-code-line-gutter-border: rgba(205, 151, 117, 0.055);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(205, 151, 117, 0.018), rgba(117, 90, 154, 0.014));
+}
+
+html[data-gf-code-variant='retro-amber-crt'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(255, 179, 70, 0.22);
+    --gf-code-bg:
+        repeating-linear-gradient(
+            180deg,
+            rgba(255, 173, 74, 0.012) 0px,
+            rgba(255, 173, 74, 0.012) 1px,
+            transparent 1px,
+            transparent 3px
+        ),
+        radial-gradient(900px 220px at 10% 0%, rgba(255, 157, 41, 0.10), transparent 56%),
+        linear-gradient(180deg, rgba(16, 13, 8, 0.995), rgba(10, 8, 5, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 220, 170, 0.04),
+        inset 0 0 24px rgba(255, 149, 37, 0.025),
+        0 10px 26px rgba(0, 0, 0, 0.26),
+        0 0 22px rgba(255, 145, 45, 0.06);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 207, 138, 0.02), transparent 14%);
+    --gf-code-lang: rgba(255, 206, 141, 0.72);
+    --gf-code-line-gutter-border: rgba(255, 179, 70, 0.07);
+    --gf-code-line-gutter-bg: rgba(255, 179, 70, 0.012);
+}
+
+html[data-gf-code-variant='aurora'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(118, 240, 214, 0.20);
+    --gf-code-bg:
+        radial-gradient(1000px 220px at 4% -6%, rgba(70, 255, 196, 0.07), transparent 50%),
+        radial-gradient(1000px 220px at 100% 8%, rgba(96, 112, 255, 0.07), transparent 56%),
+        radial-gradient(700px 160px at 42% 0%, rgba(152, 255, 208, 0.03), transparent 52%),
+        linear-gradient(180deg, rgba(11, 18, 25, 0.99), rgba(8, 12, 18, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(231, 255, 250, 0.06),
+        inset 0 0 0 1px rgba(255,255,255,0.015),
+        0 12px 30px rgba(0, 0, 0, 0.22),
+        0 0 30px rgba(88, 208, 255, 0.07);
+    --gf-code-overlay: linear-gradient(180deg, rgba(236, 255, 250, 0.012), transparent 16%);
+    --gf-code-lang: rgba(209, 244, 238, 0.72);
+    --gf-code-line-gutter-border: rgba(118, 240, 214, 0.07);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(118, 240, 214, 0.018), rgba(96, 112, 255, 0.014));
+}
+
+html[data-gf-code-variant='rose-metal'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(231, 172, 192, 0.18);
+    --gf-code-bg:
+        linear-gradient(180deg, rgba(30, 24, 31, 0.992), rgba(17, 14, 19, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 230, 240, 0.09),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.015),
+        inset 0 0 0 1px rgba(255,255,255,0.012),
+        0 10px 24px rgba(0, 0, 0, 0.22),
+        0 0 18px rgba(215, 112, 152, 0.05);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255, 226, 238, 0.05), rgba(255,255,255,0.005) 22%, transparent 30%);
+    --gf-code-lang: rgba(239, 213, 223, 0.70);
+    --gf-code-line-gutter-border: rgba(231, 172, 192, 0.06);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(231, 172, 192, 0.02), rgba(231, 172, 192, 0.008));
+}
+
+html[data-gf-code-variant='cobalt-luxe'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(116, 152, 246, 0.22);
+    --gf-code-bg:
+        radial-gradient(1000px 220px at 8% -4%, rgba(88, 126, 255, 0.09), transparent 52%),
+        radial-gradient(900px 200px at 96% 8%, rgba(74, 204, 255, 0.05), transparent 58%),
+        linear-gradient(180deg, rgba(16, 20, 34, 0.992), rgba(10, 12, 20, 0.995));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(236, 243, 255, 0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.016),
+        0 12px 30px rgba(0, 0, 0, 0.24),
+        0 0 28px rgba(88, 126, 255, 0.09);
+    --gf-code-overlay: linear-gradient(180deg, rgba(240, 246, 255, 0.014), transparent 16%);
+    --gf-code-lang: rgba(216, 226, 249, 0.74);
+    --gf-code-line-gutter-border: rgba(116, 152, 246, 0.08);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(116, 152, 246, 0.02), rgba(74, 204, 255, 0.01));
+}
+
+html[data-gf-code-variant='mono-slate'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(164, 171, 186, 0.16);
+    --gf-code-bg:
+        linear-gradient(180deg, rgba(22, 24, 29, 0.994), rgba(13, 14, 18, 0.996));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.035),
+        inset 0 0 0 1px rgba(255,255,255,0.01),
+        0 8px 20px rgba(0, 0, 0, 0.18);
+    --gf-code-overlay: linear-gradient(180deg, rgba(255,255,255,0.015), transparent 12%);
+    --gf-code-lang: rgba(214, 219, 229, 0.60);
+    --gf-code-line-gutter-border: rgba(164, 171, 186, 0.05);
+    --gf-code-line-gutter-bg: rgba(255,255,255,0.008);
+}
+
+html[data-gf-code-variant='mint-neon'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(88, 255, 204, 0.20);
+    --gf-code-bg:
+        radial-gradient(1000px 240px at 6% -4%, rgba(44, 255, 172, 0.13), transparent 56%),
+        radial-gradient(900px 230px at 96% 8%, rgba(0, 246, 255, 0.10), transparent 62%),
+        linear-gradient(180deg, rgba(10, 18, 18, 0.992), rgba(7, 11, 13, 0.996));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(222, 255, 246, 0.06),
+        inset 0 0 0 1px rgba(255,255,255,0.015),
+        0 12px 28px rgba(0, 0, 0, 0.22),
+        0 0 30px rgba(32, 255, 190, 0.08);
+    --gf-code-overlay: linear-gradient(180deg, rgba(232, 255, 248, 0.032), transparent 18%);
+    --gf-code-lang: rgba(201, 250, 236, 0.74);
+    --gf-code-line-gutter-border: rgba(88, 255, 204, 0.07);
+    --gf-code-line-gutter-bg: linear-gradient(180deg, rgba(88, 255, 204, 0.018), rgba(0, 246, 255, 0.01));
+}
+
+html[data-gf-code-variant='sepia-noir'] {
+    --gf-code-radius: 12px;
+    --gf-code-border: rgba(172, 140, 98, 0.18);
+    --gf-code-bg:
+        radial-gradient(900px 200px at 10% 0%, rgba(164, 110, 64, 0.08), transparent 58%),
+        linear-gradient(180deg, rgba(24, 19, 16, 0.994), rgba(14, 11, 10, 0.996));
+    --gf-code-shadow:
+        inset 0 1px 0 rgba(255, 234, 205, 0.04),
+        inset 0 0 0 1px rgba(255,255,255,0.008),
+        0 9px 22px rgba(0, 0, 0, 0.22);
+    --gf-code-overlay: linear-gradient(180deg, rgba(250, 228, 198, 0.02), transparent 14%);
+    --gf-code-lang: rgba(223, 202, 171, 0.62);
+    --gf-code-line-gutter-border: rgba(172, 140, 98, 0.05);
+    --gf-code-line-gutter-bg: rgba(172, 140, 98, 0.008);
 }
 
 .vp-doc div[class*='language-'] {
@@ -299,8 +742,10 @@
 }
 
 .vp-doc div[class*='language-'] .line-numbers-wrapper .line-number {
-    color: rgba(225, 217, 233, 0.35) !important;
+    color: rgba(210, 218, 240, 0.35) !important;
 }
+
+
 
 .vp-doc div[class*='language-'], .vp-block {
     /*background-color: black;*/
@@ -367,8 +812,8 @@
 }
 
 .vp-doc .custom-block.info code {
-    background: rgba(255, 94, 58, 0.095);
-    color: rgba(230, 219, 242, 0.96);
+    background: rgba(135, 184, 255, 0.095);
+    color: rgba(206, 226, 255, 0.96);
 }
 
 .vp-doc .custom-block.warning {
@@ -450,6 +895,23 @@
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .vp-doc p[align="center"] {
     text-align: center;
 }
@@ -487,7 +949,7 @@
 }
 
 .gf-library-repo-cta-text {
-    color: rgba(203, 191, 215, 0.68);
+    color: rgba(182, 192, 224, 0.68);
     font-size: 0.78rem;
     white-space: nowrap;
 }
@@ -500,10 +962,10 @@
     flex: 0 0 auto;
     height: 26px;
     padding: 0 9px;
-    border: 1px solid rgba(255, 194, 77, 0.16);
+    border: 1px solid rgba(155, 170, 220, 0.16);
     border-radius: 999px;
-    background: rgba(38, 32, 44, 0.38);
-    color: rgba(242, 237, 248, 0.84);
+    background: rgba(28, 34, 48, 0.38);
+    color: rgba(230, 236, 255, 0.84);
     text-decoration: none;
     font-size: 0.75rem;
     line-height: 1;
@@ -520,8 +982,17 @@
 }
 
 .gf-library-repo-star-link:hover {
-    border-color: rgba(209, 196, 222, 0.28);
-    background: rgba(53, 45, 61, 0.56);
+    border-color: rgba(180, 196, 238, 0.28);
+    background: rgba(38, 48, 68, 0.56);
+}
+
+.gf-code-variant-picker {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 60;
+    display: block;
+    pointer-events: auto;
 }
 
 .gf-api-index-jump {
@@ -537,10 +1008,10 @@
     gap: 8px;
     height: 30px;
     padding: 0 10px;
-    border: 1px solid rgba(255, 194, 77, 0.16);
+    border: 1px solid rgba(164, 180, 226, 0.16);
     border-radius: 999px;
-    background: rgba(26, 22, 30, 0.72);
-    color: rgba(242, 238, 247, 0.88);
+    background: rgba(18, 23, 34, 0.72);
+    color: rgba(233, 239, 252, 0.88);
     text-decoration: none;
     font-size: 11px;
     line-height: 1;
@@ -552,8 +1023,8 @@
 }
 
 .gf-api-index-jump__link:hover {
-    border-color: rgba(255, 194, 77, 0.26);
-    background: rgba(35, 29, 41, 0.84);
+    border-color: rgba(164, 180, 226, 0.26);
+    background: rgba(24, 31, 46, 0.84);
 }
 
 .gf-api-index-jump__label {
@@ -564,9 +1035,9 @@
     height: 18px;
     padding: 0 6px;
     border-radius: 999px;
-    background: rgba(255, 94, 58, 0.10);
-    border: 1px solid rgba(255, 194, 77, 0.14);
-    color: rgba(235, 225, 244, 0.88);
+    background: rgba(90, 126, 255, 0.10);
+    border: 1px solid rgba(121, 156, 255, 0.14);
+    color: rgba(214, 225, 255, 0.88);
     font-size: 10px;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -582,9 +1053,9 @@
     justify-content: center;
     gap: 4px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 194, 77, 0.12);
+    border: 1px solid rgba(164, 180, 226, 0.12);
     background: rgba(255,255,255,0.02);
-    color: rgba(217, 207, 227, 0.70);
+    color: rgba(198, 208, 236, 0.70);
     font-size: 10px;
     line-height: 1;
     letter-spacing: 0.02em;
@@ -596,10 +1067,159 @@
     opacity: 0.9;
 }
 
+.gf-code-variant-picker__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(164, 180, 226, 0.18);
+    border-radius: 999px;
+    background: rgba(18, 23, 34, 0.76);
+    color: rgba(235, 242, 255, 0.84);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 8px 24px rgba(0,0,0,0.24);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.gf-code-variant-picker__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #8fd1ff, #7f8dff);
+    box-shadow: 0 0 10px rgba(127, 141, 255, 0.35);
+    flex: 0 0 auto;
+}
+
+.gf-code-variant-picker__label {
+    color: rgba(197, 208, 237, 0.72);
+}
+
+.gf-code-variant-picker__value {
+    font-weight: 600;
+    color: rgba(241, 246, 255, 0.92);
+}
+
+.gf-code-variant-picker__panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% - 2px);
+    width: min(280px, calc(100vw - 28px));
+    max-height: min(52vh, 420px);
+    overflow: auto;
+    padding: 8px;
+    border: 1px solid rgba(164, 180, 226, 0.16);
+    border-radius: 12px;
+    background: rgba(14, 18, 27, 0.88);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 14px 42px rgba(0,0,0,0.34);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(0) scale(0.985);
+    transform-origin: bottom right;
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.gf-code-variant-picker__panel.is-open {
+    opacity: 1;
+    transform: translateY(-6px) scale(1);
+    pointer-events: auto;
+}
+
+.gf-code-variant-picker__item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 38px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 9px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(233, 239, 252, 0.88);
+    text-align: left;
+    cursor: pointer;
+}
+
+.gf-code-variant-picker__swatch {
+    position: relative;
+    width: 38px;
+    height: 24px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 4px 10px rgba(0,0,0,0.16);
+    overflow: hidden;
+}
+
+.gf-code-variant-picker__swatch::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 30%);
+    pointer-events: none;
+}
+
+.gf-code-variant-picker__swatch-line {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(233, 239, 252, 0.22);
+    top: 8px;
+}
+
+.gf-code-variant-picker__swatch-line.is-short {
+    right: 14px;
+    top: 14px;
+    background: rgba(233, 239, 252, 0.14);
+}
+
+.gf-code-variant-picker__item:hover {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(164, 180, 226, 0.10);
+}
+
+.gf-code-variant-picker__item.is-active {
+    background: rgba(90, 126, 255, 0.08);
+    border-color: rgba(121, 156, 255, 0.18);
+}
+
+.gf-code-variant-picker__item.is-preview:not(.is-active) {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(164, 180, 226, 0.16);
+}
+
+.gf-code-variant-picker__item-name {
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.gf-code-variant-picker__item-id {
+    font-size: 10px;
+    color: rgba(187, 198, 225, 0.58);
+    letter-spacing: 0.02em;
+}
+
 @media (max-width: 640px) {
     .gf-library-repo-header {
         justify-content: flex-start;
         flex-wrap: wrap;
+    }
+
+    .gf-code-variant-picker {
+        right: 10px;
+        bottom: 10px;
     }
 
     .gf-api-index-jump {
@@ -607,6 +1227,14 @@
         bottom: 46px;
     }
 
+    .gf-code-variant-picker__trigger {
+        height: 28px;
+        padding: 0 9px;
+    }
+
+    .gf-code-variant-picker__label {
+        display: none;
+    }
 }
 
 .gf-lightboxable {
@@ -625,7 +1253,7 @@ html.gf-lightbox-open body {
     display: grid;
     place-items: center;
     padding: 24px;
-    background: rgba(11, 8, 15, 0.82);
+    background: rgba(5, 10, 18, 0.82);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     opacity: 0;
@@ -646,8 +1274,8 @@ html.gf-lightbox-open body {
     height: 42px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 999px;
-    background: rgba(27, 23, 31, 0.8);
-    color: #FAF7FC;
+    background: rgba(20, 24, 34, 0.8);
+    color: #f4f7ff;
     font-size: 1.8rem;
     line-height: 1;
     cursor: pointer;
@@ -667,15 +1295,15 @@ html.gf-lightbox-open body {
     max-width: 100%;
     max-height: calc(92vh - 48px);
     object-fit: contain;
-    border-radius: 6px;
+    border-radius: 10px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
-    background: rgba(14, 12, 16, 0.8);
+    background: rgba(10, 12, 18, 0.8);
 }
 
 .gf-lightbox-caption {
     min-height: 1em;
     font-size: 0.9rem;
-    color: rgba(245, 240, 249, 0.85);
+    color: rgba(235, 240, 255, 0.85);
     text-align: center;
 }
 
@@ -749,13 +1377,13 @@ html.gf-lightbox-open body {
        ambient. Blobs are large and overlapping so there are no dark valleys, and alpha
        is low so no section becomes a brighter hotspot. */
     background:
-        radial-gradient(1300px 1000px at 82% 6%, rgba(255, 94, 58, 0.11), transparent 72%),
-        radial-gradient(1200px 1000px at 14% 22%, rgba(255, 94, 58, 0.08), transparent 74%),
-        radial-gradient(1300px 1040px at 86% 40%, rgba(255, 94, 58, 0.09), transparent 74%),
-        radial-gradient(1200px 1000px at 14% 58%, rgba(255, 94, 58, 0.075), transparent 74%),
-        radial-gradient(1300px 1040px at 86% 76%, rgba(255, 94, 58, 0.085), transparent 74%),
+        radial-gradient(1300px 1000px at 82% 6%, rgba(91, 115, 255, 0.11), transparent 72%),
+        radial-gradient(1200px 1000px at 14% 22%, rgba(120, 99, 245, 0.08), transparent 74%),
+        radial-gradient(1300px 1040px at 86% 40%, rgba(91, 115, 255, 0.09), transparent 74%),
+        radial-gradient(1200px 1000px at 14% 58%, rgba(120, 99, 245, 0.075), transparent 74%),
+        radial-gradient(1300px 1040px at 86% 76%, rgba(91, 115, 255, 0.085), transparent 74%),
         radial-gradient(1500px 1100px at 50% 98%, rgba(232, 140, 92, 0.045), transparent 72%),
-        #0E0D0F;
+        #0c0d10;
 }
 
 .gf-starter-hero {
@@ -768,9 +1396,9 @@ html.gf-lightbox-open body {
     overflow: hidden;
     padding: clamp(42px, 5vw, 76px) clamp(28px, 5vw, 104px) clamp(58px, 7vw, 108px);
     background:
-        radial-gradient(820px 460px at 73% 34%, rgba(255, 94, 58, 0.14), transparent 68%),
+        radial-gradient(820px 460px at 73% 34%, rgba(91, 115, 255, 0.14), transparent 68%),
         radial-gradient(720px 420px at 28% 96%, rgba(229, 107, 58, 0.07), transparent 74%),
-        linear-gradient(180deg, rgba(30, 28, 33, 0.38), rgba(25, 23, 27, 0));
+        linear-gradient(180deg, rgba(26, 28, 35, 0.38), rgba(22, 23, 28, 0));
 }
 
 .gf-starter-hero__copy {
@@ -783,8 +1411,8 @@ html.gf-lightbox-open body {
     inset: 0;
     pointer-events: none;
     background:
-        linear-gradient(rgba(255, 94, 58, 0.026) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 94, 58, 0.023) 1px, transparent 1px);
+        linear-gradient(rgba(129, 150, 196, 0.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(129, 150, 196, 0.023) 1px, transparent 1px);
     background-size: 74px 74px;
     mask-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0.72) 54%, transparent 100%);
     -webkit-mask-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0.72) 54%, transparent 100%);
@@ -821,7 +1449,7 @@ html.gf-lightbox-open body {
 .gf-starter-hero p,
 .gf-starter-section p,
 .gf-starter-closing p {
-    color: rgba(233, 229, 237, 0.68);
+    color: rgba(226, 232, 240, 0.68);
     line-height: 1.72;
 }
 
@@ -845,10 +1473,10 @@ html.gf-lightbox-open body {
     justify-content: center;
     min-height: 46px;
     padding: 0 20px;
-    border: 1px solid rgba(255, 194, 77, 0.22);
+    border: 1px solid rgba(165, 185, 255, 0.22);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.055);
-    color: rgba(250, 247, 252, 0.92);
+    color: rgba(244, 247, 255, 0.92);
     font-weight: 800;
     text-decoration: none !important;
     transition:
@@ -858,15 +1486,15 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-actions a:first-child {
-    border-color: rgba(255, 194, 77, 0.62);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
-    box-shadow: 0 16px 40px rgba(214, 53, 26, 0.22);
+    border-color: rgba(113, 139, 255, 0.62);
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
+    box-shadow: 0 16px 40px rgba(80, 98, 255, 0.22);
 }
 
 .gf-starter-actions a:hover,
 .gf-starter-closing a:hover {
     transform: translateY(-1px);
-    border-color: rgba(232, 222, 243, 0.40);
+    border-color: rgba(210, 222, 255, 0.40);
 }
 
 .gf-starter-hero__visual {
@@ -887,9 +1515,9 @@ html.gf-lightbox-open body {
     position: absolute;
     display: block;
     width: min(2600px, 252%);
-    border: 1px solid rgba(255, 194, 77, 0.20);
+    border: 1px solid rgba(155, 170, 205, 0.20);
     border-radius: 12px;
-    background: rgba(10, 10, 11, 0.94);
+    background: rgba(9, 10, 12, 0.94);
     backdrop-filter: blur(22px);
     box-shadow:
         0 34px 94px rgba(0, 0, 0, 0.50),
@@ -968,7 +1596,7 @@ html.gf-lightbox-open body {
 
 .gf-starter-section,
 .gf-starter-closing {
-    border-top: 1px solid rgba(166, 156, 176, 0.20);
+    border-top: 1px solid rgba(148, 163, 184, 0.20);
     padding: clamp(62px, 8vw, 112px) clamp(32px, 7vw, 128px);
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.004));
@@ -1024,8 +1652,8 @@ html.gf-lightbox-open body {
        would otherwise drop the top one), while the background stays on the same
        transparent sheen as every other content section so the page-level ambient
        field reads continuously. */
-    border-top: 1px solid rgba(166, 156, 176, 0.20);
-    border-bottom: 1px solid rgba(166, 156, 176, 0.20);
+    border-top: 1px solid rgba(148, 163, 184, 0.20);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.20);
     padding-top: clamp(48px, 6vw, 92px);
 }
 
@@ -1049,7 +1677,7 @@ html.gf-lightbox-open body {
 .gf-starter-support-hero > div > p:not(.gf-starter-eyebrow) {
     max-width: 680px;
     margin: 22px 0 0;
-    color: rgba(233, 229, 237, 0.70);
+    color: rgba(226, 232, 240, 0.70);
     font-size: 1.06rem;
     line-height: 1.68;
 }
@@ -1078,7 +1706,7 @@ html.gf-lightbox-open body {
     width: 20px;
     height: 20px;
     margin-top: 2px;
-    color: rgba(255, 194, 77, 0.94);
+    color: rgba(147, 176, 255, 0.94);
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
@@ -1087,13 +1715,13 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-pillars strong {
-    color: rgba(255, 194, 77, 0.98);
+    color: rgba(147, 176, 255, 0.98);
     font-size: 0.88rem;
     font-weight: 850;
 }
 
 .gf-starter-pillars em {
-    color: rgba(214, 208, 220, 0.60);
+    color: rgba(203, 213, 225, 0.60);
     font-size: 0.76rem;
     font-style: normal;
 }
@@ -1104,12 +1732,12 @@ html.gf-lightbox-open body {
     align-content: center;
     padding: clamp(24px, 3vw, 36px);
     min-width: 0;
-    border: 1px solid rgba(166, 156, 176, 0.24);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 14px;
     background:
-        radial-gradient(480px 220px at 0% 0%, rgba(255, 94, 58, 0.14), transparent 74%),
+        radial-gradient(480px 220px at 0% 0%, rgba(91, 115, 255, 0.14), transparent 74%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.022)),
-        rgba(29, 25, 33, 0.90);
+        rgba(22, 26, 36, 0.90);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.06),
         0 24px 68px rgba(0, 0, 0, 0.14);
@@ -1118,7 +1746,7 @@ html.gf-lightbox-open body {
 .gf-starter-command-card p,
 .gf-starter-command-card span {
     margin: 0;
-    color: rgba(233, 229, 237, 0.74);
+    color: rgba(226, 232, 240, 0.74);
     font-size: 0.94rem;
 }
 
@@ -1140,14 +1768,14 @@ html.gf-lightbox-open body {
     align-items: center;
     min-width: 0;
     padding: 12px 14px 12px 16px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 12px;
-    background: rgba(11, 10, 13, 0.62);
+    background: rgba(8, 10, 15, 0.62);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
 .gf-starter-command-card__command span {
-    color: rgba(255, 194, 77, 0.92);
+    color: rgba(126, 163, 255, 0.92);
     font-family: var(--vp-font-family-mono);
     font-size: 0.88rem;
     font-weight: 900;
@@ -1159,7 +1787,7 @@ html.gf-lightbox-open body {
     overflow: visible;
     border: 0 !important;
     background: transparent !important;
-    color: rgba(243, 239, 247, 0.92);
+    color: rgba(236, 241, 250, 0.92);
     font-family: var(--vp-font-family-mono);
     font-size: 0.86rem;
     white-space: nowrap;
@@ -1171,10 +1799,10 @@ html.gf-lightbox-open body {
     justify-content: center;
     min-height: 34px;
     padding: 0 12px;
-    border: 1px solid rgba(255, 194, 77, 0.38);
-    border-radius: 6px;
-    background: rgba(255, 94, 58, 0.10);
-    color: rgba(238, 230, 245, 0.96);
+    border: 1px solid rgba(126, 163, 255, 0.38);
+    border-radius: 9px;
+    background: rgba(126, 163, 255, 0.10);
+    color: rgba(220, 227, 255, 0.96);
     font-size: 0.76rem;
     font-weight: 850;
     cursor: pointer;
@@ -1184,12 +1812,12 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-command-card button:hover {
-    border-color: rgba(255, 194, 77, 0.62);
-    background: rgba(255, 94, 58, 0.16);
+    border-color: rgba(126, 163, 255, 0.62);
+    background: rgba(126, 163, 255, 0.16);
 }
 
 .gf-starter-command-card a {
-    color: rgba(255, 194, 77, 0.98);
+    color: rgba(126, 163, 255, 0.98);
     font-size: 0.92rem;
     font-weight: 780;
     text-decoration: none !important;
@@ -1210,12 +1838,12 @@ html.gf-lightbox-open body {
     min-height: 0;
     padding: clamp(22px, 2.4vw, 32px);
     overflow: hidden;
-    border: 1px solid rgba(166, 156, 176, 0.24);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 14px;
     background:
         radial-gradient(420px 250px at 0% 0%, color-mix(in srgb, var(--gf-starter-kit-accent) 12%, transparent), transparent 74%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.026)),
-        rgba(29, 25, 33, 0.92);
+        rgba(22, 26, 36, 0.92);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.07),
         0 24px 68px rgba(0, 0, 0, 0.16);
@@ -1241,7 +1869,7 @@ html.gf-lightbox-open body {
     width: 70px;
     height: 70px;
     border: 1px solid color-mix(in srgb, var(--gf-starter-kit-accent) 68%, transparent);
-    border-radius: 8px;
+    border-radius: 16px;
     background: color-mix(in srgb, var(--gf-starter-kit-accent) 18%, transparent);
     color: color-mix(in srgb, var(--gf-starter-kit-accent) 82%, white);
     font-size: 1.35rem;
@@ -1310,7 +1938,7 @@ html.gf-lightbox-open body {
 .gf-starter-kit-card code {
     align-self: start;
     padding: 5px 9px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.055);
     color: color-mix(in srgb, var(--gf-starter-kit-accent) 70%, white);
@@ -1330,37 +1958,37 @@ html.gf-lightbox-open body {
     align-items: center;
     min-height: 26px;
     padding: 0 10px;
-    border: 1px solid rgba(166, 156, 176, 0.26);
+    border: 1px solid rgba(148, 163, 184, 0.26);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.05);
-    color: rgba(233, 229, 237, 0.74);
+    color: rgba(226, 232, 240, 0.74);
     font-size: 0.76rem;
     font-weight: 760;
 }
 
 .gf-starter-kit-card__credit {
     margin: 10px 0 0 !important;
-    color: rgba(214, 208, 220, 0.52);
+    color: rgba(203, 213, 225, 0.52);
     font-size: 0.78rem !important;
     line-height: 1.35 !important;
 }
 
 .gf-starter-kit-card__credit a,
 .gf-starter-kit-card__credit span {
-    color: rgba(201, 191, 211, 0.92);
+    color: rgba(182, 194, 220, 0.92);
     font-weight: 760;
     text-decoration: none !important;
 }
 
 .gf-starter-kit-card__credit a:hover {
-    color: rgba(225, 218, 232, 0.98);
+    color: rgba(212, 220, 238, 0.98);
 }
 
 .gf-starter-kit-card__includes {
     grid-column: 1 / -1;
     margin-top: -2px;
     padding-top: 14px;
-    border-top: 1px solid rgba(166, 156, 176, 0.22);
+    border-top: 1px solid rgba(148, 163, 184, 0.22);
 }
 
 .gf-starter-kit-card__includes p {
@@ -1384,7 +2012,7 @@ html.gf-lightbox-open body {
     position: relative;
     margin: 0 !important;
     padding-left: 20px;
-    color: rgba(233, 229, 237, 0.72);
+    color: rgba(226, 232, 240, 0.72);
     font-size: 0.78rem;
     line-height: 1.35;
 }
@@ -1398,10 +2026,10 @@ html.gf-lightbox-open body {
     height: 12px;
     /* Uniform cool ring on every card so the checklist reads calm instead of as a
        per-card rainbow; each card's hue lives in its logo + subtitle only. */
-    border: 1px solid rgba(255, 194, 77, 0.62);
+    border: 1px solid rgba(130, 152, 226, 0.62);
     border-radius: 50%;
-    background: rgba(255, 94, 58, 0.16);
-    box-shadow: 0 0 0 3px rgba(255, 94, 58, 0.07);
+    background: rgba(130, 152, 226, 0.16);
+    box-shadow: 0 0 0 3px rgba(130, 152, 226, 0.07);
 }
 
 .gf-starter-kit-card__includes li::after {
@@ -1420,12 +2048,12 @@ html.gf-lightbox-open body {
     margin-top: 24px;
     padding: clamp(24px, 3vw, 36px);
     overflow-x: auto;
-    border: 1px solid rgba(166, 156, 176, 0.24);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 14px;
     background:
-        radial-gradient(560px 260px at 0% 0%, rgba(255, 94, 58, 0.12), transparent 74%),
+        radial-gradient(560px 260px at 0% 0%, rgba(77, 143, 255, 0.12), transparent 74%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.022)),
-        rgba(29, 25, 33, 0.90);
+        rgba(22, 26, 36, 0.90);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.06),
         0 24px 68px rgba(0, 0, 0, 0.14);
@@ -1442,7 +2070,7 @@ html.gf-lightbox-open body {
 .gf-starter-compare p,
 .gf-starter-support-cta p {
     margin: 6px 0 0;
-    color: rgba(233, 229, 237, 0.64);
+    color: rgba(226, 232, 240, 0.64);
     font-size: 0.92rem;
 }
 
@@ -1454,8 +2082,8 @@ html.gf-lightbox-open body {
     border-collapse: separate;
     border-spacing: 0;
     overflow: hidden;
-    border: 1px solid rgba(166, 156, 176, 0.18);
-    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 10px;
     table-layout: fixed;
 }
 
@@ -1463,9 +2091,9 @@ html.gf-lightbox-open body {
 .gf-starter-compare td {
     padding: 14px 18px;
     border-radius: 0;
-    border-top: 1px solid rgba(166, 156, 176, 0.14);
-    border-left: 1px solid rgba(166, 156, 176, 0.12);
-    color: rgba(233, 229, 237, 0.72);
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    border-left: 1px solid rgba(148, 163, 184, 0.12);
+    color: rgba(226, 232, 240, 0.72);
     font-size: 0.85rem;
     line-height: 1.45;
     text-align: left;
@@ -1493,14 +2121,14 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgba(255, 194, 77, 0.95);
+    --gf-starter-compare-accent: rgba(147, 176, 255, 0.95);
     display: inline-grid;
     place-items: center;
     flex: 0 0 auto;
     width: 30px;
     height: 30px;
     border: 1px solid color-mix(in srgb, var(--gf-starter-compare-accent) 48%, transparent);
-    border-radius: 6px;
+    border-radius: 9px;
     background: color-mix(in srgb, var(--gf-starter-compare-accent) 13%, transparent);
     color: color-mix(in srgb, var(--gf-starter-compare-accent) 82%, white);
     box-shadow: 0 12px 26px color-mix(in srgb, var(--gf-starter-compare-accent) 14%, transparent);
@@ -1540,7 +2168,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-compare-kit--react .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgba(255, 194, 77);
+    --gf-starter-compare-accent: rgb(97, 218, 251);
 }
 
 .gf-starter-compare-kit--vue .gf-starter-compare-kit__icon {
@@ -1552,13 +2180,13 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-compare-kit--plain .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgba(188, 179, 198);
+    --gf-starter-compare-accent: rgb(172, 184, 205);
 }
 
 .gf-starter-compare tbody th {
     background: rgba(255, 255, 255, 0.028);
     border-radius: 0 !important;
-    color: rgba(233, 229, 237, 0.84);
+    color: rgba(226, 232, 240, 0.84);
     font-weight: 780;
 }
 
@@ -1574,7 +2202,7 @@ html.gf-lightbox-open body {
     flex: 0 0 auto;
     width: 18px;
     height: 18px;
-    color: rgba(255, 194, 77, 0.72);
+    color: rgba(151, 173, 255, 0.72);
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
@@ -1593,12 +2221,12 @@ html.gf-lightbox-open body {
     align-items: center;
     margin-top: 24px;
     padding: clamp(22px, 2.6vw, 32px);
-    border: 1px solid rgba(166, 156, 176, 0.24);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 14px;
     background:
-        radial-gradient(520px 220px at 0% 0%, rgba(255, 94, 58, 0.10), transparent 74%),
+        radial-gradient(520px 220px at 0% 0%, rgba(91, 115, 255, 0.10), transparent 74%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.022)),
-        rgba(29, 25, 33, 0.90);
+        rgba(22, 26, 36, 0.90);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.06),
         0 24px 68px rgba(0, 0, 0, 0.14);
@@ -1610,15 +2238,15 @@ html.gf-lightbox-open body {
     justify-content: center;
     min-height: 44px;
     padding: 0 20px;
-    border: 1px solid rgba(255, 194, 77, 0.48);
+    border: 1px solid rgba(126, 146, 255, 0.48);
     border-radius: 999px;
-    color: rgba(235, 225, 244, 0.96);
+    color: rgba(214, 222, 255, 0.96);
     font-weight: 820;
     text-decoration: none !important;
 }
 
 .gf-starter-kit-card--react {
-    --gf-starter-kit-accent: rgba(255, 194, 77);
+    --gf-starter-kit-accent: rgb(97, 218, 251);
 }
 
 .gf-starter-kit-card--vue {
@@ -1630,7 +2258,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-kit-card--plain {
-    --gf-starter-kit-accent: rgba(186, 175, 196);
+    --gf-starter-kit-accent: rgb(166, 180, 205);
 }
 
 .gf-starter-frame,
@@ -1640,11 +2268,11 @@ html.gf-lightbox-open body {
 
 .gf-starter-frame {
     overflow: hidden;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 12px;
     background:
-        radial-gradient(420px 200px at 50% 0%, rgba(255, 94, 58, 0.12), transparent 72%),
-        rgba(12, 11, 13, 0.78);
+        radial-gradient(420px 200px at 50% 0%, rgba(93, 122, 255, 0.12), transparent 72%),
+        rgba(10, 11, 14, 0.78);
     box-shadow: 0 28px 86px rgba(0, 0, 0, 0.34);
 }
 
@@ -1670,9 +2298,9 @@ html.gf-lightbox-open body {
 
 .gf-starter-gallery figure {
     overflow: hidden;
-    border: 1px solid rgba(166, 156, 176, 0.15);
+    border: 1px solid rgba(148, 163, 184, 0.15);
     border-radius: 12px;
-    background: rgba(12, 11, 13, 0.76);
+    background: rgba(10, 11, 14, 0.76);
     box-shadow: 0 20px 54px rgba(0, 0, 0, 0.22);
 }
 
@@ -1776,7 +2404,7 @@ html.gf-lightbox-open body {
         grid-template-columns: auto minmax(0, 1fr);
         min-height: 0;
         border-right: 0;
-        border-bottom: 1px solid rgba(166, 156, 176, 0.14);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     }
 
     .gf-starter-kit-card code {
@@ -1848,8 +2476,8 @@ html.gf-lightbox-open body {
 
     .gf-starter-compare tbody tr {
         margin-top: 14px;
-        border: 1px solid rgba(166, 156, 176, 0.18);
-        border-radius: 6px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
         overflow: hidden;
         background: rgba(255, 255, 255, 0.02);
     }
@@ -1867,15 +2495,15 @@ html.gf-lightbox-open body {
         justify-content: space-between;
         align-items: baseline;
         border: 0;
-        border-top: 1px solid rgba(166, 156, 176, 0.12);
-        color: rgba(233, 229, 237, 0.84);
+        border-top: 1px solid rgba(148, 163, 184, 0.12);
+        color: rgba(226, 232, 240, 0.84);
         text-align: right;
     }
 
     .gf-starter-compare tbody tr td::before {
         content: attr(data-kit);
         flex: 0 0 auto;
-        color: rgba(233, 229, 237, 0.55);
+        color: rgba(226, 232, 240, 0.55);
         font-size: 0.78rem;
         font-weight: 760;
         text-align: left;
@@ -1889,8 +2517,8 @@ html.gf-lightbox-open body {
     gap: 18px;
     margin: 0;
     padding: 12px 0 16px;
-    border-bottom: 1px solid rgba(166, 156, 176, 0.14);
-    color: rgba(233, 229, 237, 0.64);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    color: rgba(226, 232, 240, 0.64);
     font-size: 1.2rem;
     font-weight: 800;
 }
@@ -1906,7 +2534,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-topbar a {
-    color: rgba(233, 229, 237, 0.68);
+    color: rgba(226, 232, 240, 0.68);
     text-decoration: none !important;
 }
 
@@ -1915,7 +2543,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-rss {
-    color: rgba(233, 229, 237, 0.46);
+    color: rgba(226, 232, 240, 0.46);
     font-size: 0.82rem;
     font-weight: 800;
     letter-spacing: 0.09em;
@@ -1933,7 +2561,7 @@ html.gf-lightbox-open body {
 .gf-blog-kicker,
 .gf-blog-section-label {
     margin: 0 0 14px;
-    color: rgba(255, 194, 77, 0.86);
+    color: rgba(161, 177, 255, 0.86);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -1952,14 +2580,14 @@ html.gf-lightbox-open body {
 .gf-blog-hero p:last-child {
     max-width: 660px;
     margin: 24px 0 0;
-    color: rgba(233, 229, 237, 0.72);
+    color: rgba(226, 232, 240, 0.72);
     font-size: 1.08rem;
     line-height: 1.75;
 }
 
 .gf-blog-featured,
 .gf-blog-upcoming {
-    border-top: 1px solid rgba(166, 156, 176, 0.14);
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
     padding: 0;
 }
 
@@ -1971,11 +2599,11 @@ html.gf-lightbox-open body {
 .gf-blog-card {
     display: block;
     padding: 28px;
-    border: 1px solid rgba(255, 194, 77, 0.16);
-    border-radius: 12px;
+    border: 1px solid rgba(140, 188, 255, 0.16);
+    border-radius: 24px;
     background:
-        radial-gradient(460px 180px at 12% 0%, rgba(255, 94, 58, 0.14), transparent 68%),
-        linear-gradient(180deg, rgba(40, 35, 46, 0.78), rgba(27, 24, 30, 0.72));
+        radial-gradient(460px 180px at 12% 0%, rgba(103, 126, 255, 0.14), transparent 68%),
+        linear-gradient(180deg, rgba(31, 36, 50, 0.78), rgba(22, 24, 32, 0.72));
     color: inherit;
     text-decoration: none !important;
     box-shadow: 0 22px 70px rgba(0, 0, 0, 0.20);
@@ -1986,7 +2614,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-card:hover {
-    border-color: rgba(255, 194, 77, 0.36);
+    border-color: rgba(164, 188, 255, 0.36);
     transform: translateY(-2px);
 }
 
@@ -1996,7 +2624,7 @@ html.gf-lightbox-open body {
     overflow: hidden;
     min-height: 460px;
     border: 0;
-    border-bottom: 1px solid rgba(166, 156, 176, 0.14);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     border-radius: 0;
     background: transparent;
     color: inherit;
@@ -2005,7 +2633,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-feature-card:hover .gf-blog-card-title {
-    color: rgba(236, 228, 245, 0.98);
+    color: rgba(218, 225, 255, 0.98);
 }
 
 .gf-blog-feature-card .gf-blog-card-body {
@@ -2013,7 +2641,7 @@ html.gf-lightbox-open body {
     flex-direction: column;
     justify-content: center;
     padding: 48px 44px;
-    border-left: 1px solid rgba(166, 156, 176, 0.14);
+    border-left: 1px solid rgba(148, 163, 184, 0.14);
 }
 
 .gf-blog-card-row,
@@ -2030,7 +2658,7 @@ html.gf-lightbox-open body {
     align-items: baseline;
     justify-content: space-between;
     gap: 18px;
-    color: rgba(211, 199, 223, 0.58);
+    color: rgba(190, 203, 232, 0.58);
     font-size: 0.9rem;
     font-weight: 800;
 }
@@ -2055,20 +2683,20 @@ html.gf-lightbox-open body {
 .gf-blog-card-copy {
     max-width: 690px;
     margin-top: 24px;
-    color: rgba(233, 229, 237, 0.72);
+    color: rgba(226, 232, 240, 0.72);
     font-size: 1.05rem;
     line-height: 1.7;
 }
 
 .gf-blog-card-author {
     margin-top: 32px;
-    color: rgba(233, 229, 237, 0.58);
+    color: rgba(226, 232, 240, 0.58);
     font-weight: 800;
 }
 
 .gf-blog-card-link {
     margin-top: 24px;
-    color: rgba(255, 194, 77, 0.95);
+    color: rgba(177, 190, 255, 0.95);
     font-weight: 800;
 }
 
@@ -2076,13 +2704,13 @@ html.gf-lightbox-open body {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
-    border-bottom: 1px solid rgba(166, 156, 176, 0.14);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
 }
 
 .gf-blog-topic-card {
     min-height: 300px;
     padding: 38px 26px;
-    border-left: 1px solid rgba(166, 156, 176, 0.14);
+    border-left: 1px solid rgba(148, 163, 184, 0.14);
 }
 
 .gf-blog-topic-card:first-child {
@@ -2099,7 +2727,7 @@ html.gf-lightbox-open body {
 
 .gf-blog-topic-card p {
     margin: 22px 0 0;
-    color: rgba(233, 229, 237, 0.65);
+    color: rgba(226, 232, 240, 0.65);
     font-size: 0.97rem;
     line-height: 1.65;
 }
@@ -2110,17 +2738,17 @@ html.gf-lightbox-open body {
     overflow: hidden;
     min-height: 460px;
     background:
-        radial-gradient(520px 280px at 70% 20%, rgba(255, 94, 58, 0.34), transparent 62%),
+        radial-gradient(520px 280px at 70% 20%, rgba(125, 170, 255, 0.34), transparent 62%),
         radial-gradient(420px 240px at 18% 84%, rgba(232, 111, 63, 0.30), transparent 64%),
-        linear-gradient(135deg, #15101B 0%, #1E1923 44%, #29130d 100%);
+        linear-gradient(135deg, #0b1020 0%, #151827 44%, #29130d 100%);
 }
 
 .gf-blog-visual--post {
     min-height: clamp(220px, 28vw, 340px);
     margin-top: 24px;
     margin-bottom: 34px;
-    border: 1px solid rgba(166, 156, 176, 0.14);
-    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 30px;
     box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
 }
 
@@ -2144,10 +2772,10 @@ html.gf-lightbox-open body {
     width: min(54%, 560px);
     height: 120px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 12px;
+    border-radius: 18px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
-        rgba(25, 20, 30, 0.74);
+        rgba(16, 22, 34, 0.74);
     box-shadow:
         0 28px 70px rgba(0, 0, 0, 0.35),
         inset 0 1px 0 rgba(255, 255, 255, 0.18);
@@ -2165,8 +2793,8 @@ html.gf-lightbox-open body {
 .gf-blog-visual__block {
     width: 86px;
     height: 86px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(255, 94, 58, 0.92), rgba(214, 53, 26, 0.72));
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(127, 190, 255, 0.92), rgba(80, 110, 255, 0.72));
 }
 
 .gf-blog-visual__block--a {
@@ -2193,7 +2821,7 @@ html.gf-lightbox-open body {
 .gf-blog-visual__line {
     left: 10%;
     height: 1px;
-    background: rgba(222, 208, 237, 0.32);
+    background: rgba(190, 205, 255, 0.32);
 }
 
 .gf-blog-visual__line--a {
@@ -2237,7 +2865,7 @@ html.gf-lightbox-open body {
     display: grid;
     gap: 20px;
     padding-top: 6px;
-    color: rgba(233, 229, 237, 0.66);
+    color: rgba(226, 232, 240, 0.66);
     font-size: 0.98rem;
     font-weight: 700;
 }
@@ -2253,8 +2881,8 @@ html.gf-lightbox-open body {
     width: 8px;
     height: 8px;
     border-radius: 999px;
-    background: rgba(255, 94, 58, 0.76);
-    box-shadow: 0 0 16px rgba(255, 94, 58, 0.45);
+    background: rgba(161, 177, 255, 0.76);
+    box-shadow: 0 0 16px rgba(120, 150, 255, 0.45);
 }
 
 .gf-blog-post-grid > :not(.gf-blog-post-meta) {
@@ -2263,7 +2891,7 @@ html.gf-lightbox-open body {
 
 .gf-blog-post-grid > p:first-of-type {
     margin-top: 0;
-    color: rgba(250, 247, 252, 0.92);
+    color: rgba(244, 247, 255, 0.92);
     font-size: 1.18rem;
     line-height: 1.8;
 }
@@ -2283,7 +2911,7 @@ html.gf-lightbox-open body {
 
     .gf-blog-card {
         padding: 22px;
-        border-radius: 12px;
+        border-radius: 20px;
     }
 
     .gf-blog-topic-grid {
@@ -2292,7 +2920,7 @@ html.gf-lightbox-open body {
 
     .gf-blog-topic-card,
     .gf-blog-topic-card:first-child {
-        border-top: 1px solid rgba(166, 156, 176, 0.14);
+        border-top: 1px solid rgba(148, 163, 184, 0.14);
         border-left: 0;
     }
 
@@ -2314,7 +2942,7 @@ html.gf-lightbox-open body {
 
     .gf-blog-feature-card .gf-blog-card-body {
         border-left: 0;
-        border-top: 1px solid rgba(166, 156, 176, 0.14);
+        border-top: 1px solid rgba(148, 163, 184, 0.14);
         padding: 26px;
     }
 
@@ -2326,7 +2954,7 @@ html.gf-lightbox-open body {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px 18px;
         padding-bottom: 26px;
-        border-bottom: 1px solid rgba(166, 156, 176, 0.14);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     }
 }
 
@@ -2342,12 +2970,12 @@ html.gf-lightbox-open body {
     /* A continuous atmospheric field sits behind restrained section
        seams, preserving flow while keeping each chapter legible. */
     background:
-        radial-gradient(1100px 700px at 82% 4%, rgba(255, 94, 58, 0.07), transparent 70%),
+        radial-gradient(1100px 700px at 82% 4%, rgba(91, 115, 255, 0.07), transparent 70%),
         radial-gradient(1000px 720px at 14% 16%, rgba(229, 107, 58, 0.055), transparent 72%),
-        radial-gradient(1100px 760px at 86% 30%, rgba(255, 94, 58, 0.05), transparent 72%),
-        radial-gradient(1000px 700px at 14% 43%, rgba(255, 94, 58, 0.05), transparent 72%),
+        radial-gradient(1100px 760px at 86% 30%, rgba(91, 115, 255, 0.05), transparent 72%),
+        radial-gradient(1000px 700px at 14% 43%, rgba(91, 115, 255, 0.05), transparent 72%),
         radial-gradient(1100px 760px at 86% 55%, rgba(229, 107, 58, 0.05), transparent 72%),
-        radial-gradient(1200px 800px at 50% 67%, rgba(255, 94, 58, 0.06), transparent 72%),
+        radial-gradient(1200px 800px at 50% 67%, rgba(91, 115, 255, 0.06), transparent 72%),
         radial-gradient(1100px 760px at 50% 83%, rgba(229, 107, 58, 0.06), transparent 72%),
         radial-gradient(1200px 820px at 50% 98%, rgba(229, 107, 58, 0.065), transparent 74%);
 }
@@ -2372,8 +3000,8 @@ html.gf-lightbox-open body {
 .gf-home-section {
     position: relative;
     padding: clamp(48px, 5.5vw, 80px) clamp(22px, 5vw, 96px);
-    border-top: 1px solid rgba(166, 156, 176, 0.11);
-    background: linear-gradient(180deg, rgba(16, 13, 19, 0.2), transparent 132px);
+    border-top: 1px solid rgba(148, 163, 184, 0.11);
+    background: linear-gradient(180deg, rgba(10, 14, 22, 0.2), transparent 132px);
 }
 
 .gf-home-section::after {
@@ -2383,7 +3011,7 @@ html.gf-lightbox-open body {
     left: 50%;
     width: min(1180px, calc(100% - 44px));
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 94, 58, 0.24) 18%, rgba(255, 94, 58, 0.24) 82%, transparent);
+    background: linear-gradient(90deg, transparent, rgba(174, 190, 224, 0.24) 18%, rgba(174, 190, 224, 0.24) 82%, transparent);
     transform: translateX(-50%);
     pointer-events: none;
 }
@@ -2411,7 +3039,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-h2 {
-    color: rgba(248, 246, 250, 0.98);
+    color: rgba(244, 246, 252, 0.98);
     font-size: clamp(2.05rem, 3.4vw, 3.05rem);
     font-weight: 760;
     line-height: 1.06;
@@ -2420,7 +3048,7 @@ html.gf-lightbox-open body {
 
 .gf-home-lead {
     margin-top: 18px !important;
-    color: rgba(224, 219, 230, 0.72);
+    color: rgba(214, 222, 235, 0.72);
     font-size: 1.05rem;
     line-height: 1.7;
 }
@@ -2429,10 +3057,10 @@ html.gf-lightbox-open body {
 .gf-home-points code,
 .gf-home-ops__surface code {
     padding: 0.12em 0.4em;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 6px;
-    background: rgba(18, 15, 22, 0.7);
-    color: rgba(216, 207, 226, 0.92);
+    background: rgba(13, 16, 24, 0.7);
+    color: rgba(199, 211, 234, 0.92);
     font-size: 0.86em;
 }
 
@@ -2473,13 +3101,13 @@ html.gf-lightbox-open body {
     margin: 0 !important;
     padding: 0 0 0 18px;
     border-left: 2px solid rgba(255, 154, 96, 0.35);
-    color: rgba(214, 208, 220, 0.72);
+    color: rgba(203, 213, 225, 0.72);
     font-size: 0.92rem;
     line-height: 1.6;
 }
 
 .gf-home-points li strong {
-    color: rgba(246, 243, 249, 0.94);
+    color: rgba(240, 244, 252, 0.94);
     font-weight: 750;
 }
 
@@ -2496,18 +3124,18 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-links a {
-    color: rgba(255, 194, 77, 0.95);
+    color: rgba(151, 173, 255, 0.95);
     font-size: 0.94rem;
     font-weight: 750;
     transition: color 150ms ease;
 }
 
 .gf-home-links a:hover {
-    color: rgba(227, 214, 240, 1);
+    color: rgba(199, 213, 255, 1);
 }
 
 .gf-home-links__note {
-    color: rgba(214, 208, 220, 0.58);
+    color: rgba(203, 213, 225, 0.58);
     font-size: 0.86rem;
     align-self: center;
 }
@@ -2520,11 +3148,11 @@ html.gf-lightbox-open body {
     max-width: 560px;
     margin-top: 24px;
     padding: 16px 18px;
-    border: 1px solid rgba(255, 194, 77, 0.18);
-    border-radius: 8px;
+    border: 1px solid rgba(151, 173, 255, 0.18);
+    border-radius: 14px;
     background:
-        linear-gradient(135deg, rgba(255, 94, 58, 0.13), rgba(255, 154, 96, 0.055)),
-        rgba(18, 15, 22, 0.54);
+        linear-gradient(135deg, rgba(106, 125, 255, 0.13), rgba(255, 154, 96, 0.055)),
+        rgba(13, 16, 24, 0.54);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.055),
         0 18px 42px rgba(0, 0, 0, 0.22);
@@ -2532,10 +3160,10 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-atlas:hover {
-    border-color: rgba(255, 194, 77, 0.34);
+    border-color: rgba(177, 194, 255, 0.34);
     background:
-        linear-gradient(135deg, rgba(255, 94, 58, 0.17), rgba(255, 154, 96, 0.075)),
-        rgba(23, 19, 27, 0.68);
+        linear-gradient(135deg, rgba(106, 125, 255, 0.17), rgba(255, 154, 96, 0.075)),
+        rgba(16, 20, 30, 0.68);
     transform: translateY(-1px);
 }
 
@@ -2561,23 +3189,23 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-atlas__body strong {
-    color: rgba(248, 246, 250, 0.96);
+    color: rgba(244, 246, 252, 0.96);
     font-size: 0.94rem;
     font-weight: 780;
 }
 
 .gf-home-atlas__body span {
-    color: rgba(214, 208, 220, 0.68);
+    color: rgba(203, 213, 225, 0.68);
     font-size: 0.86rem;
     line-height: 1.55;
 }
 
 .gf-home-atlas code {
     padding: 0.1em 0.36em;
-    border: 1px solid rgba(166, 156, 176, 0.14);
+    border: 1px solid rgba(148, 163, 184, 0.14);
     border-radius: 6px;
-    background: rgba(11, 10, 13, 0.58);
-    color: rgba(216, 207, 226, 0.92);
+    background: rgba(8, 10, 15, 0.58);
+    color: rgba(199, 211, 234, 0.92);
     font-size: 0.86em;
 }
 
@@ -2585,9 +3213,9 @@ html.gf-lightbox-open body {
 
 .gf-home-terminal {
     overflow: hidden;
-    border: 1px solid rgba(158, 147, 168, 0.2);
-    border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.97), rgba(10, 9, 12, 0.99));
+    border: 1px solid rgba(138, 149, 177, 0.2);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(13, 14, 19, 0.97), rgba(8, 9, 13, 0.99));
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         0 24px 60px rgba(0, 0, 0, 0.34);
@@ -2598,7 +3226,7 @@ html.gf-lightbox-open body {
     align-items: center;
     gap: 7px;
     padding: 11px 14px;
-    border-bottom: 1px solid rgba(158, 147, 168, 0.14);
+    border-bottom: 1px solid rgba(138, 149, 177, 0.14);
     background: rgba(255, 255, 255, 0.025);
 }
 
@@ -2606,16 +3234,16 @@ html.gf-lightbox-open body {
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: rgba(166, 156, 176, 0.26);
+    background: rgba(148, 163, 184, 0.26);
 }
 
 .gf-home-terminal__bar span:nth-child(1) { background: rgba(255, 122, 92, 0.6); }
 .gf-home-terminal__bar span:nth-child(2) { background: rgba(255, 195, 92, 0.55); }
-.gf-home-terminal__bar span:nth-child(3) { background: rgba(95, 207, 168, 0.55); }
+.gf-home-terminal__bar span:nth-child(3) { background: rgba(110, 220, 156, 0.55); }
 
 .gf-home-terminal__bar em {
     margin-left: 8px;
-    color: rgba(214, 208, 220, 0.46);
+    color: rgba(203, 213, 225, 0.46);
     font-size: 0.72rem;
     font-style: normal;
     font-weight: 650;
@@ -2629,7 +3257,7 @@ html.gf-lightbox-open body {
     font-family: var(--vp-font-family-mono);
     font-size: 0.83rem;
     line-height: 1.72;
-    color: rgba(227, 221, 233, 0.88);
+    color: rgba(216, 224, 238, 0.88);
 }
 
 .gf-home-terminal__body code {
@@ -2642,14 +3270,14 @@ html.gf-lightbox-open body {
 }
 
 .gf-home .t-prompt { color: rgba(255, 154, 96, 0.92); font-weight: 700; }
-.gf-home .t-cmd { color: rgba(246, 243, 249, 0.96); font-weight: 650; }
-.gf-home .t-ok { color: rgba(95, 207, 168, 0.9); }
-.gf-home .t-dim { color: rgba(166, 156, 176, 0.52); }
-.gf-home .t-step { color: rgba(255, 94, 58, 0.9); font-weight: 700; }
+.gf-home .t-cmd { color: rgba(240, 244, 252, 0.96); font-weight: 650; }
+.gf-home .t-ok { color: rgba(110, 220, 156, 0.9); }
+.gf-home .t-dim { color: rgba(148, 163, 184, 0.52); }
+.gf-home .t-step { color: rgba(151, 173, 255, 0.9); font-weight: 700; }
 .gf-home .t-hl { color: rgba(255, 196, 130, 0.95); }
-.gf-home .t-ready { color: rgba(95, 207, 168, 0.95); font-weight: 750; }
+.gf-home .t-ready { color: rgba(110, 220, 156, 0.95); font-weight: 750; }
 .gf-home .t-json { color: rgba(157, 235, 192, 0.9); }
-.gf-home .t-tree { color: rgba(166, 156, 176, 0.62); }
+.gf-home .t-tree { color: rgba(148, 163, 184, 0.62); }
 
 .gf-home .t-cursor {
     display: inline-block;
@@ -2684,8 +3312,8 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
     inset: 0;
     pointer-events: none;
     background:
-        linear-gradient(rgba(255, 94, 58, 0.024) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 94, 58, 0.021) 1px, transparent 1px);
+        linear-gradient(rgba(129, 150, 196, 0.024) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(129, 150, 196, 0.021) 1px, transparent 1px);
     background-size: 74px 74px;
     mask-image: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.8) 70%, transparent);
     -webkit-mask-image: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.8) 70%, transparent);
@@ -2700,7 +3328,7 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
 
 .gf-home-swap__label {
     margin: 0 0 12px !important;
-    color: rgba(214, 208, 220, 0.6);
+    color: rgba(203, 213, 225, 0.6);
     font-size: 0.8rem;
     font-weight: 750;
     letter-spacing: 0.05em;
@@ -2716,32 +3344,32 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
     gap: 4px;
     margin-bottom: 14px;
     padding: 4px;
-    border: 1px solid rgba(166, 156, 176, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.18);
     border-radius: 999px;
-    background: rgba(14, 12, 16, 0.66);
+    background: rgba(10, 12, 18, 0.66);
 }
 
 .gf-home-swap__toggle button {
     min-width: 108px;
     padding: 7px 18px;
     border-radius: 999px;
-    color: rgba(214, 208, 220, 0.62);
+    color: rgba(203, 213, 225, 0.62);
     font-size: 0.85rem;
     font-weight: 750;
     transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .gf-home-swap__toggle button.is-active {
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
     color: #fff;
-    box-shadow: 0 10px 26px rgba(214, 53, 26, 0.26);
+    box-shadow: 0 10px 26px rgba(80, 98, 255, 0.26);
 }
 
 .gf-home-env {
     padding: 18px 20px;
-    border: 1px solid rgba(158, 147, 168, 0.2);
-    border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.97), rgba(10, 9, 12, 0.99));
+    border: 1px solid rgba(138, 149, 177, 0.2);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(13, 14, 19, 0.97), rgba(8, 9, 13, 0.99));
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         0 18px 44px rgba(0, 0, 0, 0.28);
@@ -2750,8 +3378,8 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
     line-height: 1.9;
 }
 
-.gf-home-env__key { color: rgba(255, 94, 58, 0.88); }
-.gf-home-env__eq { color: rgba(166, 156, 176, 0.5); }
+.gf-home-env__key { color: rgba(151, 173, 255, 0.88); }
+.gf-home-env__eq { color: rgba(148, 163, 184, 0.5); }
 
 .gf-home-env__value {
     color: rgba(255, 196, 130, 0.96);
@@ -2764,7 +3392,7 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
 }
 
 @keyframes gfEnvFlash {
-    0% { background: rgba(255, 154, 96, 0.28); border-radius: 6px; }
+    0% { background: rgba(255, 154, 96, 0.28); border-radius: 4px; }
     100% { background: transparent; }
 }
 
@@ -2782,11 +3410,11 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 .gf-home-swap__after-cmd {
     font-family: var(--vp-font-family-mono);
     font-size: 0.84rem;
-    color: rgba(246, 243, 249, 0.92);
+    color: rgba(240, 244, 252, 0.92);
 }
 
 .gf-home-swap__after-note {
-    color: rgba(214, 208, 220, 0.58);
+    color: rgba(203, 213, 225, 0.58);
     font-size: 0.86rem;
     line-height: 1.55;
 }
@@ -2806,22 +3434,22 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     column-gap: 12px;
     align-items: center;
     padding: 18px 20px 20px;
-    border: 1px solid rgba(166, 156, 176, 0.13);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    border-radius: 16px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.014)),
-        rgba(18, 15, 22, 0.42);
+        rgba(13, 16, 24, 0.42);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
     transition: border-color 160ms ease, transform 160ms ease, background-color 160ms ease;
 }
 
 .gf-home-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 194, 77, 0.36);
+    border-color: rgba(165, 185, 255, 0.36);
 }
 
 .gf-home-card h3 {
-    color: rgba(247, 245, 249, 0.95);
+    color: rgba(242, 245, 252, 0.95);
     font-size: 0.99rem;
     font-weight: 780;
     letter-spacing: -0.015em;
@@ -2830,7 +3458,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 .gf-home-card p {
     grid-column: 1 / -1;
     margin-top: 10px !important;
-    color: rgba(214, 208, 220, 0.64);
+    color: rgba(203, 213, 225, 0.64);
     font-size: 0.84rem;
     line-height: 1.55;
 }
@@ -2839,7 +3467,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     position: absolute;
     top: 18px;
     right: 18px;
-    color: rgba(227, 214, 240, 0.95);
+    color: rgba(199, 213, 255, 0.95);
     font-weight: 700;
     opacity: 0;
     transform: translateX(-4px);
@@ -2854,7 +3482,11 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 /* --- generators section --- */
 
+
+
 /* --- operations section --- */
+
+
 
 .gf-home-ops__topology {
     display: grid;
@@ -2865,18 +3497,18 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-ops__shape {
     overflow: hidden;
-    border: 1px solid rgba(158, 147, 168, 0.18);
-    border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.95), rgba(10, 9, 12, 0.98));
+    border: 1px solid rgba(138, 149, 177, 0.18);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(13, 14, 19, 0.95), rgba(8, 9, 13, 0.98));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .gf-home-ops__shape-title {
     margin: 0 !important;
     padding: 10px 18px;
-    border-bottom: 1px solid rgba(158, 147, 168, 0.14);
+    border-bottom: 1px solid rgba(138, 149, 177, 0.14);
     background: rgba(255, 255, 255, 0.025);
-    color: rgba(233, 229, 237, 0.78);
+    color: rgba(226, 232, 240, 0.78);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -2890,7 +3522,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     font-family: var(--vp-font-family-mono);
     font-size: 0.84rem;
     line-height: 1.8;
-    color: rgba(227, 221, 233, 0.88);
+    color: rgba(216, 224, 238, 0.88);
 }
 
 .gf-home-ops__shape-body code {
@@ -2911,22 +3543,22 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-ops__surface {
     padding: 18px;
-    border: 1px solid rgba(166, 156, 176, 0.13);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    border-radius: 14px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.4);
+        rgba(13, 16, 24, 0.4);
 }
 
 .gf-home-ops__surface h3 {
-    color: rgba(246, 243, 249, 0.93);
+    color: rgba(240, 244, 252, 0.93);
     font-size: 0.92rem;
     font-weight: 780;
 }
 
 .gf-home-ops__surface p {
     margin-top: 8px !important;
-    color: rgba(214, 208, 220, 0.62);
+    color: rgba(203, 213, 225, 0.62);
     font-size: 0.83rem;
     line-height: 1.55;
 }
@@ -2963,7 +3595,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-ops__binary-inside {
     margin-top: 14px !important;
-    color: rgba(214, 208, 220, 0.45);
+    color: rgba(203, 213, 225, 0.45);
     font-size: 0.78rem;
     font-weight: 750;
     letter-spacing: 0.05em;
@@ -3010,7 +3642,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-ops__binary-title {
-    color: rgba(246, 243, 249, 0.95);
+    color: rgba(240, 244, 252, 0.95);
     font-size: 1.3rem;
     font-weight: 780;
     margin-bottom: 2px;
@@ -3018,7 +3650,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-ops__binary-copy p {
     margin-top: 0 !important;
-    color: rgba(214, 208, 220, 0.66);
+    color: rgba(203, 213, 225, 0.66);
     font-size: 0.95rem;
     line-height: 1.65;
 }
@@ -3049,15 +3681,15 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     gap: 4px;
     margin-bottom: 14px;
     padding: 4px;
-    border: 1px solid rgba(166, 156, 176, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.18);
     border-radius: 999px;
-    background: rgba(14, 12, 16, 0.66);
+    background: rgba(10, 12, 18, 0.66);
 }
 
 .gf-home-swap__tabs button {
     padding: 7px 18px;
     border-radius: 999px;
-    color: rgba(214, 208, 220, 0.62);
+    color: rgba(203, 213, 225, 0.62);
     font-size: 0.85rem;
     font-weight: 750;
     cursor: pointer;
@@ -3065,13 +3697,13 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-swap__tabs button:hover {
-    color: rgba(233, 229, 237, 0.85);
+    color: rgba(226, 232, 240, 0.85);
 }
 
 .gf-home-swap__tabs button.is-active {
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
     color: #fff;
-    box-shadow: 0 10px 26px rgba(214, 53, 26, 0.26);
+    box-shadow: 0 10px 26px rgba(80, 98, 255, 0.26);
 }
 
 .gf-home-swap__panels {
@@ -3095,11 +3727,11 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-env__line.is-spotlit {
-    background: rgba(255, 94, 58, 0.1);
+    background: rgba(151, 173, 255, 0.1);
 }
 
 .gf-home-env__line.is-spotlit .gf-home-env__key {
-    color: rgba(227, 214, 240, 1);
+    color: rgba(199, 213, 255, 1);
 }
 
 /* --- fit section --- */
@@ -3113,15 +3745,15 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-fit__card {
     padding: 22px;
-    border: 1px solid rgba(166, 156, 176, 0.13);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    border-radius: 14px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.4);
+        rgba(13, 16, 24, 0.4);
 }
 
 .gf-home-fit__card h3 {
-    color: rgba(246, 243, 249, 0.93);
+    color: rgba(240, 244, 252, 0.93);
     font-size: 0.95rem;
     font-weight: 780;
 }
@@ -3135,7 +3767,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-fit__card li {
-    color: rgba(214, 208, 220, 0.66);
+    color: rgba(203, 213, 225, 0.66);
     font-size: 0.88rem;
     line-height: 1.6;
     padding-left: 18px;
@@ -3150,36 +3782,36 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     width: 7px;
     height: 7px;
     border-radius: 2px;
-    background: rgba(255, 94, 58, 0.55);
+    background: rgba(151, 173, 255, 0.55);
 }
 
 .gf-home-fit__card--alt li::before {
-    background: rgba(166, 156, 176, 0.4);
+    background: rgba(148, 163, 184, 0.4);
 }
 
 .gf-home-fit__card a {
-    color: rgba(255, 194, 77, 0.95);
+    color: rgba(151, 173, 255, 0.95);
 }
 
 .gf-home-fit__eject {
     margin-top: 14px;
     padding: 22px;
-    border: 1px solid rgba(255, 194, 77, 0.2);
-    border-radius: 8px;
+    border: 1px solid rgba(151, 173, 255, 0.2);
+    border-radius: 14px;
     background:
-        linear-gradient(180deg, rgba(255, 94, 58, 0.05), rgba(255, 94, 58, 0.015)),
-        rgba(18, 15, 22, 0.4);
+        linear-gradient(180deg, rgba(151, 173, 255, 0.05), rgba(151, 173, 255, 0.015)),
+        rgba(13, 16, 24, 0.4);
 }
 
 .gf-home-fit__eject h3 {
-    color: rgba(246, 243, 249, 0.95);
+    color: rgba(240, 244, 252, 0.95);
     font-size: 0.95rem;
     font-weight: 780;
 }
 
 .gf-home-fit__eject p {
     margin-top: 8px !important;
-    color: rgba(214, 208, 220, 0.66);
+    color: rgba(203, 213, 225, 0.66);
     font-size: 0.9rem;
     line-height: 1.65;
     max-width: 720px;
@@ -3193,6 +3825,8 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 /* --- proof band --- */
 
+
+
 .gf-home-proof__stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3201,11 +3835,11 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-proof__stat {
     padding: 26px 22px;
-    border: 1px solid rgba(166, 156, 176, 0.14);
-    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 18px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.45);
+        rgba(13, 16, 24, 0.45);
     text-align: center;
 }
 
@@ -3221,7 +3855,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-proof__stat span {
     display: block;
     margin-top: 10px;
-    color: rgba(214, 208, 220, 0.66);
+    color: rgba(203, 213, 225, 0.66);
     font-size: 0.85rem;
     line-height: 1.5;
 }
@@ -3229,7 +3863,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-proof__note {
     max-width: 680px;
     margin: 26px auto 0 !important;
-    color: rgba(166, 156, 176, 0.62);
+    color: rgba(148, 163, 184, 0.62);
     font-size: 0.85rem;
     line-height: 1.6;
     text-align: center;
@@ -3260,12 +3894,12 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     align-items: center;
     gap: 9px;
     padding: 9px 16px 9px 9px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 999px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.014)),
-        rgba(18, 15, 22, 0.5);
-    color: rgba(233, 229, 237, 0.84);
+        rgba(13, 16, 24, 0.5);
+    color: rgba(226, 232, 240, 0.84);
     font-size: 0.86rem;
     font-weight: 700;
     transition: border-color 150ms ease, transform 150ms ease;
@@ -3273,7 +3907,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-path__step a:hover {
     transform: translateY(-1px);
-    border-color: rgba(255, 194, 77, 0.4);
+    border-color: rgba(165, 185, 255, 0.4);
 }
 
 .gf-home-path__num {
@@ -3283,8 +3917,8 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: rgba(255, 94, 58, 0.2);
-    color: rgba(255, 194, 77, 0.95);
+    background: rgba(106, 125, 255, 0.2);
+    color: rgba(173, 191, 255, 0.95);
     font-size: 0.74rem;
     font-weight: 800;
 }
@@ -3306,17 +3940,17 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-close__path {
     display: block;
     padding: 28px 28px 30px;
-    border: 1px solid rgba(166, 156, 176, 0.15);
-    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 20px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
-        rgba(18, 15, 22, 0.46);
+        rgba(13, 16, 24, 0.46);
     transition: border-color 160ms ease, transform 160ms ease;
 }
 
 .gf-home-close__path:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 194, 77, 0.38);
+    border-color: rgba(165, 185, 255, 0.38);
 }
 
 .gf-home-close__path .gf-home-eyebrow {
@@ -3325,14 +3959,14 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-close__path h3 {
-    color: rgba(247, 245, 249, 0.96);
+    color: rgba(242, 245, 252, 0.96);
     font-size: 1.32rem;
     font-weight: 790;
 }
 
 .gf-home-close__path p:not(.gf-home-eyebrow) {
     margin-top: 10px !important;
-    color: rgba(214, 208, 220, 0.66);
+    color: rgba(203, 213, 225, 0.66);
     font-size: 0.92rem;
     line-height: 1.6;
 }
@@ -3340,7 +3974,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-close__cta {
     display: inline-block;
     margin-top: 16px;
-    color: rgba(255, 194, 77, 0.95);
+    color: rgba(151, 173, 255, 0.95);
     font-size: 0.92rem;
     font-weight: 760;
 }
@@ -3355,9 +3989,9 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     margin: 26px auto 0;
     padding: 18px 24px;
     max-width: 520px;
-    border: 1px solid rgba(158, 147, 168, 0.2);
-    border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.97), rgba(10, 9, 12, 0.99));
+    border: 1px solid rgba(138, 149, 177, 0.2);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(13, 14, 19, 0.97), rgba(8, 9, 13, 0.99));
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         0 18px 44px rgba(0, 0, 0, 0.28);
@@ -3366,7 +4000,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     font-family: var(--vp-font-family-mono);
     font-size: 0.86rem;
     line-height: 1.9;
-    color: rgba(227, 221, 233, 0.9);
+    color: rgba(216, 224, 238, 0.9);
 }
 
 .gf-home-close__cmd code {
@@ -3380,18 +4014,18 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-close__version {
     margin-top: 13px !important;
-    color: rgba(166, 156, 176, 0.6);
+    color: rgba(148, 163, 184, 0.6);
     font-size: 0.78rem;
     line-height: 1.5;
 }
 
 .gf-home-close__version a {
-    color: rgba(255, 194, 77, 0.9);
+    color: rgba(151, 173, 255, 0.9);
     font-weight: 700;
 }
 
 .gf-home-close__version code {
-    color: rgba(214, 208, 220, 0.78);
+    color: rgba(203, 213, 225, 0.78);
     font-size: 0.95em;
 }
 
@@ -3409,23 +4043,23 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     justify-content: center;
     min-height: 46px;
     padding: 0 22px;
-    border: 1px solid rgba(255, 194, 77, 0.22);
+    border: 1px solid rgba(165, 185, 255, 0.22);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.055);
-    color: rgba(250, 247, 252, 0.92) !important;
+    color: rgba(244, 247, 255, 0.92) !important;
     font-weight: 800;
     transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
 }
 
 .gf-home-btn--primary {
-    border-color: rgba(255, 194, 77, 0.62);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
-    box-shadow: 0 16px 40px rgba(214, 53, 26, 0.22);
+    border-color: rgba(113, 139, 255, 0.62);
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
+    box-shadow: 0 16px 40px rgba(80, 98, 255, 0.22);
 }
 
 .gf-home-btn:hover {
     transform: translateY(-1px);
-    border-color: rgba(232, 222, 243, 0.4);
+    border-color: rgba(210, 222, 255, 0.4);
 }
 
 /* --- responsive --- */
@@ -3513,10 +4147,10 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     gap: 8px;
     height: 30px;
     padding: 0 10px;
-    border: 1px solid rgba(255, 194, 77, 0.18);
+    border: 1px solid rgba(164, 180, 226, 0.18);
     border-radius: 999px;
-    background: rgba(26, 22, 30, 0.76);
-    color: rgba(245, 240, 249, 0.84);
+    background: rgba(18, 23, 34, 0.76);
+    color: rgba(235, 242, 255, 0.84);
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.06),
         0 8px 24px rgba(0,0,0,0.24);
@@ -3528,15 +4162,15 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-motion-picker:hover {
-    border-color: rgba(255, 194, 77, 0.3);
-    background: rgba(35, 29, 41, 0.86);
+    border-color: rgba(164, 180, 226, 0.3);
+    background: rgba(24, 31, 46, 0.86);
 }
 
 .gf-motion-picker__dot {
     width: 8px;
     height: 8px;
     border-radius: 999px;
-    background: rgba(166, 156, 176, 0.55);
+    background: rgba(148, 163, 184, 0.55);
     flex: 0 0 auto;
 }
 
@@ -3546,11 +4180,11 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-motion-picker__dot[data-mode='reduced'] {
-    background: rgba(95, 207, 168, 0.7);
+    background: rgba(110, 220, 156, 0.7);
 }
 
 .gf-motion-picker__label {
-    color: rgba(217, 206, 228, 0.72);
+    color: rgba(197, 208, 237, 0.72);
 }
 
 .gf-motion-picker__value {
@@ -3604,10 +4238,10 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     justify-content: center;
     width: 34px;
     height: 34px;
-    border: 1px solid rgba(255, 194, 77, 0.18);
-    border-radius: 6px;
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.16), rgba(255, 94, 58, 0.05));
-    color: rgba(255, 194, 77, 0.92);
+    border: 1px solid rgba(151, 173, 255, 0.18);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.16), rgba(106, 125, 255, 0.05));
+    color: rgba(177, 194, 255, 0.92);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     transition: color 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
@@ -3619,7 +4253,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-card:hover .gf-home-card__icon {
     color: #ffffff;
-    border-color: rgba(255, 194, 77, 0.45);
+    border-color: rgba(177, 194, 255, 0.45);
     transform: translateY(-1px);
 }
 
@@ -3635,7 +4269,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent 8%, rgba(255, 94, 58, 0.45), transparent 92%);
+    background: linear-gradient(90deg, transparent 8%, rgba(177, 194, 255, 0.45), transparent 92%);
     opacity: 0;
     transition: opacity 200ms ease;
 }
@@ -3670,7 +4304,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 }
 
 .gf-home-swap__zero span {
-    color: rgba(214, 208, 220, 0.72);
+    color: rgba(203, 213, 225, 0.72);
     font-size: 0.96rem;
     font-weight: 650;
 }
@@ -3684,7 +4318,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     content: "";
     position: absolute;
     inset: -70px -140px;
-    background: radial-gradient(460px 260px at 50% 42%, rgba(255, 94, 58, 0.13), transparent 70%);
+    background: radial-gradient(460px 260px at 50% 42%, rgba(106, 125, 255, 0.13), transparent 70%);
     pointer-events: none;
 }
 
@@ -3702,12 +4336,12 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-shapes span {
     padding: 7px 14px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.16);
     border-radius: 999px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.5);
-    color: rgba(227, 221, 233, 0.8);
+        rgba(13, 16, 24, 0.5);
+    color: rgba(216, 224, 238, 0.8);
     font-size: 0.83rem;
     font-weight: 680;
 }
@@ -3730,7 +4364,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-manifesto__quote p {
     margin: 0;
-    color: rgba(243, 239, 247, 0.93);
+    color: rgba(236, 241, 250, 0.93);
     font-size: clamp(1.42rem, 2.6vw, 2.05rem);
     font-weight: 640;
     line-height: 1.44;
@@ -3752,7 +4386,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-manifesto__quote footer strong {
     display: block;
-    color: rgba(246, 243, 249, 0.92);
+    color: rgba(240, 244, 252, 0.92);
     font-size: 0.98rem;
     font-weight: 780;
 }
@@ -3766,6 +4400,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
+
 
 /* Mobile code surfaces: smaller mono, and a right-edge fade that
    signals horizontal scrollability instead of looking truncated. */
@@ -3781,8 +4416,8 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
         right: 0;
         bottom: 0;
         width: 26px;
-        border-radius: 0 0 8px 0;
-        background: linear-gradient(to right, rgba(13, 11, 15, 0), rgba(13, 11, 15, 0.92));
+        border-radius: 0 0 14px 0;
+        background: linear-gradient(to right, rgba(10, 11, 16, 0), rgba(10, 11, 16, 0.92));
         pointer-events: none;
     }
 
@@ -3797,8 +4432,8 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
         right: 0;
         bottom: 0;
         width: 22px;
-        border-radius: 0 0 8px 0;
-        background: linear-gradient(to right, rgba(13, 11, 15, 0), rgba(13, 11, 15, 0.9));
+        border-radius: 0 0 14px 0;
+        background: linear-gradient(to right, rgba(10, 11, 16, 0), rgba(10, 11, 16, 0.9));
         pointer-events: none;
     }
 
@@ -3810,18 +4445,24 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 }
 
 /* On phones, hide the code theme picker; keep Motion (accessibility control). */
+@media (max-width: 640px) {
+    .gf-code-variant-picker {
+        display: none;
+    }
+}
+
 /* The universality statement under the driver swap demo. */
 .gf-home-swap__all {
     max-width: 720px;
     margin: clamp(36px, 4vw, 52px) auto 0 !important;
     text-align: center;
-    color: rgba(214, 208, 220, 0.66);
+    color: rgba(203, 213, 225, 0.66);
     font-size: 1.02rem;
     line-height: 1.65;
 }
 
 .gf-home-swap__all strong {
-    color: rgba(248, 246, 250, 0.95);
+    color: rgba(244, 246, 252, 0.95);
     font-weight: 780;
 }
 
@@ -3832,6 +4473,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
         padding: 16px 18px;
     }
 }
+
 
 /* Hero card reveal respects the motion system: snap visible, no fade. */
 @media (prefers-reduced-motion: reduce) {
@@ -3849,10 +4491,11 @@ html[data-gf-motion='reduced'] .gf-starter-hero__visual img {
 }
 
 .gf-starter-actions--center a:first-child {
-    border-color: rgba(255, 194, 77, 0.62);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
-    box-shadow: 0 16px 40px rgba(214, 53, 26, 0.22);
+    border-color: rgba(113, 139, 255, 0.62);
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
+    box-shadow: 0 16px 40px rgba(80, 98, 255, 0.22);
 }
+
 
 /* ============================================================
    Docs view refinements: title accent, hairline rules,
@@ -3866,20 +4509,20 @@ html[data-gf-motion='reduced'] .gf-starter-hero__visual img {
     width: 52px;
     height: 2px;
     margin-top: 16px;
-    border-radius: 2px;
+    border-radius: 1px;
     background: linear-gradient(90deg, rgba(255, 154, 96, 0.72), rgba(255, 154, 96, 0));
 }
 
 /* Section rules: left-weighted gradient hairlines instead of flat lines. */
 .VPDoc.has-sidebar .vp-doc h2 {
     border-top: 1px solid transparent;
-    border-image: linear-gradient(90deg, rgba(255, 94, 58, 0.30), rgba(255, 94, 58, 0.03)) 1;
+    border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
 }
 
 .VPDoc.has-sidebar .vp-doc hr {
     border: none;
     border-top: 1px solid transparent;
-    border-image: linear-gradient(90deg, rgba(255, 94, 58, 0.30), rgba(255, 94, 58, 0.03)) 1;
+    border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
 }
 
 /* Page-enter: quiet fade + rise on doc navigation. Motion-gated. */
@@ -3911,14 +4554,14 @@ html.gf-doc-enter[data-gf-motion='on'] .VPDoc .vp-doc {
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(190, 179, 202, 0.62);
+    color: rgba(170, 182, 211, 0.62);
 }
 
 .VPDocAsideOutline .outline-marker {
     width: 2px;
     border-radius: 2px;
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(255, 94, 58, 0.35));
-    box-shadow: 0 0 10px rgba(255, 94, 58, 0.30);
+    background: linear-gradient(180deg, rgba(126, 146, 255, 0.95), rgba(126, 146, 255, 0.35));
+    box-shadow: 0 0 10px rgba(106, 125, 255, 0.30);
     transition: top 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
 }
 
@@ -3945,6 +4588,7 @@ html[data-gf-motion='reduced'] .VPSidebarItem .link:hover > .text {
     }
 }
 
+
 /* ============================================================
    Docs view refinements, round two: prev/next cards,
    hash-landing glow, selection, scrollbars, links, tables
@@ -3953,19 +4597,19 @@ html[data-gf-motion='reduced'] .VPSidebarItem .link:hover > .text {
 /* Prev/next: quiet bordered cards with a directional nudge. */
 .VPDocFooter .prev-next {
     border-top: 1px solid transparent;
-    border-image: linear-gradient(90deg, rgba(255, 94, 58, 0.30), rgba(255, 94, 58, 0.03)) 1;
+    border-image: linear-gradient(90deg, rgba(148, 163, 204, 0.30), rgba(148, 163, 204, 0.03)) 1;
 }
 
 .VPDocFooter .pager-link {
-    border: 1px solid rgba(255, 194, 77, 0.14);
-    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 204, 0.14);
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.012);
     transition: border-color 0.18s ease, background 0.18s ease;
 }
 
 .VPDocFooter .pager-link:hover {
-    border-color: rgba(255, 194, 77, 0.45);
-    background: rgba(255, 94, 58, 0.05);
+    border-color: rgba(126, 146, 255, 0.45);
+    background: rgba(106, 125, 255, 0.05);
 }
 
 .VPDocFooter .pager-link .desc {
@@ -3973,7 +4617,7 @@ html[data-gf-motion='reduced'] .VPSidebarItem .link:hover > .text {
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(190, 179, 202, 0.55);
+    color: rgba(170, 182, 211, 0.55);
 }
 
 .VPDocFooter .pager-link .title {
@@ -4035,7 +4679,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 /* Branded text selection. */
 ::selection {
-    background: rgba(255, 94, 58, 0.34);
+    background: rgba(106, 125, 255, 0.34);
     color: #fff;
 }
 
@@ -4044,7 +4688,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 .VPDoc .aside-container,
 .vp-doc div[class*='language-'] pre {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 94, 58, 0.22) transparent;
+    scrollbar-color: rgba(148, 163, 204, 0.22) transparent;
 }
 
 .VPSidebar::-webkit-scrollbar,
@@ -4063,14 +4707,14 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 .VPSidebar::-webkit-scrollbar-thumb,
 .VPDoc .aside-container::-webkit-scrollbar-thumb,
 .vp-doc div[class*='language-'] pre::-webkit-scrollbar-thumb {
-    border-radius: 6px;
-    background: rgba(255, 94, 58, 0.18);
+    border-radius: 4px;
+    background: rgba(148, 163, 204, 0.18);
 }
 
 .VPSidebar::-webkit-scrollbar-thumb:hover,
 .VPDoc .aside-container::-webkit-scrollbar-thumb:hover,
 .vp-doc div[class*='language-'] pre::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 94, 58, 0.32);
+    background: rgba(148, 163, 204, 0.32);
 }
 
 /* Heading anchors: fade in on heading hover instead of popping. */
@@ -4091,14 +4735,14 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 /* Content links: underline settles lower and brightens on hover. */
 .VPDoc .vp-doc :is(p, li, td) a:not(.header-anchor) {
     text-decoration: underline;
-    text-decoration-color: rgba(255, 194, 77, 0.40);
+    text-decoration-color: rgba(126, 146, 255, 0.40);
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
     transition: color 0.18s ease, text-decoration-color 0.18s ease, text-underline-offset 0.18s ease;
 }
 
 .VPDoc .vp-doc :is(p, li, td) a:not(.header-anchor):hover {
-    text-decoration-color: rgba(255, 194, 77, 0.95);
+    text-decoration-color: rgba(126, 146, 255, 0.95);
     text-underline-offset: 4.5px;
 }
 
@@ -4107,8 +4751,8 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     width: 100%;
     margin: 20px 0;
     overflow-x: auto;
-    border: 1px solid rgba(255, 194, 77, 0.14);
-    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 204, 0.14);
+    border-radius: 10px;
 }
 
 .VPDoc .vp-doc .gf-table-scroll table {
@@ -4122,24 +4766,24 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 }
 
 .VPDoc .vp-doc table {
-    border: 1px solid rgba(255, 194, 77, 0.14);
-    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 204, 0.14);
+    border-radius: 10px;
 }
 
 .VPDoc .vp-doc th,
 .VPDoc .vp-doc td {
     border: none;
-    border-bottom: 1px solid rgba(255, 194, 77, 0.10);
+    border-bottom: 1px solid rgba(148, 163, 204, 0.10);
 }
 
 .VPDoc .vp-doc th {
-    border-bottom: 1px solid rgba(255, 194, 77, 0.20);
-    background: rgba(255, 94, 58, 0.05);
+    border-bottom: 1px solid rgba(148, 163, 204, 0.20);
+    background: rgba(148, 163, 204, 0.05);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(208, 198, 218, 0.72);
+    color: rgba(190, 200, 226, 0.72);
 }
 
 .VPDoc .vp-doc th:first-child {
@@ -4160,7 +4804,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 }
 
 .VPDoc .vp-doc tbody tr:hover {
-    background: rgba(255, 94, 58, 0.045) !important;
+    background: rgba(106, 125, 255, 0.045) !important;
 }
 
 /* The environment reference stays compact without losing inline code semantics. */
@@ -4183,10 +4827,12 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     font-weight: 500;
 }
 
+
 /* Hash targets clear the sticky nav + preview banner on native anchor jumps. */
 .vp-doc :is(h1, h2, h3, h4, h5, h6) {
     scroll-margin-top: calc(var(--vp-nav-height, 64px) + var(--gf-banner-height, 40px) + 16px);
 }
+
 
 /* ============================================================
    Docs view refinements, round three: search modal, 404,
@@ -4195,46 +4841,46 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 /* Search modal: glass panel, hairlines, indigo highlights. */
 :root {
-    --vp-local-search-bg: rgba(25, 23, 27, 0.97);
+    --vp-local-search-bg: rgba(22, 23, 28, 0.97);
     --vp-local-search-result-bg: rgba(255, 255, 255, 0.012);
-    --vp-local-search-result-border: rgba(255, 194, 77, 0.10);
-    --vp-local-search-result-selected-bg: rgba(255, 94, 58, 0.09);
-    --vp-local-search-result-selected-border: rgba(255, 94, 58, 0.52);
-    --vp-local-search-highlight-bg: rgba(255, 94, 58, 0.32);
+    --vp-local-search-result-border: rgba(148, 163, 204, 0.10);
+    --vp-local-search-result-selected-bg: rgba(106, 125, 255, 0.09);
+    --vp-local-search-result-selected-border: rgba(126, 146, 255, 0.52);
+    --vp-local-search-highlight-bg: rgba(106, 125, 255, 0.32);
     --vp-local-search-highlight-text: #fff;
 }
 
 .VPLocalSearchBox .backdrop {
-    background: rgba(10, 9, 11, 0.68);
+    background: rgba(8, 9, 12, 0.68);
     backdrop-filter: blur(7px);
     -webkit-backdrop-filter: blur(7px);
 }
 
 .VPLocalSearchBox .shell {
-    border: 1px solid rgba(255, 194, 77, 0.15);
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 204, 0.15);
+    border-radius: 14px;
     box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
 }
 
 .VPLocalSearchBox .search-bar {
-    border-radius: 6px;
-    border-color: rgba(255, 194, 77, 0.18);
+    border-radius: 10px;
+    border-color: rgba(148, 163, 204, 0.18);
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .VPLocalSearchBox .search-bar:focus-within {
-    border-color: rgba(255, 194, 77, 0.55);
-    box-shadow: 0 0 0 3px rgba(255, 94, 58, 0.12);
+    border-color: rgba(126, 146, 255, 0.55);
+    box-shadow: 0 0 0 3px rgba(106, 125, 255, 0.12);
 }
 
 .VPLocalSearchBox .result {
-    border-radius: 6px;
+    border-radius: 10px;
     transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .VPLocalSearchBox .titles {
     font-size: 0.78rem;
-    color: rgba(190, 179, 202, 0.62);
+    color: rgba(170, 182, 211, 0.62);
 }
 
 .VPLocalSearchBox .title-icon {
@@ -4242,8 +4888,8 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 }
 
 .VPLocalSearchBox .search-keyboard-shortcuts kbd {
-    border: 1px solid rgba(255, 194, 77, 0.20);
-    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 204, 0.20);
+    border-radius: 5px;
     background: rgba(255, 255, 255, 0.03);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.45);
 }
@@ -4274,7 +4920,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.03em;
-    background: linear-gradient(180deg, rgba(243, 240, 247, 0.95), rgba(255, 94, 58, 0.55));
+    background: linear-gradient(180deg, rgba(235, 240, 252, 0.95), rgba(150, 162, 196, 0.55));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -4286,7 +4932,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     width: 52px;
     height: 2px;
     margin: 26px auto 0;
-    border-radius: 2px;
+    border-radius: 1px;
     background: linear-gradient(90deg, rgba(255, 154, 96, 0), rgba(255, 154, 96, 0.72), rgba(255, 154, 96, 0));
 }
 
@@ -4295,7 +4941,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     max-width: 420px;
     font-size: 1.02rem;
     line-height: 1.65;
-    color: rgba(208, 198, 218, 0.78);
+    color: rgba(190, 200, 226, 0.78);
 }
 
 .gf-notfound__actions {
@@ -4310,36 +4956,36 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     display: inline-flex;
     align-items: center;
     padding: 10px 22px;
-    border: 1px solid rgba(255, 194, 77, 0.22);
+    border: 1px solid rgba(148, 163, 204, 0.22);
     border-radius: 999px;
     font-size: 0.92rem;
     font-weight: 600;
-    color: rgba(238, 232, 244, 0.92);
+    color: rgba(228, 234, 248, 0.92);
     text-decoration: none;
     transition: border-color 0.18s ease, background 0.18s ease;
 }
 
 .gf-notfound__link:hover {
-    border-color: rgba(255, 194, 77, 0.45);
+    border-color: rgba(148, 163, 204, 0.45);
     background: rgba(255, 255, 255, 0.03);
 }
 
 .gf-notfound__link.is-primary {
-    border-color: rgba(255, 194, 77, 0.62);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
+    border-color: rgba(113, 139, 255, 0.62);
+    background: linear-gradient(180deg, rgba(106, 125, 255, 0.95), rgba(79, 91, 222, 0.95));
     color: #fff;
 }
 
 .gf-notfound__link.is-primary:hover {
-    border-color: rgba(255, 194, 77, 0.85);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.98), rgba(214, 53, 26, 0.98));
+    border-color: rgba(140, 162, 255, 0.85);
+    background: linear-gradient(180deg, rgba(118, 136, 255, 0.98), rgba(90, 102, 235, 0.98));
 }
 
 /* Code groups: quiet tab strip that joins its block. */
 .vp-code-group .tabs {
-    border: 1px solid rgba(255, 194, 77, 0.10);
+    border: 1px solid rgba(148, 163, 204, 0.10);
     border-bottom: none;
-    border-radius: 6px 6px 0 0;
+    border-radius: 10px 10px 0 0;
     background: rgba(255, 255, 255, 0.015);
 }
 
@@ -4364,8 +5010,8 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 /* Details: bordered disclosure with rotating chevron. */
 .VPDoc .vp-doc details.details {
-    border: 1px solid rgba(255, 194, 77, 0.12);
-    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 204, 0.12);
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.012);
     padding: 14px 18px;
 }
@@ -4391,8 +5037,8 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     width: 7px;
     height: 7px;
     margin-top: -5px;
-    border-right: 1.5px solid rgba(208, 198, 218, 0.80);
-    border-bottom: 1.5px solid rgba(208, 198, 218, 0.80);
+    border-right: 1.5px solid rgba(190, 200, 226, 0.80);
+    border-bottom: 1.5px solid rgba(190, 200, 226, 0.80);
     transform: rotate(-45deg);
     transition: transform 0.2s ease;
 }
@@ -4416,1464 +5062,4 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 html[data-gf-motion='on'] .VPDoc .vp-doc details.details[open] > *:not(summary) {
     animation: gf-details-in 0.24s ease both;
-}
-
-/* ============================================================
-   TEMPER — brand + theme overhaul
-   ------------------------------------------------------------
-   Appended last so it wins on source order. Everything above is
-   the pre-overhaul theme; the original is preserved verbatim at
-   custom-orig.css.
-
-   Source of truth: ai/design/forge-riffs.html
-     #dir=temper&mode=dark&syn=ember&code=warm&well=lifted
-   Reasoning: ai/design/handoff.md
-
-   THE COLOUR RULES. Colour means exactly one of four things, and
-   the FORM is load-bearing because action and navigation are only
-   28.5 degrees apart in hue:
-
-     Action      molten orange   always FILLED     buttons, install prompt
-     Navigation  temper gold     always TEXT/LINE  links, sidebar, TOC
-     Reference   warm frame      filled, WHITE ink inline code
-     Neither     neutral surface surface+hairline  tables, chrome
-
-   Nothing in CSS enforces this. It belongs in review.
-   ============================================================ */
-
-:root {
-    /* --- Temper core ------------------------------------- */
-    --gf-accent: #FF5E3A;          /* ACTION  — always filled  */
-    --gf-accent-hi: #FF8257;
-    --gf-nav: #FFC24D;             /* NAV     — always text/line */
-    --gf-nav-hi: #FFD37A;
-    --gf-on-accent: #08070A;
-    --gf-accent-soft: rgba(255, 94, 58, 0.12);
-    --gf-accent-line: rgba(255, 94, 58, 0.32);
-    --gf-nav-soft: rgba(255, 194, 77, 0.11);
-    --gf-nav-line: rgba(255, 194, 77, 0.30);
-
-    /* --- Planes ------------------------------------------
-       The docs body runs on the LIFTED ground (L* 8.1). The
-       landing keeps the deep ground (L* 2.95) — see the
-       .gf-home scope below. Code sits in a well BELOW both.
-
-       Why lifted: #0C0A0E sat under the band every dark UI
-       occupies (GitHub 4.95, VitePress 9.92, VS Code 11.26),
-       and chroma collapses down there — the violet tint
-       measured C* 1.90 at the old ground versus 7.81 lifted.
-       Colour needs light to read as colour.               */
-    /* Copied verbatim from the prototype's lifted Temper block.
-       These were previously re-derived with a lift function
-       rather than transcribed, which put ground-alt, surface,
-       surface-2 and line-strong all slightly off the design.
-       The prototype is the source of truth — do not recompute. */
-    --gf-ground-deep: #0C0A0E;     /* landing + code well     */
-    --gf-ground: #1A1620;          /* docs page               */
-    --gf-ground-alt: #1D1923;      /* sidebar, nav, callouts  */
-    --gf-surface: #2C2734;
-    --gf-surface-2: #2D2835;
-    --gf-line: #2A2333;
-    --gf-line-strong: #3D3349;
-    --gf-code-well: #0C0A0E;       /* dL* 5.16 BELOW the page */
-    --gf-code-chrome: #131017;
-
-    --gf-ink: #FFFFFF;
-    --gf-ink-2: #A9A1B3;
-    --gf-ink-3: #746C80;
-}
-
-/* --- VitePress token bridge ------------------------------
-   This is the block that removes the indigo. Every one of
-   these was stock VitePress; none had been chosen.        */
-:root,
-html.dark {
-    --vp-c-brand-1: var(--gf-nav);        /* links, TOC, sidebar — NAV */
-    --vp-c-brand-2: var(--gf-nav-hi);
-    --vp-c-brand-3: var(--gf-accent);     /* solid fills        — ACTION */
-    --vp-c-brand-soft: var(--gf-accent-soft);
-    --vp-c-brand-softer: var(--gf-nav-soft);
-
-    --vp-c-bg: var(--gf-ground);
-    --vp-c-bg-alt: var(--gf-ground-alt);
-    --vp-c-bg-elv: var(--gf-surface);
-    --vp-c-bg-soft: var(--gf-ground-alt);
-
-    --vp-c-text-1: var(--gf-ink);
-    --vp-c-text-2: var(--gf-ink-2);
-    --vp-c-text-3: var(--gf-ink-3);
-
-    --vp-c-divider: var(--gf-line);
-    --vp-c-border: var(--gf-line);
-    --vp-c-gutter: var(--gf-line);
-
-    /* Buttons are ACTION: filled, never gold. */
-    --vp-button-brand-bg: var(--gf-accent);
-    --vp-button-brand-hover-bg: var(--gf-accent-hi);
-    --vp-button-brand-active-bg: var(--gf-accent-hi);
-    --vp-button-brand-text: var(--gf-on-accent);
-    --vp-button-brand-hover-text: var(--gf-on-accent);
-    --vp-button-brand-border: transparent;
-
-    /* Status is a THIRD system. A warning has to look like a
-       warning; brand purity does not outrank comprehension.
-       Danger is a true red, pushed away from action orange. */
-    --vp-c-tip-1: #5FCFA8;
-    --vp-c-tip-2: #5FCFA8;
-    --vp-c-tip-3: #5FCFA8;
-    --vp-c-tip-soft: rgba(95, 207, 168, 0.10);
-    --vp-c-warning-1: #FFB454;
-    --vp-c-warning-2: #FFB454;
-    --vp-c-warning-3: #FFB454;
-    --vp-c-warning-soft: rgba(255, 180, 84, 0.10);
-    --vp-c-danger-1: #FF6B85;
-    --vp-c-danger-2: #FF6B85;
-    --vp-c-danger-3: #FF6B85;
-    --vp-c-danger-soft: rgba(255, 107, 133, 0.10);
-
-    /* Code well. VitePress already pointed this DOWN
-       (#171618 under #1D1C1E); Temper keeps the direction
-       and widens the gap from dL* 2.6 to 5.16.            */
-    --vp-code-block-bg: var(--gf-code-well);
-    --vp-code-block-divider-color: var(--gf-line);
-    --vp-code-tab-divider: var(--gf-line);
-    --vp-code-tab-text-color: var(--gf-ink-3);
-    --vp-code-tab-hover-text-color: var(--gf-ink);
-    --vp-code-tab-active-text-color: var(--gf-ink);
-    --vp-code-tab-active-bar-color: var(--gf-accent);
-    --vp-code-copy-code-bg: var(--gf-surface);
-    --vp-code-copy-code-hover-bg: var(--gf-surface-2);
-    --vp-code-copy-code-border-color: var(--gf-line-strong);
-    --vp-code-lang-color: var(--gf-ink-3);
-    --vp-code-line-highlight-color: rgba(255, 194, 77, 0.09);
-    --vp-code-line-number-color: var(--gf-ink-3);
-
-    --vp-custom-block-tip-border: rgba(95, 207, 168, 0.30);
-    --vp-custom-block-warning-border: rgba(255, 180, 84, 0.30);
-    --vp-custom-block-danger-border: rgba(255, 107, 133, 0.30);
-
-    --vp-sidebar-bg-color: var(--gf-ground-alt);
-    --vp-nav-bg-color: var(--gf-ground-alt);
-    --vp-local-nav-bg-color: var(--gf-ground-alt);
-}
-
-/* --- Landing keeps the deep ground -----------------------
-   site-theme-system.md already forces this seam: the home
-   layout renders markdown inside .vp-doc, so a bare .vp-doc
-   rule leaks onto the landing page. Same seam solves the
-   washout — lift the docs, leave the poster alone.        */
-.gf-home,
-body:has(.gf-home) {
-    --vp-c-bg: var(--gf-ground-deep);
-    --vp-c-bg-alt: var(--gf-ground-deep);
-    --gf-ground: var(--gf-ground-deep);
-    --gf-ground-alt: #131017;
-    --gf-surface: #1A1620;
-    --gf-surface-2: #221D2A;
-    background-color: var(--gf-ground-deep);
-}
-
-/* --- Reference: inline code ------------------------------
-   Warm frame, WHITE ink. Salience comes from material, not
-   from a semantic colour, so a code-dense paragraph never
-   reads as a row of alerts and no chip looks clickable.
-
-   Scoped to .VPDoc rather than .vp-doc on purpose — the home
-   layout also renders markdown inside .vp-doc.            */
-.VPDoc .vp-doc :not(pre) > code {
-    background: var(--gf-accent-soft);
-    color: var(--gf-ink);
-    border: 0;
-    border-radius: 6px;
-    padding: 1px 6px;
-    font-size: 0.92em;                 /* matches Inter's x-height */
-    font-weight: 500;
-}
-.VPDoc .vp-doc a > code {
-    color: var(--gf-nav);              /* a linked chip is still a link */
-}
-
-/* --- Navigation: always text or line, never filled ------- */
-.VPDoc .vp-doc a {
-    color: var(--gf-nav);
-    text-decoration-color: var(--gf-nav-line);
-    text-underline-offset: 3px;
-}
-.VPDoc .vp-doc a:hover {
-    color: var(--gf-nav-hi);
-    text-decoration-color: var(--gf-nav);
-}
-.VPSidebarItem.is-active > .item > .link .text,
-.VPSidebarItem.is-link.is-active > .item > .link .text {
-    color: var(--gf-nav);
-}
-/* The active TOC entry is TEXT — never a filled chip. Only the
-   marker is a filled element, and it is a 1px line, not a plate. */
-.VPDocOutlineItem a.outline-link.active {
-    color: var(--gf-nav);
-    background-color: transparent;
-}
-.VPDocAsideOutline .outline-marker {
-    background-color: var(--gf-nav);
-}
-
-/* --- Action: filled, and only filled --------------------- */
-.VPButton.brand {
-    background-color: var(--gf-accent);
-    border-color: transparent;
-    color: var(--gf-on-accent);
-}
-.VPButton.brand:hover {
-    background-color: var(--gf-accent-hi);
-    border-color: transparent;
-}
-
-/* --- The code well --------------------------------------
-   Chrome recedes toward the page, content advances. The old
-   theme had the tab strip as the LIGHTEST plane in the
-   component — furniture outranking content.               */
-.VPDoc div[class*='language-'],
-.VPDoc .vp-block {
-    background-color: var(--gf-code-well);
-    border: 1px solid var(--gf-line);
-    box-shadow:
-        inset 0 2px 5px -3px rgba(0, 0, 0, 0.7),
-        inset 0 1px 0 rgba(0, 0, 0, 0.45);
-}
-.VPDoc div[class*='language-'] pre,
-.VPDoc div[class*='language-'] code {
-    background-color: transparent;
-}
-.VPDoc .vp-code-group .tabs {
-    background-color: var(--gf-code-chrome);
-    border-bottom: 1px solid var(--gf-line);
-    box-shadow: none;
-}
-.VPDoc .vp-code-group .tabs input:checked + label {
-    color: var(--gf-ink);
-    border-bottom-color: var(--gf-accent);   /* ACTION marks the active tab */
-}
-
-/* --- Route the existing code-surface tokens to Temper -----
-   The pre-overhaul theme paints code blocks with its own
-   --gf-code-* variables rather than a flat background, and
-   that machinery (radius, gutter, overlay, shadow) is worth
-   keeping. Only the colours were wrong: the old well was a
-   COOL blue-grey (rgb 12,13,17 — hue 228) sitting under a
-   warm page, which is part of why code felt disconnected.
-
-   'ink' is the default variant, so it has to be overridden
-   alongside :root. The remaining 15 variants are untouched —
-   culling the picker is still an open decision.           */
-:root {
-    --gf-code-bg: linear-gradient(180deg, #0E0B12, #0A080D);
-    --gf-code-border: var(--gf-line);
-    --gf-code-shadow:
-        inset 0 2px 5px -3px rgba(0, 0, 0, 0.7),
-        inset 0 1px 0 rgba(0, 0, 0, 0.45),
-        0 8px 24px rgba(0, 0, 0, 0.22);
-    --gf-code-overlay: none;
-    --gf-code-lang: var(--gf-ink-3);
-    --gf-code-line-gutter-bg: rgba(255, 255, 255, 0.014);
-    --gf-code-line-gutter-border: rgba(255, 255, 255, 0.05);
-}
-
-/* Callouts: navigation gold for the rule, per the colour rules.
-   Status callouts keep their own system and are left alone. */
-.VPDoc .vp-doc .custom-block.info {
-    border-color: var(--gf-nav-line);
-    background-color: var(--gf-nav-soft);
-}
-.VPDoc .vp-doc .custom-block.info .custom-block-title {
-    color: var(--gf-nav);
-}
-
-/* --- Info callouts are navigation, not status ------------
-   The pre-overhaul theme drove info callouts from --gf-info-*
-   in a sky blue. Under Temper, "info" is not a status level —
-   tip / warning / danger are. An info block is an aside, so it
-   takes the NAVIGATION colour as a rule, never a fill.      */
-:root {
-    --gf-info-border: var(--gf-nav-line);
-    --gf-info-accent: var(--gf-nav);
-    --gf-info-title: var(--gf-nav);
-    --gf-info-text: var(--gf-ink-2);
-    --gf-info-bg:
-        linear-gradient(90deg, rgba(255, 194, 77, 0.075), rgba(255, 255, 255, 0.014) 40%, rgba(255, 255, 255, 0.008)),
-        var(--gf-ground-alt);
-    --gf-info-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.035),
-        0 10px 24px rgba(0, 0, 0, 0.14);
-
-    /* Warning keeps its own hue — comprehension outranks brand. */
-    --gf-warning-border: rgba(255, 180, 84, 0.30);
-    --gf-warning-accent: #FFB454;
-    --gf-warning-title: #FFD9A6;
-}
-
-/* ============================================================
-   TEMPER — typography and form
-   ------------------------------------------------------------
-   Colour was one axis of three. This is the other two.
-
-   Before this block every heading was Inter 600 at -0.02em and
-   every code block was landing on the OS's ui-monospace, because
-   neither display nor mono face was ever loaded. Radius was 2px
-   in 147 places against a spec of 8px, so the site read square
-   where Temper reads soft.
-   ============================================================ */
-
-:root {
-    --gf-font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-    --gf-font-body: 'Inter', system-ui, -apple-system, sans-serif;
-    --gf-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    --gf-display-weight: 700;
-    --gf-display-tracking: -0.045em;
-    --gf-radius: 8px;
-    --gf-radius-sm: 6px;
-    --gf-radius-lg: 12px;
-
-    --vp-font-family-base: var(--gf-font-body);
-    --vp-font-family-mono: var(--gf-font-mono);
-}
-
-/* --- Display voice ---------------------------------------
-   -0.045em is tight. It only works at display sizes, so it is
-   applied on a curve: full tracking on h1, eased off through
-   h3, and never on body copy or UI chrome.               */
-.VPDoc .vp-doc h1,
-.VPDoc .vp-doc h2,
-.VPDoc .vp-doc h3,
-.vp-doc h1, .vp-doc h2, .vp-doc h3 {
-    font-family: var(--gf-font-display);
-    font-weight: var(--gf-display-weight);
-}
-.vp-doc h1 {
-    letter-spacing: var(--gf-display-tracking);
-    font-size: clamp(34px, 4.2vw, 44px);
-    line-height: 1.08;
-}
-.vp-doc h2 {
-    letter-spacing: -0.032em;
-    line-height: 1.18;
-}
-.vp-doc h3 {
-    letter-spacing: -0.022em;
-}
-/* h4+ drop back to the body face — past h3 these are labels,
-   not display, and Space Grotesk at small sizes just reads odd. */
-.vp-doc h4, .vp-doc h5, .vp-doc h6 {
-    font-family: var(--gf-font-body);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-}
-
-/* The brand mark and hero headline share the display voice. */
-.VPNavBarTitle .title,
-.gf-hero-title,
-.gf-home-eyebrow,
-.gf-hero-eyebrow {
-    font-family: var(--gf-font-display);
-}
-.VPNavBarTitle .title {
-    font-weight: 700;
-    letter-spacing: -0.03em;
-}
-
-/* --- Mono everywhere it belongs --------------------------- */
-.vp-doc code,
-.vp-doc kbd,
-div[class*='language-'] code,
-div[class*='language-'] pre,
-.vp-code-group .tabs label,
-div[class*='language-'] .lang,
-.VPDoc .vp-doc :not(pre) > code {
-    font-family: var(--gf-font-mono);
-    font-variant-ligatures: none;      /* Go reads better without => ligatures */
-}
-
-/* --- Form: 2px -> 8px ------------------------------------
-   Targeted rather than a blanket override, because pills
-   (999px) and the few 12px panels are deliberate.        */
-.vp-doc div[class*='language-'],
-.vp-doc table,
-.vp-doc .custom-block,
-.vp-doc details,
-.vp-doc img,
-.VPDoc .vp-block,
-.pager-link,
-.VPFeature,
-.VPButton,
-.VPLocalSearchBox .shell,
-.gf-table-scroll,
-.vp-code-group {
-    border-radius: var(--gf-radius);
-}
-.vp-doc :not(pre) > code,
-.vp-doc kbd,
-.VPBadge,
-div[class*='language-'] .copy,
-div[class*='language-'] .lang {
-    border-radius: var(--gf-radius-sm);
-}
-/* Code blocks inside a group lose their own corners — the
-   group owns the shape, so the two do not double up. */
-.vp-code-group div[class*='language-'] {
-    border-radius: 0 0 var(--gf-radius) var(--gf-radius);
-}
-
-/* ============================================================
-   TEMPER — code chrome
-   ------------------------------------------------------------
-   The well is the surface; this is everything attached to it.
-   Governing rule: chrome recedes, content advances. The
-   pre-overhaul theme had the tab strip as the lightest plane in
-   the component — furniture outranking the code it labelled.
-   ============================================================ */
-
-/* --- Language label + copy: quiet until wanted ------------ */
-.vp-doc div[class*='language-'] .lang {
-    color: var(--gf-ink-3);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: lowercase;
-    opacity: 0.75;
-    transition: opacity 0.15s ease, color 0.15s ease;
-}
-.vp-doc div[class*='language-']:hover .lang {
-    opacity: 1;
-    color: var(--gf-ink-2);
-}
-.vp-doc div[class*='language-'] .copy {
-    background-color: var(--gf-surface);
-    border: 1px solid var(--gf-line-strong);
-    color: var(--gf-ink-2);
-    transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-.vp-doc div[class*='language-'] .copy:hover {
-    background-color: var(--gf-surface-2);
-    border-color: var(--gf-nav-line);
-}
-/* Copied is a completed ACTION, so it is allowed to fill. */
-.vp-doc div[class*='language-'] .copy.copied,
-.vp-doc div[class*='language-'] .copy:active {
-    background-color: var(--gf-accent);
-    border-color: transparent;
-}
-
-/* --- Line numbers and highlight ranges -------------------- */
-.vp-doc .line-numbers-wrapper {
-    color: var(--gf-ink-3);
-    border-right: 1px solid var(--gf-line);
-    background-color: rgba(255, 255, 255, 0.012);
-}
-/* A highlighted line is NAVIGATION — "look here" — so it takes
-   gold, and as a left rule plus a wash rather than a fill. */
-.vp-doc div[class*='language-'] .highlighted {
-    background-color: rgba(255, 194, 77, 0.085);
-    box-shadow: inset 2px 0 0 var(--gf-nav);
-}
-.vp-doc div[class*='language-'] .has-focused .line:not(.has-focus) {
-    filter: blur(0.085rem);
-    opacity: 0.5;
-}
-
-/* --- Diff blocks: status colours, not brand --------------- */
-.vp-doc div[class*='language-'] .diff.add {
-    background-color: rgba(95, 207, 168, 0.09);
-    box-shadow: inset 2px 0 0 #5FCFA8;
-}
-.vp-doc div[class*='language-'] .diff.remove {
-    background-color: rgba(255, 107, 133, 0.09);
-    box-shadow: inset 2px 0 0 #FF6B85;
-    opacity: 0.75;
-}
-.vp-doc div[class*='language-'] .diff.add::before { color: #5FCFA8; }
-.vp-doc div[class*='language-'] .diff.remove::before { color: #FF6B85; }
-.vp-doc div[class*='language-'] .error {
-    background-color: rgba(255, 107, 133, 0.10);
-    box-shadow: inset 2px 0 0 #FF6B85;
-}
-.vp-doc div[class*='language-'] .warning {
-    background-color: rgba(255, 180, 84, 0.10);
-    box-shadow: inset 2px 0 0 #FFB454;
-}
-
-/* --- Code group tabs -------------------------------------- */
-.vp-doc .vp-code-group .tabs {
-    background-color: var(--gf-code-chrome);
-    border-bottom: 1px solid var(--gf-line);
-    box-shadow: none;
-}
-.vp-doc .vp-code-group .tabs label {
-    color: var(--gf-ink-3);
-    font-size: 12px;
-    transition: color 0.15s ease;
-}
-.vp-doc .vp-code-group .tabs label:hover {
-    color: var(--gf-ink-2);
-}
-/* Active tab: ACTION marks the selection as a filled bar, the
-   label itself is just full-strength ink. */
-.vp-doc .vp-code-group .tabs input:checked + label {
-    color: var(--gf-ink);
-}
-.vp-doc .vp-code-group .tabs::after,
-.vp-doc .vp-code-group label::after {
-    background-color: var(--gf-accent);
-}
-
-/* ============================================================
-   TEMPER — content components
-   ============================================================ */
-
-/* --- Tables: NEITHER. Surface plus hairline, no colour. ---
-   A table header is not an action and not a link, so under the
-   four-row rule it gets the neutral treatment.            */
-.vp-doc table {
-    border: 1px solid var(--gf-line);
-    border-collapse: separate;
-    border-spacing: 0;
-    overflow: hidden;
-}
-.vp-doc th {
-    background-color: var(--gf-surface);
-    color: var(--gf-ink-2);
-    font-family: var(--gf-font-body);
-    font-weight: 600;
-    font-size: 12.5px;
-    letter-spacing: 0.045em;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--gf-line-strong);
-}
-.vp-doc td {
-    border-top: 1px solid var(--gf-line);
-    color: var(--gf-ink-2);
-}
-.vp-doc tr:nth-child(2n) td {
-    background-color: rgba(255, 255, 255, 0.012);
-}
-
-/* --- Callouts: a left rule, never a full frame -----------
-   Status keeps its own hue; info is navigation.          */
-.vp-doc .custom-block {
-    border: 1px solid var(--gf-line);
-    border-left-width: 3px;
-    background-color: var(--gf-ground-alt);
-    color: var(--gf-ink-2);
-}
-.vp-doc .custom-block-title {
-    font-family: var(--gf-font-body);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-.vp-doc .custom-block.info { border-left-color: var(--gf-nav); }
-.vp-doc .custom-block.info .custom-block-title { color: var(--gf-nav); }
-.vp-doc .custom-block.tip { border-left-color: #5FCFA8; background-color: rgba(95, 207, 168, 0.055); }
-.vp-doc .custom-block.tip .custom-block-title { color: #5FCFA8; }
-.vp-doc .custom-block.warning { border-left-color: #FFB454; background-color: rgba(255, 180, 84, 0.055); }
-.vp-doc .custom-block.warning .custom-block-title { color: #FFB454; }
-.vp-doc .custom-block.danger { border-left-color: #FF6B85; background-color: rgba(255, 107, 133, 0.055); }
-.vp-doc .custom-block.danger .custom-block-title { color: #FF6B85; }
-.vp-doc .custom-block a { color: inherit; text-decoration-color: currentColor; }
-
-/* --- Blockquote: a line, and the line is navigation ------- */
-.vp-doc blockquote {
-    border-left: 2px solid var(--gf-nav-line);
-    color: var(--gf-ink-2);
-    padding-left: 18px;
-}
-
-/* --- Disclosure ------------------------------------------- */
-.vp-doc details {
-    border: 1px solid var(--gf-line);
-    background-color: var(--gf-ground-alt);
-}
-.vp-doc details summary {
-    font-weight: 500;
-    color: var(--gf-ink);
-    cursor: pointer;
-}
-.vp-doc details summary::marker { color: var(--gf-nav); }
-
-/* --- Keyboard keys: physical, neutral --------------------- */
-.vp-doc kbd {
-    background-color: var(--gf-surface-2);
-    border: 1px solid var(--gf-line-strong);
-    border-bottom-width: 2px;
-    color: var(--gf-ink-2);
-    font-size: 11.5px;
-    padding: 2px 6px;
-}
-
-/* --- Badges ----------------------------------------------- */
-.VPBadge { font-family: var(--gf-font-mono); font-size: 11px; font-weight: 500; }
-.VPBadge.info    { background-color: var(--gf-surface-2); color: var(--gf-ink-2); border-color: var(--gf-line-strong); }
-.VPBadge.tip     { background-color: rgba(95, 207, 168, 0.12); color: #5FCFA8; border-color: rgba(95, 207, 168, 0.30); }
-.VPBadge.warning { background-color: rgba(255, 180, 84, 0.12); color: #FFB454; border-color: rgba(255, 180, 84, 0.30); }
-.VPBadge.danger  { background-color: rgba(255, 107, 133, 0.12); color: #FF6B85; border-color: rgba(255, 107, 133, 0.30); }
-
-/* --- Anchor headings: the anchor is navigation ------------ */
-.vp-doc .header-anchor { color: var(--gf-nav); opacity: 0; transition: opacity 0.15s ease; }
-.vp-doc h1:hover .header-anchor,
-.vp-doc h2:hover .header-anchor,
-.vp-doc h3:hover .header-anchor,
-.vp-doc .header-anchor:focus { opacity: 1; }
-
-/* --- Prev/next pager -------------------------------------
-   FIX: the brand bridge fed navigation gold into a border that
-   wraps an entire card, which reads as emphasis rather than as
-   a line. Neutral frame; gold is reserved for the link text. */
-.pager-link {
-    border: 1px solid var(--gf-line);
-    background-color: var(--gf-ground-alt);
-    transition: border-color 0.16s ease, background-color 0.16s ease;
-}
-.pager-link:hover {
-    border-color: var(--gf-line-strong);
-    background-color: var(--gf-surface);
-}
-.pager-link .desc { color: var(--gf-ink-3); }
-.pager-link .title { color: var(--gf-nav); }
-.pager-link:hover .title { color: var(--gf-nav-hi); }
-
-/* --- Sidebar: widen the active selector ------------------
-   The earlier rule only matched some page shapes.        */
-.VPSidebarItem.is-active > .item .link .text,
-.VPSidebarItem.is-active > .item .text,
-.VPSidebarItem.is-link.is-active .text,
-.VPSidebarItem.has-active > .item > .link > .text {
-    color: var(--gf-nav);
-}
-.VPSidebarItem.is-active > .item .link .text { font-weight: 600; }
-
-/* ============================================================
-   TEMPER — light mode
-   ------------------------------------------------------------
-   The bridge above only defined dark values, which left light
-   mode worse than it started. These are Temper's light tokens.
-
-   Note the navigation colour: gold cannot survive on white, so
-   it darkens to BRONZE (#8F5D00) to clear AA. That shifts the
-   feel — light mode is a quieter, more printed version of the
-   brand rather than the same one inverted. Whether to ship
-   light mode at all is still open (handoff.md, decision #2);
-   this at least makes the in-between state defensible.
-   ============================================================ */
-html:not(.dark) {
-    --gf-accent: #D6351A;
-    --gf-accent-hi: #B32B13;
-    --gf-nav: #8F5D00;             /* bronze, not gold */
-    --gf-nav-hi: #6E4700;
-    --gf-on-accent: #FFFFFF;
-    --gf-accent-soft: rgba(214, 53, 26, 0.08);
-    --gf-accent-line: rgba(214, 53, 26, 0.26);
-    --gf-nav-soft: rgba(143, 93, 0, 0.08);
-    --gf-nav-line: rgba(143, 93, 0, 0.26);
-
-    --gf-ground-deep: #FFFFFF;
-    --gf-ground: #FFFFFF;
-    --gf-ground-alt: #F7F5F9;
-    --gf-surface: #FFFFFF;
-    --gf-surface-2: #F2EFF5;
-    --gf-line: #E6E2EC;
-    --gf-line-strong: #CEC7D8;
-
-    /* Light already recesses: the well sits BELOW a white page,
-       and the chrome sits between the two, nearer the page. */
-    --gf-code-well: #F2EFF5;
-    --gf-code-chrome: #F7F5F9;
-
-    --gf-ink: #0C0A0E;
-    --gf-ink-2: #5F5868;
-    --gf-ink-3: #867E90;
-
-    --gf-code-bg: linear-gradient(180deg, #F4F1F7, #EFEBF3);
-    --gf-code-border: var(--gf-line);
-    --gf-code-shadow:
-        inset 0 2px 5px -3px rgba(20, 10, 30, 0.16),
-        inset 0 1px 0 rgba(20, 10, 30, 0.06);
-    --gf-code-lang: var(--gf-ink-3);
-    --gf-code-line-gutter-bg: rgba(20, 10, 30, 0.018);
-    --gf-code-line-gutter-border: rgba(20, 10, 30, 0.07);
-
-    --gf-info-border: var(--gf-nav-line);
-    --gf-info-accent: var(--gf-nav);
-    --gf-info-title: var(--gf-nav);
-    --gf-info-text: var(--gf-ink-2);
-    --gf-info-bg: linear-gradient(90deg, rgba(143, 93, 0, 0.055), rgba(0, 0, 0, 0.008) 40%, transparent), var(--gf-ground-alt);
-    --gf-warning-accent: #8A5A00;
-    --gf-warning-border: rgba(138, 90, 0, 0.26);
-    --gf-warning-title: #6E4700;
-
-    /* Status, light. Every one clears AA on white. */
-    --vp-c-tip-1: #0F6E52;   --vp-c-tip-2: #0F6E52;   --vp-c-tip-3: #0F6E52;
-    --vp-c-tip-soft: rgba(15, 110, 82, 0.08);
-    --vp-c-warning-1: #8A5A00; --vp-c-warning-2: #8A5A00; --vp-c-warning-3: #8A5A00;
-    --vp-c-warning-soft: rgba(138, 90, 0, 0.08);
-    --vp-c-danger-1: #B3213C; --vp-c-danger-2: #B3213C; --vp-c-danger-3: #B3213C;
-    --vp-c-danger-soft: rgba(179, 33, 60, 0.07);
-}
-
-/* Status callouts, light. */
-html:not(.dark) .vp-doc .custom-block.tip     { border-left-color: #0F6E52; background-color: rgba(15, 110, 82, 0.05); }
-html:not(.dark) .vp-doc .custom-block.tip .custom-block-title { color: #0F6E52; }
-html:not(.dark) .vp-doc .custom-block.warning { border-left-color: #8A5A00; background-color: rgba(138, 90, 0, 0.05); }
-html:not(.dark) .vp-doc .custom-block.warning .custom-block-title { color: #8A5A00; }
-html:not(.dark) .vp-doc .custom-block.danger  { border-left-color: #B3213C; background-color: rgba(179, 33, 60, 0.05); }
-html:not(.dark) .vp-doc .custom-block.danger .custom-block-title { color: #B3213C; }
-html:not(.dark) .vp-doc div[class*='language-'] .highlighted {
-    background-color: rgba(143, 93, 0, 0.09);
-    box-shadow: inset 2px 0 0 var(--gf-nav);
-}
-html:not(.dark) .vp-doc tr:nth-child(2n) td { background-color: rgba(20, 10, 30, 0.018); }
-html:not(.dark) .vp-doc .line-numbers-wrapper { background-color: rgba(20, 10, 30, 0.018); }
-
-/* The landing keeps a deep ground in dark mode only — inverting
-   a poster designed for black does not work, so in light mode
-   it simply follows the page. */
-html:not(.dark) .gf-home,
-html:not(.dark) body:has(.gf-home) {
-    --vp-c-bg: #FFFFFF;
-    --vp-c-bg-alt: #F7F5F9;
-    background-color: #FFFFFF;
-}
-
-/* --- Radius corrections ----------------------------------
-   Two rules were still winning after the form pass.
-
-   1. --gf-code-radius is declared at 12px inside every one of
-      the 16 code-variant blocks, so overriding the element's
-      border-radius was pointless — the variable is the real
-      control. Route it instead.
-   2. Tables are wrapped in .gf-table-scroll by a markdown-it
-      rule in config.mts, and the wrapper owns the clipping. */
-:root {
-    --gf-code-radius: var(--gf-radius);
-}
-.gf-table-scroll {
-    border-radius: var(--gf-radius);
-    overflow: hidden;
-    border: 1px solid var(--gf-line);
-}
-.gf-table-scroll > table,
-.vp-doc .gf-table-scroll table {
-    border: 0;
-    border-radius: 0;
-    margin: 0;
-    width: 100%;
-}
-
-/* --- Table correction ------------------------------------
-   The indigo sweep mapped the old header fill to ACTION and the
-   rules to NAVIGATION, because it judged by CSS property and
-   could not know what a table means. Both are wrong here.
-
-   Under the four-row rule a table is NEITHER: it is not an
-   action and not a link, so it gets a neutral surface and a
-   hairline and no brand colour at all. This is precisely the
-   erosion handoff.md warns about — it took nine hours to
-   appear, and it appeared in an automated pass.
-
-   Specificity matches the original .VPDoc .vp-doc th rule.  */
-.VPDoc .vp-doc th,
-.VPDoc .vp-doc td {
-    border: none;
-    border-bottom: 1px solid var(--gf-line);
-}
-.VPDoc .vp-doc th {
-    background: var(--gf-surface);
-    border-bottom: 1px solid var(--gf-line-strong);
-    color: var(--gf-ink-2);
-    font-family: var(--gf-font-body);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-.VPDoc .vp-doc th:first-child { border-top-left-radius: 0; }
-.VPDoc .vp-doc th:last-child  { border-top-right-radius: 0; }
-.VPDoc .vp-doc tr:last-child td { border-bottom: none; }
-.VPDoc .vp-doc td { color: var(--gf-ink-2); }
-html:not(.dark) .VPDoc .vp-doc th { background: var(--gf-ground-alt); }
-
-/* ============================================================
-   TEMPER — rules, dividers and sidebar
-   ------------------------------------------------------------
-   Section rules and <hr> were drawn in rgba(255,94,58,...) —
-   the ACTION colour — which made every structural divider on
-   the page look like it belonged to the same family as the
-   primary button. A divider is not an action and not a link:
-   under the four-row rule it is NEITHER, so it gets a neutral
-   hairline. The left-weighted gradient shape is kept; only the
-   hue changes.
-
-   The h1 rule is the exception and stays warm. handoff.md lists
-   "h1 accent rule" explicitly under Action, alongside the
-   primary button and install prompt — it is a deliberate,
-   once-per-page mark, not a divider.
-   ============================================================ */
-.VPDoc.has-sidebar .vp-doc > div > h1:first-child::after {
-    background: linear-gradient(90deg, var(--gf-accent), rgba(255, 94, 58, 0));
-    width: 56px;
-    height: 2px;
-}
-.VPDoc.has-sidebar .vp-doc h2 {
-    border-top: 1px solid transparent;
-    border-image: linear-gradient(90deg, var(--gf-line-strong), rgba(255, 255, 255, 0)) 1;
-}
-.VPDoc.has-sidebar .vp-doc hr {
-    border: none;
-    border-top: 1px solid transparent;
-    border-image: linear-gradient(90deg, var(--gf-line-strong), rgba(255, 255, 255, 0)) 1;
-}
-.vp-doc hr { border-color: var(--gf-line); }
-
-/* --- Sidebar -------------------------------------------------
-   Group headings were full-strength white, which made them
-   compete with the links underneath. In the prototype they are
-   quiet mono kickers — they label the group, they are not
-   destinations.                                              */
-.VPSidebarItem.level-0 > .item > .text,
-.VPSidebarItem.is-group > .item > .text {
-    font-family: var(--gf-font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    color: var(--gf-ink-3);
-}
-/* Active item: a gold rule plus a soft wash. The rule is the
-   navigation signal; the wash is neutral material. */
-.VPSidebarItem.is-link.is-active > .item,
-.VPSidebarItem.is-active > .item {
-    border-left: 2px solid var(--gf-nav);
-    background: var(--gf-nav-soft);
-    margin-left: -2px;
-    border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
-}
-.VPSidebar a:hover .text { color: var(--gf-ink); }
-
-/* --- Language label ------------------------------------------
-   Long single-line blocks scroll under the label. Give it the
-   well's own colour so code passes behind it cleanly instead of
-   colliding with it. */
-.vp-doc div[class*='language-'] .lang {
-    background: linear-gradient(90deg, rgba(12, 10, 14, 0), var(--gf-code-well) 32%);
-    padding: 2px 4px 2px 18px;
-}
-
-/* --- Version badge and preview label ---------------------
-   Both still carried a cool near-white ink (rgba(240, 233, 247))
-   that the ramp sweep skipped — at 94% lightness its nominal
-   HSL saturation reads as ~1.0, so it fell outside the filter.
-   Fixing by hand.
-
-   The version badge is ACTION — handoff.md lists it beside the
-   primary button — so it is filled, and filled means the accent
-   with on-accent ink, not a warm wash under a gold border.
-
-   The preview label is NEITHER: it is a notice, not an action
-   and not a destination, so it takes neutral material.       */
-.gf-docs-version {
-    border: 1px solid transparent;
-    background: var(--gf-accent);
-    color: var(--gf-on-accent);
-}
-
-/* --- VitePress default/gray token families ----------------
-   The bridge covered --vp-c-brand-*, --vp-c-bg-* and the text
-   ramp, but not --vp-c-default-* / --vp-c-gray-*. Those are
-   what VitePress falls back to for neutral chrome, and they
-   are a cool slate — which is how rgba(101,117,133) was still
-   painting inline code on the landing after three sweeps.
-   Stock defaults hide in variables, not just in declarations. */
-:root,
-html.dark {
-    --vp-c-default-1: var(--gf-ink-3);
-    --vp-c-default-2: var(--gf-ink-2);
-    --vp-c-default-3: var(--gf-line-strong);
-    --vp-c-default-soft: rgba(169, 161, 179, 0.16);
-
-    --vp-c-gray-1: var(--gf-line-strong);
-    --vp-c-gray-2: var(--gf-line);
-    --vp-c-gray-3: var(--gf-ground-alt);
-    --vp-c-gray-soft: rgba(169, 161, 179, 0.14);
-
-    --vp-c-indigo-1: var(--gf-nav);
-    --vp-c-indigo-2: var(--gf-nav-hi);
-    --vp-c-indigo-3: var(--gf-accent);
-    --vp-c-indigo-soft: var(--gf-accent-soft);
-
-    --vp-c-green-1: #5FCFA8; --vp-c-green-2: #5FCFA8; --vp-c-green-3: #5FCFA8;
-    --vp-c-green-soft: rgba(95, 207, 168, 0.12);
-    --vp-c-yellow-1: #FFB454; --vp-c-yellow-2: #FFB454; --vp-c-yellow-3: #FFB454;
-    --vp-c-yellow-soft: rgba(255, 180, 84, 0.12);
-    --vp-c-red-1: #FF6B85; --vp-c-red-2: #FF6B85; --vp-c-red-3: #FF6B85;
-    --vp-c-red-soft: rgba(255, 107, 133, 0.12);
-    --vp-c-purple-1: var(--gf-nav); --vp-c-purple-3: var(--gf-accent);
-    --vp-c-purple-soft: var(--gf-accent-soft);
-}
-
-/* Landing inline code follows the docs treatment: warm frame,
-   white ink — the same Reference role, so it should look the
-   same on both sides of the site. */
-.gf-home-lead code,
-.gf-home-points code,
-.gf-home-ops__surface code,
-.gf-home-atlas code {
-    border: 0;
-    background: var(--gf-accent-soft);
-    color: var(--gf-ink);
-}
-
-/* ============================================================
-   TEMPER — headings, anchors, sidebar and TOC
-   ------------------------------------------------------------
-   Matched against the mock's actual declarations rather than
-   approximated. Source: ai/design/forge-riffs.html
-     .m-rule  .m-h3  .m-side  .m-aside  .anchor
-   ============================================================ */
-
-/* --- h1 rule: SOLID, not a fade --------------------------
-   Mock is .m-rule { width:44px; height:3px; background:accent;
-   border-radius:2px }. It is a struck mark, and a gradient
-   fading to nothing reads as decoration instead.          */
-.VPDoc.has-sidebar .vp-doc > div > h1:first-child::after {
-    width: 44px;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--gf-accent);
-    margin-top: 16px;
-}
-
-/* --- Section rules sit UNDER the heading -----------------
-   The mock draws them as a border-BOTTOM with 9px of padding,
-   so the line belongs to the heading it follows. They were
-   applied as a border-top, which visually attaches the rule to
-   the paragraph above and reads as a separator between
-   sections rather than as part of the heading.            */
-.VPDoc.has-sidebar .vp-doc h2,
-.VPDoc.has-sidebar .vp-doc h3 {
-    border-top: 0;
-    border-image: none;
-}
-.VPDoc.has-sidebar .vp-doc h2 {
-    padding-bottom: 9px;
-    margin-top: 44px;
-    border-bottom: 1px solid;
-    border-image: linear-gradient(90deg, var(--gf-line-strong), transparent) 1;
-}
-.VPDoc.has-sidebar .vp-doc h3 {
-    padding-bottom: 9px;
-    border-bottom: 1px solid;
-    border-image: linear-gradient(90deg, var(--gf-line), transparent) 1;
-}
-.VPDoc.has-sidebar .vp-doc hr {
-    border: none;
-    border-top: 1px solid transparent;
-    border-image: linear-gradient(90deg, var(--gf-line-strong), transparent) 1;
-}
-
-/* --- Anchors: a quiet gold hash, no flash ----------------
-   The hash-landing animation pulsed an ember underline across
-   the heading you jumped to. Nothing in the mock does that,
-   and a heading that briefly glows warm reads as an action
-   firing. The mock's anchor is simply the nav colour at half
-   opacity, full on hover — persistent, not eventful.      */
-@keyframes gf-hash-glow {
-    0%, 100% { box-shadow: none; }
-}
-.vp-doc .gf-hash-glow { animation: none; }
-.vp-doc .header-anchor {
-    color: var(--gf-nav);
-    opacity: 0.45;
-    transition: opacity 0.15s ease;
-}
-.vp-doc h1:hover .header-anchor,
-.vp-doc h2:hover .header-anchor,
-.vp-doc h3:hover .header-anchor,
-.vp-doc h4:hover .header-anchor,
-.vp-doc .header-anchor:focus { opacity: 1; }
-
-/* --- Sidebar --------------------------------------------- */
-.VPSidebar {
-    background: var(--gf-ground-alt);
-    border-right: 1px solid var(--gf-line);
-}
-.VPSidebarItem.level-0 > .item > .text,
-.VPSidebarItem.is-group > .item > .text {
-    font-family: var(--gf-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: var(--gf-ink-3);
-}
-.VPSidebarItem .link .text {
-    font-size: 13.5px;
-    color: var(--gf-ink-2);
-}
-/* superseded — see 'Sidebar active state' below */
-.VPSidebarItem.is-active > .item .link .text,
-.VPSidebarItem.is-active > .item .text { color: var(--gf-nav); font-weight: 500; }
-
-/* --- TOC: a hairline per item, gold on the active one ---- */
-.VPDocAside { border-left: 1px solid var(--gf-line); }
-.VPDocAsideOutline .outline-title {
-    font-family: var(--gf-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--gf-ink-3);
-}
-.VPDocOutlineItem a.outline-link {
-    font-size: 12.8px;
-    color: var(--gf-ink-2);
-    padding: 5px 0 5px 11px;
-    border-left: 1px solid var(--gf-line);
-    background: transparent;
-}
-.VPDocOutlineItem a.outline-link.active {
-    color: var(--gf-nav);
-    border-left-color: var(--gf-nav);
-    background: transparent;
-}
-
-/* --- Anchor placement -------------------------------------
-   VitePress floats .header-anchor into the left gutter and
-   hides it until hover. Making it persistent there just put a
-   stray # in the margin of every heading.
-
-   The mock has it TRAILING the heading text:
-     .anchor { display:flex; align-items:center; gap:9px }
-     .anchor .lk { color:var(--nav); opacity:.5 }
-   so the heading reads as a unit and the hash is a quiet
-   affordance attached to it rather than a mark in the gutter. */
-.VPDoc .vp-doc h1,
-.VPDoc .vp-doc h2,
-.VPDoc .vp-doc h3,
-.VPDoc .vp-doc h4 {
-    display: flex;
-    align-items: baseline;
-    gap: 9px;
-    flex-wrap: wrap;
-}
-.VPDoc .vp-doc .header-anchor {
-    order: 2;
-    float: none;
-    margin: 0;
-    padding: 0;
-    font-size: 0.62em;
-    font-weight: 400;
-    color: var(--gf-nav);
-    opacity: 0.45;
-    transition: opacity 0.15s ease;
-}
-.VPDoc .vp-doc h1:hover .header-anchor,
-.VPDoc .vp-doc h2:hover .header-anchor,
-.VPDoc .vp-doc h3:hover .header-anchor,
-.VPDoc .vp-doc h4:hover .header-anchor,
-.VPDoc .vp-doc .header-anchor:focus { opacity: 1; }
-/* The h1 rule is a ::after, so it must not become a flex item. */
-.VPDoc.has-sidebar .vp-doc > div > h1:first-child::after {
-    order: 3;
-    flex-basis: 100%;
-}
-
-/* --- Heading layout correction ----------------------------
-   Making headings flex containers to move the anchor after the
-   text had two side effects: the h1 rule is an ::after, so it
-   became a flex item and flex-basis:100% stretched it to full
-   width; and the anchor keeps VitePress's float, which opts it
-   out of flex ordering entirely.
-
-   Reverting to block headings. The anchor stays in the gutter
-   where VitePress puts it, revealed on hover — quieter than
-   the mock's trailing hash and it does not fight the base
-   theme. The rule is taken out of flow so it can never be
-   affected by the heading's layout again. */
-.VPDoc .vp-doc h1,
-.VPDoc .vp-doc h2,
-.VPDoc .vp-doc h3,
-.VPDoc .vp-doc h4 {
-    display: block;
-    gap: normal;
-    flex-wrap: nowrap;
-}
-.VPDoc .vp-doc .header-anchor {
-    float: left;
-    margin-left: -0.87em;
-    padding-right: 0.23em;
-    font-size: inherit;
-    order: 0;
-    opacity: 0;
-    color: var(--gf-nav);
-}
-.VPDoc .vp-doc h1:hover .header-anchor,
-.VPDoc .vp-doc h2:hover .header-anchor,
-.VPDoc .vp-doc h3:hover .header-anchor,
-.VPDoc .vp-doc h4:hover .header-anchor,
-.VPDoc .vp-doc .header-anchor:focus { opacity: 1; }
-
-.VPDoc.has-sidebar .vp-doc > div > h1:first-child {
-    position: relative;
-    padding-bottom: 19px;
-}
-.VPDoc.has-sidebar .vp-doc > div > h1:first-child::after {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    order: 0;
-    flex-basis: auto;
-    width: 44px;
-    height: 3px;
-    margin: 0;
-    border-radius: 2px;
-    background: var(--gf-accent);
-}
-
-/* --- TOC correction ---------------------------------------
-   Two problems, both mine.
-
-   1. Outline links inherit line-height:32px from the base
-      theme. I added 5px of vertical padding on top of that
-      without resetting it, so every item became 42px tall and
-      a 12-item outline grew to 536px. The mock's 5px padding
-      assumes a normal line-height; setting it explicitly is
-      what makes that padding mean what it means there.
-
-   2. The marker still carried the old ember gradient and a
-      10px orange glow as background-image, painting over the
-      gold background-color underneath. The TOC marker is
-      NAVIGATION — it should be a flat gold line, and a glow
-      makes a position indicator look like something firing. */
-.VPDocOutlineItem a.outline-link {
-    line-height: 1.45;
-    padding: 5px 0 5px 11px;
-    font-size: 12.8px;
-    border-left: 1px solid var(--gf-line);
-    background: transparent;
-    transition: color 0.16s ease, border-color 0.16s ease;
-}
-.VPDocOutlineItem a.outline-link:hover {
-    color: var(--gf-ink);
-    border-left-color: var(--gf-line-strong);
-}
-.VPDocOutlineItem a.outline-link.active {
-    color: var(--gf-nav);
-    border-left-color: var(--gf-nav);
-    background: transparent;
-}
-.VPDocAsideOutline .outline-marker {
-    width: 2px;
-    border-radius: 2px;
-    background: var(--gf-nav);
-    background-image: none;
-    box-shadow: none;
-}
-/* The nested list indents should not compound the left rules. */
-.VPDocOutlineItem.nested { padding-left: 11px; }
-
-/* --- Sidebar active state ---------------------------------
-   The mock puts the whole treatment on the LINK:
-
-     .m-side a    { padding:6px 22px; border-left:2px solid transparent }
-     .m-side a.on { color:nav; border-left-color:nav;
-                    background:nav-soft; font-weight:500 }
-
-   It was on .item instead — the row wrapper — so the wash and
-   the bar spanned the full 32px row rather than the link box,
-   which is what made the selected entry read as a heavy plate
-   rather than a marked line. VitePress also ships an .indicator
-   element for exactly this job; with the border on the link it
-   would double up, so it is neutralised. */
-.VPSidebarItem .item > .link {
-    display: block;
-    border-left: 2px solid transparent;
-    padding-left: 0;
-}
-.VPSidebarItem.is-active > .item > .indicator,
-.VPSidebarItem.has-active > .item > .indicator {
-    background-color: transparent;
-}
-.VPSidebarItem.is-link.is-active > .item > .link {
-    border-left-color: var(--gf-nav);
-    background: var(--gf-nav-soft);
-}
-.VPSidebarItem.is-link.is-active > .item > .link .text {
-    color: var(--gf-nav);
-    font-weight: 500;
-}
-/* Parent groups containing the active page get the colour but
-   no bar and no wash — they are context, not the destination. */
-.VPSidebarItem.has-active:not(.is-active) > .item > .link .text {
-    color: var(--gf-ink-2);
-}
-
-/* --- TOC correction, second pass -------------------------
-   I put a border-left on every outline link, which produced a
-   second vertical rule sitting right beside the text — and on
-   the active item a gold bar there as well as the marker out
-   in the gutter. Two lines for one piece of state.
-
-   The outline has ONE continuous rule in the gutter, and the
-   marker slides along it. That is the whole mechanism: the
-   line is the track, the marker is the position on it. Items
-   carry no rule of their own; the active item is gold TEXT.
-
-   (I had read .m-aside's per-item `border-left:1px solid` from
-   the prototype literally, but there the aside has no marker —
-   the per-item borders ARE the track. VitePress already has a
-   marker, so importing both gives you one too many.)        */
-.VPDocOutlineItem a.outline-link {
-    border-left: 0;
-    padding-left: 11px;
-    line-height: 1.45;
-    font-size: 12.8px;
-    background: transparent;
-}
-.VPDocOutlineItem a.outline-link.active {
-    border-left: 0;
-    color: var(--gf-nav);
-    background: transparent;
-}
-.VPDocOutlineItem a.outline-link:hover {
-    border-left: 0;
-    color: var(--gf-ink);
-}
-/* The single track, and the marker that runs on it. */
-.VPDocAsideOutline .content {
-    border-left: 1px solid var(--gf-line);
-}
-.VPDocAsideOutline .outline-marker {
-    width: 2px;
-    border-radius: 2px;
-    background: var(--gf-nav);
-    background-image: none;
-    box-shadow: none;
-}
-
-/* --- Sidebar link spacing ---------------------------------
-   I set padding-left:0 on the link when adding the border, so
-   the text sat 2px from the gold bar — the width of the border
-   itself and nothing more. The mock's link is
-   `padding: 6px 22px` with the 2px rule outside that, so the
-   bar has room to read as a marker rather than as an underline
-   the text is resting on.
-
-   Padding goes on the link (not .item) so the wash and the bar
-   share the same box, and the right edge is rounded so the
-   active state reads as a marked row rather than a full-bleed
-   plate running into the content area. */
-.VPSidebarItem .item > .link {
-    display: block;
-    padding: 5px 14px 5px 14px;
-    border-left: 2px solid transparent;
-    border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
-}
-.VPSidebarItem .item > .link > .text {
-    padding: 0;
-    line-height: 1.5;
-}
-/* Group headings line up with the link text, not the bar. */
-.VPSidebarItem.level-0 > .item > .text,
-.VPSidebarItem.is-group > .item > .text {
-    padding-left: 16px;
-}
-/* Breathing room between groups. */
-.VPSidebarGroup + .VPSidebarGroup,
-.VPSidebarItem.level-0 { margin-top: 4px; }
-
-/* --- Docs page planes -------------------------------------
-   The canvas takes --ground-alt (#1D1923) and the doc content
-   column takes --ground (#1A1620), so the reading column is a
-   plane in its own right rather than the whole page being one
-   flat colour. The sidebar and local nav sit on the canvas
-   with it, which means the chrome and the page agree and the
-   content is the thing that steps forward.
-
-   Ground-alt is the LIGHTER of the two (L* 9.5 vs 8.1), so the
-   column reads very slightly recessed — the same direction as
-   the code well, one step shallower. */
-body,
-.Layout {
-    background-color: var(--gf-ground-alt);
-}
-.VPContent,
-.VPContent.has-sidebar,
-.VPDoc {
-    background: var(--gf-ground);
-}
-.VPSidebar,
-.VPLocalNav {
-    background: var(--gf-ground-alt) !important;
-}
-/* The home layout keeps the deep ground on both. */
-.gf-home,
-body:has(.gf-home),
-body:has(.gf-home) .Layout,
-body:has(.gf-home) .VPContent {
-    background-color: var(--gf-ground-deep);
-    background: var(--gf-ground-deep);
-}
-
-/* ============================================================
-   TEMPER — hero
-   ------------------------------------------------------------
-   Matched to the mock's declarations:
-     .m-eyebrow  .m-h1  .m-btn  .m-install  .m-card  .m-badge
-   ============================================================ */
-
-/* --- Eyebrow: accent, with the leading rule --------------
-   Mock is mono/11px/.17em in the ACCENT, preceded by a 22x1px
-   accent rule. It was gold and bare, which read as a link
-   colour on a line of text that is not a link. */
-.gf-hero-eyebrow,
-.gf-home-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--gf-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.17em;
-    text-transform: uppercase;
-    color: var(--gf-accent);
-    margin: 0 0 18px;
-}
-.gf-hero-eyebrow::before,
-.gf-home-eyebrow::before {
-    content: '';
-    width: 22px;
-    height: 1px;
-    background: var(--gf-accent);
-    flex: none;
-}
-
-/* --- Headline ------------------------------------------- */
-.gf-hero-headline em {
-    font-style: normal;
-    color: var(--gf-accent);
-}
-
-/* --- Buttons: flat. No bloom. ----------------------------
-   The primary had an orange glow behind it. Nothing in Temper
-   glows — the accent earns attention by being the only filled
-   warm element on the page, not by emitting light. */
-.gf-hero-btn,
-.gf-home-btn {
-    font-family: var(--gf-font-body);
-    font-size: 14.5px;
-    font-weight: 600;
-    padding: 12px 22px;
-    border-radius: var(--gf-radius);
-}
-.gf-hero-btn--primary,
-.gf-home-btn--primary {
-    background: var(--gf-accent);
-    border: 1px solid var(--gf-accent);
-    color: var(--gf-on-accent);
-    box-shadow: none;
-}
-.gf-hero-btn--primary:hover,
-.gf-home-btn--primary:hover {
-    background: var(--gf-accent-hi);
-    border-color: var(--gf-accent-hi);
-    box-shadow: none;
-}
-.gf-hero-btn--secondary {
-    background: transparent;
-    border: 1px solid var(--gf-line-strong);
-    color: var(--gf-ink);
-    box-shadow: none;
-}
-.gf-hero-btn--secondary:hover { border-color: var(--gf-ink-3); }
-
-/* --- Install prompt --------------------------------------
-   Mock: a rectangle at the standard radius, $ in the accent,
-   and COPY set off by a hairline DIVIDER rather than boxed in
-   its own bordered chip — a second border there makes the copy
-   affordance compete with the command it belongs to. */
-.gf-hero-install {
-    display: inline-flex;
-    align-items: center;
-    gap: 11px;
-    font-family: var(--gf-font-mono);
-    font-size: 13px;
-    border: 1px solid var(--gf-line);
-    background: var(--gf-surface);
-    border-radius: var(--gf-radius);
-    padding: 11px 14px;
-    color: var(--gf-ink-2);
-    box-shadow: none;
-}
-.gf-hero-install__prompt { color: var(--gf-accent); }
-.gf-hero-install__state {
-    margin-left: 8px;
-    padding-left: 11px;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--gf-ink-3);
-    border: 0;
-    border-left: 1px solid var(--gf-line);
-    background: none;
-    border-radius: 0;
-}
-
-/* --- Principle cards ------------------------------------- */
-.gf-hero-principle,
-.gf-home-card {
-    border: 1px solid var(--gf-line);
-    border-radius: var(--gf-radius);
-    padding: 15px 16px;
-    background: var(--gf-surface);
-}
-.gf-hero-principle strong,
-.gf-home-card b {
-    display: block;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--gf-ink);
-    margin-bottom: 6px;
-}
-.gf-hero-principle span,
-.gf-home-card span {
-    font-size: 12.8px;
-    line-height: 1.55;
-    color: var(--gf-ink-2);
-}
-
-/* --- Version badge: OUTLINED ----------------------------
-   Correcting myself. I made this a solid accent fill on the
-   strength of handoff.md listing "version badge" under Action.
-   The prototype renders it as .m-badge — accent TEXT on
-   accent-soft inside an accent-line border. The doc and the
-   mock disagree; the mock is what was actually looked at and
-   approved, so it wins, and the doc's rule table is the thing
-   that needs the correction. */
-.gf-docs-version {
-    font-family: var(--gf-font-mono);
-    font-size: 9.5px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 3.5px 8px;
-    border-radius: 999px;
-    border: 1px solid var(--gf-accent-line);
-    color: var(--gf-accent);
-    background: var(--gf-accent-soft);
-}
-
-/* --- Eyebrow alignment ------------------------------------
-   The eyebrow was display:flex, which makes it a full-width
-   block — so in the centred sections the label sat hard left
-   while the headline and body under it were centred.
-   inline-flex keeps the rule-plus-label as one unit and lets
-   it follow whatever text-align its section sets. */
-.gf-hero-eyebrow,
-.gf-home-eyebrow,
-.gf-home-section .gf-home-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
 }

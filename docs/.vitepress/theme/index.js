@@ -2,7 +2,6 @@ import DefaultTheme from 'vitepress/theme'
 import { useData, useRoute } from 'vitepress'
 import { defineAsyncComponent, h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
-import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
 import StarterKitOptions from './components/StarterKitOptions.vue'
@@ -13,7 +12,6 @@ const GoForjHeroStack = defineAsyncComponent(() => import('./components/GoForjHe
 const GoForjLiveTerminal = defineAsyncComponent(() => import('./components/GoForjLiveTerminal.vue'))
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
-const CODE_VARIANT_KEY = 'goforjCodeVariant'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
 const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
 const MERMAID_KEY = '__goforjMermaidState'
@@ -82,15 +80,6 @@ function preloadSidebarLinkImages(link, manifest) {
   const images = manifest[pageRouteForSidebarLink(link)]
   if (!Array.isArray(images)) return
   images.forEach(preloadPageImage)
-}
-
-function DocsPreviewBanner() {
-  return h('div', { class: 'gf-docs-preview-banner', role: 'note' }, [
-    h('div', { class: 'gf-docs-preview-banner-inner' }, [
-      h('span', { class: 'gf-docs-preview-banner-label' }, 'Documentation preview'),
-      h('span', { class: 'gf-docs-preview-banner-text' }, 'These docs are actively being built. Some pages may change as the framework and examples are finalized.')
-    ])
-  ])
 }
 
 function getLightboxState() {
@@ -478,35 +467,6 @@ function restoreDeferredInitialHash() {
   }
 }
 
-function applyCodeVariantPreference() {
-  if (typeof window === 'undefined') return
-  const allowed = new Set([
-    'halo',
-    'glass',
-    'ink',
-    'amber',
-    'forest',
-    'terminal',
-    'sunset',
-    'paper',
-    'chrome',
-    'obsidian',
-    'frost',
-    'midnight-gold',
-    'desert-dusk',
-    'retro-amber-crt',
-    'aurora',
-    'rose-metal',
-    'cobalt-luxe',
-    'mono-slate',
-    'mint-neon',
-    'sepia-noir'
-  ])
-  let variant = window.localStorage.getItem(CODE_VARIANT_KEY) || 'ink'
-  if (!allowed.has(variant)) variant = 'ink'
-  document.documentElement.dataset.gfCodeVariant = variant
-}
-
 function flashHashTarget() {
   if (typeof window === 'undefined' || !window.location.hash) return
   const target = getHashTarget(window.location.hash)
@@ -563,14 +523,18 @@ async function refreshMermaidDiagrams() {
           startOnLoad: false,
           securityLevel: 'strict',
           theme: 'dark',
+          // Temper. Nodes sit on the docs surface, borders and
+          // connectors take the NAVIGATION gold — a diagram is
+          // structure, not an action, so nothing here is filled
+          // with the accent.
           themeVariables: {
             background: 'transparent',
-            primaryColor: '#172033',
-            primaryTextColor: '#e5edf7',
-            primaryBorderColor: '#5f7fb5',
-            lineColor: '#8aa4d6',
-            secondaryColor: '#1f2937',
-            tertiaryColor: '#111827',
+            primaryColor: '#2F2737',
+            primaryTextColor: '#F2EEF6',
+            primaryBorderColor: 'rgba(255, 194, 77, 0.42)',
+            lineColor: 'rgba(255, 194, 77, 0.55)',
+            secondaryColor: '#1F1A24',
+            tertiaryColor: '#151119',
             fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
             fontSize: '14px'
           },
@@ -617,9 +581,8 @@ export default {
       ]),
       'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
       'home-hero-before': () => h(GoForjHeroStack),
-      'layout-top': () => h(DocsPreviewBanner),
       'doc-before': () => h(LibraryRepoHeader),
-      'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker), h(MotionPicker)]
+      'layout-bottom': () => [h(ApiIndexJump), h(MotionPicker)]
     })
   },
   setup() {
@@ -687,7 +650,6 @@ export default {
     let onBannerResize = null
 
     onMounted(() => {
-      applyCodeVariantPreference()
       revealNavbarSearch()
       initLightbox()
       updateBannerOffsetVar()
@@ -742,7 +704,6 @@ export default {
     })
 
     watch(() => route.path, () => {
-      applyCodeVariantPreference()
       resetOutlineScrollerPosition()
       refreshSoon()
       nextTick().then(replayDocEnter)

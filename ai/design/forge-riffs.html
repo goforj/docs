@@ -1,0 +1,1815 @@
+<!doctype html>
+<!-- Defaults: Temper + Lifted are decided. Inline code opens on "warm" — the
+     handoff's incumbent — so the ◆ recommendation is one click away to compare. -->
+<html lang="en" data-dir="temper" data-mode="dark" data-code="warm" data-syn="warm" data-well="lifted">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoForj · Molten Family</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   THE MOLTEN FAMILY  +  two survivors from the first round
+   Molten is the anchor. Forge / Steel / Edge each fix one thing it gets
+   wrong, without giving up what makes it good.
+   ========================================================================== */
+
+/* ---------- BASE FALLBACKS ----------------------------------------------
+   Every direction inherits these. Directions that define their own --nav
+   (Temper, Steel) override them because [data-dir][data-mode] is more
+   specific than [data-mode] alone. --nav resolves at use time, so by default
+   navigation simply reuses the direction's own link colour.                */
+[data-mode="dark"]{
+  --nav:var(--accent-link);--nav-hi:var(--accent-hi);
+  --nav-soft:var(--accent-soft);--nav-line:var(--accent-line);
+  --code-bg:var(--surface);--code-chrome:var(--surface-2);
+  --tip:#5FCFA8;--tip-soft:rgba(95,207,168,.10);--tip-line:rgba(95,207,168,.30);
+  --warn:#FFB454;--warn-soft:rgba(255,180,84,.10);--warn-line:rgba(255,180,84,.30);
+  --danger:#FF6B85;--danger-soft:rgba(255,107,133,.10);--danger-line:rgba(255,107,133,.30);
+  --add:#5FCFA8;--add-soft:rgba(95,207,168,.09);--del:#FF6B85;--del-soft:rgba(255,107,133,.09);
+  --shadow:0 12px 32px rgba(0,0,0,.5);
+  --term-bg:color-mix(in srgb,var(--ground) 76%,#000);
+  --term-ink:var(--ink-2);--term-dim:var(--ink-3);--term-hl:var(--ink);
+  --term-p:var(--accent);--term-step:var(--nav);--term-ok:var(--tip);--term-err:var(--danger);
+}
+[data-mode="light"]{
+  --nav:var(--accent-link);--nav-hi:var(--accent-hi);
+  --nav-soft:var(--accent-soft);--nav-line:var(--accent-line);
+  --code-bg:var(--surface-2);--code-chrome:var(--surface-2);
+  --tip:#0F6E52;--tip-soft:rgba(15,110,82,.08);--tip-line:rgba(15,110,82,.26);
+  --warn:#8A5A00;--warn-soft:rgba(138,90,0,.08);--warn-line:rgba(138,90,0,.26);
+  --danger:#B3213C;--danger-soft:rgba(179,33,60,.07);--danger-line:rgba(179,33,60,.24);
+  --add:#0F6E52;--add-soft:rgba(15,110,82,.07);--del:#B3213C;--del-soft:rgba(179,33,60,.06);
+  --shadow:0 12px 32px rgba(20,10,30,.12);
+  --term-bg:#16131C;--term-ink:#C8C2D4;--term-dim:#7A7286;--term-hl:#FFFFFF;
+  --term-p:#FF7A5C;--term-step:#FFC24D;--term-ok:#5FCFA8;--term-err:#FF6B85;
+}
+
+/* ---------- GO SYNTAX PALETTES ------------------------------------------
+   Independent of direction. github-dark is what the site runs today; the
+   three others preserve its luminance profile and shift hue warm.
+   Faithful detail: github-dark paints Go built-in types (error, string) with
+   the keyword colour, and nil as a constant.                              */
+[data-syn="github"][data-mode="dark"]{
+  --s-plain:#E1E4E8;--s-comment:#7C8794;--s-keyword:#F97583;--s-builtin:#F97583;
+  --s-type:#B392F0;--s-func:#B392F0;--s-string:#9ECBFF;--s-number:#79B8FF;
+  --s-const:#79B8FF;--s-punct:#E1E4E8;--s-tagkey:#85E89D;--s-verb:#85E89D;}
+[data-syn="warm"][data-mode="dark"]{
+  --s-plain:#E6E0EC;--s-comment:#8A8196;--s-keyword:#F97583;--s-builtin:#F97583;
+  --s-type:#D9A0F0;--s-func:#D9A0F0;--s-string:#E8C98A;--s-number:#FFB9A0;
+  --s-const:#FFB9A0;--s-punct:#9089A0;--s-tagkey:#A8D98A;--s-verb:#A8D98A;}
+[data-syn="ember"][data-mode="dark"]{
+  --s-plain:#E4DDE8;--s-comment:#8A8196;--s-keyword:#FF8A6B;--s-builtin:#FFAB8F;
+  --s-type:#9BD7C4;--s-func:#FFC24D;--s-string:#D9CE7A;--s-number:#FFAB8F;
+  --s-const:#FFAB8F;--s-punct:#9089A0;--s-tagkey:#B8D96B;--s-verb:#B8D96B;}
+[data-syn="neon"][data-mode="dark"]{
+  --s-plain:#F0EAF5;--s-comment:#8A8196;--s-keyword:#FF6B85;--s-builtin:#FF9E7C;
+  --s-type:#C89BFF;--s-func:#C89BFF;--s-string:#B8E86B;--s-number:#7FD8FF;
+  --s-const:#7FD8FF;--s-punct:#9089A0;--s-tagkey:#5FE8B0;--s-verb:#5FE8B0;}
+[data-mode="light"]{
+  --s-plain:#24202B;--s-comment:#6E6579;--s-keyword:#C4344A;--s-builtin:#C4344A;
+  --s-type:#7A3FBF;--s-func:#7A3FBF;--s-string:#6B5312;--s-number:#A8452B;
+  --s-const:#A8452B;--s-punct:#6E6579;--s-tagkey:#3F6B14;--s-verb:#3F6B14;}
+[data-syn="github"][data-mode="light"]{
+  --s-keyword:#D73A49;--s-builtin:#D73A49;--s-type:#6F42C1;--s-func:#6F42C1;
+  --s-string:#032F62;--s-number:#005CC5;--s-const:#005CC5;--s-tagkey:#22863A;--s-verb:#22863A;}
+[data-syn="ember"][data-mode="light"]{
+  --s-keyword:#B3350F;--s-builtin:#A8452B;--s-type:#0F6E62;--s-func:#8A5A00;--s-string:#5C5A14;}
+[data-syn="neon"][data-mode="light"]{
+  --s-keyword:#C4213C;--s-builtin:#B35309;--s-type:#6F42C1;--s-func:#6F42C1;
+  --s-string:#3F6B14;--s-number:#0A6B94;--s-const:#0A6B94;--s-tagkey:#0F7A52;--s-verb:#0F7A52;}
+
+/* ---------- MOLTEN — the anchor, unchanged ---------- */
+[data-dir="molten"][data-mode="dark"]{
+  --ground:#08070A;--ground-alt:#0E0C11;--surface:#131017;--surface-2:#191520;
+  --line:#251F2C;--line-strong:#372E42;--ink:#FFFFFF;--ink-2:#A39BAD;--ink-3:#6E6678;
+  --accent:#FF5E3A;--accent-hi:#FF9A3C;--accent-link:#FF9A3C;--second:#FF9A3C;--on-accent:#08070A;
+  --accent-soft:rgba(255,94,58,.13);--accent-line:rgba(255,94,58,.34);
+  --glow:radial-gradient(55% 45% at 68% -5%,rgba(255,94,58,.20),transparent 68%);}
+[data-dir="molten"][data-mode="light"]{
+  --ground:#FFFFFF;--ground-alt:#F6F5F7;--surface:#FFFFFF;--surface-2:#F3F1F5;
+  --line:#E5E2E9;--line-strong:#CDC8D4;--ink:#08070A;--ink-2:#5F5868;--ink-3:#867E90;
+  --accent:#D6351A;--accent-hi:#B32B13;--accent-link:#C43018;--second:#B45309;--on-accent:#FFFFFF;
+  --accent-soft:rgba(214,53,26,.08);--accent-line:rgba(214,53,26,.26);
+  --glow:radial-gradient(55% 45% at 68% -5%,rgba(214,53,26,.06),transparent 68%);}
+[data-dir="molten"]{--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:700;--dt:-.045em;--radius:2px;}
+
+/* ---------- MOLTEN FORGE — fixes the elevation problem ---------- */
+[data-dir="forge"][data-mode="dark"]{
+  --ground:#0C0A0E;--ground-alt:#131017;--surface:#1A1620;--surface-2:#221D2A;
+  --line:#2A2333;--line-strong:#3D3349;--ink:#FFFFFF;--ink-2:#A9A1B3;--ink-3:#746C80;
+  --accent:#FF5E3A;--accent-hi:#FF8257;--accent-link:#FF8257;--second:#FFB03C;--on-accent:#08070A;
+  --accent-soft:rgba(255,94,58,.12);--accent-line:rgba(255,94,58,.32);
+  --glow:radial-gradient(58% 46% at 68% -5%,rgba(255,94,58,.18),transparent 70%);}
+[data-dir="forge"][data-mode="light"]{
+  --ground:#FFFFFF;--ground-alt:#F7F5F9;--surface:#FFFFFF;--surface-2:#F2EFF5;
+  --line:#E6E2EC;--line-strong:#CEC7D8;--ink:#0C0A0E;--ink-2:#5F5868;--ink-3:#867E90;
+  --accent:#D6351A;--accent-hi:#B32B13;--accent-link:#C43018;--second:#B45309;--on-accent:#FFFFFF;
+  --accent-soft:rgba(214,53,26,.08);--accent-line:rgba(214,53,26,.26);
+  --glow:radial-gradient(58% 46% at 68% -5%,rgba(214,53,26,.06),transparent 70%);}
+[data-dir="forge"]{--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:700;--dt:-.045em;--radius:8px;}
+
+/* ---------- MOLTEN STEEL — fixes the one-color-two-jobs problem ---------- */
+[data-dir="steel"][data-mode="dark"]{
+  --ground:#09090C;--ground-alt:#0F0F14;--surface:#15151C;--surface-2:#1C1C25;
+  --line:#26262F;--line-strong:#383843;--ink:#FFFFFF;--ink-2:#9C9CAC;--ink-3:#6B6B7A;
+  --accent:#FF5E3A;--accent-hi:#FF8257;--accent-link:#7DA8D9;--second:#7DA8D9;--on-accent:#09090C;
+  --accent-soft:rgba(255,94,58,.12);--accent-line:rgba(255,94,58,.32);
+  --second-soft:rgba(125,168,217,.12);--second-line:rgba(125,168,217,.32);
+  --glow:radial-gradient(55% 45% at 68% -5%,rgba(255,94,58,.16),transparent 68%);}
+[data-dir="steel"][data-mode="light"]{
+  --ground:#FFFFFF;--ground-alt:#F6F6F8;--surface:#FFFFFF;--surface-2:#F1F1F5;
+  --line:#E4E4EA;--line-strong:#C9C9D3;--ink:#09090C;--ink-2:#5A5A68;--ink-3:#82828F;
+  --accent:#D6351A;--accent-hi:#B32B13;--accent-link:#2C5F94;--second:#2C5F94;--on-accent:#FFFFFF;
+  --accent-soft:rgba(214,53,26,.08);--accent-line:rgba(214,53,26,.26);
+  --second-soft:rgba(44,95,148,.09);--second-line:rgba(44,95,148,.28);
+  --glow:radial-gradient(55% 45% at 68% -5%,rgba(214,53,26,.05),transparent 68%);}
+[data-dir="steel"]{--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:700;--dt:-.045em;--radius:4px;}
+
+/* ---------- MOLTEN EDGE — pushes it further ---------- */
+[data-dir="edge"][data-mode="dark"]{
+  --ground:#060509;--ground-alt:#0B0A0F;--surface:#100E15;--surface-2:#16131D;
+  --line:#221E2B;--line-strong:#342E40;--ink:#FFFFFF;--ink-2:#A8A0B4;--ink-3:#6E6679;
+  --accent:#FF4A1F;--accent-hi:#FFAE6B;--accent-link:#FF7A47;--second:#FFC845;--on-accent:#060509;
+  --accent-soft:rgba(255,74,31,.13);--accent-line:rgba(255,74,31,.36);
+  --glow:radial-gradient(52% 44% at 66% -6%,rgba(255,74,31,.24),transparent 66%);}
+[data-dir="edge"][data-mode="light"]{
+  --ground:#FFFFFF;--ground-alt:#F5F4F6;--surface:#FFFFFF;--surface-2:#F1EFF3;
+  --line:#E3E1E7;--line-strong:#C8C4D0;--ink:#060509;--ink-2:#5C5566;--ink-3:#847C8E;
+  --accent:#CE2F0D;--accent-hi:#A9250A;--accent-link:#BC2B0C;--second:#A8600A;--on-accent:#FFFFFF;
+  --accent-soft:rgba(206,47,13,.08);--accent-line:rgba(206,47,13,.28);
+  --glow:radial-gradient(52% 44% at 66% -6%,rgba(206,47,13,.06),transparent 66%);}
+[data-dir="edge"]{--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:700;--dt:-.058em;--radius:0px;}
+
+/* ---------- MOLTEN TEMPER — Forge's depth + Steel's split, warm only ----------
+   Tempering is the last heat treatment: it takes hardened-but-brittle steel and
+   makes it tough enough to actually use. Same job here.
+   ACTION  = --accent, always on a FILLED element.
+   NAV     = --nav,    always on TEXT or a LINE.
+   The hue gap is 28.5°, so the form rule carries the rest of the distinction. */
+[data-dir="temper"][data-mode="dark"]{
+  --ground:#0C0A0E;--ground-alt:#131017;--surface:#1A1620;--surface-2:#221D2A;
+  --line:#2A2333;--line-strong:#3D3349;--ink:#FFFFFF;--ink-2:#A9A1B3;--ink-3:#746C80;
+  --accent:#FF5E3A;--accent-hi:#FF8257;--accent-link:#FFC24D;
+  --nav:#FFC24D;--nav-hi:#FFD37A;--second:#FFC24D;--on-accent:#08070A;
+  --accent-soft:rgba(255,94,58,.12);--accent-line:rgba(255,94,58,.32);
+  --nav-soft:rgba(255,194,77,.11);--nav-line:rgba(255,194,77,.30);
+  --glow:radial-gradient(58% 46% at 68% -5%,rgba(255,94,58,.18),transparent 70%);}
+[data-dir="temper"][data-mode="light"]{
+  --ground:#FFFFFF;--ground-alt:#F7F5F9;--surface:#FFFFFF;--surface-2:#F2EFF5;
+  --line:#E6E2EC;--line-strong:#CEC7D8;--ink:#0C0A0E;--ink-2:#5F5868;--ink-3:#867E90;
+  --accent:#D6351A;--accent-hi:#B32B13;--accent-link:#8F5D00;
+  --nav:#8F5D00;--nav-hi:#6E4700;--second:#8F5D00;--on-accent:#FFFFFF;
+  --accent-soft:rgba(214,53,26,.08);--accent-line:rgba(214,53,26,.26);
+  --nav-soft:rgba(143,93,0,.08);--nav-line:rgba(143,93,0,.26);
+  --glow:radial-gradient(58% 46% at 68% -5%,rgba(214,53,26,.06),transparent 70%);}
+[data-dir="temper"]{--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:700;--dt:-.045em;--radius:8px;}
+
+/* ---------- IRON — kept as the warm baseline ---------- */
+[data-dir="iron"][data-mode="dark"]{
+  --ground:#12100F;--ground-alt:#1A1715;--surface:#1C1917;--surface-2:#221D1A;
+  --line:#2E2823;--line-strong:#3D342D;--ink:#F5EFE9;--ink-2:#A9A099;--ink-3:#7A716A;
+  --accent:#FF7A2F;--accent-hi:#FF9457;--accent-link:#FFA46B;--second:#F2C14E;--on-accent:#12100F;
+  --accent-soft:rgba(255,122,47,.12);--accent-line:rgba(255,122,47,.32);
+  --glow:radial-gradient(60% 50% at 70% 0%,rgba(255,122,47,.16),transparent 70%);}
+[data-dir="iron"][data-mode="light"]{
+  --ground:#FBF8F5;--ground-alt:#F4EFE9;--surface:#FFFFFF;--surface-2:#F7F2EC;
+  --line:#E6DCD2;--line-strong:#D3C4B6;--ink:#1C1917;--ink-2:#6B615A;--ink-3:#8C8177;
+  --accent:#C2410C;--accent-hi:#9A3308;--accent-link:#B03B0A;--second:#A16207;--on-accent:#FFFFFF;
+  --accent-soft:rgba(194,65,12,.09);--accent-line:rgba(194,65,12,.28);
+  --glow:radial-gradient(60% 50% at 70% 0%,rgba(194,65,12,.07),transparent 70%);}
+[data-dir="iron"]{--font-display:'Archivo',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:800;--dt:-.035em;--radius:10px;}
+
+/* ---------- ANVIL — kept as the cold-ground counterpoint ---------- */
+[data-dir="anvil"][data-mode="dark"]{
+  --ground:#0F1113;--ground-alt:#141719;--surface:#181C1F;--surface-2:#1E2327;
+  --line:#262C31;--line-strong:#354046;--ink:#EDEFF1;--ink-2:#9BA4AB;--ink-3:#6B757C;
+  --accent:#FF6B1F;--accent-hi:#FF8A4C;--accent-link:#FF9666;--second:#8FA3AE;--on-accent:#0F1113;
+  --accent-soft:rgba(255,107,31,.11);--accent-line:rgba(255,107,31,.30);
+  --glow:radial-gradient(58% 48% at 72% 0%,rgba(255,107,31,.13),transparent 70%);}
+[data-dir="anvil"][data-mode="light"]{
+  --ground:#F4F5F6;--ground-alt:#EAECEE;--surface:#FFFFFF;--surface-2:#EFF1F2;
+  --line:#DCE0E3;--line-strong:#C0C7CB;--ink:#0F1113;--ink-2:#5C666D;--ink-3:#7A848B;
+  --accent:#C2410C;--accent-hi:#9A3308;--accent-link:#B03B0A;--second:#52646F;--on-accent:#FFFFFF;
+  --accent-soft:rgba(194,65,12,.08);--accent-line:rgba(194,65,12,.26);
+  --glow:radial-gradient(58% 48% at 72% 0%,rgba(194,65,12,.06),transparent 70%);}
+[data-dir="anvil"]{--font-display:'Archivo',sans-serif;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:800;--dt:-.035em;--radius:8px;}
+
+/* ---------- CARBON — kept as the monospace bet ---------- */
+[data-dir="carbon"][data-mode="dark"]{
+  --ground:#0A0A0A;--ground-alt:#0F0F0F;--surface:#141414;--surface-2:#1A1A1A;
+  --line:#242424;--line-strong:#333333;--ink:#EDEDED;--ink-2:#999999;--ink-3:#6B6B6B;
+  --accent:#E8501E;--accent-hi:#FF7043;--accent-link:#FF7A4D;--second:#C9A227;--on-accent:#0A0A0A;
+  --accent-soft:rgba(232,80,30,.11);--accent-line:rgba(232,80,30,.32);
+  --glow:radial-gradient(58% 48% at 72% 0%,rgba(232,80,30,.10),transparent 70%);}
+[data-dir="carbon"][data-mode="light"]{
+  --ground:#FAFAFA;--ground-alt:#F2F2F2;--surface:#FFFFFF;--surface-2:#F5F5F5;
+  --line:#E3E3E3;--line-strong:#C9C9C9;--ink:#0A0A0A;--ink-2:#5C5C5C;--ink-3:#7A7A7A;
+  --accent:#C2380F;--accent-hi:#9E2C0B;--accent-link:#B33310;--second:#8A6D0F;--on-accent:#FFFFFF;
+  --accent-soft:rgba(194,56,15,.08);--accent-line:rgba(194,56,15,.26);
+  --glow:radial-gradient(58% 48% at 72% 0%,rgba(194,56,15,.05),transparent 70%);}
+[data-dir="carbon"]{--font-display:'JetBrains Mono',monospace;--font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;--dw:700;--dt:-.05em;--radius:2px;}
+
+/* ==========================================================================
+   CODE SURFACE                                             [data-well]
+   --------------------------------------------------------------------------
+   Two states: "raised" is what the design was doing before, kept as the
+   before/after control. "lifted" is the decision.
+
+   THE PROBLEM. --code-bg was var(--surface) — two rungs UP the elevation
+   ladder — with the head/tab chrome higher still at var(--surface-2). The tab
+   strip was the lightest plane in the component: furniture outranking content.
+   Meanwhile --term-bg was the only surface in the file that explicitly went
+   DOWN. The same file disagreed with itself about which way code should point.
+
+   WHY IT COULDN'T BE FIXED IN PLACE. Measured in perceptual lightness (CIE L*):
+
+     Temper page ground #0C0A0E ....... L*  3.0
+     raised code #1A1620 .............. L*  8.1   dL* 5.16 ABOVE the page
+     code dropped to #09070A .......... L*  2.1   dL* 0.86 below  <- invisible
+     pure black #000000 ............... L*  0.0   dL* 2.95 below  <- the FLOOR
+
+   There are only three L* units of room beneath a near-black page, so even pure
+   black buys less separation than the raised state already had. The raised code
+   block was never a contrast failure. It had plenty of separation and was
+   simply pointing the wrong way — because there was nowhere else to go.
+
+   THE FIX. Lift the page off the floor. The page rises to the old card surface,
+   the well takes the old ground: separation holds at dL* 5.16 and reverses
+   direction. Cards and chrome re-stack above the new page so the ladder climbs.
+
+   WHY LIFTING IS RIGHT ON ITS OWN TERMS, not just as a means to seat the code:
+
+     1. #0C0A0E (L* 2.95) sat below the band every dark UI occupies — GitHub
+        4.95, Linear 4.80, Tailwind zinc-900 8.36, VitePress 9.92, VS Code 11.26.
+        The lifted page at 8.11 lands inside it. Note VitePress at 9.92 is what
+        this site looks like TODAY, so lifting is closer to home than it sounds.
+     2. Colour needs light. Perceived chroma (CIELAB C*) of the violet tint:
+        page today 1.90 -> lifted page 7.81 -> lifted card 9.39. At L* 3 the
+        brand hue is in the hex and absent from the eye. Lifting is what makes
+        Temper read as warm rather than merely dark.
+     3. White text on near-black halates. At L* 8 it stops.
+
+   Two earlier attempts were cut once this was understood:
+     "deep"  — page untouched, well to near-black. Bought dL* 2.6, near the
+               floor, and leaned entirely on an inset shadow to be legible.
+     "tiers" — page dark, cards floated, well near-black. It worked, but it
+               existed to protect a dark page, and the thing that actually
+               needed protecting was the LANDING, not the page. Once the hero
+               is scoped separately (see below) the reason for it evaporates.
+
+   NOTE ON THE VERIFICATION IN handoff.md: every palette was checked with WCAG
+   contrast ratio, and all of them passed. That check cannot detect this problem.
+   WCAG's +0.05 flare constant dominates when both luminances are near zero, so
+   every dark-on-dark plane pair collapses to ~1.0-1.2:1 regardless of how
+   different it looks. WCAG is a TEXT LEGIBILITY metric; dL* is the right one for
+   SURFACE SEPARATION. The readout under the palette shows both.
+   ========================================================================== */
+[data-well="lifted"][data-dir="molten"][data-mode="dark"]{
+  --ground:#131017;--ground-alt:#17141A;--surface:#23202A;--surface-2:#24212B;
+  --code-bg:#08070A;--code-chrome:#0E0C11;}
+[data-well="lifted"][data-dir="forge"][data-mode="dark"]{
+  --ground:#1A1620;--ground-alt:#1D1923;--surface:#2C2734;--surface-2:#2D2835;
+  --code-bg:#0C0A0E;--code-chrome:#131017;}
+[data-well="lifted"][data-dir="steel"][data-mode="dark"]{
+  --ground:#15151C;--ground-alt:#19191F;--surface:#26262F;--surface-2:#272730;
+  --code-bg:#09090C;--code-chrome:#0F0F14;}
+[data-well="lifted"][data-dir="edge"][data-mode="dark"]{
+  --ground:#100E15;--ground-alt:#141219;--surface:#201E27;--surface-2:#221F28;
+  --code-bg:#060509;--code-chrome:#0B0A0F;}
+[data-well="lifted"][data-dir="temper"][data-mode="dark"]{
+  --ground:#1A1620;--ground-alt:#1D1923;--surface:#2C2734;--surface-2:#2D2835;
+  --code-bg:#0C0A0E;--code-chrome:#131017;}
+[data-well="lifted"][data-dir="iron"][data-mode="dark"]{
+  --ground:#1C1917;--ground-alt:#1F1C1A;--surface:#2C2724;--surface-2:#2D2825;
+  --code-bg:#12100F;--code-chrome:#1A1715;}
+[data-well="lifted"][data-dir="anvil"][data-mode="dark"]{
+  --ground:#181C1F;--ground-alt:#1B1F22;--surface:#282D31;--surface-2:#292E32;
+  --code-bg:#0F1113;--code-chrome:#141719;}
+[data-well="lifted"][data-dir="carbon"][data-mode="dark"]{
+  --ground:#141414;--ground-alt:#181818;--surface:#242424;--surface-2:#252525;
+  --code-bg:#0A0A0A;--code-chrome:#0F0F0F;}
+
+
+/* Below dL* ~3 the eye needs help from something other than luminance. An inset
+   top shadow reads as "this surface is behind the page" the way a drop shadow
+   reads as "in front", and it costs no brightness anywhere. */
+/* A soft inset along the top edge is the cue for "this surface is behind the
+   page", the way a drop shadow says "in front". At dL* 5.16 the luminance is
+   already carrying the well, so this is lighter than it needed to be when the
+   separation was marginal — it sharpens the edge without muddying the code. */
+[data-well="lifted"] .code,[data-well="lifted"] .group,
+[data-well="lifted"] .term,[data-well="lifted"] .tree{
+  box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.7),inset 0 1px 0 rgba(0,0,0,.45);}
+
+/* --term-bg is derived from --ground, so lifting the page would drag the
+   terminal up with it and leave it floating above the code well. Re-anchor it
+   to the well instead: terminal and code should read as the same material. */
+[data-well="lifted"][data-mode="dark"]{
+  --term-bg:color-mix(in srgb,var(--code-bg) 86%,#000);}
+
+/* --------------------------------------------------------------------------
+   Lifted, scoped away from the landing.
+
+   Lifted is right for prose — the interior pages want the extra air — and wrong
+   for the hero, where the deep ground is doing the work. So don't apply it
+   globally: re-declare the ORIGINAL ground inside the landing mock and let the
+   lift apply only to documentation chrome.
+
+   This is the same split site-theme-system.md already forces on the real theme.
+   The home layout renders markdown inside .vp-doc, so a bare .vp-doc rule leaks
+   onto the landing page — anything decorating prose has to be scoped to
+   .VPDoc.has-sidebar. The mechanism you already need for correctness is the
+   mechanism that solves this, which is a good sign it's the right seam.
+   -------------------------------------------------------------------------- */
+[data-well="lifted"][data-dir="molten"] .m-hero{--ground:#08070A;--surface:#131017;--surface-2:#191520;}
+[data-well="lifted"][data-dir="forge"]  .m-hero{--ground:#0C0A0E;--surface:#1A1620;--surface-2:#221D2A;}
+[data-well="lifted"][data-dir="steel"]  .m-hero{--ground:#09090C;--surface:#15151C;--surface-2:#1C1C25;}
+[data-well="lifted"][data-dir="edge"]   .m-hero{--ground:#060509;--surface:#100E15;--surface-2:#16131D;}
+[data-well="lifted"][data-dir="temper"] .m-hero{--ground:#0C0A0E;--surface:#1A1620;--surface-2:#221D2A;}
+[data-well="lifted"][data-dir="iron"]   .m-hero{--ground:#12100F;--surface:#1C1917;--surface-2:#221D1A;}
+[data-well="lifted"][data-dir="anvil"]  .m-hero{--ground:#0F1113;--surface:#181C1F;--surface-2:#1E2327;}
+[data-well="lifted"][data-dir="carbon"] .m-hero{--ground:#0A0A0A;--surface:#141414;--surface-2:#1A1A1A;}
+[data-well="lifted"][data-mode="dark"] .m-hero{background-color:var(--ground)}
+[data-well="lifted"][data-mode="light"] .m-hero{background-color:transparent}
+
+/* Light mode already recesses code (surface-2 sits below a white page), so
+   lifted only needs to deepen the well and pull the chrome back to the page. */
+[data-well="lifted"][data-mode="light"]{
+  --code-bg:color-mix(in srgb,var(--surface-2) 92%,#000);
+  --code-chrome:var(--ground-alt);}
+
+/* ==========================================================================
+   SHELL
+   ========================================================================== */
+*{box-sizing:border-box}
+body{margin:0;background:#0A0A0B;color:#E7E7EA;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.shell{max-width:1240px;margin:0 auto;padding:0 24px 120px}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,11,.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid #1E1E22;padding:12px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.topbar h1{font-size:13.5px;margin:0;font-weight:600;color:#fff;white-space:nowrap}
+.topbar h1 span{color:#7A7A85;font-weight:400}
+.seg{display:flex;gap:2px;background:#161619;border:1px solid #26262B;border-radius:8px;padding:3px;flex-wrap:wrap;align-items:stretch}
+/* Inline group label. Not a control — it names the axis the buttons vary. */
+.seg .seglbl{display:flex;align-items:center;padding:0 10px 0 8px;margin-right:3px;
+  font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:#6E6E7A;white-space:nowrap;user-select:none;pointer-events:none;
+  border-right:1px solid #26262B}
+.share{margin-left:8px;background:#161619;border:1px solid #26262B;color:#9A9AA6;
+  border-radius:8px;padding:0 12px;height:30px;font-size:11.5px;font-family:inherit;
+  cursor:pointer;white-space:nowrap}
+.share:hover{color:#fff;border-color:#3A3A42}
+.seg.dirs{margin-left:auto}
+.seg button{appearance:none;border:0;background:transparent;color:#8A8A94;font:inherit;font-size:12px;font-weight:500;
+  padding:6px 11px;border-radius:6px;cursor:pointer;transition:.15s;white-space:nowrap}
+.seg button:hover{color:#D5D5DC}
+.seg button[aria-pressed="true"]{background:#2C2C33;color:#fff}
+.seg button.base{color:#E8886A}
+.seg button.base[aria-pressed="true"]{background:#3A211A;color:#FF9E7C}
+.seg button.rec{color:#E8C06A}
+.seg button.rec[aria-pressed="true"]{background:#3A2F16;color:#FFD37A}
+
+/* usage-rule table (Temper) */
+.rules{margin-top:20px;border:1px solid #1E1E22;border-radius:10px;overflow:hidden;background:#0C0C0E}
+.rules table{width:100%;border-collapse:collapse;font-size:13px}
+.rules th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:#5F5F6A;padding:11px 14px;border-bottom:1px solid #1E1E22;font-weight:400}
+.rules td{padding:10px 14px;border-bottom:1px solid #171719;color:#ADADB6;vertical-align:top}
+.rules tr:last-child td{border-bottom:0}
+.rules .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:8px;vertical-align:-1px}
+.rules .act{background:#FF5E3A}.rules .nav{background:#FFC24D}.rules .neu{background:#3D3349}
+.rules .warm{background:#3A2119;border:1px solid rgba(255,94,58,.5);box-shadow:inset 0 0 0 1px #fff2}
+.rules td b{color:#E7E7EA;font-weight:600}
+.segdiv{width:1px;background:#33333A;margin:2px 5px}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:#6A6A75;margin:52px 0 14px;display:flex;align-items:center;gap:12px}
+.sec-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#26262B,transparent)}
+
+.heat{margin-top:26px;border:1px solid #1E1E22;border-radius:14px;padding:24px 26px 18px;background:#111113}
+.heat h3{margin:0 0 4px;font-size:15px;color:#fff;font-weight:600}
+.heat > p{margin:0 0 22px;font-size:13.5px;color:#8A8A94;line-height:1.6;max-width:82ch}
+.heatbar{height:26px;border-radius:6px;position:relative;
+  background:linear-gradient(90deg,#4A0E00,#8C1B00 14%,#C22B00 27%,#E8501E 38%,#FF6B1F 48%,#FF8A2B 60%,#FFB020 72%,#FFD54D 85%,#FFF0C0)}
+.heatmarks{position:relative;height:112px;margin-top:9px}
+.hm{position:absolute;top:0;transform:translateX(-50%);text-align:center;width:132px}
+.hm i{display:block;width:1px;height:14px;background:#4A4A52;margin:0 auto 6px}
+.hm.r1 i{height:46px}
+.hm b{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:#C9C9D2;line-height:1.4}
+.hm s{display:block;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:9px;color:#6A6A75;margin-top:3px}
+.hm.fam b{color:#FF9E7C}.hm.fam i{background:#7A3E2C}
+.hm.fam[style*="50%"]{width:230px}
+
+.thesis{border:1px solid #1E1E22;border-radius:14px;padding:26px 28px;background:#111113;margin-top:26px}
+.thesis .name{font-family:var(--font-display);font-size:29px;font-weight:var(--dw);
+  letter-spacing:var(--dt);color:var(--accent);margin:0 0 4px}
+.thesis .tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:#6A6A75;margin:0 0 15px}
+.basetag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:#FF9E7C;background:#3A211A;border:1px solid #5C3328;border-radius:999px;
+  padding:4px 10px;vertical-align:middle;margin-left:10px;font-weight:400}
+.fixtag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:#7FD8A6;background:#16301F;border:1px solid #27553A;border-radius:999px;
+  padding:4px 10px;vertical-align:middle;margin-left:10px;font-weight:400}
+.thesis p{margin:0 0 11px;font-size:14.5px;line-height:1.66;color:#C2C2CA;max-width:78ch}
+.thesis p:last-of-type{margin-bottom:0}
+.thesis strong{color:#fff;font-weight:600}
+.dials{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:9px;margin-top:20px}
+.dials div{border:1px solid #1E1E22;border-radius:9px;padding:11px 13px;background:#0C0C0E}
+.dials .k{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:#5F5F6A;margin-bottom:5px}
+.dials .v{font-size:12.5px;color:#D5D5DC;line-height:1.45}
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:760px){.verdict{grid-template-columns:1fr}}
+.verdict div{border:1px solid #1E1E22;border-radius:9px;padding:13px 15px;background:#0C0C0E}
+.verdict h4{margin:0 0 7px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.verdict div:first-child h4{color:#5BD68A}
+.verdict div:last-child h4{color:#E8A33D}
+.verdict ul{margin:0;padding-left:16px;font-size:13px;line-height:1.58;color:#ADADB6}
+.verdict li+li{margin-top:4px}
+
+.pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:9px;margin-top:14px}
+.pal .sw{border:1px solid #1E1E22;border-radius:9px;overflow:hidden;background:#111113}
+.pal .sw .chip{height:56px;border-bottom:1px solid #1E1E22}
+.pal .sw .meta{padding:8px 10px}
+.pal .sw .role{font-size:11px;color:#D5D5DC;font-weight:500;display:block;line-height:1.3}
+.pal .sw .hex{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6A6A75}
+
+/* ==========================================================================
+   MOCKS
+   ========================================================================== */
+.mock{border:1px solid #1E1E22;border-radius:14px;overflow:hidden;margin-top:14px;
+  background:var(--ground);color:var(--ink);font-family:var(--font-body)}
+.m-nav{display:flex;align-items:center;gap:13px;padding:0 22px;height:60px;
+  border-bottom:1px solid var(--line);background:var(--ground-alt);position:relative;z-index:2}
+.m-logo{display:flex;align-items:center;gap:9px}
+.m-logo svg{width:26px;height:26px;display:block}
+.m-logo b{font-family:var(--font-display);font-weight:var(--dw);font-size:17.5px;letter-spacing:var(--dt);color:var(--ink)}
+.m-badge{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3.5px 8px;border-radius:999px;border:1px solid var(--accent-line);color:var(--accent);background:var(--accent-soft)}
+.m-search{margin-left:4px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3);
+  border:1px solid var(--line);border-radius:var(--radius);padding:6px 11px;background:var(--surface);min-width:146px}
+.m-search kbd{margin-left:auto;font-family:var(--font-mono);font-size:10px;border:1px solid var(--line-strong);
+  border-radius:3px;padding:1px 4px;color:var(--ink-3)}
+.m-navlinks{margin-left:auto;display:flex;gap:19px;font-size:13.5px;font-weight:500;color:var(--ink-2)}
+.m-navlinks span:first-child{color:var(--ink)}
+[data-dir="steel"] .m-navlinks span:first-child{color:var(--second)}
+@media(max-width:900px){.m-navlinks{display:none}}
+
+.m-hero{padding:50px 44px 44px;background-image:var(--glow);position:relative}
+[data-dir="carbon"] .m-hero::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:40px 40px;-webkit-mask-image:radial-gradient(70% 60% at 50% 0%,#000,transparent 72%);
+  mask-image:radial-gradient(70% 60% at 50% 0%,#000,transparent 72%)}
+[data-dir="edge"] .m-hero::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay}
+.m-hero > *{position:relative;z-index:1}
+.m-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 18px;display:flex;align-items:center;gap:10px}
+.m-eyebrow::before{content:'';width:22px;height:1px;background:var(--accent)}
+.m-h1{font-family:var(--font-display);font-weight:var(--dw);letter-spacing:var(--dt);
+  font-size:clamp(33px,5vw,58px);line-height:1.03;margin:0 0 20px;max-width:15ch;color:var(--ink)}
+[data-dir="edge"] .m-h1{font-size:clamp(36px,5.6vw,66px);line-height:.98}
+.m-h1 em{font-style:normal;color:var(--accent)}
+.m-lead{font-size:16.5px;line-height:1.62;color:var(--ink-2);max-width:56ch;margin:0 0 26px}
+.m-cta{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:22px}
+.m-btn{font-family:var(--font-body);font-size:14.5px;font-weight:600;padding:12px 22px;border-radius:var(--radius);
+  border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);cursor:pointer}
+.m-btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.m-install{display:inline-flex;align-items:center;gap:11px;font-family:var(--font-mono);font-size:13px;
+  border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:11px 14px;color:var(--ink-2)}
+.m-install .d{color:var(--accent)}
+.m-install .cp{margin-left:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  border-left:1px solid var(--line);padding-left:11px}
+.m-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:32px}
+@media(max-width:760px){.m-cards{grid-template-columns:1fr}}
+.m-card{border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;background:var(--surface);
+  border-top:2px solid var(--accent-line)}
+[data-dir="forge"] .m-card{box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 28px rgba(0,0,0,.45)}
+.m-card b{display:block;font-size:13.5px;color:var(--ink);margin-bottom:6px;font-weight:600}
+.m-card span{font-size:12.8px;line-height:1.55;color:var(--ink-2)}
+
+.m-docs{display:grid;grid-template-columns:212px 1fr 174px;min-height:420px}
+@media(max-width:900px){.m-docs{grid-template-columns:1fr}.m-side,.m-aside{display:none}}
+.m-side{border-right:1px solid var(--line);padding:24px 0;background:var(--ground-alt)}
+.m-side .grp{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);padding:0 22px;margin:19px 0 9px}
+.m-side .grp:first-child{margin-top:0}
+.m-side a{display:block;padding:6px 22px;font-size:13.5px;color:var(--ink-2);text-decoration:none;border-left:2px solid transparent}
+.m-side a.on{color:var(--accent);border-left-color:var(--accent);background:var(--accent-soft);font-weight:500}
+[data-dir="steel"] .m-side a.on{color:var(--second);border-left-color:var(--second);background:var(--second-soft)}
+/* Temper: navigation is gold, action stays orange */
+[data-dir="temper"] .m-side a.on{color:var(--nav);border-left-color:var(--nav);background:var(--nav-soft)}
+[data-dir="temper"] .m-note{border-color:var(--nav-line);background:var(--nav-soft);border-left-color:var(--nav)}
+[data-dir="temper"] .m-note b{color:var(--nav)}
+[data-dir="temper"] .m-navlinks span:first-child{color:var(--nav)}
+[data-dir="temper"] .m-card{box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 28px rgba(0,0,0,.45)}
+.m-main{padding:32px 38px}
+.m-main h2{font-family:var(--font-display);font-weight:var(--dw);letter-spacing:var(--dt);
+  font-size:32px;margin:0 0 6px;color:var(--ink)}
+.m-rule{width:44px;height:3px;background:var(--accent);border-radius:2px;margin-bottom:19px}
+.m-main p{font-size:15.5px;line-height:1.72;color:var(--ink-2);margin:0 0 14px;max-width:66ch}
+.m-main code{font-family:var(--font-mono);font-size:.92em;background:var(--accent-soft);color:var(--accent);
+  padding:1px 6px;border-radius:4px;border:0}
+.m-main a.inline{color:var(--accent-link);text-decoration:underline;text-underline-offset:3px}
+
+/* ---- inline code treatments · driven by [data-code] on <html> ----
+
+   Cut from five to two. The three that were removed were not close calls:
+
+     Full accent    (accent fill + accent ink) — a filled orange element is the
+                    definition of ACTION in this system. The chip claims to be a
+                    button. Rule violation, not a taste call.
+     Navigation gold(nav fill + nav ink)       — same problem against the
+                    navigation role. Code and links would share a colour and the
+                    action/navigation split would stop meaning anything.
+     Neutral        (surface + MUTED ink)      — de-emphasises a string the
+                    reader has to transcribe character-for-character. The one
+                    place dimming is indefensible.
+
+   What remains is the real question, and it is a question about design
+   LANGUAGE rather than taste:
+
+     Inline code is not a semantic role — it is a typographic REGISTER. Action,
+     navigation and status tell you what will happen if you interact. Inline
+     code tells you nothing about interaction; it says "this is a literal
+     quotation from the machine's language, reproduce it exactly". That is the
+     same category as italics for a book title: a change of voice, not function.
+
+     Roles get hue. Registers get typography and material. Inline code already
+     owns the strongest register signal available — it changes TYPEFACE, and
+     JetBrains Mono against Inter is a larger perceptual break than any tint.
+
+   High contrast spends no accent and still shouts, because the surface ramp is
+   already brand-tinted (Temper's --surface-2 is #221D2A, violet at 271deg), so
+   "neutral" here means "no ACCENT hue", not "grey".
+
+   Warm frame is the more distinctive of the two and the handoff's pick. Note
+   though that the A/B which justified it compared Warm frame against NEUTRAL —
+   that is, "no hue AND dimmer ink" versus "hue AND bright ink". High contrast
+   is the actual control condition and was never the comparison that decided it.
+   Judge them against each other here.                                        */
+html[data-code="contrast"] .m-main code, .cmp .row[data-code="contrast"] code{
+  background:var(--surface-2);color:var(--ink);border-color:var(--line-strong);font-weight:500}
+html[data-code="warm"]     .m-main code, .cmp .row[data-code="warm"]     code{
+  background:var(--accent-soft);color:var(--ink);border-color:var(--accent-line);font-weight:500}
+
+/* code treatment comparison panel */
+.cmp{border:1px solid #1E1E22;border-radius:14px;overflow:hidden;margin-top:14px;
+  background:var(--ground);font-family:var(--font-body)}
+.cmp .row{display:grid;grid-template-columns:186px 1fr;gap:22px;padding:18px 24px;border-bottom:1px solid var(--line)}
+.cmp .row:last-child{border-bottom:0}
+/* The selected row used to be tinted with var(--accent-soft) — the SAME tint as
+   the warm chips — so Warm frame lost contrast against its own row at exactly
+   the moment you were evaluating it. A neutral surface plus a hairline marker
+   shows selection without colouring the thing under test. */
+.cmp .row.pick{background:var(--surface);box-shadow:inset 3px 0 0 var(--ink-3)}
+.cmp .lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);padding-top:3px;text-wrap:balance;line-height:1.5}
+.cmp .lbl b{display:block;color:var(--ink-2);font-size:11px;letter-spacing:.11em;margin-bottom:5px;font-weight:500}
+.cmp .lbl s{display:block;text-decoration:none;color:var(--accent);font-size:9px;margin-top:6px}
+.cmp p{margin:0;font-size:15.5px;line-height:1.78;color:var(--ink-2);max-width:none}
+/* Chip metrics. .86em made the mono look small-but-bulky against Inter; .92em
+   matches x-height so the chip reads as the same size as the prose. Vertical
+   padding is 1px rather than 2px and the border is gone in favour of the fill
+   alone — at seven references in two sentences, boxy chips fragment the line
+   and strand words at the start of the next one. */
+.cmp code{font-family:var(--font-mono);font-size:.92em;padding:1px 6px;border-radius:4px;border:0}
+@media(max-width:760px){.cmp .row{grid-template-columns:1fr;gap:10px}}
+.m-h3{font-family:var(--font-display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:19px;
+  margin:26px 0 12px;color:var(--ink);padding-bottom:9px;
+  border-bottom:1px solid;border-image:linear-gradient(90deg,var(--line-strong),transparent) 1}
+.m-code{border:1px solid var(--line);border-radius:var(--radius);background:var(--code-bg);overflow:hidden;margin:13px 0}
+.m-code .bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--code-chrome)}
+.m-code .bar i{width:7px;height:7px;border-radius:50%;background:var(--line-strong);display:block}
+.m-code pre{margin:0;padding:15px 17px;font-family:var(--font-mono);font-size:12.6px;line-height:1.72;overflow:auto;color:var(--ink-2)}
+.k{color:var(--accent)}.s{color:var(--second)}.cm{color:var(--ink-3);font-style:italic}.fn{color:var(--ink)}
+.m-note{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:var(--radius);
+  padding:13px 15px;margin:17px 0;border-left:3px solid var(--accent)}
+.m-note b{display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.m-note span{font-size:13.8px;line-height:1.6;color:var(--ink-2)}
+.m-aside{border-left:1px solid var(--line);padding:32px 20px}
+.m-aside .t{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:12px}
+.m-aside a{display:block;font-size:12.8px;color:var(--ink-2);text-decoration:none;padding:5px 0 5px 11px;
+  border-left:1px solid var(--line)}
+.m-aside a.on{color:var(--accent);border-left-color:var(--accent)}
+[data-dir="steel"] .m-aside a.on{color:var(--second);border-left-color:var(--second)}
+[data-dir="temper"] .m-aside a.on{color:var(--nav);border-left-color:var(--nav)}
+
+.dirblock{display:none}
+
+/* ---- showcase typography (scoped to the themed showcase container) ---- */
+.showcase{padding:30px 34px}
+.showcase h2.sec{font-family:var(--font-display);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);margin:52px 0 8px;font-weight:500;display:flex;align-items:center;gap:12px}
+.showcase h2.sec:first-child{margin-top:0}
+.showcase h2.sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.showcase h3.sub{font-family:var(--font-display);font-size:15px;letter-spacing:-.02em;margin:30px 0 8px;font-weight:600}
+.showcase p.note{font-size:14px;line-height:1.7;color:var(--ink-2);max-width:82ch;margin:0 0 16px}
+.showcase p.note strong{color:var(--ink);font-weight:600}
+.showcase code.ic,.showcase p.note code,.showcase li code,.showcase td code,
+.showcase summary code,.showcase .body code{font-family:var(--font-mono);font-size:.86em;
+  background:var(--accent-soft);color:var(--ink);border:1px solid var(--accent-line);
+  padding:2px 6px;border-radius:4px;font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* =============== CODE =================================================== */
+.code{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--code-bg);margin:12px 0}
+.code .head{display:flex;align-items:center;gap:9px;padding:9px 15px;border-bottom:1px solid var(--line);
+  background:var(--code-chrome);font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.code .head i{width:7px;height:7px;border-radius:50%;background:var(--line-strong)}
+.code .head .lang{margin-left:auto;color:var(--nav);letter-spacing:.12em}
+.code .head .copy{margin-left:auto;display:flex;gap:7px;align-items:center;border:1px solid var(--line-strong);
+  border-radius:5px;padding:4px 9px;color:var(--ink-2);cursor:pointer;letter-spacing:.08em}
+.code .head .copy:hover{border-color:var(--accent);color:var(--accent)}
+.code .head .copy.done{border-color:var(--tip-line);color:var(--tip)}
+.code pre{margin:0;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  line-height:1.78;overflow-x:auto;color:var(--s-plain);tab-size:4}
+.code.numbered pre{padding-left:0}
+.code.numbered .ln{display:inline-block;width:46px;padding-right:16px;text-align:right;color:var(--ink-3);
+  user-select:none;border-right:1px solid var(--line);margin-right:16px;font-size:12px}
+.code .hl{display:block;background:var(--nav-soft);box-shadow:inset 3px 0 0 var(--nav);margin:0 -20px;padding:0 20px}
+.code.numbered .hl{margin:0;padding:0}
+.kw{color:var(--s-keyword)}.bt{color:var(--s-builtin)}.ty{color:var(--s-type)}
+.fn{color:var(--s-func)}.st{color:var(--s-string)}.nu{color:var(--s-number)}
+.cn{color:var(--s-const)}.cm{color:var(--s-comment);font-style:italic}
+.pu{color:var(--s-punct)}.tk{color:var(--s-tagkey)}.vb{color:var(--s-verb);font-weight:700}
+.dadd{display:block;background:var(--add-soft);box-shadow:inset 3px 0 0 var(--add);margin:0 -20px;padding:0 20px}
+.ddel{display:block;background:var(--del-soft);box-shadow:inset 3px 0 0 var(--del);margin:0 -20px;padding:0 20px}
+.dadd::before{content:'+ ';color:var(--add);font-weight:700}
+.ddel::before{content:'- ';color:var(--del);font-weight:700}
+
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:8px;margin-top:14px}
+.legend > div{border:1px solid var(--line);border-radius:7px;padding:10px 12px;background:var(--surface)}
+.legend .sw{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;margin-bottom:5px}
+.legend .sc{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-3);line-height:1.45}
+
+.group{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:12px 0;background:var(--code-bg)}
+.group .tabs{display:flex;background:var(--code-chrome);border-bottom:1px solid var(--line);overflow-x:auto}
+.group .tabs button{border:0;background:transparent;color:var(--ink-3);font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:.08em;padding:11px 17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.group .tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-soft)}
+.group .panel{display:none}.group .panel.on{display:block}
+.group pre{margin:0;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  line-height:1.78;overflow-x:auto;color:var(--s-plain)}
+
+.term{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--term-bg);margin:12px 0}
+.term .head{display:flex;gap:7px;align-items:center;padding:9px 15px;border-bottom:1px solid var(--line);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--term-dim)}
+.term .head i{width:8px;height:8px;border-radius:50%}
+.term pre{margin:0;padding:15px 20px;font-family:var(--font-mono);font-size:12.6px;
+  line-height:1.85;overflow-x:auto;color:var(--term-ink)}
+.t-p{color:var(--term-p);font-weight:700}.t-ok{color:var(--term-ok);font-weight:700}
+.t-step{color:var(--term-step);font-weight:500}.t-dim{color:var(--term-dim)}
+.t-hl{color:var(--term-hl);font-weight:500}.t-err{color:var(--term-err);font-weight:700}
+
+/* =============== CONTENT ================================================ */
+.call{border:1px solid;border-left-width:3px;border-radius:8px;padding:13px 16px;margin:10px 0}
+.call b{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;margin-bottom:6px}
+.call p{margin:0;font-size:14.5px;line-height:1.65;color:var(--ink-2)}
+.call .act{margin-top:11px;display:flex;gap:8px}
+.call.note{border-color:var(--line-strong);border-left-color:var(--nav);background:var(--nav-soft)}
+.call.note b{color:var(--nav)}
+.call.tip{border-color:var(--tip-line);border-left-color:var(--tip);background:var(--tip-soft)}
+.call.tip b{color:var(--tip)}
+.call.warn{border-color:var(--warn-line);border-left-color:var(--warn);background:var(--warn-soft)}
+.call.warn b{color:var(--warn)}
+.call.danger{border-color:var(--danger-line);border-left-color:var(--danger);background:var(--danger-soft)}
+.call.danger b{color:var(--danger)}
+details.disc{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0}
+details.disc summary{padding:12px 16px;cursor:pointer;font-size:14.5px;font-weight:500;color:var(--ink);
+  list-style:none;display:flex;align-items:center;gap:10px}
+details.disc summary::-webkit-details-marker{display:none}
+details.disc summary::before{content:'▸';color:var(--nav);transition:.18s;display:inline-block}
+details.disc[open] summary::before{transform:rotate(90deg)}
+details.disc .body{padding:13px 16px 15px;font-size:14.5px;line-height:1.7;color:var(--ink-2);border-top:1px solid var(--line)}
+
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:12px 0}
+ol.steps li{counter-increment:s;position:relative;padding:0 0 26px 46px;border-left:1px solid var(--line);margin-left:15px}
+ol.steps li:last-child{border-left-color:transparent;padding-bottom:0}
+ol.steps li::before{content:counter(s);position:absolute;left:-15px;top:-3px;width:30px;height:30px;
+  border-radius:50%;background:var(--surface);border:1px solid var(--nav-line);color:var(--nav);
+  display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+ol.steps h4{margin:2px 0 5px;font-size:15px;font-weight:600;color:var(--ink)}
+ol.steps p{margin:0;font-size:14px;line-height:1.65;color:var(--ink-2)}
+
+dl.params{margin:12px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+dl.params .p{padding:13px 16px;border-bottom:1px solid var(--line)}
+dl.params .p:last-child{border-bottom:0}
+dl.params dt{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:5px}
+dl.params dt .n{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--ink);font-weight:500}
+dl.params dt .t{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--s-type)}
+dl.params dd{margin:0;font-size:14px;line-height:1.65;color:var(--ink-2)}
+
+.tree{border:1px solid var(--line);border-radius:8px;background:var(--code-bg);padding:16px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:12.8px;line-height:1.95;margin:12px 0;color:var(--ink-2);
+  white-space:pre;overflow-x:auto}
+.tree .d{color:var(--nav)}.tree .f{color:var(--ink-2)}.tree .g{color:var(--ink-3)}
+.tree .hi{color:var(--ink);font-weight:500}
+kbd{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--surface-2);
+  border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:5px;padding:3px 7px;color:var(--ink-2)}
+table.doc{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0;border:1px solid var(--line);
+  border-radius:8px;overflow:hidden}
+table.doc th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:400;padding:12px 15px;
+  background:var(--surface-2);border-bottom:1px solid var(--line)}
+table.doc td{padding:12px 15px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+table.doc tr:last-child td{border-bottom:0}
+table.doc tbody tr:hover{background:var(--surface)}
+table.doc td b{color:var(--ink);font-weight:600}
+blockquote.q{border-left:3px solid var(--accent);background:var(--accent-soft);margin:12px 0;
+  padding:15px 19px;border-radius:0 8px 8px 0}
+blockquote.q p{margin:0;font-size:15.5px;line-height:1.7;color:var(--ink-2);font-style:italic}
+blockquote.q footer{margin-top:9px;font-size:13px;color:var(--ink-3);font-style:normal}
+
+/* =============== NAVIGATION ============================================= */
+.navbar{display:flex;align-items:center;gap:13px;padding:0 20px;height:58px;border:1px solid var(--line);
+  border-radius:8px;background:var(--ground-alt);margin:12px 0}
+.navbar .logo{display:flex;align-items:center;gap:9px}
+.navbar .logo svg{width:24px;height:24px}
+.navbar .logo b{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.045em}
+.navbar .links{margin-left:auto;display:flex;gap:18px;font-size:13.5px;font-weight:500;color:var(--ink-2)}
+.navbar .links span:first-child{color:var(--nav)}
+.searchbox{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3);
+  border:1px solid var(--line);border-radius:8px;padding:6px 11px;background:var(--surface);min-width:150px}
+.searchbox kbd{margin-left:auto}
+.crumbs{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-3);margin:12px 0}
+.crumbs a{color:var(--nav);text-decoration:none}
+.crumbs a:hover{text-decoration:underline;text-underline-offset:3px}
+.crumbs span.sep{color:var(--ink-3)}
+.crumbs span.cur{color:var(--ink-2)}
+.navdemo{display:grid;grid-template-columns:230px 1fr 190px;gap:22px;border:1px solid var(--line);
+  border-radius:8px;padding:20px;margin:12px 0;background:var(--ground-alt)}
+@media(max-width:820px){.navdemo{grid-template-columns:1fr}}
+.navdemo .grp{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
+.navdemo a{display:block;padding:6px 13px;font-size:13.5px;color:var(--ink-2);text-decoration:none;
+  border-left:2px solid transparent;border-radius:0 5px 5px 0}
+.navdemo a:hover{color:var(--ink);background:var(--surface)}
+.navdemo a.on{color:var(--nav);border-left-color:var(--nav);background:var(--nav-soft);font-weight:500}
+.navdemo a.visited{color:var(--ink-3)}
+.toc a{border-left:1px solid var(--line);padding:5px 12px;font-size:12.8px;border-radius:0}
+.toc a.on{color:var(--nav);border-left-color:var(--nav);background:transparent}
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media(max-width:700px){.pager{grid-template-columns:1fr}}
+.pager a{border:1px solid var(--line);border-radius:8px;padding:14px 17px;text-decoration:none;display:block}
+.pager a:hover{border-color:var(--nav-line);background:var(--nav-soft)}
+.pager .k{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px}
+.pager .t{color:var(--nav);font-size:15px;font-weight:500}
+.pager .next{text-align:right}
+.modal{border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);
+  box-shadow:var(--shadow);overflow:hidden;margin:12px 0;max-width:620px}
+.modal .top{display:flex;align-items:center;gap:11px;padding:14px 17px;border-bottom:1px solid var(--line)}
+.modal .top input{flex:1;background:transparent;border:0;outline:0;color:var(--ink);font:inherit;font-size:15px}
+.modal .res{padding:7px}
+.modal .res a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:7px;
+  text-decoration:none;color:var(--ink-2);font-size:14px}
+.modal .res a .p{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-3);margin-left:auto}
+.modal .res a.on{background:var(--nav-soft);color:var(--nav)}
+.modal .res a mark{background:var(--accent-soft);color:var(--accent);border-radius:2px;padding:0;
+  box-shadow:0 0 0 2px var(--accent-soft)}
+.modal .foot{padding:9px 15px;border-top:1px solid var(--line);display:flex;gap:14px;
+  font-size:11px;color:var(--ink-3);background:var(--surface-2)}
+.menu{border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);box-shadow:var(--shadow);
+  padding:6px;width:230px;margin:12px 0}
+.menu a{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:6px;text-decoration:none;
+  color:var(--ink-2);font-size:13.5px}
+.menu a:hover{background:var(--surface-2);color:var(--ink)}
+.menu a.on{color:var(--nav)}
+.menu a.on::after{content:'✓';margin-left:auto;color:var(--nav)}
+.menu .div{height:1px;background:var(--line);margin:5px 0}
+.menu .lbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);padding:7px 11px 5px}
+
+/* =============== INTERFACE ============================================== */
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.btn{font-size:14.5px;font-weight:600;padding:11px 20px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:var(--on-accent)}
+.btn:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--nav);padding-left:6px;padding-right:6px}
+.btn.sm{font-size:12.5px;padding:7px 13px}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:var(--on-accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.pill{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-3);white-space:nowrap}
+.pill.act{border-color:var(--accent-line);color:var(--accent);background:var(--accent-soft)}
+.pill.nav{border-color:var(--nav-line);color:var(--nav);background:var(--nav-soft)}
+.pill.tip{border-color:var(--tip-line);color:var(--tip);background:var(--tip-soft)}
+.pill.warn{border-color:var(--warn-line);color:var(--warn);background:var(--warn-soft)}
+.pill.danger{border-color:var(--danger-line);color:var(--danger);background:var(--danger-soft)}
+.pill.sq{border-radius:4px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:9px;padding:16px 17px;background:var(--surface);
+  text-decoration:none;display:block;border-top:2px solid var(--accent-line)}
+.card:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.card b{display:block;font-size:14.5px;color:var(--ink);margin-bottom:6px;font-weight:600}
+.card span{font-size:13px;line-height:1.55;color:var(--ink-2);display:block}
+.card .more{color:var(--nav);font-size:13px;margin-top:10px;display:block}
+.stat{border:1px solid var(--line);border-radius:9px;padding:17px 18px;background:var(--surface)}
+.stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:30px;letter-spacing:-.04em;
+  color:var(--accent);font-weight:700;line-height:1}
+.stat span{display:block;font-size:12.5px;color:var(--ink-2);margin-top:7px;line-height:1.45}
+.field{margin:12px 0;max-width:420px}
+.field label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:6px;font-weight:500}
+.field input,.field select{width:100%;background:var(--surface);border:1px solid var(--line-strong);
+  border-radius:8px;padding:10px 13px;color:var(--ink);font:inherit;font-size:14px;outline:0}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.field .hint{font-size:12px;color:var(--ink-3);margin-top:6px}
+.field.err input{border-color:var(--danger)}
+.field.err .hint{color:var(--danger)}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink-2);margin:9px 0;cursor:pointer}
+.check i{width:18px;height:18px;border-radius:5px;border:1px solid var(--line-strong);display:grid;
+  place-items:center;font-size:11px;color:var(--on-accent);font-style:normal}
+.check.on i{background:var(--accent);border-color:var(--accent)}
+.toggle{width:38px;height:22px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line-strong);
+  position:relative;display:inline-block;vertical-align:middle}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:var(--ink-3);transition:.18s}
+.toggle.on{background:var(--accent-soft);border-color:var(--accent)}
+.toggle.on::after{left:18px;background:var(--accent)}
+.prog{height:7px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin:9px 0;max-width:420px}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.toast{display:flex;align-items:center;gap:13px;border:1px solid var(--line-strong);border-left:3px solid var(--tip);
+  border-radius:9px;background:var(--surface);box-shadow:var(--shadow);padding:13px 16px;margin:12px 0;max-width:520px}
+.toast .msg{font-size:14px;color:var(--ink-2)}
+.toast .msg b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px;font-weight:600}
+.toast .x{margin-left:auto;color:var(--ink-3);cursor:pointer}
+.empty{border:1px dashed var(--line-strong);border-radius:10px;padding:38px 24px;text-align:center;margin:12px 0}
+.empty .ico{font-size:26px;color:var(--ink-3);margin-bottom:10px}
+.empty b{display:block;font-size:15.5px;color:var(--ink);margin-bottom:6px;font-weight:600}
+.empty span{font-size:13.5px;color:var(--ink-2);display:block;margin-bottom:14px}
+.tip-wrap{position:relative;display:inline-block;margin:20px 0}
+.tooltip{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;padding:8px 11px;
+  font-size:12.5px;color:var(--ink-2);box-shadow:var(--shadow);display:inline-block}
+.anchor{display:flex;align-items:center;gap:9px;margin:12px 0}
+.anchor h4{margin:0;font-family:'Space Grotesk',sans-serif;font-size:19px;letter-spacing:-.02em;font-weight:600}
+.anchor .lk{color:var(--nav);opacity:.5;font-size:15px;cursor:pointer}
+.anchor:hover .lk{opacity:1}
+.skel{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%);
+  background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;height:13px;margin:9px 0}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>GoForj <span>· molten family</span></h1>
+  <div class="seg dirs" role="group" aria-label="Direction">
+    <span class="seglbl">Direction</span>
+    <button data-set="dir" data-val="molten" aria-pressed="true" class="base">Molten ★</button>
+    <span class="segdiv"></span>
+    <button data-set="dir" data-val="forge" aria-pressed="false">Forge</button>
+    <button data-set="dir" data-val="steel" aria-pressed="false">Steel</button>
+    <button data-set="dir" data-val="edge" aria-pressed="false">Edge</button>
+    <button data-set="dir" data-val="temper" aria-pressed="false" class="rec">Temper ◆</button>
+    <span class="segdiv"></span>
+    <button data-set="dir" data-val="iron" aria-pressed="false" class="base">Iron ★</button>
+    <button data-set="dir" data-val="anvil" aria-pressed="false">Anvil</button>
+    <button data-set="dir" data-val="carbon" aria-pressed="false">Carbon</button>
+  </div>
+  <div class="seg" role="group" aria-label="Mode">
+    <span class="seglbl">Mode</span>
+    <button data-set="mode" data-val="dark" aria-pressed="true">Dark</button>
+    <button data-set="mode" data-val="light" aria-pressed="false">Light</button>
+  </div>
+  <button class="share" id="share" title="Copy a link to this exact combination">Copy link</button>
+</div>
+<div class="topbar" style="top:57px;padding-top:9px;padding-bottom:9px;justify-content:flex-end">
+  <div class="seg" role="group" aria-label="Go syntax">
+    <span class="seglbl">Syntax</span>
+    <button data-set="syn" data-val="github" aria-pressed="false">GitHub (current)</button>
+    <button data-set="syn" data-val="warm" aria-pressed="true">Warm</button>
+    <button data-set="syn" data-val="ember" aria-pressed="false">Ember</button>
+    <button data-set="syn" data-val="neon" aria-pressed="false">Neon</button>
+  </div>
+  <div class="seg" role="group" aria-label="Code treatment">
+    <span class="seglbl">Inline code</span>
+    <button data-set="code" data-val="contrast" aria-pressed="false" class="rec">High contrast ◆</button>
+    <button data-set="code" data-val="warm" aria-pressed="true">Warm frame</button>
+  </div>
+  <div class="seg" role="group" aria-label="Code surface">
+    <span class="seglbl">Code surface</span>
+    <button data-set="well" data-val="raised" aria-pressed="false">Raised (before)</button>
+    <button data-set="well" data-val="lifted" aria-pressed="true" class="rec">Lifted ◆</button>
+  </div>
+</div>
+
+<div class="shell">
+
+<div class="heat">
+  <h3>Where each accent sits on the heat</h3>
+  <p>Steel announces its temperature by color, and smiths read it by eye — which gives this family a real organising principle rather than an arbitrary hue pick. Forge, Steel, and Temper deliberately share Molten's exact accent; they improve it on other dials, so they sit at the same point on the scale. Edge is the only variant that moves the temperature — and Temper is the only one that adds a second color, one stop further up the same scale.</p>
+  <div class="heatbar"></div>
+  <div class="heatmarks" id="marks"></div>
+</div>
+
+<!-- ============ MOLTEN ============ -->
+<div class="dirblock" data-for="molten">
+  <div class="thesis">
+    <p class="name">Molten <span class="basetag">the anchor</span></p>
+    <p class="tag">Maximum confidence · minimum chrome</p>
+    <p>Near-pure black, one accent taken from steel at forging temperature, display type set enormous and tight, almost no borders or cards. Hierarchy carried entirely by scale and space.</p>
+    <p>The variants that follow each fix <strong>one specific thing this gets wrong</strong>, without giving up what makes it good. Compare them against this, not against each other. <strong>Temper</strong> combines two of the fixes and is the one to look at last.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Near-pure black</div></div>
+      <div><div class="k">Accent</div><div class="v">#FF5E3A flat</div></div>
+      <div><div class="k">Secondary</div><div class="v">Peak-heat gold</div></div>
+      <div><div class="k">Type</div><div class="v">Space Grotesk 700</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>Most distinctive and shareable — real launch-day energy</li>
+        <li>Single-accent discipline makes every highlight land</li>
+        <li>Space Grotesk gives the wordmark genuine character</li>
+      </ul></div>
+      <div><h4>Its three real weaknesses</h4><ul>
+        <li><strong>No elevation.</strong> Pure black leaves nowhere for cards or screenshots to sit — Forge fixes this</li>
+        <li><strong>One color, two jobs.</strong> Orange means both "click" and "you are here" — Steel fixes this</li>
+        <li><strong>Flat black reads dead</strong> at large areas — Edge fixes this</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FORGE ============ -->
+<div class="dirblock" data-for="forge">
+  <div class="thesis">
+    <p class="name">Molten Forge <span class="fixtag">fixes elevation</span></p>
+    <p class="tag">Molten with somewhere to put things</p>
+    <p>Molten's biggest practical problem is that pure black has <strong>no room underneath it.</strong> Every card, code block, screenshot, and Lighthouse panel has to sit on the same plane as the page, so the whole thing flattens out and imported images look like holes punched in the page.</p>
+    <p>Forge lifts the ground to <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8A8A94">#0C0A0E</code> and builds a real elevation ladder above it — ground, ground-alt, surface, surface-2 — each step clearly distinguishable. Radius goes from 2px to 8px so cards read as objects rather than outlined regions, and surfaces get a soft shadow. <strong>Same accent, same type, same attitude</strong>; it just has depth now.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Lifted warm black</div></div>
+      <div><div class="k">Accent</div><div class="v">#FF5E3A · unchanged</div></div>
+      <div><div class="k">Secondary</div><div class="v">Amber</div></div>
+      <div><div class="k">Type</div><div class="v">Space Grotesk 700</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>Screenshots and diagrams finally have a plane to sit on</li>
+        <li>Four-step elevation ladder is far easier to apply consistently across 134 pages</li>
+        <li>Keeps everything you liked about Molten — this is Molten, corrected</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>Slightly less severe than Molten; loses a little of the stark drama</li>
+        <li>Softer radii read marginally more conventional</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STEEL ============ -->
+<div class="dirblock" data-for="steel">
+  <div class="thesis">
+    <p class="name">Molten Steel <span class="fixtag">fixes the color jobs</span></p>
+    <p class="tag">Hot for action · cold for navigation</p>
+    <p>In Molten, orange is the button, the link, the active sidebar item, the TOC marker, the inline code, and the callout border. When one color means everything, <strong>it stops meaning anything</strong> — and on a docs page with fifty links, it becomes noise.</p>
+    <p>Steel splits the work. Molten orange is reserved for <strong>action</strong>: primary buttons, the install command, CTAs. A desaturated steel blue takes <strong>navigation</strong>: links, active sidebar, TOC, breadcrumbs. Look at the sidebar and TOC in the docs mock below — the orange now only appears where you can actually do something.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Neutral black</div></div>
+      <div><div class="k">Accent</div><div class="v">#FF5E3A · action only</div></div>
+      <div><div class="k">Secondary</div><div class="v">Steel blue · navigation</div></div>
+      <div><div class="k">Type</div><div class="v">Space Grotesk 700</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>The most functionally useful system here — solves a problem you will hit daily</li>
+        <li>Orange becomes scarce again, so CTAs actually stand out</li>
+        <li>Steel blue at 8:1 is a more comfortable link color for long reading</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>Reintroduces a cool color, which is what you were trying to escape</li>
+        <li>Needs a written rule about which color does what, enforced in review</li>
+        <li>Steel blue is close enough to the old indigo to feel like a step back</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EDGE ============ -->
+<div class="dirblock" data-for="edge">
+  <div class="thesis">
+    <p class="name">Molten Edge <span class="fixtag">fixes flatness</span></p>
+    <p class="tag">Hotter · tighter · harder</p>
+    <p>The opposite response to the same complaint. Rather than lifting the ground, Edge <strong>commits harder</strong>: ground drops to <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8A8A94">#060509</code>, the accent moves hotter and more saturated, radius goes to zero, and tracking tightens to -0.058em with the headline scaled up.</p>
+    <p>The fix for flat black isn't more gray — it's <strong>texture.</strong> A fine film-grain overlay sits on the hero, which stops the large dark areas reading as dead pixels and gives the page a physical quality that flat black can't. Gold returns at peak heat for hover and focus states.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Deepest black + grain</div></div>
+      <div><div class="k">Accent</div><div class="v">#FF4A1F · hotter</div></div>
+      <div><div class="k">Secondary</div><div class="v">Peak gold</div></div>
+      <div><div class="k">Type</div><div class="v">Space Grotesk 700, -.058em</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>The most striking thing on this page — zero compromise on impact</li>
+        <li>Grain solves the dead-black problem without giving up the darkness</li>
+        <li>Zero radius and tighter tracking give it a genuine edge Molten lacks</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>Still no elevation ladder — Molten's screenshot problem is unsolved</li>
+        <li>Grain textures are a strong stylistic signature that will date</li>
+        <li>Tightest tracking of the set; needs care at small sizes and on mobile</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMPER ============ -->
+<div class="dirblock" data-for="temper">
+  <div class="thesis">
+    <p class="name">Molten Temper <span class="fixtag">the hybrid</span></p>
+    <p class="tag">Forge's depth · Steel's discipline · warm throughout</p>
+    <p>Tempering is the last heat treatment steel gets — it takes metal that is hard but brittle and makes it tough enough to actually use. That is what this does to Molten: <strong>Forge's elevation ladder plus Steel's job split, with the cool color thrown out.</strong></p>
+    <p>Steel's weakness was that its blue landed close enough to the VitePress indigo you're escaping to feel like a step backwards. Here, navigation goes to <strong>gold</strong> instead. It stays inside the heat metaphor, and at 12.3:1 it is nearly twice as legible as the orange — which matters, because links are the most numerous colored thing on a docs page.</p>
+    <p><strong>The honest weakness:</strong> two warm colors are only 28.5° apart in hue, so they will not separate on hue alone the way orange and blue did. A second rule carries the load — <strong>action is always a filled shape, navigation is always text or a line.</strong> Different form, not just different color.</p>
+    <div class="rules">
+      <table>
+        <tr><th>Role</th><th>Color</th><th>Form</th><th>Where it appears</th></tr>
+        <tr>
+          <td><b>Action</b></td>
+          <td><span class="dot act"></span>Molten orange</td>
+          <td>Always <b>filled</b></td>
+          <td>Primary button, install command prompt, version badge, h1 accent rule</td>
+        </tr>
+        <tr>
+          <td><b>Navigation</b></td>
+          <td><span class="dot nav"></span>Temper gold</td>
+          <td>Always <b>text or line</b></td>
+          <td>Body links, active sidebar item, TOC marker, active nav, callout rule</td>
+        </tr>
+        <tr>
+          <td><b>Reference</b></td>
+          <td><span class="dot warm"></span>Warm frame, bright ink</td>
+          <td>Filled, but <b>ink is white</b></td>
+          <td>Inline code chips — salient, never mistakable for a link or a button</td>
+        </tr>
+        <tr>
+          <td><b>Neither</b></td>
+          <td><span class="dot neu"></span>Neutral surface</td>
+          <td>Surface + hairline</td>
+          <td>Table headers, code block chrome, disclosure controls</td>
+        </tr>
+      </table>
+    </div>
+    <p style="margin-top:16px">The reference row is where this earns its keep. Inline code is the first thing developers scan for, so it has to be <strong>loud</strong> — but Molten paints it in the accent, which means a paragraph with seven <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8A8A94">code</code> references lights up like an alert and every chip looks clickable. Temper keeps the warm frame and the weight, and switches the ink to white. <strong>Salience comes from material, not from a semantic color</strong> — so code can shout without lying about what it is. See the comparison further down.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Lifted warm black</div></div>
+      <div><div class="k">Action</div><div class="v">#FF5E3A filled only</div></div>
+      <div><div class="k">Navigation</div><div class="v">#FFC24D text only</div></div>
+      <div><div class="k">Type</div><div class="v">Space Grotesk 700</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>Fixes both of Molten's structural problems at once, keeps its look</li>
+        <li>Stays entirely warm — no echo of the indigo you're replacing</li>
+        <li>Gold links at 12.3:1 are far kinder for long reading than orange at 6.5:1</li>
+        <li>Code chips stay loud and scannable without reading as clickable</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>28.5° hue gap is tight — the filled-vs-text rule has to be enforced, not assumed</li>
+        <li>Two warm accents risk reading as "two oranges" to some people</li>
+        <li>In light mode gold must darken to bronze to pass contrast, shifting the feel</li>
+        <li>Most rules of any option here; needs the convention written down</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IRON ============ -->
+<div class="dirblock" data-for="iron">
+  <div class="thesis">
+    <p class="name">Iron <span class="basetag">baseline</span></p>
+    <p class="tag">The warm alternative · kept for comparison</p>
+    <p>Your other original pick, kept here so the Molten family has something outside itself to be judged against. Ember as the single accent, warm near-black ground, Archivo instead of Space Grotesk.</p>
+    <p><strong>Its real advantage is inertia.</strong> The existing hero illustration, favicon, and OG image already work in this palette. Everything in the Molten family costs you asset rework; this costs you a token file.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Warm near-black</div></div>
+      <div><div class="k">Accent</div><div class="v">#FF7A2F ember</div></div>
+      <div><div class="k">Secondary</div><div class="v">Gold</div></div>
+      <div><div class="k">Type</div><div class="v">Archivo 800</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>Lowest cost to ship by a wide margin — assets already match</li>
+        <li>Warm ground differentiates from the sea of blue-gray dev docs</li>
+        <li>Ember at 7.3:1 is legible, not decorative</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>Orange is crowded territory — Rust, HashiCorp, Cloudflare adjacency</li>
+        <li>Refines rather than reframes; least surprising option here</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ANVIL ============ -->
+<div class="dirblock" data-for="anvil">
+  <div class="thesis">
+    <p class="name">Anvil</p>
+    <p class="tag">Cold iron · one hot spot</p>
+    <p>Kept as the counterpoint: the only direction here that makes the <strong>ground cold.</strong> Graphite and gunmetal, the color of the tool rather than the fire, with ember appearing rarely enough to read as genuinely hot.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Cold graphite</div></div>
+      <div><div class="k">Accent</div><div class="v">#FF6B1F</div></div>
+      <div><div class="k">Secondary</div><div class="v">Steel gray</div></div>
+      <div><div class="k">Type</div><div class="v">Archivo 800</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>Neutral ground is the kindest of all to screenshots and diagrams</li>
+        <li>Restraint scales across 134 docs pages without fatigue</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>Gives up the warmth entirely</li>
+        <li>Closest of the set to conventional dev-docs dark gray</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CARBON ============ -->
+<div class="dirblock" data-for="carbon">
+  <div class="thesis">
+    <p class="name">Carbon</p>
+    <p class="tag">Terminal-native · monospace wordmark</p>
+    <p>Kept because it is the most ownable idea in the whole exercise: <strong>the wordmark itself is monospace.</strong> People meet GoForj through <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8A8A94">forj new</code> in a terminal, and no Go framework currently owns mono-as-identity.</p>
+    <div class="dials">
+      <div><div class="k">Ground</div><div class="v">Pure carbon</div></div>
+      <div><div class="k">Accent</div><div class="v">#E8501E blood orange</div></div>
+      <div><div class="k">Secondary</div><div class="v">Brass, sparing</div></div>
+      <div><div class="k">Type</div><div class="v">JetBrains Mono display</div></div>
+    </div>
+    <div class="verdict">
+      <div><h4>Why it wins</h4><ul>
+        <li>Most ownable — a mono wordmark is rare and instantly recognisable</li>
+        <li>Honest about what the product is: a command-line tool</li>
+      </ul></div>
+      <div><h4>What it costs</h4><ul>
+        <li>Mono display is hard to set well at large sizes</li>
+        <li>Reads as "hacker tool," which may undersell the product surface</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<p class="sec-label">Color system</p>
+<div class="pal" id="pal"></div>
+
+<p class="sec-label">Landing — nav and hero</p>
+<div class="mock">
+  <div class="m-nav">
+    <div class="m-logo"><span id="mark1"></span><b>GoForj</b></div>
+    <span class="m-badge">v1.0</span>
+    <div class="m-search">Search <kbd>⌘K</kbd></div>
+    <div class="m-navlinks"><span>Getting Started</span><span>Core</span><span>Libraries</span><span>Reference</span></div>
+  </div>
+  <div class="m-hero">
+    <p class="m-eyebrow">Generated Go applications you own</p>
+    <h2 class="m-h1">The composable stack for <em>building with Go</em></h2>
+    <p class="m-lead">One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives across the application stack.</p>
+    <div class="m-cta">
+      <button class="m-btn">Build a GoForj App</button>
+      <button class="m-btn ghost">Use a standalone library</button>
+    </div>
+    <div class="m-install"><span class="d">$</span> go install github.com/goforj/goforj/cmd/forj@latest <span class="cp">Copy</span></div>
+    <div class="m-cards">
+      <div class="m-card"><b>App-owned composition</b><span>Generated code keeps application boundaries and extension points explicit.</span></div>
+      <div class="m-card"><b>Explicit Runtimes</b><span>Run together locally, then split into production processes.</span></div>
+      <div class="m-card"><b>Swap drivers, not logic</b><span>Move between local and production infrastructure behind the same APIs.</span></div>
+    </div>
+  </div>
+</div>
+
+<p class="sec-label">How loud should a backtick be?</p>
+<div class="cmp" id="cmp"></div>
+<p style="font-size:13.5px;color:#8A8A94;line-height:1.65;margin-top:14px;max-width:82ch">
+Same sentence, seven code references, two treatments. Cut from five: <em>Full accent</em> and
+<em>Navigation gold</em> were rule violations rather than taste calls — a filled orange chip is the
+definition of an action in this system, and a gold one is the definition of a link — while <em>Neutral</em>
+dimmed a string the reader has to transcribe exactly.<br><br>
+What is left is a question about design language. Inline code is not a semantic role; it is a typographic
+<strong style="color:#D5D5DC">register</strong> — it says "this is a literal quotation from the machine's
+language", not "this will do something if you touch it". Roles get hue. Registers get typography and
+material, and inline code already owns the strongest register signal there is: it changes typeface.
+<strong style="color:#D5D5DC">High contrast</strong> spends no accent and still shouts, and it stays calm
+across a code-dense page. <strong style="color:#D5D5DC">Warm frame</strong> is more distinctive but needs a
+fourth rule to justify itself. Whichever you pick drives the docs mock below.</p>
+
+<p class="sec-label">Documentation — interior page</p>
+<div class="mock">
+  <div class="m-nav">
+    <div class="m-logo"><span id="mark2"></span><b>GoForj</b></div>
+    <div class="m-search">Search <kbd>⌘K</kbd></div>
+    <div class="m-navlinks"><span>Core Concepts</span><span>Build</span><span>Runtime</span></div>
+  </div>
+  <div class="m-docs">
+    <nav class="m-side">
+      <p class="grp">Getting Started</p>
+      <a href="#">Overview</a><a href="#">Quickstart</a><a href="#">Configuration</a>
+      <p class="grp">Core Concepts</p>
+      <a href="#">App</a><a href="#" class="on">Apps</a><a href="#">Runtime Lifecycle</a>
+      <a href="#">Dependency Injection</a><a href="#">Providers</a><a href="#">Make Commands</a>
+    </nav>
+    <main class="m-main">
+      <h2>Apps</h2>
+      <div class="m-rule"></div>
+      <p>Start with one app. Add another only when the Project needs another runnable boundary.</p>
+      <p>That rule keeps GoForj simple: one Project, shared application behavior under <code>internal/</code>, and clear app composition under <code>app/</code>. See <a class="inline" href="#">runtime topology</a> for how they split at deploy time.</p>
+      <h3 class="m-h3">The default shape</h3>
+      <p>Every Project has a default app named <code>app</code>. Set <code>STORAGE_PHOTOS_DRIVER</code> to <code>s3</code> in production and <code>local</code> in development — <code>forj dev</code> reads <code>.env</code>, then <code>forj build</code> compiles the selected drivers into <code>bin/app</code>:</p>
+      <div class="m-code">
+        <div class="bar"><i></i><i></i><i></i> internal/photos/service.go</div>
+        <pre><span class="cm">// Services depend on contracts, not drivers.</span>
+<span class="k">type</span> <span class="fn">Service</span> <span class="k">struct</span> {
+    disk storage.<span class="fn">Storage</span>
+}
+
+<span class="k">func</span> (s *Service) <span class="fn">Store</span>(ctx context.Context, in UploadInput) (<span class="fn">Photo</span>, <span class="k">error</span>) {
+    path := <span class="fn">photoPath</span>(in)
+    <span class="k">if</span> err := s.disk.<span class="fn">WithContext</span>(ctx).<span class="fn">Put</span>(path, in.Body); err != <span class="k">nil</span> {
+        <span class="k">return</span> Photo{}, fmt.<span class="fn">Errorf</span>(<span class="s">"store photo: %w"</span>, err)
+    }
+    <span class="k">return</span> Photo{Path: path}, <span class="k">nil</span>
+}</pre>
+      </div>
+      <div class="m-note"><b>Note</b><span>Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</span></div>
+    </main>
+    <aside class="m-aside">
+      <p class="t">On this page</p>
+      <a href="#" class="on">The default shape</a><a href="#">Add a named app</a>
+      <a href="#">App metadata</a><a href="#">Runtime defaults</a><a href="#">Common mistakes</a>
+    </aside>
+  </div>
+</div>
+
+<p class="sec-label">Full component set — applied to the selected direction</p>
+<div class="mock showcase">
+<h2 class="sec">Syntax — transposed from your current theme</h2>
+<p class="note">Your site runs <strong>github-dark</strong> today. I pulled its real token colours off the rendered page rather than guessing, and the reason its contrast works is structural: <strong>every token is a high-luminance pastel, the hues sit far apart, plain text is near-white, and comments are the only dim element.</strong> The three transpositions below preserve that luminance profile and move hue into the Temper family — each token lands within about one contrast point of the github-dark original, and where they differ they are brighter, because Temper's code surface is darker than GitHub's.</p>
+<p class="note">Switch to <strong>GitHub (current)</strong> in the header to A/B against the real thing. One fidelity detail carried through: github-dark colours Go built-in types like <code>error</code> with the <em>keyword</em> colour, and <code>nil</code> as a constant — Forge keeps that, while Ember and Neon separate built-ins out as a deliberate improvement.</p>
+
+<div class="code numbered">
+  <div class="head"><i></i><i></i><i></i> internal/photos/service.go <span class="lang">go</span></div>
+<pre><span class="ln">1</span><span class="cm">// Package photos stores uploaded images and fans out thumbnail work.</span>
+<span class="ln">2</span><span class="kw">package</span> photos
+<span class="ln">3</span>
+<span class="ln">4</span><span class="kw">import</span> <span class="pu">(</span>
+<span class="ln">5</span>	<span class="st">"context"</span>
+<span class="ln">6</span>	<span class="st">"fmt"</span>
+<span class="ln">7</span>	<span class="st">"time"</span>
+<span class="ln">8</span><span class="pu">)</span>
+<span class="ln">9</span>
+<span class="ln">10</span><span class="kw">const</span> maxUploadMB <span class="pu">=</span> <span class="nu">25</span>
+<span class="ln">11</span>
+<span class="ln">12</span><span class="cm">// Photo is a stored image owned by a single user.</span>
+<span class="ln">13</span><span class="kw">type</span> <span class="ty">Photo</span> <span class="kw">struct</span> <span class="pu">{</span>
+<span class="ln">14</span>	ID        <span class="bt">string</span>    <span class="st">`</span><span class="tk">json</span><span class="st">:"id" </span><span class="tk">gorm</span><span class="st">:"primaryKey"`</span>
+<span class="ln">15</span>	OwnerID   <span class="bt">int64</span>     <span class="st">`</span><span class="tk">json</span><span class="st">:"owner_id"`</span>
+<span class="ln">16</span>	CreatedAt time<span class="pu">.</span><span class="ty">Time</span> <span class="st">`</span><span class="tk">json</span><span class="st">:"created_at"`</span>
+<span class="ln">17</span><span class="pu">}</span>
+<span class="ln">18</span>
+<span class="ln">19</span><span class="kw">type</span> <span class="ty">Service</span> <span class="kw">struct</span> <span class="pu">{</span>
+<span class="ln">20</span>	disk   storage<span class="pu">.</span><span class="ty">Storage</span>
+<span class="ln">21</span>	queues <span class="pu">*</span>queue<span class="pu">.</span><span class="ty">Manager</span>
+<span class="ln">22</span><span class="pu">}</span>
+<span class="ln">23</span>
+<span class="ln">24</span><span class="kw">func</span> <span class="pu">(</span>s <span class="pu">*</span><span class="ty">Service</span><span class="pu">)</span> <span class="fn">Store</span><span class="pu">(</span>ctx context<span class="pu">.</span><span class="ty">Context</span><span class="pu">,</span> in <span class="ty">UploadInput</span><span class="pu">)</span> <span class="pu">(</span><span class="ty">Photo</span><span class="pu">,</span> <span class="bt">error</span><span class="pu">)</span> <span class="pu">{</span>
+<span class="ln">25</span>	<span class="kw">if</span> in<span class="pu">.</span>SizeMB <span class="pu">&gt;</span> maxUploadMB <span class="pu">{</span>
+<span class="ln">26</span>		<span class="kw">return</span> <span class="ty">Photo</span><span class="pu">{},</span> fmt<span class="pu">.</span><span class="fn">Errorf</span><span class="pu">(</span><span class="st">"store photo: </span><span class="vb">%w</span><span class="st">"</span><span class="pu">,</span> ErrTooLarge<span class="pu">)</span>
+<span class="ln">27</span>	<span class="pu">}</span>
+<span class="ln">28</span>
+<span class="hl"><span class="ln">29</span>	path <span class="pu">:=</span> <span class="fn">photoPath</span><span class="pu">(</span>in<span class="pu">)</span>
+</span><span class="hl"><span class="ln">30</span>	<span class="kw">if</span> err <span class="pu">:=</span> s<span class="pu">.</span>disk<span class="pu">.</span><span class="fn">WithContext</span><span class="pu">(</span>ctx<span class="pu">).</span><span class="fn">Put</span><span class="pu">(</span>path<span class="pu">,</span> in<span class="pu">.</span>Body<span class="pu">);</span> err <span class="pu">!=</span> <span class="cn">nil</span> <span class="pu">{</span>
+</span><span class="hl"><span class="ln">31</span>		<span class="kw">return</span> <span class="ty">Photo</span><span class="pu">{},</span> fmt<span class="pu">.</span><span class="fn">Errorf</span><span class="pu">(</span><span class="st">"store photo: </span><span class="vb">%w</span><span class="st">"</span><span class="pu">,</span> err<span class="pu">)</span>
+</span><span class="hl"><span class="ln">32</span>	<span class="pu">}</span>
+</span><span class="ln">33</span>
+<span class="ln">34</span>	job <span class="pu">:=</span> queue<span class="pu">.</span><span class="fn">NewJob</span><span class="pu">(</span><span class="st">"photos:thumbnail"</span><span class="pu">).</span><span class="fn">OnQueue</span><span class="pu">(</span><span class="st">"media"</span><span class="pu">).</span><span class="fn">Retry</span><span class="pu">(</span><span class="nu">3</span><span class="pu">)</span>
+<span class="ln">35</span>	<span class="kw">if</span> <span class="pu">_,</span> err <span class="pu">:=</span> s<span class="pu">.</span>queues<span class="pu">.</span><span class="fn">WithContext</span><span class="pu">(</span>ctx<span class="pu">).</span><span class="fn">Dispatch</span><span class="pu">(</span>job<span class="pu">);</span> err <span class="pu">!=</span> <span class="cn">nil</span> <span class="pu">{</span>
+<span class="ln">36</span>		<span class="kw">return</span> <span class="ty">Photo</span><span class="pu">{},</span> err
+<span class="ln">37</span>	<span class="pu">}</span>
+<span class="ln">38</span>
+<span class="ln">39</span>	<span class="kw">return</span> <span class="ty">Photo</span><span class="pu">{</span>ID<span class="pu">:</span> <span class="fn">newID</span><span class="pu">(),</span> CreatedAt<span class="pu">:</span> time<span class="pu">.</span><span class="fn">Now</span><span class="pu">()},</span> <span class="cn">nil</span>
+<span class="ln">40</span><span class="pu">}</span></pre>
+</div>
+<div class="legend" id="legend"></div>
+
+<h2 class="sec">Code blocks</h2>
+<h3 class="sub">Diff</h3>
+<div class="code">
+  <div class="head"><i></i><i></i><i></i> app/routes.go <span class="lang">diff</span></div>
+<pre>	router<span class="pu">.</span><span class="fn">Group</span><span class="pu">(</span><span class="st">"/api"</span><span class="pu">,</span> <span class="kw">func</span><span class="pu">(</span>r <span class="pu">*</span>web<span class="pu">.</span><span class="ty">Router</span><span class="pu">)</span> <span class="pu">{</span>
+<span class="ddel">		r<span class="pu">.</span><span class="fn">Get</span><span class="pu">(</span><span class="st">"/photos"</span><span class="pu">,</span> photos<span class="pu">.</span><span class="fn">Index</span><span class="pu">)</span>
+</span><span class="dadd">		r<span class="pu">.</span><span class="fn">Get</span><span class="pu">(</span><span class="st">"/photos"</span><span class="pu">,</span> photos<span class="pu">.</span><span class="fn">Index</span><span class="pu">).</span><span class="fn">Middleware</span><span class="pu">(</span>auth<span class="pu">.</span><span class="ty">Required</span><span class="pu">)</span>
+</span><span class="dadd">		r<span class="pu">.</span><span class="fn">Post</span><span class="pu">(</span><span class="st">"/photos"</span><span class="pu">,</span> photos<span class="pu">.</span><span class="fn">Store</span><span class="pu">).</span><span class="fn">Middleware</span><span class="pu">(</span>auth<span class="pu">.</span><span class="ty">Required</span><span class="pu">)</span>
+</span>	<span class="pu">})</span></pre>
+</div>
+
+<h3 class="sub">Code group with tabs, and copy state</h3>
+<div class="group">
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="0">service.go</button>
+    <button role="tab" aria-selected="false" data-tab="1">.env</button>
+    <button role="tab" aria-selected="false" data-tab="2">shell</button>
+  </div>
+  <div class="panel on">
+<pre><span class="kw">func</span> <span class="pu">(</span>s <span class="pu">*</span><span class="ty">Service</span><span class="pu">)</span> <span class="fn">Trending</span><span class="pu">(</span>ctx context<span class="pu">.</span><span class="ty">Context</span><span class="pu">)</span> <span class="pu">([]</span><span class="ty">Photo</span><span class="pu">,</span> <span class="bt">error</span><span class="pu">)</span> <span class="pu">{</span>
+	photos<span class="pu">,</span> ok<span class="pu">,</span> err <span class="pu">:=</span> cache<span class="pu">.</span><span class="fn">Get</span><span class="pu">[[]</span><span class="ty">Photo</span><span class="pu">](</span>s<span class="pu">.</span>cache<span class="pu">,</span> <span class="st">"photos:trending"</span><span class="pu">)</span>
+	<span class="kw">if</span> err <span class="pu">!=</span> <span class="cn">nil</span> <span class="pu">||</span> ok <span class="pu">{</span>
+		<span class="kw">return</span> photos<span class="pu">,</span> err
+	<span class="pu">}</span>
+	<span class="kw">return</span> photos<span class="pu">,</span> cache<span class="pu">.</span><span class="fn">Set</span><span class="pu">(</span>s<span class="pu">.</span>cache<span class="pu">,</span> <span class="st">"photos:trending"</span><span class="pu">,</span> photos<span class="pu">,</span> <span class="nu">5</span><span class="pu">*</span>time<span class="pu">.</span>Minute<span class="pu">)</span>
+<span class="pu">}</span></pre>
+  </div>
+  <div class="panel">
+<pre><span class="cm"># Local development</span>
+<span class="fn">STORAGE_PHOTOS_DRIVER</span><span class="pu">=</span><span class="st">local</span>
+<span class="fn">CACHE_DRIVER</span><span class="pu">=</span><span class="st">memory</span>
+<span class="fn">QUEUE_DRIVER</span><span class="pu">=</span><span class="st">workerpool</span></pre>
+  </div>
+  <div class="panel">
+<pre><span class="cn">$</span> <span class="fn">forj</span> make:job photos:thumbnail <span class="pu">--</span><span class="bt">queue</span> media
+<span class="cn">$</span> <span class="fn">forj</span> build</pre>
+  </div>
+</div>
+<div class="code">
+  <div class="head"><i></i><i></i><i></i> copy states <span class="copy" id="cp">Copy</span></div>
+<pre><span class="cn">$</span> go install github.com/goforj/goforj/cmd/forj@latest</pre>
+</div>
+
+<h3 class="sub">Terminal — success and failure</h3>
+<div class="term">
+  <div class="head"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i> photodrop · forj dev</div>
+<pre><span class="t-p">$</span> forj dev
+<span class="t-ok">✔</span> 4/4 go build          <span class="t-dim">built app in 2s</span>
+<span class="t-ok">✔</span> migrations complete   <span class="t-dim">(7)</span>
+<span class="t-ok">✔</span> dev ready
+  <span class="t-dim">→</span> App         <span class="t-hl">http://localhost:3000</span>
+  <span class="t-dim">→</span> Lighthouse  <span class="t-hl">http://localhost:3000/lighthouse</span>
+
+<span class="t-dim">23:51:32.256</span> <span class="t-step">Scheduler</span>  Scheduler started
+<span class="t-dim">23:51:32.256</span> <span class="t-step">Jobs</span>       Queue worker started <span class="t-dim">→ driver=redis · workers=30</span>
+<span class="t-dim">23:51:32.257</span> <span class="t-step">HTTP</span>       Listening <span class="t-dim">→ addr=</span><span class="t-hl">0.0.0.0:3000</span>
+
+<span class="t-err">✖</span> wire: no provider found for <span class="t-hl">*photos.Repository</span>
+  <span class="t-dim">see</span> <span class="t-step">core/reading-wire-errors</span></pre>
+</div>
+
+<h2 class="sec">Content</h2>
+<h3 class="sub">Callouts — including one with actions</h3>
+<div class="call note"><b>Note</b><p>Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</p></div>
+<div class="call tip"><b>Tip</b><p>Run <code>forj route:list</code> instead of scrolling startup logs — it is the source of truth for the HTTP surface.</p></div>
+<div class="call warn"><b>Warning</b><p>Changing <code>DB_DRIVER</code> after migrations have run requires a fresh migration path.</p></div>
+<div class="call danger"><b>Danger</b><p><code>forj make:controller --remove</code> deletes the file and unwires it. There is no undo.</p>
+  <div class="act"><button class="btn sm danger">Run anyway</button><button class="btn sm ghost">Preview with --dry-run</button></div></div>
+<details class="disc"><summary>What does <code>--dry-run</code> print?</summary>
+  <div class="body">Every file the generator would create, every file it would modify, and the exact wiring lines it would insert — with no changes written to disk.</div>
+</details>
+
+<h3 class="sub">Steps</h3>
+<ol class="steps">
+  <li><h4>Create the Project</h4><p>Run <code>forj new</code> and pick your components. Nothing you skip gets rendered.</p></li>
+  <li><h4>Bring it up</h4><p><code>forj dev</code> builds the binary, starts containers, runs migrations, and watches for changes.</p></li>
+  <li><h4>Generate a feature</h4><p><code>forj make:controller photos</code> writes the file and the wiring beside the service that owns it.</p></li>
+</ol>
+
+<h3 class="sub">Parameter list</h3>
+<dl class="params">
+  <div class="p"><dt><span class="n">ctx</span><span class="t">context.Context</span><span class="pill sq">required</span></dt>
+    <dd>Cancellation and deadline propagation. Passed straight through to the driver.</dd></div>
+  <div class="p"><dt><span class="n">in</span><span class="t">UploadInput</span><span class="pill sq">required</span></dt>
+    <dd>The upload payload. Rejected with <code>ErrTooLarge</code> above <code>maxUploadMB</code>.</dd></div>
+  <div class="p"><dt><span class="n">opts</span><span class="t">...StoreOption</span><span class="pill sq nav">variadic</span></dt>
+    <dd>Optional overrides for disk name, retry count, and content type.</dd></div>
+</dl>
+
+<h3 class="sub">File tree, keyboard keys, table</h3>
+<div class="tree"><span class="d">photodrop/</span>
+├── <span class="d">cmd/app/</span>          <span class="g"># default app binary</span>
+├── <span class="d">app/</span>              <span class="g"># routes, commands, wiring</span>
+│   ├── <span class="f">routes.go</span>
+│   └── <span class="f">lifecycle.go</span>
+├── <span class="d">internal/photos/</span>  <span class="g"># feature package</span>
+│   ├── <span class="hi">service.go</span>    <span class="g"># your workflow code</span>
+│   ├── <span class="f">controller.go</span> <span class="g"># HTTP entry point</span>
+│   └── <span class="f">thumbnail_job.go</span>
+└── <span class="f">go.mod</span></div>
+<p class="note">Press <kbd>⌘</kbd> <kbd>K</kbd> to search, <kbd>↑</kbd> <kbd>↓</kbd> to move, <kbd>Enter</kbd> to open, <kbd>Esc</kbd> to dismiss.</p>
+<table class="doc">
+  <thead><tr><th>Primitive</th><th>Local driver</th><th>Production drivers</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><b>Cache</b></td><td><code>memory</code></td><td><code>redis</code>, <code>memcached</code></td><td><span class="pill tip">stable</span></td></tr>
+    <tr><td><b>Queue</b></td><td><code>workerpool</code></td><td><code>redis</code>, <code>sqs</code></td><td><span class="pill tip">stable</span></td></tr>
+    <tr><td><b>Events</b></td><td><code>inproc</code></td><td><code>nats</code>, <code>kafka</code></td><td><span class="pill warn">beta</span></td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub">Anchor heading and quote</h3>
+<div class="anchor"><h4>Reading wire errors</h4><span class="lk">#</span></div>
+<blockquote class="q">
+  <p>GoForj is the stack I wanted for complete Go applications: cohesive, explicit, compiled, and still recognizably Go.</p>
+  <footer>Chris Miles · Creator of GoForj</footer>
+</blockquote>
+
+<h2 class="sec">Navigation</h2>
+<div class="navbar">
+  <div class="logo">
+    <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="6" fill="var(--surface-2)"/><path d="M16 8 C16 8 23 15 23 20.2 A7 7 0 0 1 9 20.2 C9 15 16 8 16 8 Z" fill="var(--accent)"/><path d="M16 8 C16 8 16 27.2 16 27.2 A7 7 0 0 0 23 20.2 C23 15 16 8 16 8 Z" fill="var(--nav)"/><path d="M16 15.5 C16 15.5 19 18.8 19 20.9 A3 3 0 0 1 13 20.9 C13 18.8 16 15.5 16 15.5 Z" fill="var(--surface-2)" opacity=".92"/></svg>
+    <b>GoForj</b>
+  </div>
+  <span class="pill act">v1.0</span>
+  <div class="searchbox">Search <kbd>⌘K</kbd></div>
+  <div class="links"><span>Core Concepts</span><span>Build</span><span>Runtime</span><span>Reference</span></div>
+</div>
+<div class="crumbs"><a href="#">Docs</a><span class="sep">/</span><a href="#">Core Concepts</a><span class="sep">/</span><span class="cur">Apps</span></div>
+<div class="navdemo">
+  <nav>
+    <p class="grp">Core Concepts</p>
+    <a href="#">App</a><a href="#" class="on">Apps</a><a href="#">Runtime Lifecycle</a>
+    <a href="#" class="visited">Dependency Injection</a><a href="#">Providers</a>
+  </nav>
+  <div><p class="note" style="margin:0">Active is gold text, gold rule, gold wash — all navigation, no fill. Hover lifts to a neutral surface rather than introducing colour, so scanning a long sidebar does not flicker. Visited drops to <code>--ink-3</code>.</p></div>
+  <div class="toc">
+    <p class="grp">On this page</p>
+    <a href="#" class="on">The default shape</a><a href="#">Add a named app</a><a href="#">App metadata</a>
+  </div>
+</div>
+<div class="grid2">
+  <div>
+    <div class="modal">
+      <div class="top"><span style="color:var(--ink-3)">⌕</span><input value="driver" readonly><kbd>Esc</kbd></div>
+      <div class="res">
+        <a href="#" class="on">Swapping <mark>drivers</mark><span class="p">core/drivers</span></a>
+        <a href="#"><mark>Driver</mark> decision model<span class="p">core/drivers</span></a>
+        <a href="#">Cache <mark>drivers</mark><span class="p">data/cache</span></a>
+      </div>
+      <div class="foot"><span><kbd>↵</kbd> open</span><span><kbd>↑↓</kbd> navigate</span><span><kbd>Esc</kbd> close</span></div>
+    </div>
+  </div>
+  <div>
+    <div class="menu">
+      <div class="lbl">Version</div>
+      <a href="#" class="on">Unreleased</a>
+      <a href="#">v0.20.0 (latest)</a>
+      <a href="#">v0.19.0</a>
+      <div class="div"></div>
+      <a href="#">Version policy</a>
+      <a href="#">Changelog</a>
+    </div>
+  </div>
+</div>
+<div class="pager">
+  <a href="#"><span class="k">← Previous</span><span class="t">Runtime Lifecycle</span></a>
+  <a href="#" class="next"><span class="k">Next →</span><span class="t">Dependency Injection</span></a>
+</div>
+
+<h2 class="sec">Interface</h2>
+<h3 class="sub">Buttons and badges</h3>
+<div class="btns">
+  <button class="btn">Build a GoForj App</button>
+  <button class="btn ghost">Use a standalone library</button>
+  <button class="btn quiet">Read the Quickstart →</button>
+  <button class="btn sm">Small</button>
+  <button class="btn" disabled>Disabled</button>
+</div>
+<div class="pills">
+  <span class="pill act">GET</span><span class="pill nav">POST</span><span class="pill warn">PATCH</span>
+  <span class="pill danger">DELETE</span><span class="pill tip">stable</span><span class="pill">since v0.18</span>
+  <span class="pill warn">beta</span><span class="pill danger">deprecated</span>
+</div>
+<p class="note">Only the filled button carries the action colour. The quiet button is navigation, so it is gold text with no fill — the rule holds even when the two sit side by side.</p>
+
+<h3 class="sub">Cards and stats</h3>
+<div class="grid3">
+  <a class="card" href="#"><b>Queues and jobs</b><span>Named, durable background work with typed payloads and retries.</span><span class="more">Read more →</span></a>
+  <a class="card" href="#"><b>Events</b><span>Typed facts with local-first fan-out. In-process today, NATS when you need it.</span><span class="more">Read more →</span></a>
+  <a class="card" href="#"><b>Lighthouse</b><span>A first-party operator view over routes, inspects, schedules, and queues.</span><span class="more">Read more →</span></a>
+</div>
+<div class="grid3" style="margin-top:14px">
+  <div class="stat"><b>2,500+</b><span>test functions across the first-party libraries</span></div>
+  <div class="stat"><b>49</b><span>interchangeable drivers</span></div>
+  <div class="stat"><b>18</b><span>standalone libraries</span></div>
+</div>
+
+<h3 class="sub">Forms</h3>
+<div class="grid2">
+  <div>
+    <div class="field"><label>Project name</label><input value="photodrop"><div class="hint">Lowercase, no spaces. Becomes the Go module name.</div></div>
+    <div class="field err"><label>Database driver</label><input value="postgress"><div class="hint">Unknown driver. Did you mean <code>postgres</code>?</div></div>
+    <div class="field"><label>Starter kit</label><select><option>Vue</option><option>React</option><option>templ</option></select></div>
+  </div>
+  <div>
+    <div class="check on"><i>✓</i> Install Atlas agent support</div>
+    <div class="check"><i></i> Include Grafana dashboards</div>
+    <p class="note" style="margin-top:16px">Observability <span class="toggle on"></span> &nbsp; Swagger <span class="toggle"></span></p>
+    <p class="note" style="margin-bottom:4px">Rendering project — 412 of 736 files</p>
+    <div class="prog"><i style="width:56%"></i></div>
+  </div>
+</div>
+
+<h3 class="sub">Feedback states</h3>
+<div class="toast"><span style="color:var(--tip);font-size:17px">✔</span>
+  <div class="msg"><b>Copied to clipboard</b>go install github.com/goforj/goforj/cmd/forj@latest</div>
+  <span class="x">✕</span></div>
+<div class="grid2">
+  <div class="empty"><div class="ico">⌕</div><b>No results for "kubernets"</b>
+    <span>Check the spelling, or browse the reference index instead.</span>
+    <button class="btn sm ghost">Browse reference</button></div>
+  <div>
+    <div class="tooltip">Compiled into the binary. Selected at runtime.</div>
+    <div style="margin-top:18px">
+      <div class="skel" style="width:60%"></div><div class="skel" style="width:92%"></div>
+      <div class="skel" style="width:78%"></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+const MARKS = [
+  {id:'carbon', label:'Carbon',                   pos:13, temp:'~900°C',  row:0},
+  {id:'edge',   label:'Edge',                     pos:31, temp:'~940°C',  row:1, fam:true},
+  {id:'family', label:'Molten · Forge · Steel · Temper', pos:50, temp:'~980°C', row:0, fam:true},
+  {id:'anvil',  label:'Anvil',                    pos:69, temp:'~1000°C', row:1},
+  {id:'iron',   label:'Iron',                     pos:87, temp:'~1010°C', row:0}
+];
+const PAL = [
+  ['Ground','--ground'],['Ground alt','--ground-alt'],['Surface','--surface'],['Surface 2','--surface-2'],
+  ['Code well','--code-bg'],['Code chrome','--code-chrome'],
+  ['Hairline','--line'],['Ink','--ink'],['Ink muted','--ink-2'],['Accent','--accent'],
+  ['Accent hover','--accent-hi'],['Link','--accent-link'],['Secondary','--second']
+];
+
+/* ---------------------------------------------------------------------------
+   Plane-separation readout.
+
+   The question this switcher exists to answer is not "which looks nicer" but
+   "how far is the code plane from the page, and in which direction".
+
+   Both metrics are shown on purpose. WCAG ratio is what handoff.md used to
+   verify every palette, and it is the wrong tool for this job: its +0.05 flare
+   constant swamps the numerator when both luminances are near zero, so any two
+   dark surfaces score ~1.0-1.2:1 no matter how far apart they look. dL* (CIE
+   L*, perceptual lightness) is the metric that tracks what the eye reports for
+   large flat areas. Rough guide: dL* < 1 is invisible, 2-3 is a subtle step,
+   5+ is a clear plane change.
+   --------------------------------------------------------------------------- */
+function rgb(v){
+  const m = v.match(/-?[\d.]+/g);
+  return m ? m.slice(0,3).map(Number) : [0,0,0];
+}
+function lum(c){
+  const f = c.map(v=>{v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4);});
+  return 0.2126*f[0] + 0.7152*f[1] + 0.0722*f[2];
+}
+function lstar(v){
+  const y = lum(rgb(v)), d = 6/29;
+  return 116*(y > d*d*d ? Math.cbrt(y) : y/(3*d*d) + 4/29) - 16;
+}
+function ratio(a,b){
+  const la = lum(rgb(a)), lb = lum(rgb(b));
+  return (Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05);
+}
+function hex(v){
+  const c = rgb(v);
+  return '#'+c.map(n=>Math.round(n).toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+/* Each direction's original page ground, so the readout can report how much
+   brightness a given well strategy actually costs the page — the thing that
+   made "lifted" feel washed out. */
+const BASE_GROUND = {molten:'#08070A',forge:'#0C0A0E',steel:'#09090C',edge:'#060509',
+  temper:'#0C0A0E',iron:'#12100F',anvil:'#0F1113',carbon:'#0A0A0A'};
+
+function renderContrast(cs){
+  const g  = cs.getPropertyValue('--ground');
+  const gL = lstar(g);
+  const base   = BASE_GROUND[document.documentElement.dataset.dir];
+  const pageD  = base && document.documentElement.dataset.mode === 'dark'
+                 ? gL - lstar(base) : 0;
+  const rows = [
+    ['Code well',   cs.getPropertyValue('--code-bg')],
+    ['Code chrome', cs.getPropertyValue('--code-chrome')],
+    ['Terminal',    cs.getPropertyValue('--term-bg')],
+    ['Card surface',cs.getPropertyValue('--surface')],
+    ['Hairline',    cs.getPropertyValue('--line')]
+  ];
+  const dark = document.documentElement.dataset.mode === 'dark';
+  return `<div style="grid-column:1/-1;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);
+      font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--ink-3)">
+    <div style="color:var(--ink-2);margin-bottom:6px">
+      Plane separation vs page ground ${hex(g)} · L* ${gL.toFixed(1)}
+      ${pageD > 0.15
+        ? `<span style="color:var(--tip)">· page +${pageD.toFixed(1)} L* — docs only, landing stays deep</span>`
+        : '<span style="color:var(--ink-3)">· page at its original value</span>'}
+      <br><span style="color:var(--ink-3)">dL* is the one that matters; WCAG saturates down here</span>
+    </div>
+    ${rows.map(([n,v])=>{
+      const d = lstar(v) - gL;
+      const isWell = n === 'Code well';
+      // A well must sit below the page in dark mode, above it in light.
+      const rightWay = isWell ? (dark ? d < 0 : d < 0) : true;
+      const visible  = Math.abs(d) >= 2;
+      const col = !isWell ? 'var(--ink-3)'
+                : (rightWay && visible) ? 'var(--tip)'
+                : rightWay ? 'var(--warn)' : 'var(--danger)';
+      return `<div><span style="display:inline-block;min-width:104px">${n}</span>
+        <span style="color:var(--ink-2)">${hex(v)}</span>
+        <span style="display:inline-block;min-width:74px;text-align:right">${ratio(g,v).toFixed(2)}:1</span>
+        <span style="display:inline-block;min-width:74px;text-align:right;color:${col}">dL* ${d>0?'+':''}${d.toFixed(2)}</span>
+        <span style="color:${col}"> ${d<0?'below':'above'}${isWell && !visible ? '  ← imperceptible' : ''}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+const MARKSVG = {
+  molten:'<svg viewBox="0 0 32 32" fill="none"><path d="M16 3 C16 3 25 12 25 19 A9 9 0 0 1 7 19 C7 12 16 3 16 3 Z" fill="var(--accent)"/><path d="M16 12 C16 12 20 16.5 20 19.6 A4 4 0 0 1 12 19.6 C12 16.5 16 12 16 12 Z" fill="var(--ground)" opacity=".85"/></svg>',
+  forge:'<svg viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="6" fill="var(--surface-2)"/><path d="M16 8 C16 8 23 15 23 20.2 A7 7 0 0 1 9 20.2 C9 15 16 8 16 8 Z" fill="var(--accent)"/><path d="M16 15.5 C16 15.5 19 18.8 19 20.9 A3 3 0 0 1 13 20.9 C13 18.8 16 15.5 16 15.5 Z" fill="var(--surface-2)" opacity=".9"/></svg>',
+  steel:'<svg viewBox="0 0 32 32" fill="none"><path d="M16 3 C16 3 25 12 25 19 A9 9 0 0 1 7 19 C7 12 16 3 16 3 Z" fill="var(--accent)"/><path d="M16 3 C16 3 16 27.9 16 27.9 A9 9 0 0 0 25 19 C25 12 16 3 16 3 Z" fill="var(--second)"/><path d="M16 12 C16 12 20 16.5 20 19.6 A4 4 0 0 1 12 19.6 C12 16.5 16 12 16 12 Z" fill="var(--ground)" opacity=".85"/></svg>',
+  edge:'<svg viewBox="0 0 32 32" fill="none"><path d="M16 2 L26 20 L16 30 L6 20 Z" fill="var(--accent)"/><path d="M16 12.5 L21 21 L16 25.5 L11 21 Z" fill="var(--ground)"/></svg>',
+  temper:'<svg viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="6" fill="var(--surface-2)"/><path d="M16 8 C16 8 23 15 23 20.2 A7 7 0 0 1 9 20.2 C9 15 16 8 16 8 Z" fill="var(--accent)"/><path d="M16 8 C16 8 16 27.2 16 27.2 A7 7 0 0 0 23 20.2 C23 15 16 8 16 8 Z" fill="var(--nav)"/><path d="M16 15.5 C16 15.5 19 18.8 19 20.9 A3 3 0 0 1 13 20.9 C13 18.8 16 15.5 16 15.5 Z" fill="var(--surface-2)" opacity=".92"/></svg>',
+  iron:'<svg viewBox="0 0 32 32" fill="none"><path d="M4 22 L16 4 L28 22 L22 22 L16 13 L10 22 Z" fill="var(--accent)"/><rect x="9" y="25" width="14" height="3.4" rx="1.2" fill="var(--ink-2)"/></svg>',
+  anvil:'<svg viewBox="0 0 32 32" fill="none"><path d="M5 11h13l4 4h5l-3 5H12l-3-4H5z" fill="var(--accent)"/><path d="M13 20h6l-1.5 5h-3z" fill="var(--ink-2)"/><rect x="9" y="25" width="14" height="3.2" rx="1.1" fill="var(--ink-2)"/></svg>',
+  carbon:'<svg viewBox="0 0 32 32" fill="none"><rect x="3" y="3" width="26" height="26" rx="3" fill="var(--accent)"/><path d="M11 10h11M11 16h8M11 22h5" stroke="var(--on-accent)" stroke-width="2.4" stroke-linecap="square"/></svg>'
+};
+const root = document.documentElement;
+
+// Seven code references in two sentences — a genuine stress test for salience.
+const CODE_SENTENCE = `Set <code>STORAGE_PHOTOS_DRIVER</code> to <code>s3</code> in production and
+  <code>local</code> in development. The <code>forj dev</code> command reads <code>.env</code>, then
+  <code>forj build</code> compiles the selected drivers into <code>bin/app</code>.`;
+const TREATMENTS = [
+  ['contrast','High contrast','surface + full ink',
+   'Spends no accent. Salience comes from the typeface change, the chip and full-strength ink — the things that mark a change of register rather than a change of role. Scales across a code-dense page without agitating it, and still carries brand warmth because the surface ramp is violet-tinted, not grey.'],
+  ['warm','Warm frame','accent frame + full ink',
+   'More distinctive, and the handoff\'s pick. The cost: it needs a fourth rule — filled + orange ink is action, filled + white ink is reference — carried entirely by ink colour on a tinted fill. That is a finer distinction than the rule table implies, and it is exactly the convention the handoff predicts will erode.']
+];
+/* Cut, and why — kept here so the artifact stays a record of the decision:
+     Full accent     — filled orange = ACTION. The chip claims to be a button.
+     Navigation gold — code and links share a colour; the split stops meaning anything.
+     Neutral         — muted ink on a string you must transcribe exactly.        */
+function renderCmp(){
+  const cur = root.dataset.code;
+  document.getElementById('cmp').innerHTML = TREATMENTS.map(([id,name,how,note])=>
+    `<div class="row${id===cur?' pick':''}" data-code="${id}">
+       <div class="lbl"><b>${name}</b>${how}${id===cur?'<s>◆ selected</s>':''}</div>
+       <div><p>${CODE_SENTENCE}</p>
+         <p style="font-size:12.5px;color:var(--ink-3);margin-top:9px;line-height:1.5">${note}</p></div>
+     </div>`).join('');
+}
+
+document.getElementById('marks').innerHTML = MARKS.map(m=>
+  `<span class="hm${m.fam?' fam':''}${m.row?' r1':''}" style="left:${m.pos}%">
+     <i></i><b>${m.label}</b><s>${m.temp}</s></span>`).join('');
+
+function render(){
+  const dir = root.dataset.dir;
+  document.querySelectorAll('.dirblock').forEach(b=>{
+    b.style.display = b.dataset.for === dir ? 'block' : 'none';
+  });
+  const svg = MARKSVG[dir] || '';
+  document.getElementById('mark1').innerHTML = svg;
+  document.getElementById('mark2').innerHTML = svg;
+  const cs = getComputedStyle(root);
+  const pal = PAL.slice();
+  const nav = cs.getPropertyValue('--nav').trim();
+  if (nav) {
+    // Temper carries a dedicated navigation color; show it next to the action accent.
+    const i = pal.findIndex(([r])=>r==='Link');
+    pal.splice(i, 1, ['Navigation','--nav'], ['Nav hover','--nav-hi']);
+  }
+  document.getElementById('pal').innerHTML = pal.map(([role,v])=>{
+    const val = cs.getPropertyValue(v).trim();
+    return `<div class="sw"><div class="chip" style="background:${val}"></div>
+      <div class="meta"><span class="role">${role}</span><span class="hex">${hex(val)}</span></div></div>`;
+  }).join('') + renderContrast(cs);
+  renderCmp();
+  renderLegend();
+}
+/* ---------------------------------------------------------------------------
+   Deep linking. Every switcher lives in the URL hash, so any combination of
+   direction / mode / syntax / inline-code / code-surface is a shareable and
+   bookmarkable address:
+
+     forge-riffs.html#dir=temper&mode=dark&syn=warm&code=warm&well=tiers
+
+   Uses replaceState so flipping switches does not fill the back button, but
+   hashchange is still honoured for hand-edited or pasted URLs.
+   --------------------------------------------------------------------------- */
+const KEYS = ['dir','mode','syn','code','well'];
+
+function syncButtons(){
+  document.querySelectorAll('[data-set]').forEach(b=>{
+    b.setAttribute('aria-pressed', String(root.dataset[b.dataset.set] === b.dataset.val));
+  });
+}
+function writeHash(){
+  const h = KEYS.map(k=>`${k}=${root.dataset[k]}`).join('&');
+  history.replaceState(null, '', `${location.pathname}${location.search}#${h}`);
+}
+function readHash(){
+  const raw = location.hash.replace(/^#/,'');
+  if(!raw) return false;
+  let touched = false;
+  new URLSearchParams(raw).forEach((v,k)=>{
+    if(KEYS.includes(k) && /^[\w-]+$/.test(v)){ root.dataset[k] = v; touched = true; }
+  });
+  return touched;
+}
+
+document.querySelectorAll('[data-set]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const {set,val}=b.dataset;
+    root.dataset[set]=val;
+    syncButtons();
+    writeHash();
+    render();
+  });
+});
+
+window.addEventListener('hashchange',()=>{ readHash(); syncButtons(); render(); });
+
+const share = document.getElementById('share');
+if(share) share.addEventListener('click', async ()=>{
+  writeHash();
+  try { await navigator.clipboard.writeText(location.href); }
+  catch(e){
+    const t=document.createElement('textarea');
+    t.value=location.href; document.body.appendChild(t); t.select();
+    document.execCommand('copy'); t.remove();
+  }
+  const was = share.textContent;
+  share.textContent = 'Copied ✓';
+  setTimeout(()=>{ share.textContent = was; }, 1500);
+});
+const TOKENS = [
+  ['Keyword','--s-keyword','func type return if struct','keyword.control, keyword.other'],
+  ['Built-in type','--s-builtin','string int64 error bool','storage.type.built-in, support.type'],
+  ['Type','--s-type','Photo Service Context Storage','entity.name.type'],
+  ['Function','--s-func','NewService Errorf Dispatch','entity.name.function, support.function'],
+  ['String','--s-string','"photos:thumbnail"','string.quoted.double, string.quoted.raw'],
+  ['Format verb','--s-verb','%w %s %d','constant.other.placeholder'],
+  ['Number','--s-number','25 3 5','constant.numeric'],
+  ['Constant','--s-const','nil true false iota','constant.language'],
+  ['Struct tag key','--s-tagkey','json: gorm:','meta.struct-tag entity.name.tag'],
+  ['Comment','--s-comment','// Package photos ...','comment.line, comment.block'],
+  ['Plain','--s-plain','ctx err path time fmt','variable.other, source.go'],
+  ['Punctuation','--s-punct',':= != { } ( ) . ,','punctuation.*, meta.brace']
+];
+function renderLegend(){
+  const el = document.getElementById('legend'); if(!el) return;
+  const cs = getComputedStyle(document.documentElement);
+  el.innerHTML = TOKENS.map(([name,v,sample,scope])=>{
+    const val = cs.getPropertyValue(v).trim();
+    return `<div><div class="sw" style="color:${val}">${sample}</div>
+      <div class="sc"><span style="color:var(--ink-2)">${name}</span> · ${val}<br>${scope}</div></div>`;
+  }).join('');
+}
+document.querySelectorAll('.group .tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const g=b.closest('.group'), i=+b.dataset.tab;
+    g.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
+    g.querySelectorAll('.panel').forEach((p,pi)=>p.classList.toggle('on',pi===i));
+  });
+});
+const cp=document.getElementById('cp');
+if(cp) cp.addEventListener('click',()=>{
+  cp.textContent='Copied ✓'; cp.classList.add('done');
+  setTimeout(()=>{cp.textContent='Copy';cp.classList.remove('done')},1600);
+});
+document.querySelectorAll('.check,.toggle').forEach(el=>{
+  el.addEventListener('click',()=>{
+    el.classList.toggle('on');
+    const i=el.querySelector('i'); if(i) i.textContent = el.classList.contains('on') ? '✓' : '';
+  });
+});
+/* Restore from the URL first so a deep link wins over the markup defaults,
+   then write it back so a bare load still produces a copyable address. */
+readHash();
+syncButtons();
+renderLegend();
+render();
+writeHash();
+</script>
+</body>
+</html>

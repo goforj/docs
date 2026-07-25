@@ -22,16 +22,16 @@ const variants = [
 
 const previewStyles = {
   halo: {
-    borderColor: 'rgba(170,188,240,.28)',
-    background: 'radial-gradient(70px 18px at 10% 0%, rgba(44,104,255,.12), transparent 52%), linear-gradient(180deg, #171d28, #0f131c)'
+    borderColor: 'rgba(255, 94, 58,.28)',
+    background: 'radial-gradient(70px 18px at 10% 0%, rgba(214, 53, 26,.12), transparent 52%), linear-gradient(180deg, #1F1B24, #151219)'
   },
   glass: {
-    borderColor: 'rgba(210,226,255,.24)',
-    background: 'radial-gradient(70px 18px at 20% 0%, rgba(125,186,255,.10), transparent 52%), linear-gradient(180deg, rgba(35,42,56,.85), rgba(22,27,38,.75))'
+    borderColor: 'rgba(232, 222, 243,.24)',
+    background: 'radial-gradient(70px 18px at 20% 0%, rgba(255, 94, 58,.10), transparent 52%), linear-gradient(180deg, rgba(45, 40, 51,.85), rgba(30, 26, 34,.75))'
   },
   ink: {
-    borderColor: 'rgba(138,149,177,.22)',
-    background: 'linear-gradient(180deg, #151920, #0d1016)'
+    borderColor: 'rgba(158, 147, 168,.22)',
+    background: 'linear-gradient(180deg, #1A171E, #110F14)'
   },
   amber: {
     borderColor: 'rgba(255,196,96,.24)',
@@ -54,16 +54,16 @@ const previewStyles = {
     background: 'linear-gradient(180deg, #2a241d, #1c1813)'
   },
   chrome: {
-    borderColor: 'rgba(200,212,236,.24)',
-    background: 'linear-gradient(180deg, #2a313d, #171b22)'
+    borderColor: 'rgba(218, 208, 228,.24)',
+    background: 'linear-gradient(180deg, #332E39, #1C1920)'
   },
   obsidian: {
     borderColor: 'rgba(255,94,94,.18)',
-    background: 'radial-gradient(70px 20px at 10% 0%, rgba(255,70,70,.12), transparent 60%), linear-gradient(180deg, #101012, #0a0a0c)'
+    background: 'radial-gradient(70px 20px at 10% 0%, rgba(255,70,70,.12), transparent 60%), linear-gradient(180deg, #111012, #0B0A0C)'
   },
   'midnight-gold': {
     borderColor: 'rgba(232,192,94,.20)',
-    background: 'radial-gradient(70px 20px at 14% 0%, rgba(255,205,92,.14), transparent 60%), linear-gradient(180deg, #171b26, #0d0f16)'
+    background: 'radial-gradient(70px 20px at 14% 0%, rgba(255,205,92,.14), transparent 60%), linear-gradient(180deg, #1E1A23, #110F14)'
   },
   'desert-dusk': {
     borderColor: 'rgba(205,151,117,.20)',
@@ -78,8 +78,8 @@ const previewStyles = {
     background: 'linear-gradient(180deg, #312831, #1b171d)'
   },
   'mono-slate': {
-    borderColor: 'rgba(164,171,186,.18)',
-    background: 'linear-gradient(180deg, #22262d, #15171c)'
+    borderColor: 'rgba(175, 169, 181,.18)',
+    background: 'linear-gradient(180deg, #28242B, #18171A)'
   },
   'sepia-noir': {
     borderColor: 'rgba(172,140,98,.20)',

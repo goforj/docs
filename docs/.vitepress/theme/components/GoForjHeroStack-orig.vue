@@ -378,14 +378,14 @@ const GROUP_CONFIG = [
     id: 'frontend',
     label: 'FRONTEND',
     icon: 'app-window',
-    color: '#FFC24D',
+    color: '#4f7ec9',
     summary: 'UI surfaces and client delivery',
     title: 'Frontend choices',
     href: '/frontend/',
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
       { id: 'frontend-templ', icon: 'templ', color: '#f97316', textColor: '#ffffff', iconColor: '#ffffff', title: 'templ', href: 'https://templ.guide/' }
     ]
   },
@@ -393,7 +393,7 @@ const GROUP_CONFIG = [
     id: 'infrastructure',
     label: 'BACKEND',
     icon: 'server',
-    color: '#68616E',
+    color: '#5b6574',
     summary: 'Queue, events, cache, and storage backends',
     title: 'Backend libraries and infrastructure',
     href: '/drivers',
@@ -410,94 +410,94 @@ const GROUP_CONFIG = [
           { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/collection' },
           { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
           { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/httpx' },
-          { id: 'core-env', icon: 'shield-check', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
-          { id: 'core-crypt', icon: 'key-round', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
-          { id: 'core-console', icon: 'terminal', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
+          { id: 'core-env', icon: 'shield-check', color: '#06b6d4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
+          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
+          { id: 'core-console', icon: 'terminal', color: '#0284c7', textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
         ]
       },
       {
         id: 'backend-queue',
         label: 'QUEUE',
         icon: 'rows-3',
-        color: '#776D82',
+        color: '#64748b',
         title: 'Queue library',
         href: '/queue',
         children: [
           { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Queue', href: 'https://redis.io/' },
           { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff', title: 'RabbitMQ Queue', href: 'https://www.rabbitmq.com/' },
-          { id: 'queue-nats', icon: 'nats', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
+          { id: 'queue-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
           { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SQS Queue', href: 'https://aws.amazon.com/sqs/' },
-          { id: 'queue-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
-          { id: 'queue-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
-          { id: 'queue-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
+          { id: 'queue-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
+          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
+          { id: 'queue-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
         ]
       },
       {
         id: 'backend-events',
         label: 'EVENTS',
         icon: 'git-branch',
-        color: '#685E72',
+        color: '#56657a',
         title: 'Events library',
         href: '/events',
         children: [
-          { id: 'events-nats', icon: 'nats', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
-          { id: 'events-jetstream', icon: 'jetstream', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
+          { id: 'events-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
+          { id: 'events-jetstream', icon: 'jetstream', color: '#1e88e5', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
           { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Events', href: 'https://redis.io/' },
           { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff', title: 'Kafka Events', href: 'https://kafka.apache.org/' },
           { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SNS Events', href: 'https://aws.amazon.com/sns/' },
-          { id: 'events-gcppubsub', icon: 'gcs', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
+          { id: 'events-gcppubsub', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
         ]
       },
       {
         id: 'backend-storage',
         label: 'STORAGE',
         icon: 'hard-drive',
-        color: '#57505E',
+        color: '#4b5563',
         title: 'Storage library',
         href: '/storage',
         children: [
-          { id: 'storage-local', icon: 'local', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/storage' },
-          { id: 'storage-memory', icon: 'memory', color: '#766D7E', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
+          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/storage' },
+          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
           { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Storage', href: 'https://redis.io/' },
           { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff', title: 'FTP Storage', href: 'https://filezilla-project.org/' },
-          { id: 'storage-sftp', icon: 'sftp', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
+          { id: 'storage-sftp', icon: 'sftp', color: '#1f6feb', textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
           { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon S3 Storage', href: 'https://aws.amazon.com/s3/' },
-          { id: 'storage-gcs', icon: 'gcs', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
-          { id: 'storage-dropbox', icon: 'dropbox', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
-          { id: 'storage-rclone', icon: 'rclone', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
+          { id: 'storage-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
+          { id: 'storage-dropbox', icon: 'dropbox', color: '#0061ff', textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
+          { id: 'storage-rclone', icon: 'rclone', color: '#5a45ff', textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
         ]
       },
       {
         id: 'backend-database',
         label: 'DATABASE',
         icon: 'database',
-        color: '#6D6574',
+        color: '#5f6b7a',
         title: 'Database backends',
         href: '/drivers',
         childMetrics: { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
         children: [
-          { id: 'database-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
-          { id: 'database-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres', href: 'https://www.postgresql.org/' },
-          { id: 'database-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite', href: 'https://sqlite.org/' }
+          { id: 'database-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
+          { id: 'database-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres', href: 'https://www.postgresql.org/' },
+          { id: 'database-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite', href: 'https://sqlite.org/' }
         ]
       },
       {
         id: 'backend-cache',
         label: 'CACHE',
         icon: 'database-zap',
-        color: '#584F61',
+        color: '#475569',
         title: 'Cache library',
         href: '/cache',
         children: [
-          { id: 'cache-file', icon: 'file', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
+          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
           { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/cache' },
-          { id: 'cache-memcached', icon: 'memcached', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
+          { id: 'cache-memcached', icon: 'memcached', color: '#0198c4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
           { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Cache', href: 'https://redis.io/' },
-          { id: 'cache-nats', icon: 'nats', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
-          { id: 'cache-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
-          { id: 'cache-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
-          { id: 'cache-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
-          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
+          { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
+          { id: 'cache-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
+          { id: 'cache-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
+          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
+          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
         ]
       }
     ],
@@ -507,7 +507,7 @@ const GROUP_CONFIG = [
     id: 'ai-agents',
     label: 'ATLAS',
     icon: 'brain-circuit',
-    color: '#FFC24D',
+    color: '#7b74d6',
     summary: 'Local guidance, skills, and MCP context for coding agents',
     title: 'Atlas coding-agent support',
     href: '/developer-tools/atlas',
@@ -515,8 +515,8 @@ const GROUP_CONFIG = [
     children: [
       { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'Codex' },
       { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude Code' },
-      { id: 'ai-gemini', icon: 'gemini', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
-      { id: 'ai-copilot', icon: 'copilot', color: '#2A262D', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
+      { id: 'ai-gemini', icon: 'gemini', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
+      { id: 'ai-copilot', icon: 'copilot', color: '#24292f', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
     ]
   }
 ]
@@ -710,7 +710,7 @@ const scene = computed(() => {
         type: 'block',
         tier: 'rear-support',
         label: '',
-        color: '#443D4B',
+        color: '#374151',
         textColor: '#ffffff',
         x: rearShelf.x + LAYOUT.rearSupportInsetX,
         y: core.y - LAYOUT.rearSupportDepth,
@@ -722,7 +722,7 @@ const scene = computed(() => {
     : null
 
   const tower = [
-    { id: 'ground', type: 'shelf', tier: 'ground', color: '#FAF9FB', ...ground },
+    { id: 'ground', type: 'shelf', tier: 'ground', color: '#f8fafc', ...ground },
     {
       id: 'runtime',
       type: 'block',
@@ -730,8 +730,8 @@ const scene = computed(() => {
       label: 'RUNTIME',
       icon: 'go',
       labelFace: 'left',
-      color: '#1C1524',
-      textColor: '#FF5E3A',
+      color: '#0f172a',
+      textColor: '#93a9cb',
       labelSize: 18,
       iconScale: 1.32,
       ...runtime
@@ -748,9 +748,9 @@ const scene = computed(() => {
       ...core
     },
     { id: 'platform-shelf', type: 'shelf', tier: 'platform', color: '#ffffff', opacity: LAYOUT.platformOpacity, ...platform },
-    ...(lowerShelf ? [{ id: 'lower-shelf', type: 'block', tier: 'lower-shelf', label: '', color: '#625C69', textColor: '#ffffff', ...lowerShelf }] : []),
+    ...(lowerShelf ? [{ id: 'lower-shelf', type: 'block', tier: 'lower-shelf', label: '', color: '#56606f', textColor: '#ffffff', ...lowerShelf }] : []),
     ...(rearSupport ? [rearSupport] : []),
-    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#57505E', textColor: '#ffffff', ...rearShelf }] : [])
+    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#4b5563', textColor: '#ffffff', ...rearShelf }] : [])
   ]
 
   const assemblyCenterX = core.x + (core.w * 0.49)
@@ -763,7 +763,7 @@ const scene = computed(() => {
       type: 'block',
       tier: 'assembly-input',
       assemblyRole: 'input',
-      color: '#A59EAD',
+      color: '#98a4b3',
       textColor: '#ffffff',
       x: assemblyCenterX - 0.92,
       y: assemblyCenterY + 0.08,
@@ -778,7 +778,7 @@ const scene = computed(() => {
       type: 'block',
       tier: 'assembly-input',
       assemblyRole: 'input',
-      color: '#8B8492',
+      color: '#7e8998',
       textColor: '#ffffff',
       x: assemblyCenterX - 0.14,
       y: assemblyCenterY - 0.06,
@@ -1196,12 +1196,7 @@ function adjustColor(color, amount) {
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
         <p class="gf-hero-eyebrow">Generated Go applications you own</p>
         <h1 class="gf-hero-title">
-          <!-- Two-tone headline. The mock is .m-h1 with an <em> on the
-               closing phrase: `.m-h1 em { font-style:normal; color:accent }`.
-               The accent is doing what it does everywhere else here — it is a
-               filled mark, not a link — so the phrase reads as emphasis rather
-               than as something clickable. -->
-          <span class="gf-hero-headline">The composable stack for <em>building with Go</em></span>
+          <span class="gf-hero-headline">The composable stack for building with Go</span>
         </h1>
         <p class="gf-hero-tagline">
           One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives across the application stack.
@@ -1224,6 +1219,11 @@ function adjustColor(color, amount) {
           <span class="gf-hero-install__state">{{ installCopied ? 'copied' : 'copy' }}</span>
         </button>
         <span class="gf-sr-only" role="status" aria-live="polite">{{ installCopyStatus }}</span>
+        <p class="gf-hero-version">
+          <a href="/versions/">Unreleased documentation</a>
+          <span aria-hidden="true">·</span>
+          <span><code>@latest</code> installs the latest tagged release</span>
+        </p>
         <div class="gf-hero-principles" aria-label="GoForj application model">
           <div class="gf-hero-principle">
             <strong>App-owned composition</strong>
@@ -1273,9 +1273,9 @@ function adjustColor(color, amount) {
               </linearGradient>
             </template>
             <radialGradient id="hero-ambient" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#FF5E3A" stop-opacity="0.46" />
-              <stop offset="52%" stop-color="#FF5E3A" stop-opacity="0.24" />
-              <stop offset="100%" stop-color="#1C1524" stop-opacity="0" />
+              <stop offset="0%" stop-color="#7c83ff" stop-opacity="0.46" />
+              <stop offset="52%" stop-color="#3b82f6" stop-opacity="0.24" />
+              <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
@@ -1389,18 +1389,18 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6D6574" stop-opacity="0.72" />
-              <stop offset="40%" stop-color="#48434E" stop-opacity="0.82" />
-              <stop offset="100%" stop-color="#2B272F" stop-opacity="0.9" />
+              <stop offset="0%" stop-color="#5f6b7a" stop-opacity="0.72" />
+              <stop offset="40%" stop-color="#3e4653" stop-opacity="0.82" />
+              <stop offset="100%" stop-color="#232933" stop-opacity="0.9" />
             </linearGradient>
             <linearGradient id="steel-shelf-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#3A353F" />
-              <stop offset="100%" stop-color="#1D1921" />
+              <stop offset="0%" stop-color="#313843" />
+              <stop offset="100%" stop-color="#161b24" />
             </linearGradient>
             <linearGradient id="steel-shelf-brush" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#D6D0DC" stop-opacity="0.02" />
-              <stop offset="35%" stop-color="#E8E6EA" stop-opacity="0.1" />
-              <stop offset="55%" stop-color="#A6A0AB" stop-opacity="0.04" />
+              <stop offset="0%" stop-color="#cbd5e1" stop-opacity="0.02" />
+              <stop offset="35%" stop-color="#e5e7eb" stop-opacity="0.1" />
+              <stop offset="55%" stop-color="#9ca3af" stop-opacity="0.04" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01" />
             </linearGradient>
           </defs>
@@ -1485,7 +1485,7 @@ function adjustColor(color, amount) {
                       <path
                         v-if="hasForgePlateShadow(item)"
                         :d="getForgePlateShadowPath(item)"
-                        fill="#0C0811"
+                        fill="#020617"
                         :opacity="getForgePlateShadowOpacity(item)"
                       />
                       <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-bounce-face)" :opacity="getForgeBounceOpacity(item)" />
@@ -1719,8 +1719,8 @@ function adjustColor(color, amount) {
   padding: 1.35rem 2rem 5rem;
   overflow: visible;
   background:
-    radial-gradient(circle at 76% 32%, rgba(255, 94, 58, 0.12) 0%, transparent 34%),
-    radial-gradient(circle at 66% 42%, rgba(214, 53, 26, 0.06) 0%, transparent 28%);
+    radial-gradient(circle at 76% 32%, rgba(99, 102, 241, 0.12) 0%, transparent 34%),
+    radial-gradient(circle at 66% 42%, rgba(59, 130, 246, 0.06) 0%, transparent 28%);
 }
 .gf-hero-container {
   max-width: 1280px;
@@ -1743,7 +1743,7 @@ function adjustColor(color, amount) {
 }
 .gf-hero-eyebrow {
   margin: 0 0 0.85rem;
-  color: rgba(255, 194, 77, 0.9);
+  color: rgba(165, 180, 252, 0.9);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.13em;
@@ -1782,24 +1782,24 @@ function adjustColor(color, amount) {
 .gf-hero-principle {
   min-height: 5.6rem;
   padding: 0.78rem;
-  border: 1px solid rgba(166, 156, 176, 0.13);
-  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 16px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
-    rgba(21, 18, 24, 0.32);
+    rgba(15, 18, 27, 0.32);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
 .gf-hero-principle strong {
   display: block;
   margin-bottom: 0.35rem;
-  color: rgba(250, 248, 252, 0.92);
+  color: rgba(245, 248, 255, 0.92);
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
 .gf-hero-principle span {
   display: block;
-  color: rgba(214, 208, 220, 0.72);
+  color: rgba(203, 213, 225, 0.72);
   font-size: 0.74rem;
   font-weight: 520;
   line-height: 1.38;
@@ -1807,7 +1807,7 @@ function adjustColor(color, amount) {
 .gf-hero-story {
   max-width: 560px;
   margin: 0 0 3rem;
-  color: rgba(233, 229, 237, 0.72);
+  color: rgba(226, 232, 240, 0.72);
   font-size: 0.98rem;
   line-height: 1.7;
 }
@@ -1821,17 +1821,17 @@ function adjustColor(color, amount) {
   gap: 0.6rem;
   margin-top: 1.05rem;
   padding: 0.5rem 0.95rem;
-  border: 1px solid rgba(166, 156, 176, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 12px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    rgba(14, 12, 16, 0.62);
-  color: rgba(233, 229, 237, 0.84);
+    rgba(10, 12, 18, 0.62);
+  color: rgba(226, 232, 240, 0.84);
   cursor: pointer;
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 .gf-hero-install:hover {
-  border-color: rgba(227, 214, 240, 0.34);
+  border-color: rgba(199, 213, 255, 0.34);
 }
 .gf-hero-install__prompt {
   color: rgba(255, 154, 96, 0.92);
@@ -1851,15 +1851,10 @@ function adjustColor(color, amount) {
   content: ' ';
 }
 .gf-hero-install__state {
-  /* Temper: a hairline divider, not a second bordered chip.
-     Boxing the copy affordance makes it compete with the
-     command it belongs to. */
-  margin-left: 0.5rem;
-  padding: 0 0 0 0.7rem;
-  border: 0;
-  border-left: 1px solid var(--gf-line);
-  border-radius: 0;
-  color: var(--gf-ink-3);
+  padding: 0.14rem 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+  color: rgba(203, 213, 225, 0.66);
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.08em;
@@ -1874,16 +1869,16 @@ function adjustColor(color, amount) {
   flex-wrap: wrap;
   gap: 0.25rem 0.5rem;
   margin: 0.55rem 0 0;
-  color: rgba(166, 156, 176, 0.68);
+  color: rgba(148, 163, 184, 0.68);
   font-size: 0.7rem;
   line-height: 1.4;
 }
 .gf-hero-version a {
-  color: rgba(255, 194, 77, 0.86);
+  color: rgba(165, 180, 252, 0.86);
   text-decoration: none;
 }
 .gf-hero-version a:hover {
-  color: rgba(226, 214, 239, 1);
+  color: rgba(199, 210, 254, 1);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -1902,52 +1897,36 @@ function adjustColor(color, amount) {
   white-space: nowrap;
   border: 0;
 }
-/* Temper .m-btn. Every value here is transcribed from the mock:
-     font 14.5px / 600, padding 12px 22px, radius 8px,
-     primary  bg accent, border 1px accent, color ON-ACCENT,
-     ghost    transparent, ink text, line-strong border.
-
-   The dark on-accent ink is the part that matters. Orange at
-   #FF5E3A carries white at only 2.9:1 — below AA even for large
-   text — while #08070A on the same fill is 8.6:1. The mock is
-   not making a stylistic choice there, it is the only legible
-   option on a fill that saturated.
-
-   The pill radius, the 700 weight and the lift-and-glow hover
-   all predate the overhaul. Nothing in Temper glows, and the
-   radius scale is 6/8/12. */
 .gf-hero-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--gf-font-body);
-  padding: 12px 22px;
-  border-radius: var(--gf-radius);
-  font-weight: 600;
-  font-size: 14.5px;
-  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  padding: 0.78rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.24s ease, background-color 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 .gf-hero-btn--primary {
-  background-color: var(--gf-accent);
-  border: 1px solid var(--gf-accent);
-  color: var(--gf-on-accent);
-  box-shadow: none;
+  background-color: #6366f1;
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 .gf-hero-btn--primary:hover {
-  background-color: var(--gf-accent-hi);
-  border-color: var(--gf-accent-hi);
-  box-shadow: none;
+  background-color: #4f46e5;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
 }
 .gf-hero-btn--secondary {
-  background-color: transparent;
-  color: var(--gf-ink);
-  border: 1px solid var(--gf-line-strong);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--vp-c-text-1);
+  border: 1px solid var(--vp-c-divider);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .gf-hero-btn--secondary:hover {
-  background-color: transparent;
-  border-color: var(--gf-ink-3);
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-3px) scale(1.02);
 }
 .gf-hero-graphic {
   flex: 1.4;
@@ -2088,7 +2067,7 @@ function adjustColor(color, amount) {
   outline: none;
 }
 .gf-iso-item-wrapper:focus-visible .gf-iso-item {
-  filter: brightness(1.28) drop-shadow(0 0 7px rgba(255, 94, 58, 0.75));
+  filter: brightness(1.28) drop-shadow(0 0 7px rgba(151, 173, 255, 0.75));
 }
 .gf-ember {
   fill: #ffc685;
@@ -2116,10 +2095,10 @@ function adjustColor(color, amount) {
   gap: 2px;
   pointer-events: none;
   padding: 5px 12px;
-  border: 1px solid rgba(255, 194, 77, 0.3);
+  border: 1px solid rgba(165, 185, 255, 0.3);
   border-radius: 8px;
-  background: rgba(13, 11, 15, 0.92);
-  color: rgba(245, 242, 248, 0.96);
+  background: rgba(9, 11, 17, 0.92);
+  color: rgba(238, 242, 252, 0.96);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -2132,7 +2111,7 @@ function adjustColor(color, amount) {
   border-radius: 8px;
 }
 .gf-hero-tip span {
-  color: rgba(206, 196, 215, 0.78);
+  color: rgba(189, 201, 222, 0.78);
   font-size: 0.7rem;
   font-weight: 550;
   letter-spacing: 0.01em;
@@ -2220,7 +2199,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   pointer-events: none;
   letter-spacing: -0.02em;
   paint-order: stroke fill;
-  stroke: rgba(214, 53, 26, 0.2);
+  stroke: rgba(79, 70, 229, 0.2);
   stroke-width: 1.4;
 }
 .iso-templ-logo {
