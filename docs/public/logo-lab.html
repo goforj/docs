@@ -539,15 +539,16 @@ table.t td strong { color: var(--gf-ink); }
     <span class="lbl">surface-2</span><div id="lg3"></div>
   </div>
 
-  <h3>The seam has a dependency that only light mode exposes</h3>
+  <h3>The seam paints itself in the ground colour — when does that bite?</h3>
   <p>
-    Seam paints its seam in the <strong>ground colour</strong>, which means the
-    asset has to know what it will be placed on. Dark mode hides this, because
-    nearly everything sits on one near-black ground. Light mode does not. Below,
-    the painted seam exported for white, placed on all three light grounds — then
-    the same mark with the seam <em>cut</em> as transparency instead.
+    Seam draws its seam in the <strong>ground colour</strong>, so the asset
+    carries an assumption about what it will be placed on. The obvious worry is
+    that light mode has three grounds and the asset can only be exported for one.
+    Below: a seam painted for white, then the same mark with the seam
+    <em>cut</em> as transparency, across the system's light grounds and then off
+    the system entirely.
   </p>
-  <div class="cropgrid" id="seamModeGrid"></div>
+  <div class="cropgrid" id="seamModeGrid" style="grid-template-columns:124px repeat(4,1fr)"></div>
   <div class="note pick" id="seamModeFinding"></div>
 
   <h3>The recommendation</h3>
@@ -1657,45 +1658,75 @@ const GRAPHIC_MIN = 3.0;
       `</div>`;
   });
 
-/* Painted seam versus cut seam, across the three light grounds. */
+/*
+  Painted versus cut seam.
+
+  The first version of this compared the two across only the system's
+  three light grounds and concluded the painted seam "reads as a
+  printing error". That was wrong, and the render showed it: the two
+  rows looked identical. Measured, the three light grounds span just
+  ΔL* 5.18 — page 100, alt 96.79, surface-2 94.82 — so a seam painted
+  white and placed on surface-2 is off by an amount nobody can see on
+  a 2-unit line.
+
+  The dependency is real, but it does not bite inside the system. It
+  bites the moment the mark leaves it, where the mismatch is ΔL* 80+
+  rather than 5. So the fourth column is the honest test.
+*/
 (function seamModes() {
-  const cols = GROUNDS_LIGHT;
+  const OFF = ['#1D1923', 'linear-gradient(115deg,#2b1c3a,#7a3a2e 55%,#c9713f)'];
+  const cols = [
+    ...GROUNDS_LIGHT,
+    ['off-system', OFF[0], OFF[1]]
+  ];
   const grid = document.getElementById('seamModeGrid');
-  const box = (g, svg) =>
-    `<figure><span style="display:block;padding:9px;border-radius:8px;background:${g};border:1px solid #E6E2EC">${svg}</span></figure>`;
+  const box = (bg, svg) =>
+    `<figure><span style="display:block;padding:9px;border-radius:8px;background:${bg};border:1px solid rgba(128,128,128,.25)">${svg}</span></figure>`;
+
   grid.innerHTML =
     `<span></span>` +
     cols.map(([n]) => `<span class="colhd">${n}</span>`).join('') +
-    `<span></span>` +
 
     `<span class="rowlbl">Painted seam<br>exported for white</span>` +
-    cols.map(([, g]) => box(g, rSeam(52, Object.assign({}, P_LIGHT, { bg: P_LIGHT.ground })))).join('') +
-    `<span></span>` +
+    cols.map(([, g, alt]) =>
+      box(alt || g, rSeam(52, Object.assign({}, P_LIGHT, { bg: P_LIGHT.ground })))).join('') +
 
     `<span class="rowlbl">Cut seam<br>transparent</span>` +
-    cols.map(([, g]) => box(g, rSeamCut(52, P_LIGHT))).join('') +
-    `<span></span>`;
+    cols.map(([, g, alt]) => box(alt || g, rSeamCut(52, P_LIGHT))).join('');
+
+  const dl = (a, b) => Math.abs(lstar(a) - lstar(b));
+  const worstIn = Math.max(
+    dl(P_LIGHT.ground, P_LIGHT.groundAlt),
+    dl(P_LIGHT.ground, P_LIGHT.surface2),
+    dl(P_LIGHT.groundAlt, P_LIGHT.surface2)
+  );
+  const worstOut = dl(P_LIGHT.ground, OFF[0]);
 
   document.getElementById('seamModeFinding').innerHTML = `
-    <b>Cut the seam, do not paint it</b>
+    <b>Cut the seam — but not for the reason you would expect</b>
     <p>
-      In the top row the seam is white because the asset was exported for a white
-      page. On <code>alt</code> and <code>surface-2</code> that white is simply
-      the wrong colour, and it reads as a printing error rather than as an edge.
-      The mark is carrying an assumption about its background that it has no way
-      to check.
+      Across the first three columns the two rows are
+      <strong>indistinguishable</strong>, and that is the correct result rather
+      than a broken demo. The system's light grounds span only
+      <strong>ΔL* ${worstIn.toFixed(2)}</strong> — page ${lstar(P_LIGHT.ground).toFixed(0)},
+      alt ${lstar(P_LIGHT.groundAlt).toFixed(1)}, surface-2 ${lstar(P_LIGHT.surface2).toFixed(1)} —
+      so a seam painted white and placed on surface-2 is wrong by an amount no
+      one can perceive on a 2-unit line. Inside light mode, the painted seam is
+      fine. An earlier draft of this section claimed it "reads as a printing
+      error"; the render disproved it.
     </p>
     <p>
-      In the bottom row the seam is a gap. It shows whatever is actually behind
-      the mark, so it is correct on all three grounds without being told which
-      one it is on — and it stays correct on a photo, in a PDF, and on whatever
-      surface someone invents in two years.
+      The fourth column is where it actually bites. Off the system the mismatch
+      is <strong>ΔL* ${worstOut.toFixed(1)}</strong> rather than
+      ${worstIn.toFixed(1)}, and the painted seam becomes a white scar across the
+      mark — visibly a defect, not an edge. The cut seam is a gap, so it shows
+      whatever is genuinely behind it and stays correct on every one.
     </p>
     <p>
-      This strengthens the forever argument rather than complicating it. The
-      painted seam meant one file per ground; the cut seam means the seam costs
-      nothing at all. Combined with the sub-pixel behaviour at 16px, Seam now has
-      <strong>no dependency on its background and no dependency on its size</strong>.
+      So the recommendation stands, with the reasoning corrected: cut the seam
+      <strong>for portability, not for light mode</strong>. Inside the system
+      either works. Outside it, only one does — and a forever mark spends a lot
+      of its life outside the system.
     </p>`;
 })();
 
@@ -1703,7 +1734,7 @@ const GRAPHIC_MIN = 3.0;
 document.getElementById('lightRecs').innerHTML = [
   {
     t: 'Docs, README, light UI',
-    d: `Seam with a <strong>cut</strong> seam, filled <code>#D6351A</code>. Works on all three light grounds untouched.`,
+    d: `Seam, filled <code>#D6351A</code>. Painted or cut both work here — the three light grounds are within ΔL* 5.2 of each other — so use the cut version simply because it is also the one that survives leaving the system.`,
     r: P => `<div class="row">
       <figure>${rSeamCut(56, P)}<figcaption>page</figcaption></figure>
       <figure>${rSeamCut(56, Object.assign({}, P, { bg: P.groundAlt }))}<figcaption>alt</figcaption></figure>
@@ -1719,7 +1750,7 @@ document.getElementById('lightRecs').innerHTML = [
   },
   {
     t: 'Print, invoices, single-colour',
-    d: `Keyline in ink at ${'' /* computed below */}, or the flat mark in <code>#D6351A</code>. Both survive one plate.`,
+    d: `Keyline in ink at ${wcag(P_LIGHT.ink, P_LIGHT.ground).toFixed(1)}:1, or the flat mark in <code>#D6351A</code>. Both survive one plate.`,
     r: P => `<div class="row">
       <figure>${rKeyline(56, P)}<figcaption>keyline</figcaption></figure>
       <figure>${rTrue(56, P)}<figcaption>flat</figcaption></figure>
