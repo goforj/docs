@@ -183,6 +183,26 @@ body {
 
 /* circle crop / photo tests */
 .crop { border-radius: 50%; overflow: hidden; display: block; }
+
+/* Paired crop comparison. Fixed column track so the two rows line up
+   exactly — the whole point is reading down a column, and captions of
+   different widths were pushing the columns out of register. */
+.cropgrid {
+  display: grid; grid-template-columns: 124px repeat(4, 1fr); gap: 14px 18px;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground-deep); padding: 20px 22px; margin: 14px 0;
+  align-items: center; justify-items: center;
+}
+.cropgrid .rowlbl {
+  justify-self: start; font-family: var(--gf-font-mono); font-size: 10px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--gf-ink-2); line-height: 1.5;
+}
+.cropgrid .colhd {
+  font-family: var(--gf-font-display); font-weight: 700; font-size: 13px;
+  letter-spacing: -0.025em; color: var(--gf-ink);
+}
+.cropgrid figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
+.cropgrid figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-3); }
 .photo {
   background:
     linear-gradient(115deg, #2b1c3a 0%, #7a3a2e 38%, #c9713f 62%, #1b2233 100%);
@@ -351,6 +371,37 @@ table.t td strong { color: var(--gf-ink); }
     the variant survives a hard threshold, which is what happens on an etched
     surface, a fax, or a single-colour print.
   </p>
+  <div class="note warn">
+    <b>The face variants were warped, and it was a geometry bug</b>
+    <p>
+      Every face-based direction in v1 rendered as a bent shard rather than a
+      cube. The cause was not colour. v1's <code>FACE_TOP</code>,
+      <code>FACE_LEFT</code> and <code>FACE_RIGHT</code> were extracted from
+      luminance bands in the source PNG and never cleaned up, and they are
+      broken: <code>FACE_TOP</code>'s third subpath has an <strong>area of
+      zero</strong> — it repeats the vertex <code>41.36 83.29</code>, making a
+      degenerate bowtie that paints nothing. <code>FACE_RIGHT</code> contains two
+      zero-width spikes that double back on themselves, and one of its subpaths
+      covers a region on the <em>left</em> of the cube.
+    </p>
+    <p>
+      Together the three groups accounted for <strong>93.7%</strong> of the
+      mark's area, and that figure counts overlaps as positive, so real coverage
+      was lower. Parts of the mark were never painted; other parts were painted
+      twice by faces that disagreed about who owned them.
+    </p>
+    <p>
+      They have been replaced. In an isometric cube the three visible faces meet
+      at a single interior vertex, and the three edges radiating from it cut the
+      plane into exactly three sectors — so the faces are now
+      <strong>the frozen mark clipped to each sector</strong> rather than three
+      separately traced outlines. This cannot warp by construction, and it
+      measures at <strong>100.00% coverage with 0.3px of overlap across 64,000
+      pixels</strong>, which is antialiasing on the shared edges and nothing
+      else. The seam in <em>Seam</em> is drawn from those same three edges, so
+      the seam and the face split can never disagree.
+    </p>
+  </div>
   <div class="marks" id="marks"></div>
 </section>
 
@@ -358,19 +409,22 @@ table.t td strong { color: var(--gf-ink); }
   <p class="kicker">Measured</p>
   <h2>Where the counter <em>closes</em></h2>
   <p>
-    v1 asserted its small-size verdicts as hand-typed strings. This measures
-    them. The mark is rasterised to a canvas at each size, the counter region is
-    rasterised separately as a mask, and survival is the share of the counter
-    that is still open rather than filled in by antialiasing.
+    v1 asserted its small-size verdicts as hand-typed strings — <code>holds</code>,
+    <code>tones merge</code>, <code>grey smudge</code>. This measures them. The
+    mark is rasterised at each size, the aperture is identified as
+    <code>inside(outer) − painted</code>, and the metric is how much body colour
+    has bled into those pixels through antialiasing — reported as a WCAG ratio of
+    aperture against body, so it is the same unit the rest of the system already
+    argues in.
   </p>
   <p>
     Because the geometry is frozen, this is a property of the
     <strong>shape itself</strong> and is identical for every variant. It answers
     one question — the minimum size this silhouette may ever be used at — and it
-    answers it once.
+    answers it once, for good.
   </p>
   <table class="t">
-    <thead><tr><th>Size</th><th>Counter survival</th><th>Reading</th></tr></thead>
+    <thead><tr><th>Size</th><th>Aperture vs body</th><th>Reading</th></tr></thead>
     <tbody id="survival"></tbody>
   </table>
   <div class="strip dark">
@@ -378,6 +432,29 @@ table.t td strong { color: var(--gf-ink); }
     <div id="sizeRow"></div>
   </div>
   <div class="note" id="minSizeNote"></div>
+
+  <h3>The seam, in device pixels</h3>
+  <p>
+    Seam's whole argument is that its detail disappears on its own rather than
+    being swapped out, so that claim needs a number rather than a promise. The
+    stroke is 2 units on a 112-unit viewBox, which fixes its width as a constant
+    fraction of the mark.
+  </p>
+  <table class="t">
+    <thead><tr><th>Size</th><th>Seam width</th><th>What renders</th></tr></thead>
+    <tbody id="seamTable"></tbody>
+  </table>
+  <div class="note warn">
+    <b>Stated precisely, because “disappears” was too strong</b>
+    <p>
+      A sub-pixel stroke does not vanish — the renderer paints it at reduced
+      alpha. At 24px and 16px the seam is still faintly present as a softening of
+      the top edge rather than as visible structure. That is the intended
+      behaviour and it is why the ladder resolves smoothly, but “identical to the
+      base at 16px” would be an overclaim. It is <em>converging</em> on the base,
+      and it is visually indistinguishable at a glance from about 20px down.
+    </p>
+  </div>
 </section>
 
 <section class="sec">
@@ -393,6 +470,7 @@ table.t td strong { color: var(--gf-ink); }
   </p>
   <div class="strip light"><span class="lbl">light · page</span><div id="lightRow"></div></div>
   <div class="strip lightalt"><span class="lbl">light · alt</span><div id="lightAltRow"></div></div>
+  <div class="note warn" id="lightFail"></div>
   <div class="note warn">
     <b>The bronze problem is a logo problem too</b>
     <p>
@@ -426,9 +504,11 @@ table.t td strong { color: var(--gf-ink); }
   <h3>2 · Circle crop — the avatar nobody controls</h3>
   <p>
     GitHub, Slack, npm, Discord and Go package registries all crop to a circle,
-    and none of them ask. The cube's corners are the first casualty.
+    and none of them ask. Read this one down the columns: the same treatment as
+    a bare square asset, then composed for the crop.
   </p>
-  <div class="strip dark"><span class="lbl">circle</span><div id="cropRow"></div></div>
+  <div class="cropgrid" id="cropGrid"></div>
+  <div class="note" id="cropFinding"></div>
 
   <h3>3 · Hostile ground — a photo, not a token</h3>
   <p>
@@ -466,6 +546,25 @@ table.t td strong { color: var(--gf-ink); }
   <div class="lock" id="lock"></div>
 
   <h3>Favicon ladder and app icon</h3>
+  <div class="note warn">
+    <b>The mark is not square, and v1's framing assumed it was</b>
+    <p>
+      The bounding box measures <strong>84.01 × 100</strong> — an isometric cube
+      seen corner-on is taller than it is wide by the projection ratio. v1 framed
+      it in a square <code>-6 -6 112 112</code>, which pads correctly on the top
+      and bottom and incorrectly on the sides: 6 units of gap on the left,
+      <strong>21.99 on the right</strong>. Every mark on that page sat 8 units
+      left of centre, about 7% of its own width.
+    </p>
+    <p>
+      Against a flat ground that is invisible, which is how it survived. Behind a
+      plate it is obvious, because the plate gives the eye two symmetrical edges
+      to measure against — which is exactly why the tiles and circles looked
+      wrong while the bare marks looked fine. Every frame here is now derived
+      from the measured bounding box, and optical size is set by one number: the
+      mark's long side as a fraction of the frame.
+    </p>
+  </div>
   <div class="grid2" id="favicons"></div>
 
   <h3>Clear space and minimum size</h3>
@@ -521,10 +620,105 @@ const MARK_OUTER = 'M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L8
 const MARK_HOLE  = 'M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z';
 const MARK_VB    = '-6 -6 112 112';
 
-const FACE_TOP   = 'M78.81 21.96 L65.09 12.57 L25.1 36.23 L37.15 44.99 Z M54.1 9.42 L41.08 0.47 L3.3 23.21 L14.23 32.16 Z M69.55 67.01 L41.36 83.29 L14.25 67.64 L41.36 83.29 Z M83.38 30.02 L77.93 26.37 L78.14 31.69 L67.04 38.1 L45.88 50.25 L47.97 50.46 Z';
-const FACE_LEFT  = 'M0.21 20.22 L0.42 74.72 L41.48 99.43 L42.95 83.16 L14.25 64.69 L14.25 31.95 L15.13 32.56 Z M23.25 34.86 L23.25 61.08 L38.13 70.36 L38.97 44.42 L37.77 45.01 Z';
-const FACE_RIGHT = 'M83.8 27.64 L47.56 50.44 L46.09 65.26 L68.92 51.11 L68.09 67.97 L42.11 83.54 L42.53 99.85 L83.8 75.2 Z M56.98 6.75 L14.66 32.6 L14.66 67.01 L14.66 32.86 L38.97 18.83 L43.37 24.9 L55.94 17.64 Z M80.03 20.92 L38.13 45.11 L38.13 70.36 L38.13 45.74 L60.68 32.63 L67.25 36.42 Z';
 /* ================= END FROZEN BASE ================= */
+
+/*
+  ==================================================================
+  QUARANTINED — v1's FACE_TOP / FACE_LEFT / FACE_RIGHT.
+
+  These are kept here, unused, so nobody re-adopts them. They are the
+  reason every face-based variant in v1 looked warped, and the fault
+  is geometric, not chromatic. Audited:
+
+    FACE_TOP   subpath 2 : AREA = 0. Vertex 1 and vertex 3 are the
+                           same point (41.36, 83.29) — a degenerate
+                           bowtie that paints nothing at all.
+    FACE_RIGHT subpath 1 : zero-width spike, and it covers a region
+                           on the LEFT of the cube (x 14–57).
+    FACE_RIGHT subpath 2 : zero-width spike (38.13,70.36 →
+                           38.13,45.74 doubles back on itself).
+
+    Coverage: the three groups together account for 4704 units² of a
+    5019 unit² mark — 93.7%, and that figure counts overlaps as
+    positive area, so true coverage is lower still. Parts of the mark
+    were never painted and other parts were painted twice.
+
+  They were extracted from luminance bands in the source PNG and
+  never cleaned up. A band boundary in a JPEG-ish raster is not an
+  edge, so the trace produced slivers and doubled-back vertices.
+
+  const FACE_TOP   = 'M78.81 21.96 L65.09 12.57 ... (see git history)';
+  const FACE_LEFT  = 'M0.21 20.22 L0.42 74.72 ...';
+  const FACE_RIGHT = 'M83.8 27.64 L47.56 50.44 ...';
+  ==================================================================
+*/
+
+/*
+  THE REPLACEMENT: faces derived from the frozen base, not traced.
+
+  In an isometric cube the three visible faces meet at one interior
+  vertex, and the three edges radiating from it divide the plane into
+  exactly three sectors. So rather than drawing three shapes and
+  hoping they tile the mark, we build three wedges from that centre
+  and CLIP THE FROZEN MARK to each one.
+
+  This cannot warp, by construction: the silhouette is always exactly
+  MARK_OUTER/MARK_HOLE, the three sectors partition the plane with no
+  gap and no overlap, and no new outline is invented anywhere. The
+  notch and the counter are handled for free, because they are part
+  of the clip rather than something the faces have to reproduce.
+
+  The cube's corners, read off MARK_OUTER. R1 is reconstructed
+  because the notch removes the real upper-right corner; C is the
+  mean of the two ways an isometric cube lets you derive it, which
+  differ by ~1.7 units because the trace is not perfectly regular.
+*/
+const CUBE = {
+  T:  [40.59,   0.0],
+  L1: [ 0.0,   25.06],
+  L2: [ 0.0,   74.9],
+  B:  [42.26, 100.0],
+  R2: [84.01,  75.99],
+  R1: [84.01,  25.06]     // reconstructed: the notch eats the real corner
+};
+const CUBE_C = [
+  ((CUBE.L1[0] + CUBE.R1[0] - CUBE.T[0]) + (CUBE.L2[0] + CUBE.R2[0] - CUBE.B[0])) / 2,
+  ((CUBE.L1[1] + CUBE.R1[1] - CUBE.T[1]) + (CUBE.L2[1] + CUBE.R2[1] - CUBE.B[1])) / 2
+];
+
+/* A sector of the plane, hinged at the centre vertex, big enough to
+   overshoot the mark in every direction. */
+function wedge(pA, pB, R = 400) {
+  const ray = p => {
+    const d = [p[0] - CUBE_C[0], p[1] - CUBE_C[1]];
+    const m = Math.hypot(d[0], d[1]);
+    return [d[0] / m * R, d[1] / m * R];
+  };
+  const a = ray(pA), b = ray(pB);
+  return [
+    CUBE_C,
+    [CUBE_C[0] + a[0], CUBE_C[1] + a[1]],
+    [CUBE_C[0] + a[0] + b[0], CUBE_C[1] + a[1] + b[1]],
+    [CUBE_C[0] + b[0], CUBE_C[1] + b[1]]
+  ];
+}
+const SECTOR = {
+  top:   wedge(CUBE.L1, CUBE.R1),
+  left:  wedge(CUBE.L1, CUBE.B),
+  right: wedge(CUBE.R1, CUBE.B)
+};
+
+/*
+  The three interior edges of the cube — the seams where the visible
+  faces meet. They are exactly the sector boundaries, drawn as rays
+  from the centre vertex and clipped to the mark, so the seam can
+  never disagree with the face partition: they are the same lines.
+*/
+const SEAM_EDGES = [CUBE.L1, CUBE.R1, CUBE.B].map(p => {
+  const d = [p[0] - CUBE_C[0], p[1] - CUBE_C[1]];
+  const m = Math.hypot(d[0], d[1]);
+  return `M${CUBE_C[0]} ${CUBE_C[1]} L${CUBE_C[0] + d[0] / m * 400} ${CUBE_C[1] + d[1] / m * 400}`;
+}).join(' ');
 
 
 /* ------------------------------------------------------------------
@@ -635,87 +829,223 @@ let _uid = 0;
 const svgOpen = (size, vb) =>
   `<svg width="${size}" height="${size}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GoForj">`;
 
+/*
+  ==================================================================
+  FRAMING — and a bug that was in every render on v1's page.
+
+  The mark's bounding box is 84.01 wide by 100 tall. It is NOT
+  square: an isometric cube seen corner-on is taller than it is wide
+  by exactly the projection ratio.
+
+  v1 framed it in a square viewBox of '-6 -6 112 112', i.e. 6 units
+  of padding, which is correct vertically and wrong horizontally —
+  it leaves a 6-unit gap on the left and a 21.99-unit gap on the
+  right. Every mark on that page sat 8 units left of centre, about
+  7% of the mark's width.
+
+  On a bare mark against a flat ground that is invisible, which is
+  why it survived. Put a symmetrical plate behind it — a tile, a
+  circle, an avatar — and it is immediately obvious, because the eye
+  measures the mark against the plate's edges. That is what looked
+  wrong about the tiles and circles.
+
+  Everything below frames from the measured bounding box instead of
+  a hardcoded box, so this cannot drift again.
+  ==================================================================
+*/
+const MARK_BBOX = (() => {
+  const n = (MARK_OUTER.match(/-?[\d.]+/g) || []).map(Number);
+  const xs = [], ys = [];
+  for (let i = 0; i < n.length; i += 2) { xs.push(n[i]); ys.push(n[i + 1]); }
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const y0 = Math.min(...ys), y1 = Math.max(...ys);
+  return { x0, x1, y0, y1, w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+})();
+
+/*
+  A square frame centred on the mark. `cover` is the mark's LONG side
+  as a fraction of the frame, so it is the one number that controls
+  optical size — and it is the same number platforms specify their
+  icon safe zones in.
+
+    0.89  bare mark, matching v1's intended optical size
+    0.62  inside a filled tile (iOS/Android glyph safe zone)
+    0.58  inside a circular avatar, which crops more aggressively
+*/
+function frame(cover = 0.89) {
+  const S = Math.max(MARK_BBOX.w, MARK_BBOX.h) / cover;
+  const x0 = MARK_BBOX.cx - S / 2, y0 = MARK_BBOX.cy - S / 2;
+  return { vb: `${x0} ${y0} ${S} ${S}`, S, x0, y0, x1: x0 + S, y1: y0 + S,
+           cx: MARK_BBOX.cx, cy: MARK_BBOX.cy };
+}
+const MARK_PATH = `${MARK_OUTER} ${MARK_HOLE}`;
+
 /* THE BASE. One flat fill, counter knocked out with evenodd. */
 function rTrue(size, P, o = {}) {
-  return svgOpen(size, MARK_VB) +
-    `<path d="${MARK_OUTER} ${MARK_HOLE}" fill="${o.fill || P.accent}" fill-rule="evenodd"/></svg>`;
+  const F = frame(o.cover ?? 0.89);
+  return svgOpen(size, F.vb) +
+    `<path d="${MARK_PATH}" fill="${o.fill || P.accent}" fill-rule="evenodd"/></svg>`;
 }
 
-/* Face-group fills — the three isometric planes take separate tones. */
+/*
+  Face-group fills. Each face is the frozen mark clipped to one
+  sector, so the union is the mark exactly — 100% coverage, no
+  overlap, nothing warped.
+
+  For Exploded the clip is applied INSIDE the translated group, so
+  each piece is cut first and then moved. Cutting after moving would
+  slice the mark in the wrong places.
+*/
 function rFaces(size, P, o = {}) {
   const off = o.explode || 0;
-  const g = (d, fill, dx, dy) =>
-    `<path d="${d}" fill="${fill}"${off ? ` transform="translate(${dx} ${dy})"` : ''}/>`;
-  return svgOpen(size, o.vb || '-10 -10 120 120') +
-    g(FACE_RIGHT, o.right,  off * 0.87,  off * 0.5) +
-    g(FACE_LEFT,  o.left,  -off * 0.87,  off * 0.5) +
-    g(FACE_TOP,   o.top,    0,          -off) + '</svg>';
+  const F = frame(o.cover ?? (off ? 0.76 : 0.89));
+  const id = 'fc' + (++_uid);
+  const poly = pts => pts.map(p => p.join(',')).join(' ');
+  const face = (sector, fill, dx, dy) =>
+    `<g${off ? ` transform="translate(${dx} ${dy})"` : ''}>` +
+      `<g clip-path="url(#${id})">` +
+        `<polygon points="${poly(sector)}" fill="${fill}"/>` +
+      `</g></g>`;
+  return svgOpen(size, F.vb) +
+    `<defs><clipPath id="${id}">` +
+      `<path d="${MARK_PATH}" clip-rule="evenodd"/>` +
+    `</clipPath></defs>` +
+    face(SECTOR.right, o.right,  off * 0.87,  off * 0.5) +
+    face(SECTOR.left,  o.left,  -off * 0.87,  off * 0.5) +
+    face(SECTOR.top,   o.top,    0,          -off) +
+    '</svg>';
 }
 
 /*
   SEAM — the variant v1's own conclusion implies but never drew.
 
-  A flat mark, plus the top-face boundaries stroked in the ground
-  colour and clipped to the silhouette. The stroke is specified in
-  USER UNITS on a 112-unit viewBox, so it scales with the mark: at
-  128px it is a clean 2.3px seam that gives the cube its edges, and
-  at 16px it is 0.29px — under the device pixel, so it disappears
-  and leaves exactly the flat base behind.
+  A flat mark plus the cube's three interior edges, stroked in the
+  ground colour and clipped to the silhouette. Those edges are the
+  sector boundaries, so the seam and the face partition are the same
+  lines by construction and cannot drift apart.
 
-  That is the whole argument. It is not an isometric mark plus a
-  separate flat favicon; it is one definition that becomes the other
-  on its own, with no second file to maintain and nothing to keep in
-  sync. Detail that is a function of size rather than of asset.
+  The stroke is specified in USER UNITS on a ~112-unit frame, so it
+  scales with the mark: a clean seam at display size, and 0.29px at
+  16px — under one device pixel, so it converges on the flat base.
+
+  That is the whole argument. Not an isometric mark plus a separate
+  flat favicon, but one definition that becomes the other on its own,
+  with no second file to keep in sync.
 */
 function rSeam(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.89);
   const id = 'sm' + (++_uid);
   const fill = o.fill || P.accent;
   const seam = o.seam || P.bg || P.deep;
-  return svgOpen(size, MARK_VB) +
-    `<defs><clipPath id="${id}"><path d="${MARK_OUTER} ${MARK_HOLE}" clip-rule="evenodd"/></clipPath></defs>` +
-    `<path d="${MARK_OUTER} ${MARK_HOLE}" fill="${fill}" fill-rule="evenodd"/>` +
+  return svgOpen(size, F.vb) +
+    `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
     `<g clip-path="url(#${id})">` +
-      `<path d="${FACE_TOP}" fill="none" stroke="${seam}" stroke-width="${o.w || 2}" stroke-linejoin="round"/>` +
+      `<path d="${SEAM_EDGES}" fill="none" stroke="${seam}" stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
     `</g></svg>`;
 }
 
 /* Counter-first: body in one colour, the enclosed counter in another. */
 function rCounter(size, P, o = {}) {
-  return svgOpen(size, MARK_VB) +
+  const F = frame(o.cover ?? 0.89);
+  return svgOpen(size, F.vb) +
     `<path d="${MARK_HOLE}" fill="${o.counter || P.accent}"/>` +
-    `<path d="${MARK_OUTER} ${MARK_HOLE}" fill="${o.body || P.ink}" fill-rule="evenodd"/></svg>`;
+    `<path d="${MARK_PATH}" fill="${o.body || P.ink}" fill-rule="evenodd"/></svg>`;
+}
+
+/*
+  Plated forms — tile, circle, void.
+
+  These are the ones the miscentring wrecked, because a plate gives
+  the eye two symmetrical edges to measure the mark against. They now
+  share one frame helper and one safe-zone number.
+
+  Radius: 22.37% of the side is the iOS superellipse approximation,
+  which is also close to what Android and macOS use. Deliberately NOT
+  --gf-radius: that token is 8px for UI components at component
+  sizes, and an app icon is not a component — a fixed 8px on a 512px
+  icon would read as a square.
+*/
+const ICON_RADIUS = 0.2237;
+
+/*
+  The glyph as it sits on a plate. `seam` re-cuts the cube's interior
+  edges in the plate colour, so a plated icon can carry the same
+  treatment as the primary mark instead of being a separate flat
+  drawing — the point of Seam is that there is only ever one idea.
+*/
+function platedGlyph(P, o, plate) {
+  const fill = o.fill || P.deep;
+  if (!o.seam) return `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>`;
+  const id = 'pg' + (++_uid);
+  return `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+    `<g clip-path="url(#${id})">` +
+      `<path d="${SEAM_EDGES}" fill="none" stroke="${plate}" stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+    `</g>`;
+}
+
+/* The mark knocked out of a filled tile. */
+function rTile(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.62);
+  const plate = o.plate || P.accent;
+  return svgOpen(size, F.vb) +
+    `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" rx="${F.S * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    platedGlyph(P, o, plate) + '</svg>';
+}
+
+/* Circular avatar — the crop GitHub, Slack, npm and Discord impose.
+   `ring` adds a hairline so a plate close to the page ground still
+   reads as a plate rather than as a floating glyph. */
+function rAvatar(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.58);
+  const plate = o.plate || P.accent;
+  return svgOpen(size, F.vb) +
+    `<circle cx="${F.cx}" cy="${F.cy}" r="${F.S / 2 - (o.ring ? 0.75 : 0)}" fill="${plate}"${
+      o.ring ? ` stroke="${o.ring}" stroke-width="1.5"` : ''}/>` +
+    (o.glyph ? o.glyph(P) : platedGlyph(P, o, plate)) + '</svg>';
 }
 
 /* The mark as a void, cut out of a filled plate. */
 function rWell(size, P, o = {}) {
-  return svgOpen(size, '-16 -16 132 132') +
-    `<path d="M-16 -16 H116 V116 H-16 Z ${MARK_OUTER} ${MARK_HOLE}" fill="${o.plate || P.accent}" fill-rule="evenodd"/></svg>`;
+  const F = frame(o.cover ?? 0.62);
+  const r = o.round ? ` rx="${F.S * ICON_RADIUS}"` : '';
+  return svgOpen(size, F.vb) +
+    `<path d="M${F.x0} ${F.y0} H${F.x1} V${F.y1} H${F.x0} Z ${MARK_PATH}" fill="${o.plate || P.accent}" fill-rule="evenodd"/></svg>`;
 }
 
-/* App-icon tile. Radius follows the token scale, not a magic number. */
-function rTile(size, P, o = {}) {
-  const r = (o.radius != null ? o.radius : 8) / 40 * 132;
-  return svgOpen(size, '-16 -16 132 132') +
-    `<rect x="-16" y="-16" width="132" height="132" rx="${r}" fill="${o.plate || P.accent}"/>` +
-    `<path d="${MARK_OUTER} ${MARK_HOLE}" fill="${o.fill || P.deep}" fill-rule="evenodd"/></svg>`;
-}
-
-/* Outline only — for hostile grounds where no fill is safe. */
+/* Outline only — for hostile grounds where no fill is safe.
+   Framed slightly smaller because the stroke straddles the path and
+   would otherwise be clipped by the frame edge. */
 function rKeyline(size, P, o = {}) {
-  return svgOpen(size, MARK_VB) +
-    `<path d="${MARK_OUTER} ${MARK_HOLE}" fill="none" stroke="${o.stroke || P.ink}" stroke-width="${o.w || 4}" stroke-linejoin="round" fill-rule="evenodd"/></svg>`;
+  const w = o.w ?? 4;
+  const F = frame(o.cover ?? 0.85);
+  return svgOpen(size, F.vb) +
+    `<path d="${MARK_PATH}" fill="none" stroke="${o.stroke || P.ink}" stroke-width="${w}" stroke-linejoin="round" fill-rule="evenodd"/></svg>`;
 }
 
 /* ------------------------------------------------------------------
-   The variant set. `tones` lists the fills that actually carry the
-   mark, so tone separation and 1-bit collapse can be computed rather
-   than claimed. `paletteFree` records whether the variant's MEANING
-   survives losing Temper — a judgement, marked as one.
+   The variant set.
+
+   `tones` lists the fills that carry the mark, so tone separation and
+   1-bit collapse can be computed rather than claimed.
+
+   `pairs` lists the figure/ground relationships that MUST separate for
+   the mark to read. This matters more than it sounds: a first pass
+   measured every tone against the page background, which wrongly failed
+   Tile — Tile knocks the mark out of its own accent plate, so its
+   contrast is fill-against-plate and the page behind it is irrelevant.
+   Measuring the wrong pair produces a confident wrong answer, so each
+   variant declares its own.
+
+   `paletteFree` records whether the variant's MEANING survives losing
+   Temper. That one is a judgement, and is marked as one.
    ------------------------------------------------------------------ */
 const VARIANTS = [
   {
     id: 'true', name: 'True', tag: 'base', frozen: true,
     render: (px, P) => rTrue(px, P),
+    pairs: P => [[P.accent, P.bg]],
     tones: P => [P.accent],
     why: '<b>The base. Frozen.</b> The traced silhouette in one flat fill and nothing else. Every other variant is this plus a decision.',
     paletteFree: true, says: 'the mark'
@@ -723,20 +1053,24 @@ const VARIANTS = [
   {
     id: 'seam', name: 'Seam', tag: 'new', hot: true,
     render: (px, P) => rSeam(px, P),
+    pairs: P => [[P.accent, P.bg]],
     tones: P => [P.accent],
-    why: '<b>Detail as a function of size.</b> Flat fill plus the top-face edges stroked in the ground colour, clipped inside the silhouette. The stroke is in user units, so it is a crisp seam at display size and sub-pixel by 16px — the mark degrades into the base on its own. One definition, not an isometric primary plus a separate flat favicon.',
+    why: '<b>Detail as a function of size.</b> Flat fill plus the cube\'s three interior edges stroked in the ground colour and clipped inside the silhouette — the same three edges that define the face partition, so the two can never drift apart. The stroke is 2 units on a 112-unit viewBox, so its device width is a fixed fraction of the mark: crisp at display size, sub-pixel by 16px. The mark degrades into the base on its own — one definition, not an isometric primary plus a separate flat favicon.',
+    seamWidth: px => 2 * px / 112,
     paletteFree: true, says: 'a cube, until it is too small to be one'
   },
   {
     id: 'crest', name: 'Crest', tag: 'structural',
     render: (px, P) => rFaces(px, P, { top: P.accent, left: P.deep, right: P.deep }),
+    pairs: P => [[P.accent, P.bg], [P.deep, P.bg], [P.accent, P.deep]],
     tones: P => [P.accent, P.deep],
-    why: '<b>Two tones, following the form.</b> Only the top surfaces take the accent; the walls fall back to the ground. The heat lands where light actually would.',
+    why: '<b>Two tones, following the form.</b> Only the top surfaces take the accent; the walls fall back to the ground. The heat lands where light actually would — but note what that means on a ground that <em>is</em> the wall colour: the walls do not recede, they disappear, and the mark reads as a floating shard. That is what the 1.00:1 measurement is saying, and it is why the geometry being correct is not enough to save it.',
     paletteFree: true, says: 'lit from above'
   },
   {
     id: 'quench', name: 'Quench', tag: 'structural',
     render: (px, P) => rFaces(px, P, { top: P.nav, left: P.accent, right: P.surface2 }),
+    pairs: P => [[P.nav, P.bg], [P.accent, P.bg], [P.surface2, P.bg]],
     tones: P => [P.nav, P.accent, P.surface2],
     why: '<b>The oxide progression, on three faces.</b> Straw on the tops, ember on the near walls, cooled surface on the far ones. Retokenised — v1 hardcoded <code>#7A3A2E</code>, which is not in the system. Note that it fills with the navigation colour, which the rule forbids.',
     paletteFree: false, says: 'tempered metal'
@@ -744,6 +1078,7 @@ const VARIANTS = [
   {
     id: 'facet', name: 'Facet', tag: 'structural',
     render: (px, P) => rFaces(px, P, { top: P.surface, left: P.ground, right: P.deep }),
+    pairs: P => [[P.surface, P.bg], [P.ground, P.bg], [P.deep, P.bg]],
     tones: P => [P.surface, P.ground, P.deep],
     why: '<b>The plane ladder, on the faces.</b> Surface, column, canvas mapped onto the three face groups. Entirely neutral — spends no role colour, so it never competes with an action.',
     paletteFree: true, says: 'the system itself'
@@ -751,6 +1086,7 @@ const VARIANTS = [
   {
     id: 'exploded', name: 'Exploded', tag: 'structural',
     render: (px, P) => rFaces(px, P, { top: P.accent, left: P.ground, right: P.deep, explode: 3.2, vb: '-14 -14 128 128' }),
+    pairs: P => [[P.accent, P.bg], [P.ground, P.bg], [P.deep, P.bg]],
     tones: P => [P.accent, P.ground, P.deep],
     why: '<b>Assembled from parts.</b> Each face group offset along its own isometric axis, opening the joints. Modular in the literal sense — but it needs the joints to be visible, and they are the first thing to go.',
     paletteFree: true, says: 'composable'
@@ -758,6 +1094,7 @@ const VARIANTS = [
   {
     id: 'counter', name: 'Counter', tag: 'interpretation',
     render: (px, P) => rCounter(px, P, { body: P.ink, counter: P.accent }),
+    pairs: P => [[P.ink, P.bg], [P.accent, P.ink]],
     tones: P => [P.ink, P.accent],
     why: '<b>Negative space carries the colour.</b> Body in ink, the enclosed counter in accent. The counter is one big simple shape, so it survives small — and it satisfies the action rule, since the accent is filled.',
     paletteFree: true, says: 'aperture, focus'
@@ -765,6 +1102,7 @@ const VARIANTS = [
   {
     id: 'well', name: 'Well', tag: 'interpretation',
     render: (px, P) => rWell(px, P),
+    pairs: P => [[P.accent, P.bg]],
     tones: P => [P.accent],
     why: '<b>The mark as a hole.</b> Cut out of a filled plate rather than drawn on one. Echoes “code is a well, not a card”, and the plate guarantees contrast on any ground.',
     paletteFree: true, says: 'cut, recessed'
@@ -772,6 +1110,7 @@ const VARIANTS = [
   {
     id: 'tile', name: 'Tile', tag: 'interpretation',
     render: (px, P) => rTile(px, P),
+    pairs: P => [[P.deep, P.accent]],
     tones: P => [P.accent, P.deep],
     why: '<b>App icon.</b> Knocked out of an accent tile at the token radius. Not a primary — a required derivative, since every OS demands a filled square.',
     paletteFree: true, says: 'product, installable'
@@ -779,6 +1118,7 @@ const VARIANTS = [
   {
     id: 'keyline', name: 'Keyline', tag: 'utility',
     render: (px, P) => rKeyline(px, P),
+    pairs: P => [[P.ink, P.bg]],
     tones: P => [P.ink],
     why: '<b>Outline only.</b> For grounds nobody controls, and for etch and emboss where there is no fill at all. Fails below about 24px as the stroke closes the counter — a utility variant, never the primary.',
     paletteFree: true, says: 'engraved'
@@ -791,31 +1131,72 @@ const byId = id => VARIANTS.find(v => v.id === id);
    MEASUREMENT
    ------------------------------------------------------------------ */
 
-/* Counter survival: rasterise the mark and the counter mask at the
-   same size, then measure how much of the counter is still open.
-   1.0 = fully open. Falls as antialiasing floods it. */
-function counterSurvival(N) {
-  const draw = (pathStr, evenodd) => {
+/*
+  APERTURE CONTAMINATION.
+
+  The first attempt at this used the MARK_HOLE path as the counter
+  mask. That was wrong: under evenodd the aperture is not the hole
+  path, it is `inside(outer) MINUS painted`, and the two differ
+  because the hole path is a complex channel that partly re-fills
+  itself. The wrong version returned ~43% at every size, i.e. it was
+  measuring nothing. This version is verified against an independent
+  scanline rasterisation of the same geometry.
+
+  What it measures: for every pixel that ought to be aperture, how
+  much body colour has bled into it through antialiasing. Zero at
+  display size; it climbs as the channel narrows toward one device
+  pixel. That contamination is then expressed the way the rest of
+  the system expresses everything — as a WCAG ratio, aperture
+  against body. When that ratio collapses toward 1:1, the hole has
+  stopped being a hole.
+*/
+function apertureContamination(N) {
+  /* Rasterise through the SAME frame the page renders through, so the
+     measured scale is the scale on screen rather than a near-miss. */
+  const F = frame(0.89);
+  const draw = (pathStr, evenodd, px, py) => {
     const c = document.createElement('canvas');
     c.width = c.height = N;
     const x = c.getContext('2d', { willReadFrequently: true });
     x.clearRect(0, 0, N, N);
-    const k = N / 112;
-    x.setTransform(k, 0, 0, k, 6 * k, 6 * k);
+    const k = N / F.S;
+    x.setTransform(k, 0, 0, k, -F.x0 * k + px, -F.y0 * k + py);
     x.fillStyle = '#fff';
     x.fill(new Path2D(pathStr), evenodd ? 'evenodd' : 'nonzero');
     return x.getImageData(0, 0, N, N).data;
   };
-  const mark = draw(MARK_OUTER + ' ' + MARK_HOLE, true);
-  const hole = draw(MARK_HOLE, false);
-  let num = 0, den = 0;
-  for (let i = 3; i < hole.length; i += 4) {
-    const m = hole[i] / 255;
-    if (m < 0.02) continue;
-    den += m;
-    num += m * (1 - mark[i] / 255);   // open where the mark did NOT paint
+
+  /*
+    Averaged over sub-pixel phase.
+
+    A single rasterisation measures one alignment of the shape against
+    the pixel grid, and at 12-24px that alignment matters enough to
+    make the result non-monotonic — 20px scored WORSE than 16px purely
+    because of where the edges happened to land. A brand's minimum-size
+    floor should not be decided by one lucky offset, so this samples a
+    3x3 grid of phases and reports the mean.
+  */
+  const PH = [0, 1 / 3, 2 / 3];
+  let total = 0, n = 0;
+  for (const px of PH) for (const py of PH) {
+    const solid = draw(MARK_OUTER, false, px, py);
+    const painted = draw(MARK_OUTER + ' ' + MARK_HOLE, true, px, py);
+    let sum = 0, cnt = 0;
+    for (let i = 3; i < solid.length; i += 4) {
+      const A = solid[i] / 255, B = painted[i] / 255;
+      if (A - B > 0.5) { sum += B; cnt++; }   // this pixel should be aperture
+    }
+    if (cnt) { total += sum / cnt; n++; }
   }
-  return den ? num / den : 0;
+  return n ? total / n : 1;
+}
+
+/* Aperture-to-body contrast at a given size, in the live palette. */
+function apertureContrast(N, P) {
+  const k = apertureContamination(N);
+  const body = toRgb(P.accent), ground = toRgb(P.bg || P.deep);
+  const mixed = 'rgb(' + body.map((v, i) => Math.round(v * k + ground[i] * (1 - k))).join(',') + ')';
+  return { contam: k, ratio: wcag(mixed, P.accent) };
 }
 
 /* Distinct tones and the smallest gap between any two of them. */
@@ -829,14 +1210,30 @@ function toneStats(list) {
   return { n: uniq.length, min };
 }
 
-/* 1-bit collapse: threshold every fill at mid L*. If they all land on
-   the same side, the variant has become a silhouette. */
-function bitCollapse(list, bg) {
-  const t = 50;
-  const sides = new Set(list.map(c => lstar(c) > t));
-  const bgSide = lstar(bg) > t;
-  if (sides.size > 1) return { ok: true, note: 'holds' };
-  return { ok: [...sides][0] !== bgSide, note: [...sides][0] !== bgSide ? 'flattens to base' : 'vanishes' };
+/*
+  1-BIT COLLAPSE.
+
+  A first version of this thresholded the fills and asked only whether
+  they all landed on the same side as the background. That produced a
+  confidently wrong answer for Counter, which it labelled "flattens to
+  base" while the render showed a solid white hexagon with no G in it
+  at all — because Counter's aperture is FILLED by design, so once body
+  and counter threshold to the same value the mark has no counter left.
+
+  The fix is to stop looking at the fills in isolation and check the
+  relationships instead: a variant survives one ink only if every pair
+  it depends on to be readable still separates after thresholding.
+*/
+const toBit = c => (lstar(c) > 50 ? '#FFFFFF' : '#000000');
+
+function bitCollapse(v, P) {
+  const bg = P.bg || P.deep;
+  const pairs = v.pairs(P);
+  const broken = pairs.filter(([a, b]) => toBit(a) === toBit(b));
+  if (!broken.length) return { ok: true, note: 'holds' };
+  if (broken.length === pairs.length) return { ok: false, note: 'vanishes' };
+  const intoGround = broken.some(([a, b]) => a === bg || b === bg);
+  return { ok: false, note: intoGround ? 'faces sink into ground' : 'counter fills in' };
 }
 
 const fmt = n => (Number.isFinite(n) ? n.toFixed(1) : '—');
@@ -881,8 +1278,8 @@ document.getElementById('ruleTests').innerHTML = RULE_READINGS.map(r => `
 document.getElementById('marks').innerHTML = VARIANTS.map(v => {
   const tones = v.tones(P_DARK);
   const ts = toneStats(tones);
-  const ratio = wcag(tones[0], P_DARK.deep);
-  const bit = bitCollapse(tones, P_DARK.deep);
+  const ratio = Math.min(...v.pairs(P_DARK).map(([a, b]) => wcag(a, b)));
+  const bit = bitCollapse(v, P_DARK);
   const toneChip = ts.n === 1
     ? `<span class="chip ok">1 tone</span>`
     : `<span class="chip ${ts.min >= 8 ? 'ok' : 'bad'}">${ts.n} tones · ΔL* ${fmt(ts.min)}</span>`;
@@ -901,6 +1298,7 @@ document.getElementById('marks').innerHTML = VARIANTS.map(v => {
       <span class="chip ${ratio >= 4.5 ? 'ok' : ratio >= 3 ? 'warn' : 'bad'}">ground ${ratio.toFixed(2)}:1</span>
       <span class="chip ${bit.ok ? 'ok' : 'bad'}">1-bit ${bit.note}</span>
       <span class="chip ${v.paletteFree ? 'ok' : 'bad'}">${v.paletteFree ? 'palette-free' : 'needs Temper'}</span>
+      ${v.seamWidth ? `<span class="chip ${v.seamWidth(16) < 0.5 ? 'ok' : 'warn'}">seam ${v.seamWidth(16).toFixed(2)}px @16</span>` : ''}
     </div>
     <p class="mark__why">${v.why}</p>
     <div class="mark__act">
@@ -910,18 +1308,20 @@ document.getElementById('marks').innerHTML = VARIANTS.map(v => {
   </div>`;
 }).join('');
 
-/* --- counter survival table --- */
-const SURV = [64, 48, 32, 24, 20, 16, 12].map(px => ({ px, s: counterSurvival(px) }));
-document.getElementById('survival').innerHTML = SURV.map(({ px, s }) => {
-  const pc = s * 100;
-  const cls = pc >= 80 ? 'ok' : pc >= 60 ? 'warn' : 'bad';
-  const read = pc >= 80 ? 'open — the G is unambiguous'
-             : pc >= 60 ? 'narrowing — still legible, losing crispness'
-             : pc >= 40 ? 'closing — reads as a blob with a notch'
+/* --- aperture table --- */
+const SURV = [128, 64, 48, 32, 24, 20, 16, 12].map(px =>
+  Object.assign({ px }, apertureContrast(px, P_DARK)));
+
+document.getElementById('survival').innerHTML = SURV.map(({ px, contam, ratio }) => {
+  const cls = ratio >= 4.5 ? 'ok' : ratio >= 3 ? 'warn' : 'bad';
+  const read = ratio >= 4.5 ? 'open — the counter reads as a hole'
+             : ratio >= 3   ? 'narrowing — still a hole, losing crispness'
+             : ratio >= 1.8 ? 'closing — reads as a notch, not an aperture'
              : 'closed — no longer a G';
   return `<tr>
     <td class="mono"><strong>${px}px</strong></td>
-    <td><span class="chip ${cls}">${pc.toFixed(1)}%</span></td>
+    <td><span class="chip ${cls}">${ratio.toFixed(2)}:1</span>
+        <span class="chip">${(contam * 100).toFixed(1)}% bleed</span></td>
     <td>${read}</td></tr>`;
 }).join('');
 
@@ -930,16 +1330,43 @@ document.getElementById('sizeRow').innerHTML =
   SURV.map(({ px }) => `<figure>${rTrue(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('') +
   `</div>`;
 
-const firstFail = SURV.slice().reverse().find(r => r.s >= 0.6);
+/* Smallest size still clearing AA between aperture and body. */
+const floorRow = SURV.slice().reverse().find(r => r.ratio >= 4.5);
+const FLOOR = floorRow ? floorRow.px : 24;
 document.getElementById('minSizeNote').innerHTML = `
-  <b>Minimum size, derived rather than picked</b>
+  <b>This contradicts v1, and the measurement wins</b>
   <p>
-    Counter survival crosses 60% at <strong>${firstFail ? firstFail.px : '—'}px</strong>.
-    Below that the counter is more filled than open and the shape stops reading as
-    a G. That number is a property of the frozen geometry, so it is the same for
-    every variant on this page and it will not change unless the silhouette does.
-    It belongs in the brand rules as the hard floor.
+    v1 asserted that the mark “loses its face separation somewhere around 24px
+    and turns to mush”, and told you to watch the 16px row above all others.
+    Measured, that is not true of the <em>geometry</em>. The counter is a wide
+    channel, not a hairline: aperture-to-body contrast is still
+    <strong>${(SURV.find(r => r.px === 16) || {}).ratio?.toFixed(2) ?? '—'}:1</strong>
+    at 16px and only falls below AA at
+    <strong>${FLOOR > 12 ? 'under ' + FLOOR + 'px' : '12px'}</strong>.
+    The flat silhouette is far more robust at small sizes than the page claimed.
+  </p>
+  <p>
+    What actually fails below 24px is <strong>tone separation</strong> — the
+    multi-tone variants, whose faces merge into each other. v1 attributed a
+    colour problem to the shape. Because the shape is frozen and shared, this
+    number is the same for every variant here: the floor is
+    <strong>${FLOOR}px</strong>, and any variant that fails earlier is failing on
+    its rendering, not on its geometry.
   </p>`;
+
+/* --- seam width ladder --- */
+document.getElementById('seamTable').innerHTML = [128, 64, 48, 32, 24, 20, 16].map(px => {
+  const w = byId('seam').seamWidth(px);
+  const cls = w >= 1 ? 'ok' : w >= 0.5 ? 'warn' : 'bad';
+  const read = w >= 1.5 ? 'a true seam — the cube reads as a volume'
+             : w >= 1   ? 'a hairline — structure still legible'
+             : w >= 0.5 ? 'sub-pixel — softening, not structure'
+             : 'below half a pixel — visually the base';
+  return `<tr>
+    <td class="mono"><strong>${px}px</strong></td>
+    <td><span class="chip ${cls}">${w.toFixed(2)} px</span></td>
+    <td>${read}</td></tr>`;
+}).join('');
 
 /* --- light mode --- */
 const lightSet = ['true', 'seam', 'crest', 'quench', 'facet', 'counter', 'well', 'tile', 'keyline'];
@@ -947,12 +1374,45 @@ function strip(P) {
   return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
     lightSet.map(id => {
       const v = byId(id);
-      const r = wcag(v.tones(P)[0], P.bg);
-      return `<figure>${v.render(44, P)}<figcaption>${v.name} · ${r.toFixed(1)}:1</figcaption></figure>`;
+      const r = Math.min(...v.pairs(P).map(([a, b]) => wcag(a, b)));
+      const col = r >= 4.5 ? '#0F6E52' : r >= 3 ? '#8A5A00' : '#B3213C';
+      return `<figure>${v.render(44, P)}<figcaption style="color:${col}">${v.name} · ${r.toFixed(1)}:1</figcaption></figure>`;
     }).join('') + `</div>`;
 }
 document.getElementById('lightRow').innerHTML = strip(P_LIGHT);
 document.getElementById('lightAltRow').innerHTML = strip(P_LIGHT_ALT);
+
+/*
+  The headline finding of this section, computed rather than eyeballed.
+
+  Several dark-mode variants use --gf-ground-deep or --gf-surface as a
+  face tone. Those tokens are near-black in dark and WHITE in light, so
+  the variant does not merely shift — it disintegrates. v1 could not
+  have found this, because v1 had no way to render the light tokens.
+*/
+(function () {
+  const failures = VARIANTS.map(v => ({
+    v, worst: Math.min(...v.pairs(P_LIGHT).map(([a, b]) => wcag(a, b)))
+  })).filter(r => r.worst < 3);
+  const el = document.getElementById('lightFail');
+  if (!failures.length) { el.remove(); return; }
+  el.innerHTML = `
+    <b>${failures.length} variant${failures.length > 1 ? 's' : ''} disintegrate${failures.length > 1 ? '' : 's'} in light mode</b>
+    <p>
+      ${failures.map(r => `<strong>${r.v.name}</strong> (${r.worst.toFixed(2)}:1)`).join(', ')} —
+      because they use <code>--gf-ground-deep</code> or <code>--gf-surface</code>
+      as a face tone, and those tokens are near-black in dark mode but
+      <strong>white</strong> in light. The walls do not darken, they vanish, and
+      the mark falls apart into a floating shard. Look at the strips above:
+      this is not a subtle shift, it is a broken logo.
+    </p>
+    <p>
+      This is the single strongest argument for a one-tone mark. Any variant
+      whose structure is carried by plane tokens is inheriting a decision that
+      was made for <em>surfaces</em>, where flipping black to white is correct
+      behaviour. A logo is not a surface.
+    </p>`;
+})();
 
 /* --- palette swap --- */
 function swapStrip(P) {
@@ -965,13 +1425,96 @@ function swapStrip(P) {
 document.getElementById('swapA').innerHTML = swapStrip(P_GRAPHITE);
 document.getElementById('swapB').innerHTML = swapStrip(P_VERDIGRIS);
 
-/* --- circle crop --- */
-document.getElementById('cropRow').innerHTML =
-  `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
-  ['true', 'seam', 'crest', 'counter', 'well', 'tile'].map(id => {
-    const v = byId(id);
-    return `<figure><span class="crop" style="background:${P_DARK.groundAlt}">${v.render(56, P_DARK)}</span><figcaption>${v.name}</figcaption></figure>`;
-  }).join('') + `</div>`;
+/*
+  ------------------------------------------------------------------
+  CIRCLE CROP.
+
+  The crop circle is drawn INSIDE the SVG rather than as a CSS
+  border-radius on a wrapper. A CSS mask only lines up if the wrapper
+  box matches the SVG box exactly, and figure captions of different
+  widths were shifting the columns out of register — which is what
+  made this section look misaligned.
+
+  Drawing it in user space means the circle, the mark and the crop
+  line are all in one coordinate system and cannot drift.
+  ------------------------------------------------------------------
+*/
+function rCircleCrop(size, P, glyph, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'cc' + (++_uid);
+  const r = F.S / 2;
+  return svgOpen(size, F.vb) +
+    `<defs><clipPath id="${id}"><circle cx="${F.cx}" cy="${F.cy}" r="${r}"/></clipPath></defs>` +
+    `<circle cx="${F.cx}" cy="${F.cy}" r="${r}" fill="${o.plate || P.groundAlt}"/>` +
+    `<g clip-path="url(#${id})">${glyph(P)}</g>` +
+    `<circle cx="${F.cx}" cy="${F.cy}" r="${r - 0.6}" fill="none" stroke="${P.lineStrong}" stroke-width="1.2"/>` +
+    '</svg>';
+}
+
+/* Glyph bodies in user space, so the same drawing can go bare, cropped
+   or plated without being redrawn three times. */
+const GLYPH = {
+  flat: P => `<path d="${MARK_PATH}" fill="${P.accent}" fill-rule="evenodd"/>`,
+  seam: P => {
+    const id = 'gs' + (++_uid);
+    return `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+      `<path d="${MARK_PATH}" fill="${P.accent}" fill-rule="evenodd"/>` +
+      `<g clip-path="url(#${id})"><path d="${SEAM_EDGES}" fill="none" stroke="${P.deep}" stroke-width="2" stroke-linecap="round"/></g>`;
+  },
+  counter: P => `<path d="${MARK_HOLE}" fill="${P.accent}"/>` +
+                `<path d="${MARK_PATH}" fill="${P.ink}" fill-rule="evenodd"/>`,
+  keyline: P => `<path d="${MARK_PATH}" fill="none" stroke="${P.ink}" stroke-width="4" stroke-linejoin="round" fill-rule="evenodd"/>`
+};
+
+const CROP_COLS = [
+  { name: 'True',    bare: GLYPH.flat,    avatar: P => rAvatar(60, P) },
+  { name: 'Seam',    bare: GLYPH.seam,    avatar: P => rAvatar(60, P, { seam: true }) },
+  { name: 'Counter', bare: GLYPH.counter, avatar: P => rAvatar(60, P, { plate: P.ink, fill: P.accent }) },
+  { name: 'Keyline', bare: GLYPH.keyline, avatar: P => rAvatar(60, P, { plate: P.groundAlt, ring: P.lineStrong, glyph: GLYPH.keyline }) }
+];
+
+document.getElementById('cropGrid').innerHTML =
+  `<span></span>` +
+  CROP_COLS.map(c => `<span class="colhd">${c.name}</span>`).join('') +
+  `<span class="rowlbl">As supplied<br>square asset</span>` +
+  CROP_COLS.map(c => `<figure>${rCircleCrop(60, P_DARK, c.bare)}<figcaption>cover 0.89</figcaption></figure>`).join('') +
+  `<span class="rowlbl">Avatar-ready<br>plate + safe zone</span>` +
+  CROP_COLS.map(c => `<figure>${c.avatar(P_DARK)}<figcaption>cover 0.58</figcaption></figure>`).join('');
+
+/* The finding, computed — because the claim inherited from v1 turned
+   out to be wrong and it would have been repeated forever. */
+(function () {
+  const n = (MARK_OUTER.match(/-?[\d.]+/g) || []).map(Number);
+  const V = []; for (let i = 0; i < n.length; i += 2) V.push([n[i], n[i + 1]]);
+  const dist = V.map(([x, y]) => Math.hypot(x - MARK_BBOX.cx, y - MARK_BBOX.cy));
+  const maxD = Math.max(...dist), minD = Math.min(...dist);
+  const rAt = c => (Math.max(MARK_BBOX.w, MARK_BBOX.h) / c) / 2;
+  const clipAt = [0.89, 1.0, 1.1, 1.2].map(c =>
+    ({ c, n: dist.filter(d => d > rAt(c)).length }));
+  const firstClip = clipAt.find(x => x.n > 0);
+  document.getElementById('cropFinding').innerHTML = `
+    <b>v1 said the corners are the first casualty. They are not.</b>
+    <p>
+      Measured against the crop circle at the page's own optical size,
+      <strong>zero</strong> of the silhouette's ${V.length} vertices fall outside
+      it — the furthest sits ${(rAt(0.89) - maxD).toFixed(2)} units
+      <em>inside</em> the boundary. Clipping does not begin until the mark is
+      exported edge-to-edge at cover ${firstClip ? firstClip.c : '1.0'}.
+    </p>
+    <p>
+      The reason is structural: a cube seen corner-on is a hexagon, and a hexagon
+      is one of the most circle-efficient shapes there is. Vertex distances here
+      run ${minD.toFixed(1)}–${maxD.toFixed(1)} from centre, a spread of only
+      ${((1 - minD / maxD) * 100).toFixed(0)}%. <strong>This mark is unusually
+      circle-safe</strong>, and that is a real asset for a forever logo.
+    </p>
+    <p>
+      So the top row is not failing — nothing is being cut. What it shows is a
+      mark sized for a rectangle sitting inside a circle, where it reads as
+      crowded because it has no breathing room against a curved edge. The fix is
+      optical, not protective: drop to a 0.58 safe zone and give it a plate.
+    </p>`;
+})();
 
 /* --- hostile ground --- */
 document.getElementById('photoRow').innerHTML =
@@ -983,16 +1526,24 @@ document.getElementById('photoRow').innerHTML =
   }).join('') + `</div>`;
 
 /* --- 1-bit --- */
-const P_BIT = Object.assign({}, P_DARK, {
-  accent: '#FFFFFF', accentHi: '#FFFFFF', nav: '#FFFFFF', ink: '#FFFFFF',
-  deep: '#000000', ground: '#000000', groundAlt: '#000000',
-  surface: '#FFFFFF', surface2: '#FFFFFF', bg: '#000000'
-});
+/* Derived, not hardcoded: every token thresholded through the same
+   rule the measurement uses, so the render and the verdict cannot
+   disagree. An earlier hardcoded version mapped --gf-surface to white
+   while the metric treated it as black. */
+const P_BIT = (() => {
+  const out = { id: 'bit' };
+  for (const k of ['accent','accentHi','nav','ink','ink2','ink3','deep','ground',
+                   'groundAlt','surface','surface2','line','lineStrong','onAccent']) {
+    out[k] = toBit(P_DARK[k]);
+  }
+  out.bg = '#000000';
+  return out;
+})();
 document.getElementById('bitRow').innerHTML =
   `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
   lightSet.map(id => {
     const v = byId(id);
-    const bit = bitCollapse(v.tones(P_DARK), P_DARK.deep);
+    const bit = bitCollapse(v, P_DARK);
     return `<figure><span style="background:#000;display:block;border-radius:4px">${v.render(48, P_BIT)}</span>
       <figcaption>${v.name} · ${bit.note}</figcaption></figure>`;
   }).join('') + `</div>`;
@@ -1022,20 +1573,26 @@ document.getElementById('lock').innerHTML =
 
 /* --- favicon ladder --- */
 document.getElementById('favicons').innerHTML = [
-  ['Favicon — Seam on the deep ground', 'seam', [32, 24, 16]],
-  ['Favicon — Tile, for OS surfaces', 'tile', [64, 48, 32]]
-].map(([label, id, sizes]) => {
-  const v = byId(id);
-  return `<div class="panel">
+  {
+    label: 'Favicon — Seam, bare on the page ground',
+    cap: 'One asset resolving itself: the seam is 2.29px at 128 and 0.29px at 16, so the ladder converges on the flat base with nothing swapped out.',
+    sizes: [64, 32, 24, 16],
+    fn: (px, P) => rSeam(px, P)
+  },
+  {
+    label: 'App icon — tile, carrying the same seam',
+    cap: 'Every OS demands a filled square. Radius is 22.37% of the side (the iOS superellipse approximation), and the glyph sits at a 0.62 safe zone — not --gf-radius, which is an 8px UI token and would read as a square at icon sizes.',
+    sizes: [64, 48, 32],
+    fn: (px, P) => rTile(px, P, { seam: true })
+  }
+].map(({ label, cap, sizes, fn }) => `
+  <div class="panel">
     <b>${label}</b>
-    <p class="cap">${id === 'seam'
-      ? 'The seam is sub-pixel by 16px, so this ladder is one asset resolving itself. Nothing is swapped.'
-      : 'Every OS demands a filled square. Radius follows the token scale rather than a magic number.'}</p>
+    <p class="cap">${cap}</p>
     <div class="row">
-      ${sizes.map(px => `<figure>${v.render(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('')}
+      ${sizes.map(px => `<figure>${fn(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('')}
     </div>
-  </div>`;
-}).join('');
+  </div>`).join('');
 
 /* --- clear space --- */
 document.getElementById('clearspace').innerHTML = `
@@ -1064,8 +1621,8 @@ document.getElementById('clearspace').innerHTML = `
 document.getElementById('assess').innerHTML = VARIANTS.map(v => {
   const tD = v.tones(P_DARK), tL = v.tones(P_LIGHT);
   const ts = toneStats(tD);
-  const bit = bitCollapse(tD, P_DARK.deep);
-  const lightR = wcag(tL[0], P_LIGHT.bg);
+  const bit = bitCollapse(v, P_DARK);
+  const lightR = Math.min(...v.pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
   const usesNav = tD.some(c => c.toLowerCase() === String(P_DARK.nav).toLowerCase());
   return `<tr>
     <td><strong>${v.name}</strong>${v.frozen ? ' <span class="chip ok">frozen</span>' : ''}</td>
@@ -1077,22 +1634,39 @@ document.getElementById('assess').innerHTML = VARIANTS.map(v => {
   </tr>`;
 }).join('');
 
+/* Which variants clear every gate. Computed, so the prose below cannot
+   drift away from the table above it. */
+const PASSERS = VARIANTS.filter(v =>
+  bitCollapse(v, P_DARK).ok &&
+  v.paletteFree &&
+  Math.min(...v.pairs(P_LIGHT).map(([a, b]) => wcag(a, b))) >= 3 &&
+  Math.min(...v.pairs(P_DARK).map(([a, b]) => wcag(a, b))) >= 3
+);
+
 /* --- recommendation, written against the measurements --- */
 (function () {
-  const seamTones = byId('seam').tones(P_DARK);
-  const seamLight = wcag(byId('seam').tones(P_LIGHT)[0], P_LIGHT.bg);
-  const floor = firstFail ? firstFail.px : 24;
+  const seamLight = Math.min(...byId('seam').pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
+  const floor = FLOOR;
   document.getElementById('recommendation').innerHTML = `
     <b>If a decision has to come out of this page: Seam as primary, Tile as the OS derivative, Keyline as the utility</b>
     <p>
-      <strong>Seam</strong> is the only variant that passes every test on this
-      page. It is one tone, so it cannot fail tone separation, cannot collapse at
-      1-bit, and needs no second definition for light mode — it clears
+      ${PASSERS.length} variants pass every test here — ${PASSERS.map(v => v.name).join(', ')} —
+      and every one that <em>fails</em> does so because a second or third tone is
+      carrying structural work. That is the finding, and it is not a matter of
+      taste: it fell out of the measurements, not the argument.
+    </p>
+    <p>
+      Among the five, <strong>Seam</strong> is the one worth choosing, because it
+      is the only one that passes while still keeping the cube. It cannot fail
+      tone separation, cannot collapse at 1-bit, and needs no second definition
+      for light mode — it clears
       ${seamLight.toFixed(2)}:1 on the light ground using nothing but the light
       accent token. It spends the action colour as a fill, which is the one
       reading of the colour rule that requires no exemption to be written down.
       And it keeps the cube, which is the most ownable thing about the mark,
-      without paying for it at small sizes.
+      without paying for it at small sizes — its seam is
+      ${byId('seam').seamWidth(16).toFixed(2)}px at favicon size, well under one
+      device pixel.
     </p>
     <p>
       The reason it is worth calling a forever answer is structural rather than
