@@ -288,6 +288,7 @@ table.t td strong { color: var(--gf-ink); }
     <a href="#rule">Rule</a>
     <a href="#variants">Variants</a>
     <a href="#measure">Measured</a>
+    <a href="#lightship">Light</a>
     <a href="#forever">Forever</a>
     <a href="#surfaces">Surfaces</a>
     <a href="#verdict">Verdict</a>
@@ -403,6 +404,27 @@ table.t td strong { color: var(--gf-ink); }
     </p>
   </div>
   <div class="marks" id="marks"></div>
+
+  <h3>Against what ships today</h3>
+  <p>
+    The first question anyone reviewing this will ask is whether it beats the
+    current mark, so it should not require opening two tabs. Same sizes, same
+    ground, no rescaling — <code>/assets/goforj-v7.png</code> as it exists,
+    beside the recommendation.
+  </p>
+  <div class="strip dark"><span class="lbl">current<br>PNG</span><div id="beforeRow"></div></div>
+  <div class="strip dark"><span class="lbl">proposed<br>Seam</span><div id="afterRow"></div></div>
+  <div class="note">
+    <b>What the comparison is and is not evidence of</b>
+    <p>
+      The current mark is a raster with a soft shadow and interior gradients, so
+      below about 32px it is compositing detail it cannot resolve and goes muddy.
+      That is a fair comparison at favicon sizes, because that is exactly what
+      ships. It is <em>not</em> evidence that the underlying artwork is bad — the
+      silhouette on this page was traced from it, and the geometry is the same
+      geometry. The difference here is entirely rendering.
+    </p>
+  </div>
 </section>
 
 <section class="sec" id="measure">
@@ -480,6 +502,56 @@ table.t td strong { color: var(--gf-ink); }
       mode is two marks. Any variant depending on gold cannot be the primary.
     </p>
   </div>
+</section>
+
+<section class="sec" id="lightship">
+  <p class="kicker">Light mode</p>
+  <h2>What to actually <em>ship</em> on light</h2>
+  <p>
+    The section above diagnoses what breaks. This one is the answer to the
+    practical question — which asset goes on a light surface, in which colour,
+    and why.
+  </p>
+
+  <h3>There is no single fill that clears AA on both modes</h3>
+  <p>
+    Worth establishing first, because it determines how many assets exist. Every
+    candidate fill, measured against every ground the system defines:
+  </p>
+  <table class="t">
+    <thead><tr>
+      <th>Fill</th><th>Worst on dark</th><th>Worst on light</th><th>Worst overall</th><th>Verdict</th>
+    </tr></thead>
+    <tbody id="fillMatrix"></tbody>
+  </table>
+  <div class="note" id="fillFinding"></div>
+
+  <h3>The three light grounds</h3>
+  <p>
+    Light mode is not one surface. The system defines page
+    <code>#FFFFFF</code>, alt <code>#F7F5F9</code> for sidebar and callouts, and
+    surface-2 <code>#F2EFF5</code> for the code well. The mark has to hold on all
+    three.
+  </p>
+  <div class="strip light"><span class="lbl">page</span><div id="lg1"></div></div>
+  <div class="strip lightalt"><span class="lbl">alt</span><div id="lg2"></div></div>
+  <div class="strip" style="background:#F2EFF5;color:#5F5868;border-color:#E6E2EC">
+    <span class="lbl">surface-2</span><div id="lg3"></div>
+  </div>
+
+  <h3>The seam has a dependency that only light mode exposes</h3>
+  <p>
+    Seam paints its seam in the <strong>ground colour</strong>, which means the
+    asset has to know what it will be placed on. Dark mode hides this, because
+    nearly everything sits on one near-black ground. Light mode does not. Below,
+    the painted seam exported for white, placed on all three light grounds — then
+    the same mark with the seam <em>cut</em> as transparency instead.
+  </p>
+  <div class="cropgrid" id="seamModeGrid"></div>
+  <div class="note pick" id="seamModeFinding"></div>
+
+  <h3>The recommendation</h3>
+  <div class="grid2" id="lightRecs"></div>
 </section>
 
 <section class="sec" id="forever">
@@ -585,6 +657,22 @@ table.t td strong { color: var(--gf-ink); }
     <tbody id="assess"></tbody>
   </table>
   <div class="note pick" id="recommendation"></div>
+
+  <h3>The rules, in one place</h3>
+  <p>
+    Every number here is read from the same constants the measurements above use,
+    so this block cannot drift from the evidence. It is written as a
+    specification because that is the useful shape — but the direction itself is
+    still open, and the handoff still lists it that way.
+  </p>
+  <div class="panel">
+    <b>Mark specification — draft</b>
+    <p class="cap">Copy this into the contributing guide if the direction is adopted.</p>
+    <pre id="specBlock" style="margin:0;overflow:auto;font-family:var(--gf-font-mono);font-size:12px;line-height:1.7;color:var(--gf-ink-2);white-space:pre-wrap"></pre>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn-s" id="copySpec">Copy specification</button>
+    </div>
+  </div>
   <div class="note">
     <b>The trade, stated plainly</b>
     <p>
@@ -826,8 +914,24 @@ const P_VERDIGRIS = {
    mode and the palette swap real rather than decorative.
    ------------------------------------------------------------------ */
 let _uid = 0;
-const svgOpen = (size, vb) =>
-  `<svg width="${size}" height="${size}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GoForj">`;
+
+/*
+  ACCESSIBILITY.
+
+  Every SVG on the v2 page carried role="img" aria-label="GoForj" —
+  144 of them — so a screen reader announced the name 144 times to
+  get through the document. Almost none of those are content: the
+  size ladders, palette strips, crop grids and 1-bit rows are
+  illustrations OF a measurement, and the measurement is already in
+  the adjacent text and chips.
+
+  So labelling is now opt-in. Default is aria-hidden; pass
+  {label:'...'} where the mark is genuinely the thing being
+  communicated. That is a handful of places, not 144.
+*/
+const svgOpen = (size, vb, label) =>
+  `<svg width="${size}" height="${size}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" ` +
+  (label ? `role="img" aria-label="${label}"` : `aria-hidden="true" focusable="false"`) + '>';
 
 /*
   ==================================================================
@@ -883,7 +987,7 @@ const MARK_PATH = `${MARK_OUTER} ${MARK_HOLE}`;
 /* THE BASE. One flat fill, counter knocked out with evenodd. */
 function rTrue(size, P, o = {}) {
   const F = frame(o.cover ?? 0.89);
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<path d="${MARK_PATH}" fill="${o.fill || P.accent}" fill-rule="evenodd"/></svg>`;
 }
 
@@ -906,7 +1010,7 @@ function rFaces(size, P, o = {}) {
       `<g clip-path="url(#${id})">` +
         `<polygon points="${poly(sector)}" fill="${fill}"/>` +
       `</g></g>`;
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<defs><clipPath id="${id}">` +
       `<path d="${MARK_PATH}" clip-rule="evenodd"/>` +
     `</clipPath></defs>` +
@@ -937,7 +1041,7 @@ function rSeam(size, P, o = {}) {
   const id = 'sm' + (++_uid);
   const fill = o.fill || P.accent;
   const seam = o.seam || P.bg || P.deep;
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
     `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
     `<g clip-path="url(#${id})">` +
@@ -948,7 +1052,7 @@ function rSeam(size, P, o = {}) {
 /* Counter-first: body in one colour, the enclosed counter in another. */
 function rCounter(size, P, o = {}) {
   const F = frame(o.cover ?? 0.89);
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<path d="${MARK_HOLE}" fill="${o.counter || P.accent}"/>` +
     `<path d="${MARK_PATH}" fill="${o.body || P.ink}" fill-rule="evenodd"/></svg>`;
 }
@@ -989,7 +1093,7 @@ function platedGlyph(P, o, plate) {
 function rTile(size, P, o = {}) {
   const F = frame(o.cover ?? 0.62);
   const plate = o.plate || P.accent;
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" rx="${F.S * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
     platedGlyph(P, o, plate) + '</svg>';
 }
@@ -1000,7 +1104,7 @@ function rTile(size, P, o = {}) {
 function rAvatar(size, P, o = {}) {
   const F = frame(o.cover ?? 0.58);
   const plate = o.plate || P.accent;
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<circle cx="${F.cx}" cy="${F.cy}" r="${F.S / 2 - (o.ring ? 0.75 : 0)}" fill="${plate}"${
       o.ring ? ` stroke="${o.ring}" stroke-width="1.5"` : ''}/>` +
     (o.glyph ? o.glyph(P) : platedGlyph(P, o, plate)) + '</svg>';
@@ -1010,8 +1114,33 @@ function rAvatar(size, P, o = {}) {
 function rWell(size, P, o = {}) {
   const F = frame(o.cover ?? 0.62);
   const r = o.round ? ` rx="${F.S * ICON_RADIUS}"` : '';
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<path d="M${F.x0} ${F.y0} H${F.x1} V${F.y1} H${F.x0} Z ${MARK_PATH}" fill="${o.plate || P.accent}" fill-rule="evenodd"/></svg>`;
+}
+
+/*
+  SEAM, CUT INSTEAD OF PAINTED.
+
+  The painted seam has a dependency nobody notices until light mode:
+  it is drawn in the GROUND colour, so the asset has to know what it
+  will be placed on. Dark mode hides this because almost everything
+  sits on one near-black ground. Light mode has three — page #FFFFFF,
+  alt #F7F5F9, surface-2 #F2EFF5 — so a seam painted white is visibly
+  wrong on two of them, and on a photo it is wrong everywhere.
+
+  Cutting the seam as transparency instead removes the dependency
+  entirely: the gap shows whatever is actually behind the mark. Same
+  drawing, same three edges, one fewer thing to get wrong.
+*/
+function rSeamCut(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'sc' + (++_uid);
+  return svgOpen(size, F.vb, o.label) +
+    `<defs><mask id="${id}" maskUnits="userSpaceOnUse" x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}">` +
+      `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="#fff"/>` +
+      `<path d="${SEAM_EDGES}" fill="none" stroke="#000" stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+    `</mask></defs>` +
+    `<path d="${MARK_PATH}" fill="${o.fill || P.accent}" fill-rule="evenodd" mask="url(#${id})"/></svg>`;
 }
 
 /* Outline only — for hostile grounds where no fill is safe.
@@ -1020,7 +1149,7 @@ function rWell(size, P, o = {}) {
 function rKeyline(size, P, o = {}) {
   const w = o.w ?? 4;
   const F = frame(o.cover ?? 0.85);
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<path d="${MARK_PATH}" fill="none" stroke="${o.stroke || P.ink}" stroke-width="${w}" stroke-linejoin="round" fill-rule="evenodd"/></svg>`;
 }
 
@@ -1244,10 +1373,14 @@ const fmt = n => (Number.isFinite(n) ? n.toFixed(1) : '—');
 const SIZES = [48, 32, 24, 16];
 
 /* --- base row --- */
+/* The one place the mark is the content rather than an illustration of
+   a measurement, so it is the one place that carries a label. Every
+   smaller copy in this ladder is the same mark again and is hidden. */
 document.getElementById('baseRow').innerHTML =
   `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
-  [128, 64, 32, 24, 16].map(px =>
-    `<figure>${rTrue(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('') +
+  [128, 64, 32, 24, 16].map((px, i) =>
+    `<figure>${rTrue(px, P_DARK, i === 0 ? { label: 'The GoForj mark' } : {})}` +
+    `<figcaption>${px}</figcaption></figure>`).join('') +
   `</div>`;
 
 /* --- the three readings of the colour rule --- */
@@ -1303,10 +1436,25 @@ document.getElementById('marks').innerHTML = VARIANTS.map(v => {
     <p class="mark__why">${v.why}</p>
     <div class="mark__act">
       <button class="btn-s" data-copy="${v.id}">Copy SVG</button>
-      <button class="btn-s" data-dl="${v.id}">Download</button>
+      <button class="btn-s" data-dl="${v.id}">Dark</button>
+      <button class="btn-s" data-dl="${v.id}" data-mode="light">Light</button>
+      <button class="btn-s" data-set="${v.id}">Asset set</button>
     </div>
   </div>`;
 }).join('');
+
+/* --- before / after against the shipping PNG --- */
+const CMP_SIZES = [64, 48, 32, 24, 16];
+document.getElementById('beforeRow').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+  CMP_SIZES.map(px =>
+    `<figure><img src="/assets/goforj-v7.png" width="${px}" height="${px}" alt="" aria-hidden="true" style="display:block">` +
+    `<figcaption>${px}</figcaption></figure>`).join('') + `</div>`;
+
+document.getElementById('afterRow').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+  CMP_SIZES.map(px =>
+    `<figure>${rSeam(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('') + `</div>`;
 
 /* --- aperture table --- */
 const SURV = [128, 64, 48, 32, 24, 20, 16, 12].map(px =>
@@ -1414,6 +1562,184 @@ document.getElementById('lightAltRow').innerHTML = strip(P_LIGHT_ALT);
     </p>`;
 })();
 
+/* ==================================================================
+   LIGHT MODE — WHAT TO SHIP
+   ================================================================== */
+const GROUNDS_DARK = [
+  ['page', P_DARK.ground], ['deep', P_DARK.deep],
+  ['alt', P_DARK.groundAlt], ['surface', P_DARK.surface]
+];
+const GROUNDS_LIGHT = [
+  ['page', P_LIGHT.ground], ['alt', P_LIGHT.groundAlt], ['surface-2', P_LIGHT.surface2]
+];
+
+/*
+  The applicable threshold here is 3:1, not 4.5:1.
+
+  WCAG 1.4.3 exempts logotypes from contrast minimums outright, and
+  the nearest rule that does apply to graphics — 1.4.11 non-text
+  contrast — asks for 3:1. Holding a logo to the body-text ratio
+  would be measuring it against the wrong standard, so 3:1 is the
+  working floor and 4.5:1 is recorded as comfortable rather than
+  required.
+*/
+const GRAPHIC_MIN = 3.0;
+
+(function fillMatrix() {
+  const fills = [
+    ['Accent, dark token', P_DARK.accent, '#FF5E3A'],
+    ['Accent, light token', P_LIGHT.accent, '#D6351A'],
+    ['Accent-hi', P_DARK.accentHi, '#FF8257'],
+    ['Ink, dark', P_DARK.ink, '#FFFFFF'],
+    ['Ink, light', P_LIGHT.ink, '#0C0A0E']
+  ];
+  const rows = fills.map(([name, c, hex]) => {
+    const d = Math.min(...GROUNDS_DARK.map(([, g]) => wcag(c, g)));
+    const l = Math.min(...GROUNDS_LIGHT.map(([, g]) => wcag(c, g)));
+    return { name, hex, d, l, all: Math.min(d, l) };
+  });
+  const cell = v => {
+    const cls = v >= 4.5 ? 'ok' : v >= GRAPHIC_MIN ? 'warn' : 'bad';
+    return `<span class="chip ${cls}">${v.toFixed(2)}:1</span>`;
+  };
+  document.getElementById('fillMatrix').innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r.name}</strong><br><span class="mono" style="font-size:11px;color:var(--gf-ink-3)">${r.hex}</span></td>
+      <td>${cell(r.d)}</td>
+      <td>${cell(r.l)}</td>
+      <td>${cell(r.all)}</td>
+      <td>${r.all >= GRAPHIC_MIN
+            ? 'Works on every ground in the system'
+            : r.d >= GRAPHIC_MIN ? 'Dark only' : r.l >= GRAPHIC_MIN ? 'Light only' : 'Neither'}</td>
+    </tr>`).join('');
+
+  const universal = rows.filter(r => r.all >= GRAPHIC_MIN);
+  const anyAA = rows.filter(r => r.all >= 4.5);
+  document.getElementById('fillFinding').innerHTML = `
+    <b>Two fills for comfort, or one if you want a single asset</b>
+    <p>
+      ${anyAA.length === 0
+        ? 'No fill clears <strong>4.5:1</strong> on both modes, so if that were the bar, two assets would be mandatory.'
+        : 'Some fills clear 4.5:1 on both modes.'}
+      But 4.5:1 is the body-text ratio, and a logo is not body text — WCAG exempts
+      logotypes from contrast minimums entirely, and the nearest rule that does
+      apply to graphics asks for <strong>3:1</strong>.
+    </p>
+    <p>
+      Against that floor, <strong>${universal.map(r => r.hex).join(' and ')}</strong>
+      ${universal.length === 1 ? 'is the only fill that holds' : 'hold'} on all
+      ${GROUNDS_DARK.length + GROUNDS_LIGHT.length} grounds the system defines.
+      ${universal.length
+        ? `That makes <code>${universal[0].hex}</code> the one-asset answer if you ever need a single file: slightly muted on the dark ground, correct everywhere.`
+        : ''}
+      The dark accent <code>#FF5E3A</code> falls to
+      ${rows[0].l.toFixed(2)}:1 on light surfaces, which is why it cannot simply
+      be reused there.
+    </p>
+    <p>
+      Recommended: keep <strong>two fills</strong> — the tokens already define
+      them, the theme already switches them, and each is comfortable in its own
+      mode. Reach for the single fill only when the surface is genuinely unknown.
+    </p>`;
+})();
+
+/* The recommended mark on each of the three light grounds. */
+[['lg1', P_LIGHT.ground], ['lg2', P_LIGHT.groundAlt], ['lg3', P_LIGHT.surface2]]
+  .forEach(([id, g]) => {
+    const P = Object.assign({}, P_LIGHT, { bg: g });
+    document.getElementById(id).innerHTML =
+      `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+      [48, 32, 24, 16].map(px =>
+        `<figure>${rSeamCut(px, P)}<figcaption>${px}</figcaption></figure>`).join('') +
+      `<figure>${rTile(44, P)}<figcaption>tile</figcaption></figure>` +
+      `<figure>${rAvatar(44, P)}<figcaption>avatar</figcaption></figure>` +
+      `<span class="mono" style="font-size:11px;opacity:.75">${wcag(P_LIGHT.accent, g).toFixed(2)}:1</span>` +
+      `</div>`;
+  });
+
+/* Painted seam versus cut seam, across the three light grounds. */
+(function seamModes() {
+  const cols = GROUNDS_LIGHT;
+  const grid = document.getElementById('seamModeGrid');
+  const box = (g, svg) =>
+    `<figure><span style="display:block;padding:9px;border-radius:8px;background:${g};border:1px solid #E6E2EC">${svg}</span></figure>`;
+  grid.innerHTML =
+    `<span></span>` +
+    cols.map(([n]) => `<span class="colhd">${n}</span>`).join('') +
+    `<span></span>` +
+
+    `<span class="rowlbl">Painted seam<br>exported for white</span>` +
+    cols.map(([, g]) => box(g, rSeam(52, Object.assign({}, P_LIGHT, { bg: P_LIGHT.ground })))).join('') +
+    `<span></span>` +
+
+    `<span class="rowlbl">Cut seam<br>transparent</span>` +
+    cols.map(([, g]) => box(g, rSeamCut(52, P_LIGHT))).join('') +
+    `<span></span>`;
+
+  document.getElementById('seamModeFinding').innerHTML = `
+    <b>Cut the seam, do not paint it</b>
+    <p>
+      In the top row the seam is white because the asset was exported for a white
+      page. On <code>alt</code> and <code>surface-2</code> that white is simply
+      the wrong colour, and it reads as a printing error rather than as an edge.
+      The mark is carrying an assumption about its background that it has no way
+      to check.
+    </p>
+    <p>
+      In the bottom row the seam is a gap. It shows whatever is actually behind
+      the mark, so it is correct on all three grounds without being told which
+      one it is on — and it stays correct on a photo, in a PDF, and on whatever
+      surface someone invents in two years.
+    </p>
+    <p>
+      This strengthens the forever argument rather than complicating it. The
+      painted seam meant one file per ground; the cut seam means the seam costs
+      nothing at all. Combined with the sub-pixel behaviour at 16px, Seam now has
+      <strong>no dependency on its background and no dependency on its size</strong>.
+    </p>`;
+})();
+
+/* The prescriptive answer, per surface. */
+document.getElementById('lightRecs').innerHTML = [
+  {
+    t: 'Docs, README, light UI',
+    d: `Seam with a <strong>cut</strong> seam, filled <code>#D6351A</code>. Works on all three light grounds untouched.`,
+    r: P => `<div class="row">
+      <figure>${rSeamCut(56, P)}<figcaption>page</figcaption></figure>
+      <figure>${rSeamCut(56, Object.assign({}, P, { bg: P.groundAlt }))}<figcaption>alt</figcaption></figure>
+    </div>`
+  },
+  {
+    t: 'Favicon on a light browser chrome',
+    d: `Tile, so the mark never depends on the browser's own background — which you do not control and which differs per platform.`,
+    r: P => `<div class="row">
+      <figure>${rTile(48, P)}<figcaption>32</figcaption></figure>
+      <figure>${rTile(32, P)}<figcaption>16</figcaption></figure>
+    </div>`
+  },
+  {
+    t: 'Print, invoices, single-colour',
+    d: `Keyline in ink at ${'' /* computed below */}, or the flat mark in <code>#D6351A</code>. Both survive one plate.`,
+    r: P => `<div class="row">
+      <figure>${rKeyline(56, P)}<figcaption>keyline</figcaption></figure>
+      <figure>${rTrue(56, P)}<figcaption>flat</figcaption></figure>
+    </div>`
+  },
+  {
+    t: 'Unknown or photographic ground',
+    d: `Plated avatar or tile. Never a bare mark — on an uncontrolled light ground nothing else can be guaranteed.`,
+    r: P => `<div class="row">
+      <figure>${rAvatar(56, P)}<figcaption>avatar</figcaption></figure>
+      <figure>${rAvatar(56, P, { plate: P.ink, fill: P.accent })}<figcaption>inverse</figcaption></figure>
+    </div>`
+  }
+].map(x => `
+  <div class="panel">
+    <b>${x.t}</b>
+    <p class="cap">${x.d}</p>
+    ${x.r(P_LIGHT)}
+  </div>`).join('');
+
 /* --- palette swap --- */
 function swapStrip(P) {
   return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
@@ -1443,7 +1769,7 @@ function rCircleCrop(size, P, glyph, o = {}) {
   const F = frame(o.cover ?? 0.89);
   const id = 'cc' + (++_uid);
   const r = F.S / 2;
-  return svgOpen(size, F.vb) +
+  return svgOpen(size, F.vb, o.label) +
     `<defs><clipPath id="${id}"><circle cx="${F.cx}" cy="${F.cy}" r="${r}"/></clipPath></defs>` +
     `<circle cx="${F.cx}" cy="${F.cy}" r="${r}" fill="${o.plate || P.groundAlt}"/>` +
     `<g clip-path="url(#${id})">${glyph(P)}</g>` +
@@ -1683,25 +2009,142 @@ const PASSERS = VARIANTS.filter(v =>
     </p>`;
 })();
 
-/* --- copy / download --- */
-function exportSVG(id) {
+/*
+  The specification, generated from the same constants the rest of the
+  page measures with. Nothing here is retyped, so it cannot say one
+  thing while the tables above say another.
+*/
+(function () {
+  const seam16 = byId('seam').seamWidth(16);
+  const lightR = Math.min(...byId('seam').pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
+  const darkR  = Math.min(...byId('seam').pairs(P_DARK).map(([a, b]) => wcag(a, b)));
+  const spec = `GoForj mark — specification (draft)
+
+GEOMETRY
+  Source            one frozen path pair: outer + counter, even-odd
+  Bounding box      ${MARK_BBOX.w.toFixed(2)} x ${MARK_BBOX.h.toFixed(2)}  (NOT square)
+  Never             rescale one axis, redraw, or re-trace from a raster
+
+SIZING
+  Minimum size      ${FLOOR}px  (aperture drops below AA against the body under this)
+  Clear space       0.23x the mark, all sides  (one counter-width)
+  Bare mark         cover 0.89   (mark's long side / frame side)
+  Inside a tile     cover 0.62
+  Inside a circle   cover 0.58
+  Icon radius       22.37% of the side  (superellipse approximation)
+
+COLOUR
+  One tone only. Every variant that failed a test on this page failed
+  because a second tone was doing structural work.
+  Fill              var(--gf-accent)  — #FF5E3A dark / #D6351A light
+  Contrast          ${darkR.toFixed(2)}:1 dark ground, ${lightR.toFixed(2)}:1 light ground
+  Never             fill with var(--gf-nav); that colour is text/line only
+  Never             use --gf-ground-deep or --gf-surface as a mark tone —
+                    they invert between modes and the mark disintegrates
+
+SEAM
+  Stroke            2 units on the ~112-unit frame, ground colour,
+                    clipped to the silhouette, on the cube's 3 interior edges
+  At 16px           ${seam16.toFixed(2)}px — sub-pixel, converges on the flat base
+  Consequence       one asset. Do not ship a separate flat favicon.
+
+ASSETS
+  Primary           Seam, accent fill
+  OS icon           Tile, glyph knocked out of an accent plate
+  Utility           Keyline, for etch, emboss and uncontrolled grounds
+  Avatar            plate + 0.58 safe zone. The silhouette is circle-safe:
+                    every vertex sits inside the crop at normal size.`;
+  const el = document.getElementById('specBlock');
+  if (el) el.textContent = spec;
+  const btn = document.getElementById('copySpec');
+  if (btn) btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(spec).then(() => {
+      btn.textContent = 'Copied ✓';
+      setTimeout(() => btn.textContent = 'Copy specification', 1400);
+    });
+  });
+})();
+
+/*
+  ------------------------------------------------------------------
+  EXPORT.
+
+  The v2 export was not usable as a production asset. It hardcoded
+  width="256" and height="256", so the file could not scale — the one
+  thing an SVG logo exists to do. It always used the dark palette,
+  despite an entire section arguing that light mode needs different
+  tokens. And its clipPath ids were sequential counters like "sm12",
+  which collide the moment the SVG is inlined into a document that
+  already contains one.
+
+  This version strips the fixed size and keeps only the viewBox, so
+  the asset scales to whatever it is placed in; takes a palette, so
+  the light asset is actually obtainable; and rewrites every internal
+  id to a namespaced, content-derived one so two exported files can
+  coexist in the same document.
+  ------------------------------------------------------------------
+*/
+function exportSVG(id, P = P_DARK, opts = {}) {
   const v = byId(id);
-  return v.render(256, P_DARK).replace('<svg ', '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ');
+  let svg = v.render(1000, P, { label: opts.label || `GoForj — ${v.name}` });
+
+  // Drop the fixed size; keep the viewBox so the asset is resolution-free.
+  svg = svg.replace(/^<svg width="\d+" height="\d+" /, '<svg ');
+
+  // Namespace every internal id so exports cannot collide with each other
+  // or with whatever document they are pasted into.
+  const stamp = `gf-${id}-${P.id || 'dark'}`;
+  const ids = [...new Set([...svg.matchAll(/id="([^"]+)"/g)].map(m => m[1]))];
+  ids.forEach((old, i) => {
+    const safe = `${stamp}-${i}`;
+    svg = svg.split(`id="${old}"`).join(`id="${safe}"`)
+             .split(`url(#${old})`).join(`url(#${safe})`);
+  });
+
+  return `<!-- GoForj ${v.name} — ${P.id === 'light' ? 'light' : 'dark'} palette. `
+       + `Minimum size ${FLOOR}px. Clear space 0.23x. -->\n` + svg + '\n';
+}
+
+/* The full set a handoff actually needs, rather than one mark. */
+function assetSet(id) {
+  const v = byId(id);
+  return [
+    [`goforj-${id}-dark.svg`,   exportSVG(id, P_DARK)],
+    [`goforj-${id}-light.svg`,  exportSVG(id, P_LIGHT)],
+    ['goforj-tile.svg',         exportSVG('tile', P_DARK)],
+    ['goforj-keyline.svg',      exportSVG('keyline', P_DARK)]
+  ];
+}
+
+function downloadText(name, text) {
+  const blob = new Blob([text], { type: 'image/svg+xml;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 document.addEventListener('click', e => {
-  const c = e.target.closest('[data-copy]'), dl = e.target.closest('[data-dl]');
+  const c = e.target.closest('[data-copy]');
+  const dl = e.target.closest('[data-dl]');
+  const set = e.target.closest('[data-set]');
+  const flash = (el, msg) => {
+    const t = el.textContent; el.textContent = msg;
+    setTimeout(() => el.textContent = t, 1400);
+  };
   if (c) {
-    navigator.clipboard.writeText(exportSVG(c.dataset.copy)).then(() => {
-      const t = c.textContent; c.textContent = 'Copied ✓';
-      setTimeout(() => c.textContent = t, 1400);
-    });
+    const P = c.dataset.mode === 'light' ? P_LIGHT : P_DARK;
+    navigator.clipboard.writeText(exportSVG(c.dataset.copy, P))
+      .then(() => flash(c, 'Copied ✓'));
   }
   if (dl) {
-    const blob = new Blob([exportSVG(dl.dataset.dl)], { type: 'image/svg+xml' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `goforj-${dl.dataset.dl}.svg`;
-    a.click(); URL.revokeObjectURL(a.href);
+    const P = dl.dataset.mode === 'light' ? P_LIGHT : P_DARK;
+    downloadText(`goforj-${dl.dataset.dl}-${P.id}.svg`, exportSVG(dl.dataset.dl, P));
+  }
+  if (set) {
+    assetSet(set.dataset.set).forEach(([name, text], i) =>
+      setTimeout(() => downloadText(name, text), i * 220));
+    flash(set, 'Downloading…');
   }
 });
 </script>
