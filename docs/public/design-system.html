@@ -227,6 +227,28 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 }
 .gal .why b { font-weight: 600; }
 
+/* Skeleton — neutral only. A loading state pulsing in the accent would be an
+   action colour firing with nobody having acted. */
+.skel {
+  display: block; height: 10px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--gf-surface), var(--gf-surface-2), var(--gf-surface));
+  background-size: 200% 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skel { animation: skel 1.4s ease-in-out infinite; }
+}
+@keyframes skel { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+/* Spacing scale */
+.space { display: grid; gap: 1px; background: var(--gf-line);
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  overflow: hidden; margin: 16px 0; }
+.space .row { display: grid; grid-template-columns: 58px 1fr minmax(0,1.6fr);
+  align-items: center; gap: 14px; padding: 10px 14px; background: var(--gf-ground); }
+.space .n { font-family: var(--gf-font-mono); font-size: 12px; color: var(--gf-ink); }
+.space .bar { height: 12px; border-radius: 3px; background: var(--gf-accent); opacity: .8; }
+.space .use { font-size: 12.5px; color: var(--gf-ink-2); }
+
 /* Callouts, rendered with the real rules */
 .call { border: 1px solid var(--gf-line); border-left-width: 3px;
   background: var(--gf-ground-alt); border-radius: var(--gf-radius);
@@ -244,7 +266,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 /* Chrome fragments — sidebar, TOC, tabs, terminal */
 .frag { font-size: 13px; }
 .frag .side-grp { font-family: var(--gf-font-mono); font-size: 10px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--gf-ink-3); padding: 0 0 8px 16px; }
+  text-transform: uppercase; color: var(--gf-ink-2); padding: 0 0 8px 16px; }
 .frag .side-a { display: block; padding: 5px 14px; color: var(--gf-ink-2);
   border-left: 2px solid transparent; text-decoration: none; }
 .frag .side-a.on { color: var(--gf-nav); border-left-color: var(--gf-nav);
@@ -258,7 +280,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 
 .tabs { display: flex; background: var(--gf-code-chrome); border-bottom: 1px solid var(--gf-line); }
 .tabs span { font-family: var(--gf-font-mono); font-size: 12px; padding: 9px 14px;
-  color: var(--gf-ink-3); border-bottom: 2px solid transparent; }
+  color: var(--gf-ink-2); border-bottom: 2px solid transparent; }
 .tabs span.on { color: var(--gf-ink); border-bottom-color: var(--gf-accent); }
 
 .badge { display: inline-block; font-family: var(--gf-font-mono); font-size: 11px;
@@ -269,7 +291,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .badge.danger { background: var(--vp-c-danger-soft); color: var(--vp-c-danger-1); border-color: var(--vp-c-danger-1); }
 
 .ln { display: grid; grid-template-columns: 34px 1fr; }
-.ln .g { color: var(--gf-ink-3); text-align: right; padding-right: 14px;
+.ln .g { color: var(--gf-ink-2); text-align: right; padding-right: 14px;
   border-right: 1px solid var(--gf-line); user-select: none; }
 .ln .c { padding-left: 14px; }
 .ln .hl { background: rgba(255,194,77,.085); box-shadow: inset 2px 0 0 var(--gf-nav); }
@@ -411,7 +433,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .mock .install .d { color: var(--gf-accent); }
 .mock .install .cp {
   margin-left: 6px; padding-left: 10px; border-left: 1px solid var(--gf-line);
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gf-ink-3);
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gf-ink-2);
 }
 .mock .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-top: 26px; }
 /* .card is standalone so it works both inside a mock and on its own in the
@@ -502,6 +524,10 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     <a href="#planes">Planes</a>
     <a href="#code">Code</a>
     <a href="#components">Components</a>
+    <a href="#states">States</a>
+    <a href="#space">Space</a>
+    <a href="#motion">Motion</a>
+    <a href="#stress">Stress</a>
   </nav>
 </header>
 
@@ -1135,19 +1161,52 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   </p>
 
   <h3>The code well</h3>
-  <div class="well" data-ember>
-<span data-t="comment">// Services depend on contracts, not drivers.</span>
-<span data-t="keyword">type</span> <span data-t="type">Service</span> <span data-t="keyword">struct</span> <span data-t="punct">{</span>
-    disk storage<span data-t="punct">.</span><span data-t="type">Storage</span>
+  <pre class="well" data-ember><span data-t="comment">// Services depend on contracts, not drivers. The disk is a</span>
+<span data-t="comment">// storage.Storage, so local disk and S3 are the same call.</span>
+<span data-t="keyword">package</span> photos
+
+<span data-t="keyword">import</span> <span data-t="punct">(</span>
+    <span data-t="string">"context"</span>
+    <span data-t="string">"fmt"</span>
+    <span data-t="string">"time"</span>
+<span data-t="punct">)</span>
+
+<span data-t="keyword">const</span> maxUploadBytes <span data-t="punct">=</span> <span data-t="number">25</span> <span data-t="punct">&lt;&lt;</span> <span data-t="number">20</span>
+
+<span data-t="keyword">type</span> <span data-t="type">Photo</span> <span data-t="keyword">struct</span> <span data-t="punct">{</span>
+    ID        <span data-t="builtin">string</span>    <span data-t="string">`<span data-t="tagkey">json</span>:"id" <span data-t="tagkey">db</span>:"id"`</span>
+    OwnerID   <span data-t="builtin">string</span>    <span data-t="string">`<span data-t="tagkey">json</span>:"owner_id" <span data-t="tagkey">db</span>:"owner_id"`</span>
+    CreatedAt <span data-t="type">time</span><span data-t="punct">.</span><span data-t="type">Time</span> <span data-t="string">`<span data-t="tagkey">json</span>:"created_at"`</span>
 <span data-t="punct">}</span>
 
-<span data-t="keyword">func</span> <span data-t="punct">(</span>s <span data-t="punct">*</span><span data-t="type">Service</span><span data-t="punct">)</span> <span data-t="func">Store</span><span data-t="punct">(</span>ctx context<span data-t="punct">.</span><span data-t="type">Context</span><span data-t="punct">)</span> <span data-t="punct">(</span><span data-t="type">Photo</span><span data-t="punct">,</span> <span data-t="builtin">error</span><span data-t="punct">)</span> <span data-t="punct">{</span>
-    <span data-t="keyword">return</span> <span data-t="type">Photo</span><span data-t="punct">{},</span> fmt<span data-t="punct">.</span><span data-t="func">Errorf</span><span data-t="punct">(</span><span data-t="string">"store photo: <span data-t="verb">%w</span>"</span><span data-t="punct">,</span> err<span data-t="punct">)</span>
+<span data-t="keyword">type</span> <span data-t="type">Service</span> <span data-t="keyword">struct</span> <span data-t="punct">{</span>
+    disk  storage<span data-t="punct">.</span><span data-t="type">Storage</span>
+    cache cache<span data-t="punct">.</span><span data-t="type">Cache</span>
 <span data-t="punct">}</span>
-  </div>
+
+<span data-t="keyword">func</span> <span data-t="punct">(</span>s <span data-t="punct">*</span><span data-t="type">Service</span><span data-t="punct">)</span> <span data-t="func">Store</span><span data-t="punct">(</span>ctx context<span data-t="punct">.</span><span data-t="type">Context</span><span data-t="punct">,</span> name <span data-t="builtin">string</span><span data-t="punct">,</span> body <span data-t="punct">[]</span><span data-t="builtin">byte</span><span data-t="punct">)</span> <span data-t="punct">(</span><span data-t="type">Photo</span><span data-t="punct">,</span> <span data-t="builtin">error</span><span data-t="punct">)</span> <span data-t="punct">{</span>
+    <span data-t="keyword">if</span> <span data-t="func">len</span><span data-t="punct">(</span>body<span data-t="punct">)</span> <span data-t="punct">&gt;</span> maxUploadBytes <span data-t="punct">{</span>
+        <span data-t="keyword">return</span> <span data-t="type">Photo</span><span data-t="punct">{},</span> <span data-t="type">ErrTooLarge</span>
+    <span data-t="punct">}</span>
+
+    <span data-t="keyword">if</span> err <span data-t="punct">:=</span> s<span data-t="punct">.</span>disk<span data-t="punct">.</span><span data-t="func">Put</span><span data-t="punct">(</span>ctx<span data-t="punct">,</span> name<span data-t="punct">,</span> body<span data-t="punct">);</span> err <span data-t="punct">!=</span> <span data-t="const">nil</span> <span data-t="punct">{</span>
+        <span data-t="keyword">return</span> <span data-t="type">Photo</span><span data-t="punct">{},</span> fmt<span data-t="punct">.</span><span data-t="func">Errorf</span><span data-t="punct">(</span><span data-t="string">"store photo <span data-t="verb">%q</span>: <span data-t="verb">%w</span>"</span><span data-t="punct">,</span> name<span data-t="punct">,</span> err<span data-t="punct">)</span>
+    <span data-t="punct">}</span>
+
+    s<span data-t="punct">.</span>cache<span data-t="punct">.</span><span data-t="func">Forget</span><span data-t="punct">(</span>ctx<span data-t="punct">,</span> <span data-t="string">"photos:"</span><span data-t="punct">+</span>name<span data-t="punct">)</span>
+    <span data-t="keyword">return</span> <span data-t="type">Photo</span><span data-t="punct">{</span>ID<span data-t="punct">:</span> name<span data-t="punct">,</span> CreatedAt<span data-t="punct">:</span> time<span data-t="punct">.</span><span data-t="func">Now</span><span data-t="punct">()},</span> <span data-t="const">nil</span>
+<span data-t="punct">}</span></pre>
   <p>
-    Note <code>error</code> takes the keyword colour rather than a type colour,
-    and the well sits below the page rather than above it.
+    Every role in the mapping above appears here, which is the point of the
+    sample: comment, keyword, built-in, type, function, string, number,
+    constant, struct-tag key, format verb and punctuation. Two fidelity
+    details worth checking against your own theme — <code>error</code>,
+    <code>string</code> and <code>byte</code> take the <strong>keyword</strong>
+    family rather than a type colour, and <code>nil</code> is a
+    <strong>constant</strong>, not a keyword.
+  </p>
+  <p>
+    The well sits below the page rather than above it.
   </p>
 
   <h3>Code surfaces</h3>
@@ -1225,7 +1284,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <figcaption>Keyboard keys</figcaption>
       <div class="box" style="flex-direction:row;gap:8px;align-items:center">
         <span class="kbd">⌘</span><span class="kbd">K</span>
-        <span style="font-size:13px;color:var(--gf-ink-3)">to search</span>
+        <span style="font-size:13px;color:var(--gf-ink-2)">to search</span>
       </div>
       <p class="why">Physical objects: neutral surface, heavier bottom border. A keycap is not an action.</p>
     </figure>
@@ -1298,7 +1357,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <figcaption>Prev / next pager</figcaption>
       <div class="box" style="padding:0">
         <div style="border:1px solid var(--gf-line);background:var(--gf-ground-alt);border-radius:var(--gf-radius);padding:12px 14px;margin:16px">
-          <div style="font-size:11.5px;color:var(--gf-ink-3);margin-bottom:3px">Next</div>
+          <div style="font-size:11.5px;color:var(--gf-ink-2);margin-bottom:3px">Next</div>
           <div style="color:var(--gf-nav);font-size:14px;font-weight:500">Provider Patterns</div>
         </div>
       </div>
@@ -1480,6 +1539,257 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   </p>
 </section>
 
+<section class="ds-sec" id="states">
+  <p class="ds-kicker">States</p>
+  <h2>Rest is not the <em>only state</em></h2>
+
+  <div class="ds-note warn">
+    <b>Focus was missing entirely</b>
+    <p>
+      Until this section was written, every focusable element on the site
+      computed to <code>outline-style: none</code> — links, sidebar items, the
+      copy button, search. Keyboard users had no visible focus indicator at all.
+      That is <strong>WCAG 2.4.7 Focus Visible</strong>, a Level AA criterion,
+      and it is the most serious defect this work has turned up. It came from a
+      base-theme reset rather than a decision, which is exactly why it survived:
+      nobody chose it, so nobody reviewed it.
+    </p>
+  </div>
+
+  <h3>The focus ring</h3>
+  <p>
+    Focus is neither action nor navigation — it is system feedback about where
+    you are. It uses the <strong>accent</strong> because “you are about to act
+    here” is the closest of the three roles, and because 2px of accent clears
+    the 3:1 non-text contrast floor on every Temper ground with room to spare.
+  </p>
+  <table class="ds">
+    <thead><tr><th>Property</th><th>Value</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Selector</td><td class="mono">:focus-visible</td><td>Keyboard users always see it; pointer users never do</td></tr>
+      <tr><td>Ring</td><td class="mono">2px solid var(--gf-accent)</td><td><span data-contrast="--gf-accent|--gf-ground-deep"></span> against the ground — 1.4.11 needs 3:1</td></tr>
+      <tr><td>Offset</td><td class="mono">2px</td><td>Reads as a ring <em>around</em> the element, not a border <em>on</em> it — a border would collide with the form rule</td></tr>
+      <tr><td>Radius</td><td class="mono">inherit</td><td>Follows the element's own shape</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13.5px;color:var(--gf-ink-2)">
+    <strong>Tab into the row below</strong> to see it. Nothing may ever set
+    <code>outline: none</code> — if a component needs a different indicator, it
+    changes the shape, not the visibility.
+  </p>
+  <div class="demo" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+    <button class="btn" style="font-size:13px;padding:9px 16px">Primary</button>
+    <button class="btn ghost" style="font-size:13px;padding:9px 16px">Ghost</button>
+    <a href="#states" style="color:var(--gf-nav);font-size:13.5px">A link</a>
+    <input type="text" placeholder="An input"
+      style="background:var(--gf-ground-deep);border:1px solid var(--gf-line-strong);
+      border-radius:var(--gf-radius);padding:9px 12px;color:var(--gf-ink);
+      font-family:var(--gf-font-body);font-size:13.5px">
+  </div>
+
+  <h3>The full set</h3>
+  <div class="gal">
+    <figure>
+      <figcaption>Button</figcaption>
+      <div class="box" style="gap:9px">
+        <button class="btn" style="font-size:12.5px;padding:8px 14px">Rest</button>
+        <button class="btn" style="font-size:12.5px;padding:8px 14px;background:var(--gf-accent-hi);border-color:var(--gf-accent-hi)">Hover</button>
+        <button class="btn" style="font-size:12.5px;padding:8px 14px;outline:2px solid var(--gf-accent);outline-offset:2px">Focus</button>
+        <button class="btn" style="font-size:12.5px;padding:8px 14px;opacity:.45;cursor:not-allowed">Disabled</button>
+      </div>
+      <p class="why">Hover brightens the fill. Focus adds a ring without changing the fill — the two states stack rather than replace.</p>
+    </figure>
+    <figure>
+      <figcaption>Link</figcaption>
+      <div class="box" style="gap:9px;align-items:flex-start">
+        <span style="color:var(--gf-nav);font-size:13.5px;text-decoration:underline;text-decoration-color:var(--gf-nav-line);text-underline-offset:3px">Rest</span>
+        <span style="color:var(--gf-nav-hi);font-size:13.5px;text-decoration:underline;text-decoration-color:var(--gf-nav);text-underline-offset:3px">Hover</span>
+        <span style="color:var(--gf-nav);font-size:13.5px;text-decoration:underline;text-underline-offset:3px;outline:2px solid var(--gf-accent);outline-offset:2px;border-radius:4px">Focus</span>
+      </div>
+      <p class="why">Hover brightens the ink and the underline together. The focus ring is accent even on a navigation element — focus is a third thing.</p>
+    </figure>
+    <figure>
+      <figcaption>Loading</figcaption>
+      <div class="box" style="gap:10px">
+        <span class="skel" style="width:70%"></span>
+        <span class="skel" style="width:92%"></span>
+        <span class="skel" style="width:54%"></span>
+      </div>
+      <p class="why">Skeletons are neutral surface only. A loading state that pulses in the accent would be an action colour firing on its own.</p>
+    </figure>
+  </div>
+</section>
+
+<section class="ds-sec" id="space">
+  <p class="ds-kicker">Space</p>
+  <h2>Rhythm and <em>measure</em></h2>
+  <p>
+    Undocumented constraints erode first. The spacing steps and the line-length
+    rule were both being followed in the stylesheet and written down nowhere.
+  </p>
+
+  <h3>Spacing</h3>
+  <p>
+    A six-step scale. Not a strict 4px grid — the steps widen as they grow,
+    because equal ratios read as equal spacing and equal increments do not.
+  </p>
+  <div data-space='[["4","hairline gaps, icon to label"],["8","within a control"],["12","between related lines"],["18","component padding"],["26","between components"],["44","between sections"]]'></div>
+
+  <h3>Measure</h3>
+  <p>
+    Prose is capped at <strong>66ch</strong>. Captions and secondary text run to
+    72ch because they are shorter overall and the extra width costs less than
+    the extra wrapping.
+  </p>
+  <div class="demo">
+    <p style="max-width:66ch;margin:0 0 10px">
+      This paragraph is set at the 66ch measure. Beyond roughly this width the
+      eye loses the start of the next line on the return sweep, which is the
+      actual reason for the rule — not aesthetics.
+    </p>
+    <p style="max-width:none;color:var(--gf-ink-2);font-size:13px;margin:0;border-top:1px solid var(--gf-line);padding-top:10px">
+      This one is uncapped. On a wide screen it will run past the point where
+      returning to the next line stays effortless, and you can feel the
+      difference between this sentence and the one above it as the lines get
+      longer and longer and the return sweep gets harder to land accurately.
+    </p>
+  </div>
+</section>
+
+<section class="ds-sec" id="motion">
+  <p class="ds-kicker">Motion</p>
+  <h2>Gated by <em>default</em></h2>
+  <p>
+    Every animation on the site must pass through the
+    <code>prefers-reduced-motion</code> + <code>[data-gf-motion]</code> pattern.
+    This is already mandatory in <code>site-theme-system.md</code> and had no
+    page until now.
+  </p>
+
+  <table class="ds">
+    <thead><tr><th>Signal</th><th>Source</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">prefers-reduced-motion</td><td>OS setting</td><td>Motion off unless explicitly re-enabled</td></tr>
+      <tr><td class="mono">[data-gf-motion="on"]</td><td>User override</td><td>Motion on regardless of OS</td></tr>
+      <tr><td class="mono">[data-gf-motion="reduced"]</td><td>User override</td><td>Motion off regardless of OS</td></tr>
+      <tr><td class="mono">(unset)</td><td>Default</td><td>Follows the OS</td></tr>
+    </tbody>
+  </table>
+
+  <h3>What may animate</h3>
+  <table class="ds">
+    <thead><tr><th>Property</th><th>Allowed</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">opacity</td><td>yes</td><td>Cheap, and the least likely to trigger vestibular symptoms</td></tr>
+      <tr><td class="mono">transform</td><td>yes, small</td><td>Under ~8px of travel. No parallax, no scale beyond 1.02</td></tr>
+      <tr><td class="mono">color / background</td><td>yes</td><td>State feedback — hover, focus, active</td></tr>
+      <tr><td class="mono">height / width / top / left</td><td>no</td><td>Layout thrash, and unskippable for the reader</td></tr>
+      <tr><td class="mono">auto-playing loops</td><td>no</td><td>Nothing moves unless the reader caused it</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Durations sit between <strong>120ms</strong> and <strong>280ms</strong>.
+    Below 120ms the change reads as a jump; above 280ms it reads as a wait. The
+    site's own transitions are 150–180ms.
+  </p>
+  <div class="ds-note">
+    <b>The rule, not the value</b>
+    <p>
+      A transition that forgets the gate is not a slow transition — it is an
+      accessibility failure for someone with a vestibular disorder. This is the
+      one subsystem where the correct default is <em>nothing moves</em>.
+    </p>
+  </div>
+</section>
+
+<section class="ds-sec" id="stress">
+  <p class="ds-kicker">Stress</p>
+  <h2>The system under <em>hostile content</em></h2>
+  <p>
+    Every specimen above uses ideal content. Real failure arrives as content
+    nobody designed for — and those are exactly the cases where someone invents
+    an off-system solution because the system appeared not to cover them.
+  </p>
+
+  <div class="gal" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+    <figure>
+      <figcaption>A heading that will not stop</figcaption>
+      <div class="box">
+        <div style="font-family:var(--gf-font-display);font-weight:700;letter-spacing:-.032em;font-size:20px;color:var(--gf-ink);line-height:1.2;padding-bottom:9px;border-bottom:1px solid;border-image:linear-gradient(90deg,var(--gf-line-strong),transparent) 1">
+          Configuring app-scoped output directories for generated components across multiple runnable boundaries
+        </div>
+      </div>
+      <p class="why">Tight tracking survives wrapping because the rule is a border-bottom on the block, not a fixed-width underline.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Unbroken 200-char line</figcaption>
+      <div class="box" style="padding:0">
+        <div class="well" style="margin:0;border:0;border-radius:0;white-space:pre;overflow-x:auto">forj make:service photos --with-cache --with-storage --driver=s3 --region=eu-west-1 --bucket=production-photos-primary --acl=private --retry=5 --timeout=30s --verbose</div>
+      </div>
+      <p class="why">The well scrolls rather than wrapping or blowing out the column. Wrapping a command would make it uncopyable.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Nine-column table</figcaption>
+      <div class="box" style="padding:0">
+        <div style="overflow-x:auto">
+          <table class="ds" style="margin:0;border:0;border-radius:0;min-width:520px">
+            <thead><tr><th>Driver</th><th>Local</th><th>Prod</th><th>TTL</th><th>Retry</th><th>Batch</th><th>Tx</th><th>Obs</th><th>Since</th></tr></thead>
+            <tbody>
+              <tr><td>redis</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>✓</td><td>0.4</td></tr>
+              <tr><td>postgres</td><td>✓</td><td>✓</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>0.2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="why">Scrolls inside its own frame. The neutral header keeps working at density — an accent wash would be unbearable across nine columns.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Callout inside a list</figcaption>
+      <div class="box">
+        <ul style="margin:0;padding-left:20px;color:var(--gf-ink-2);font-size:13.5px;line-height:1.7">
+          <li>Generate the service</li>
+          <li>
+            Wire the driver
+            <div class="call warn" style="margin:8px 0 0;font-size:12.5px">
+              <b>Warning</b>Nested callouts keep the left rule and lose nothing.
+            </div>
+          </li>
+          <li>Run the tests</li>
+        </ul>
+      </div>
+      <p class="why">The left-rule form survives nesting. A full-frame callout would fight the list indent.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Dense inline code</figcaption>
+      <div class="box">
+        <p style="margin:0;font-size:14px;line-height:1.8">
+          Set <code>FORJ_ENV</code>, <code>DB_URL</code>, <code>REDIS_URL</code>,
+          <code>S3_BUCKET</code>, <code>S3_REGION</code>, <code>SMTP_HOST</code>,
+          <code>SMTP_PORT</code> and <code>LOG_LEVEL</code> before
+          <code>forj dev</code>.
+        </p>
+      </div>
+      <p class="why">Eight chips in one sentence — the case that ruled out the accent-ink treatment, which would have made this strobe.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Empty state</figcaption>
+      <div class="box">
+        <div style="text-align:center;padding:18px 8px">
+          <div style="font-size:13.5px;color:var(--gf-ink);margin-bottom:5px">No drivers configured</div>
+          <div style="font-size:12.5px;color:var(--gf-ink-2);margin-bottom:14px">Add one to get started.</div>
+          <button class="btn" style="font-size:12.5px;padding:8px 15px">Add a driver</button>
+        </div>
+      </div>
+      <p class="why">One action, filled. Empty states are where systems reach for illustration and end up inventing colour.</p>
+    </figure>
+  </div>
+</section>
+
 <section class="ds-sec">
   <p class="ds-kicker">A caution</p>
   <h2>What will <em>decay</em></h2>
@@ -1576,7 +1886,7 @@ document.querySelectorAll('[data-planes]').forEach(el => {
           <td><i style="display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--gf-line-strong);background:var(${token});margin-right:8px;vertical-align:-2px"></i>${name}</td>
           <td class="mono">${toHex(token)}</td>
           <td class="mono">${lstar(token).toFixed(2)}</td>
-          <td class="mono" style="color:${weak ? 'var(--gf-ink-3)' : 'var(--gf-ink)'}">${d > 0 ? '+' : ''}${d.toFixed(2)}</td>
+          <td class="mono" style="color:${weak ? 'var(--gf-ink-2)' : 'var(--gf-ink)'}">${d > 0 ? '+' : ''}${d.toFixed(2)}</td>
           <td class="mono" style="color:var(--gf-ink-2)">${wcag(token, ground).toFixed(2)}:1</td>
         </tr>`;
       }).join('')}
@@ -1735,6 +2045,19 @@ function atLstar(base, target) {
   render();
 })();
 
+// Spacing scale — the bar width IS the value, so the illustration cannot
+// disagree with the number beside it.
+document.querySelectorAll('[data-space]').forEach(el => {
+  const rows = JSON.parse(el.dataset.space);
+  el.className = 'space';
+  el.innerHTML = rows.map(([px, use]) => `
+    <div class="row">
+      <span class="n">${px}px</span>
+      <span class="bar" style="width:${px}px"></span>
+      <span class="use">${use}</span>
+    </div>`).join('');
+});
+
 // Elevation cross-section. Indent and bar width come from the measured L*,
 // so the drawing cannot disagree with the tokens.
 document.querySelectorAll('[data-elev]').forEach(el => {
@@ -1756,8 +2079,11 @@ document.querySelectorAll('[data-elev]').forEach(el => {
 });
 
 // Ember colouring for the sample block
+// The full Ember palette. number/const and tagkey were missing, so a sample
+// using them fell back to plain and the page under-reported its own system.
 const EMBER = { plain:'#E4DDE8', comment:'#8A8196', keyword:'#FF8A6B', builtin:'#FFAB8F',
-  type:'#9BD7C4', func:'#FFC24D', string:'#D9CE7A', verb:'#B8D96B', punct:'#9089A0' };
+  type:'#9BD7C4', func:'#FFC24D', string:'#D9CE7A', number:'#FFAB8F', const:'#FFAB8F',
+  tagkey:'#B8D96B', verb:'#B8D96B', punct:'#9089A0' };
 document.querySelectorAll('[data-ember]').forEach(block => {
   block.style.color = EMBER.plain;
   block.querySelectorAll('[data-t]').forEach(s => {

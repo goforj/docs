@@ -5,7 +5,7 @@ repoUrl: https://github.com/goforj/mail
 ---
 
 <p align="center">
-  <strong>mail</strong>
+  <img src="https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png?v=1" width="300" alt="mail logo">
 </p>
 
 <p align="center">
@@ -14,6 +14,7 @@ repoUrl: https://github.com/goforj/mail
 
 <p align="center">
   <a href="https://pkg.go.dev/github.com/goforj/mail"><img src="https://pkg.go.dev/badge/github.com/goforj/mail.svg" alt="Go Reference"></a>
+  <a href="https://github.com/goforj/mail/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://github.com/goforj/mail/actions/workflows/ci.yml"><img src="https://github.com/goforj/mail/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
   <img src="https://img.shields.io/github/v/tag/goforj/mail?label=version&sort=semver&filter=%21mailses%2A" alt="Latest tag">
