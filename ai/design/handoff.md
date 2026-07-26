@@ -44,14 +44,27 @@ Secondary findings:
 
 | File | What it is |
 | --- | --- |
-| `docs/public/design-spec.html` | **The main artifact.** Eight directions, four syntax palettes, two inline-code treatments, two code surfaces, light/dark, plus a full component showcase. Served at `/design-spec.html`. |
+| `docs/public/design-system.html` | **The design system.** The governing record of colour, type, planes, code and components. Served at `/design-system.html`. |
+| `docs/public/design-spec.html` | **The exploration behind it.** Eight directions, four syntax palettes, two inline-code treatments, two code surfaces, light/dark, plus a full component showcase. Served at `/design-spec.html`. |
 
-Formerly `ai/design/forge-riffs.html`. It now lives in `docs/public/` and ships with the site, so
-it can be linked and shared rather than passed around as a local file. It carries a
-`robots: noindex, nofollow` tag: it is a real public URL, but not a docs page.
+Both live in `docs/public/` and ship with the site, so they can be linked and shared rather than
+passed around as local files. Both carry `robots: noindex, nofollow`: real public URLs, not docs
+pages. `design-spec.html` was formerly `ai/design/forge-riffs.html`.
 
-There is no second copy — `docs/public/design-spec.html` is the only one. Do not reintroduce a
-mirror under `ai/design/`; the two will drift.
+`design-system.html` reads its swatches and plane readouts from the real stylesheet —
+`docs/.vitepress/scripts/sync-design-css.mjs` copies `theme/custom.css` to
+`public/design-system.css` on `predev` and `prebuild`. That is the whole point of it: if the site
+and the system disagree, the page shows it rather than repeating a table of hexes someone typed.
+
+**The system is housed in `design-system.html`, not in docs pages.** An earlier attempt put it at
+`docs/design/*.md` — six markdown pages plus `DesignTokens.vue` and `DesignPlanes.vue`. Every
+`.md` under `docs/` becomes a route, so that set published `/design/`, `/design/color`,
+`/design/type`, `/design/planes`, `/design/code` and `/design/components` into the search index
+and the sitemap despite never being in the nav or sidebar. It has been removed. Do not
+reintroduce the design system as docs pages.
+
+There is no second copy of either file. Do not reintroduce a mirror under `ai/design/`; the two
+will drift.
 
 `ai/design/brand-directions.html` (the first-round Forge Iron / Blueprint / Molten exploration) is
 referenced in older notes but is no longer in the tree.

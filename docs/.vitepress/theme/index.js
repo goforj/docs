@@ -8,7 +8,19 @@ import StarterKitOptions from './components/StarterKitOptions.vue'
 import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
 
-const GoForjHeroStack = defineAsyncComponent(() => import('./components/GoForjHeroStack.vue'))
+/* The hero is imported STATICALLY on purpose. As an async component it
+   is the one thing on the page guaranteed to be late: the SSR HTML does
+   contain the hero, but Vue cannot hydrate an unresolved async subtree,
+   so on load it swaps the server markup for a placeholder until the
+   52KB chunk arrives. The hero occupies `min-height: calc(100vh - 140px)`,
+   so for that window the whole landing page shifts up and the second
+   section renders where the hero should be, then everything jumps back.
+
+   Lazy-loading the largest above-the-fold element trades a visible
+   layout shift for bytes on secondary pages. It is the wrong trade for
+   a hero. GoForjLiveTerminal stays async — it is 5KB and below the fold. */
+import GoForjHeroStack from './components/GoForjHeroStack.vue'
+
 const GoForjLiveTerminal = defineAsyncComponent(() => import('./components/GoForjLiveTerminal.vue'))
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -522,27 +534,58 @@ async function refreshMermaidDiagrams() {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: 'strict',
-          theme: 'dark',
-          // Temper. Nodes sit on the docs surface, borders and
-          // connectors take the NAVIGATION gold — a diagram is
-          // structure, not an action, so nothing here is filled
-          // with the accent.
+          // 'base' rather than 'dark': the dark theme hard-sets its
+          // own mainBkg/nodeBorder/nodeTextColor, which beat the
+          // primary* variables below — only lineColor was landing,
+          // so nodes rendered on stock #1F2020 with #CCC borders.
+          // 'base' is the one theme intended to be overridden.
+          theme: 'base',
+          // These cover the first paint only. The durable styling is
+          // the TEMPER — Mermaid block in custom.css, which drives
+          // everything from var(--gf-*): mermaid.initialize() runs
+          // once per session, so values set here cannot follow a
+          // light/dark toggle. Keep the two in agreement.
           themeVariables: {
             background: 'transparent',
-            primaryColor: '#2F2737',
-            primaryTextColor: '#F2EEF6',
-            primaryBorderColor: 'rgba(255, 194, 77, 0.42)',
-            lineColor: 'rgba(255, 194, 77, 0.55)',
-            secondaryColor: '#1F1A24',
-            tertiaryColor: '#151119',
-            fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            fontSize: '14px'
+            // Flowchart reads these, not primaryColor/primaryBorderColor.
+            mainBkg: '#2C2734',
+            nodeBorder: '#3D3349',
+            nodeTextColor: '#FFFFFF',
+            clusterBkg: '#1D1923',
+            clusterBorder: '#2A2333',
+            edgeLabelBackground: '#131017',
+            titleColor: '#FFFFFF',
+            primaryColor: '#2C2734',
+            primaryTextColor: '#FFFFFF',
+            primaryBorderColor: '#3D3349',
+            lineColor: '#FFC24D',
+            secondaryColor: '#1D1923',
+            tertiaryColor: '#131017',
+            fontFamily:
+              "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
+            // Set here, NOT in custom.css. Mermaid measures label text at
+            // render time to size every node box and lay out the graph, so
+            // a CSS-only bump leaves the boxes at the old dimensions and
+            // the text spills out of them. This is the layout-safe knob;
+            // the CSS block deliberately sets font-family only.
+            fontSize: '18px'
           },
+          // The readability problem was never the font size on its own.
+          // Mermaid lays the graph out at its own intrinsic width and the
+          // SVG is then scaled to fit the reading column: an LR flowchart
+          // of five long-labelled nodes came out 1104px wide against a
+          // 753px column, so everything rendered at 0.68 scale and a 16px
+          // label reached the screen at about 11px.
+          //
+          // The fix is to make the graph narrower, not the type bigger —
+          // tighter wrapping turns wide boxes into taller ones, which
+          // costs vertical space the page has and buys back the scale.
           flowchart: {
             curve: 'basis',
             htmlLabels: false,
-            nodeSpacing: 34,
-            rankSpacing: 42,
+            nodeSpacing: 26,
+            rankSpacing: 34,
+            wrappingWidth: 140,
             padding: 8
           }
         })

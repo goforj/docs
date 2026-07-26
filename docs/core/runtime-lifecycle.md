@@ -41,9 +41,9 @@ An app command follows this shape:
 ```mermaid
 flowchart LR
   entry["cmd/<app>/main.go"] --> wire["app/<app>/wire"]
-  wire --> startup["BeforeStartup -> Startup -> AfterStartup"]
+  wire --> startup["BeforeStartup → Startup → AfterStartup"]
   startup --> command["run command or runtime"]
-  command --> shutdown["BeforeShutdown -> Shutdown -> AfterShutdown"]
+  command --> shutdown["BeforeShutdown → Shutdown → AfterShutdown"]
 ```
 
 ## Lifecycle Support

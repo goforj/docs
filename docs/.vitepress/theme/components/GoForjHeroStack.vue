@@ -309,9 +309,24 @@ onMounted(() => {
     })
   }
   syncMotionPreference()
-  mountTimer = window.setTimeout(() => {
+  /* Everything in the hero starts at opacity 0 and reveals on
+     `is-visible`, so this delay is time the hero is present but blank.
+     It was a flat 100ms. Two frames is all the browser needs to paint
+     the start state for the transition to run from.
+
+     rAF does not fire in a background tab, and this must never be the
+     thing that leaves the hero invisible — so the timeout stays as a
+     guaranteed floor rather than being replaced by rAF. */
+  let revealed = false
+  const reveal = () => {
+    if (revealed) return
+    revealed = true
     isMounted.value = true
-  }, 100)
+  }
+  if (typeof window.requestAnimationFrame === 'function') {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(reveal))
+  }
+  mountTimer = window.setTimeout(reveal, 120)
 })
 
 onBeforeUnmount(() => {
@@ -1174,8 +1189,15 @@ function getGenericIconBody(icon) {
   return lucideIconBodies[icon] || ''
 }
 
+/* The narrow viewBox frames the SOLID content (x 136-1048, y 156-1095),
+   not the SVG bounding box. The ground plane is a 16%-opacity haze that
+   overhangs 107 units — about 11% of the drawing width — to the left of
+   anything you can actually see, so fitting the bbox centred the frame
+   on the haze and pushed every visible object right of centre. The hero
+   clips the spill at <=640px, so losing the plane's left edge costs
+   nothing. */
 const heroViewBox = computed(() =>
-  isNarrow.value ? '14 146 1070 1020' : '0 0 800 900'
+  isNarrow.value ? '120 140 944 971' : '0 0 800 900'
 )
 
 function catchesForgeGlow(item) {

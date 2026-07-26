@@ -1,0 +1,1770 @@
+<!doctype html>
+<!--
+  GoForj Design System — the record of truth.
+
+  Two things make this page different from the prototype it replaces.
+
+  1. It renders ONE state. The prototype offered eight directions, four syntax
+     palettes and two code surfaces because it existed to choose between them.
+     That choice is made. A record of truth states what IS; the exploration
+     lives in git and in ai/design/handoff.md.
+
+  2. It does not restate the tokens. It links the REAL theme stylesheet —
+     public/design-system.css, copied from .vitepress/theme/custom.css by
+     `npm run sync:design` on predev and prebuild — and every swatch, value and
+     measurement below is computed from that at load. There is no second source,
+     so there is nothing to drift. If a value here is wrong, the site is wrong.
+-->
+<html lang="en" class="dark" data-gf-motion="reduced">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<!-- Dark only, on purpose. The site's light mode is still an open decision
+     (see ai/design/handoff.md), and a design system that renders half-built
+     in a mode it documents would be worse than one that declines to. -->
+<meta name="color-scheme" content="dark">
+<title>GoForj Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<!-- The live theme. Everything below reads its computed values. -->
+<link rel="stylesheet" href="/design-system.css">
+<style>
+/* Page chrome only. Every colour here is a theme token — this file
+   introduces no values of its own, by design. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--gf-ground-deep);
+  color: var(--gf-ink-2);
+  font-family: var(--gf-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+.ds-head {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  padding: 14px 32px;
+  background: color-mix(in srgb, var(--gf-ground-deep) 92%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--gf-line);
+}
+.ds-head h1 {
+  margin: 0; font-family: var(--gf-font-display); font-weight: 700;
+  letter-spacing: -0.03em; font-size: 17px; color: var(--gf-ink);
+}
+.ds-head .state {
+  font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-3);
+  letter-spacing: 0.04em;
+}
+.ds-head nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+.ds-head nav a {
+  font-size: 13px; color: var(--gf-ink-2); text-decoration: none;
+}
+.ds-head nav a:hover { color: var(--gf-nav); }
+
+.ds-wrap { max-width: 980px; margin: 0 auto; padding: 0 32px 140px; }
+
+.ds-sec { padding-top: 76px; }
+.ds-kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.17em;
+  text-transform: uppercase; color: var(--gf-accent); margin: 0 0 16px;
+}
+.ds-kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-accent); }
+.ds-sec > h2 {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.032em;
+  font-size: 30px; color: var(--gf-ink); margin: 0 0 6px; line-height: 1.15;
+}
+.ds-sec > h2 em { font-style: normal; color: var(--gf-accent); }
+.ds-sec > h3 {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.022em;
+  font-size: 18px; color: var(--gf-ink); margin: 38px 0 10px;
+  padding-bottom: 9px; border-bottom: 1px solid;
+  border-image: linear-gradient(90deg, var(--gf-line), transparent) 1;
+}
+.ds-sec p { font-size: 15px; line-height: 1.72; max-width: 72ch; margin: 0 0 14px; }
+.ds-sec p strong { color: var(--gf-ink); font-weight: 600; }
+.ds-sec code {
+  font-family: var(--gf-font-mono); font-size: 0.92em;
+  background: var(--gf-accent-soft); color: var(--gf-ink);
+  padding: 1px 6px; border-radius: var(--gf-radius-sm);
+}
+.ds-sec a { color: var(--gf-nav); text-decoration-color: var(--gf-nav-line); text-underline-offset: 3px; }
+
+table.ds {
+  width: 100%; border-collapse: separate; border-spacing: 0; margin: 16px 0;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius); overflow: hidden;
+  font-size: 14px;
+}
+table.ds th {
+  text-align: left; background: var(--gf-surface); color: var(--gf-ink-2);
+  font-size: 11.5px; letter-spacing: 0.07em; text-transform: uppercase; font-weight: 600;
+  padding: 10px 14px; border-bottom: 1px solid var(--gf-line-strong);
+}
+table.ds td { padding: 10px 14px; border-bottom: 1px solid var(--gf-line); color: var(--gf-ink-2); }
+table.ds tr:last-child td { border-bottom: 0; }
+table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-size: 12.5px; }
+
+.ds-note {
+  border: 1px solid var(--gf-line); border-left: 3px solid var(--gf-nav);
+  background: var(--gf-ground-alt); border-radius: var(--gf-radius);
+  padding: 14px 16px; margin: 18px 0;
+}
+/* The left rule is gold — a line is legitimate navigation-adjacent chrome.
+   The TITLE is ink: it is a label, not a destination. This was the page's
+   own headline violation. */
+.ds-note b { display: block; color: var(--gf-ink); font-size: 13.5px; margin-bottom: 5px; font-weight: 600; }
+.ds-note p { margin: 0; font-size: 14px; }
+.ds-note.warn { border-left-color: var(--vp-c-warning-1); }
+.ds-note.warn { border-left-color: var(--vp-c-warning-1); }
+.ds-note.warn b { color: var(--vp-c-warning-1); }  /* status: the colour IS the meaning */
+
+.swatches { display: grid; gap: 1px; margin: 16px 0; border: 1px solid var(--gf-line);
+  border-radius: var(--gf-radius); overflow: hidden; background: var(--gf-line); }
+.sw { display: grid; grid-template-columns: 34px minmax(0,1.4fr) 96px minmax(0,1.3fr) auto;
+  align-items: center; gap: 14px; padding: 10px 14px; background: var(--gf-ground); }
+.sw i { width: 26px; height: 26px; border-radius: var(--gf-radius-sm);
+  border: 1px solid var(--gf-line-strong); display: block; }
+.sw .nm { font-size: 13.5px; color: var(--gf-ink); }
+/* The variable name is what you copy — content, not decoration. ink-3 put it
+   at 3.56:1. */
+.sw .vr, .sw .hx, .sw .ct { font-family: var(--gf-font-mono); font-size: 11.5px; color: var(--gf-ink-2); }
+.sw .hx { color: var(--gf-ink-2); }
+.sw .rl { font-size: 12.5px; color: var(--gf-ink-2); }
+.sw .ct { text-align: right; }
+
+.demo { border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  padding: 22px; margin: 16px 0; background: var(--gf-ground); }
+.btn { display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--gf-font-body); font-size: 14.5px; font-weight: 600;
+  padding: 12px 22px; border-radius: var(--gf-radius); cursor: pointer;
+  background: var(--gf-accent); border: 1px solid var(--gf-accent); color: var(--gf-on-accent); }
+.btn.ghost { background: transparent; color: var(--gf-ink); border-color: var(--gf-line-strong); }
+.well { background: var(--gf-code-well); border: 1px solid var(--gf-line);
+  border-radius: var(--gf-radius); padding: 15px 18px; font-family: var(--gf-font-mono);
+  font-size: 13px; line-height: 1.75; overflow-x: auto; margin: 14px 0;
+  box-shadow: inset 0 2px 5px -3px rgba(0,0,0,.7), inset 0 1px 0 rgba(0,0,0,.45); }
+.kbd { font-family: var(--gf-font-mono); font-size: 11.5px; background: var(--gf-surface-2);
+  border: 1px solid var(--gf-line-strong); border-bottom-width: 2px; border-radius: var(--gf-radius-sm);
+  padding: 2px 7px; color: var(--gf-ink-2); }
+/* ---- illustration primitives ---------------------------------------- */
+
+/* Do / don't pairs. For a rules-based system this is the highest-value
+   illustration there is: the rule stated abstractly is forgettable, the
+   violation sitting next to the correct version is not. */
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+.pair > div {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden;
+}
+.pair .lbl {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 8px 14px; border-bottom: 1px solid var(--gf-line);
+}
+.pair .no .lbl  { color: var(--vp-c-danger-1); background: var(--vp-c-danger-soft); }
+.pair .yes .lbl { color: var(--vp-c-tip-1);    background: var(--vp-c-tip-soft); }
+.pair .body { padding: 18px 16px; }
+/* ink-2, not ink-3. These are captions but they are CONTENT, and the
+   colour page states ink-3 is AA-large and must not be used for content.
+   At ink-3 they measured 3.56:1 — the design system was breaking a rule it
+   states, which is the worst possible place for it to break. */
+.pair .why {
+  font-size: 12.5px; line-height: 1.55; color: var(--gf-ink-2);
+  padding: 0 16px 14px; margin: 0;
+}
+@media (max-width: 720px) { .pair { grid-template-columns: 1fr; } }
+
+/* Elevation cross-section. Each plane drawn at its real token value and
+   offset by its measured L*, so the diagram is the data. */
+.elev { margin: 20px 0; border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  overflow: hidden; background: var(--gf-ground-deep); }
+.elev .layer {
+  display: grid; grid-template-columns: minmax(0,1fr) 92px 76px;
+  align-items: center; gap: 12px;
+  padding: 15px 18px; border-bottom: 1px solid var(--gf-line);
+  font-size: 13.5px; color: var(--gf-ink-2);
+}
+.elev .layer:last-child { border-bottom: 0; }
+.elev .layer .nm { display: flex; align-items: center; gap: 10px; }
+/* These labels sit ON the plane colours, so they are read against a moving
+   background — ink-3 fell to 2.90:1 on the lightest band. ink-2 clears AA on
+   every band in the stack. */
+.elev .layer .depth { font-family: var(--gf-font-mono); font-size: 11.5px; color: var(--gf-ink-2); text-align: right; }
+.elev .layer .bar { height: 3px; border-radius: 2px; background: var(--gf-accent); }
+
+/* Type specimen */
+.spec { border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); padding: 4px 20px 20px; margin: 18px 0; }
+.spec .row { padding: 16px 0; border-bottom: 1px solid var(--gf-line); }
+.spec .row:last-child { border-bottom: 0; }
+.spec .meta { font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--gf-ink-3); margin-bottom: 8px; }
+.spec .sample { color: var(--gf-ink); }
+
+/* Component gallery */
+.gal { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px; margin: 18px 0; }
+.gal > figure {
+  margin: 0; border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden; display: flex; flex-direction: column;
+}
+.gal figcaption {
+  font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  padding: 8px 14px; border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.gal .box { padding: 18px 16px; flex: 1; display: flex; flex-direction: column;
+  gap: 10px; justify-content: center; }
+/* Gallery captions. `.pair .why` was styled and this was not, so these ran
+   flush to the card edge with nothing separating them from the specimen. */
+.gal .why {
+  margin: 0; padding: 12px 16px;
+  border-top: 1px solid var(--gf-line);
+  background: var(--gf-ground-alt);
+  font-size: 12.5px; line-height: 1.55; color: var(--gf-ink-2);
+}
+.gal .why b { font-weight: 600; }
+
+/* Callouts, rendered with the real rules */
+.call { border: 1px solid var(--gf-line); border-left-width: 3px;
+  background: var(--gf-ground-alt); border-radius: var(--gf-radius);
+  padding: 12px 15px; font-size: 13.5px; line-height: 1.6; }
+.call b { display: block; font-weight: 600; margin-bottom: 3px; }
+.call.tip { border-left-color: var(--vp-c-tip-1); background: var(--vp-c-tip-soft); }
+.call.tip b { color: var(--vp-c-tip-1); }
+.call.warn { border-left-color: var(--vp-c-warning-1); background: var(--vp-c-warning-soft); }
+.call.warn b { color: var(--vp-c-warning-1); }
+.call.danger { border-left-color: var(--vp-c-danger-1); background: var(--vp-c-danger-soft); }
+.call.danger b { color: var(--vp-c-danger-1); }
+.call.info { border-left-color: var(--gf-nav); background: var(--gf-nav-soft); }
+.call.info b { color: var(--gf-ink); }   /* rule is gold; the title is a label */
+
+/* Chrome fragments — sidebar, TOC, tabs, terminal */
+.frag { font-size: 13px; }
+.frag .side-grp { font-family: var(--gf-font-mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gf-ink-3); padding: 0 0 8px 16px; }
+.frag .side-a { display: block; padding: 5px 14px; color: var(--gf-ink-2);
+  border-left: 2px solid transparent; text-decoration: none; }
+.frag .side-a.on { color: var(--gf-nav); border-left-color: var(--gf-nav);
+  background: var(--gf-nav-soft); font-weight: 500; border-radius: 0 6px 6px 0; }
+.frag .toc { border-left: 1px solid var(--gf-line); }
+.frag .toc a { display: block; padding: 5px 0 5px 11px; color: var(--gf-ink-2);
+  text-decoration: none; font-size: 12.8px; }
+.frag .toc a.on { color: var(--gf-nav); }
+.frag .toc .mark { width: 2px; height: 20px; background: var(--gf-nav);
+  border-radius: 2px; position: absolute; margin-left: -1px; }
+
+.tabs { display: flex; background: var(--gf-code-chrome); border-bottom: 1px solid var(--gf-line); }
+.tabs span { font-family: var(--gf-font-mono); font-size: 12px; padding: 9px 14px;
+  color: var(--gf-ink-3); border-bottom: 2px solid transparent; }
+.tabs span.on { color: var(--gf-ink); border-bottom-color: var(--gf-accent); }
+
+.badge { display: inline-block; font-family: var(--gf-font-mono); font-size: 11px;
+  font-weight: 500; padding: 2px 8px; border-radius: var(--gf-radius-sm);
+  background: var(--gf-surface-2); color: var(--gf-ink-2); border: 1px solid var(--gf-line-strong); }
+.badge.tip { background: var(--vp-c-tip-soft); color: var(--vp-c-tip-1); border-color: var(--vp-c-tip-1); }
+.badge.warn { background: var(--vp-c-warning-soft); color: var(--vp-c-warning-1); border-color: var(--vp-c-warning-1); }
+.badge.danger { background: var(--vp-c-danger-soft); color: var(--vp-c-danger-1); border-color: var(--vp-c-danger-1); }
+
+.ln { display: grid; grid-template-columns: 34px 1fr; }
+.ln .g { color: var(--gf-ink-3); text-align: right; padding-right: 14px;
+  border-right: 1px solid var(--gf-line); user-select: none; }
+.ln .c { padding-left: 14px; }
+.ln .hl { background: rgba(255,194,77,.085); box-shadow: inset 2px 0 0 var(--gf-nav); }
+.ln .add { background: rgba(95,207,168,.09); box-shadow: inset 2px 0 0 var(--vp-c-tip-1); }
+.ln .del { background: rgba(255,107,133,.09); box-shadow: inset 2px 0 0 var(--vp-c-danger-1); opacity: .75; }
+
+/* ---- interactive proofs ---------------------------------------------
+   The system rests on two claims that are counterintuitive enough that
+   stating them does not persuade: that WCAG and dL* disagree, and that
+   28.5 degrees of hue is not enough separation on its own. Both are
+   arguments about perception, and an argument about perception has to be
+   handed to the reader's perception. These let you break the system and
+   watch what happens. */
+.proof {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  overflow: hidden; margin: 20px 0; background: var(--gf-ground);
+}
+.proof__ctl {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 13px 16px; border-bottom: 1px solid var(--gf-line);
+  background: var(--gf-ground-alt);
+}
+.proof__ctl label {
+  font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gf-ink-2); white-space: nowrap;
+}
+.proof input[type=range] {
+  flex: 1; min-width: 160px; accent-color: var(--gf-accent);
+  height: 22px; background: transparent; cursor: pointer;
+}
+.proof__val {
+  font-family: var(--gf-font-mono); font-size: 12px; color: var(--gf-ink);
+  min-width: 74px; text-align: right;
+}
+.proof__reset {
+  font-family: var(--gf-font-body); font-size: 11.5px; font-weight: 500;
+  padding: 5px 11px; border-radius: var(--gf-radius-sm);
+  background: transparent; color: var(--gf-ink-2);
+  border: 1px solid var(--gf-line-strong); cursor: pointer;
+}
+.proof__reset:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+.proof__stage { padding: 20px 16px; }
+.proof__meters {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 1px; background: var(--gf-line); border-top: 1px solid var(--gf-line);
+}
+.proof__meter { padding: 12px 16px; background: var(--gf-ground-alt); }
+.proof__meter .k {
+  display: block; font-family: var(--gf-font-mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--gf-ink-2);
+  margin-bottom: 5px;
+}
+.proof__meter .v {
+  display: block; font-family: var(--gf-font-mono); font-size: 19px;
+  color: var(--gf-ink); line-height: 1.1;
+}
+.proof__meter .n { display: block; font-size: 11.5px; color: var(--gf-ink-2); margin-top: 4px; }
+.proof__verdict {
+  padding: 12px 16px; border-top: 1px solid var(--gf-line);
+  background: var(--gf-ground-alt); font-size: 13px; line-height: 1.6;
+  color: var(--gf-ink-2);
+}
+.proof__verdict b { color: var(--gf-ink); font-weight: 600; }
+
+/* plane proof stage */
+.pstage { border-radius: var(--gf-radius); overflow: hidden; border: 1px solid var(--gf-line); }
+.pstage .canvas { padding: 16px; }
+.pstage .column { border-radius: var(--gf-radius-sm); padding: 15px 16px; }
+.pstage .column p {
+  margin: 0 0 11px; font-size: 13px; line-height: 1.6; max-width: none;
+}
+.pstage .wellbox {
+  border-radius: var(--gf-radius-sm); padding: 12px 14px;
+  font-family: var(--gf-font-mono); font-size: 12px; color: #E4DDE8;
+  border: 1px solid var(--gf-line);
+}
+
+/* hue proof stage */
+.hstage { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.hstage .btn-x {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--gf-font-body); font-size: 14px; font-weight: 600;
+  padding: 11px 20px; border-radius: var(--gf-radius); border: 1px solid transparent;
+}
+.hstage .link-x { font-size: 14px; text-underline-offset: 3px; text-decoration: underline; }
+.hstage.is-flat .link-x {
+  text-decoration: none; padding: 11px 20px; border-radius: var(--gf-radius);
+  color: var(--gf-on-accent); font-weight: 600;
+}
+
+/* ---- page-scale compositions ---------------------------------------- */
+/* Fragments show a component. These show the SYSTEM — the plane stack, the
+   role split and the type scale all visible in one frame, which is the only
+   way to tell whether they actually cohere. */
+.mock {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius-lg);
+  overflow: hidden; margin: 18px 0; background: var(--gf-ground-deep);
+  font-family: var(--gf-font-body);
+}
+.mock .bar {
+  display: flex; align-items: center; gap: 13px; padding: 0 18px; height: 50px;
+  border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-deep);
+}
+.mock .bar .logo {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.03em;
+  font-size: 15px; color: var(--gf-ink);
+}
+.mock .bar .ver {
+  font-family: var(--gf-font-mono); font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3px 7px; border-radius: 999px;
+  border: 1px solid var(--gf-accent-line); color: var(--gf-accent);
+  background: var(--gf-accent-soft);
+}
+.mock .bar .links { margin-left: auto; display: flex; gap: 17px; font-size: 12.5px; color: var(--gf-ink-2); }
+.mock .bar .links .on { color: var(--gf-nav); }
+
+/* landing */
+.mock .hero { padding: 40px 34px 34px; background-image:
+  radial-gradient(600px 240px at 20% -10%, rgba(255,94,58,.07), transparent 70%); }
+.mock .eyebrow {
+  display: inline-flex; align-items: center; gap: 9px; font-family: var(--gf-font-mono);
+  font-size: 9.5px; letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--gf-accent); margin-bottom: 15px;
+}
+.mock .eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--gf-accent); }
+.mock h3.hl {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.045em;
+  font-size: 34px; line-height: 1.05; color: var(--gf-ink); margin: 0 0 14px; max-width: 15ch;
+  padding: 0; border: 0;
+}
+.mock h3.hl em { font-style: normal; color: var(--gf-accent); }
+.mock .lead { font-size: 13.5px; line-height: 1.62; color: var(--gf-ink-2); max-width: 52ch; margin: 0 0 20px; }
+.mock .cta { display: flex; gap: 10px; margin-bottom: 18px; }
+.mock .install {
+  display: inline-flex; align-items: center; gap: 10px; font-family: var(--gf-font-mono);
+  font-size: 11.5px; border: 1px solid var(--gf-line); background: var(--gf-surface);
+  border-radius: var(--gf-radius); padding: 9px 12px; color: var(--gf-ink-2);
+}
+.mock .install .d { color: var(--gf-accent); }
+.mock .install .cp {
+  margin-left: 6px; padding-left: 10px; border-left: 1px solid var(--gf-line);
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gf-ink-3);
+}
+.mock .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-top: 26px; }
+/* .card is standalone so it works both inside a mock and on its own in the
+   gallery. It was previously only defined as `.mock .card`, a descendant
+   selector — so a gallery card written as class="mock card" matched neither
+   half and inherited page-level type at 15px. */
+.card {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  padding: 13px 14px; background: var(--gf-ground);
+  font-family: var(--gf-font-body);
+}
+.card b { display: block; font-size: 12.5px; color: var(--gf-ink); margin-bottom: 5px; font-weight: 600; }
+.card span { display: block; font-size: 11.5px; line-height: 1.5; color: var(--gf-ink-2); }
+.card .sub { color: var(--gf-ink); font-weight: 600; font-size: 11.5px; margin-bottom: 4px; }
+.card .stat {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.04em;
+  font-size: 30px; color: var(--gf-ink); line-height: 1; margin-bottom: 5px;
+}
+.card .mark {
+  flex: none; width: 38px; height: 38px; border-radius: var(--gf-radius);
+  background: var(--gf-surface); border: 1px solid var(--gf-line-strong);
+  display: grid; place-items: center; font-size: 18px;
+}
+
+/* docs layout */
+.mock .docs { display: grid; grid-template-columns: 178px minmax(0,1fr) 150px; }
+.mock .side { border-right: 1px solid var(--gf-line); padding: 18px 0; background: var(--gf-ground-deep); }
+.mock .main { padding: 26px 26px 30px; background: var(--gf-ground); }
+.mock .aside { border-left: 1px solid var(--gf-line); padding: 22px 14px; background: var(--gf-ground-deep); }
+.mock .main h4 {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.045em;
+  font-size: 26px; color: var(--gf-ink); margin: 0 0 5px;
+}
+.mock .rule44 { width: 44px; height: 3px; border-radius: 2px; background: var(--gf-accent); margin-bottom: 16px; }
+.mock .main h5 {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.032em;
+  font-size: 15px; color: var(--gf-ink); margin: 22px 0 9px; padding-bottom: 8px;
+  border-bottom: 1px solid; border-image: linear-gradient(90deg, var(--gf-line-strong), transparent) 1;
+}
+.mock .main p { font-size: 12.8px; line-height: 1.68; color: var(--gf-ink-2); margin: 0 0 11px; }
+.mock .main code {
+  font-family: var(--gf-font-mono); font-size: 0.92em; background: var(--gf-accent-soft);
+  color: var(--gf-ink); padding: 1px 5px; border-radius: 4px;
+}
+.mock .main a { color: var(--gf-nav); text-underline-offset: 3px; }
+.mock .planetag {
+  position: absolute; right: 8px; top: 6px; font-family: var(--gf-font-mono);
+  font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gf-ink-3); background: var(--gf-surface-2); border: 1px solid var(--gf-line);
+  padding: 2px 6px; border-radius: 4px; pointer-events: none;
+}
+.mock.annotated .side, .mock.annotated .main, .mock.annotated .aside,
+.mock.annotated .codewell { position: relative; }
+@media (max-width: 820px) {
+  .mock .docs { grid-template-columns: 1fr; }
+  .mock .side, .mock .aside { display: none; }
+  .mock .cards { grid-template-columns: 1fr; }
+}
+
+@media print {
+  /* Dark surfaces do not print. Invert the ground, keep the roles, and drop
+     the chrome that only makes sense on screen. */
+  .ds-head { position: static; }
+  .ds-head nav { display: none; }
+  body { background: #fff; color: #1a1620; }
+  .ds-sec { page-break-inside: avoid; padding-top: 34px; }
+  .pair, .gal, .mock, .elev, .spec, table.ds { page-break-inside: avoid; }
+  .ds-wrap { max-width: none; padding: 0 12mm 12mm; }
+  a { text-decoration: underline; }
+}
+
+@media (max-width: 760px) {
+  .ds-wrap, .ds-head { padding-left: 18px; padding-right: 18px; }
+  .sw { grid-template-columns: 26px 1fr auto; }
+  .sw .rl, .sw .vr { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="ds-head">
+  <h1>GoForj Design System</h1>
+  <span class="state">Temper · dark · Ember · lifted</span>
+  <nav>
+    <a href="#rules">Rules</a>
+    <a href="#colour">Colour</a>
+    <a href="#type">Type</a>
+    <a href="#planes">Planes</a>
+    <a href="#code">Code</a>
+    <a href="#components">Components</a>
+  </nav>
+</header>
+
+<noscript>
+  <div class="ds-wrap" style="padding-top:28px">
+    <div class="ds-note warn">
+      <b>This page needs JavaScript</b>
+      <p>
+        Every swatch, contrast ratio and plane measurement here is computed
+        from the live stylesheet rather than written down, so with scripting
+        disabled the tables render empty. The rules themselves are still
+        readable below; the numbers are not.
+      </p>
+    </div>
+  </div>
+</noscript>
+
+<div class="ds-wrap">
+
+<section class="ds-sec" id="rules">
+  <p class="ds-kicker">The system</p>
+  <h2>Colour means exactly <em>one of four things</em></h2>
+  <p>
+    This is the load-bearing part of the system, and the only part a machine
+    cannot enforce. Everything else on this page — every hex, every ratio — is
+    read live from the stylesheet the site actually runs. This table is not.
+  </p>
+
+  <table class="ds">
+    <thead><tr><th>Role</th><th>Colour</th><th>Form</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Action</strong></td><td>Molten orange</td><td>Always <strong>filled</strong></td><td>Primary button, install prompt, h1 rule, headline emphasis</td></tr>
+      <tr><td><strong>Navigation</strong></td><td>Temper gold</td><td>Always <strong>text or line</strong></td><td>Links, active sidebar, TOC marker, callout rule</td></tr>
+      <tr><td><strong>Reference</strong></td><td>Warm frame, white ink</td><td>Filled, ink is white</td><td>Inline code</td></tr>
+      <tr><td><strong>Neither</strong></td><td>Neutral surface</td><td>Surface + hairline</td><td>Tables, cards, chrome, dividers</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>The form rule is doing real work.</strong> Action and navigation are
+    only 28.5° apart in hue, so they do not separate on colour alone the way
+    orange and blue would. Filled-versus-text carries the rest of the distinction.
+  </p>
+
+  <h3>The two failure modes</h3>
+  <p>
+    Both have already happened on this site. Each pair below is real — the left
+    side is what shipped, the right is what replaced it.
+  </p>
+
+  <p style="font-size:13.5px;color:var(--gf-ink-2);margin-bottom:6px">
+    <strong style="color:var(--gf-ink-2)">1 · Gold used for emphasis.</strong>
+    Gold reads as “important”, and important is not a role.
+  </p>
+  <div class="pair">
+    <div class="no">
+      <div class="lbl">✕ Gold on things that don’t navigate</div>
+      <div class="body">
+        <div style="color:var(--gf-nav);font-weight:850;font-size:14px;margin-bottom:4px">Source first</div>
+        <div style="font-size:13px;color:var(--gf-ink-2);margin-bottom:14px">You own the code.</div>
+        <div class="well" style="margin:0;font-size:12.5px">
+          <span style="color:var(--gf-nav);font-weight:900">$ forj new my-app --starter-kit</span>
+        </div>
+      </div>
+      <p class="why">A heading and a shell command. Neither goes anywhere.</p>
+    </div>
+    <div class="yes">
+      <div class="lbl">✓ Ink for emphasis, code for code</div>
+      <div class="body">
+        <div style="color:var(--gf-ink);font-weight:600;font-size:14px;margin-bottom:4px">Source first</div>
+        <div style="font-size:13px;color:var(--gf-ink-2);margin-bottom:14px">You own the code.</div>
+        <div class="well" style="margin:0;font-size:12.5px">
+          <span style="color:var(--gf-accent)">$</span>
+          <span style="color:#FFC24D">forj</span>
+          <span style="color:#E4DDE8">new my-app --starter-kit</span>
+        </div>
+      </div>
+      <p class="why">Emphasis is weight and ink. The command is code, in the code palette.</p>
+    </div>
+  </div>
+
+  <p style="font-size:13.5px;color:var(--gf-ink-2);margin:26px 0 6px">
+    <strong style="color:var(--gf-ink-2)">2 · A role colour used decoratively.</strong>
+    Brand tints landed on top of three reserved meanings.
+  </p>
+  <div class="pair">
+    <div class="no">
+      <div class="lbl">✕ Cards tinted by framework</div>
+      <div class="body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="border:1px solid rgba(255,194,77,.5);background:rgba(255,194,77,.10);border-radius:8px;padding:11px">
+          <div style="color:#FFC24D;font-size:12.5px;font-weight:600">React</div>
+          <div style="font-size:11.5px;color:var(--gf-ink-2)">= navigation gold</div>
+        </div>
+        <div style="border:1px solid rgba(66,184,131,.5);background:rgba(66,184,131,.10);border-radius:8px;padding:11px">
+          <div style="color:#42B883;font-size:12.5px;font-weight:600">Vue</div>
+          <div style="font-size:11.5px;color:var(--gf-ink-2)">≈ tip green</div>
+        </div>
+      </div>
+      <p class="why">One card claims “link”, the other claims “success”.</p>
+    </div>
+    <div class="yes">
+      <div class="lbl">✓ Neutral card, logo keeps its colour</div>
+      <div class="body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="border:1px solid var(--gf-line);background:var(--gf-ground);border-radius:8px;padding:11px">
+          <div style="color:var(--gf-ink);font-size:12.5px;font-weight:600">React</div>
+          <div style="font-size:11.5px;color:var(--gf-ink-2)">neutral · logo tinted</div>
+        </div>
+        <div style="border:1px solid var(--gf-line);background:var(--gf-ground);border-radius:8px;padding:11px">
+          <div style="color:var(--gf-ink);font-size:12.5px;font-weight:600">Vue</div>
+          <div style="font-size:11.5px;color:var(--gf-ink-2)">neutral · logo tinted</div>
+        </div>
+      </div>
+      <p class="why">A logo may carry its own colour — it is an image, not a signal. The card may not.</p>
+    </div>
+  </div>
+
+  <p style="font-size:13.5px;color:var(--gf-ink-2);margin:26px 0 6px">
+    <strong style="color:var(--gf-ink-2)">And the form rule, shown.</strong>
+    Action and navigation are 28.5° apart — close enough that form has to carry
+    the rest.
+  </p>
+  <div class="pair">
+    <div class="no">
+      <div class="lbl">✕ Both roles as fills</div>
+      <div class="body" style="display:flex;gap:10px;align-items:center">
+        <button class="btn" style="font-size:13px;padding:9px 16px">Create App</button>
+        <button class="btn" style="font-size:13px;padding:9px 16px;background:var(--gf-nav);border-color:var(--gf-nav)">Read docs</button>
+      </div>
+      <p class="why">Two filled warm buttons 28.5° apart. Which one is the primary move?</p>
+    </div>
+    <div class="yes">
+      <div class="lbl">✓ Filled action, ghost + gold link</div>
+      <div class="body" style="display:flex;gap:14px;align-items:center">
+        <button class="btn" style="font-size:13px;padding:9px 16px">Create App</button>
+        <a href="#rules" style="color:var(--gf-nav);font-size:13.5px;text-underline-offset:3px">Read the docs →</a>
+      </div>
+      <p class="why">Filled is the action. Gold text is the way somewhere else. No ambiguity.</p>
+    </div>
+  </div>
+
+  <h3>28.5°, and why form has to carry it</h3>
+  <p>
+    Drag the action hue toward navigation gold. At the top of the range the two
+    roles are the same colour — and the only thing still telling a button from a
+    link is that one is <strong>filled</strong> and the other is
+    <strong>text</strong>. Then switch the form rule off and watch the last
+    distinction go with it.
+  </p>
+  <div class="proof" id="proof-hue">
+    <div class="proof__ctl">
+      <label for="hue">Action hue</label>
+      <input type="range" id="hue" min="13" max="41" step="0.5" value="13"
+             aria-describedby="hue-out">
+      <span class="proof__val" id="hue-out">13°</span>
+      <button type="button" class="proof__reset" data-reset="hue">Reset</button>
+    </div>
+    <div class="proof__ctl" style="border-top:0">
+      <label for="flat" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="flat" style="accent-color:var(--gf-accent);width:15px;height:15px;cursor:pointer">
+        Ignore the form rule — fill both
+      </label>
+    </div>
+    <div class="proof__stage">
+      <div class="hstage" id="hstage">
+        <span class="btn-x" id="h-btn">Build a GoForj App</span>
+        <a class="link-x" id="h-link" href="#rules">Read the docs</a>
+      </div>
+    </div>
+    <div class="proof__meters">
+      <div class="proof__meter">
+        <span class="k">Hue separation</span>
+        <span class="v" id="h-sep">28.5°</span>
+        <span class="n" id="h-sep-n"></span>
+      </div>
+      <div class="proof__meter">
+        <span class="k">Action</span>
+        <span class="v" id="h-a" style="font-size:15px">#FF5E3A</span>
+        <span class="n">filled</span>
+      </div>
+      <div class="proof__meter">
+        <span class="k">Navigation</span>
+        <span class="v" id="h-n" style="font-size:15px">#FFC24D</span>
+        <span class="n">text or line</span>
+      </div>
+    </div>
+    <p class="proof__verdict" id="h-verdict"></p>
+  </div>
+
+  <h3>Status is a third system</h3>
+  <p>
+    A warning has to look like a warning. Brand purity does not outrank
+    comprehension, so tip, warning and danger keep their own hues and sit
+    outside the four rules. Danger is a <strong>true red</strong>, pushed away
+    from the action orange deliberately — those two near each other was a real
+    collision risk.
+  </p>
+</section>
+
+<section class="ds-sec" id="colour">
+  <p class="ds-kicker">Colour</p>
+  <h2>Tokens, read from the <em>running theme</em></h2>
+  <p>
+    Every swatch below is computed from the live stylesheet at load. These are
+    not copies of the values — they are the values.
+  </p>
+
+  <h3>Action</h3>
+  <p>
+    Always filled. It marks the one thing on a view that is the primary move. It
+    is never text on a transparent background: an orange word looks like a link,
+    and links are gold.
+  </p>
+  <div class="swatches" data-swatches='[
+    ["Accent","--gf-accent","fills"],
+    ["Accent hover","--gf-accent-hi","hover fills"],
+    ["On accent","--gf-on-accent","ink on a fill"],
+    ["Accent soft","--gf-accent-soft","inline code frame"],
+    ["Accent line","--gf-accent-line","edges"]]'></div>
+  <div class="ds-note warn">
+    <b>Ink on the accent must be --gf-on-accent, not white</b>
+    <p>
+      White on the accent fill measures <span data-contrast="--gf-accent|#FFFFFF"></span>
+      and fails AA. The near-black measures <span data-contrast="--gf-accent|--gf-on-accent"></span>.
+      On a fill this saturated that is not a stylistic choice, it is the only
+      legible option.
+    </p>
+  </div>
+
+  <h3>Navigation</h3>
+  <p>
+    Always text or a line, never a fill. The second half of the rule matters
+    more than the first: gold means <em>this takes you somewhere</em>.
+  </p>
+  <div class="swatches" data-swatches='[
+    ["Nav","--gf-nav","link text, active states"],
+    ["Nav hover","--gf-nav-hi","hover"],
+    ["Nav soft","--gf-nav-soft","active row wash"],
+    ["Nav line","--gf-nav-line","rules and edges"]]'></div>
+
+  <h3>Neutral</h3>
+  <p>
+    Most of the interface lives here, and that is correct — colour is a scarce
+    resource with three assigned jobs. Note the ramp is <strong>violet, around
+    hue 270</strong>, not grey: surfaces carry the brand temperature without
+    spending any role colour. It also means an imported cool grey is visibly
+    wrong even when it looks near-identical in isolation.
+  </p>
+  <div class="swatches" data-swatches='[
+    ["Ink","--gf-ink","primary text"],
+    ["Ink muted","--gf-ink-2","body, secondary"],
+    ["Ink tertiary","--gf-ink-3","labels, decorative — AA-large only"],
+    ["Hairline","--gf-line","default border"],
+    ["Hairline strong","--gf-line-strong","emphasised border"]]'></div>
+
+  <h3>Status</h3>
+  <div class="swatches" data-swatches='[
+    ["Tip","--vp-c-tip-1","success, additive"],
+    ["Warning","--vp-c-warning-1","caution"],
+    ["Danger","--vp-c-danger-1","destructive, errors"]]'></div>
+</section>
+
+<section class="ds-sec" id="type">
+  <p class="ds-kicker">Type</p>
+  <h2>Three faces, <em>one job each</em></h2>
+  <table class="ds">
+    <thead><tr><th>Role</th><th>Face</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Display</td><td class="mono" data-font="--gf-font-display"></td><td>h1–h3, wordmark, hero headlines</td></tr>
+      <tr><td>Body</td><td class="mono" data-font="--gf-font-body"></td><td>everything else</td></tr>
+      <tr><td>Mono</td><td class="mono" data-font="--gf-font-mono"></td><td>code, kbd, labels, eyebrows, terminal</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The tracking curve</h3>
+  <p>
+    Display tracking is <code>-0.045em</code>. That only works at display sizes,
+    so it is applied on a curve. Past h3 these are labels rather than display
+    type — Space Grotesk reads oddly small — so they drop to the body face at 600.
+  </p>
+  <table class="ds">
+    <thead><tr><th>Level</th><th>Tracking</th><th>Face</th></tr></thead>
+    <tbody>
+      <tr><td>h1</td><td class="mono">-0.045em</td><td>display</td></tr>
+      <tr><td>h2</td><td class="mono">-0.032em</td><td>display</td></tr>
+      <tr><td>h3</td><td class="mono">-0.022em</td><td>display</td></tr>
+      <tr><td>h4 and below</td><td class="mono">-0.01em</td><td>body, 600</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Specimen</h3>
+  <div class="spec">
+    <div class="row">
+      <div class="meta">h1 · Space Grotesk 700 · -0.045em</div>
+      <div class="sample" style="font-family:var(--gf-font-display);font-weight:700;letter-spacing:-.045em;font-size:40px;line-height:1.08">
+        The composable stack for <em style="font-style:normal;color:var(--gf-accent)">building with Go</em>
+      </div>
+    </div>
+    <div class="row">
+      <div class="meta">h2 · Space Grotesk 700 · -0.032em</div>
+      <div class="sample" style="font-family:var(--gf-font-display);font-weight:700;letter-spacing:-.032em;font-size:28px">
+        Providers keep construction explicit
+      </div>
+    </div>
+    <div class="row">
+      <div class="meta">h3 · Space Grotesk 700 · -0.022em</div>
+      <div class="sample" style="font-family:var(--gf-font-display);font-weight:700;letter-spacing:-.022em;font-size:19px">
+        Required dependencies
+      </div>
+    </div>
+    <div class="row">
+      <div class="meta">h4 · Inter 600 · -0.01em — back to the body face</div>
+      <div class="sample" style="font-family:var(--gf-font-body);font-weight:600;letter-spacing:-.01em;font-size:16px">
+        App-scoped output
+      </div>
+    </div>
+    <div class="row">
+      <div class="meta">body · Inter 400 · 15.5px / 1.72</div>
+      <div class="sample" style="font-family:var(--gf-font-body);font-size:15.5px;line-height:1.72;color:var(--gf-ink-2);max-width:66ch">
+        Providers keep construction explicit: dependencies go in as parameters,
+        and the constructed value comes out as the return value.
+      </div>
+    </div>
+    <div class="row">
+      <div class="meta">mono · JetBrains Mono 400 · ligatures off</div>
+      <div class="sample" style="font-family:var(--gf-font-mono);font-size:14px;color:var(--gf-ink-2)">
+        if err != nil { return fmt.Errorf("store: %w", err) }
+      </div>
+    </div>
+  </div>
+
+  <h3>Why mono sits at 0.92em</h3>
+  <p>
+    Mono has a larger x-height than Inter at the same nominal size, so the
+    obvious 0.85em looks small <em>and</em> bulky at once. Compare:
+  </p>
+  <div class="pair">
+    <div class="no">
+      <div class="lbl">✕ 0.85em — undersized, still heavy</div>
+      <div class="body">
+        <p style="margin:0;font-size:15px;line-height:1.75">
+          Set <code style="font-size:.85em">STORAGE_PHOTOS_DRIVER</code> to
+          <code style="font-size:.85em">s3</code> in production.
+        </p>
+      </div>
+    </div>
+    <div class="yes">
+      <div class="lbl">✓ 0.92em — x-heights match</div>
+      <div class="body">
+        <p style="margin:0;font-size:15px;line-height:1.75">
+          Set <code>STORAGE_PHOTOS_DRIVER</code> to <code>s3</code> in production.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Details that are decisions</h3>
+  <p>
+    <strong>Ligatures are off.</strong> Go reads better without <code>=&gt;</code>
+    and <code>!=</code> fused into glyphs that do not exist in the source.
+  </p>
+  <p>
+    <strong>Inline code sits at 0.92em</strong>, not the more common 0.85em. Mono
+    has a larger x-height than Inter at the same nominal size, so a smaller value
+    looks small <em>and</em> bulky at once. 0.92 is where the two optically match.
+  </p>
+  <p>
+    <strong>Emphasis in a headline is <code>&lt;em&gt;</code></strong>, and it means
+    the accent lands there. <code>font-style</code> stays normal — the accent is
+    the emphasis, and italicising as well says it twice.
+  </p>
+  <p>
+    <strong>Body is 400, emphasis is 600.</strong> No 700 outside the display
+    face, and no 800 or 900 anywhere. Heavy weights were doing emphasis work that
+    colour should not have been doing either; a label at 850 in navigation gold
+    said “important” three times.
+  </p>
+</section>
+
+<section class="ds-sec" id="planes">
+  <p class="ds-kicker">Planes</p>
+  <h2>Depth, and how it is <em>measured</em></h2>
+
+  <div class="ds-note warn">
+    <b>Use ΔL*, not WCAG ratio, to judge whether two surfaces separate</b>
+    <p>
+      WCAG contrast ratio is a <em>text legibility</em> metric. Its +0.05 flare
+      constant dominates the numerator when both luminances are near zero, so any
+      two dark surfaces collapse to roughly 1.0–1.2:1 no matter how different
+      they look. ΔL* (CIE L*, perceptual lightness) tracks what the eye reports
+      for large flat areas. Under 1 is invisible, 2–3 is a subtle step, 5+ is a
+      clear plane change. This is written down because the original verification
+      checked WCAG only, passed every palette, and missed a code surface pointing
+      the wrong way.
+    </p>
+  </div>
+
+  <h3>Break it yourself</h3>
+  <p>
+    Drag the reading column down toward the canvas. Watch the two numbers
+    disagree: <strong>ΔL* collapses toward zero while the WCAG ratio barely
+    moves.</strong> That gap is the entire argument for measuring surfaces in
+    L*, and it is why a verification pass that checked only WCAG passed a code
+    surface nobody could see.
+  </p>
+  <div class="proof" id="proof-planes">
+    <div class="proof__ctl">
+      <label for="lift">Column lift</label>
+      <input type="range" id="lift" min="0" max="14" step="0.1" value="8.11"
+             aria-describedby="lift-out">
+      <span class="proof__val" id="lift-out">L* 8.11</span>
+      <button type="button" class="proof__reset" data-reset="lift">Reset</button>
+    </div>
+    <div class="proof__stage">
+      <div class="pstage" id="pstage">
+        <div class="canvas">
+          <div class="column">
+            <p>The reading column. Drag the control above and this plane moves.</p>
+            <div class="wellbox">forj build ./cmd/app</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="proof__meters">
+      <div class="proof__meter">
+        <span class="k">Well vs column · ΔL*</span>
+        <span class="v" id="m-dl">—</span>
+        <span class="n" id="m-dl-n"></span>
+      </div>
+      <div class="proof__meter">
+        <span class="k">Well vs column · WCAG</span>
+        <span class="v" id="m-wc">—</span>
+        <span class="n">barely responds</span>
+      </div>
+      <div class="proof__meter">
+        <span class="k">Column vs canvas · ΔL*</span>
+        <span class="v" id="m-cc">—</span>
+        <span class="n" id="m-cc-n"></span>
+      </div>
+    </div>
+    <p class="proof__verdict" id="p-verdict"></p>
+    <p class="proof__verdict" id="p-sweep" style="border-top:1px solid var(--gf-line)"></p>
+  </div>
+
+  <h3>The stack, drawn</h3>
+  <p>
+    Each band below is filled with its real token and indented by its measured
+    L*, so the diagram <em>is</em> the data — it redraws itself if the tokens
+    change.
+  </p>
+  <div class="elev" data-elev='[
+    ["Card / raised surface","--gf-surface"],
+    ["Reading column","--gf-ground"],
+    ["Code chrome","--gf-code-chrome"],
+    ["Canvas, nav, sidebar","--gf-ground-deep"],
+    ["Code well","--gf-code-well"]]'></div>
+  <p>
+    Read it as a cross-section: the canvas is the floor most of the site stands
+    on, the column steps up out of it, and code cuts back down through the
+    column to the floor again.
+  </p>
+
+  <h3>The stack, measured</h3>
+  <div data-planes='["--gf-ground-deep",[
+    ["Canvas, nav, sidebar","--gf-ground-deep"],
+    ["Reading column","--gf-ground"],
+    ["Code well","--gf-code-well"],
+    ["Code chrome","--gf-code-chrome"],
+    ["Card / raised surface","--gf-surface"],
+    ["Nested surface","--gf-surface-2"]]]'></div>
+  <p>
+    The code well lands back on the canvas value exactly. Code is a hole through
+    the column to the page ground underneath — the same depth it would have had
+    if the column were never lifted. That fell out of the arithmetic rather than
+    being designed, which is usually a sign the structure is coherent.
+  </p>
+
+  <h3>Why the column is lifted</h3>
+  <p>
+    <strong>There was nowhere to put the code.</strong> A near-black page has
+    about three L* units of room beneath it — even pure black buys less
+    separation than raising the code block did. The code well was never a
+    contrast failure; it had plenty of separation and was pointing the wrong way,
+    because there was nowhere else to go. Lifting the column creates the room.
+  </p>
+  <p>
+    <strong>Colour needs light.</strong> Perceived chroma of the violet neutral
+    measures ~1.9 at the deep ground and ~7.8 at the column. Lower down, the
+    brand tint is in the hex and absent from the eye.
+  </p>
+  <p>
+    <strong>Near-black halates.</strong> White text on a very dark ground blooms
+    slightly, especially on OLED. At the column’s lightness it stops.
+  </p>
+
+  <h3>Measured from the column</h3>
+  <div data-planes='["--gf-ground",[
+    ["Code well","--gf-code-well"],
+    ["Card","--gf-surface"],
+    ["Nested surface","--gf-surface-2"],
+    ["Hairline","--gf-line"],
+    ["Hairline strong","--gf-line-strong"]]]'></div>
+  <p>
+    <strong>A token is only meaningful relative to the ground it was calibrated
+    against.</strong> <code>--gf-surface</code> is a +8.6 step from the column.
+    Used on a marketing page, where the ground is the deep value, the same token
+    becomes a +13.7 step — 1.6× the intended lift across a large area, which
+    reads as pale blocks rather than panels. On the deep ground, content sits at
+    <code>--gf-ground</code> and takes the same step the column takes.
+  </p>
+
+  <h3>Code is a well, not a card</h3>
+  <p>
+    Every tool the audience uses all day — editor, terminal, diff, gist —
+    renders code in a recessed dark field. A code block styled as a card that
+    happens to contain code stops reading as a viewport into another system.
+    Chrome recedes, content advances: the tab strip on a code group must never be
+    the lightest plane in the component.
+  </p>
+</section>
+
+<section class="ds-sec" id="code">
+  <p class="ds-kicker">Code</p>
+  <h2>Ember, transposed from <em>github-dark</em></h2>
+  <p>
+    The syntax theme is a transposition rather than a new palette. It preserves
+    github-dark’s luminance profile — every token a high-luminance pastel, hues
+    far apart, plain text near-white, comments the only dim element — and shifts
+    hue into the Temper family. Where tokens differ they are brighter, because
+    this code well is darker than GitHub’s ground.
+  </p>
+
+  <table class="ds">
+    <thead><tr><th>Token</th><th>Dark</th><th>Light</th><th>Shiki scopes</th></tr></thead>
+    <tbody>
+      <tr><td>plain</td><td class="mono">#E4DDE8</td><td class="mono">#24202B</td><td class="mono">variable.other, source.go</td></tr>
+      <tr><td>comment</td><td class="mono">#8A8196</td><td class="mono">#6E6579</td><td class="mono">comment.line, comment.block</td></tr>
+      <tr><td>keyword</td><td class="mono">#FF8A6B</td><td class="mono">#B3350F</td><td class="mono">keyword.control, keyword.other</td></tr>
+      <tr><td>built-in type</td><td class="mono">#FFAB8F</td><td class="mono">#A8452B</td><td class="mono">storage.type.built-in, support.type</td></tr>
+      <tr><td>type</td><td class="mono">#9BD7C4</td><td class="mono">#0F6E62</td><td class="mono">entity.name.type</td></tr>
+      <tr><td>function</td><td class="mono">#FFC24D</td><td class="mono">#8A5A00</td><td class="mono">entity.name.function, support.function</td></tr>
+      <tr><td>string</td><td class="mono">#D9CE7A</td><td class="mono">#5C5A14</td><td class="mono">string.quoted.double, string.quoted.raw</td></tr>
+      <tr><td>number / constant</td><td class="mono">#FFAB8F</td><td class="mono">#A8452B</td><td class="mono">constant.numeric, constant.language</td></tr>
+      <tr><td>tag key / verb</td><td class="mono">#B8D96B</td><td class="mono">#3F6B14</td><td class="mono">meta.struct-tag entity.name.tag</td></tr>
+      <tr><td>punctuation</td><td class="mono">#9089A0</td><td class="mono">#6E6579</td><td class="mono">punctuation.*, meta.brace</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ds-note warn">
+    <b>Two known collisions</b>
+    <p>
+      Ember’s <strong>function</strong> colour is <code>#FFC24D</code> — the same
+      hex as navigation gold. This is contained to code, where the syntax system
+      governs rather than the four-role table, so it is acceptable. But it means
+      an automated check cannot distinguish “gold used correctly in code” from
+      “gold used wrongly as emphasis”. That one case needs a human.
+    </p>
+    <p style="margin-top:9px">
+      The same is true of <strong>warning amber</strong>
+      (<span data-var="--vp-c-warning-1"></span>) against
+      <strong>navigation gold</strong> (<span data-var="--gf-nav"></span>).
+      They are close enough that a colour audit written against one will flag
+      the other. Both are legitimate in their own roles — but any automated
+      check over this palette will produce false positives on these two pairs,
+      and reviewers should expect that rather than chase them.
+    </p>
+  </div>
+
+  <h3>Two Go fidelity details</h3>
+  <p>
+    Both confirmed against live output, and both easy to get wrong: Go built-in
+    types (<code>error</code>, <code>string</code>) take the <strong>keyword</strong>
+    colour, not a type colour; and <code>nil</code> is a <strong>constant</strong>,
+    not a keyword.
+  </p>
+
+  <h3>Comments were lifted</h3>
+  <p>
+    github-dark sets comments at <code>#6A737D</code>, which measures 3.9:1.
+    Ember lifts them to <code>#8A8196</code> at 5.1:1. Comments are content
+    people actually read, and dimming them below AA treats them as decoration.
+  </p>
+
+  <h3>Surface rules</h3>
+  <p>
+    Highlighted lines are <strong>navigation</strong> — a gold left rule plus a
+    wash, because the highlight says “look here”, not “do this”. Diffs use
+    <strong>status</strong> colours, not brand ones. Copy is an <strong>action</strong>:
+    its resting state is a neutral ghost, and only the completed state fills with
+    the accent, because a completed action is legitimately an action.
+  </p>
+  <p>
+    A shell command in a marketing card is still code. It goes in a well at the
+    well’s depth, in the Ember palette — <code>$</code> in the action colour, the
+    binary in the function colour, arguments in plain. The failure mode this
+    replaced was the whole command in navigation gold at weight 900, which made
+    it look like a link that had been shouted.
+  </p>
+</section>
+
+<section class="ds-sec" id="components">
+  <p class="ds-kicker">Components</p>
+  <h2>Applied, using <em>the real tokens</em></h2>
+
+  <h3>Action versus navigation</h3>
+  <div class="demo">
+    <button class="btn">Build a GoForj App</button>
+    <button class="btn ghost" style="margin-left:10px">Use a standalone library</button>
+    <p style="margin:16px 0 0">
+      A <a href="#rules">body link</a> is navigation: gold, underlined, no fill.
+      A button is filled. A markdown link styled as a button must be excluded
+      from the prose link rule, or it inherits gold and ends up as gold ink on an
+      orange fill.
+    </p>
+  </div>
+
+  <h3>Reference — inline code</h3>
+  <div class="demo">
+    <p style="margin:0">
+      Set <code>STORAGE_PHOTOS_DRIVER</code> to <code>s3</code> in production and
+      <code>local</code> in development. The <code>forj dev</code> command reads
+      <code>.env</code>, then <code>forj build</code> compiles the selected
+      drivers into <code>bin/app</code>.
+    </p>
+  </div>
+  <p>
+    Seven references in two sentences is the stress test. Inline code is not a
+    semantic role at all — it is a typographic <strong>register</strong>. It says
+    “this is a literal quotation from the machine’s language”, not “this will do
+    something if you touch it”, and it already owns the strongest register signal
+    available: it changes typeface.
+  </p>
+
+  <h3>The code well</h3>
+  <div class="well" data-ember>
+<span data-t="comment">// Services depend on contracts, not drivers.</span>
+<span data-t="keyword">type</span> <span data-t="type">Service</span> <span data-t="keyword">struct</span> <span data-t="punct">{</span>
+    disk storage<span data-t="punct">.</span><span data-t="type">Storage</span>
+<span data-t="punct">}</span>
+
+<span data-t="keyword">func</span> <span data-t="punct">(</span>s <span data-t="punct">*</span><span data-t="type">Service</span><span data-t="punct">)</span> <span data-t="func">Store</span><span data-t="punct">(</span>ctx context<span data-t="punct">.</span><span data-t="type">Context</span><span data-t="punct">)</span> <span data-t="punct">(</span><span data-t="type">Photo</span><span data-t="punct">,</span> <span data-t="builtin">error</span><span data-t="punct">)</span> <span data-t="punct">{</span>
+    <span data-t="keyword">return</span> <span data-t="type">Photo</span><span data-t="punct">{},</span> fmt<span data-t="punct">.</span><span data-t="func">Errorf</span><span data-t="punct">(</span><span data-t="string">"store photo: <span data-t="verb">%w</span>"</span><span data-t="punct">,</span> err<span data-t="punct">)</span>
+<span data-t="punct">}</span>
+  </div>
+  <p>
+    Note <code>error</code> takes the keyword colour rather than a type colour,
+    and the well sits below the page rather than above it.
+  </p>
+
+  <h3>Code surfaces</h3>
+  <div class="gal">
+    <figure>
+      <figcaption>Line numbers + highlight</figcaption>
+      <div class="box" style="padding:0">
+        <div class="well ln" style="margin:0;border:0;border-radius:0">
+          <div class="g">1<br>2<br>3<br>4</div>
+          <div class="c"><span style="color:#8A8196">// wire the cache</span><br><span
+            class="hl" style="display:block;margin:0 -14px;padding:0 14px"><span style="color:#FF8A6B">return</span> <span style="color:#9BD7C4">Service</span>{}</span><br><span style="color:#9089A0">}</span></div>
+        </div>
+      </div>
+      <p class="why">A highlight is <b style="color:var(--gf-nav);font-weight:600">navigation</b> — “look here” — so it is a gold rule and a wash, not a fill.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Diff</figcaption>
+      <div class="box" style="padding:0">
+        <div class="well ln" style="margin:0;border:0;border-radius:0">
+          <div class="g">1<br>2<br>3</div>
+          <div class="c"><span style="color:#E4DDE8">func NewService() {</span><br><span
+            class="del" style="display:block;margin:0 -14px;padding:0 14px">- cache.New()</span><span
+            class="add" style="display:block;margin:0 -14px;padding:0 14px">+ cache.NewWithTTL(5)</span></div>
+        </div>
+      </div>
+      <p class="why">Diffs use <b style="color:var(--vp-c-tip-1);font-weight:600">status</b> colours, never brand ones.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Code group tabs</figcaption>
+      <div class="box" style="padding:0">
+        <div class="tabs"><span class="on">service.go</span><span>.env</span><span>shell</span></div>
+        <div class="well" style="margin:0;border:0;border-radius:0;box-shadow:none">
+          <span style="color:#FF8A6B">func</span> <span style="color:#FFC24D">NewService</span><span style="color:#9089A0">()</span> <span style="color:#9BD7C4">*Service</span>
+        </div>
+      </div>
+      <p class="why">Chrome sits <em>below</em> the code it labels. The active tab is marked by an action bar.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Copy — resting and done</figcaption>
+      <div class="box" style="flex-direction:row;align-items:center;gap:12px">
+        <button class="btn ghost" style="font-size:11px;padding:6px 12px;border-radius:6px;color:var(--gf-ink-2)">Copy</button>
+        <button class="btn" style="font-size:11px;padding:6px 12px;border-radius:6px">Copied ✓</button>
+      </div>
+      <p class="why">Resting is a neutral ghost. Only the <em>completed</em> state fills — a completed action is legitimately an action.</p>
+    </figure>
+  </div>
+
+  <h3>Content</h3>
+  <div class="gal">
+    <figure>
+      <figcaption>Callouts</figcaption>
+      <div class="box">
+        <div class="call info"><b>Info</b>Not a status level — an aside. Takes navigation.</div>
+        <div class="call tip"><b>Tip</b>Additive, safe to follow.</div>
+        <div class="call warn"><b>Warning</b>Comprehension outranks brand purity.</div>
+        <div class="call danger"><b>Danger</b>A true red, pushed away from action orange.</div>
+      </div>
+    </figure>
+
+    <figure>
+      <figcaption>Badges</figcaption>
+      <div class="box" style="flex-direction:row;flex-wrap:wrap;gap:8px;align-items:flex-start">
+        <span class="badge">v0.20.0</span>
+        <span class="badge tip">stable</span>
+        <span class="badge warn">beta</span>
+        <span class="badge danger">deprecated</span>
+      </div>
+      <p class="why">Neutral by default. Colour only when it carries status.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Keyboard keys</figcaption>
+      <div class="box" style="flex-direction:row;gap:8px;align-items:center">
+        <span class="kbd">⌘</span><span class="kbd">K</span>
+        <span style="font-size:13px;color:var(--gf-ink-3)">to search</span>
+      </div>
+      <p class="why">Physical objects: neutral surface, heavier bottom border. A keycap is not an action.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Blockquote</figcaption>
+      <div class="box">
+        <div style="border-left:2px solid var(--gf-nav-line);padding-left:16px;color:var(--gf-ink-2);font-size:13.5px;line-height:1.65">
+          A quotation points somewhere else, so its rule is navigation. The text
+          stays muted ink.
+        </div>
+      </div>
+    </figure>
+
+    <figure>
+      <figcaption>Table — “neither”</figcaption>
+      <div class="box" style="padding:0">
+        <table class="ds" style="margin:0;border:0;border-radius:0">
+          <thead><tr><th>Driver</th><th>Local</th></tr></thead>
+          <tbody>
+            <tr><td>redis</td><td>✓</td></tr>
+            <tr><td>postgres</td><td>✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="why">Neutral surface and hairline. A header carrying an accent wash is how this rule most often erodes.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Disclosure</figcaption>
+      <div class="box">
+        <details style="border:1px solid var(--gf-line);border-radius:var(--gf-radius);background:var(--gf-ground-alt);padding:11px 14px;font-size:13.5px">
+          <summary style="cursor:pointer;color:var(--gf-ink);font-weight:500">What does the marker mean?</summary>
+          <p style="margin:9px 0 0;color:var(--gf-ink-2);font-size:13px">
+            The marker is navigation — opening it moves you somewhere. The
+            container is neutral.
+          </p>
+        </details>
+      </div>
+    </figure>
+  </div>
+
+  <h3>Navigation chrome</h3>
+  <div class="gal">
+    <figure>
+      <figcaption>Sidebar</figcaption>
+      <div class="box frag" style="background:var(--gf-ground-deep)">
+        <div class="side-grp">Core Concepts</div>
+        <a class="side-a" href="#components">Overview</a>
+        <a class="side-a on" href="#components">Providers</a>
+        <a class="side-a" href="#components">Runtime Lifecycle</a>
+      </div>
+      <p class="why">Group labels are quiet mono kickers. The active row is a gold rule plus a wash — the rule is the signal, the wash is neutral material.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Table of contents</figcaption>
+      <div class="box frag">
+        <div class="toc" style="position:relative">
+          <span class="mark" style="top:26px"></span>
+          <a href="#components">Overview</a>
+          <a href="#components" class="on">Shape</a>
+          <a href="#components">Next steps</a>
+        </div>
+      </div>
+      <p class="why">One continuous gutter line with a marker running on it. The line is the track; the marker is the position. Per-item rules would give you two indicators for one piece of state.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Prev / next pager</figcaption>
+      <div class="box" style="padding:0">
+        <div style="border:1px solid var(--gf-line);background:var(--gf-ground-alt);border-radius:var(--gf-radius);padding:12px 14px;margin:16px">
+          <div style="font-size:11.5px;color:var(--gf-ink-3);margin-bottom:3px">Next</div>
+          <div style="color:var(--gf-nav);font-size:14px;font-weight:500">Provider Patterns</div>
+        </div>
+      </div>
+      <p class="why">Neutral frame, gold reserved for the link text. A navigation-coloured border around a whole card reads as emphasis, not as a line.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Headings and rules</figcaption>
+      <div class="box">
+        <div style="font-family:var(--gf-font-display);font-weight:700;letter-spacing:-.045em;font-size:26px;color:var(--gf-ink)">Apps</div>
+        <div style="width:44px;height:3px;border-radius:2px;background:var(--gf-accent);margin:2px 0 16px"></div>
+        <div style="font-family:var(--gf-font-display);font-weight:700;letter-spacing:-.032em;font-size:17px;color:var(--gf-ink);padding-bottom:9px;border-bottom:1px solid;border-image:linear-gradient(90deg,var(--gf-line-strong),transparent) 1">The default shape</div>
+      </div>
+      <p class="why">The h1 bar is solid accent, once per page. Section rules sit <em>under</em> the heading — above it, the line attaches to the paragraph before.</p>
+    </figure>
+  </div>
+
+  <h3>Cards</h3>
+  <p>
+    Cards are <strong>“neither”</strong> — neutral surface, hairline, no brand
+    colour. Differentiation is carried by the mark and the title, not by tinting
+    the container.
+  </p>
+  <div class="gal" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
+    <figure>
+      <figcaption>Feature card</figcaption>
+      <div class="box" style="justify-content:flex-start">
+        <div class="card">
+          <b>App-owned composition</b>
+          <span>Generated code keeps application boundaries and extension points explicit.</span>
+        </div>
+      </div>
+      <p class="why">Neutral surface, hairline, ink title, muted body. No brand colour anywhere.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Card with a logo mark</figcaption>
+      <div class="box" style="justify-content:flex-start">
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start">
+          <span class="mark" style="color:#61DAFB">⚛</span>
+          <span style="min-width:0">
+            <b>React Starter Kit</b>
+            <span class="sub">Rich client applications</span>
+            <span>Build modern SPAs and dashboards with a fast developer experience.</span>
+          </span>
+        </div>
+      </div>
+      <p class="why">The glyph keeps the framework colour — a logo is an image, not a signal. The tile and the card around it stay neutral.</p>
+    </figure>
+
+    <figure>
+      <figcaption>Stat tile</figcaption>
+      <div class="box" style="justify-content:flex-start">
+        <div class="card">
+          <span class="stat">0</span>
+          <span>lines of Go changed when swapping drivers</span>
+        </div>
+      </div>
+      <p class="why">The number is display type doing the work. Still no colour — a statistic is not an action.</p>
+    </figure>
+  </div>
+
+  <h3>Landing page</h3>
+  <p>
+    Deep ground throughout. One filled action, one ghost, gold reserved for the
+    nav. The accent appears exactly three times: the eyebrow rule, the headline
+    emphasis, and the primary button.
+  </p>
+  <div class="mock">
+    <div class="bar">
+      <span class="logo">GoForj</span>
+      <span class="ver">Unreleased</span>
+      <span class="links"><span>Getting Started</span><span class="on">Core Concepts</span><span>Guides</span><span>Reference</span></span>
+    </div>
+    <div class="hero">
+      <div class="eyebrow">Generated Go applications you own</div>
+      <h3 class="hl">The composable stack for <em>building with Go</em></h3>
+      <p class="lead">
+        One cohesive application model. Explicit dependency wiring. Local-first
+        drivers. Production-ready primitives across the application stack.
+      </p>
+      <div class="cta">
+        <button class="btn" style="font-size:13px;padding:10px 18px">Build a GoForj App</button>
+        <button class="btn ghost" style="font-size:13px;padding:10px 18px">Use a standalone library</button>
+      </div>
+      <div class="install">
+        <span class="d">$</span> go install github.com/goforj/goforj/cmd/forj@latest
+        <span class="cp">Copy</span>
+      </div>
+      <div class="cards">
+        <div class="card"><b>App-owned composition</b><span>Boundaries and extension points stay explicit.</span></div>
+        <div class="card"><b>Explicit Runtimes</b><span>Run together locally, split in production.</span></div>
+        <div class="card"><b>Swap drivers, not logic</b><span>Same APIs, different infrastructure.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Documentation layout</h3>
+  <p>
+    The payoff illustration: all three planes visible at once. The canvas and
+    both rails sit on the deep ground, the reading column steps up out of it,
+    and the code well cuts back down through the column to the same value the
+    canvas is on.
+  </p>
+  <div class="mock annotated">
+    <div class="bar">
+      <span class="logo">GoForj</span>
+      <span class="ver">Unreleased</span>
+      <span class="links"><span>Getting Started</span><span class="on">Core Concepts</span><span>Guides</span><span>Reference</span></span>
+    </div>
+    <div class="docs">
+      <div class="side frag">
+        <span class="planetag">canvas</span>
+        <div class="side-grp">Core Concepts</div>
+        <a class="side-a" href="#components">Overview</a>
+        <a class="side-a" href="#components">App</a>
+        <a class="side-a on" href="#components">Apps</a>
+        <a class="side-a" href="#components">Runtime Lifecycle</a>
+        <a class="side-a" href="#components">Providers</a>
+      </div>
+
+      <div class="main">
+        <span class="planetag">column · +5.16 L*</span>
+        <h4>Apps</h4>
+        <div class="rule44"></div>
+        <p>
+          Start with one app. Add another only when the Project needs another
+          runnable boundary.
+        </p>
+        <p>
+          That rule keeps GoForj simple: shared behavior under <code>internal/</code>,
+          and clear composition under <code>app/</code>. See
+          <a href="#components">runtime topology</a> for how they split at deploy time.
+        </p>
+        <h5>The default shape</h5>
+        <p>Every Project has a default app named <code>app</code>:</p>
+        <div class="well codewell" style="font-size:11.5px;line-height:1.7">
+          <span class="planetag">well · −5.16 L*</span>
+          <span style="color:#8A8196">// Services depend on contracts, not drivers.</span><br>
+          <span style="color:#FF8A6B">type</span> <span style="color:#9BD7C4">Service</span> <span style="color:#FF8A6B">struct</span> <span style="color:#9089A0">{</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;disk storage<span style="color:#9089A0">.</span><span style="color:#9BD7C4">Storage</span><br>
+          <span style="color:#9089A0">}</span><br><br>
+          <span style="color:#FF8A6B">func</span> <span style="color:#FFC24D">NewService</span><span style="color:#9089A0">()</span> <span style="color:#9089A0">(</span><span style="color:#9BD7C4">Service</span><span style="color:#9089A0">,</span> <span style="color:#FFAB8F">error</span><span style="color:#9089A0">)</span> <span style="color:#9089A0">{</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#FF8A6B">return</span> <span style="color:#9BD7C4">Service</span><span style="color:#9089A0">{},</span> <span style="color:#FFAB8F">nil</span><br>
+          <span style="color:#9089A0">}</span>
+        </div>
+        <div class="call info" style="margin-top:14px;font-size:12.5px">
+          <b>Note</b>Named apps share one repo, one Go module, and everything
+          under <code style="background:var(--gf-accent-soft)">internal/</code>.
+        </div>
+      </div>
+
+      <div class="aside frag">
+        <span class="planetag">canvas</span>
+        <div class="side-grp" style="padding-left:11px">On this page</div>
+        <div class="toc" style="position:relative">
+          <span class="mark" style="top:26px"></span>
+          <a href="#components">Apps</a>
+          <a href="#components" class="on">The default shape</a>
+          <a href="#components">App metadata</a>
+          <a href="#components">Common mistakes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p>
+    Note what the accent does and does not do here: one 44×3 bar under the h1,
+    and nothing else. Every link, the active sidebar row and the TOC marker are
+    gold. The callout rule is gold because an aside points elsewhere. The table
+    of contents, the sidebar group label and the code chrome carry no colour at
+    all.
+  </p>
+
+  <h3>The same layout, in situ</h3>
+  <p>
+    These are drawn with the stylesheet the site runs, but they are still
+    reductions. For the real thing: <a href="/core/apps">a docs page</a>,
+    <a href="/starter-kits">a marketing page</a>, <a href="/">the landing</a>.
+  </p>
+</section>
+
+<section class="ds-sec">
+  <p class="ds-kicker">A caution</p>
+  <h2>What will <em>decay</em></h2>
+  <p>
+    Contrast ratios and token tables are the easy part, and they are settled. The
+    part that will decay is the action / navigation / reference discipline. It is
+    a convention, not a constraint — nothing in CSS stops someone making a link
+    orange.
+  </p>
+  <p>
+    That four-row table belongs in review. It has already eroded twice in a
+    single day of work, both times from automated passes that could not know what
+    a table header or a button <em>means</em>.
+  </p>
+</section>
+
+</div>
+
+<script>
+/*
+  Everything below reads the live stylesheet. No values are declared here.
+*/
+const root = document.documentElement;
+const readVar = (n) => getComputedStyle(root).getPropertyValue(n).trim();
+
+function toRgb(value) {
+  const probe = document.createElement('span');
+  probe.style.color = value; probe.style.display = 'none';
+  document.body.appendChild(probe);
+  const rgb = getComputedStyle(probe).color;
+  probe.remove();
+  return (rgb.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+}
+const resolve = (v) => v.startsWith('--') ? readVar(v) : v;
+const toHex = (v) => {
+  const c = toRgb(resolve(v));
+  return c.length < 3 ? v : '#' + c.map(n => Math.round(n).toString(16).padStart(2, '0')).join('').toUpperCase();
+};
+const lum = (v) => {
+  const f = toRgb(resolve(v)).map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+  return 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2];
+};
+const lstar = (v) => { const y = lum(v), d = 6 / 29;
+  return 116 * (y > d * d * d ? Math.cbrt(y) : y / (3 * d * d) + 4 / 29) - 16; };
+const wcag = (a, b) => { const A = lum(a), B = lum(b);
+  return ((Math.max(A, B) + 0.05) / (Math.min(A, B) + 0.05)); };
+
+// Swatch grids
+document.querySelectorAll('[data-swatches]').forEach(el => {
+  const rows = JSON.parse(el.dataset.swatches);
+  el.innerHTML = rows.map(([name, token, role]) => `
+    <div class="sw">
+      <i style="background:var(${token})"></i>
+      <span><span class="nm">${name}</span><br><span class="vr">${token}</span></span>
+      <span class="hx">${toHex(token)}</span>
+      <span class="rl">${role || ''}</span>
+      <span class="ct"></span>
+    </div>`).join('');
+});
+
+// Inline contrast readouts: data-contrast="--a|--b"
+document.querySelectorAll('[data-contrast]').forEach(el => {
+  const [a, b] = el.dataset.contrast.split('|');
+  const r = wcag(a, b);
+  el.textContent = r.toFixed(2) + ':1';
+  el.style.fontFamily = 'var(--gf-font-mono)';
+  el.style.color = r >= 4.5 ? 'var(--vp-c-tip-1)' : 'var(--vp-c-danger-1)';
+});
+
+// Inline token value readouts: <span data-var="--token">
+document.querySelectorAll('[data-var]').forEach(el => {
+  el.textContent = toHex(el.dataset.var);
+  el.style.fontFamily = 'var(--gf-font-mono)';
+  el.style.color = 'var(--gf-ink)';
+});
+
+// Font readouts
+document.querySelectorAll('[data-font]').forEach(el => {
+  el.textContent = readVar(el.dataset.font).split(',')[0].replace(/["']/g, '');
+});
+
+// Plane tables
+document.querySelectorAll('[data-planes]').forEach(el => {
+  const [ground, planes] = JSON.parse(el.dataset.planes);
+  const gl = lstar(ground);
+  el.innerHTML = `
+    <table class="ds">
+      <thead><tr><th>Plane</th><th>Value</th><th>L*</th><th>ΔL*</th><th>WCAG</th></tr></thead>
+      <tbody>
+      ${planes.map(([name, token]) => {
+        const d = lstar(token) - gl;
+        const weak = Math.abs(d) < 2;
+        return `<tr>
+          <td><i style="display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--gf-line-strong);background:var(${token});margin-right:8px;vertical-align:-2px"></i>${name}</td>
+          <td class="mono">${toHex(token)}</td>
+          <td class="mono">${lstar(token).toFixed(2)}</td>
+          <td class="mono" style="color:${weak ? 'var(--gf-ink-3)' : 'var(--gf-ink)'}">${d > 0 ? '+' : ''}${d.toFixed(2)}</td>
+          <td class="mono" style="color:var(--gf-ink-2)">${wcag(token, ground).toFixed(2)}:1</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+    <p style="font-size:12.5px;color:var(--gf-ink-2);margin:-6px 0 0">
+      The WCAG column is shown only so you can watch it collapse — every row lands
+      within a fraction of the same ratio regardless of how different the planes
+      look. Judge with ΔL*.
+    </p>`;
+});
+
+/* ---- interactive proofs -------------------------------------------- */
+
+// Scale a colour to a target L* while preserving its hue. Multiplicative on
+// the channels, so the ratios — and therefore the hue — survive.
+function atLstar(base, target) {
+  const c = toRgb(resolve(base));
+  const L = (rgbArr) => {
+    const f = rgbArr.map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    const y = 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2], d = 6 / 29;
+    return 116 * (y > d * d * d ? Math.cbrt(y) : y / (3 * d * d) + 4 / 29) - 16;
+  };
+  let lo = 0, hi = 24;
+  for (let i = 0; i < 60; i++) {
+    const m = (lo + hi) / 2;
+    if (L(c.map(v => Math.min(255, v * m))) < target) lo = m; else hi = m;
+  }
+  const k = (lo + hi) / 2;
+  return 'rgb(' + c.map(v => Math.round(Math.min(255, v * k))).join(',') + ')';
+}
+
+(function planeProof() {
+  const stage = document.getElementById('pstage');
+  if (!stage) return;
+  const slider = document.getElementById('lift');
+  const canvasEl = stage.querySelector('.canvas');
+  const colEl = stage.querySelector('.column');
+  const wellEl = stage.querySelector('.wellbox');
+  const base = readVar('--gf-ground');                 // hue source
+  const canvasC = readVar('--gf-ground-deep');
+  const wellC = readVar('--gf-code-well');
+  const canvasL = lstar(canvasC), wellL = lstar(wellC);
+
+  function render() {
+    const target = parseFloat(slider.value);
+    const col = atLstar(base, target);
+    canvasEl.style.background = canvasC;
+    colEl.style.background = col;
+    colEl.style.color = 'var(--gf-ink-2)';
+    wellEl.style.background = wellC;
+
+    const dWell = target - wellL;              // column above well
+    const dCanvas = target - canvasL;
+    const wc = wcag(col, wellC);
+
+    document.getElementById('lift-out').textContent = 'L* ' + target.toFixed(2);
+    document.getElementById('m-dl').textContent = dWell.toFixed(2);
+    document.getElementById('m-wc').textContent = wc.toFixed(2) + ':1';
+    document.getElementById('m-cc').textContent = dCanvas.toFixed(2);
+
+    const verdict = document.getElementById('p-verdict');
+    const dlNote = document.getElementById('m-dl-n');
+    const ccNote = document.getElementById('m-cc-n');
+    ccNote.textContent = dCanvas < 1 ? 'column has vanished' : 'column reads';
+
+    if (dWell < 1) {
+      dlNote.textContent = 'invisible';
+      verdict.innerHTML = '<b>The well has disappeared.</b> ΔL* is under 1 — you cannot see the code block at all — and yet WCAG still reports ' +
+        wc.toFixed(2) + ':1, essentially unchanged from where it started. This is the failure the original verification pass shipped: every palette cleared WCAG, and one of them had a code surface nobody could distinguish from the page.';
+    } else if (dWell < 2.5) {
+      dlNote.textContent = 'barely there';
+      verdict.innerHTML = '<b>Marginal.</b> ΔL* ' + dWell.toFixed(2) + ' is at the edge of perceptible for a large flat area. Note WCAG has moved almost not at all — it is not measuring this.';
+    } else if (dWell < 4.5) {
+      dlNote.textContent = 'subtle step';
+      verdict.innerHTML = 'A subtle step. Readable as a plane, but the well no longer reads as a <em>viewport into another system</em> — it looks like a panel that happens to hold code.';
+    } else {
+      dlNote.textContent = 'clear plane change';
+      verdict.innerHTML = '<b>This is the shipped value.</b> ΔL* ' + dWell.toFixed(2) + ' between column and well, and the same again between column and canvas — so code lands exactly back on the canvas plane. Across this entire slider WCAG moved by roughly ' +
+        '0.1, which is why it was never going to catch the problem.';
+    }
+  }
+  slider.addEventListener('input', render);
+  document.querySelector('[data-reset="lift"]').addEventListener('click', () => {
+    slider.value = lstar(readVar('--gf-ground')).toFixed(2); render();
+  });
+  render();
+
+  // Sweep the full range once and report how far each metric travelled. This
+  // is the whole argument as a single number, and it is computed rather than
+  // claimed — so it stays true if the tokens move.
+  (function sweep() {
+    let dMin = Infinity, dMax = -Infinity, wMin = Infinity, wMax = -Infinity;
+    for (let t = canvasL; t <= 16; t += 0.25) {
+      const col = atLstar(base, t);
+      const d = t - wellL, w = wcag(col, wellC);
+      dMin = Math.min(dMin, d); dMax = Math.max(dMax, d);
+      wMin = Math.min(wMin, w); wMax = Math.max(wMax, w);
+    }
+    const dRange = dMax - dMin, wRange = wMax - wMin;
+    document.getElementById('p-sweep').innerHTML =
+      'Across the entire range of that slider, <b>ΔL* travels ' + dRange.toFixed(1) +
+      '</b> while <b>the WCAG ratio travels ' + wRange.toFixed(2) + '</b> — a factor of about ' +
+      Math.round(dRange / wRange) + '. One of these metrics is measuring the thing you can see. ' +
+      'The other is measuring text legibility, correctly, on surfaces where no text is being read.';
+  })();
+})();
+
+(function hueProof() {
+  const stage = document.getElementById('hstage');
+  if (!stage) return;
+  const slider = document.getElementById('hue');
+  const flat = document.getElementById('flat');
+  const btn = document.getElementById('h-btn');
+  const link = document.getElementById('h-link');
+  const NAV_HUE = 41;
+
+  const hsl = (h, s, l) => `hsl(${h} ${s}% ${l}%)`;
+  function render() {
+    const h = parseFloat(slider.value);
+    const action = hsl(h, 100, 61);            // the accent's own S/L
+    const nav = hsl(NAV_HUE, 100, 65);
+    const sep = Math.abs(NAV_HUE - h);
+
+    btn.style.background = action;
+    btn.style.borderColor = action;
+    btn.style.color = 'var(--gf-on-accent)';
+    link.style.color = flat.checked ? 'var(--gf-on-accent)' : nav;
+    link.style.background = flat.checked ? nav : 'transparent';
+    link.style.textDecorationColor = nav;
+    stage.classList.toggle('is-flat', flat.checked);
+
+    document.getElementById('hue-out').textContent = h.toFixed(1) + '°';
+    document.getElementById('h-sep').textContent = sep.toFixed(1) + '°';
+    document.getElementById('h-a').textContent = toHex(action);
+    document.getElementById('h-n').textContent = toHex(nav);
+    document.getElementById('h-sep-n').textContent =
+      sep < 3 ? 'the same colour' : sep < 12 ? 'not separable' : 'distinguishable';
+
+    const v = document.getElementById('h-verdict');
+    if (flat.checked && sep < 12) {
+      v.innerHTML = '<b>Both roles are now indistinguishable.</b> Same hue, same form. A reader has no way to tell which one performs the action and which one navigates. This is what the four-role table is preventing.';
+    } else if (flat.checked) {
+      v.innerHTML = 'With the form rule off, the roles rest entirely on ' + sep.toFixed(1) + '° of hue. That works here — but at the shipped 28.5° it will not, which is the next thing to try.';
+    } else if (sep < 6) {
+      v.innerHTML = '<b>The colours have merged, and the system still works.</b> Filled versus text is carrying the whole distinction on its own. That is the form rule doing its job — and why it is not a stylistic preference.';
+    } else {
+      v.innerHTML = 'At ' + sep.toFixed(1) + '° the hues are still telling them apart. Push the slider up to see what happens when they stop.';
+    }
+  }
+  slider.addEventListener('input', render);
+  flat.addEventListener('change', render);
+  document.querySelector('[data-reset="hue"]').addEventListener('click', () => {
+    slider.value = 13; flat.checked = false; render();
+  });
+  render();
+})();
+
+// Elevation cross-section. Indent and bar width come from the measured L*,
+// so the drawing cannot disagree with the tokens.
+document.querySelectorAll('[data-elev]').forEach(el => {
+  const layers = JSON.parse(el.dataset.elev);
+  const ls = layers.map(([, t]) => lstar(t));
+  const max = Math.max(...ls), min = Math.min(...ls), span = (max - min) || 1;
+  el.innerHTML = layers.map(([name, token]) => {
+    const l = lstar(token);
+    const pct = (l - min) / span;             // 0 = deepest, 1 = highest
+    return `<div class="layer" style="background:var(${token});padding-left:${18 + pct * 46}px">
+      <span class="nm">
+        <span class="bar" style="width:${18 + pct * 54}px;opacity:${0.25 + pct * 0.75}"></span>
+        ${name}
+      </span>
+      <span class="depth">${toHex(token)}</span>
+      <span class="depth">L* ${l.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+});
+
+// Ember colouring for the sample block
+const EMBER = { plain:'#E4DDE8', comment:'#8A8196', keyword:'#FF8A6B', builtin:'#FFAB8F',
+  type:'#9BD7C4', func:'#FFC24D', string:'#D9CE7A', verb:'#B8D96B', punct:'#9089A0' };
+document.querySelectorAll('[data-ember]').forEach(block => {
+  block.style.color = EMBER.plain;
+  block.querySelectorAll('[data-t]').forEach(s => {
+    s.style.color = EMBER[s.dataset.t] || EMBER.plain;
+    if (s.dataset.t === 'comment') s.style.fontStyle = 'italic';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 {
   "scripts": {
+    "sync:design": "node .vitepress/scripts/sync-design-css.mjs",
+    "predev": "npm run sync:design",
     "dev": "vitepress dev .",
+    "prebuild": "npm run sync:design",
     "build": "vitepress build .",
     "preview": "vitepress preview ."
   },
