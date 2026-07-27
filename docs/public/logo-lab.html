@@ -399,7 +399,7 @@ figure:hover > svg { transform: translateY(-1px); }
   font-size: 14px; color: var(--gf-ink);
 }
 .ldr__stage {
-  display: flex; align-items: flex-end; justify-content: center; gap: 26px;
+  display: flex; align-items: flex-end; justify-content: center; gap: 26px; flex-wrap: wrap;
   padding: 26px 18px; background: var(--gf-ground-deep); min-height: 130px;
 }
 .ldr__stage figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
@@ -915,7 +915,9 @@ figure:hover > svg { transform: translateY(-1px); }
   <h3>The decided set</h3>
   <p>
     Three roles, one geometry. Everything below is the same frozen silhouette —
-    what changes between them is the job, not the drawing.
+    what changes between them is the job, not the drawing. The 256px and 128px
+    variants expose display-scale detail; click one for SVG or Alt-click for a
+    PNG at the displayed size.
   </p>
   <div class="ldrs" id="decidedSet"></div>
   <div class="note pick" id="recommendation"></div>
@@ -2590,21 +2592,21 @@ const PASSERS = VARIANTS.filter(v =>
     {
       role: 'Primary', name: 'Seam', id: 'seam',
       why: 'The mark. Cut seam rather than painted, so it carries no assumption about its background.',
-      sizes: [64, 40, 24, 16],
+      sizes: [256, 128, 64, 40, 24, 16],
       dark: px => rSeamCut(px, P_DARK),
       light: px => rSeamCut(px, P_LIGHT)
     },
     {
       role: 'OS derivative', name: 'Tile', id: 'tile',
       why: 'Every operating system demands a filled square. Glyph at the 0.62 safe zone, radius 22.37%.',
-      sizes: [64, 48, 32],
+      sizes: [256, 128, 64, 48, 32],
       dark: px => rTile(px, P_DARK, { seam: true }),
       light: px => rTile(px, P_LIGHT, { seam: true })
     },
     {
       role: 'Utility', name: 'Keyline', id: 'keyline',
       why: 'Etch, emboss, foil, single-plate print, and any ground nobody controls.',
-      sizes: [64, 48, 32],
+      sizes: [256, 128, 64, 48, 32],
       dark: px => rKeyline(px, P_DARK),
       light: px => rKeyline(px, P_LIGHT)
     }
@@ -2618,10 +2620,10 @@ const PASSERS = VARIANTS.filter(v =>
         <span class="mark__tag hot" style="margin-left:auto">${r.role}</span>
       </div>
       <div class="ldr__stage">
-        ${r.sizes.map(px => `<figure>${r.dark(px)}<figcaption>${px}</figcaption></figure>`).join('')}
+        ${r.sizes.map(px => `<figure>${r.dark(px)}<figcaption>${px}px</figcaption></figure>`).join('')}
       </div>
       <div class="ldr__stage" data-dlname="light" style="background:#FFFFFF">
-        ${r.sizes.map(px => `<figure>${r.light(px)}<figcaption style="color:#867E90">${px}</figcaption></figure>`).join('')}
+        ${r.sizes.map(px => `<figure>${r.light(px)}<figcaption style="color:#867E90">${px}px</figcaption></figure>`).join('')}
       </div>
       <p class="ldr__why">${r.why}</p>
       <div class="mark__act">
