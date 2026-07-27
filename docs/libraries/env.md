@@ -5,7 +5,7 @@ repoUrl: https://github.com/goforj/env
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/env/main/docs/images/logo.png?v=2" width="250" alt="goforj/env logo">
+  <img src="https://raw.githubusercontent.com/goforj/env/main/docs/images/logo.png?v=3" width="250" alt="goforj/env logo">
 </p>
 
 <p align="center">
