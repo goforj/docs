@@ -165,6 +165,36 @@ body {
 .tile-scale small {
   grid-column: 1 / -1; color: var(--gf-ink-3); font-size: 11px; line-height: 1.45;
 }
+.product-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px; margin: 20px 0;
+}
+.product-logo {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden;
+}
+.product-logo__head {
+  display: flex; align-items: center; gap: 10px; padding: 12px 15px;
+  border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.product-logo__name {
+  color: var(--gf-ink); font-family: var(--gf-font-display);
+  font-size: 15px; font-weight: 700; letter-spacing: -.03em;
+}
+.product-logo__stage {
+  display: flex; align-items: flex-end; justify-content: center; gap: 18px;
+  min-height: 190px; padding: 24px 16px; background: var(--gf-ground-deep);
+}
+.product-logo__stage.light { background: #fff; }
+.product-logo__stage figure { display: grid; justify-items: center; gap: 7px; margin: 0; }
+.product-logo__stage figcaption {
+  color: var(--gf-ink-3); font-family: var(--gf-font-mono); font-size: 9px;
+}
+.product-logo__stage.light figcaption { color: #867e90; }
+.product-logo__why {
+  min-height: 82px; margin: 0; padding: 13px 15px; border-top: 1px solid var(--gf-line);
+  color: var(--gf-ink-2); font-size: 12.5px; line-height: 1.55;
+}
 
 /* ---- generic test strips ---- */
 .strip {
@@ -496,6 +526,7 @@ figure:hover > svg { transform: translateY(-1px); }
     <a href="#loader">Loader</a>
     <a href="#surfaces">Surfaces</a>
     <a href="#verdict">Verdict</a>
+    <a href="#products">Products</a>
   </nav>
 </header>
 
@@ -979,6 +1010,26 @@ figure:hover > svg { transform: translateY(-1px); }
   </div>
 </section>
 
+<section class="sec" id="products">
+  <p class="kicker">Product family</p>
+  <h2>Related at a glance, <em>distinct in use</em></h2>
+  <p>
+    A product family should share construction rules, not one repeated symbol.
+    These studies hold the plate, palette, corner geometry, optical size, and
+    dark/light behavior constant while giving each product its own silhouette.
+    Click a study for SVG or Alt-click for a PNG at the displayed size.
+  </p>
+  <div class="product-grid" id="productFamily"></div>
+  <div class="note">
+    <b>What is decided—and what is not</b>
+    <p>
+      GoForj is the parent identity. Harbor’s anchor follows the symbol already
+      used by its desktop app, redrawn here to test family construction. Ship is
+      a concept study only; this page does not make it an approved product mark.
+    </p>
+  </div>
+</section>
+
 </div>
 
 <script>
@@ -1407,6 +1458,36 @@ function rAvatar(size, P, o = {}) {
     `<circle cx="${F.cx}" cy="${F.cy}" r="${F.S / 2 - (o.ring ? 0.75 : 0)}" fill="${plate}"${
       o.ring ? ` stroke="${o.ring}" stroke-width="1.5"` : ''}/>` +
     (o.glyph ? o.glyph(P) : platedGlyph(P, o, plate)) + '</svg>';
+}
+
+/* Harbor keeps the anchor metaphor already present in its desktop
+   icon, but rebuilds it on the shared plate instead of importing a
+   raster treatment that cannot participate in palette or size tests. */
+function rHarborTile(size, P, o = {}) {
+  const plate = o.plate || P.accent;
+  const glyph = o.fill || P.deep;
+  return svgOpen(size, '0 0 100 100', o.label) +
+    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    `<g fill="none" stroke="${glyph}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">` +
+      `<circle cx="50" cy="24" r="8"/>` +
+      `<path d="M50 32V84M34 45H66M19 62C22 78 34 87 50 87S78 78 81 62M19 62L29 67M81 62L71 67"/>` +
+    `</g></svg>`;
+}
+
+/* Ship is intentionally a concept study: a mast, two sails, and one
+   weighted hull reduced to filled shapes that survive beside an
+   anchor at 32px. It shares Harbor's system, not Harbor's symbol. */
+function rShipTile(size, P, o = {}) {
+  const plate = o.plate || P.accent;
+  const glyph = o.fill || P.deep;
+  return svgOpen(size, '0 0 100 100', o.label) +
+    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    `<g fill="${glyph}">` +
+      `<path d="M47 16H53V58H47Z"/>` +
+      `<path d="M43 27V54H23Z"/>` +
+      `<path d="M57 24V54H79Z"/>` +
+      `<path d="M17 59H83L76 76C73 84 66 88 57 88H43C34 88 27 84 24 76Z"/>` +
+    `</g></svg>`;
 }
 
 /* The mark as a void, cut out of a filled plate. */
@@ -2717,6 +2798,48 @@ const PASSERS = VARIANTS.filter(v =>
       });
     });
   });
+})();
+
+/* Render products as one aligned family so similarity and collision
+   are visible at the sizes people will actually encounter. */
+(function productFamily() {
+  const sizes = [160, 64, 32];
+  const products = [
+    {
+      name: 'GoForj', status: 'Parent mark',
+      why: 'The cube remains the ecosystem signature. Product marks inherit its plate and behavior without borrowing its silhouette.',
+      dark: px => rTile(px, P_DARK, { seam: true }),
+      light: px => rTile(px, P_LIGHT, { seam: true })
+    },
+    {
+      name: 'Harbor', status: 'Alignment study',
+      why: 'The existing anchor metaphor, simplified to one monoline symbol and placed on the same optical frame as the parent.',
+      dark: px => rHarborTile(px, P_DARK),
+      light: px => rHarborTile(px, P_LIGHT)
+    },
+    {
+      name: 'Ship', status: 'Concept only',
+      why: 'A filled sail-and-hull silhouette. It reads as movement while remaining clearly different from Harbor at avatar size.',
+      dark: px => rShipTile(px, P_DARK),
+      light: px => rShipTile(px, P_LIGHT)
+    }
+  ];
+
+  const ladder = (product, mode) => sizes.map(px =>
+    `<figure data-dlname="${product.name} ${mode} product tile">${product[mode](px)}<figcaption>${px}px</figcaption></figure>`
+  ).join('');
+
+  document.getElementById('productFamily').innerHTML = products.map(product => `
+    <article class="product-logo">
+      <div class="product-logo__head">
+        <span class="product-logo__name">${product.name}</span>
+        <span class="mark__tag${product.name === 'GoForj' ? ' hot' : ''}" style="margin-left:auto">${product.status}</span>
+      </div>
+      <div class="product-logo__stage">${ladder(product, 'dark')}</div>
+      <div class="product-logo__stage light">${ladder(product, 'light')}</div>
+      <p class="product-logo__why">${product.why}</p>
+    </article>
+  `).join('');
 })();
 
 /* --- recommendation, written against the measurements --- */
