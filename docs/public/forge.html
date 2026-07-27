@@ -263,25 +263,25 @@ camera.lookAt(CAM_LOOK);
    Materials
    ================================================================ */
 const mat = {
-  ironDark:  new THREE.MeshStandardMaterial({ color: T.groundAlt, metalness: 0.78, roughness: 0.42, envMapIntensity: 0.35 }),
-  iron:      new THREE.MeshStandardMaterial({ color: T.surface,   metalness: 0.72, roughness: 0.5,  envMapIntensity: 0.3 }),
-  wood:      new THREE.MeshStandardMaterial({ color: 0x35281f,    metalness: 0.0,  roughness: 0.86, envMapIntensity: 0.12 }),
-  woodDark:  new THREE.MeshStandardMaterial({ color: 0x241a14,    metalness: 0.0,  roughness: 0.9,  envMapIntensity: 0.1 }),
-  brick:     new THREE.MeshStandardMaterial({ color: T.groundAlt, metalness: 0.05, roughness: 0.92, envMapIntensity: 0.1 }),
-  floor:     new THREE.MeshStandardMaterial({ color: 0x120f17,    metalness: 0.15, roughness: 0.82, envMapIntensity: 0.15 }),
-  wall:      new THREE.MeshStandardMaterial({ color: 0x110e15,    metalness: 0.0,  roughness: 1.0,  envMapIntensity: 0.05 })
+  ironDark:  new THREE.MeshStandardMaterial({ color: 0x18141d, metalness: 0.78, roughness: 0.42, envMapIntensity: 0.3 }),
+  iron:      new THREE.MeshStandardMaterial({ color: 0x231e2b, metalness: 0.72, roughness: 0.5,  envMapIntensity: 0.28 }),
+  wood:      new THREE.MeshStandardMaterial({ color: 0x2b201a, metalness: 0.0,  roughness: 0.86, envMapIntensity: 0.1 }),
+  woodDark:  new THREE.MeshStandardMaterial({ color: 0x1d1510, metalness: 0.0,  roughness: 0.9,  envMapIntensity: 0.08 }),
+  brick:     new THREE.MeshStandardMaterial({ color: 0x161219, metalness: 0.05, roughness: 0.92, envMapIntensity: 0.08 }),
+  floor:     new THREE.MeshStandardMaterial({ color: 0x0e0b12, metalness: 0.15, roughness: 0.88, envMapIntensity: 0.08 }),
+  wall:      new THREE.MeshStandardMaterial({ color: 0x0d0b11, metalness: 0.0,  roughness: 1.0,  envMapIntensity: 0.04 })
 };
 
 /* ================================================================
    Lights
    ================================================================ */
-scene.add(new THREE.HemisphereLight(0x2a2438, T.groundDeep, 0.55));
+scene.add(new THREE.HemisphereLight(0x2a2438, T.groundDeep, 0.22));
 
-const rim = new THREE.DirectionalLight(0x8a7fae, 0.5);           // violet rim — the palette's tint
+const rim = new THREE.DirectionalLight(0x8a7fae, 0.4);           // violet rim — the palette's tint
 rim.position.set(-4, 6, -6);
 scene.add(rim);
 
-const lampLight = new THREE.SpotLight(0xffd9a6, 55, 0, 0.62, 0.55, 1.6);
+const lampLight = new THREE.SpotLight(0xffb974, 110, 0, 0.4, 0.85, 1.5);
 lampLight.position.set(0.35, 5.0, 0.6);
 lampLight.castShadow = true;
 lampLight.shadow.mapSize.set(1024, 1024);
@@ -292,7 +292,7 @@ scene.add(lampTarget);
 lampLight.target = lampTarget;
 scene.add(lampLight);
 
-const hearthLight = new THREE.PointLight(T.accent, 22, 11, 1.9);
+const hearthLight = new THREE.PointLight(T.accent, 13, 11, 1.9);
 hearthLight.position.set(-3.0, 1.6, -1.6);
 scene.add(hearthLight);
 
@@ -360,7 +360,7 @@ const coals = [];
   for (let i = 0; i < 14; i++) {
     const m = new THREE.MeshStandardMaterial({
       color: 0x1a0f0a, roughness: 0.9,
-      emissive: T.accent, emissiveIntensity: 0.6 + Math.random() * 1.6
+      emissive: T.accent, emissiveIntensity: 0.4 + Math.random() * 0.9
     });
     const c = new THREE.Mesh(g, m);
     c.position.set((Math.random() - 0.5) * 1.5, 1.1 + Math.random() * 0.1, (Math.random() - 0.5) * 1.0);
@@ -386,9 +386,9 @@ scene.add(hearth);
   bulb.position.y = 4.76;
   /* faked volumetric cone */
   const cone = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.28, 1.7, 3.7, 32, 1, true),
+    new THREE.CylinderGeometry(0.2, 1.45, 3.9, 32, 1, true),
     new THREE.MeshBasicMaterial({
-      color: 0xffc98a, transparent: true, opacity: 0.05,
+      color: 0xff9d5c, transparent: true, opacity: 0.02,
       blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
     })
   );
@@ -402,18 +402,18 @@ scene.add(hearth);
 {
   const shelves = new THREE.Group();
   const boardG = new THREE.BoxGeometry(2.6, 0.07, 0.45);
-  [2.4, 3.3].forEach((y, row) => {
+  [1.7, 2.5].forEach((y, row) => {
     const board = new THREE.Mesh(boardG, mat.woodDark);
-    board.position.set(3.4, y, -5.9);
+    board.position.set(3.7, y, -5.9);
     shelves.add(board);
     for (let i = 0; i < 4; i++) {
       const w = 0.2 + Math.random() * 0.3;
       const h = 0.24 + Math.random() * 0.34;
       const jar = new THREE.Mesh(
         Math.random() > 0.5 ? new THREE.BoxGeometry(w, h, 0.3) : new THREE.CylinderGeometry(w * 0.5, w * 0.5, h, 12),
-        Math.random() > 0.5 ? mat.iron : mat.woodDark
+        Math.random() > 0.5 ? mat.ironDark : mat.woodDark
       );
-      jar.position.set(2.4 + i * 0.68 + (Math.random() - 0.5) * 0.15, y + 0.035 + h / 2, -5.9);
+      jar.position.set(2.7 + i * 0.68 + (Math.random() - 0.5) * 0.15, y + 0.035 + h / 2, -5.9);
       shelves.add(jar);
     }
   });
@@ -440,8 +440,12 @@ hammerHead.castShadow = true;
   hammer.add(handle, hammerHead);
 }
 scene.add(hammer);
+/* The head sits at local (-1.5, 0, 0), so raising it means rotating the
+   group by MINUS the swing angle — setHammer owns that sign so nobody
+   re-inverts the hammer by assigning rotation.z directly. */
 const HAMMER_REST = 0.52, HAMMER_UP = 1.32, HAMMER_HIT = 0.335;
-hammer.rotation.z = HAMMER_REST;
+function setHammer(a) { hammer.rotation.z = -a; }
+setHammer(HAMMER_REST);
 
 /* ================================================================
    The mark — extruded from the frozen base
@@ -458,11 +462,12 @@ const markGeom = (() => {
   return g;
 })();
 
-const MARK_SCALE = 1.42;
+const MARK_SCALE = 1.42;        // hero size, on the anvil
+const CONST_SCALE = 0.92;       // shipped size, in the constellation
 function makeMark() {
   const m = new THREE.Mesh(markGeom, new THREE.MeshStandardMaterial({
     color: T.surface, metalness: 0.62, roughness: 0.48,
-    emissive: T.accent, emissiveIntensity: 2.6, envMapIntensity: 0.5
+    emissive: T.accent, emissiveIntensity: 1.7, envMapIntensity: 0.4
   }));
   m.scale.setScalar(MARK_SCALE);
   m.castShadow = true;
@@ -476,11 +481,11 @@ function applyHeat(mesh, t) {
   const m = mesh.material;
   if (t < 0.55) {
     m.emissive.lerpColors(C_MOLTEN, C_GOLD, t / 0.55);
-    m.emissiveIntensity = THREE.MathUtils.lerp(2.6, 1.15, t / 0.55);
+    m.emissiveIntensity = THREE.MathUtils.lerp(1.7, 0.9, t / 0.55);
   } else {
     const u = (t - 0.55) / 0.45;
     m.emissive.copy(C_GOLD);
-    m.emissiveIntensity = THREE.MathUtils.lerp(1.15, 0.16, u);
+    m.emissiveIntensity = THREE.MathUtils.lerp(0.9, 0.14, u);
     m.metalness = THREE.MathUtils.lerp(0.62, 0.9, u);
     m.roughness = THREE.MathUtils.lerp(0.48, 0.3, u);
   }
@@ -488,11 +493,11 @@ function applyHeat(mesh, t) {
 
 /* --- constellation of finished applications --- */
 const SLOTS = [
-  new THREE.Vector3( 3.2, 3.35, -2.0),
-  new THREE.Vector3( 2.1, 4.05, -2.5),
-  new THREE.Vector3( 0.8, 4.4,  -2.8),
-  new THREE.Vector3(-0.6, 4.15, -2.5),
-  new THREE.Vector3(-1.8, 3.45, -2.1)
+  new THREE.Vector3( 3.05, 3.7,  -2.4),
+  new THREE.Vector3( 1.9,  4.35, -2.8),
+  new THREE.Vector3( 0.55, 4.6,  -3.0),
+  new THREE.Vector3(-0.85, 4.3,  -2.7),
+  new THREE.Vector3(-2.0,  3.6,  -2.2)
 ];
 const constellation = [];  // { mesh, slot, phase, dying }
 function addToConstellation(mesh, slotIdx) {
@@ -510,7 +515,7 @@ function freeSlot() {
 /* --- billet + orbiting component motes --- */
 const billet = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.4, 0.5), new THREE.MeshStandardMaterial({
   color: 0x2a1610, metalness: 0.4, roughness: 0.5,
-  emissive: T.accent, emissiveIntensity: 2.3, envMapIntensity: 0.3
+  emissive: T.accent, emissiveIntensity: 1.55, envMapIntensity: 0.3
 }));
 billet.castShadow = true;
 billet.visible = false;
@@ -523,7 +528,7 @@ const motes = [];
   for (let i = 0; i < MOTES; i++) {
     const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
       color: 0x2a2010, metalness: 0.5, roughness: 0.4,
-      emissive: T.gold, emissiveIntensity: 1.8
+      emissive: T.gold, emissiveIntensity: 1.3
     }));
     m.visible = false;
     scene.add(m);
@@ -577,7 +582,7 @@ function makePoints(count, size) {
 
 /* embers: perpetual, cozy */
 const EMBERS = 150;
-const embers = makePoints(EMBERS, 0.085);
+const embers = makePoints(EMBERS, 0.105);
 const eData = [];
 function respawnEmber(i, warm) {
   const nearHearth = Math.random() < 0.62;
@@ -662,7 +667,7 @@ function updateParticles(dt, t) {
    ================================================================ */
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.75, 0.55, 0.82);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.95, 0.6, 0.68);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -685,7 +690,7 @@ function startCycle() {
   phase = 'slide'; phaseT = 0; strikeIdx = 0; struck = false;
   billet.visible = true;
   billet.scale.set(1, 1, 1);
-  billet.material.emissiveIntensity = 2.3;
+  billet.material.emissiveIntensity = 1.55;
   motes.forEach((mo, i) => {
     mo.mesh.visible = true;
     mo.mesh.scale.setScalar(1);
@@ -744,22 +749,22 @@ function tickCycle(dt, t) {
       const cyc = D.windup + D.hold + D.strike + D.recoil;
       const lt = phaseT;
       if (lt < D.windup) {
-        hammer.rotation.z = THREE.MathUtils.lerp(strikeIdx ? HAMMER_HIT : HAMMER_REST, HAMMER_UP, easeOut(lt / D.windup));
+        setHammer(THREE.MathUtils.lerp(strikeIdx ? HAMMER_HIT : HAMMER_REST, HAMMER_UP, easeOut(lt / D.windup)));
       } else if (lt < D.windup + D.hold) {
-        hammer.rotation.z = HAMMER_UP;
+        setHammer(HAMMER_UP);
       } else if (lt < D.windup + D.hold + D.strike) {
         const u = (lt - D.windup - D.hold) / D.strike;
-        hammer.rotation.z = THREE.MathUtils.lerp(HAMMER_UP, HAMMER_HIT, easeIn(u));
+        setHammer(THREE.MathUtils.lerp(HAMMER_UP, HAMMER_HIT, easeIn(u)));
         if (!struck && u > 0.96) { struck = true; impact(strikeIdx === STRIKES - 1); }
       } else {
-        hammer.rotation.z = HAMMER_HIT;
+        setHammer(HAMMER_HIT);
       }
       if (lt >= cyc) {
         phaseT = 0; struck = false; strikeIdx++;
         if (strikeIdx >= STRIKES) { phase = 'reveal'; }
       }
       /* billet breathes while hot */
-      if (billet.visible) billet.material.emissiveIntensity = 2.3 + Math.sin(t * 9) * 0.35;
+      if (billet.visible) billet.material.emissiveIntensity = 1.55 + Math.sin(t * 9) * 0.22;
       break;
     }
 
@@ -768,9 +773,9 @@ function tickCycle(dt, t) {
       if (currentMark) {
         currentMark.scale.setScalar(MARK_SCALE * THREE.MathUtils.lerp(0.4, 1, easeOut(u)));
         currentMark.rotation.y = Math.sin(u * Math.PI) * 0.12;
-        currentMark.material.emissiveIntensity = 2.6 + Math.sin(t * 7) * 0.4;
+        currentMark.material.emissiveIntensity = 1.7 + Math.sin(t * 7) * 0.28;
       }
-      hammer.rotation.z = THREE.MathUtils.lerp(HAMMER_HIT, HAMMER_REST, easeIO(u));
+      setHammer(THREE.MathUtils.lerp(HAMMER_HIT, HAMMER_REST, easeIO(u)));
       if (phaseT >= D.reveal) { phase = 'rise'; phaseT = 0; }
       break;
     }
@@ -781,6 +786,7 @@ function tickCycle(dt, t) {
       if (currentMark && riseCurve) {
         riseCurve.getPoint(e, currentMark.position);
         currentMark.rotation.y = e * Math.PI * 2;                    // one full turn, lands facing front
+        currentMark.scale.setScalar(THREE.MathUtils.lerp(MARK_SCALE, CONST_SCALE, e));
         applyHeat(currentMark, u);
         /* hot metal sheds embers on the way up */
         if (u < 0.45 && Math.random() < 0.5) {
@@ -832,7 +838,7 @@ function tickConstellation(dt, t) {
     if (c.dying > 0) {
       c.dying += dt / 1.4;
       const u = Math.min(c.dying, 1);
-      c.mesh.scale.setScalar(MARK_SCALE * (1 - easeIn(u)));
+      c.mesh.scale.setScalar(CONST_SCALE * (1 - easeIn(u)));
       c.mesh.position.y = base.y + u * 0.8;
       if (u >= 1) {
         scene.remove(c.mesh);
@@ -850,14 +856,17 @@ function tickConstellation(dt, t) {
   }
 }
 
-/* prefill two cooled applications so the constellation reads at once */
+/* prefill cooled applications so the constellation reads at once */
+const PREFILL_ORDER = [1, 3, 0, 4, 2];   // spread, not clustered
 function prefill(n) {
   for (let i = 0; i < n; i++) {
+    const slot = PREFILL_ORDER[i];
     const m = makeMark();
+    m.scale.setScalar(CONST_SCALE);
     applyHeat(m, 1);
-    m.position.copy(SLOTS[i]);
+    m.position.copy(SLOTS[slot]);
     scene.add(m);
-    addToConstellation(m, i);
+    addToConstellation(m, slot);
   }
 }
 
@@ -901,7 +910,7 @@ function frame() {
   /* flicker */
   hearthLight.intensity = 20 + Math.sin(t * 7.3) * 3 + Math.sin(t * 13.7) * 2.4 + Math.random() * 1.6;
   coals.forEach((c, i) => {
-    c.material.emissiveIntensity = 1.1 + Math.sin(t * (2.3 + i * 0.37) + i * 2.1) * 0.7 + Math.random() * 0.15;
+    c.material.emissiveIntensity = 0.7 + Math.sin(t * (2.3 + i * 0.37) + i * 2.1) * 0.4 + Math.random() * 0.1;
   });
   if (flash.intensity > 0.2) flash.intensity *= Math.pow(0.0005, dt); else flash.intensity = 0;
   if (ringT < 1) {
@@ -935,7 +944,7 @@ if (REDUCED) {
   applyHeat(m, 0.5);                                 // caught mid-temper, gold
   m.position.set(0, ANVIL_TOP + 0.78, 0);
   scene.add(m);
-  hammer.rotation.z = HAMMER_REST;
+  setHammer(HAMMER_REST);
   updateParticles(0.016, 1.7);                       // settle embers into place
   for (let i = 0; i < 90; i++) updateParticles(0.05, 2 + i * 0.05);
   pauseBtn.style.display = 'none';
