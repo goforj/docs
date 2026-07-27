@@ -309,24 +309,9 @@ onMounted(() => {
     })
   }
   syncMotionPreference()
-  /* Everything in the hero starts at opacity 0 and reveals on
-     `is-visible`, so this delay is time the hero is present but blank.
-     It was a flat 100ms. Two frames is all the browser needs to paint
-     the start state for the transition to run from.
-
-     rAF does not fire in a background tab, and this must never be the
-     thing that leaves the hero invisible — so the timeout stays as a
-     guaranteed floor rather than being replaced by rAF. */
-  let revealed = false
-  const reveal = () => {
-    if (revealed) return
-    revealed = true
+  mountTimer = window.setTimeout(() => {
     isMounted.value = true
-  }
-  if (typeof window.requestAnimationFrame === 'function') {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(reveal))
-  }
-  mountTimer = window.setTimeout(reveal, 120)
+  }, 100)
 })
 
 onBeforeUnmount(() => {
@@ -388,50 +373,19 @@ const BRAND_ICON_KEYS = {
   ollama: 'ollama'
 }
 
-/* ============================================================
-   TILE PALETTE
-   ------------------------------------------------------------
-   Every tile whose vendor identity is cool used to be blue, and
-   a bulk sweep flattened all of them onto the action orange
-   (#FF5E3A). Twenty-two tiles ended up sharing one hex, which
-   cost the tower its readability and turned the action colour
-   into decoration — precisely the erosion the design handoff's
-   closing caution warns about.
-
-   The fix follows the Ember syntax palette's thesis rather than
-   inventing a new one: WARM-DOMINANT, WITH A SINGLE COOL ANCHOR.
-   Ember anchors on --s-type #9BD7C4; COOL_* is that mint carried
-   down to tile weight, where a white glyph still reads (~2.4:1
-   at the light end, matching the untouched #42b883 Vue tile).
-   Five steps so neighbouring tiles in a row never share a value.
-
-   Warm secondaries come from Ember's --s-func (#FFC24D) and
-   --s-string (#D9CE7A), same treatment.
-
-   Rule: --gf-accent stays reserved for GoForj's own primitives
-   (Env, Local Storage). Vendors carry a hue of their own.
-   ============================================================ */
-const COOL_1 = '#4FB8A6'
-const COOL_2 = '#2F9A8B'
-const COOL_3 = '#2A8A93'
-const COOL_4 = '#2E7A8E'
-const COOL_5 = '#2C6478'
-const GOLD = '#C98F2B'
-const KHAKI = '#9E9440'
-
 const GROUP_CONFIG = [
   {
     id: 'frontend',
     label: 'FRONTEND',
     icon: 'app-window',
-    color: '#FFC24D',
+    color: '#4f7ec9',
     summary: 'UI surfaces and client delivery',
     title: 'Frontend choices',
     href: '/frontend/',
     row: 'front',
     children: [
       { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
+      { id: 'frontend-react', icon: 'react', color: '#61dafb', textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
       { id: 'frontend-templ', icon: 'templ', color: '#f97316', textColor: '#ffffff', iconColor: '#ffffff', title: 'templ', href: 'https://templ.guide/' }
     ]
   },
@@ -439,7 +393,7 @@ const GROUP_CONFIG = [
     id: 'infrastructure',
     label: 'BACKEND',
     icon: 'server',
-    color: '#68616E',
+    color: '#5b6574',
     summary: 'Queue, events, cache, and storage backends',
     title: 'Backend libraries and infrastructure',
     href: '/drivers',
@@ -456,94 +410,94 @@ const GROUP_CONFIG = [
           { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/collection' },
           { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
           { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/httpx' },
-          { id: 'core-env', icon: 'shield-check', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
-          { id: 'core-crypt', icon: 'key-round', color: GOLD, textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
-          { id: 'core-console', icon: 'terminal', color: KHAKI, textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
+          { id: 'core-env', icon: 'shield-check', color: '#06b6d4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
+          { id: 'core-crypt', icon: 'key-round', color: '#0891b2', textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
+          { id: 'core-console', icon: 'terminal', color: '#0284c7', textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
         ]
       },
       {
         id: 'backend-queue',
         label: 'QUEUE',
         icon: 'rows-3',
-        color: '#776D82',
+        color: '#64748b',
         title: 'Queue library',
         href: '/queue',
         children: [
           { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Queue', href: 'https://redis.io/' },
           { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff', title: 'RabbitMQ Queue', href: 'https://www.rabbitmq.com/' },
-          { id: 'queue-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
+          { id: 'queue-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
           { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SQS Queue', href: 'https://aws.amazon.com/sqs/' },
-          { id: 'queue-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
-          { id: 'queue-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
-          { id: 'queue-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
+          { id: 'queue-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
+          { id: 'queue-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
+          { id: 'queue-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
         ]
       },
       {
         id: 'backend-events',
         label: 'EVENTS',
         icon: 'git-branch',
-        color: '#685E72',
+        color: '#56657a',
         title: 'Events library',
         href: '/events',
         children: [
-          { id: 'events-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
-          { id: 'events-jetstream', icon: 'jetstream', color: COOL_1, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
+          { id: 'events-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
+          { id: 'events-jetstream', icon: 'jetstream', color: '#1e88e5', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
           { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Events', href: 'https://redis.io/' },
           { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff', title: 'Kafka Events', href: 'https://kafka.apache.org/' },
           { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SNS Events', href: 'https://aws.amazon.com/sns/' },
-          { id: 'events-gcppubsub', icon: 'gcs', color: COOL_4, textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
+          { id: 'events-gcppubsub', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
         ]
       },
       {
         id: 'backend-storage',
         label: 'STORAGE',
         icon: 'hard-drive',
-        color: '#57505E',
+        color: '#4b5563',
         title: 'Storage library',
         href: '/storage',
         children: [
-          { id: 'storage-local', icon: 'local', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/storage' },
-          { id: 'storage-memory', icon: 'memory', color: '#766D7E', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
+          { id: 'storage-local', icon: 'local', color: '#4c8eda', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/storage' },
+          { id: 'storage-memory', icon: 'memory', color: '#667085', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
           { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Storage', href: 'https://redis.io/' },
           { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff', title: 'FTP Storage', href: 'https://filezilla-project.org/' },
-          { id: 'storage-sftp', icon: 'sftp', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
+          { id: 'storage-sftp', icon: 'sftp', color: '#1f6feb', textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
           { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon S3 Storage', href: 'https://aws.amazon.com/s3/' },
-          { id: 'storage-gcs', icon: 'gcs', color: COOL_4, textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
-          { id: 'storage-dropbox', icon: 'dropbox', color: COOL_5, textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
-          { id: 'storage-rclone', icon: 'rclone', color: COOL_1, textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
+          { id: 'storage-gcs', icon: 'gcs', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
+          { id: 'storage-dropbox', icon: 'dropbox', color: '#0061ff', textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
+          { id: 'storage-rclone', icon: 'rclone', color: '#5a45ff', textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
         ]
       },
       {
         id: 'backend-database',
         label: 'DATABASE',
         icon: 'database',
-        color: '#6D6574',
+        color: '#5f6b7a',
         title: 'Database backends',
         href: '/drivers',
         childMetrics: { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
         children: [
-          { id: 'database-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
-          { id: 'database-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres', href: 'https://www.postgresql.org/' },
-          { id: 'database-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite', href: 'https://sqlite.org/' }
+          { id: 'database-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
+          { id: 'database-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres', href: 'https://www.postgresql.org/' },
+          { id: 'database-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite', href: 'https://sqlite.org/' }
         ]
       },
       {
         id: 'backend-cache',
         label: 'CACHE',
         icon: 'database-zap',
-        color: '#584F61',
+        color: '#475569',
         title: 'Cache library',
         href: '/cache',
         children: [
-          { id: 'cache-file', icon: 'file', color: GOLD, textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
+          { id: 'cache-file', icon: 'file', color: '#3f51b5', textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
           { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/cache' },
-          { id: 'cache-memcached', icon: 'memcached', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
+          { id: 'cache-memcached', icon: 'memcached', color: '#0198c4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
           { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Cache', href: 'https://redis.io/' },
-          { id: 'cache-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
-          { id: 'cache-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
-          { id: 'cache-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
-          { id: 'cache-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
-          { id: 'cache-dynamodb', icon: 'dynamodb', color: COOL_5, textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
+          { id: 'cache-nats', icon: 'nats', color: '#27aae1', textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
+          { id: 'cache-sqlite', icon: 'sqlite', color: '#003b57', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
+          { id: 'cache-postgres', icon: 'postgres', color: '#336791', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
+          { id: 'cache-mysql', icon: 'mysql', color: '#4479a1', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
+          { id: 'cache-dynamodb', icon: 'dynamodb', color: '#4053d6', textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
         ]
       }
     ],
@@ -553,7 +507,7 @@ const GROUP_CONFIG = [
     id: 'ai-agents',
     label: 'ATLAS',
     icon: 'brain-circuit',
-    color: '#FFC24D',
+    color: '#7b74d6',
     summary: 'Local guidance, skills, and MCP context for coding agents',
     title: 'Atlas coding-agent support',
     href: '/developer-tools/atlas',
@@ -561,8 +515,8 @@ const GROUP_CONFIG = [
     children: [
       { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'Codex' },
       { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude Code' },
-      { id: 'ai-gemini', icon: 'gemini', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
-      { id: 'ai-copilot', icon: 'copilot', color: '#2A262D', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
+      { id: 'ai-gemini', icon: 'gemini', color: '#4285f4', textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
+      { id: 'ai-copilot', icon: 'copilot', color: '#24292f', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
     ]
   }
 ]
@@ -573,10 +527,7 @@ const LAYOUT = {
   runtimeZ: 0.1,
   coreInsetX: 0.52,
   coreInsetY: 0.4,
-  /* Was 1.92. That spent roughly half the frame on an object carrying
-     no information; the vertical space belongs to the tower, which is
-     where the content is. */
-  coreHeight: 1.4,
+  coreHeight: 1.92,
   platformHeight: 0.1,
   rearShelfInsetX: 0.12,
   rearShelfDepth: 1.34,
@@ -759,7 +710,7 @@ const scene = computed(() => {
         type: 'block',
         tier: 'rear-support',
         label: '',
-        color: '#443D4B',
+        color: '#374151',
         textColor: '#ffffff',
         x: rearShelf.x + LAYOUT.rearSupportInsetX,
         y: core.y - LAYOUT.rearSupportDepth,
@@ -771,7 +722,7 @@ const scene = computed(() => {
     : null
 
   const tower = [
-    { id: 'ground', type: 'shelf', tier: 'ground', color: '#FAF9FB', ...ground },
+    { id: 'ground', type: 'shelf', tier: 'ground', color: '#f8fafc', ...ground },
     {
       id: 'runtime',
       type: 'block',
@@ -779,12 +730,8 @@ const scene = computed(() => {
       label: 'RUNTIME',
       icon: 'go',
       labelFace: 'left',
-      /* The plinth was #1C1524, about one step off the #0C0A0E ground,
-         so the base of the composition was effectively invisible and
-         the whole tower read as hovering. It needs enough separation
-         to be an object the rest of the scene stands on. */
-      color: '#332A40',
-      textColor: '#FF5E3A',
+      color: '#0f172a',
+      textColor: '#93a9cb',
       labelSize: 18,
       iconScale: 1.32,
       ...runtime
@@ -801,9 +748,9 @@ const scene = computed(() => {
       ...core
     },
     { id: 'platform-shelf', type: 'shelf', tier: 'platform', color: '#ffffff', opacity: LAYOUT.platformOpacity, ...platform },
-    ...(lowerShelf ? [{ id: 'lower-shelf', type: 'block', tier: 'lower-shelf', label: '', color: '#625C69', textColor: '#ffffff', ...lowerShelf }] : []),
+    ...(lowerShelf ? [{ id: 'lower-shelf', type: 'block', tier: 'lower-shelf', label: '', color: '#56606f', textColor: '#ffffff', ...lowerShelf }] : []),
     ...(rearSupport ? [rearSupport] : []),
-    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#57505E', textColor: '#ffffff', ...rearShelf }] : [])
+    ...(backGroups.length ? [{ id: 'rear-shelf', type: 'block', tier: 'rear-shelf', label: '', color: '#4b5563', textColor: '#ffffff', ...rearShelf }] : [])
   ]
 
   const assemblyCenterX = core.x + (core.w * 0.49)
@@ -816,7 +763,7 @@ const scene = computed(() => {
       type: 'block',
       tier: 'assembly-input',
       assemblyRole: 'input',
-      color: '#A59EAD',
+      color: '#98a4b3',
       textColor: '#ffffff',
       x: assemblyCenterX - 0.92,
       y: assemblyCenterY + 0.08,
@@ -831,7 +778,7 @@ const scene = computed(() => {
       type: 'block',
       tier: 'assembly-input',
       assemblyRole: 'input',
-      color: '#8B8492',
+      color: '#7e8998',
       textColor: '#ffffff',
       x: assemblyCenterX - 0.14,
       y: assemblyCenterY - 0.06,
@@ -856,7 +803,7 @@ const scene = computed(() => {
       d: 0.66,
       h: 0.68
     }
-    )
+  )
 
   const placeLane = (laneGroups, shelf, options = {}) => {
     const {
@@ -1189,17 +1136,6 @@ function getGenericIconBody(icon) {
   return lucideIconBodies[icon] || ''
 }
 
-/* The narrow viewBox frames the SOLID content (x 136-1048, y 156-1095),
-   not the SVG bounding box. The ground plane is a 16%-opacity haze that
-   overhangs 107 units — about 11% of the drawing width — to the left of
-   anything you can actually see, so fitting the bbox centred the frame
-   on the haze and pushed every visible object right of centre. The hero
-   clips the spill at <=640px, so losing the plane's left edge costs
-   nothing. */
-const heroViewBox = computed(() =>
-  isNarrow.value ? '120 140 944 971' : '0 0 800 900'
-)
-
 function catchesForgeGlow(item) {
   if (item.type !== 'block') return false
   if (item.id === 'core' || item.id === 'runtime' || item.id === 'ground' || item.id === 'platform-shelf') return false
@@ -1260,12 +1196,7 @@ function adjustColor(color, amount) {
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
         <p class="gf-hero-eyebrow">Generated Go applications you own</p>
         <h1 class="gf-hero-title">
-          <!-- Two-tone headline. The mock is .m-h1 with an <em> on the
-               closing phrase: `.m-h1 em { font-style:normal; color:accent }`.
-               The accent is doing what it does everywhere else here — it is a
-               filled mark, not a link — so the phrase reads as emphasis rather
-               than as something clickable. -->
-          <span class="gf-hero-headline">The composable stack for <em>building with Go</em></span>
+          <span class="gf-hero-headline">The composable stack for building with Go</span>
         </h1>
         <p class="gf-hero-tagline">
           One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives across the application stack.
@@ -1288,6 +1219,11 @@ function adjustColor(color, amount) {
           <span class="gf-hero-install__state">{{ installCopied ? 'copied' : 'copy' }}</span>
         </button>
         <span class="gf-sr-only" role="status" aria-live="polite">{{ installCopyStatus }}</span>
+        <p class="gf-hero-version">
+          <a href="/versions/">Unreleased documentation</a>
+          <span aria-hidden="true">·</span>
+          <span><code>@latest</code> installs the latest tagged release</span>
+        </p>
         <div class="gf-hero-principles" aria-label="GoForj application model">
           <div class="gf-hero-principle">
             <strong>App-owned composition</strong>
@@ -1314,7 +1250,7 @@ function adjustColor(color, amount) {
         <svg
           class="gf-hero-svg"
           :class="{ 'is-striking': strikeActive }"
-          :viewBox="heroViewBox"
+          :viewBox="isNarrow ? '20 30 1060 1050' : '0 0 800 900'"
           preserveAspectRatio="xMidYMid meet"
           aria-labelledby="gf-forge-title gf-forge-description"
           :style="{ transform: `translate3d(${parallax.x.toFixed(2)}px, ${parallax.y.toFixed(2)}px, 0)` }"
@@ -1337,9 +1273,9 @@ function adjustColor(color, amount) {
               </linearGradient>
             </template>
             <radialGradient id="hero-ambient" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#FF5E3A" stop-opacity="0.46" />
-              <stop offset="52%" stop-color="#FF5E3A" stop-opacity="0.24" />
-              <stop offset="100%" stop-color="#1C1524" stop-opacity="0" />
+              <stop offset="0%" stop-color="#7c83ff" stop-opacity="0.46" />
+              <stop offset="52%" stop-color="#3b82f6" stop-opacity="0.24" />
+              <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
@@ -1392,15 +1328,11 @@ function adjustColor(color, amount) {
               <stop offset="0%" stop-color="#ffe0ba" stop-opacity="0.22" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
-            <!-- Two stops, not four. This previously ran #ff9a47 to
-                 #43100f — close to the full lightness range — while every
-                 tile top face in the scene spans about 35 points. That
-                 mismatch made the largest surface in the drawing read as a
-                 vignette rather than a hot plate, and sent the far end of
-                 the slab to near-black for no reason an object would. -->
             <linearGradient id="forge-core-top" x1="10%" y1="10%" x2="90%" y2="90%">
-              <stop offset="0%" stop-color="#ff8a3d" />
-              <stop offset="100%" stop-color="#c04a20" />
+              <stop offset="0%" stop-color="#ff9a47" />
+              <stop offset="28%" stop-color="#c5341c" />
+              <stop offset="72%" stop-color="#781710" />
+              <stop offset="100%" stop-color="#43100f" />
             </linearGradient>
             <linearGradient id="forge-core-right" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="#b92b19" />
@@ -1457,18 +1389,18 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6D6574" stop-opacity="0.72" />
-              <stop offset="40%" stop-color="#48434E" stop-opacity="0.82" />
-              <stop offset="100%" stop-color="#2B272F" stop-opacity="0.9" />
+              <stop offset="0%" stop-color="#5f6b7a" stop-opacity="0.72" />
+              <stop offset="40%" stop-color="#3e4653" stop-opacity="0.82" />
+              <stop offset="100%" stop-color="#232933" stop-opacity="0.9" />
             </linearGradient>
             <linearGradient id="steel-shelf-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#3A353F" />
-              <stop offset="100%" stop-color="#1D1921" />
+              <stop offset="0%" stop-color="#313843" />
+              <stop offset="100%" stop-color="#161b24" />
             </linearGradient>
             <linearGradient id="steel-shelf-brush" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#D6D0DC" stop-opacity="0.02" />
-              <stop offset="35%" stop-color="#E8E6EA" stop-opacity="0.1" />
-              <stop offset="55%" stop-color="#A6A0AB" stop-opacity="0.04" />
+              <stop offset="0%" stop-color="#cbd5e1" stop-opacity="0.02" />
+              <stop offset="35%" stop-color="#e5e7eb" stop-opacity="0.1" />
+              <stop offset="55%" stop-color="#9ca3af" stop-opacity="0.04" />
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01" />
             </linearGradient>
           </defs>
@@ -1553,7 +1485,7 @@ function adjustColor(color, amount) {
                       <path
                         v-if="hasForgePlateShadow(item)"
                         :d="getForgePlateShadowPath(item)"
-                        fill="#0C0811"
+                        fill="#020617"
                         :opacity="getForgePlateShadowOpacity(item)"
                       />
                       <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forge-bounce-face)" :opacity="getForgeBounceOpacity(item)" />
@@ -1637,18 +1569,18 @@ function adjustColor(color, amount) {
                     <g :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
                       <g :transform="MATRIX_DOWN_RIGHT">
                         <template v-if="item.stampLabel">
-                           <!-- The GOFORJ CORE kicker was removed: it sat
-                                directly above the embossed GOFORJ stamp on the
-                                same centre axis, one repeating the other, so
-                                neither read as the mark. -->
-                           <!-- The stamp sat at y +18.5 to balance a GOFORJ CORE kicker
-                                that used to sit above it at y -24. With the kicker
-                                gone it needs to centre on the face itself; these
-                                offsets are now the emboss deltas only. -->
+                           <text
+                             y="-24"
+                             text-anchor="middle"
+                             :fill="item.textColor"
+                             class="iso-label iso-label--core-kicker"
+                           >
+                             GOFORJ CORE
+                           </text>
                            <g class="iso-stamp">
                              <text
                                x="-0.62"
-                               y="-0.85"
+                               y="17.7"
                                text-anchor="middle"
                                class="iso-stamp__highlight"
                              >
@@ -1656,7 +1588,7 @@ function adjustColor(color, amount) {
                              </text>
                              <text
                                x="1.18"
-                               y="1.15"
+                               y="19.7"
                                text-anchor="middle"
                                class="iso-stamp__depth"
                              >
@@ -1664,21 +1596,21 @@ function adjustColor(color, amount) {
                              </text>
                              <text
                                x="0.74"
-                               y="0.6"
+                               y="19.15"
                                text-anchor="middle"
                                class="iso-stamp__shadow"
                              >
                                {{ item.stampLabel }}
                              </text>
                              <text
-                               y="0.0"
+                               y="18.55"
                                text-anchor="middle"
                                class="iso-stamp__cut"
                              >
                                {{ item.stampLabel }}
                              </text>
                              <text
-                               y="0.0"
+                               y="18.55"
                                text-anchor="middle"
                                class="iso-stamp__face"
                              >
@@ -1786,12 +1718,9 @@ function adjustColor(color, amount) {
   width: 100%;
   padding: 1.35rem 2rem 5rem;
   overflow: visible;
-  /* Temper's --glow token geometry, verbatim from the prototype:
-     top-anchored ambient heat over the whole hero, not a bloom
-     centred on the illustration. The old pair of gradients sat at
-     76%/32% and 66%/42%, which stacked warm light directly behind
-     the tower — the warmest object on the page already. */
-  background: radial-gradient(58% 46% at 68% -5%, rgba(255, 94, 58, 0.18), transparent 70%);
+  background:
+    radial-gradient(circle at 76% 32%, rgba(99, 102, 241, 0.12) 0%, transparent 34%),
+    radial-gradient(circle at 66% 42%, rgba(59, 130, 246, 0.06) 0%, transparent 28%);
 }
 .gf-hero-container {
   max-width: 1280px;
@@ -1812,35 +1741,36 @@ function adjustColor(color, amount) {
   opacity: 1;
   transform: translateY(0);
 }
-/* Eyebrow, install chip and principle cards are styled by the
-   "TEMPER — hero" block in custom.css. They are deliberately NOT
-   restyled here: scoped rules compile to `.class[data-v-hash]`,
-   which outranks a single-class global, so anything declared in
-   this file silently wins over the token layer. Only layout that
-   the Temper block does not own belongs in these rules. */
-
+.gf-hero-eyebrow {
+  margin: 0 0 0.85rem;
+  color: rgba(165, 180, 252, 0.9);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
 .gf-hero-title {
   font-size: clamp(4rem, 4.6vw, 4.6rem);
-  font-weight: 700;
+  font-weight: 780;
   line-height: 0.96;
-  letter-spacing: -0.045em;
-  color: var(--gf-ink);
+  letter-spacing: -0.048em;
+  color: var(--vp-c-text-1);
   max-width: 12ch;
   text-wrap: balance;
   margin-bottom: 1.45rem;
 }
-/* .gf-hero-headline carries no colour of its own — the flat ink of
-   .gf-hero-title, with the <em> lifted to --gf-accent by custom.css.
-   It previously held a background-clip:text gradient with no
-   -webkit-text-fill-color, so it painted nothing and contradicted
-   Temper's flat-ink spec at the same time. */
+.gf-hero-headline {
+  background: linear-gradient(to bottom right, var(--vp-c-text-1) 30%, var(--vp-c-text-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 .gf-hero-tagline {
   font-size: 1.14rem;
   line-height: 1.62;
-  color: var(--gf-ink-2);
+  color: var(--vp-c-text-2);
   max-width: 42rem;
   margin-bottom: 1.15rem;
-  font-weight: 400;
+  font-weight: 430;
 }
 .gf-hero-principles {
   display: grid;
@@ -1849,20 +1779,35 @@ function adjustColor(color, amount) {
   max-width: 43rem;
   margin: 1.35rem 0 0;
 }
-/* Surface, hairline, radius, padding and type all come from the
-   Temper block. Only the equal-height floor stays local. The inset
-   white top-highlight is gone: Temper cards are a flat surface and
-   a hairline, with no simulated lighting. */
 .gf-hero-principle {
   min-height: 5.6rem;
+  padding: 0.78rem;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(15, 18, 27, 0.32);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.gf-hero-principle strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: rgba(245, 248, 255, 0.92);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 .gf-hero-principle span {
   display: block;
+  color: rgba(203, 213, 225, 0.72);
+  font-size: 0.74rem;
+  font-weight: 520;
+  line-height: 1.38;
 }
 .gf-hero-story {
   max-width: 560px;
   margin: 0 0 3rem;
-  color: var(--gf-ink-2);
+  color: rgba(226, 232, 240, 0.72);
   font-size: 0.98rem;
   line-height: 1.7;
 }
@@ -1870,24 +1815,32 @@ function adjustColor(color, amount) {
   display: flex;
   gap: 0.8rem;
 }
-/* Border, surface, radius, padding, mono face and ink are Temper's.
-   The chip was on a 12px radius against a system scale of 6/8/12
-   and a bespoke translucent ground; both are now the token values. */
 .gf-hero-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-top: 1.05rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(10, 12, 18, 0.62);
+  color: rgba(226, 232, 240, 0.84);
   cursor: pointer;
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 .gf-hero-install:hover {
-  border-color: var(--gf-line-strong);
+  border-color: rgba(199, 213, 255, 0.34);
 }
 .gf-hero-install__prompt {
-  font-family: var(--gf-font-mono);
+  color: rgba(255, 154, 96, 0.92);
+  font-family: var(--vp-font-family-mono);
   font-size: 0.82rem;
   font-weight: 700;
 }
 .gf-hero-install__cmd {
-  font-family: var(--gf-font-mono);
+  font-family: var(--vp-font-family-mono);
   font-size: 0.8rem;
   letter-spacing: -0.01em;
   background: transparent;
@@ -1898,44 +1851,34 @@ function adjustColor(color, amount) {
   content: ' ';
 }
 .gf-hero-install__state {
-  /* Temper: a hairline divider, not a second bordered chip.
-     Boxing the copy affordance makes it compete with the
-     command it belongs to. */
-  margin-left: 0.5rem;
-  padding: 0 0 0 0.7rem;
-  border: 0;
-  border-left: 1px solid var(--gf-line);
-  border-radius: 0;
-  /* --gf-ink-3 is AA-large only (3.6:1 here) and the handoff limits
-     it to decorative text. COPY is an affordance label people have
-     to read, so it sits on --gf-ink-2 (7.0:1). */
-  color: var(--gf-ink-2);
+  padding: 0.14rem 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+  color: rgba(203, 213, 225, 0.66);
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-/* Status is Temper's third system, not action or navigation: --tip. */
 .gf-hero-install.is-copied .gf-hero-install__state {
-  border-color: rgba(95, 207, 168, 0.5);
-  color: #5fcfa8;
+  border-color: rgba(125, 211, 160, 0.5);
+  color: rgba(157, 235, 192, 0.92);
 }
 .gf-hero-version {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 0.5rem;
   margin: 0.55rem 0 0;
-  color: var(--gf-ink-2);
+  color: rgba(148, 163, 184, 0.68);
   font-size: 0.7rem;
   line-height: 1.4;
 }
-/* These are real links, so navigation gold is the correct role here. */
 .gf-hero-version a {
-  color: var(--gf-nav);
+  color: rgba(165, 180, 252, 0.86);
   text-decoration: none;
 }
 .gf-hero-version a:hover {
-  color: var(--gf-nav-hi);
+  color: rgba(199, 210, 254, 1);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -1954,52 +1897,36 @@ function adjustColor(color, amount) {
   white-space: nowrap;
   border: 0;
 }
-/* Temper .m-btn. Every value here is transcribed from the mock:
-     font 14.5px / 600, padding 12px 22px, radius 8px,
-     primary  bg accent, border 1px accent, color ON-ACCENT,
-     ghost    transparent, ink text, line-strong border.
-
-   The dark on-accent ink is the part that matters. Orange at
-   #FF5E3A carries white at only 2.9:1 — below AA even for large
-   text — while #08070A on the same fill is 8.6:1. The mock is
-   not making a stylistic choice there, it is the only legible
-   option on a fill that saturated.
-
-   The pill radius, the 700 weight and the lift-and-glow hover
-   all predate the overhaul. Nothing in Temper glows, and the
-   radius scale is 6/8/12. */
 .gf-hero-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--gf-font-body);
-  padding: 12px 22px;
-  border-radius: var(--gf-radius);
-  font-weight: 600;
-  font-size: 14.5px;
-  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  padding: 0.78rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.24s ease, background-color 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
 }
 .gf-hero-btn--primary {
-  background-color: var(--gf-accent);
-  border: 1px solid var(--gf-accent);
-  color: var(--gf-on-accent);
-  box-shadow: none;
+  background-color: #6366f1;
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 .gf-hero-btn--primary:hover {
-  background-color: var(--gf-accent-hi);
-  border-color: var(--gf-accent-hi);
-  box-shadow: none;
+  background-color: #4f46e5;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
 }
 .gf-hero-btn--secondary {
-  background-color: transparent;
-  color: var(--gf-ink);
-  border: 1px solid var(--gf-line-strong);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--vp-c-text-1);
+  border: 1px solid var(--vp-c-divider);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .gf-hero-btn--secondary:hover {
-  background-color: transparent;
-  border-color: var(--gf-ink-3);
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-3px) scale(1.02);
 }
 .gf-hero-graphic {
   flex: 1.4;
@@ -2007,15 +1934,11 @@ function adjustColor(color, amount) {
   opacity: 0;
   transition: transform 1.8s ease, opacity 1.8s ease;
   will-change: transform, opacity;
-  /* The scene is drawn 1038 units wide inside an 800-unit viewBox and
-     bleeds past the right edge on purpose. These offsets pull it back
-     toward the centre of the row so the slab's right end stays on
-     screen at common widths. */
-  transform: translate3d(-140px, -10px, 0);
+  transform: translate3d(-80px, -10px, 0);
 }
 .gf-hero-graphic.is-visible {
   opacity: 1;
-  transform: translate3d(-150px, -10px, 0);
+  transform: translate3d(-90px, -10px, 0);
 }
 .gf-hero-svg {
   width: 100%;
@@ -2144,7 +2067,7 @@ function adjustColor(color, amount) {
   outline: none;
 }
 .gf-iso-item-wrapper:focus-visible .gf-iso-item {
-  filter: brightness(1.28) drop-shadow(0 0 7px rgba(255, 94, 58, 0.75));
+  filter: brightness(1.28) drop-shadow(0 0 7px rgba(151, 173, 255, 0.75));
 }
 .gf-ember {
   fill: #ffc685;
@@ -2172,28 +2095,25 @@ function adjustColor(color, amount) {
   gap: 2px;
   pointer-events: none;
   padding: 5px 12px;
-  /* Was a gold hairline. Nothing about a tooltip is navigation, and
-     Temper's gold is reserved for links and line-form nav marks. A
-     tooltip is "neither" — surface plus a neutral hairline. */
-  border: 1px solid var(--gf-line-strong);
-  border-radius: var(--gf-radius);
-  background: var(--gf-surface-2);
-  color: var(--gf-ink);
+  border: 1px solid rgba(165, 185, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(9, 11, 17, 0.92);
+  color: rgba(238, 242, 252, 0.96);
   font-size: 0.74rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
   overflow-wrap: anywhere;
   white-space: normal;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
 }
 .gf-hero-tip--rich {
   padding: 8px 13px;
-  border-radius: var(--gf-radius);
+  border-radius: 8px;
 }
 .gf-hero-tip span {
-  color: var(--gf-ink-2);
+  color: rgba(189, 201, 222, 0.78);
   font-size: 0.7rem;
-  font-weight: 400;
+  font-weight: 550;
   letter-spacing: 0.01em;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2255,7 +2175,6 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 .gf-iso-item[data-block='core'] {
   cursor: pointer;
 }
-
 @keyframes forgePulse {
   0% { opacity: 0.45; transform: translateY(0); }
   100% { opacity: 1; transform: translateY(-3px); }
@@ -2269,19 +2188,6 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 .gf-block-edge--top {
   stroke: rgba(255, 255, 255, 0.18);
 }
-
-/* The base blocks carry the same hairline as every tile, but 0.12
-   white cannot survive on faces that bottom out near #2a0d0d — so
-   the largest object in the frame had no readable silhouette. The
-   base gets a stronger edge; the tiles keep the standard one. */
-.gf-iso-item[data-block='core'] .gf-block-edge,
-.gf-iso-item[data-block='runtime'] .gf-block-edge {
-  stroke: rgba(255, 255, 255, 0.30);
-}
-.gf-iso-item[data-block='core'] .gf-block-edge--top,
-.gf-iso-item[data-block='runtime'] .gf-block-edge--top {
-  stroke: rgba(255, 226, 190, 0.42);
-}
 .iso-label {
   user-select: none;
   pointer-events: none;
@@ -2293,7 +2199,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   pointer-events: none;
   letter-spacing: -0.02em;
   paint-order: stroke fill;
-  stroke: rgba(214, 53, 26, 0.2);
+  stroke: rgba(79, 70, 229, 0.2);
   stroke-width: 1.4;
 }
 .iso-templ-logo {
@@ -2405,11 +2311,9 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   .gf-hero-container {
     gap: 1.65rem;
   }
-  /* One step under the Temper block's 11px, not a rem value that
-     no longer relates to it. */
   .gf-hero-eyebrow {
     margin-bottom: 0.65rem;
-    font-size: 10px;
+    font-size: 0.68rem;
   }
   .gf-hero-title {
     margin-bottom: 0.9rem;
@@ -2433,16 +2337,11 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   .gf-hero-principle strong {
     margin-bottom: 0.22rem;
   }
-  /* The narrow viewBox is all but square, so pinning a landscape box
-     (28rem x 18rem) made preserveAspectRatio fit to HEIGHT — the
-     drawing rendered about 288px wide inside a 448px container with
-     dead margins either side. Sizing by width instead lets it fill
-     the column. */
   .gf-hero-graphic {
     width: 100%;
-    max-width: none;
-    height: auto;
-    overflow: visible;
+    height: 18rem;
+    max-width: 28rem;
+    overflow: hidden;
     transform: translate(0, 0);
   }
   .gf-hero-graphic.is-visible {
@@ -2450,8 +2349,8 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   }
   .gf-hero-svg {
     width: 100%;
-    height: auto;
-    max-height: none;
+    height: 100%;
+    max-height: 18rem;
   }
   .gf-hero-actions {
     flex-direction: column;
@@ -2496,9 +2395,11 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   .gf-hero-title {
     font-size: 2.25rem;
   }
-  /* Still width-driven at the smallest sizes; no height cap. */
   .gf-hero-graphic {
-    height: auto;
+    height: 14rem;
+  }
+  .gf-hero-svg {
+    max-height: 14rem;
   }
 }
 </style>

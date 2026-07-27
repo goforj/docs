@@ -10,7 +10,7 @@ noAutoTitle: true
   <section class="gf-starter-hero">
     <div class="gf-starter-hero__copy">
       <p class="gf-starter-eyebrow">Starter Kits</p>
-      <h1>Start from a real application</h1>
+      <h1>Start from a <em>real application</em></h1>
       <p>
         GoForj starter kits render real source into your App: auth surfaces, settings screens,
         dashboard structure, component references, and frontend patterns your team can inspect,

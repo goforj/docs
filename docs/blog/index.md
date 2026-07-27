@@ -21,6 +21,8 @@ noAutoTitle: true
         <span class="gf-blog-visual__block gf-blog-visual__block--a"></span>
         <span class="gf-blog-visual__block gf-blog-visual__block--b"></span>
         <span class="gf-blog-visual__block gf-blog-visual__block--c"></span>
+        <span class="gf-blog-visual__line gf-blog-visual__line--a"></span>
+        <span class="gf-blog-visual__line gf-blog-visual__line--b"></span>
       </span>
       <span class="gf-blog-card-body">
         <span class="gf-blog-card-row">

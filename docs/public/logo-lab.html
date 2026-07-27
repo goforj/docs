@@ -1,0 +1,3468 @@
+<!doctype html>
+<!--
+  GoForj Logo Lab — v2.
+
+  WHAT CHANGED FROM v1, AND WHY.
+
+  1. The base is frozen. MARK_OUTER, MARK_HOLE and the three FACE_*
+     paths are copied byte-for-byte from v1 and are not edited here.
+     Every variant on this page is a different RENDERING of those
+     paths. Nothing redraws the geometry.
+
+  2. v1's stated thesis did not match v1's code. Its header claimed
+     eight directions generated from a parametric 6x6 grid, but no
+     shipped direction used the grid — gRects, withGap, isoSVG,
+     isoFlatSVG, flatSVG, cutSVG, wireSVG, monoSVG, bands and
+     markLine were all defined and never called. The grid machinery
+     is gone. The traced silhouette is the single source.
+
+  3. v1 could not render light mode. Every renderer called readVar()
+     against a document hardcoded to class="dark", so the "on white"
+     strip was dark-mode marks placed on a white box — the exact
+     mistake the handoff warns about. Renderers here take a palette
+     argument, so dark, light and foreign palettes are all real.
+
+  4. v1 asserted its verdicts. Strings like "holds" and "tones merge"
+     were hand-typed. They are computed here, using the same colour
+     maths as the plane readout in design-system.html.
+
+  Loads the real theme stylesheet and reads BOTH token scopes out of
+  it, so if the site and this page disagree, this page shows it.
+-->
+<html lang="en" class="dark" data-gf-motion="reduced">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<title>GoForj Logo Lab</title>
+<link rel="icon" href="/favicon.svg?v=20260727" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/design-system.css">
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--gf-ground-deep); color: var(--gf-ink-2);
+  font-family: var(--gf-font-body); -webkit-font-smoothing: antialiased;
+}
+.head {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  padding: 14px 32px; border-bottom: 1px solid var(--gf-line);
+  background: color-mix(in srgb, var(--gf-ground-deep) 92%, transparent);
+  backdrop-filter: blur(14px);
+}
+.head h1 {
+  margin: 0; font-family: var(--gf-font-display); font-weight: 700;
+  letter-spacing: -0.045em; font-size: 17px; color: var(--gf-ink);
+}
+.head .sub { font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-2); }
+.head nav { margin-left: auto; display: flex; gap: 14px; flex-wrap: wrap; }
+.head nav a {
+  font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--gf-nav); text-decoration: none;
+  border-bottom: 1px solid transparent; padding-bottom: 2px;
+}
+.head nav a:hover { border-bottom-color: var(--gf-nav); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px 120px; }
+.sec { padding-top: 68px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.17em;
+  text-transform: uppercase; color: var(--gf-nav); margin: 0 0 15px;
+}
+.kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-nav); }
+.sec > h2 {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.045em;
+  font-size: 29px; color: var(--gf-ink); margin: 0 0 8px; line-height: 1.15;
+}
+.sec > h2 em { font-style: normal; color: var(--gf-nav); }
+.sec h3 {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.03em;
+  font-size: 17px; color: var(--gf-ink); margin: 36px 0 10px;
+  padding-bottom: 9px; border-bottom: 1px solid;
+  border-image: linear-gradient(90deg, var(--gf-line), transparent) 1;
+}
+.sec p { font-size: 15px; line-height: 1.72; max-width: 72ch; margin: 0 0 14px; }
+.sec p strong { color: var(--gf-ink); font-weight: 600; }
+.sec code {
+  font-family: var(--gf-font-mono); font-size: 0.92em; background: var(--gf-accent-soft);
+  border: 1px solid var(--gf-accent-line);
+  color: var(--gf-ink); padding: 1px 6px; border-radius: var(--gf-radius-sm);
+}
+
+/* ---- variant cards ---- */
+.marks { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; margin: 20px 0; }
+.mark {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden; display: flex; flex-direction: column;
+}
+.mark.is-base { border-color: var(--gf-accent-line); }
+.mark__head {
+  display: flex; align-items: center; gap: 10px; padding: 10px 15px;
+  border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.mark__name {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.03em;
+  font-size: 14px; color: var(--gf-ink);
+}
+.mark__tag {
+  margin-left: auto; font-family: var(--gf-font-mono); font-size: 9.5px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--gf-ink-2);
+  border: 1px solid var(--gf-line-strong); border-radius: 999px; padding: 3px 8px;
+}
+.mark__tag.hot { color: var(--gf-nav); border-color: var(--gf-nav-line); }
+.mark__stage {
+  padding: 26px 18px; display: grid; place-items: center; min-height: 172px;
+  background: var(--gf-ground-deep);
+}
+.mark__stage svg, .mark__stage img { display: block; }
+.mark__sizes {
+  display: flex; align-items: flex-end; gap: 16px; padding: 14px 16px;
+  border-top: 1px solid var(--gf-line); background: var(--gf-ground);
+  flex-wrap: wrap;
+}
+.mark__sizes figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+.mark__sizes figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-2); }
+.mark__why {
+  margin: 0; padding: 12px 16px; border-top: 1px solid var(--gf-line);
+  background: var(--gf-ground-alt); font-size: 12.5px; line-height: 1.55;
+  color: var(--gf-ink-2);
+}
+.mark__why b { color: var(--gf-ink); font-weight: 600; }
+.mark__m {
+  display: flex; gap: 7px; flex-wrap: wrap; padding: 11px 16px;
+  border-top: 1px solid var(--gf-line);
+}
+.chip {
+  font-family: var(--gf-font-mono); font-size: 9.5px; letter-spacing: .05em;
+  padding: 3px 8px; border-radius: 999px; border: 1px solid var(--gf-line-strong);
+  color: var(--gf-ink-2); white-space: nowrap;
+}
+.chip.ok   { color: var(--vp-c-tip-1);     border-color: color-mix(in srgb, var(--vp-c-tip-1) 40%, transparent); }
+.chip.warn { color: var(--vp-c-warning-1); border-color: color-mix(in srgb, var(--vp-c-warning-1) 40%, transparent); }
+.chip.bad  { color: var(--vp-c-danger-1);  border-color: color-mix(in srgb, var(--vp-c-danger-1) 40%, transparent); }
+.mark__act { display: flex; gap: 8px; flex-wrap: wrap; padding: 11px 16px; border-top: 1px solid var(--gf-line); }
+.btn-s {
+  font-family: var(--gf-font-body); font-size: 11.5px; font-weight: 500;
+  padding: 6px 12px; border-radius: var(--gf-radius-sm); cursor: pointer;
+  background: transparent; color: var(--gf-ink-2); border: 1px solid var(--gf-line-strong);
+}
+.btn-s:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+.tile-scale {
+  display: grid; grid-template-columns: minmax(150px, 1fr) minmax(180px, 2fr);
+  align-items: center; gap: 8px 18px; padding: 13px 16px;
+  border-top: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.tile-scale label {
+  display: flex; justify-content: space-between; gap: 12px;
+  color: var(--gf-ink-2); font-size: 12px;
+}
+.tile-scale output { color: var(--gf-ink); font-family: var(--gf-font-mono); }
+.tile-scale input { width: 100%; accent-color: var(--gf-accent); cursor: ew-resize; }
+.tile-scale small {
+  grid-column: 1 / -1; color: var(--gf-ink-3); font-size: 11px; line-height: 1.45;
+}
+.product-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px; margin: 20px 0;
+}
+.product-logo {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden;
+}
+.product-logo__head {
+  display: flex; align-items: center; gap: 10px; padding: 12px 15px;
+  border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.product-logo__name {
+  color: var(--gf-ink); font-family: var(--gf-font-display);
+  font-size: 15px; font-weight: 700; letter-spacing: -.03em;
+}
+.product-logo__stage {
+  display: flex; align-items: flex-end; justify-content: center; gap: 18px;
+  min-height: 190px; padding: 24px 16px; background: var(--gf-ground-deep);
+}
+.product-logo__stage.light { background: #fff; }
+.product-logo__stage figure { display: grid; justify-items: center; gap: 7px; margin: 0; }
+.product-logo__stage figcaption {
+  color: var(--gf-ink-3); font-family: var(--gf-font-mono); font-size: 9px;
+}
+.product-logo__stage.light figcaption { color: #867e90; }
+.product-logo__why {
+  min-height: 82px; margin: 0; padding: 13px 15px; border-top: 1px solid var(--gf-line);
+  color: var(--gf-ink-2); font-size: 12.5px; line-height: 1.55;
+}
+
+/* ---- generic test strips ---- */
+.strip {
+  display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  padding: 20px 22px; margin: 14px 0;
+}
+.strip .lbl {
+  font-family: var(--gf-font-mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; opacity: .7; min-width: 92px;
+}
+.strip figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
+.strip figcaption { font-family: var(--gf-font-mono); font-size: 9px; opacity: .65; }
+.strip.dark  { background: var(--gf-ground-deep); color: var(--gf-ink-2); }
+.strip.light { background: #FFFFFF; color: #5F5868; border-color: #E6E2EC; }
+.strip.lightalt { background: #F7F5F9; color: #5F5868; border-color: #E6E2EC; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 16px 0; }
+.panel {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); padding: 16px 18px;
+}
+.panel > b {
+  display: block; font-family: var(--gf-font-display); font-weight: 700;
+  letter-spacing: -0.03em; font-size: 14px; color: var(--gf-ink); margin-bottom: 4px;
+}
+.panel > .cap { font-size: 12.5px; line-height: 1.55; color: var(--gf-ink-2); margin: 0 0 12px; }
+.panel .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.panel .row figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+.panel .row figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-3); }
+
+/* circle crop / photo tests */
+.crop { border-radius: 50%; overflow: hidden; display: block; }
+
+/* Paired crop comparison. Fixed column track so the two rows line up
+   exactly — the whole point is reading down a column, and captions of
+   different widths were pushing the columns out of register. */
+.cropgrid {
+  display: grid; grid-template-columns: 124px repeat(4, 1fr); gap: 14px 18px;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground-deep); padding: 20px 22px; margin: 14px 0;
+  align-items: center; justify-items: center;
+}
+.cropgrid .rowlbl {
+  justify-self: start; font-family: var(--gf-font-mono); font-size: 10px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--gf-ink-2); line-height: 1.5;
+}
+.cropgrid .colhd {
+  font-family: var(--gf-font-display); font-weight: 700; font-size: 13px;
+  letter-spacing: -0.025em; color: var(--gf-ink);
+}
+.cropgrid figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
+.cropgrid .swatchbox {
+  display: block; padding: 9px; border-radius: 8px;
+  border: 1px solid rgba(128,128,128,.25);
+}
+.cropgrid figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-3); }
+.photo {
+  background:
+    linear-gradient(115deg, #2b1c3a 0%, #7a3a2e 38%, #c9713f 62%, #1b2233 100%);
+  border-radius: var(--gf-radius);
+}
+
+/* lockups */
+.lock { display: grid; gap: 14px; margin: 16px 0; }
+.lock__row {
+  display: flex; align-items: center; gap: 14px; padding: 18px 20px;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground);
+}
+.lock__word {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.045em;
+  color: var(--gf-ink);
+}
+.lock__badge {
+  font-family: var(--gf-font-mono); font-size: 9.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3.5px 8px; border-radius: 999px;
+  border: 1px solid var(--gf-nav-line); color: var(--gf-nav); background: var(--gf-nav-soft);
+}
+
+/* fake nav bar, real dimensions */
+.navbar {
+  display: flex; align-items: center; gap: 11px; height: 56px; padding: 0 20px;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground-alt); margin: 12px 0;
+}
+.navbar .brand {
+  font-family: var(--gf-font-display); font-weight: 700; font-size: 16px;
+  letter-spacing: -0.045em; color: var(--gf-ink);
+}
+.navbar .links { margin-left: auto; display: flex; gap: 18px; }
+.navbar .links span { font-size: 13px; color: var(--gf-ink-2); }
+.navbar .links span:first-child { color: var(--gf-nav); }
+
+table.t {
+  width: 100%; border-collapse: separate; border-spacing: 0; margin: 16px 0;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius); overflow: hidden;
+  font-size: 14px;
+}
+table.t th {
+  text-align: left; background: var(--gf-surface); color: var(--gf-ink-2);
+  font-size: 11.5px; letter-spacing: 0.07em; text-transform: uppercase; font-weight: 600;
+  padding: 10px 14px; border-bottom: 1px solid var(--gf-line-strong);
+}
+table.t td { padding: 10px 14px; border-bottom: 1px solid var(--gf-line); color: var(--gf-ink-2); }
+table.t tr:last-child td { border-bottom: 0; }
+table.t td.mono, table.t td .mono { font-family: var(--gf-font-mono); font-size: 12.5px; }
+table.t td strong { color: var(--gf-ink); }
+
+.note {
+  border: 1px solid var(--gf-line); border-left: 3px solid var(--gf-nav);
+  background: var(--gf-ground-alt); border-radius: var(--gf-radius);
+  padding: 14px 16px; margin: 18px 0;
+}
+.note b { display: block; color: var(--gf-ink); font-weight: 600; font-size: 13.5px; margin-bottom: 5px; }
+.note p { margin: 0 0 10px; font-size: 14px; }
+.note p:last-child { margin-bottom: 0; }
+.note.warn { border-left-color: var(--vp-c-warning-1); }
+.note.warn b { color: var(--vp-c-warning-1); }
+.note.pick { border-left-color: var(--gf-accent); background: var(--gf-accent-soft); }
+.note.pick b { color: var(--gf-accent); }
+.ref {
+  display: flex; gap: 22px; align-items: center; flex-wrap: wrap;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); padding: 20px 22px; margin: 18px 0;
+}
+.ref img { background: #fff; border-radius: var(--gf-radius-sm); display: block; }
+.ref b { display: block; color: var(--gf-ink); font-weight: 600; font-size: 14px; margin-bottom: 5px; }
+.ref p { margin: 0; font-size: 13.5px; color: var(--gf-ink-2); max-width: 52ch; }
+/* ---- click-to-download affordance ----
+   Every illustration is a file. The cue has to be present enough to be
+   discoverable and quiet enough not to compete with the marks, which
+   are the actual subject of the page. */
+svg { cursor: pointer; transition: filter .12s ease, transform .12s ease; }
+figure:hover > svg,
+.mark__stage:hover > svg,
+.strip svg:hover,
+.panel svg:hover { filter: brightness(1.06) drop-shadow(0 0 8px var(--gf-accent-line)); }
+figure:hover > svg { transform: translateY(-1px); }
+.ref img, #beforeRow img { cursor: pointer; }
+[data-gf-motion="reduced"] svg { transition: none; }
+
+/* ---- loaders ----
+   Motion is gated twice, per the handoff's implementation notes: the
+   OS preference, and the [data-gf-motion] attribute. Nothing here
+   animates unless BOTH allow it. The static state is the mark, so a
+   reduced-motion user gets a logo rather than a broken spinner. */
+/* Base state is the COMPLETE mark: every face fully opaque, seam fully
+   drawn, nothing offset. The keyframes take it away and give it back,
+   so when motion is gated off the result is not a frozen frame of an
+   animation — it is the logo. An earlier version set the resting
+   opacity to .24 with one face lit, which froze into a two-tone mark
+   of exactly the kind this page spent three sections arguing against. */
+.gf-ldr .gf-f { opacity: 1; transform-box: fill-box; }
+.gf-ldr .gf-seam { stroke-dasharray: 62; stroke-dashoffset: 0; }
+/* Resting states again chosen so that gating motion off leaves the
+   complete mark: the sweep band parked outside, the level filled, the
+   orbit segment closed into a solid outline. */
+.gf-ldr .gf-band { transform: translateX(-96px); }
+.gf-ldr .gf-level { transform: translateY(0); }
+.gf-ldr .gf-track { stroke-dasharray: 100 0; stroke-dashoffset: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f {
+    animation: gfCycle 1.35s cubic-bezier(.4,0,.2,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f2 { animation-delay: -.45s; }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f3 { animation-delay: -.90s; }
+
+  /* SETTLE — and the two rewrites it took to get here.
+
+     v1 gave all three faces delay 0, so they moved as one blob, and
+     its first keyframe was exploded while its last was seated, so
+     every loop ended in a hard snap.
+
+     v2 fixed both and was still wrong, which stepping the animation
+     frame by frame made obvious: with a large travel and an opacity
+     fade, a missing face does not read as "a part that has not
+     arrived". It reads as a damaged logo — because the three sectors
+     are REGIONS OF ONE SILHOUETTE, not components. This is the same
+     reason Exploded scores badly in the variants table; the flaw was
+     inherited by animating it.
+
+     So the travel is now small and opacity is constant. The mark is
+     never incomplete — its seams widen and close. That is honest to
+     what the geometry actually is. */
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f {
+    animation: gfAsmT 2s cubic-bezier(.37,0,.24,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f2 {
+    animation-name: gfAsmR; animation-delay: .13s;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f3 {
+    animation-name: gfAsmL; animation-delay: .26s;
+  }
+
+  html[data-gf-motion="full"] .gf-ldr[data-anim="draw"] .gf-seam {
+    animation: gfDraw 1.5s ease-in-out infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="breathe"] .gf-mark {
+    animation: gfBreathe 1.5s ease-in-out infinite;
+  }
+  /* Signal by AREA rather than by a hairline — which is the whole
+     reason Draw is limited and these three are not. */
+  html[data-gf-motion="full"] .gf-ldr[data-anim="sweep"] .gf-band {
+    animation: gfSweep 1.6s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="fill"] .gf-level {
+    animation: gfFill 2.1s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="orbit"] .gf-track {
+    animation: gfOrbit 1.5s linear infinite;
+  }
+}
+@keyframes gfSweep { 0% { transform: translateX(-96px) } 100% { transform: translateX(96px) } }
+@keyframes gfFill  { 0%, 8% { transform: translateY(112px) } 78%, 100% { transform: translateY(0) } }
+@keyframes gfOrbit { to { stroke-dashoffset: -100 } }
+@keyframes gfCycle { 0%, 62%, 100% { opacity: .24 } 16% { opacity: 1 } }
+/* Small travel, constant opacity: the seams open and close, and the
+   mark is legible at every frame of the loop. */
+@keyframes gfAsmT {
+  0%, 100% { transform: translate(0,-3.6px) }
+  46%, 62% { transform: translate(0,0) }
+}
+@keyframes gfAsmR {
+  0%, 100% { transform: translate(3.1px,1.8px) }
+  46%, 62% { transform: translate(0,0) }
+}
+@keyframes gfAsmL {
+  0%, 100% { transform: translate(-3.1px,1.8px) }
+  46%, 62% { transform: translate(0,0) }
+}
+@keyframes gfDraw { 0% { stroke-dashoffset: 62 } 55%, 100% { stroke-dashoffset: 0 } }
+@keyframes gfBreathe { 0%, 100% { opacity: .38 } 50% { opacity: 1 } }
+
+.ldrs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 20px 0; }
+#decidedSet { grid-template-columns: 1fr; }
+.ldr {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden;
+}
+.ldr__head {
+  display: flex; align-items: center; gap: 10px; padding: 10px 15px;
+  border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.ldr__name {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.03em;
+  font-size: 14px; color: var(--gf-ink);
+}
+.ldr__stage {
+  display: flex; align-items: flex-end; justify-content: center; gap: 26px; flex-wrap: wrap;
+  padding: 26px 18px; background: var(--gf-ground-deep); min-height: 130px;
+}
+.ldr__stage figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
+.ldr__stage figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-3); }
+.ldr__why {
+  margin: 0; padding: 12px 16px; border-top: 1px solid var(--gf-line);
+  background: var(--gf-ground-alt); font-size: 12.5px; line-height: 1.55; color: var(--gf-ink-2);
+}
+.ldr__why b { color: var(--gf-ink); font-weight: 600; }
+.motionbar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  border: 1px solid var(--gf-nav-line); background: var(--gf-nav-soft);
+  border-radius: var(--gf-radius); padding: 12px 16px; margin: 16px 0;
+}
+.motionbar span { font-size: 13px; color: var(--gf-ink-2); }
+.inline-ldr {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 13.5px; color: var(--gf-ink-2);
+}
+.dlhint {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-2);
+  border: 1px solid var(--gf-line-strong); border-radius: 999px;
+  padding: 5px 12px; margin: 0 0 4px;
+}
+.dlhint b { color: var(--gf-nav); font-weight: 500; }
+
+#gfToast {
+  position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(8px);
+  background: var(--gf-surface); color: var(--gf-ink);
+  border: 1px solid var(--gf-line-strong); border-radius: 999px;
+  padding: 10px 18px; font-family: var(--gf-font-mono); font-size: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.45);
+  opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+  z-index: 60; max-width: 80vw; text-align: center;
+}
+#gfToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+[data-gf-motion="reduced"] #gfToast { transition: opacity .18s ease; }
+
+@media (max-width: 760px) { .wrap, .head { padding-left: 18px; padding-right: 18px; } }
+@media (max-width: 560px) {
+  .tile-scale { grid-template-columns: 1fr; }
+  .tile-scale small { grid-column: auto; }
+}
+
+/* The aligned grids are the one thing that forced the whole document
+   to scroll sideways on a phone — measured at 581px of scroll width
+   in a 390px viewport. Reading down a column is the entire point of
+   them, so they keep their columns and scroll INSIDE their own box
+   rather than dragging the page with them. */
+@media (max-width: 880px) {
+  .cropgrid {
+    grid-template-columns: 84px repeat(4, minmax(56px, 1fr));
+    gap: 10px 8px; padding: 14px 12px;
+  }
+  .cropgrid .colhd { font-size: 11px; }
+  .cropgrid .rowlbl { font-size: 9px; letter-spacing: .06em; }
+  .cropgrid svg { max-width: 100%; height: auto; }
+  .cropgrid .swatchbox { padding: 5px; }
+  table.t { display: block; overflow-x: auto; }
+  pre { font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<header class="head">
+  <h1>GoForj Logo Lab</h1>
+  <span class="sub">frozen base · rendered variants · measured</span>
+  <nav>
+    <a href="#base">Base</a>
+    <a href="#rule">Rule</a>
+    <a href="#variants">Variants</a>
+    <a href="#measure">Measured</a>
+    <a href="#otherground">Ground</a>
+    <a href="#lightship">Light</a>
+    <a href="#forever">Forever</a>
+    <a href="#loader">Loader</a>
+    <a href="#surfaces">Surfaces</a>
+    <a href="#verdict">Verdict</a>
+    <a href="#products">Products</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+<section class="sec" id="base">
+  <p class="kicker">The base</p>
+  <h2>The geometry is <em>settled</em></h2>
+  <p class="dlhint">
+    <b>↓</b> Click any illustration on this page to download it as SVG.
+    Alt-click for PNG at the size shown.
+  </p>
+  <p>
+    The traced silhouette is frozen. <code>MARK_OUTER</code> and
+    <code>MARK_HOLE</code> are carried over unchanged, and nothing on this page
+    edits them. Every variant below is a different <strong>rendering</strong> of
+    those two paths — a fill rule, a palette, a treatment. If a variant needs
+    the shape to change in order to work, that variant is wrong, not the shape.
+  </p>
+  <p>
+    That constraint is what makes a “forever” answer possible. A mark ages badly
+    when the thing you committed to was a rendering — a gradient era, a long
+    shadow era, a particular orange. It ages well when the thing you committed
+    to was a silhouette, and the rendering was always understood as the
+    replaceable layer.
+  </p>
+  <div class="strip dark">
+    <span class="lbl">the base</span>
+    <div id="baseRow"></div>
+  </div>
+  <div class="ref">
+    <img src="/assets/goforj-v7.png" alt="The current GoForj mark" width="150" height="150">
+    <div>
+      <b>Where it came from</b>
+      <p>
+        <code>/assets/goforj-v7.png</code> — the raster the silhouette was traced
+        from. Kept for comparison only. The identity is the hexagonal cube, the
+        notch that opens the G, and the counter cut through the front; the
+        shading, wall gradients and drop shadow were rendering, and are gone.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="rule">
+  <p class="kicker">The rule test</p>
+  <h2>Three readings of the <em>colour rule</em></h2>
+  <p>
+    The design system says colour means exactly one of four things, and that the
+    <strong>form</strong> is load-bearing: action is molten orange and always
+    filled, navigation is temper gold and always text or line. Action and
+    navigation sit only 28.5° apart in hue, so filled-versus-line is carrying the
+    distinction that colour cannot.
+  </p>
+  <p>
+    A logo has to declare where it stands relative to that rule, because the mark
+    appears in the nav bar directly beside real links and real buttons. Below,
+    the same frozen silhouette under all three readings.
+  </p>
+  <div class="grid2" id="ruleTests"></div>
+  <div class="note warn">
+    <b>What v1 did, unstated</b>
+    <p>
+      v1's <em>Quench</em> direction filled the top faces with
+      <code>#FFC24D</code> — that is <code>--gf-nav</code>, the navigation
+      colour, used as a fill. It also hardcoded <code>#7A3A2E</code>, which is
+      not a token in the system at all. Neither was flagged. The rule was broken
+      quietly, which is precisely the erosion the handoff's closing caution
+      predicts.
+    </p>
+  </div>
+</section>
+
+<section class="sec" id="variants">
+  <p class="kicker">Variants</p>
+  <h2>One shape, many <em>renderings</em></h2>
+  <p>
+    Each card measures itself. <strong>Tones</strong> counts distinct fills and
+    reports the smallest ΔL* between any two of them — below about 8 they merge
+    at small sizes. <strong>Ground</strong> is the WCAG ratio of the dominant
+    fill against the surface behind it. <strong>1-bit</strong> reports whether
+    the variant survives a hard threshold, which is what happens on an etched
+    surface, a fax, or a single-colour print.
+  </p>
+  <div class="note warn">
+    <b>The face variants were warped, and it was a geometry bug</b>
+    <p>
+      Every face-based direction in v1 rendered as a bent shard rather than a
+      cube. The cause was not colour. v1's <code>FACE_TOP</code>,
+      <code>FACE_LEFT</code> and <code>FACE_RIGHT</code> were extracted from
+      luminance bands in the source PNG and never cleaned up, and they are
+      broken: <code>FACE_TOP</code>'s third subpath has an <strong>area of
+      zero</strong> — it repeats the vertex <code>41.36 83.29</code>, making a
+      degenerate bowtie that paints nothing. <code>FACE_RIGHT</code> contains two
+      zero-width spikes that double back on themselves, and one of its subpaths
+      covers a region on the <em>left</em> of the cube.
+    </p>
+    <p>
+      Together the three groups accounted for <strong>93.7%</strong> of the
+      mark's area, and that figure counts overlaps as positive, so real coverage
+      was lower. Parts of the mark were never painted; other parts were painted
+      twice by faces that disagreed about who owned them.
+    </p>
+    <p>
+      They have been replaced. In an isometric cube the three visible faces meet
+      at a single interior vertex, and the three edges radiating from it cut the
+      plane into exactly three sectors — so the faces are now
+      <strong>the frozen mark clipped to each sector</strong> rather than three
+      separately traced outlines. This cannot warp by construction, and it
+      measures at <strong>100.00% coverage with 0.3px of overlap across 64,000
+      pixels</strong>, which is antialiasing on the shared edges and nothing
+      else. The seam in <em>Seam</em> is drawn from those same three edges, so
+      the seam and the face split can never disagree.
+    </p>
+  </div>
+  <div class="marks" id="marks"></div>
+
+  <h3>Against what ships today</h3>
+  <p>
+    The first question anyone reviewing this will ask is whether it beats the
+    current mark, so it should not require opening two tabs. Same sizes, same
+    ground, no rescaling — <code>/assets/goforj-v7.png</code> as it exists,
+    beside the recommendation.
+  </p>
+  <div class="strip dark"><span class="lbl">current<br>PNG</span><div id="beforeRow"></div></div>
+  <div class="strip dark"><span class="lbl">proposed<br>Seam</span><div id="afterRow"></div></div>
+  <div class="note">
+    <b>What the comparison is and is not evidence of</b>
+    <p>
+      The current mark is a raster with a soft shadow and interior gradients, so
+      below about 32px it is compositing detail it cannot resolve and goes muddy.
+      That is a fair comparison at favicon sizes, because that is exactly what
+      ships. It is <em>not</em> evidence that the underlying artwork is bad — the
+      silhouette on this page was traced from it, and the geometry is the same
+      geometry. The difference here is entirely rendering.
+    </p>
+  </div>
+</section>
+
+<section class="sec" id="measure">
+  <p class="kicker">Measured</p>
+  <h2>Where the counter <em>closes</em></h2>
+  <p>
+    v1 asserted its small-size verdicts as hand-typed strings — <code>holds</code>,
+    <code>tones merge</code>, <code>grey smudge</code>. This measures them. The
+    mark is rasterised at each size, the aperture is identified as
+    <code>inside(outer) − painted</code>, and the metric is how much body colour
+    has bled into those pixels through antialiasing — reported as a WCAG ratio of
+    aperture against body, so it is the same unit the rest of the system already
+    argues in.
+  </p>
+  <p>
+    Because the geometry is frozen, this is a property of the
+    <strong>shape itself</strong> and is identical for every variant. It answers
+    one question — the minimum size this silhouette may ever be used at — and it
+    answers it once, for good.
+  </p>
+  <table class="t">
+    <thead><tr><th>Size</th><th>Aperture vs body</th><th>Reading</th></tr></thead>
+    <tbody id="survival"></tbody>
+  </table>
+  <div class="strip dark">
+    <span class="lbl">rendered</span>
+    <div id="sizeRow"></div>
+  </div>
+  <div class="note" id="minSizeNote"></div>
+
+  <h3>The seam, in device pixels</h3>
+  <p>
+    Seam's whole argument is that its detail disappears on its own rather than
+    being swapped out, so that claim needs a number rather than a promise. The
+    stroke is 2 units on a 112-unit viewBox, which fixes its width as a constant
+    fraction of the mark.
+  </p>
+  <table class="t">
+    <thead><tr><th>Size</th><th>Seam width</th><th>What renders</th></tr></thead>
+    <tbody id="seamTable"></tbody>
+  </table>
+  <div class="note warn">
+    <b>Stated precisely, because “disappears” was too strong</b>
+    <p>
+      A sub-pixel stroke does not vanish — the renderer paints it at reduced
+      alpha. At 24px and 16px the seam is still faintly present as a softening of
+      the top edge rather than as visible structure. That is the intended
+      behaviour and it is why the ladder resolves smoothly, but “identical to the
+      base at 16px” would be an overclaim. It is <em>converging</em> on the base,
+      and it is visually indistinguishable at a glance from about 20px down.
+    </p>
+  </div>
+</section>
+
+<section class="sec" id="otherground">
+  <p class="kicker">The other ground</p>
+  <h2>Light mode, with the <em>light tokens</em></h2>
+  <p>
+    v1's “on white” strip rendered dark-mode marks on a white box. That is not a
+    light-mode test — it is the mistake the handoff warns about, made on the page
+    whose job was to catch it. These use the real
+    <code>html:not(.dark)</code> token set read out of the stylesheet: accent
+    darkens to <code>#D6351A</code>, and gold darkens to bronze at
+    <code>#8F5D00</code>.
+  </p>
+  <div class="strip light"><span class="lbl">light · page</span><div id="lightRow"></div></div>
+  <div class="strip lightalt"><span class="lbl">light · alt</span><div id="lightAltRow"></div></div>
+  <div class="note warn" id="lightFail"></div>
+  <div class="note warn">
+    <b>The bronze problem is a logo problem too</b>
+    <p>
+      The handoff notes that gold has to darken to bronze in light mode to clear
+      contrast, “which shifts the feel”. For UI that is a nuisance. For a
+      logo it is disqualifying: a mark whose colours have to be redefined per
+      mode is two marks. Any variant depending on gold cannot be the primary.
+    </p>
+  </div>
+</section>
+
+<section class="sec" id="lightship">
+  <p class="kicker">Light mode</p>
+  <h2>What to actually <em>ship</em> on light</h2>
+  <p>
+    The section above diagnoses what breaks. This one is the answer to the
+    practical question — which asset goes on a light surface, in which colour,
+    and why.
+  </p>
+
+  <h3>There is no single fill that clears AA on both modes</h3>
+  <p>
+    Worth establishing first, because it determines how many assets exist. Every
+    candidate fill, measured against every ground the system defines:
+  </p>
+  <table class="t">
+    <thead><tr>
+      <th>Fill</th><th>Worst on dark</th><th>Worst on light</th><th>Worst overall</th><th>Verdict</th>
+    </tr></thead>
+    <tbody id="fillMatrix"></tbody>
+  </table>
+  <div class="note" id="fillFinding"></div>
+
+  <h3>The three light grounds</h3>
+  <p>
+    Light mode is not one surface. The system defines page
+    <code>#FFFFFF</code>, alt <code>#F7F5F9</code> for sidebar and callouts, and
+    surface-2 <code>#F2EFF5</code> for the code well. The mark has to hold on all
+    three.
+  </p>
+  <div class="strip light"><span class="lbl">page</span><div id="lg1"></div></div>
+  <div class="strip lightalt"><span class="lbl">alt</span><div id="lg2"></div></div>
+  <div class="strip" style="background:#F2EFF5;color:#5F5868;border-color:#E6E2EC">
+    <span class="lbl">surface-2</span><div id="lg3"></div>
+  </div>
+
+  <h3>The seam paints itself in the ground colour — when does that bite?</h3>
+  <p>
+    Seam draws its seam in the <strong>ground colour</strong>, so the asset
+    carries an assumption about what it will be placed on. The obvious worry is
+    that light mode has three grounds and the asset can only be exported for one.
+    Below: a seam painted for white, then the same mark with the seam
+    <em>cut</em> as transparency, across the system's light grounds and then off
+    the system entirely.
+  </p>
+  <div class="cropgrid" id="seamModeGrid"></div>
+  <div class="note pick" id="seamModeFinding"></div>
+
+  <h3>The recommendation</h3>
+  <div class="grid2" id="lightRecs"></div>
+</section>
+
+<section class="sec" id="forever">
+  <p class="kicker">Forever</p>
+  <h2>Three tests a lab page usually <em>skips</em></h2>
+  <p>
+    Everything so far tests the mark inside the world it was designed for. These
+    test it outside that world, which is where a permanent mark actually spends
+    most of its life.
+  </p>
+
+  <h3>1 · Palette swap — does it outlive Temper?</h3>
+  <p>
+    Temper is a leading candidate, not a decision; the handoff still lists
+    direction as open. A mark that only makes sense in one palette is hostage to
+    a choice that has not been made. Here is each variant rendered in two
+    palettes that have nothing to do with heat.
+  </p>
+  <div class="strip dark"><span class="lbl">graphite</span><div id="swapA"></div></div>
+  <div class="strip dark"><span class="lbl">verdigris</span><div id="swapB"></div></div>
+
+  <h3>2 · Circle crop — the avatar nobody controls</h3>
+  <p>
+    GitHub, Slack, npm, Discord and Go package registries all crop to a circle,
+    and none of them ask. Read this one down the columns: the same treatment as
+    a bare square asset, then composed for the crop.
+  </p>
+  <div class="cropgrid" id="cropGrid"></div>
+  <div class="note" id="cropFinding"></div>
+
+  <h3>3 · Hostile ground — a photo, not a token</h3>
+  <p>
+    Conference backdrops, screenshots, social cards. No control over what sits
+    behind the mark.
+  </p>
+  <div class="strip photo"><span class="lbl" style="color:#fff">on photo</span><div id="photoRow"></div></div>
+
+  <h3>4 · One colour — etch, emboss, single-plate print</h3>
+  <p>
+    Laser etch, embroidery, foil, a stamp. There is exactly one ink and no
+    tonal range at all.
+  </p>
+  <div class="strip dark"><span class="lbl">1-bit</span><div id="bitRow"></div></div>
+</section>
+
+<section class="sec" id="loader">
+  <p class="kicker">Loader</p>
+  <h2>The one place a logo may <em>move</em></h2>
+  <p>
+    Seam resolves the mark into three faces meeting at a single interior vertex.
+    That is already the structure of a loading indicator — three parts, one
+    centre, a natural order to travel in — so a loader here is not a new drawing.
+    It is the same frozen silhouette with one of its faces leading.
+  </p>
+  <p>
+    This matters more than it sounds. Most product loaders are a generic spinner
+    that happens to sit near a logo. This one <strong>is</strong> the logo, so the
+    moment a page is waiting is still a moment the mark is on screen.
+  </p>
+
+  <div class="motionbar">
+    <button class="btn-s" id="motionToggle">Enable motion</button>
+    <span id="motionState"></span>
+  </div>
+  <div class="note warn">
+    <b>Gated twice, and the static state is the mark</b>
+    <p>
+      The handoff requires every animation to use the
+      <code>prefers-reduced-motion</code> + <code>[data-gf-motion]</code> pattern,
+      so nothing here animates unless <em>both</em> permit it. The button above
+      is an explicit opt-in for previewing; it does not override anyone's OS
+      setting silently.
+    </p>
+    <p>
+      The important part is what a reduced-motion user sees: not a frozen
+      spinner, but <strong>the mark itself</strong>. Every loader below degrades
+      to a legitimate static logo, because the animation only ever changes which
+      face leads — never the geometry.
+    </p>
+  </div>
+
+  <div class="ldrs" id="loaders"></div>
+
+  <h3>In context</h3>
+  <p>
+    A loader is judged inline at 16–24px beside text, not at 64px on a swatch
+    board.
+  </p>
+  <div class="strip dark" id="ldrContext"></div>
+
+  <h3>Fill, driven by a real value</h3>
+  <p>
+    Fill is the only determinate loader here. Because the level is a transform on
+    a clipped rect, it can be set to an actual percentage rather than looped —
+    the mark becomes the progress bar instead of sitting next to one.
+  </p>
+  <div class="strip dark" id="ldrFillSteps"></div>
+
+  <h3>Which survive small</h3>
+  <p>
+    The same constraint that decided the variants applies here. A loader that
+    signals by <em>tone</em> is a multi-tone mark for as long as it is animating,
+    so it inherits the merge problem — measured below as the ΔL* between a
+    leading face and a trailing one, composited over the ground.
+  </p>
+  <table class="t">
+    <thead><tr><th>Loader</th><th>Signal</th><th>Lead vs trail</th><th>Floor</th><th>Use for</th></tr></thead>
+    <tbody id="ldrAssess"></tbody>
+  </table>
+  <div class="note pick" id="ldrVerdict"></div>
+</section>
+
+<section class="sec" id="surfaces">
+  <p class="kicker">Surfaces</p>
+  <h2>Where it actually <em>ships</em></h2>
+
+  <h3>The nav bar, at real size</h3>
+  <p>
+    This is the mark's highest-traffic appearance by an enormous margin, and it
+    is roughly 24px. v1 never rendered it in context.
+  </p>
+  <div id="navbars"></div>
+
+  <h3>Lockup</h3>
+  <p>
+    Corrected to the system's display voice: Space Grotesk 700 at
+    <code>-0.045em</code>. v1 set the wordmark at <code>-0.03em</code>, which is
+    the h3 step, not the display step — so the wordmark was quietly off-system.
+    Mark height equals cap height; the gap is 0.42× the mark.
+  </p>
+  <div class="lock" id="lock"></div>
+
+  <h3>Favicon ladder and app icon</h3>
+  <div class="note warn">
+    <b>The mark is not square, and v1's framing assumed it was</b>
+    <p>
+      The bounding box measures <strong>84.01 × 100</strong> — an isometric cube
+      seen corner-on is taller than it is wide by the projection ratio. v1 framed
+      it in a square <code>-6 -6 112 112</code>, which pads correctly on the top
+      and bottom and incorrectly on the sides: 6 units of gap on the left,
+      <strong>21.99 on the right</strong>. Every mark on that page sat 8 units
+      left of centre, about 7% of its own width.
+    </p>
+    <p>
+      Against a flat ground that is invisible, which is how it survived. Behind a
+      plate it is obvious, because the plate gives the eye two symmetrical edges
+      to measure against — which is exactly why the tiles and circles looked
+      wrong while the bare marks looked fine. Every frame here is now derived
+      from the measured bounding box, and optical size is set by one number: the
+      mark's long side as a fraction of the frame.
+    </p>
+  </div>
+  <div class="grid2" id="favicons"></div>
+
+  <h3>Clear space and minimum size</h3>
+  <p>
+    Clear space is one counter-width on every side — derived from the mark
+    rather than picked, so it scales automatically and cannot be argued with.
+  </p>
+  <div class="panel" id="clearspace"></div>
+</section>
+
+<section class="sec" id="verdict">
+  <p class="kicker">Verdict</p>
+  <h2>What each one <em>costs</em></h2>
+  <table class="t">
+    <thead><tr>
+      <th>Variant</th><th>Tones</th><th>1-bit</th><th>Palette-free</th><th>Light mode</th><th>Says</th>
+    </tr></thead>
+    <tbody id="assess"></tbody>
+  </table>
+  <h3>The decided set</h3>
+  <p>
+    Three logo roles, one geometry, plus a square delivery asset for avatar
+    croppers. Everything below is the same frozen silhouette — what changes
+    between them is the job, not the drawing. The 256px and 128px variants
+    expose display-scale detail; click one for SVG or Alt-click for a PNG at
+    the displayed size. The tile controls scale the inner mark without changing
+    the outer plate, and every export follows the preview. The avatar tile also
+    has direct 1024px PNG downloads.
+  </p>
+  <div class="ldrs" id="decidedSet"></div>
+  <div class="note pick" id="recommendation"></div>
+
+  <h3>The rules, in one place</h3>
+  <p>
+    Every number here is read from the same constants the measurements above use,
+    so this block cannot drift from the evidence. It is written as a
+    specification because that is the useful shape — but the direction itself is
+    still open, and the handoff still lists it that way.
+  </p>
+  <div class="panel">
+    <b>Mark specification — draft</b>
+    <p class="cap">Copy this into the contributing guide if the direction is adopted.</p>
+    <pre id="specBlock" style="margin:0;overflow:auto;font-family:var(--gf-font-mono);font-size:12px;line-height:1.7;color:var(--gf-ink-2);white-space:pre-wrap"></pre>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn-s" id="copySpec">Copy specification</button>
+    </div>
+  </div>
+  <div class="note">
+    <b>The trade, stated plainly</b>
+    <p>
+      The multi-tone variants are the most ownable and the most on-system, and
+      they are the ones that fail every test in the Forever section — they
+      collapse at 1-bit, they lose their meaning under a palette swap, and they
+      need a second definition for light mode. The flat variants survive
+      everything and say less.
+    </p>
+    <p>
+      v1 proposed resolving this by shipping an isometric primary with a
+      separate flat favicon. That is two marks with two maintenance paths, and it
+      is how identities drift. The alternative worth taking seriously is a single
+      mark whose detail is <em>sub-pixel at small sizes</em>, so it degrades into
+      the flat version on its own rather than being swapped for it.
+    </p>
+  </div>
+</section>
+
+<section class="sec" id="products">
+  <p class="kicker">Product family</p>
+  <h2>Related at a glance, <em>distinct in use</em></h2>
+  <p>
+    A product family should share construction rules, not one repeated symbol.
+    These studies hold the plate, palette, corner geometry, optical size, and
+    dark/light behavior constant while giving each product its own silhouette.
+    Click a study for SVG or Alt-click for a PNG at the displayed size.
+  </p>
+  <div class="product-grid" id="productFamily"></div>
+  <div class="note">
+    <b>What is decided—and what is not</b>
+    <p>
+      GoForj is the parent identity. Harbor’s anchor follows the symbol already
+      used by its desktop app, redrawn here to test family construction. Ship is
+      a concept study only; this page does not make it an approved product mark.
+    </p>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ==================================================================
+   FROZEN BASE — copied verbatim from v1. Do not edit.
+
+   No vector source existed, so the mark was traced from
+   /assets/goforj-v7.png: alpha channel for the silhouette, contour
+   extraction for the outline and the counter, then every edge snapped
+   onto a true isometric axis (30 / 150 / 90 degrees) and the corners
+   re-intersected.
+   ================================================================== */
+const MARK_OUTER = 'M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z';
+const MARK_HOLE  = 'M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z';
+const MARK_VB    = '-6 -6 112 112';
+
+/* ================= END FROZEN BASE ================= */
+
+/*
+  ==================================================================
+  QUARANTINED — v1's FACE_TOP / FACE_LEFT / FACE_RIGHT.
+
+  These are kept here, unused, so nobody re-adopts them. They are the
+  reason every face-based variant in v1 looked warped, and the fault
+  is geometric, not chromatic. Audited:
+
+    FACE_TOP   subpath 2 : AREA = 0. Vertex 1 and vertex 3 are the
+                           same point (41.36, 83.29) — a degenerate
+                           bowtie that paints nothing at all.
+    FACE_RIGHT subpath 1 : zero-width spike, and it covers a region
+                           on the LEFT of the cube (x 14–57).
+    FACE_RIGHT subpath 2 : zero-width spike (38.13,70.36 →
+                           38.13,45.74 doubles back on itself).
+
+    Coverage: the three groups together account for 4704 units² of a
+    5019 unit² mark — 93.7%, and that figure counts overlaps as
+    positive area, so true coverage is lower still. Parts of the mark
+    were never painted and other parts were painted twice.
+
+  They were extracted from luminance bands in the source PNG and
+  never cleaned up. A band boundary in a JPEG-ish raster is not an
+  edge, so the trace produced slivers and doubled-back vertices.
+
+  const FACE_TOP   = 'M78.81 21.96 L65.09 12.57 ... (see git history)';
+  const FACE_LEFT  = 'M0.21 20.22 L0.42 74.72 ...';
+  const FACE_RIGHT = 'M83.8 27.64 L47.56 50.44 ...';
+  ==================================================================
+*/
+
+/*
+  THE REPLACEMENT: faces derived from the frozen base, not traced.
+
+  In an isometric cube the three visible faces meet at one interior
+  vertex, and the three edges radiating from it divide the plane into
+  exactly three sectors. So rather than drawing three shapes and
+  hoping they tile the mark, we build three wedges from that centre
+  and CLIP THE FROZEN MARK to each one.
+
+  This cannot warp, by construction: the silhouette is always exactly
+  MARK_OUTER/MARK_HOLE, the three sectors partition the plane with no
+  gap and no overlap, and no new outline is invented anywhere. The
+  notch and the counter are handled for free, because they are part
+  of the clip rather than something the faces have to reproduce.
+
+  The cube's corners, read off MARK_OUTER. R1 is reconstructed
+  because the notch removes the real upper-right corner; C is the
+  mean of the two ways an isometric cube lets you derive it, which
+  differ by ~1.7 units because the trace is not perfectly regular.
+*/
+const CUBE = {
+  T:  [40.59,   0.0],
+  L1: [ 0.0,   25.06],
+  L2: [ 0.0,   74.9],
+  B:  [42.26, 100.0],
+  R2: [84.01,  75.99],
+  R1: [84.01,  25.06]     // reconstructed: the notch eats the real corner
+};
+const CUBE_C = [
+  ((CUBE.L1[0] + CUBE.R1[0] - CUBE.T[0]) + (CUBE.L2[0] + CUBE.R2[0] - CUBE.B[0])) / 2,
+  ((CUBE.L1[1] + CUBE.R1[1] - CUBE.T[1]) + (CUBE.L2[1] + CUBE.R2[1] - CUBE.B[1])) / 2
+];
+
+/* A sector of the plane, hinged at the centre vertex, big enough to
+   overshoot the mark in every direction. */
+function wedge(pA, pB, R = 400) {
+  const ray = p => {
+    const d = [p[0] - CUBE_C[0], p[1] - CUBE_C[1]];
+    const m = Math.hypot(d[0], d[1]);
+    return [d[0] / m * R, d[1] / m * R];
+  };
+  const a = ray(pA), b = ray(pB);
+  return [
+    CUBE_C,
+    [CUBE_C[0] + a[0], CUBE_C[1] + a[1]],
+    [CUBE_C[0] + a[0] + b[0], CUBE_C[1] + a[1] + b[1]],
+    [CUBE_C[0] + b[0], CUBE_C[1] + b[1]]
+  ];
+}
+const SECTOR = {
+  top:   wedge(CUBE.L1, CUBE.R1),
+  left:  wedge(CUBE.L1, CUBE.B),
+  right: wedge(CUBE.R1, CUBE.B)
+};
+
+/*
+  The three interior edges of the cube — the seams where the visible
+  faces meet. They are exactly the sector boundaries, drawn as rays
+  from the centre vertex and clipped to the mark, so the seam can
+  never disagree with the face partition: they are the same lines.
+*/
+const SEAM_EDGES = [CUBE.L1, CUBE.R1, CUBE.B].map(p => {
+  const d = [p[0] - CUBE_C[0], p[1] - CUBE_C[1]];
+  const m = Math.hypot(d[0], d[1]);
+  return `M${CUBE_C[0]} ${CUBE_C[1]} L${CUBE_C[0] + d[0] / m * 400} ${CUBE_C[1] + d[1] / m * 400}`;
+}).join(' ');
+
+
+/* ------------------------------------------------------------------
+   Colour maths. Same functions as the plane readout in
+   design-system.html, so the two pages cannot disagree on a number.
+   ------------------------------------------------------------------ */
+function toRgb(value) {
+  const probe = document.createElement('span');
+  probe.style.color = value; probe.style.display = 'none';
+  document.body.appendChild(probe);
+  const rgb = getComputedStyle(probe).color;
+  probe.remove();
+  return (rgb.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+}
+const lum = (v) => {
+  const f = toRgb(v).map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+  return 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2];
+};
+const lstar = (v) => { const y = lum(v), d = 6 / 29;
+  return 116 * (y > d * d * d ? Math.cbrt(y) : y / (3 * d * d) + 4 / 29) - 16; };
+const wcag = (a, b) => { const A = lum(a), B = lum(b);
+  return (Math.max(A, B) + 0.05) / (Math.min(A, B) + 0.05); };
+
+/* ------------------------------------------------------------------
+   Read BOTH token scopes out of the real stylesheet.
+
+   The light tokens live on `html:not(.dark)`, which cannot be active
+   at the same time as `html.dark` on this document — so they are
+   parsed from the CSSOM rather than computed. This is what makes a
+   genuine light-mode test possible at all.
+   ------------------------------------------------------------------ */
+function scopeTokens(match) {
+  const out = {};
+  for (const sheet of Array.from(document.styleSheets)) {
+    let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+    if (!rules) continue;
+    for (const r of Array.from(rules)) {
+      if (r.type !== 1 || !r.selectorText) continue;
+      if (!match(r.selectorText)) continue;
+      for (const prop of Array.from(r.style)) {
+        if (prop.startsWith('--gf-')) out[prop] = r.style.getPropertyValue(prop).trim();
+      }
+    }
+  }
+  return out;
+}
+
+const DARK_RAW  = scopeTokens(s => /(^|,)\s*(:root|html\.dark)\s*(,|$)/.test(s));
+const LIGHT_RAW = Object.assign({}, DARK_RAW, scopeTokens(s => /html:not\(\.dark\)/.test(s)));
+
+/* Hardcoded fallback, used only if the stylesheet did not load. Values
+   transcribed from the handoff, not recomputed. */
+const FALLBACK_DARK = {
+  '--gf-accent': '#FF5E3A', '--gf-accent-hi': '#FF8257', '--gf-nav': '#FFC24D',
+  '--gf-ink': '#FFFFFF', '--gf-ink-2': '#A9A1B3', '--gf-ink-3': '#746C80',
+  '--gf-ground-deep': '#0C0A0E', '--gf-ground': '#1A1620', '--gf-ground-alt': '#1D1923',
+  '--gf-surface': '#2C2734', '--gf-surface-2': '#2D2835',
+  '--gf-line': '#2A2333', '--gf-line-strong': '#3D3349', '--gf-on-accent': '#08070A'
+};
+const FALLBACK_LIGHT = {
+  '--gf-accent': '#D6351A', '--gf-accent-hi': '#B32B13', '--gf-nav': '#8F5D00',
+  '--gf-ink': '#0C0A0E', '--gf-ink-2': '#5F5868', '--gf-ink-3': '#867E90',
+  '--gf-ground-deep': '#FFFFFF', '--gf-ground': '#FFFFFF', '--gf-ground-alt': '#F7F5F9',
+  '--gf-surface': '#FFFFFF', '--gf-surface-2': '#F2EFF5',
+  '--gf-line': '#E6E2EC', '--gf-line-strong': '#CEC7D8', '--gf-on-accent': '#FFFFFF'
+};
+
+function palette(raw, fallback, meta) {
+  const g = k => (raw[k] && /^#|^rgb/.test(raw[k])) ? raw[k] : fallback[k];
+  return Object.assign({
+    accent: g('--gf-accent'), accentHi: g('--gf-accent-hi'), nav: g('--gf-nav'),
+    ink: g('--gf-ink'), ink2: g('--gf-ink-2'), ink3: g('--gf-ink-3'),
+    deep: g('--gf-ground-deep'), ground: g('--gf-ground'), groundAlt: g('--gf-ground-alt'),
+    surface: g('--gf-surface'), surface2: g('--gf-surface-2'),
+    line: g('--gf-line'), lineStrong: g('--gf-line-strong'), onAccent: g('--gf-on-accent')
+  }, meta || {});
+}
+
+const P_DARK  = palette(DARK_RAW,  FALLBACK_DARK,  { id: 'dark',  bg: null });
+const P_LIGHT = palette(LIGHT_RAW, FALLBACK_LIGHT, { id: 'light', bg: null });
+P_DARK.bg  = P_DARK.deep;
+P_LIGHT.bg = P_LIGHT.ground;
+const P_LIGHT_ALT = Object.assign({}, P_LIGHT, { bg: P_LIGHT.groundAlt });
+
+/* Two palettes with no relationship to heat. The question they answer:
+   does the variant still mean anything when Temper is gone? */
+const P_GRAPHITE = {
+  id: 'graphite', accent: '#6E8CD8', accentHi: '#8AA4E6', nav: '#9FB0C4',
+  ink: '#FFFFFF', ink2: '#A6ADB8', ink3: '#727A85',
+  deep: '#0B0D10', ground: '#151920', groundAlt: '#191E26',
+  surface: '#262C36', surface2: '#2B323D', line: '#242A33', lineStrong: '#39414D',
+  onAccent: '#0B0D10', bg: '#0B0D10'
+};
+const P_VERDIGRIS = {
+  id: 'verdigris', accent: '#2FA37A', accentHi: '#48C094', nav: '#8FCBAF',
+  ink: '#FFFFFF', ink2: '#9FB5AB', ink3: '#6B8078',
+  deep: '#08110D', ground: '#101B16', groundAlt: '#13201A',
+  surface: '#1E2F27', surface2: '#22352C', line: '#1C2B24', lineStrong: '#2F473C',
+  onAccent: '#08110D', bg: '#08110D'
+};
+
+/* ------------------------------------------------------------------
+   Renderers. Every one takes (size, palette) and returns SVG markup.
+   None of them read CSS custom properties, which is what makes light
+   mode and the palette swap real rather than decorative.
+   ------------------------------------------------------------------ */
+let _uid = 0;
+
+/*
+  ACCESSIBILITY.
+
+  Every SVG on the v2 page carried role="img" aria-label="GoForj" —
+  144 of them — so a screen reader announced the name 144 times to
+  get through the document. Almost none of those are content: the
+  size ladders, palette strips, crop grids and 1-bit rows are
+  illustrations OF a measurement, and the measurement is already in
+  the adjacent text and chips.
+
+  So labelling is now opt-in. Default is aria-hidden; pass
+  {label:'...'} where the mark is genuinely the thing being
+  communicated. That is a handful of places, not 144.
+*/
+const svgOpen = (size, vb, label) =>
+  `<svg width="${size}" height="${size}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" ` +
+  (label ? `role="img" aria-label="${label}"` : `aria-hidden="true" focusable="false"`) + '>';
+
+/*
+  ==================================================================
+  FRAMING — and a bug that was in every render on v1's page.
+
+  The mark's bounding box is 84.01 wide by 100 tall. It is NOT
+  square: an isometric cube seen corner-on is taller than it is wide
+  by exactly the projection ratio.
+
+  v1 framed it in a square viewBox of '-6 -6 112 112', i.e. 6 units
+  of padding, which is correct vertically and wrong horizontally —
+  it leaves a 6-unit gap on the left and a 21.99-unit gap on the
+  right. Every mark on that page sat 8 units left of centre, about
+  7% of the mark's width.
+
+  On a bare mark against a flat ground that is invisible, which is
+  why it survived. Put a symmetrical plate behind it — a tile, a
+  circle, an avatar — and it is immediately obvious, because the eye
+  measures the mark against the plate's edges. That is what looked
+  wrong about the tiles and circles.
+
+  Everything below frames from the measured bounding box instead of
+  a hardcoded box, so this cannot drift again.
+  ==================================================================
+*/
+const MARK_BBOX = (() => {
+  const n = (MARK_OUTER.match(/-?[\d.]+/g) || []).map(Number);
+  const xs = [], ys = [];
+  for (let i = 0; i < n.length; i += 2) { xs.push(n[i]); ys.push(n[i + 1]); }
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const y0 = Math.min(...ys), y1 = Math.max(...ys);
+  return { x0, x1, y0, y1, w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+})();
+
+/*
+  A square frame centred on the mark. `cover` is the mark's LONG side
+  as a fraction of the frame, so it is the one number that controls
+  optical size — and it is the same number platforms specify their
+  icon safe zones in.
+
+    0.89  bare mark, matching v1's intended optical size
+    0.62  inside a filled tile (iOS/Android glyph safe zone)
+    0.58  inside a circular avatar, which crops more aggressively
+*/
+function frame(cover = 0.89) {
+  const S = Math.max(MARK_BBOX.w, MARK_BBOX.h) / cover;
+  const x0 = MARK_BBOX.cx - S / 2, y0 = MARK_BBOX.cy - S / 2;
+  return { vb: `${x0} ${y0} ${S} ${S}`, S, x0, y0, x1: x0 + S, y1: y0 + S,
+           cx: MARK_BBOX.cx, cy: MARK_BBOX.cy };
+}
+const MARK_PATH = `${MARK_OUTER} ${MARK_HOLE}`;
+
+/* THE BASE. One flat fill, counter knocked out with evenodd. */
+function rTrue(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  return svgOpen(size, F.vb, o.label) +
+    `<path d="${MARK_PATH}" fill="${o.fill || P.accent}" fill-rule="evenodd"/></svg>`;
+}
+
+/*
+  Face-group fills. Each face is the frozen mark clipped to one
+  sector, so the union is the mark exactly — 100% coverage, no
+  overlap, nothing warped.
+
+  For Exploded the clip is applied INSIDE the translated group, so
+  each piece is cut first and then moved. Cutting after moving would
+  slice the mark in the wrong places.
+*/
+function rFaces(size, P, o = {}) {
+  const off = o.explode || 0;
+  const F = frame(o.cover ?? (off ? 0.76 : 0.89));
+  const id = 'fc' + (++_uid);
+  const poly = pts => pts.map(p => p.join(',')).join(' ');
+  const face = (sector, fill, dx, dy) =>
+    `<g${off ? ` transform="translate(${dx} ${dy})"` : ''}>` +
+      `<g clip-path="url(#${id})">` +
+        `<polygon points="${poly(sector)}" fill="${fill}"/>` +
+      `</g></g>`;
+  return svgOpen(size, F.vb, o.label) +
+    `<defs><clipPath id="${id}">` +
+      `<path d="${MARK_PATH}" clip-rule="evenodd"/>` +
+    `</clipPath></defs>` +
+    face(SECTOR.right, o.right,  off * 0.87,  off * 0.5) +
+    face(SECTOR.left,  o.left,  -off * 0.87,  off * 0.5) +
+    face(SECTOR.top,   o.top,    0,          -off) +
+    '</svg>';
+}
+
+/*
+  SEAM — the variant v1's own conclusion implies but never drew.
+
+  A flat mark plus the cube's three interior edges, stroked in the
+  ground colour and clipped to the silhouette. Those edges are the
+  sector boundaries, so the seam and the face partition are the same
+  lines by construction and cannot drift apart.
+
+  The stroke is specified in USER UNITS on a ~112-unit frame, so it
+  scales with the mark: a clean seam at display size, and 0.29px at
+  16px — under one device pixel, so it converges on the flat base.
+
+  That is the whole argument. Not an isometric mark plus a separate
+  flat favicon, but one definition that becomes the other on its own,
+  with no second file to keep in sync.
+*/
+function rSeam(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'sm' + (++_uid);
+  const fill = o.fill || P.accent;
+  const seam = o.seam || P.bg || P.deep;
+  return svgOpen(size, F.vb, o.label) +
+    `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+    `<g clip-path="url(#${id})">` +
+      `<path d="${SEAM_EDGES}" fill="none" stroke="${seam}" stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+    `</g></svg>`;
+}
+
+/* Counter-first: body in one colour, the enclosed counter in another. */
+function rCounter(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  return svgOpen(size, F.vb, o.label) +
+    `<path d="${MARK_HOLE}" fill="${o.counter || P.accent}"/>` +
+    `<path d="${MARK_PATH}" fill="${o.body || P.ink}" fill-rule="evenodd"/></svg>`;
+}
+
+/*
+  Plated forms — tile, circle, void.
+
+  These are the ones the miscentring wrecked, because a plate gives
+  the eye two symmetrical edges to measure the mark against. They now
+  share one frame helper and one safe-zone number.
+
+  Radius: 22.37% of the side is the iOS superellipse approximation,
+  which is also close to what Android and macOS use. Deliberately NOT
+  --gf-radius: that token is 8px for UI components at component
+  sizes, and an app icon is not a component — a fixed 8px on a 512px
+  icon would read as a square.
+*/
+const ICON_RADIUS = 0.2237;
+
+/*
+  The glyph as it sits on a plate. `seam` re-cuts the cube's interior
+  edges in the plate colour, so a plated icon can carry the same
+  treatment as the primary mark instead of being a separate flat
+  drawing — the point of Seam is that there is only ever one idea.
+*/
+function platedGlyph(P, o, plate) {
+  const fill = o.fill || P.deep;
+  if (!o.seam) return `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>`;
+  const id = 'pg' + (++_uid);
+  return `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+    `<g clip-path="url(#${id})">` +
+      `<path d="${SEAM_EDGES}" fill="none" stroke="${plate}" stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+    `</g>`;
+}
+
+/* The mark knocked out of a filled tile. */
+function rTile(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.62);
+  const plate = o.plate || P.accent;
+  return svgOpen(size, F.vb, o.label) +
+    `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" rx="${F.S * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    platedGlyph(P, o, plate) + '</svg>';
+}
+
+/* Avatar uploaders want an uncropped source square so their own circle
+   or rounded mask remains the only crop. The smaller avatar safe zone
+   keeps the glyph clear even when the destination imposes a circle. */
+const AVATAR_TILE_COVER = 0.58;
+function rAvatarTile(size, P, o = {}) {
+  const F = frame(o.cover ?? AVATAR_TILE_COVER);
+  const plate = o.plate || P.accent;
+  return svgOpen(size, F.vb, o.label) +
+    `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${plate}"/>` +
+    platedGlyph(P, o, plate) + '</svg>';
+}
+
+/* Circular avatar — the crop GitHub, Slack, npm and Discord impose.
+   `ring` adds a hairline so a plate close to the page ground still
+   reads as a plate rather than as a floating glyph. */
+function rAvatar(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.58);
+  const plate = o.plate || P.accent;
+  return svgOpen(size, F.vb, o.label) +
+    `<circle cx="${F.cx}" cy="${F.cy}" r="${F.S / 2 - (o.ring ? 0.75 : 0)}" fill="${plate}"${
+      o.ring ? ` stroke="${o.ring}" stroke-width="1.5"` : ''}/>` +
+    (o.glyph ? o.glyph(P) : platedGlyph(P, o, plate)) + '</svg>';
+}
+
+/* Harbor keeps the anchor metaphor already present in its desktop
+   icon, but rebuilds it on the shared plate instead of importing a
+   raster treatment that cannot participate in palette or size tests. */
+function rHarborTile(size, P, o = {}) {
+  const plate = o.plate || P.accent;
+  const glyph = o.fill || P.deep;
+  return svgOpen(size, '0 0 100 100', o.label) +
+    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    `<g fill="none" stroke="${glyph}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">` +
+      `<circle cx="50" cy="24" r="8"/>` +
+      `<path d="M50 32V84M34 45H66M19 62C22 78 34 87 50 87S78 78 81 62M19 62L29 67M81 62L71 67"/>` +
+    `</g></svg>`;
+}
+
+/* Ship is intentionally a concept study: a mast, two sails, and one
+   weighted hull reduced to filled shapes that survive beside an
+   anchor at 32px. It shares Harbor's system, not Harbor's symbol. */
+function rShipTile(size, P, o = {}) {
+  const plate = o.plate || P.accent;
+  const glyph = o.fill || P.deep;
+  return svgOpen(size, '0 0 100 100', o.label) +
+    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    `<g fill="${glyph}">` +
+      `<path d="M47 16H53V58H47Z"/>` +
+      `<path d="M43 27V54H23Z"/>` +
+      `<path d="M57 24V54H79Z"/>` +
+      `<path d="M17 59H83L76 76C73 84 66 88 57 88H43C34 88 27 84 24 76Z"/>` +
+    `</g></svg>`;
+}
+
+/* The mark as a void, cut out of a filled plate. */
+function rWell(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.62);
+  const r = o.round ? ` rx="${F.S * ICON_RADIUS}"` : '';
+  return svgOpen(size, F.vb, o.label) +
+    `<path d="M${F.x0} ${F.y0} H${F.x1} V${F.y1} H${F.x0} Z ${MARK_PATH}" fill="${o.plate || P.accent}" fill-rule="evenodd"/></svg>`;
+}
+
+/*
+  SEAM, CUT INSTEAD OF PAINTED.
+
+  The painted seam has a dependency nobody notices until light mode:
+  it is drawn in the GROUND colour, so the asset has to know what it
+  will be placed on. Dark mode hides this because almost everything
+  sits on one near-black ground. Light mode has three — page #FFFFFF,
+  alt #F7F5F9, surface-2 #F2EFF5 — so a seam painted white is visibly
+  wrong on two of them, and on a photo it is wrong everywhere.
+
+  Cutting the seam as transparency instead removes the dependency
+  entirely: the gap shows whatever is actually behind the mark. Same
+  drawing, same three edges, one fewer thing to get wrong.
+*/
+function rSeamCut(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'sc' + (++_uid);
+  return svgOpen(size, F.vb, o.label) +
+    `<defs><mask id="${id}" maskUnits="userSpaceOnUse" x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}">` +
+      `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="#fff"/>` +
+      `<path d="${SEAM_EDGES}" fill="none" stroke="#000" stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+    `</mask></defs>` +
+    `<path d="${MARK_PATH}" fill="${o.fill || P.accent}" fill-rule="evenodd" mask="url(#${id})"/></svg>`;
+}
+
+/* Outline only — for hostile grounds where no fill is safe.
+   Framed slightly smaller because the stroke straddles the path and
+   would otherwise be clipped by the frame edge. */
+function rKeyline(size, P, o = {}) {
+  const w = o.w ?? 4;
+  const F = frame(o.cover ?? 0.85);
+  return svgOpen(size, F.vb, o.label) +
+    `<path d="${MARK_PATH}" fill="none" stroke="${o.stroke || P.ink}" stroke-width="${w}" stroke-linejoin="round" fill-rule="evenodd"/></svg>`;
+}
+
+/* ------------------------------------------------------------------
+   The variant set.
+
+   `tones` lists the fills that carry the mark, so tone separation and
+   1-bit collapse can be computed rather than claimed.
+
+   `pairs` lists the figure/ground relationships that MUST separate for
+   the mark to read. This matters more than it sounds: a first pass
+   measured every tone against the page background, which wrongly failed
+   Tile — Tile knocks the mark out of its own accent plate, so its
+   contrast is fill-against-plate and the page behind it is irrelevant.
+   Measuring the wrong pair produces a confident wrong answer, so each
+   variant declares its own.
+
+   `paletteFree` records whether the variant's MEANING survives losing
+   Temper. That one is a judgement, and is marked as one.
+   ------------------------------------------------------------------ */
+const VARIANTS = [
+  {
+    id: 'true', name: 'True', tag: 'base', frozen: true,
+    render: (px, P) => rTrue(px, P),
+    pairs: P => [[P.accent, P.bg]],
+    tones: P => [P.accent],
+    why: '<b>The base. Frozen.</b> The traced silhouette in one flat fill and nothing else. Every other variant is this plus a decision.',
+    paletteFree: true, says: 'the mark'
+  },
+  {
+    id: 'seam', name: 'Seam', tag: 'new', hot: true,
+    /*
+      CUT, not painted.
+
+      This card and its exports used rSeam — the painted version —
+      while the light-mode section, the decided set and the
+      recommendation had all moved to the cut seam. So "Copy SVG" on
+      the page's own primary mark handed you the variant the page
+      argues against. The painted renderer is still used, but only in
+      the light-mode comparison, where it is the counter-example.
+    */
+    render: (px, P) => rSeamCut(px, P),
+    pairs: P => [[P.accent, P.bg]],
+    tones: P => [P.accent],
+    why: '<b>Detail as a function of size.</b> Flat fill with the cube\'s three interior edges <em>cut out</em> as transparency — the same three edges that define the face partition, so the two can never drift apart. Cut rather than painted, so the gap shows whatever is actually behind the mark and the asset carries no assumption about its background. The seam is 2 units on a 112-unit viewBox, so its device width is a fixed fraction of the mark: crisp at display size, sub-pixel by 16px. The mark converges on the flat base on its own — one definition, not an isometric primary plus a separate flat favicon.',
+    seamWidth: px => 2 * px / 112,
+    paletteFree: true, says: 'a cube, until it is too small to be one'
+  },
+  {
+    id: 'crest', name: 'Crest', tag: 'structural',
+    render: (px, P) => rFaces(px, P, { top: P.accent, left: P.deep, right: P.deep }),
+    pairs: P => [[P.accent, P.bg], [P.deep, P.bg], [P.accent, P.deep]],
+    tones: P => [P.accent, P.deep],
+    why: '<b>Two tones, following the form.</b> Only the top surfaces take the accent; the walls fall back to the ground. The heat lands where light actually would — but note what that means on a ground that <em>is</em> the wall colour: the walls do not recede, they disappear, and the mark reads as a floating shard. That is what the 1.00:1 measurement is saying, and it is why the geometry being correct is not enough to save it.',
+    paletteFree: true, says: 'lit from above'
+  },
+  {
+    id: 'quench', name: 'Quench', tag: 'structural',
+    render: (px, P) => rFaces(px, P, { top: P.nav, left: P.accent, right: P.surface2 }),
+    pairs: P => [[P.nav, P.bg], [P.accent, P.bg], [P.surface2, P.bg]],
+    tones: P => [P.nav, P.accent, P.surface2],
+    why: '<b>The oxide progression, on three faces.</b> Straw on the tops, ember on the near walls, cooled surface on the far ones. Retokenised — v1 hardcoded <code>#7A3A2E</code>, which is not in the system. Note that it fills with the navigation colour, which the rule forbids.',
+    paletteFree: false, says: 'tempered metal'
+  },
+  {
+    id: 'facet', name: 'Facet', tag: 'structural',
+    render: (px, P) => rFaces(px, P, { top: P.surface, left: P.ground, right: P.deep }),
+    pairs: P => [[P.surface, P.bg], [P.ground, P.bg], [P.deep, P.bg]],
+    tones: P => [P.surface, P.ground, P.deep],
+    why: '<b>The plane ladder, on the faces.</b> Surface, column, canvas mapped onto the three face groups. Entirely neutral — spends no role colour, so it never competes with an action.',
+    paletteFree: true, says: 'the system itself'
+  },
+  {
+    id: 'exploded', name: 'Exploded', tag: 'structural',
+    render: (px, P) => rFaces(px, P, { top: P.accent, left: P.ground, right: P.deep, explode: 3.2, vb: '-14 -14 128 128' }),
+    pairs: P => [[P.accent, P.bg], [P.ground, P.bg], [P.deep, P.bg]],
+    tones: P => [P.accent, P.ground, P.deep],
+    why: '<b>Assembled from parts.</b> Each face group offset along its own isometric axis, opening the joints. Modular in the literal sense — but it needs the joints to be visible, and they are the first thing to go.',
+    paletteFree: true, says: 'composable'
+  },
+  {
+    id: 'counter', name: 'Counter', tag: 'interpretation',
+    render: (px, P) => rCounter(px, P, { body: P.ink, counter: P.accent }),
+    pairs: P => [[P.ink, P.bg], [P.accent, P.ink]],
+    tones: P => [P.ink, P.accent],
+    why: '<b>Negative space carries the colour.</b> Body in ink, the enclosed counter in accent. The counter is one big simple shape, so it survives small — and it satisfies the action rule, since the accent is filled.',
+    paletteFree: true, says: 'aperture, focus'
+  },
+  {
+    id: 'well', name: 'Well', tag: 'interpretation',
+    render: (px, P) => rWell(px, P),
+    pairs: P => [[P.accent, P.bg]],
+    tones: P => [P.accent],
+    why: '<b>The mark as a hole.</b> Cut out of a filled plate rather than drawn on one. Echoes “code is a well, not a card”, and the plate guarantees contrast on any ground.',
+    paletteFree: true, says: 'cut, recessed'
+  },
+  {
+    id: 'tile', name: 'Tile', tag: 'interpretation',
+    render: (px, P) => rTile(px, P),
+    pairs: P => [[P.deep, P.accent]],
+    tones: P => [P.accent, P.deep],
+    why: '<b>App icon.</b> Knocked out of an accent tile at the token radius. Not a primary — a required derivative, since every OS demands a filled square.',
+    paletteFree: true, says: 'product, installable'
+  },
+  {
+    id: 'keyline', name: 'Keyline', tag: 'utility',
+    render: (px, P) => rKeyline(px, P),
+    pairs: P => [[P.ink, P.bg]],
+    tones: P => [P.ink],
+    why: '<b>Outline only.</b> For grounds nobody controls, and for etch and emboss where there is no fill at all. Fails below about 24px as the stroke closes the counter — a utility variant, never the primary.',
+    paletteFree: true, says: 'engraved'
+  }
+];
+
+const byId = id => VARIANTS.find(v => v.id === id);
+
+/* Delivery assets are exported like variants without entering the
+   aesthetic assessment: packaging for a cropper is not a fourth logo
+   direction and should not change the verdict's measured pass count. */
+const DELIVERY_VARIANTS = {
+  'avatar-tile': {
+    id: 'avatar-tile',
+    name: 'Avatar tile',
+    render: (px, P, o = {}) => rAvatarTile(px, P, { ...o, seam: true })
+  }
+};
+const exportableById = id => byId(id) || DELIVERY_VARIANTS[id];
+
+/* ------------------------------------------------------------------
+   MEASUREMENT
+   ------------------------------------------------------------------ */
+
+/*
+  APERTURE CONTAMINATION.
+
+  The first attempt at this used the MARK_HOLE path as the counter
+  mask. That was wrong: under evenodd the aperture is not the hole
+  path, it is `inside(outer) MINUS painted`, and the two differ
+  because the hole path is a complex channel that partly re-fills
+  itself. The wrong version returned ~43% at every size, i.e. it was
+  measuring nothing. This version is verified against an independent
+  scanline rasterisation of the same geometry.
+
+  What it measures: for every pixel that ought to be aperture, how
+  much body colour has bled into it through antialiasing. Zero at
+  display size; it climbs as the channel narrows toward one device
+  pixel. That contamination is then expressed the way the rest of
+  the system expresses everything — as a WCAG ratio, aperture
+  against body. When that ratio collapses toward 1:1, the hole has
+  stopped being a hole.
+*/
+function apertureContamination(N) {
+  /* Rasterise through the SAME frame the page renders through, so the
+     measured scale is the scale on screen rather than a near-miss. */
+  const F = frame(0.89);
+  const draw = (pathStr, evenodd, px, py) => {
+    const c = document.createElement('canvas');
+    c.width = c.height = N;
+    const x = c.getContext('2d', { willReadFrequently: true });
+    x.clearRect(0, 0, N, N);
+    const k = N / F.S;
+    x.setTransform(k, 0, 0, k, -F.x0 * k + px, -F.y0 * k + py);
+    x.fillStyle = '#fff';
+    x.fill(new Path2D(pathStr), evenodd ? 'evenodd' : 'nonzero');
+    return x.getImageData(0, 0, N, N).data;
+  };
+
+  /*
+    Averaged over sub-pixel phase.
+
+    A single rasterisation measures one alignment of the shape against
+    the pixel grid, and at 12-24px that alignment matters enough to
+    make the result non-monotonic — 20px scored WORSE than 16px purely
+    because of where the edges happened to land. A brand's minimum-size
+    floor should not be decided by one lucky offset, so this samples a
+    3x3 grid of phases and reports the mean.
+  */
+  const PH = [0, 1 / 3, 2 / 3];
+  let total = 0, n = 0;
+  for (const px of PH) for (const py of PH) {
+    const solid = draw(MARK_OUTER, false, px, py);
+    const painted = draw(MARK_OUTER + ' ' + MARK_HOLE, true, px, py);
+    let sum = 0, cnt = 0;
+    for (let i = 3; i < solid.length; i += 4) {
+      const A = solid[i] / 255, B = painted[i] / 255;
+      if (A - B > 0.5) { sum += B; cnt++; }   // this pixel should be aperture
+    }
+    if (cnt) { total += sum / cnt; n++; }
+  }
+  return n ? total / n : 1;
+}
+
+/* Aperture-to-body contrast at a given size, in the live palette. */
+function apertureContrast(N, P) {
+  const k = apertureContamination(N);
+  const body = toRgb(P.accent), ground = toRgb(P.bg || P.deep);
+  const mixed = 'rgb(' + body.map((v, i) => Math.round(v * k + ground[i] * (1 - k))).join(',') + ')';
+  return { contam: k, ratio: wcag(mixed, P.accent) };
+}
+
+/* Distinct tones and the smallest gap between any two of them. */
+function toneStats(list) {
+  const uniq = [...new Set(list.map(c => c.toLowerCase()))];
+  if (uniq.length < 2) return { n: uniq.length, min: Infinity };
+  let min = Infinity;
+  for (let i = 0; i < uniq.length; i++)
+    for (let j = i + 1; j < uniq.length; j++)
+      min = Math.min(min, Math.abs(lstar(uniq[i]) - lstar(uniq[j])));
+  return { n: uniq.length, min };
+}
+
+/*
+  1-BIT COLLAPSE.
+
+  A first version of this thresholded the fills and asked only whether
+  they all landed on the same side as the background. That produced a
+  confidently wrong answer for Counter, which it labelled "flattens to
+  base" while the render showed a solid white hexagon with no G in it
+  at all — because Counter's aperture is FILLED by design, so once body
+  and counter threshold to the same value the mark has no counter left.
+
+  The fix is to stop looking at the fills in isolation and check the
+  relationships instead: a variant survives one ink only if every pair
+  it depends on to be readable still separates after thresholding.
+*/
+const toBit = c => (lstar(c) > 50 ? '#FFFFFF' : '#000000');
+
+function bitCollapse(v, P) {
+  const bg = P.bg || P.deep;
+  const pairs = v.pairs(P);
+  const broken = pairs.filter(([a, b]) => toBit(a) === toBit(b));
+  if (!broken.length) return { ok: true, note: 'holds' };
+  if (broken.length === pairs.length) return { ok: false, note: 'vanishes' };
+  const intoGround = broken.some(([a, b]) => a === bg || b === bg);
+  return { ok: false, note: intoGround ? 'faces sink into ground' : 'counter fills in' };
+}
+
+const fmt = n => (Number.isFinite(n) ? n.toFixed(1) : '—');
+
+/* ------------------------------------------------------------------
+   RENDER THE PAGE
+   ------------------------------------------------------------------ */
+const SIZES = [48, 32, 24, 16];
+
+/* --- base row --- */
+/* The one place the mark is the content rather than an illustration of
+   a measurement, so it is the one place that carries a label. Every
+   smaller copy in this ladder is the same mark again and is hidden. */
+document.getElementById('baseRow').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+  [128, 64, 32, 24, 16].map((px, i) =>
+    `<figure>${rTrue(px, P_DARK, i === 0 ? { label: 'The GoForj mark' } : {})}` +
+    `<figcaption>${px}</figcaption></figure>`).join('') +
+  `</div>`;
+
+/* --- the three readings of the colour rule --- */
+const RULE_READINGS = [
+  {
+    name: 'Exempt', cap: 'Identity sits outside the action/nav/reference system. The rule governs UI; the mark predates it and outranks it. Requires writing the exemption down, or it reads as erosion.',
+    marks: P => [['Quench', byId('quench').render(80, P)], ['Crest', byId('crest').render(80, P)]]
+  },
+  {
+    name: 'Action only', cap: 'Strictest reading. The mark is an action-coloured object: molten orange filled, or neutral. Gold never appears as a fill anywhere in the identity. Quench as drawn cannot exist.',
+    marks: P => [['Seam', byId('seam').render(80, P)], ['Counter', byId('counter').render(80, P)]]
+  },
+  {
+    name: 'Neutral', cap: 'The mark spends no role colour at all — plane tones only. It can never be mistaken for a button or a link, and it survives any palette. Also the least distinctive.',
+    marks: P => [['Facet', byId('facet').render(80, P)], ['Keyline', byId('keyline').render(80, P)]]
+  }
+];
+document.getElementById('ruleTests').innerHTML = RULE_READINGS.map(r => `
+  <div class="panel">
+    <b>${r.name}</b>
+    <p class="cap">${r.cap}</p>
+    <div class="row">
+      ${r.marks(P_DARK).map(([n, svg]) => `<figure>${svg}<figcaption>${n}</figcaption></figure>`).join('')}
+    </div>
+  </div>`).join('');
+
+/* --- variant cards, with computed chips --- */
+document.getElementById('marks').innerHTML = VARIANTS.map(v => {
+  const tones = v.tones(P_DARK);
+  const ts = toneStats(tones);
+  const ratio = Math.min(...v.pairs(P_DARK).map(([a, b]) => wcag(a, b)));
+  const bit = bitCollapse(v, P_DARK);
+  const toneChip = ts.n === 1
+    ? `<span class="chip ok">1 tone</span>`
+    : `<span class="chip ${ts.min >= 8 ? 'ok' : 'bad'}">${ts.n} tones · ΔL* ${fmt(ts.min)}</span>`;
+  return `
+  <div class="mark${v.frozen ? ' is-base' : ''}">
+    <div class="mark__head">
+      <span class="mark__name">${v.name}</span>
+      <span class="mark__tag${v.hot ? ' hot' : ''}">${v.tag}</span>
+    </div>
+    <div class="mark__stage">${v.render(128, P_DARK)}</div>
+    <div class="mark__sizes">
+      ${SIZES.map(px => `<figure>${v.render(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('')}
+    </div>
+    <div class="mark__m">
+      ${toneChip}
+      <span class="chip ${ratio >= 4.5 ? 'ok' : ratio >= 3 ? 'warn' : 'bad'}">ground ${ratio.toFixed(2)}:1</span>
+      <span class="chip ${bit.ok ? 'ok' : 'bad'}">1-bit ${bit.note}</span>
+      <span class="chip ${v.paletteFree ? 'ok' : 'bad'}">${v.paletteFree ? 'palette-free' : 'needs Temper'}</span>
+      ${v.seamWidth ? `<span class="chip ${v.seamWidth(16) < 0.5 ? 'ok' : 'warn'}">seam ${v.seamWidth(16).toFixed(2)}px @16</span>` : ''}
+    </div>
+    <p class="mark__why">${v.why}</p>
+    <div class="mark__act">
+      <button class="btn-s" data-copy="${v.id}">Copy SVG</button>
+      <button class="btn-s" data-dl="${v.id}">Dark</button>
+      <button class="btn-s" data-dl="${v.id}" data-mode="light">Light</button>
+      <button class="btn-s" data-set="${v.id}">Asset set</button>
+    </div>
+  </div>`;
+}).join('');
+
+/* --- before / after against the shipping PNG --- */
+const CMP_SIZES = [64, 48, 32, 24, 16];
+document.getElementById('beforeRow').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+  CMP_SIZES.map(px =>
+    `<figure><img src="/assets/goforj-v7.png" width="${px}" height="${px}" alt="" aria-hidden="true" style="display:block">` +
+    `<figcaption>${px}</figcaption></figure>`).join('') + `</div>`;
+
+document.getElementById('afterRow').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+  CMP_SIZES.map(px =>
+    `<figure>${rSeam(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('') + `</div>`;
+
+/* --- aperture table --- */
+const SURV = [128, 64, 48, 32, 24, 20, 16, 12].map(px =>
+  Object.assign({ px }, apertureContrast(px, P_DARK)));
+
+document.getElementById('survival').innerHTML = SURV.map(({ px, contam, ratio }) => {
+  const cls = ratio >= 4.5 ? 'ok' : ratio >= 3 ? 'warn' : 'bad';
+  const read = ratio >= 4.5 ? 'open — the counter reads as a hole'
+             : ratio >= 3   ? 'narrowing — still a hole, losing crispness'
+             : ratio >= 1.8 ? 'closing — reads as a notch, not an aperture'
+             : 'closed — no longer a G';
+  return `<tr>
+    <td class="mono"><strong>${px}px</strong></td>
+    <td><span class="chip ${cls}">${ratio.toFixed(2)}:1</span>
+        <span class="chip">${(contam * 100).toFixed(1)}% bleed</span></td>
+    <td>${read}</td></tr>`;
+}).join('');
+
+document.getElementById('sizeRow').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap">` +
+  SURV.map(({ px }) => `<figure>${rTrue(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('') +
+  `</div>`;
+
+/* Smallest size still clearing AA between aperture and body. */
+const floorRow = SURV.slice().reverse().find(r => r.ratio >= 4.5);
+const FLOOR = floorRow ? floorRow.px : 24;
+document.getElementById('minSizeNote').innerHTML = `
+  <b>This contradicts v1, and the measurement wins</b>
+  <p>
+    v1 asserted that the mark “loses its face separation somewhere around 24px
+    and turns to mush”, and told you to watch the 16px row above all others.
+    Measured, that is not true of the <em>geometry</em>. The counter is a wide
+    channel, not a hairline: aperture-to-body contrast is still
+    <strong>${(SURV.find(r => r.px === 16) || {}).ratio?.toFixed(2) ?? '—'}:1</strong>
+    at 16px and only falls below AA at
+    <strong>${FLOOR > 12 ? 'under ' + FLOOR + 'px' : '12px'}</strong>.
+    The flat silhouette is far more robust at small sizes than the page claimed.
+  </p>
+  <p>
+    What actually fails below 24px is <strong>tone separation</strong> — the
+    multi-tone variants, whose faces merge into each other. v1 attributed a
+    colour problem to the shape. Because the shape is frozen and shared, this
+    number is the same for every variant here: the floor is
+    <strong>${FLOOR}px</strong>, and any variant that fails earlier is failing on
+    its rendering, not on its geometry.
+  </p>`;
+
+/* --- seam width ladder --- */
+document.getElementById('seamTable').innerHTML = [128, 64, 48, 32, 24, 20, 16].map(px => {
+  const w = byId('seam').seamWidth(px);
+  const cls = w >= 1 ? 'ok' : w >= 0.5 ? 'warn' : 'bad';
+  const read = w >= 1.5 ? 'a true seam — the cube reads as a volume'
+             : w >= 1   ? 'a hairline — structure still legible'
+             : w >= 0.5 ? 'sub-pixel — softening, not structure'
+             : 'below half a pixel — visually the base';
+  return `<tr>
+    <td class="mono"><strong>${px}px</strong></td>
+    <td><span class="chip ${cls}">${w.toFixed(2)} px</span></td>
+    <td>${read}</td></tr>`;
+}).join('');
+
+/* --- light mode --- */
+const lightSet = ['true', 'seam', 'crest', 'quench', 'facet', 'counter', 'well', 'tile', 'keyline'];
+function strip(P) {
+  return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
+    lightSet.map(id => {
+      const v = byId(id);
+      const r = Math.min(...v.pairs(P).map(([a, b]) => wcag(a, b)));
+      const col = r >= 4.5 ? '#0F6E52' : r >= 3 ? '#8A5A00' : '#B3213C';
+      return `<figure>${v.render(44, P)}<figcaption style="color:${col}">${v.name} · ${r.toFixed(1)}:1</figcaption></figure>`;
+    }).join('') + `</div>`;
+}
+document.getElementById('lightRow').innerHTML = strip(P_LIGHT);
+document.getElementById('lightAltRow').innerHTML = strip(P_LIGHT_ALT);
+
+/*
+  The headline finding of this section, computed rather than eyeballed.
+
+  Several dark-mode variants use --gf-ground-deep or --gf-surface as a
+  face tone. Those tokens are near-black in dark and WHITE in light, so
+  the variant does not merely shift — it disintegrates. v1 could not
+  have found this, because v1 had no way to render the light tokens.
+*/
+(function () {
+  const failures = VARIANTS.map(v => ({
+    v, worst: Math.min(...v.pairs(P_LIGHT).map(([a, b]) => wcag(a, b)))
+  })).filter(r => r.worst < 3);
+  const el = document.getElementById('lightFail');
+  if (!failures.length) { el.remove(); return; }
+  el.innerHTML = `
+    <b>${failures.length} variant${failures.length > 1 ? 's' : ''} disintegrate${failures.length > 1 ? '' : 's'} in light mode</b>
+    <p>
+      ${failures.map(r => `<strong>${r.v.name}</strong> (${r.worst.toFixed(2)}:1)`).join(', ')} —
+      because they use <code>--gf-ground-deep</code> or <code>--gf-surface</code>
+      as a face tone, and those tokens are near-black in dark mode but
+      <strong>white</strong> in light. The walls do not darken, they vanish, and
+      the mark falls apart into a floating shard. Look at the strips above:
+      this is not a subtle shift, it is a broken logo.
+    </p>
+    <p>
+      This is the single strongest argument for a one-tone mark. Any variant
+      whose structure is carried by plane tokens is inheriting a decision that
+      was made for <em>surfaces</em>, where flipping black to white is correct
+      behaviour. A logo is not a surface.
+    </p>`;
+})();
+
+/* ==================================================================
+   LIGHT MODE — WHAT TO SHIP
+   ================================================================== */
+const GROUNDS_DARK = [
+  ['page', P_DARK.ground], ['deep', P_DARK.deep],
+  ['alt', P_DARK.groundAlt], ['surface', P_DARK.surface]
+];
+const GROUNDS_LIGHT = [
+  ['page', P_LIGHT.ground], ['alt', P_LIGHT.groundAlt], ['surface-2', P_LIGHT.surface2]
+];
+
+/*
+  The applicable threshold here is 3:1, not 4.5:1.
+
+  WCAG 1.4.3 exempts logotypes from contrast minimums outright, and
+  the nearest rule that does apply to graphics — 1.4.11 non-text
+  contrast — asks for 3:1. Holding a logo to the body-text ratio
+  would be measuring it against the wrong standard, so 3:1 is the
+  working floor and 4.5:1 is recorded as comfortable rather than
+  required.
+*/
+const GRAPHIC_MIN = 3.0;
+
+(function fillMatrix() {
+  const fills = [
+    ['Accent, dark token', P_DARK.accent, '#FF5E3A'],
+    ['Accent, light token', P_LIGHT.accent, '#D6351A'],
+    ['Accent-hi', P_DARK.accentHi, '#FF8257'],
+    ['Ink, dark', P_DARK.ink, '#FFFFFF'],
+    ['Ink, light', P_LIGHT.ink, '#0C0A0E']
+  ];
+  const rows = fills.map(([name, c, hex]) => {
+    const d = Math.min(...GROUNDS_DARK.map(([, g]) => wcag(c, g)));
+    const l = Math.min(...GROUNDS_LIGHT.map(([, g]) => wcag(c, g)));
+    return { name, hex, d, l, all: Math.min(d, l) };
+  });
+  const cell = v => {
+    const cls = v >= 4.5 ? 'ok' : v >= GRAPHIC_MIN ? 'warn' : 'bad';
+    return `<span class="chip ${cls}">${v.toFixed(2)}:1</span>`;
+  };
+  document.getElementById('fillMatrix').innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r.name}</strong><br><span class="mono" style="font-size:11px;color:var(--gf-ink-3)">${r.hex}</span></td>
+      <td>${cell(r.d)}</td>
+      <td>${cell(r.l)}</td>
+      <td>${cell(r.all)}</td>
+      <td>${r.all >= GRAPHIC_MIN
+            ? 'Works on every ground in the system'
+            : r.d >= GRAPHIC_MIN ? 'Dark only' : r.l >= GRAPHIC_MIN ? 'Light only' : 'Neither'}</td>
+    </tr>`).join('');
+
+  const universal = rows.filter(r => r.all >= GRAPHIC_MIN);
+  const anyAA = rows.filter(r => r.all >= 4.5);
+  document.getElementById('fillFinding').innerHTML = `
+    <b>Two fills for comfort, or one if you want a single asset</b>
+    <p>
+      ${anyAA.length === 0
+        ? 'No fill clears <strong>4.5:1</strong> on both modes, so if that were the bar, two assets would be mandatory.'
+        : 'Some fills clear 4.5:1 on both modes.'}
+      But 4.5:1 is the body-text ratio, and a logo is not body text — WCAG exempts
+      logotypes from contrast minimums entirely, and the nearest rule that does
+      apply to graphics asks for <strong>3:1</strong>.
+    </p>
+    <p>
+      Against that floor, <strong>${universal.map(r => r.hex).join(' and ')}</strong>
+      ${universal.length === 1 ? 'is the only fill that holds' : 'hold'} on all
+      ${GROUNDS_DARK.length + GROUNDS_LIGHT.length} grounds the system defines.
+      ${universal.length
+        ? `That makes <code>${universal[0].hex}</code> the one-asset answer if you ever need a single file: slightly muted on the dark ground, correct everywhere.`
+        : ''}
+      The dark accent <code>#FF5E3A</code> falls to
+      ${rows[0].l.toFixed(2)}:1 on light surfaces, which is why it cannot simply
+      be reused there.
+    </p>
+    <p>
+      Recommended: keep <strong>two fills</strong> — the tokens already define
+      them, the theme already switches them, and each is comfortable in its own
+      mode. Reach for the single fill only when the surface is genuinely unknown.
+    </p>`;
+})();
+
+/* The recommended mark on each of the three light grounds. */
+[['lg1', P_LIGHT.ground], ['lg2', P_LIGHT.groundAlt], ['lg3', P_LIGHT.surface2]]
+  .forEach(([id, g]) => {
+    const P = Object.assign({}, P_LIGHT, { bg: g });
+    document.getElementById(id).innerHTML =
+      `<div style="display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap">` +
+      [48, 32, 24, 16].map(px =>
+        `<figure>${rSeamCut(px, P)}<figcaption>${px}</figcaption></figure>`).join('') +
+      `<figure>${rTile(44, P)}<figcaption>tile</figcaption></figure>` +
+      `<figure>${rAvatar(44, P)}<figcaption>avatar</figcaption></figure>` +
+      `<span class="mono" style="font-size:11px;opacity:.75">${wcag(P_LIGHT.accent, g).toFixed(2)}:1</span>` +
+      `</div>`;
+  });
+
+/*
+  Painted versus cut seam.
+
+  The first version of this compared the two across only the system's
+  three light grounds and concluded the painted seam "reads as a
+  printing error". That was wrong, and the render showed it: the two
+  rows looked identical. Measured, the three light grounds span just
+  ΔL* 5.18 — page 100, alt 96.79, surface-2 94.82 — so a seam painted
+  white and placed on surface-2 is off by an amount nobody can see on
+  a 2-unit line.
+
+  The dependency is real, but it does not bite inside the system. It
+  bites the moment the mark leaves it, where the mismatch is ΔL* 80+
+  rather than 5. So the fourth column is the honest test.
+*/
+(function seamModes() {
+  const OFF = ['#1D1923', 'linear-gradient(115deg,#2b1c3a,#7a3a2e 55%,#c9713f)'];
+  const cols = [
+    ...GROUNDS_LIGHT,
+    ['off-system', OFF[0], OFF[1]]
+  ];
+  const grid = document.getElementById('seamModeGrid');
+  /* Class rather than inline padding, so the narrow-viewport rules can
+     shrink it — inline styles cannot be responded to without !important. */
+  const box = (bg, svg) =>
+    `<figure><span class="swatchbox" style="background:${bg}">${svg}</span></figure>`;
+
+  grid.innerHTML =
+    `<span></span>` +
+    cols.map(([n]) => `<span class="colhd">${n}</span>`).join('') +
+
+    `<span class="rowlbl">Painted seam<br>exported for white</span>` +
+    cols.map(([, g, alt]) =>
+      box(alt || g, rSeam(52, Object.assign({}, P_LIGHT, { bg: P_LIGHT.ground })))).join('') +
+
+    `<span class="rowlbl">Cut seam<br>transparent</span>` +
+    cols.map(([, g, alt]) => box(alt || g, rSeamCut(52, P_LIGHT))).join('');
+
+  const dl = (a, b) => Math.abs(lstar(a) - lstar(b));
+  const worstIn = Math.max(
+    dl(P_LIGHT.ground, P_LIGHT.groundAlt),
+    dl(P_LIGHT.ground, P_LIGHT.surface2),
+    dl(P_LIGHT.groundAlt, P_LIGHT.surface2)
+  );
+  const worstOut = dl(P_LIGHT.ground, OFF[0]);
+
+  document.getElementById('seamModeFinding').innerHTML = `
+    <b>Cut the seam — but not for the reason you would expect</b>
+    <p>
+      Across the first three columns the two rows are
+      <strong>indistinguishable</strong>, and that is the correct result rather
+      than a broken demo. The system's light grounds span only
+      <strong>ΔL* ${worstIn.toFixed(2)}</strong> — page ${lstar(P_LIGHT.ground).toFixed(0)},
+      alt ${lstar(P_LIGHT.groundAlt).toFixed(1)}, surface-2 ${lstar(P_LIGHT.surface2).toFixed(1)} —
+      so a seam painted white and placed on surface-2 is wrong by an amount no
+      one can perceive on a 2-unit line. Inside light mode, the painted seam is
+      fine. An earlier draft of this section claimed it "reads as a printing
+      error"; the render disproved it.
+    </p>
+    <p>
+      The fourth column is where it actually bites. Off the system the mismatch
+      is <strong>ΔL* ${worstOut.toFixed(1)}</strong> rather than
+      ${worstIn.toFixed(1)}, and the painted seam becomes a white scar across the
+      mark — visibly a defect, not an edge. The cut seam is a gap, so it shows
+      whatever is genuinely behind it and stays correct on every one.
+    </p>
+    <p>
+      So the recommendation stands, with the reasoning corrected: cut the seam
+      <strong>for portability, not for light mode</strong>. Inside the system
+      either works. Outside it, only one does — and a forever mark spends a lot
+      of its life outside the system.
+    </p>`;
+})();
+
+/* The prescriptive answer, per surface. */
+document.getElementById('lightRecs').innerHTML = [
+  {
+    t: 'Docs, README, light UI',
+    d: `Seam, filled <code>#D6351A</code>. Painted or cut both work here — the three light grounds are within ΔL* 5.2 of each other — so use the cut version simply because it is also the one that survives leaving the system.`,
+    r: P => `<div class="row">
+      <figure>${rSeamCut(56, P)}<figcaption>page</figcaption></figure>
+      <figure>${rSeamCut(56, Object.assign({}, P, { bg: P.groundAlt }))}<figcaption>alt</figcaption></figure>
+    </div>`
+  },
+  {
+    t: 'Favicon on a light browser chrome',
+    d: `Tile, so the mark never depends on the browser's own background — which you do not control and which differs per platform.`,
+    r: P => `<div class="row">
+      <figure>${rTile(48, P)}<figcaption>32</figcaption></figure>
+      <figure>${rTile(32, P)}<figcaption>16</figcaption></figure>
+    </div>`
+  },
+  {
+    t: 'Print, invoices, single-colour',
+    d: `Keyline in ink at ${wcag(P_LIGHT.ink, P_LIGHT.ground).toFixed(1)}:1, or the flat mark in <code>#D6351A</code>. Both survive one plate.`,
+    r: P => `<div class="row">
+      <figure>${rKeyline(56, P)}<figcaption>keyline</figcaption></figure>
+      <figure>${rTrue(56, P)}<figcaption>flat</figcaption></figure>
+    </div>`
+  },
+  {
+    t: 'Unknown or photographic ground',
+    d: `Plated avatar or tile. Never a bare mark — on an uncontrolled light ground nothing else can be guaranteed.`,
+    r: P => `<div class="row">
+      <figure>${rAvatar(56, P)}<figcaption>avatar</figcaption></figure>
+      <figure>${rAvatar(56, P, { plate: P.ink, fill: P.accent })}<figcaption>inverse</figcaption></figure>
+    </div>`
+  }
+].map(x => `
+  <div class="panel">
+    <b>${x.t}</b>
+    <p class="cap">${x.d}</p>
+    ${x.r(P_LIGHT)}
+  </div>`).join('');
+
+/* ==================================================================
+   LOADERS
+
+   Built from the same three sectors as the face partition, so a
+   loader cannot drift from the mark: change the geometry and the
+   loader changes with it. The animation only ever alters which face
+   LEADS — opacity, or a short travel along its own isometric axis.
+   Nothing rotates, nothing scales, and the silhouette is never
+   touched, which is why the static state is a legitimate logo rather
+   than a stalled spinner.
+   ================================================================== */
+const polyPts = pts => pts.map(p => p.join(',')).join(' ');
+
+/* Flatten a translucent fill against its ground. Used both to build
+   the dim states below and to measure whether they separate. */
+function composite(fg, bg, alpha) {
+  const a = toRgb(fg), b = toRgb(bg);
+  return 'rgb(' + a.map((v, i) => Math.round(v * alpha + b[i] * (1 - alpha))).join(',') + ')';
+}
+
+function rLoader(size, P, anim, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'ld' + (++_uid);
+  const fill = o.fill || P.accent;
+
+  if (anim === 'draw') {
+    return `<svg class="gf-ldr" data-anim="draw" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+      `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+      `<g clip-path="url(#${id})">` +
+        `<path class="gf-seam" d="${SEAM_EDGES}" fill="none" stroke="${o.seam || P.bg || P.deep}" ` +
+        `stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+      `</g></svg>`;
+  }
+
+  /*
+    SWEEP — a light band travelling along the isometric axis, clipped
+    to the mark. Signals with a large area rather than a hairline, so
+    unlike Draw it is still visible when the mark is 16px.
+  */
+  if (anim === 'sweep') {
+    const g = 'sg' + (++_uid);
+    return `<svg class="gf-ldr" data-anim="sweep" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath>` +
+        `<linearGradient id="${g}" x1="0" y1="0" x2="1" y2="0">` +
+          `<stop offset="0" stop-color="#fff" stop-opacity="0"/>` +
+          `<stop offset="0.5" stop-color="#fff" stop-opacity="0.55"/>` +
+          `<stop offset="1" stop-color="#fff" stop-opacity="0"/>` +
+        `</linearGradient></defs>` +
+      `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+      `<g clip-path="url(#${id})">` +
+        `<g transform="rotate(-30 ${F.cx} ${F.cy})">` +
+          `<rect class="gf-band" x="${F.cx - 17}" y="${F.y0 - 60}" width="34" height="${F.S + 120}" fill="url(#${g})"/>` +
+        `</g></g></svg>`;
+  }
+
+  /*
+    FILL — the mark as a level. The only DETERMINATE loader here: the
+    boundary is a hard horizontal edge across a large area, so it
+    reads at any size and can be driven by a real percentage instead
+    of looping.
+  */
+  if (anim === 'fill') {
+    const pct = o.pct;
+    const dim = composite(fill, P.bg || P.deep, 0.26);
+    const shift = pct == null ? '' : ` style="transform:translateY(${(1 - pct) * F.S}px)"`;
+    return `<svg class="gf-ldr" data-anim="fill" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+      `<g clip-path="url(#${id})">` +
+        `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${dim}"/>` +
+        `<rect class="gf-level" x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${fill}"${shift}/>` +
+      `</g></svg>`;
+  }
+
+  /*
+    ORBIT — a segment running the silhouette's own perimeter. Classic
+    spinner semantics, but the track is the mark's outline rather than
+    a circle borrowed from somewhere else. pathLength normalises the
+    hexagon to 100 units so the dash maths is readable.
+  */
+  if (anim === 'orbit') {
+    const dim = composite(fill, P.bg || P.deep, 0.22);
+    return `<svg class="gf-ldr" data-anim="orbit" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<path d="${MARK_PATH}" fill="${dim}" fill-rule="evenodd"/>` +
+      `<path class="gf-track" d="${MARK_OUTER}" fill="none" stroke="${fill}" stroke-width="${o.w || 5}" ` +
+        `stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="22 78"/>` +
+      `</svg>`;
+  }
+
+  if (anim === 'breathe') {
+    return `<svg class="gf-ldr" data-anim="breathe" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<path class="gf-mark" d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/></svg>`;
+  }
+
+  const faces = [SECTOR.top, SECTOR.right, SECTOR.left];
+  return `<svg class="gf-ldr" data-anim="${anim}" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+    `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<g clip-path="url(#${id})">` +
+      faces.map((s, i) =>
+        `<polygon class="gf-f gf-f${i + 1}" points="${polyPts(s)}" fill="${fill}"/>`
+      ).join('') +
+    `</g></svg>`;
+}
+
+const LOADERS = [
+  {
+    id: 'cycle', name: 'Cycle', anim: 'cycle', signal: 'opacity',
+    why: '<b>The default.</b> Each face takes the light in turn, travelling around the cube in the direction the isometric already implies. Indeterminate, endlessly loopable, and it never leaves the silhouette — at any frozen instant it is still the mark with one face lit.',
+    use: 'Indeterminate waits — fetches, builds, navigation'
+  },
+  {
+    id: 'assemble', name: 'Settle', anim: 'assemble', signal: 'position',
+    why: '<b>The seams opening and closing.</b> Each face travels a short way along its own isometric axis and seats, in sequence. It began as a full assemble — faces flying in from far out, fading up from zero — and that version was <em>wrong</em>: stepping it frame by frame showed that a missing face does not read as a part still arriving, it reads as a damaged logo. The three sectors are regions of one silhouette, not components, which is the same reason Exploded scores badly above. Travel is now small and opacity constant, so the mark is legible at every frame.',
+    use: 'First paint and cold starts — motion with the mark always whole'
+  },
+  {
+    id: 'draw', name: 'Draw', anim: 'draw', signal: 'stroke',
+    why: '<b>The seam, drawing itself.</b> The three interior edges extend from the centre vertex outward. The most restrained of the four and the most obviously <em>this</em> mark — but it is carried entirely by the seam, which is sub-pixel below about 24px.',
+    use: 'Large or hero-scale loading states only'
+  },
+  {
+    id: 'sweep', name: 'Sweep', anim: 'sweep', signal: 'area — light band',
+    why: '<b>A band of light crossing the mark.</b> Travels along the isometric axis, clipped to the silhouette. This is the answer to Draw being underwhelming: it signals with a <em>large area</em> rather than a hairline, so it is still obvious at 16px where a 2-unit stroke has nothing left to show. The mark stays whole and fully opaque throughout.',
+    use: 'The strongest small-size option — inline, nav, favicon'
+  },
+  {
+    id: 'fill', name: 'Fill', anim: 'fill', signal: 'area — level',
+    why: '<b>The mark as a level.</b> The only <strong>determinate</strong> loader here — the boundary is a hard horizontal edge across a large area, so it can be driven by a real percentage rather than looped. Use it wherever you actually know the progress, which is most build and upload cases.',
+    use: 'Determinate progress — builds, uploads, migrations'
+  },
+  {
+    id: 'orbit', name: 'Orbit', anim: 'orbit', signal: 'stroke — perimeter',
+    why: '<b>A segment running the silhouette\'s own perimeter.</b> Classic spinner semantics, except the track is the mark\'s outline rather than a circle borrowed from a component library. The hexagon is normalised with <code>pathLength</code> so the dash maths stays readable. Carried by a stroke like Draw, but a thicker one on a much longer path, which is why it lands at less than half Draw\'s floor.',
+    use: 'Medium and large indeterminate waits'
+  },
+  {
+    id: 'breathe', name: 'Breathe', anim: 'breathe', signal: 'whole-mark opacity',
+    why: '<b>One tone, no structure.</b> The whole mark fades in and out. Says the least, and is the only one that cannot fail on tone separation, because there are never two tones on screen at once.',
+    use: 'Favicon-scale and anywhere below the floor'
+  }
+];
+
+const LDR_SIZES = [64, 40, 24, 16];
+document.getElementById('loaders').innerHTML = LOADERS.map(l => `
+  <div class="ldr">
+    <div class="ldr__head"><span class="ldr__name">${l.name}</span>
+      <span class="mark__tag" style="margin-left:auto">${l.signal}</span></div>
+    <div class="ldr__stage">
+      ${LDR_SIZES.map(px => `<figure>${rLoader(px, P_DARK, l.anim)}<figcaption>${px}</figcaption></figure>`).join('')}
+    </div>
+    <p class="ldr__why">${l.why}</p>
+  </div>`).join('');
+
+/* Determinate steps — the animation switched off entirely and the
+   level set from a value instead. */
+document.getElementById('ldrFillSteps').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap">` +
+  [0, 0.25, 0.5, 0.75, 1].map(p =>
+    `<figure>${rLoader(56, P_DARK, 'fill', { pct: p })}` +
+    `<figcaption>${Math.round(p * 100)}%</figcaption></figure>`).join('') +
+  `</div>`;
+
+/* In context: inline, at the size a loader is actually judged. */
+document.getElementById('ldrContext').innerHTML =
+  `<div style="display:grid;gap:14px">` +
+  LOADERS.map(l => `<span class="inline-ldr" data-dlname="${l.name} inline">${rLoader(20, P_DARK, l.anim)}` +
+    `<span>${l.name} — building your project…</span></span>`).join('') +
+  `</div>`;
+
+/*
+  Tone separation for the animating state.
+
+  While a loader runs it is, briefly, a multi-tone mark — so it
+  inherits exactly the constraint that eliminated Crest and Facet. The
+  lead face sits at full accent; a trailing face sits at 24% accent
+  composited over the ground. If those two land within ~8 ΔL* they
+  merge and the motion stops reading as motion.
+*/
+(function ldrAssess() {
+  const trailAlpha = 0.24;
+  const lead = P_DARK.accent;
+  const trail = composite(P_DARK.accent, P_DARK.deep, trailAlpha);
+  const sep = Math.abs(lstar(lead) - lstar(trail));
+  const seam16 = byId('seam').seamWidth(16);
+
+  /*
+    Floors derived, not asserted.
+
+    A loader's signal is either a THIN geometry — a stroke or a small
+    travel, whose size scales with the mark and eventually falls under
+    one device pixel — or an AREA, which does not. So each loader
+    declares the width of its signal in user units on the ~112-unit
+    frame, and the floor is the smallest standard size at which that
+    signal is still at least one device pixel wide.
+
+    This immediately explains why Draw felt underwhelming and Sweep
+    does not: 2 units versus 34.
+  */
+  const SIZES_LADDER = [16, 20, 24, 32, 40, 48, 64];
+  const SIGNAL = {           // signal width in user units, or null = area-based
+    cycle: null, assemble: 3.6, draw: 2, orbit: 5, sweep: null, fill: null, breathe: null
+  };
+  const toPx = (units, px) => units * px / 112;
+  const floorFor = anim => {
+    const u = SIGNAL[anim];
+    if (u == null) return FLOOR;                       // area-based: the mark's own floor
+    return SIZES_LADDER.find(px => toPx(u, px) >= 1) || 64;
+  };
+
+  /*
+    Each area-based loader gets ITS OWN separation, not a borrowed
+    one. A first pass printed Cycle's ΔL* against Sweep and Fill too,
+    which was simply the wrong number on the wrong row — they lighten
+    or dim by different amounts and against different references.
+  */
+  const ground = P_DARK.deep, acc = P_DARK.accent;
+  const SEP = {
+    cycle:   Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.24))),
+    sweep:   Math.abs(lstar(acc) - lstar(composite('#FFFFFF', acc, 0.55))),
+    fill:    Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.26))),
+    breathe: Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.38))),
+    orbit:   Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.22)))
+  };
+
+  const rows = LOADERS.map(l => {
+    const u = SIGNAL[l.anim];
+    const floor = floorFor(l.anim);
+    const sepL = SEP[l.anim];
+    let note;
+    if (u == null) {
+      note = sepL != null
+        ? `area · ΔL* ${sepL.toFixed(1)}`
+        : 'area signal';
+    } else {
+      note = `${u} units → ${toPx(u, 16).toFixed(2)}px at 16`;
+    }
+    return { l, floor, note, areaBased: u == null, sepL };
+  });
+
+  document.getElementById('ldrAssess').innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r.l.name}</strong></td>
+      <td class="mono">${r.l.signal}</td>
+      <td><span class="chip ${r.areaBased ? 'ok' : r.floor <= 24 ? 'warn' : 'bad'}">${r.note}</span></td>
+      <td class="mono"><span class="chip ${r.floor <= 16 ? 'ok' : r.floor <= 24 ? 'warn' : 'bad'}">${r.floor}px</span></td>
+      <td>${r.l.use}</td>
+    </tr>`).join('');
+  window.__ldrRows = rows;
+
+  const areaOnes = rows.filter(r => r.areaBased).map(r => r.l.name);
+  const thinOnes = rows.filter(r => !r.areaBased);
+  document.getElementById('ldrVerdict').innerHTML = `
+    <b>The split is area versus hairline, and it decides everything</b>
+    <p>
+      ${areaOnes.length} of the ${rows.length} signal with an <strong>area</strong> —
+      ${areaOnes.join(', ')} — so their signal does not shrink out of existence
+      and they inherit the mark's own ${FLOOR}px floor. The rest are carried by a
+      thin geometry that scales with the mark:
+      ${thinOnes.map(r => `<strong>${r.l.name}</strong> at ${r.floor}px`).join(', ')}.
+    </p>
+    <p>
+      That is precisely why <strong>Draw</strong> underwhelms. Its seam is 2 units
+      on a 112-unit frame — ${seam16.toFixed(2)}px at favicon size — so there is
+      almost nothing on screen to animate. <strong>Sweep</strong> is the same idea
+      done with 34 units instead of 2, and it is the one to reach for when the
+      mark is small.
+    </p>
+    <p>
+      Defaults: <strong>Sweep</strong> for indeterminate waits at any size,
+      <strong>Fill</strong> whenever the progress is actually known — it is the
+      only determinate one here — and <strong>Cycle</strong> when you want the
+      cube's structure to read rather than a moving highlight. Keep
+      <strong>Draw</strong> and <strong>Orbit</strong> for hero scale, and
+      <strong>Breathe</strong> as the last resort below everything else.
+    </p>`;
+})();
+
+/*
+  Motion gating. Respects the OS by default and lets the user opt in
+  explicitly for previewing — an escape hatch that is user-initiated
+  rather than a silent override.
+*/
+(function motionGate() {
+  const btn = document.getElementById('motionToggle');
+  const state = document.getElementById('motionState');
+  if (!btn) return;
+  const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const paint = () => {
+    const on = document.documentElement.getAttribute('data-gf-motion') === 'full';
+    btn.textContent = on ? 'Disable motion' : 'Enable motion';
+    state.innerHTML = prefersReduce
+      ? `Your system asks for reduced motion, so the loaders stay static — which is the point. ${on ? 'The attribute is set to <code>full</code>, but the media query still blocks the animation.' : ''}`
+      : (on ? 'Motion on. Every loader is gated on this attribute plus the OS preference.'
+            : 'Motion off. This is what a reduced-motion visitor sees — the mark, not a stalled spinner.');
+  };
+  btn.addEventListener('click', () => {
+    const on = document.documentElement.getAttribute('data-gf-motion') === 'full';
+    document.documentElement.setAttribute('data-gf-motion', on ? 'reduced' : 'full');
+    paint();
+  });
+  if (!prefersReduce) document.documentElement.setAttribute('data-gf-motion', 'full');
+  paint();
+})();
+
+/* --- palette swap --- */
+function swapStrip(P) {
+  return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
+    lightSet.map(id => {
+      const v = byId(id);
+      return `<figure>${v.render(44, P)}<figcaption>${v.name}</figcaption></figure>`;
+    }).join('') + `</div>`;
+}
+document.getElementById('swapA').innerHTML = swapStrip(P_GRAPHITE);
+document.getElementById('swapB').innerHTML = swapStrip(P_VERDIGRIS);
+
+/*
+  ------------------------------------------------------------------
+  CIRCLE CROP.
+
+  The crop circle is drawn INSIDE the SVG rather than as a CSS
+  border-radius on a wrapper. A CSS mask only lines up if the wrapper
+  box matches the SVG box exactly, and figure captions of different
+  widths were shifting the columns out of register — which is what
+  made this section look misaligned.
+
+  Drawing it in user space means the circle, the mark and the crop
+  line are all in one coordinate system and cannot drift.
+  ------------------------------------------------------------------
+*/
+function rCircleCrop(size, P, glyph, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'cc' + (++_uid);
+  const r = F.S / 2;
+  return svgOpen(size, F.vb, o.label) +
+    `<defs><clipPath id="${id}"><circle cx="${F.cx}" cy="${F.cy}" r="${r}"/></clipPath></defs>` +
+    `<circle cx="${F.cx}" cy="${F.cy}" r="${r}" fill="${o.plate || P.groundAlt}"/>` +
+    `<g clip-path="url(#${id})">${glyph(P)}</g>` +
+    `<circle cx="${F.cx}" cy="${F.cy}" r="${r - 0.6}" fill="none" stroke="${P.lineStrong}" stroke-width="1.2"/>` +
+    '</svg>';
+}
+
+/* Glyph bodies in user space, so the same drawing can go bare, cropped
+   or plated without being redrawn three times. */
+const GLYPH = {
+  flat: P => `<path d="${MARK_PATH}" fill="${P.accent}" fill-rule="evenodd"/>`,
+  seam: P => {
+    const id = 'gs' + (++_uid);
+    return `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+      `<path d="${MARK_PATH}" fill="${P.accent}" fill-rule="evenodd"/>` +
+      `<g clip-path="url(#${id})"><path d="${SEAM_EDGES}" fill="none" stroke="${P.deep}" stroke-width="2" stroke-linecap="round"/></g>`;
+  },
+  counter: P => `<path d="${MARK_HOLE}" fill="${P.accent}"/>` +
+                `<path d="${MARK_PATH}" fill="${P.ink}" fill-rule="evenodd"/>`,
+  keyline: P => `<path d="${MARK_PATH}" fill="none" stroke="${P.ink}" stroke-width="4" stroke-linejoin="round" fill-rule="evenodd"/>`
+};
+
+const CROP_COLS = [
+  { name: 'True',    bare: GLYPH.flat,    avatar: P => rAvatar(60, P) },
+  { name: 'Seam',    bare: GLYPH.seam,    avatar: P => rAvatar(60, P, { seam: true }) },
+  { name: 'Counter', bare: GLYPH.counter, avatar: P => rAvatar(60, P, { plate: P.ink, fill: P.accent }) },
+  { name: 'Keyline', bare: GLYPH.keyline, avatar: P => rAvatar(60, P, { plate: P.groundAlt, ring: P.lineStrong, glyph: GLYPH.keyline }) }
+];
+
+document.getElementById('cropGrid').innerHTML =
+  `<span></span>` +
+  CROP_COLS.map(c => `<span class="colhd">${c.name}</span>`).join('') +
+  `<span class="rowlbl">As supplied<br>square asset</span>` +
+  CROP_COLS.map(c => `<figure>${rCircleCrop(60, P_DARK, c.bare)}<figcaption>cover 0.89</figcaption></figure>`).join('') +
+  `<span class="rowlbl">Avatar-ready<br>plate + safe zone</span>` +
+  CROP_COLS.map(c => `<figure>${c.avatar(P_DARK)}<figcaption>cover 0.58</figcaption></figure>`).join('');
+
+/* The finding, computed — because the claim inherited from v1 turned
+   out to be wrong and it would have been repeated forever. */
+(function () {
+  const n = (MARK_OUTER.match(/-?[\d.]+/g) || []).map(Number);
+  const V = []; for (let i = 0; i < n.length; i += 2) V.push([n[i], n[i + 1]]);
+  const dist = V.map(([x, y]) => Math.hypot(x - MARK_BBOX.cx, y - MARK_BBOX.cy));
+  const maxD = Math.max(...dist), minD = Math.min(...dist);
+  const rAt = c => (Math.max(MARK_BBOX.w, MARK_BBOX.h) / c) / 2;
+  const clipAt = [0.89, 1.0, 1.1, 1.2].map(c =>
+    ({ c, n: dist.filter(d => d > rAt(c)).length }));
+  const firstClip = clipAt.find(x => x.n > 0);
+  document.getElementById('cropFinding').innerHTML = `
+    <b>v1 said the corners are the first casualty. They are not.</b>
+    <p>
+      Measured against the crop circle at the page's own optical size,
+      <strong>zero</strong> of the silhouette's ${V.length} vertices fall outside
+      it — the furthest sits ${(rAt(0.89) - maxD).toFixed(2)} units
+      <em>inside</em> the boundary. Clipping does not begin until the mark is
+      exported edge-to-edge at cover ${firstClip ? firstClip.c : '1.0'}.
+    </p>
+    <p>
+      The reason is structural: a cube seen corner-on is a hexagon, and a hexagon
+      is one of the most circle-efficient shapes there is. Vertex distances here
+      run ${minD.toFixed(1)}–${maxD.toFixed(1)} from centre, a spread of only
+      ${((1 - minD / maxD) * 100).toFixed(0)}%. <strong>This mark is unusually
+      circle-safe</strong>, and that is a real asset for a forever logo.
+    </p>
+    <p>
+      So the top row is not failing — nothing is being cut. What it shows is a
+      mark sized for a rectangle sitting inside a circle, where it reads as
+      crowded because it has no breathing room against a curved edge. The fix is
+      optical, not protective: drop to a 0.58 safe zone and give it a plate.
+    </p>`;
+})();
+
+/* --- hostile ground --- */
+document.getElementById('photoRow').innerHTML =
+  `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
+  ['true', 'seam', 'well', 'tile', 'keyline'].map(id => {
+    const v = byId(id);
+    const P = id === 'keyline' ? Object.assign({}, P_DARK, { ink: '#FFFFFF' }) : P_DARK;
+    return `<figure>${v.render(52, P)}<figcaption style="color:#fff;opacity:.85">${v.name}</figcaption></figure>`;
+  }).join('') + `</div>`;
+
+/* --- 1-bit --- */
+/* Derived, not hardcoded: every token thresholded through the same
+   rule the measurement uses, so the render and the verdict cannot
+   disagree. An earlier hardcoded version mapped --gf-surface to white
+   while the metric treated it as black. */
+const P_BIT = (() => {
+  const out = { id: 'bit' };
+  for (const k of ['accent','accentHi','nav','ink','ink2','ink3','deep','ground',
+                   'groundAlt','surface','surface2','line','lineStrong','onAccent']) {
+    out[k] = toBit(P_DARK[k]);
+  }
+  out.bg = '#000000';
+  return out;
+})();
+document.getElementById('bitRow').innerHTML =
+  `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">` +
+  lightSet.map(id => {
+    const v = byId(id);
+    const bit = bitCollapse(v, P_DARK);
+    return `<figure><span style="background:#000;display:block;border-radius:4px">${v.render(48, P_BIT)}</span>
+      <figcaption>${v.name} · ${bit.note}</figcaption></figure>`;
+  }).join('') + `</div>`;
+
+/* --- nav bars at real size --- */
+document.getElementById('navbars').innerHTML =
+  ['true', 'seam', 'crest', 'counter'].map(id => {
+    const v = byId(id);
+    return `<div class="navbar" data-dlname="navbar ${v.name}">
+      ${v.render(24, Object.assign({}, P_DARK, { bg: P_DARK.groundAlt }))}
+      <span class="brand">GoForj</span>
+      <span class="links"><span>Docs</span><span>Guide</span><span>API</span><span>Blog</span></span>
+    </div>`;
+  }).join('');
+
+/* --- lockups, corrected to -0.045em --- */
+document.getElementById('lock').innerHTML =
+  ['seam', 'true', 'counter', 'facet'].map(id => {
+    const v = byId(id);
+    const px = 32;
+    return `<div class="lock__row" data-dlname="lockup ${v.name}" style="gap:${Math.round(px * 0.42)}px">
+      ${v.render(px, P_DARK)}
+      <span class="lock__word" style="font-size:25px">GoForj</span>
+      <span class="lock__badge" style="margin-left:auto">${v.name}</span>
+    </div>`;
+  }).join('');
+
+/* --- favicon ladder --- */
+document.getElementById('favicons').innerHTML = [
+  {
+    label: 'Favicon — Seam, bare on the page ground',
+    cap: 'One asset resolving itself: the seam is 2.29px at 128 and 0.29px at 16, so the ladder converges on the flat base with nothing swapped out.',
+    sizes: [64, 32, 24, 16],
+    fn: (px, P) => rSeam(px, P)
+  },
+  {
+    label: 'App icon — tile, carrying the same seam',
+    cap: 'Every OS demands a filled square. Radius is 22.37% of the side (the iOS superellipse approximation), and the glyph sits at a 0.62 safe zone — not --gf-radius, which is an 8px UI token and would read as a square at icon sizes.',
+    sizes: [64, 48, 32],
+    fn: (px, P) => rTile(px, P, { seam: true })
+  }
+].map(({ label, cap, sizes, fn }) => `
+  <div class="panel">
+    <b>${label}</b>
+    <p class="cap">${cap}</p>
+    <div class="row">
+      ${sizes.map(px => `<figure>${fn(px, P_DARK)}<figcaption>${px}</figcaption></figure>`).join('')}
+    </div>
+  </div>`).join('');
+
+/* --- clear space --- */
+document.getElementById('clearspace').innerHTML = `
+  <b>One counter-width, all round</b>
+  <p class="cap">
+    The clear-space unit is the width of the counter aperture — about 0.23× the
+    mark. Derived from the geometry, so it scales with the mark and does not need
+    a separate rule per size.
+  </p>
+  <div class="row">
+    <figure>
+      <span style="display:block;padding:${Math.round(96 * 0.23)}px;background:var(--gf-accent-soft);border:1px dashed var(--gf-accent-line);border-radius:var(--gf-radius)">
+        ${rSeam(96, P_DARK)}
+      </span>
+      <figcaption>clear space = 0.23×</figcaption>
+    </figure>
+    <figure>
+      <span style="display:block;padding:${Math.round(96 * 0.23)}px;background:var(--gf-accent-soft);border:1px dashed var(--gf-accent-line);border-radius:var(--gf-radius)">
+        ${rTrue(96, P_DARK)}
+      </span>
+      <figcaption>same rule, base</figcaption>
+    </figure>
+  </div>`;
+
+/* --- assessment --- */
+document.getElementById('assess').innerHTML = VARIANTS.map(v => {
+  const tD = v.tones(P_DARK), tL = v.tones(P_LIGHT);
+  const ts = toneStats(tD);
+  const bit = bitCollapse(v, P_DARK);
+  const lightR = Math.min(...v.pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
+  const usesNav = tD.some(c => c.toLowerCase() === String(P_DARK.nav).toLowerCase());
+  return `<tr>
+    <td><strong>${v.name}</strong>${v.frozen ? ' <span class="chip ok">frozen</span>' : ''}</td>
+    <td class="mono">${ts.n === 1 ? '1' : `${ts.n} · ΔL* ${fmt(ts.min)}`}</td>
+    <td class="mono" style="color:${bit.ok ? 'var(--vp-c-tip-1)' : 'var(--vp-c-danger-1)'}">${bit.note}</td>
+    <td class="mono" style="color:${v.paletteFree ? 'var(--vp-c-tip-1)' : 'var(--vp-c-danger-1)'}">${v.paletteFree ? 'yes' : 'no'}</td>
+    <td class="mono" style="color:${lightR >= 4.5 ? 'var(--vp-c-tip-1)' : lightR >= 3 ? 'var(--vp-c-warning-1)' : 'var(--vp-c-danger-1)'}">${lightR.toFixed(2)}:1${usesNav ? ' · nav fill' : ''}</td>
+    <td>${v.says}</td>
+  </tr>`;
+}).join('');
+
+/* Which variants clear every gate. Computed, so the prose below cannot
+   drift away from the table above it. */
+const PASSERS = VARIANTS.filter(v =>
+  bitCollapse(v, P_DARK).ok &&
+  v.paletteFree &&
+  Math.min(...v.pairs(P_LIGHT).map(([a, b]) => wcag(a, b))) >= 3 &&
+  Math.min(...v.pairs(P_DARK).map(([a, b]) => wcag(a, b))) >= 3
+);
+
+/*
+  The decided set, shown rather than described.
+
+  The verdict used to be a paragraph naming three variants, which
+  meant scrolling back up to see what it was actually recommending.
+  Each role now renders its own mark, in both palettes, at the sizes
+  that role is used at — and carries its own download.
+*/
+(function decidedSet() {
+  const roles = [
+    {
+      role: 'Primary', name: 'Seam', id: 'seam',
+      why: 'The mark. Cut seam rather than painted, so it carries no assumption about its background.',
+      sizes: [256, 128, 64, 40, 24, 16],
+      dark: px => rSeamCut(px, P_DARK),
+      light: px => rSeamCut(px, P_LIGHT)
+    },
+    {
+      role: 'OS derivative', name: 'Tile', id: 'tile',
+      why: 'Every operating system demands a filled square. Glyph at the 0.62 safe zone, radius 22.37%.',
+      sizes: [256, 128, 64, 48, 32],
+      cover: 0.62, coverMin: 52,
+      coverNote: '62% is the OS-safe default. Larger settings may exceed an app platform’s recommended glyph zone.',
+      dark: (px, cover = 0.62) => rTile(px, P_DARK, { seam: true, cover }),
+      light: (px, cover = 0.62) => rTile(px, P_LIGHT, { seam: true, cover })
+    },
+    {
+      role: 'Avatar upload', name: 'Avatar tile', id: 'avatar-tile',
+      why: 'A full-bleed square with no corner radius. The 0.58 safe zone leaves GitHub, Slack, Discord, and similar croppers room to impose their own circular mask.',
+      sizes: [256, 128, 64, 48, 32],
+      png: 1024,
+      cover: AVATAR_TILE_COVER, coverMin: 48,
+      coverNote: '58% is the crop-safe default. Larger settings trade away margin for more visual weight.',
+      dark: (px, cover = AVATAR_TILE_COVER) => rAvatarTile(px, P_DARK, { seam: true, cover }),
+      light: (px, cover = AVATAR_TILE_COVER) => rAvatarTile(px, P_LIGHT, { seam: true, cover })
+    },
+    {
+      role: 'Utility', name: 'Keyline', id: 'keyline',
+      why: 'Etch, emboss, foil, single-plate print, and any ground nobody controls.',
+      sizes: [256, 128, 64, 48, 32],
+      dark: px => rKeyline(px, P_DARK),
+      light: px => rKeyline(px, P_LIGHT)
+    }
+  ];
+  document.getElementById('decidedSet').innerHTML = roles.map(r => {
+    return `
+    <div class="ldr" data-decided-role="${r.id}">
+      <div class="ldr__head">
+        <span class="ldr__name">${r.name}</span>
+        <span class="mark__tag hot" style="margin-left:auto">${r.role}</span>
+      </div>
+      <div class="ldr__stage">
+        ${r.sizes.map(px => `<figure>${r.dark(px)}<figcaption>${px}px</figcaption></figure>`).join('')}
+      </div>
+      <div class="ldr__stage" data-dlname="light" style="background:#FFFFFF">
+        ${r.sizes.map(px => `<figure>${r.light(px)}<figcaption style="color:#867E90">${px}px</figcaption></figure>`).join('')}
+      </div>
+      <p class="ldr__why">${r.why}</p>
+      ${r.cover ? `<div class="tile-scale">
+        <label for="${r.id}Scale">Inner mark size <output for="${r.id}Scale" data-cover-output>${Math.round(r.cover * 100)}%</output></label>
+        <input id="${r.id}Scale" type="range" min="${r.coverMin}" max="76" step="1" value="${Math.round(r.cover * 100)}" data-mark-cover aria-label="${r.name} inner mark size">
+        <small>${r.coverNote}</small>
+      </div>` : ''}
+      <div class="mark__act">
+        <button class="btn-s" data-dl="${r.id}">Dark</button>
+        <button class="btn-s" data-dl="${r.id}" data-mode="light">Light</button>
+        ${r.png ? `<button class="btn-s" data-png="${r.id}" data-png-size="${r.png}">Dark PNG ${r.png}</button>
+        <button class="btn-s" data-png="${r.id}" data-png-size="${r.png}" data-mode="light">Light PNG ${r.png}</button>` : ''}
+        <button class="btn-s" data-set="${r.id}">Asset set</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* Re-render the live ladders from the same cover value the export
+     actions read, so experimentation never produces a mismatched file. */
+  document.getElementById('decidedSet').addEventListener('input', e => {
+    const slider = e.target.closest('[data-mark-cover]');
+    if (!slider) return;
+    const card = slider.closest('[data-decided-role]');
+    const role = roles.find(r => r.id === card.dataset.decidedRole);
+    const cover = Number(slider.value) / 100;
+    card.querySelector('[data-cover-output]').value = `${slider.value}%`;
+    card.querySelectorAll('.ldr__stage').forEach((stage, mode) => {
+      stage.querySelectorAll('figure').forEach(figure => {
+        const px = Number.parseInt(figure.querySelector('figcaption').textContent, 10);
+        figure.querySelector('svg').outerHTML = mode === 0
+          ? role.dark(px, cover)
+          : role.light(px, cover);
+      });
+    });
+  });
+})();
+
+/* Render products as one aligned family so similarity and collision
+   are visible at the sizes people will actually encounter. */
+(function productFamily() {
+  const sizes = [160, 64, 32];
+  const products = [
+    {
+      name: 'GoForj', status: 'Parent mark',
+      why: 'The cube remains the ecosystem signature. Product marks inherit its plate and behavior without borrowing its silhouette.',
+      dark: px => rTile(px, P_DARK, { seam: true }),
+      light: px => rTile(px, P_LIGHT, { seam: true })
+    },
+    {
+      name: 'Harbor', status: 'Alignment study',
+      why: 'The existing anchor metaphor, simplified to one monoline symbol and placed on the same optical frame as the parent.',
+      dark: px => rHarborTile(px, P_DARK),
+      light: px => rHarborTile(px, P_LIGHT)
+    },
+    {
+      name: 'Ship', status: 'Concept only',
+      why: 'A filled sail-and-hull silhouette. It reads as movement while remaining clearly different from Harbor at avatar size.',
+      dark: px => rShipTile(px, P_DARK),
+      light: px => rShipTile(px, P_LIGHT)
+    }
+  ];
+
+  const ladder = (product, mode) => sizes.map(px =>
+    `<figure data-dlname="${product.name} ${mode} product tile">${product[mode](px)}<figcaption>${px}px</figcaption></figure>`
+  ).join('');
+
+  document.getElementById('productFamily').innerHTML = products.map(product => `
+    <article class="product-logo">
+      <div class="product-logo__head">
+        <span class="product-logo__name">${product.name}</span>
+        <span class="mark__tag${product.name === 'GoForj' ? ' hot' : ''}" style="margin-left:auto">${product.status}</span>
+      </div>
+      <div class="product-logo__stage">${ladder(product, 'dark')}</div>
+      <div class="product-logo__stage light">${ladder(product, 'light')}</div>
+      <p class="product-logo__why">${product.why}</p>
+    </article>
+  `).join('');
+})();
+
+/* --- recommendation, written against the measurements --- */
+(function () {
+  const seamLight = Math.min(...byId('seam').pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
+  const floor = FLOOR;
+  document.getElementById('recommendation').innerHTML = `
+    <b>If a decision has to come out of this page: Seam as primary, Tile as the OS derivative, Keyline as the utility</b>
+    <p>
+      ${PASSERS.length} variants pass every test here — ${PASSERS.map(v => v.name).join(', ')} —
+      and every one that <em>fails</em> does so because a second or third tone is
+      carrying structural work. That is the finding, and it is not a matter of
+      taste: it fell out of the measurements, not the argument.
+    </p>
+    <p>
+      Among the five, <strong>Seam</strong> is the one worth choosing, because it
+      is the only one that passes while still keeping the cube. It cannot fail
+      tone separation, cannot collapse at 1-bit, and needs no second definition
+      for light mode — it clears
+      ${seamLight.toFixed(2)}:1 on the light ground using nothing but the light
+      accent token. It spends the action colour as a fill, which is the one
+      reading of the colour rule that requires no exemption to be written down.
+      And it keeps the cube, which is the most ownable thing about the mark,
+      without paying for it at small sizes — its seam is
+      ${byId('seam').seamWidth(16).toFixed(2)}px at favicon size, well under one
+      device pixel.
+    </p>
+    <p>
+      The reason it is worth calling a forever answer is structural rather than
+      aesthetic: its detail is a function of size rather than of asset. There is
+      no isometric file and no flat file to keep in sync, no moment where someone
+      has to remember to regenerate the favicon, and no second mark to drift.
+      Add <strong>Tile</strong> because operating systems demand a filled square,
+      and <strong>Keyline</strong> for etch, emboss and grounds nobody controls.
+    </p>
+    <p>
+      The floor is <strong>${floor}px</strong>, measured, not chosen. Below it the
+      counter is more closed than open and the silhouette stops being a G — at
+      which point the wordmark has to carry the identity instead.
+    </p>`;
+})();
+
+/*
+  The specification, generated from the same constants the rest of the
+  page measures with. Nothing here is retyped, so it cannot say one
+  thing while the tables above say another.
+*/
+(function () {
+  const seam16 = byId('seam').seamWidth(16);
+  const lightR = Math.min(...byId('seam').pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
+  const darkR  = Math.min(...byId('seam').pairs(P_DARK).map(([a, b]) => wcag(a, b)));
+  /* Loader floors read from the loader section's own computation, so
+     the specification cannot state a number the table disagrees with. */
+  const ANIM_OF = { sweep:'sweep', fill:'fill', cycle:'cycle', breathe:'breathe',
+                    orbit:'orbit', settle:'assemble', draw:'draw' };
+  const floorOf = key => {
+    const row = (window.__ldrRows || []).find(r => r.l.anim === ANIM_OF[key]);
+    return row ? String(row.floor).padStart(2) : '--';
+  };
+  const spec = `GoForj mark — specification (draft)
+
+GEOMETRY
+  Source            one frozen path pair: outer + counter, even-odd
+  Bounding box      ${MARK_BBOX.w.toFixed(2)} x ${MARK_BBOX.h.toFixed(2)}  (NOT square)
+  Never             rescale one axis, redraw, or re-trace from a raster
+
+SIZING
+  Minimum size      ${FLOOR}px  (aperture drops below AA against the body under this)
+  Clear space       0.23x the mark, all sides  (one counter-width)
+  Bare mark         cover 0.89   (mark's long side / frame side)
+  Inside a tile     cover 0.62
+  Inside a circle   cover 0.58
+  Icon radius       22.37% of the side  (superellipse approximation)
+
+COLOUR
+  One tone only. Every variant that failed a test on this page failed
+  because a second tone was doing structural work.
+  Fill              var(--gf-accent)  — #FF5E3A dark / #D6351A light
+  Contrast          ${darkR.toFixed(2)}:1 dark ground, ${lightR.toFixed(2)}:1 light ground
+  Never             fill with var(--gf-nav); that colour is text/line only
+  Never             use --gf-ground-deep or --gf-surface as a mark tone —
+                    they invert between modes and the mark disintegrates
+
+SEAM
+  Stroke            2 units on the ~112-unit frame, ground colour,
+                    clipped to the silhouette, on the cube's 3 interior edges
+  At 16px           ${seam16.toFixed(2)}px — sub-pixel, converges on the flat base
+  Consequence       one asset. Do not ship a separate flat favicon.
+
+ASSETS
+  Primary           Seam, accent fill, seam CUT not painted
+  OS icon           Tile, glyph knocked out of an accent plate
+  Utility           Keyline, for etch, emboss and uncontrolled grounds
+  Avatar            plate + 0.58 safe zone. The silhouette is circle-safe:
+                    every vertex sits inside the crop at normal size.
+
+MOTION
+  Gate              prefers-reduced-motion AND [data-gf-motion="full"].
+                    Both must permit it. Never animate on one alone.
+  Resting state     the COMPLETE mark — full opacity, seam closed,
+                    nothing offset. Gating motion off must leave a
+                    logo, not a frozen frame of an animation.
+  Never             translate a face far enough to read as missing.
+                    The three sectors are regions of one silhouette,
+                    not components; a gap reads as damage.
+
+LOADERS            signal            floor
+  Sweep             area, light band  ${floorOf('sweep')}px   default, indeterminate
+  Fill              area, level       ${floorOf('fill')}px   determinate — takes a real %
+  Cycle             area, face light  ${floorOf('cycle')}px   when the cube should read
+  Breathe           area, whole mark  ${floorOf('breathe')}px   last resort, smallest sizes
+  Orbit             stroke, perimeter ${floorOf('orbit')}px   medium and large only
+  Settle            position          ${floorOf('settle')}px   first paint
+  Draw              stroke, seam      ${floorOf('draw')}px   hero scale only
+
+  The rule behind that table: a signal made of AREA keeps working as
+  the mark shrinks; a signal made of a hairline or a small travel
+  scales with the mark and eventually falls under one device pixel.
+  Prefer area at small sizes. This is the same lesson as one tone
+  beating three.`;
+  const el = document.getElementById('specBlock');
+  if (el) el.textContent = spec;
+  const btn = document.getElementById('copySpec');
+  if (btn) btn.addEventListener('click', () => {
+    copyText(spec, 'goforj-mark-spec.txt').then(ok => {
+      btn.textContent = ok ? 'Copied ✓' : 'Downloaded instead';
+      setTimeout(() => btn.textContent = 'Copy specification', 1600);
+    });
+  });
+})();
+
+/*
+  ------------------------------------------------------------------
+  EXPORT.
+
+  The v2 export was not usable as a production asset. It hardcoded
+  width="256" and height="256", so the file could not scale — the one
+  thing an SVG logo exists to do. It always used the dark palette,
+  despite an entire section arguing that light mode needs different
+  tokens. And its clipPath ids were sequential counters like "sm12",
+  which collide the moment the SVG is inlined into a document that
+  already contains one.
+
+  This version strips the fixed size and keeps only the viewBox, so
+  the asset scales to whatever it is placed in; takes a palette, so
+  the light asset is actually obtainable; and rewrites every internal
+  id to a namespaced, content-derived one so two exported files can
+  coexist in the same document.
+  ------------------------------------------------------------------
+*/
+function exportSVG(id, P = P_DARK, opts = {}) {
+  const v = exportableById(id);
+  let svg = v.render(1000, P, { ...opts, label: opts.label || `GoForj — ${v.name}` });
+
+  // Drop the fixed size; keep the viewBox so the asset is resolution-free.
+  svg = svg.replace(/^<svg width="\d+" height="\d+" /, '<svg ');
+
+  // Namespace every internal id so exports cannot collide with each other
+  // or with whatever document they are pasted into.
+  const stamp = `gf-${id}-${P.id || 'dark'}`;
+  const ids = [...new Set([...svg.matchAll(/id="([^"]+)"/g)].map(m => m[1]))];
+  ids.forEach((old, i) => {
+    const safe = `${stamp}-${i}`;
+    svg = svg.split(`id="${old}"`).join(`id="${safe}"`)
+             .split(`url(#${old})`).join(`url(#${safe})`);
+  });
+
+  const cover = opts.cover ? ` Glyph cover ${Math.round(opts.cover * 100)}%.` : '';
+  return `<!-- GoForj ${v.name} — ${P.id === 'light' ? 'light' : 'dark'} palette. `
+       + `Minimum size ${FLOOR}px. Clear space 0.23x.${cover} -->\n` + svg + '\n';
+}
+
+/* The full set a handoff actually needs, rather than one mark. */
+function assetSet(id, opts = {}) {
+  return [
+    [`goforj-${id}-dark.svg`,   exportSVG(id, P_DARK, opts)],
+    [`goforj-${id}-light.svg`,  exportSVG(id, P_LIGHT, opts)],
+    ['goforj-tile.svg',         exportSVG('tile', P_DARK)],
+    ['goforj-keyline.svg',      exportSVG('keyline', P_DARK)]
+  ];
+}
+
+function downloadText(name, text) {
+  const blob = new Blob([text], { type: 'image/svg+xml;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+/* ==================================================================
+   CLICK-TO-DOWNLOAD, ON EVERY ILLUSTRATION
+
+   Rather than registering ~183 handlers, this serialises the LIVE DOM
+   node on click. That means it works for illustrations built by any
+   of the renderers, including composites like the crop grid and the
+   plated forms, with no per-illustration bookkeeping to keep in sync.
+
+   Accessibility note. These illustrations are aria-hidden and stay
+   OUT of the tab order deliberately. Making 183 of them focusable
+   buttons would be strictly correct per WCAG and genuinely hostile in
+   practice — 183 tab stops and 183 announcements, undoing the fix
+   that took this page from 144 announcements to 1. So the click is a
+   mouse convenience layered on top, and every asset also remains
+   reachable through real buttons: the per-variant controls and the
+   per-section download-all controls added below.
+   ================================================================== */
+
+/* Keyframes for a downloaded loader, so the file animates on its own.
+   Kept in one place and generated per animation, so an exported asset
+   carries only what it uses. */
+const LOADER_CSS = anim => {
+  const base = `.gf-f{opacity:1;transform-box:fill-box}.gf-seam{stroke-dasharray:62;stroke-dashoffset:0}` +
+    `.gf-band{transform:translateX(-96px)}.gf-level{transform:translateY(0)}.gf-track{stroke-dasharray:100 0}`;
+  const bodies = {
+    cycle: `.gf-f{animation:gfCycle 1.35s cubic-bezier(.4,0,.2,1) infinite}` +
+           `.gf-f2{animation-delay:-.45s}.gf-f3{animation-delay:-.9s}` +
+           `@keyframes gfCycle{0%,62%,100%{opacity:.24}16%{opacity:1}}`,
+    assemble: `.gf-f{animation:gfAsmT 2s cubic-bezier(.37,0,.24,1) infinite}` +
+           `.gf-f2{animation-name:gfAsmR;animation-delay:.13s}` +
+           `.gf-f3{animation-name:gfAsmL;animation-delay:.26s}` +
+           `@keyframes gfAsmT{0%,100%{transform:translate(0,-3.6px)}46%,62%{transform:translate(0,0)}}` +
+           `@keyframes gfAsmR{0%,100%{transform:translate(3.1px,1.8px)}46%,62%{transform:translate(0,0)}}` +
+           `@keyframes gfAsmL{0%,100%{transform:translate(-3.1px,1.8px)}46%,62%{transform:translate(0,0)}}`,
+    draw: `.gf-seam{animation:gfDraw 1.5s ease-in-out infinite}` +
+           `@keyframes gfDraw{0%{stroke-dashoffset:62}55%,100%{stroke-dashoffset:0}}`,
+    sweep: `.gf-band{transform:translateX(-96px);animation:gfSweep 1.6s cubic-bezier(.5,0,.5,1) infinite}` +
+           `@keyframes gfSweep{0%{transform:translateX(-96px)}100%{transform:translateX(96px)}}`,
+    fill: `.gf-level{animation:gfFill 2.1s cubic-bezier(.5,0,.5,1) infinite}` +
+           `@keyframes gfFill{0%,8%{transform:translateY(112px)}78%,100%{transform:translateY(0)}}`,
+    orbit: `.gf-track{animation:gfOrbit 1.5s linear infinite}` +
+           `@keyframes gfOrbit{to{stroke-dashoffset:-100}}`,
+    breathe: `.gf-mark{animation:gfBreathe 1.5s ease-in-out infinite}` +
+           `@keyframes gfBreathe{0%,100%{opacity:.38}50%{opacity:1}}`
+  };
+  return `${base}@media (prefers-reduced-motion:no-preference){${bodies[anim] || ''}}`;
+};
+
+/* Turn a live <svg> node into a standalone, portable file. */
+function serialiseSVG(node, nameHint) {
+  const clone = node.cloneNode(true);
+  clone.removeAttribute('width');
+  clone.removeAttribute('height');
+  clone.removeAttribute('aria-hidden');
+  clone.removeAttribute('focusable');
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  clone.setAttribute('role', 'img');
+  clone.setAttribute('aria-label', `GoForj — ${nameHint}`);
+
+  /*
+    A loader's animation lives in the page stylesheet, so a naive
+    serialisation would hand someone a file that silently does not
+    move — the one thing they downloaded it for. Inline the keyframes
+    it needs, gated on prefers-reduced-motion so the exported asset
+    carries the same accessibility contract as the page.
+  */
+  if (clone.classList && clone.classList.contains('gf-ldr')) {
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.textContent = LOADER_CSS(clone.dataset.anim);
+    clone.insertBefore(style, clone.firstChild);
+  }
+
+  let out = new XMLSerializer().serializeToString(clone);
+
+  /* Namespace internal ids so a downloaded file can sit alongside any
+     other in the same document without its clip-path or mask silently
+     binding to the wrong definition. */
+  const stamp = 'gf-' + slug(nameHint);
+  [...new Set([...out.matchAll(/id="([^"]+)"/g)].map(m => m[1]))].forEach((old, i) => {
+    const safe = `${stamp}-${i}`;
+    out = out.split(`id="${old}"`).join(`id="${safe}"`)
+             .split(`url(#${old})`).join(`url(#${safe})`);
+  });
+  return `<!-- GoForj — ${nameHint}. Minimum size ${FLOOR}px. Clear space 0.23x. -->\n${out}\n`;
+}
+
+const slug = s => String(s).toLowerCase().trim()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'mark';
+
+/*
+  Name the file from where the illustration actually sits. A page full
+  of files called download.svg would make this feature pointless, so
+  the name is assembled from the nearest caption, the variant card
+  heading, the column header in a grid, and the section.
+*/
+function describe(node) {
+  const bits = [];
+  const sec = node.closest('section.sec');
+  const secName = sec && sec.id ? sec.id : '';
+  /* innerText, not textContent: several labels use <br>, and
+     textContent glues the words either side of it into one
+     ("As suppliedsquare asset"). */
+  const txt = el => (el ? (el.innerText || el.textContent || '') : '').replace(/\s+/g, ' ').trim();
+
+  const card = node.closest('.mark');
+  if (card) bits.push(txt(card.querySelector('.mark__name')));
+
+  /* Loader and decided-set cards. Without this every loader ladder
+     exported as goforj-64.svg, goforj-40.svg … repeated seven times,
+     because the only text near them is the size caption. */
+  const ldr = node.closest('.ldr');
+  if (ldr) bits.push(txt(ldr.querySelector('.ldr__name')));
+
+  const panel = node.closest('.panel');
+  if (panel && !card && !ldr) bits.push(txt(panel.querySelector('b')));
+
+  /* Column and row headers in the aligned grids, found by counting
+     cells — the grid is a flat child list, not nested rows. */
+  const grid = node.closest('.cropgrid');
+  if (grid) {
+    const cells = [...grid.children];
+    const mine = cells.find(c => c.contains(node));
+    const cols = cells.filter(c => c.classList.contains('colhd'));
+    if (mine && cols.length) {
+      const idx = cells.indexOf(mine);
+      const perRow = cols.length + 1;
+      const col = (idx % perRow) - 1;
+      if (col >= 0 && cols[col]) bits.push(txt(cols[col]));
+      const rows = cells.filter(c => c.classList.contains('rowlbl') && cells.indexOf(c) < idx);
+      if (rows.length) bits.push(txt(rows[rows.length - 1]));
+    }
+  }
+
+  /* Explicit override, for illustrations that carry no caption of
+     their own — the lockups and nav bars, which would otherwise all
+     fall back to the section name and collide. */
+  const named = node.closest('[data-dlname]');
+  if (named) bits.push(named.dataset.dlname);
+
+  const strip = node.closest('.strip');
+  if (strip) bits.push(txt(strip.querySelector('.lbl')));
+
+  const cap = txt(node.closest('figure')?.querySelector('figcaption'));
+  if (cap) bits.push(cap);
+
+  /* Section prefix only when nothing more specific was found, so names
+     stay short enough to be useful in a downloads folder. */
+  const name = bits.filter(Boolean).join(' ');
+  return (name ? name : secName || 'mark').trim();
+}
+
+/* Rasterise an SVG source through the browser so generated PNGs use
+   the exact same geometry and palette as their vector counterparts. */
+function rasteriseSource(src, name, w, h) {
+  const blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    c.toBlob(b => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = `goforj-${slug(name)}-${w}px.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/png');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('Could not rasterise that one'); };
+  img.src = url;
+}
+
+/* Rasterise the live node at what it actually measures on screen,
+   multiplied by DPR — which is the point of PNG here, since the
+   favicon and app-icon rows are the reason anyone wants raster. */
+function rasterise(node, name) {
+  const rect = node.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(rect.width * dpr));
+  const h = Math.max(1, Math.round(rect.height * dpr));
+  const src = serialiseSVG(node, name).replace(/^<!--[\s\S]*?-->\n/, '');
+  rasteriseSource(src, name, w, h);
+}
+
+/* Avatar uploaders generally want a large raster rather than an SVG,
+   so the decided-set action can produce a predictable source size
+   without rendering a 1024px preview into the page. */
+function rasteriseExport(id, P, size, opts = {}) {
+  const src = exportSVG(id, P, opts)
+    .replace(/^<!--[\s\S]*?-->\n/, '')
+    .replace('<svg ', `<svg width="${size}" height="${size}" `);
+  rasteriseSource(src, `${id}-${P.id}`, size, size);
+}
+
+/*
+  Clipboard writes fail more often than the happy path suggests — an
+  unfocused document, a denied permission, a non-secure origin. The
+  original code chained .then() with no .catch(), so any of those
+  produced silence and a user left wondering whether the click
+  registered. This always resolves, and falls back to a download so
+  the content is never simply lost.
+*/
+function copyText(text, filename = 'goforj-mark.svg') {
+  if (!navigator.clipboard || !window.isSecureContext) {
+    downloadText(filename, text);
+    return Promise.resolve(false);
+  }
+  return navigator.clipboard.writeText(text)
+    .then(() => true)
+    .catch(() => { downloadText(filename, text); return false; });
+}
+
+/* Brief confirmation, so a click is never silent. */
+let _toastTimer;
+function toast(msg) {
+  let el = document.getElementById('gfToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'gfToast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/*
+  ------------------------------------------------------------------
+  A MINIMAL ZIP WRITER.
+
+  The first version of the bulk download fired one anchor per file on
+  a 160ms stagger. Chrome and Safari treat more than ~10 automatic
+  downloads as hostile and put up a permission prompt or silently drop
+  the rest, so "download all 55" would have half-failed — and failed
+  quietly, which is worse.
+
+  Store-only (no compression) keeps this to about sixty lines with no
+  external dependency, which matters because this page loads nothing
+  but fonts and the theme stylesheet. SVG would compress well, but
+  correctness beats file size for a handful of kilobytes.
+  ------------------------------------------------------------------
+*/
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[i] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(bytes) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function makeZip(files) {
+  const enc = new TextEncoder();
+  const chunks = [], central = [];
+  let offset = 0;
+
+  const u16 = n => [n & 0xFF, (n >>> 8) & 0xFF];
+  const u32 = n => [n & 0xFF, (n >>> 8) & 0xFF, (n >>> 16) & 0xFF, (n >>> 24) & 0xFF];
+
+  /*
+    Two things a round-trip test through our own parser cannot catch,
+    both found by running the output through a real `unzip`:
+
+    1. Bit 11 of the general-purpose flag declares the filename as
+       UTF-8. Without it, extractors fall back to CP437 and an em dash
+       in a name comes out as mojibake. slug() forces ASCII today, so
+       this is latent rather than live — but it is one word to be
+       correct instead of accidentally correct.
+
+    2. A zero time/date field is 1980-00-00, which is not a real date.
+       Some extractors show it as invalid. Writing the actual time in
+       DOS format costs two expressions.
+  */
+  const UTF8_FLAG = 0x0800;
+  const now = new Date();
+  const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+
+  files.forEach(([name, text]) => {
+    const nameB = enc.encode(name), data = enc.encode(text);
+    const crc = crc32(data);
+    const local = [
+      ...u32(0x04034b50), ...u16(20), ...u16(UTF8_FLAG), ...u16(0),
+      ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(data.length), ...u32(data.length),
+      ...u16(nameB.length), ...u16(0)
+    ];
+    chunks.push(new Uint8Array(local), nameB, data);
+    central.push([
+      ...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(UTF8_FLAG), ...u16(0),
+      ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(data.length), ...u32(data.length),
+      ...u16(nameB.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
+      ...u32(0), ...u32(offset)
+    ].concat([...nameB]));
+    offset += local.length + nameB.length + data.length;
+  });
+
+  const cd = central.flat();
+  const end = [
+    ...u32(0x06054b50), ...u16(0), ...u16(0),
+    ...u16(files.length), ...u16(files.length),
+    ...u32(cd.length), ...u32(offset), ...u16(0)
+  ];
+  return new Blob([...chunks, new Uint8Array(cd), new Uint8Array(end)],
+    { type: 'application/zip' });
+}
+function downloadBlob(name, blob) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/*
+  The keyboard path.
+
+  Because the illustrations are deliberately not focusable, every
+  section that contains any gets a real button that downloads all of
+  them. This is what keeps the mouse shortcut a shortcut rather than
+  the only way to obtain an asset — roughly eight tab stops instead of
+  183, and nothing is reachable by mouse alone.
+*/
+function addSectionDownloads() {
+  document.querySelectorAll('section.sec').forEach(sec => {
+    const svgs = [...sec.querySelectorAll('svg')];
+    if (!svgs.length || sec.querySelector('[data-secdl]')) return;
+    const bar = document.createElement('div');
+    bar.style.cssText = 'margin:18px 0 0;display:flex;gap:8px;flex-wrap:wrap';
+    /* No id lookup — the button finds its own section by walking up.
+       An earlier version keyed off sec.id, which threw on the one
+       section that had no id. */
+    bar.innerHTML = `<button class="btn-s" data-secdl>` +
+      `Download all ${svgs.length} illustrations (.zip)</button>`;
+    sec.appendChild(bar);
+  });
+}
+addSectionDownloads();
+
+/* Read card-local controls at action time so every download reflects
+   the preview currently in front of the user. */
+function exportOptionsFor(node) {
+  const slider = node.closest('.ldr')?.querySelector('[data-mark-cover]');
+  return slider ? { cover: Number(slider.value) / 100 } : {};
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-secdl]');
+  if (!b) return;
+  const sec = b.closest('section.sec');
+  if (!sec) return;
+  const svgs = [...sec.querySelectorAll('svg')];
+  const seen = new Map();
+  const files = svgs.map(s => {
+    const label = describe(s);
+    let name = slug(label);
+    const n = (seen.get(name) || 0) + 1;
+    seen.set(name, n);
+    if (n > 1) name += `-${n}`;                 // de-duplicate within the zip
+    return [`goforj-${name}.svg`, serialiseSVG(s, label)];
+  });
+  const secName = slug(sec.id || 'section');
+  downloadBlob(`goforj-${secName}.zip`, makeZip(files));
+  toast(`${files.length} files — goforj-${secName}.zip`);
+});
+
+document.addEventListener('click', e => {
+  /* Never hijack a real control. */
+  if (e.target.closest('button, a, input, select, textarea')) return;
+
+  const svg = e.target.closest('svg');
+  const img = e.target.closest('img[src$=".png"]');
+
+  if (svg) {
+    const name = describe(svg);
+    if (e.altKey) { rasterise(svg, name); toast(`PNG — ${name}`); }
+    else {
+      downloadText(`goforj-${slug(name)}.svg`, serialiseSVG(svg, name));
+      toast(`SVG — ${name}  ·  alt-click for PNG`);
+    }
+    return;
+  }
+  if (img) {
+    const a = document.createElement('a');
+    a.href = img.getAttribute('src');
+    a.download = img.getAttribute('src').split('/').pop();
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Downloaded the current mark, as it ships');
+  }
+}, true);
+
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]');
+  const dl = e.target.closest('[data-dl]');
+  const png = e.target.closest('[data-png]');
+  const set = e.target.closest('[data-set]');
+  const flash = (el, msg) => {
+    const t = el.textContent; el.textContent = msg;
+    setTimeout(() => el.textContent = t, 1400);
+  };
+  if (c) {
+    const P = c.dataset.mode === 'light' ? P_LIGHT : P_DARK;
+    copyText(exportSVG(c.dataset.copy, P))
+      .then(ok => flash(c, ok ? 'Copied ✓' : 'Downloaded instead'))
+      .catch(() => flash(c, 'Copy failed'));
+  }
+  if (dl) {
+    const P = dl.dataset.mode === 'light' ? P_LIGHT : P_DARK;
+    downloadText(`goforj-${dl.dataset.dl}-${P.id}.svg`, exportSVG(dl.dataset.dl, P, exportOptionsFor(dl)));
+  }
+  if (png) {
+    const P = png.dataset.mode === 'light' ? P_LIGHT : P_DARK;
+    rasteriseExport(png.dataset.png, P, Number(png.dataset.pngSize), exportOptionsFor(png));
+    flash(png, 'Rendering…');
+  }
+  if (set) {
+    const files = assetSet(set.dataset.set, exportOptionsFor(set));
+    downloadBlob(`goforj-${set.dataset.set}-assets.zip`, makeZip(files));
+    flash(set, 'Zipped ✓');
+  }
+});
+</script>
+</body>
+</html>

@@ -6,7 +6,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png?v=2" width="300" alt="storage logo">
+  <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png?v=4" width="300" alt="storage logo">
 </p>
 
 <p align="center">
@@ -348,19 +348,19 @@ Notes:
 
 ### Latency (ns/op) {#latency-(ns/op)}
 
-![Storage benchmark latency chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ns.svg?t=1773001729)
+![Storage benchmark latency chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ns.svg?t=2df0336b200f)
 
 ### Iterations (N) {#iterations-(n)}
 
-![Storage benchmark iteration chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ops.svg?t=1773001729)
+![Storage benchmark iteration chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_ops.svg?t=2df0336b200f)
 
 ### Allocated Bytes (B/op) {#allocated-bytes-(b/op)}
 
-![Storage benchmark bytes chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_bytes.svg?t=1773001729)
+![Storage benchmark bytes chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_bytes.svg?t=2df0336b200f)
 
 ### Allocations (allocs/op) {#allocations-(allocs/op)}
 
-![Storage benchmark allocs chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_allocs.svg?t=1773001729)
+![Storage benchmark allocs chart](https://raw.githubusercontent.com/goforj/storage/main/docs/bench/benchmarks_allocs.svg?t=2df0336b200f)
 <!-- bench:embed:end -->
 
 ## Capability Matrix {#capability-matrix}

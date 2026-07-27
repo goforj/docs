@@ -1,0 +1,747 @@
+<!doctype html>
+<!--
+  GoForj — The Request Journey (v5). One concrete request, followed
+  end to end through a running GoForj app, in the developer's native
+  visual language: a trace waterfall.
+
+  The story, played as animation:
+
+    POST /orders arrives → your http controller → your orders service
+      → writes database          (postgres | sqlite)
+      → dispatches a job         (queue: redis | workerpool)
+      → publishes orders.created (events: nats | inproc)
+    ← responds 201 in 12ms — and the work KEEPS GOING:
+      the job runs on a worker and sends mail (smtp | log)
+      a subscriber catches the event and warms the cache (redis | memory)
+
+  Every hop appends a span to the Lighthouse-style trace panel below —
+  which is the kicker: GoForj ships this observability with the
+  framework. When the run completes, the driver chips page-flip to the
+  other environment and the SAME request replays: identical code path,
+  identical trace shape, different backends. Click anywhere to swap
+  and replay yourself.
+
+  Visual language shared with forge-v3/v4: paper cards, white cut
+  edges, toon steps, confetti, nothing glows.
+
+  Sources of truth: colour tokens from public/design-system.css
+  (Temper core); driver pairs from the landing page's env-swap block.
+
+  Motion policy + debug hooks match the series: `?static` and
+  reduced-motion render the completed trace; `?embed` strips chrome;
+  `window.__forge` reads state; `window.__forgeStep(sec)`
+  fast-forwards (the page pauses in hidden tabs). Mid-journey ≈3s,
+  response ≈3.3s, async tail ≈5s, swap beat ≈8.5s.
+-->
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>GoForj — The Request Journey</title>
+<link rel="icon" href="/favicon.svg?v=20260727" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --gf-accent: #FF5E3A;
+  --gf-nav: #FFC24D;
+  --gf-ground-deep: #0C0A0E;
+  --gf-line: #2A2333;
+  --gf-line-strong: #3D3349;
+  --gf-ink: #FFFFFF;
+  --gf-ink-2: #A9A1B3;
+  --gf-ink-3: #746C80;
+  --gf-font-display: 'Space Grotesk', sans-serif;
+  --gf-font-body: 'Inter', sans-serif;
+  --gf-font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--gf-ground-deep);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+#stage { position: fixed; inset: 0; cursor: pointer; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+#vignette {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 42%, transparent 42%, rgba(12,10,14,.55) 100%),
+    radial-gradient(60% 45% at 50% 45%, rgba(255,160,90,.05), transparent 70%);
+}
+.ov { position: fixed; z-index: 5; pointer-events: none; }
+.ov--head { top: clamp(20px, 3.6vh, 40px); left: clamp(22px, 4vw, 52px); max-width: 520px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px;
+  letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--gf-nav); margin: 0 0 12px;
+}
+.kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-nav); }
+h1 {
+  margin: 0 0 8px; font-family: var(--gf-font-display); font-weight: 700;
+  font-size: clamp(26px, 3.5vw, 42px); line-height: 1.06; letter-spacing: -0.032em;
+  text-shadow: 0 2px 26px rgba(12,10,14,.85);
+}
+h1 em { font-style: normal; color: var(--gf-accent); }
+.sub {
+  margin: 0; font-size: clamp(12.5px, 1.15vw, 14.5px); line-height: 1.6;
+  color: var(--gf-ink-2); max-width: 42ch;
+  text-shadow: 0 1px 18px rgba(12,10,14,.9);
+}
+.ov--foot { left: 0; right: 0; bottom: clamp(12px, 2.6vh, 22px); display: flex; justify-content: center; }
+.caption {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  padding: 8px 16px; border: 1px solid var(--gf-line); border-radius: 999px;
+  background: color-mix(in srgb, var(--gf-ground-deep) 72%, transparent);
+  backdrop-filter: blur(8px);
+}
+.caption b { color: var(--gf-ink-2); font-weight: 500; }
+.ov--ctl { right: clamp(16px, 2.4vw, 30px); bottom: clamp(12px, 2.6vh, 22px); pointer-events: auto; }
+#pause {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--gf-ink-2); background: transparent;
+  border: 1px solid var(--gf-line-strong); border-radius: 8px;
+  padding: 7px 13px; cursor: pointer;
+}
+#pause:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+#boot {
+  position: fixed; inset: 0; z-index: 4; display: grid; place-items: center;
+  font-family: var(--gf-font-mono); font-size: 12px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  background: var(--gf-ground-deep);
+  transition: opacity .8s ease; pointer-events: none;
+}
+#boot.off { opacity: 0; }
+#fallback {
+  position: fixed; inset: 0; z-index: 6; display: none;
+  place-items: center; background: var(--gf-ground-deep); text-align: center;
+}
+#fallback .mark { width: 120px; margin: 0 auto 22px; display: block; }
+#fallback p { font-size: 14px; color: var(--gf-ink-2); max-width: 40ch; margin: 0 auto; line-height: 1.6; }
+body.embed .ov--head, body.embed .ov--foot, body.embed .ov--ctl, body.embed #vignette { display: none; }
+@media (max-width: 640px) { .ov--head { max-width: 80vw; } .caption { font-size: 9px; } }
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="vignette"></div>
+<div id="boot">tracing the request&hellip;</div>
+
+<header class="ov ov--head">
+  <p class="kicker">goforj &middot; one request, end to end</p>
+  <h1>Your code answers in 12ms.<br><em>The work keeps going.</em></h1>
+  <p class="sub">POST /orders hits your controller, writes the database,
+  queues a job, publishes an event — then the worker mails, the
+  subscriber caches. One app model, and every run leaves this trace.</p>
+</header>
+
+<div class="ov ov--foot">
+  <p class="caption">click to swap drivers and replay — <b>same code, same trace, different backends</b></p>
+</div>
+
+<div class="ov ov--ctl"><button id="pause" aria-pressed="false">pause</button></div>
+
+<div id="fallback">
+  <div>
+    <svg class="mark" viewBox="-8.2 -6.2 100.4 112.4" aria-hidden="true">
+      <path d="M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z"
+            fill="#FF5E3A" fill-rule="evenodd"/>
+    </svg>
+    <p>The journey needs WebGL. Your browser declined — the request,
+    rest assured, still returned 201.</p>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+const P = {
+  accent: 0xFF5E3A, accentHi: 0xFF8257,
+  gold: 0xFFC24D, goldHi: 0xFFD37A,
+  paper: 0xF7F2E8, cream: 0xEFE3CF,
+  ink: 0x1D1923, deep: 0x0C0A0E,
+  ok: 0x5fcfa8,
+  card1: 0x241F2C, card2: 0x1D1923, card3: 0x161219
+};
+
+/* ---- motion policy ---- */
+const params = new URLSearchParams(location.search);
+let stored = null;
+try { stored = localStorage.getItem('goforjMotion'); } catch (e) {}
+const osReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REDUCED = params.has('static') || stored === 'reduced' || (osReduced && stored !== 'on');
+if (params.has('embed')) document.body.classList.add('embed');
+
+const bootEl = document.getElementById('boot');
+const pauseBtn = document.getElementById('pause');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+} catch (e) {
+  document.getElementById('fallback').style.display = 'grid';
+  bootEl.style.display = 'none';
+  throw e;
+}
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.NoToneMapping;
+document.getElementById('stage').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(P.deep);
+
+const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 60);
+const CAM_BASE = new THREE.Vector3(0, 2.95, 11.5);
+const CAM_LOOK = new THREE.Vector3(0, 2.9, 0);
+function fitCamera() {
+  const halfH = 3.15, halfW = 6.75;
+  const f = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  CAM_BASE.z = Math.max(halfH / f, halfW / (f * camera.aspect));
+  camera.position.z = CAM_BASE.z;
+}
+fitCamera();
+camera.position.copy(CAM_BASE);
+camera.lookAt(CAM_LOOK);
+
+const ramp = new THREE.DataTexture(new Uint8Array([110, 180, 255]), 3, 1, THREE.RedFormat);
+ramp.minFilter = ramp.magFilter = THREE.NearestFilter;
+ramp.needsUpdate = true;
+scene.add(new THREE.AmbientLight(0xffe9d2, 1.35));
+const keyL = new THREE.DirectionalLight(0xfff1dc, 1.5);
+keyL.position.set(2.5, 5, 6);
+scene.add(keyL);
+const fillL = new THREE.DirectionalLight(0x8a7fae, 0.35);
+fillL.position.set(-4, 2, 3);
+scene.add(fillL);
+
+const toon = (color) => new THREE.MeshToonMaterial({ color, gradientMap: ramp });
+
+/* ---- kit (shared with v3/v4) ---- */
+function roundedRect(w, h, r) {
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+function makeCard(shape, color, { edge = 1.05 } = {}) {
+  const g = new THREE.Group();
+  const geo = new THREE.ShapeGeometry(shape);
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3();
+  geo.boundingBox.getCenter(c);
+  const front = new THREE.Mesh(geo, toon(color));
+  const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: P.paper, side: THREE.DoubleSide }));
+  back.scale.set(edge, edge, 1);
+  back.position.set(c.x * (1 - edge), c.y * (1 - edge), -0.012);
+  g.add(back, front);
+  return g;
+}
+const allTags = [];
+function tagSprite(text, { w = 288, h = 72, font = 27, bg = '#F7F2E8', ink = '#1D1923', border = null, sx = 0.85, sy = 0.21 } = {}) {
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(sx, sy, 1);
+  sp.userData.baseSx = sx;
+  sp.userData.draw = (t2, bg2, ink2, border2) => {
+    sp.userData.last = [t2, bg2 || bg, ink2 || ink, border2 || border];
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = bg2 || bg;
+    x.beginPath();
+    if (x.roundRect) x.roundRect(6, 6, w - 12, h - 12, (h - 12) / 2); else x.rect(6, 6, w - 12, h - 12);
+    x.fill();
+    if (border2 || border) { x.strokeStyle = border2 || border; x.lineWidth = 5; x.stroke(); }
+    x.font = `600 ${font}px "JetBrains Mono", monospace`;
+    x.fillStyle = ink2 || ink;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(t2, w / 2, h / 2 + 1);
+    tex.needsUpdate = true;
+  };
+  sp.userData.draw(text, bg, ink, border);
+  allTags.push(sp);
+  return sp;
+}
+function labelSprite(text, { w = 320, h = 52, font = 25, ink = '#A9A1B3', sx = 0.95, sy = 0.155 } = {}) {
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(sx, sy, 1);
+  sp.userData.draw = (t2) => {
+    sp.userData.last = [t2];
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.font = `500 ${font}px "JetBrains Mono", monospace`;
+    x.fillStyle = ink;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(t2, w / 2, h / 2 + 1);
+    tex.needsUpdate = true;
+  };
+  sp.userData.draw(text);
+  allTags.push(sp);
+  return sp;
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => allTags.forEach(sp => sp.userData.draw(...sp.userData.last)));
+}
+
+/* backdrop layers */
+[[36, 2.2, -3.6, P.card1], [36, 3.2, -5.0, P.card2], [36, 4.4, -6.4, P.card3]].forEach(([w, h, z, col]) => {
+  const card = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(w, h, 0.5)), toon(col));
+  card.position.set(0, h / 2 + 2.4, z);
+  scene.add(card);
+});
+
+/* ================================================================
+   The system graph. Code nodes are YOUR code (cream on ink);
+   infra nodes carry a driver chip that swaps with the environment.
+   ================================================================ */
+const ENV_PAIRS = { database: ['postgres', 'sqlite'], queue: ['redis', 'workerpool'], events: ['nats', 'inproc'], mail: ['smtp', 'log'], cache: ['redis', 'memory'] };
+let env = 0;                       // 0 production, 1 local — starts in prod for the hero run
+
+const NODE_DEFS = {
+  http:    { p: [-3.5, 4.45], w: 1.75, code: 1, title: 'http · controller' },
+  service: { p: [-1.15, 4.45], w: 1.7, code: 1, title: 'orders service' },
+  db:      { p: [1.2, 5.2],  w: 1.7, title: 'database' },
+  queue:   { p: [1.2, 4.15], w: 1.7, title: 'queue' },
+  events:  { p: [1.2, 3.1],  w: 1.7, title: 'events' },
+  worker:  { p: [3.45, 4.15], w: 1.6, code: 1, title: 'job · worker' },
+  mail:    { p: [5.45, 4.15], w: 1.55, title: 'mail' },
+  sub:     { p: [3.45, 3.1],  w: 1.6, code: 1, title: 'subscriber' },
+  cache:   { p: [5.45, 3.1],  w: 1.55, title: 'cache' }
+};
+const ENTRY = new THREE.Vector3(-6.3, 4.45, 0);
+
+const nodes = {};
+Object.entries(NODE_DEFS).forEach(([key, def]) => {
+  const g = new THREE.Group();
+  const prim = ENV_PAIRS[key];
+  const h = prim ? 0.86 : 0.6;
+  g.add(makeCard(roundedRect(def.w, h, 0.13), def.code ? 0x201a28 : 0x14111a, { edge: 1.04 }));
+  const title = labelSprite(def.title, { ink: def.code ? '#F7F2E8' : '#FFC24D', font: 25, sx: 1.05, sy: 0.16 });
+  title.position.set(0, prim ? 0.22 : 0, 0.05);
+  g.add(title);
+  let chip = null;
+  if (prim) {
+    chip = tagSprite(prim[env], { sx: 0.78, sy: 0.185, font: 26, bg: '#2C2734', ink: '#FFC24D', border: '#FFC24D' });
+    chip.position.set(0, -0.2, 0.06);
+    g.add(chip);
+  }
+  g.position.set(def.p[0], def.p[1], 0);
+  scene.add(g);
+  nodes[key] = { g, chip, key, pulse: 0, pos: new THREE.Vector3(def.p[0], def.p[1], 0) };
+});
+
+/* edges: the wiring — contracts, drawn once, never moved */
+const EDGE_DEFS = [
+  ['entry', 'http'], ['http', 'service'],
+  ['service', 'db'], ['service', 'queue'], ['service', 'events'],
+  ['queue', 'worker'], ['worker', 'mail'],
+  ['events', 'sub'], ['sub', 'cache']
+];
+const edges = {};
+function nodePos(key) { return key === 'entry' ? ENTRY : nodes[key].pos; }
+EDGE_DEFS.forEach(([a, b]) => {
+  const from = nodePos(a), to = nodePos(b);
+  const mid = from.clone().add(to).multiplyScalar(0.5);
+  const dir = to.clone().sub(from).normalize();
+  const norm = new THREE.Vector3(-dir.y, dir.x, 0);
+  mid.addScaledVector(norm, 0.22);
+  const curve = new THREE.QuadraticBezierCurve3(from.clone().setZ(-0.05), mid.setZ(-0.05), to.clone().setZ(-0.05));
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 20, 0.02, 6), toon(0x6f6480)));
+  edges[a + '>' + b] = curve;
+});
+function edgeCurve(a, b) { return edges[a + '>' + b] || edges[b + '>' + a]; }
+function edgePoint(a, b, u, out) {
+  const fwd = edges[a + '>' + b];
+  if (fwd) return fwd.getPoint(u, out);
+  return edges[b + '>' + a].getPoint(1 - u, out);
+}
+
+/* env tag, top right of the graph */
+const envTag = tagSprite('env: production', { sx: 1.3, sy: 0.24, font: 26, bg: '#2C2734', ink: '#FFC24D', border: '#FFC24D' });
+envTag.position.set(5.2, 5.5, 0);
+scene.add(envTag);
+
+/* ================================================================
+   The journey script (times in journey-seconds)
+   ================================================================ */
+const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const DOT_DEFS = [
+  { color: P.accent,  path: [['entry', 0], ['http', 0.75], ['service', 1.5]], die: 1.75 },
+  { color: P.accent,  path: [['service', 1.7], ['db', 2.4]], die: 2.95 },
+  { color: P.accent,  path: [['service', 1.7], ['queue', 2.35]], die: 2.7 },
+  { color: P.accent,  path: [['service', 1.7], ['events', 2.5]], die: 2.8 },
+  { color: P.ok, chip: '201', path: [['service', 2.6], ['http', 3.2], ['entry', 3.85]], die: 3.9 },
+  { color: P.gold,    path: [['queue', 3.15], ['worker', 3.9]], die: 4.25, hold: 4.2 },
+  { color: P.gold,    path: [['worker', 4.2], ['mail', 4.9]], die: 5.6 },
+  { color: P.gold,    path: [['events', 2.95], ['sub', 3.6]], die: 3.85 },
+  { color: P.gold,    path: [['sub', 3.8], ['cache', 4.5]], die: 5.0 }
+];
+const dots = DOT_DEFS.map(def => {
+  const m = new THREE.Mesh(new THREE.CircleGeometry(0.075, 12), new THREE.MeshBasicMaterial({ color: def.color }));
+  m.visible = false;
+  scene.add(m);
+  let chip = null;
+  if (def.chip) {
+    chip = tagSprite(def.chip, { sx: 0.42, sy: 0.16, font: 28, bg: '#F7F2E8', ink: '#1D1923', border: '#5fcfa8' });
+    chip.visible = false;
+    scene.add(chip);
+  }
+  return { def, m, chip };
+});
+/* node pulses on every arrival */
+const ARRIVALS = DOT_DEFS.flatMap(d => d.path.slice(1).map(([node, t]) => ({ node, t, hit: false })));
+
+/* spans for the waterfall: [row, indent, label, start, end, kind] */
+const SPANS = [
+  { row: 0, ind: 0, label: 'POST /orders', start: 0.75, end: 3.2, kind: 'sync', ms: '12ms' },
+  { row: 1, ind: 1, label: 'orders.service.Create', start: 1.5, end: 2.7, kind: 'sync', ms: '9ms' },
+  { row: 2, ind: 2, label: 'database · INSERT orders', start: 2.4, end: 2.9, kind: 'sync', ms: '4ms' },
+  { row: 3, ind: 2, label: 'queue · dispatch confirm', start: 2.35, end: 2.6, kind: 'sync', ms: '1ms' },
+  { row: 4, ind: 2, label: 'events · orders.created', start: 2.5, end: 2.72, kind: 'sync', ms: '0.4ms' },
+  { row: 5, ind: 0, label: 'response', start: 3.2, end: 3.2, kind: 'mark', ms: '201 · 12ms' },
+  { row: 6, ind: 0, label: 'job confirm · worker', start: 3.9, end: 4.9, kind: 'async', ms: '18ms' },
+  { row: 7, ind: 1, label: 'mail · send confirmation', start: 4.9, end: 5.6, kind: 'async', ms: '11ms' },
+  { row: 8, ind: 0, label: 'sub orders.created → cache', start: 4.5, end: 4.9, kind: 'async', ms: '2ms' }
+];
+const JOURNEY_END = 5.9, HOLD_END = 8.1, SWAP_END = 9.4;
+
+/* ================================================================
+   The trace panel — Lighthouse ships with the framework
+   ================================================================ */
+const trace = (() => {
+  const w = 1460, h = 300;
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(10.7, 2.2, 1);
+  sp.position.set(0, 1.22, 0.3);
+  scene.add(sp);
+  const X0 = 470, PPS = 162, ROW0 = 78, ROWH = 24.5;
+  function draw(jt, reqId) {
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = '#14111a';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(3, 3, w - 6, h - 6, 16); else x.rect(3, 3, w - 6, h - 6);
+    x.fill();
+    x.strokeStyle = '#F7F2E8';
+    x.lineWidth = 5;
+    x.stroke();
+    /* header */
+    x.font = '600 24px "JetBrains Mono", monospace';
+    x.fillStyle = '#FFC24D';
+    x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+    x.fillText('⬡ lighthouse · trace', 26, 42);
+    x.font = '500 22px "JetBrains Mono", monospace';
+    x.fillStyle = '#746C80';
+    x.fillText(`req_01hf${(300 + reqId).toString(36)}  env=${env ? 'local' : 'production'}`, 330, 42);
+    x.textAlign = 'right';
+    x.fillText('built into every app', w - 28, 42);
+    x.textAlign = 'left';
+    /* faint grid */
+    x.strokeStyle = 'rgba(169,161,179,0.08)';
+    x.lineWidth = 1;
+    for (let g = 0; g <= 6; g++) {
+      const gx = X0 + g * PPS * 0.9;
+      x.beginPath(); x.moveTo(gx, 58); x.lineTo(gx, h - 16); x.stroke();
+    }
+    SPANS.forEach(spn => {
+      if (jt < spn.start) return;
+      const y = ROW0 + spn.row * ROWH;
+      if (spn.kind === 'mark') {
+        const mx = X0 + spn.start * PPS * 0.9;
+        x.strokeStyle = '#5fcfa8';
+        x.lineWidth = 2;
+        x.beginPath(); x.moveTo(mx, y - 15); x.lineTo(mx, y + 3); x.stroke();
+        x.font = '600 20px "JetBrains Mono", monospace';
+        x.fillStyle = '#5fcfa8';
+        x.fillText(spn.ms, mx + 10, y);
+        return;
+      }
+      x.font = '500 20px "JetBrains Mono", monospace';
+      x.fillStyle = spn.ind === 0 ? '#F7F2E8' : '#A9A1B3';
+      x.fillText(spn.label, 26 + spn.ind * 26, y);
+      const bw = Math.max((Math.min(jt, spn.end) - spn.start) * PPS * 0.9, 4);
+      x.fillStyle = spn.kind === 'sync' ? '#FF5E3A' : '#FFC24D';
+      x.beginPath();
+      if (x.roundRect) x.roundRect(X0 + spn.start * PPS * 0.9, y - 14, bw, 16, 8); else x.rect(X0 + spn.start * PPS * 0.9, y - 14, bw, 16);
+      x.fill();
+      if (jt >= spn.end) {
+        x.font = '500 19px "JetBrains Mono", monospace';
+        x.fillStyle = '#746C80';
+        x.fillText(spn.ms, X0 + spn.start * PPS * 0.9 + bw + 10, y);
+      }
+    });
+    tex.needsUpdate = true;
+  }
+  return { draw };
+})();
+
+/* confetti — tiny, for node arrivals */
+const CONFETTI = 70;
+const confMesh = (() => {
+  const tri = new THREE.BufferGeometry();
+  tri.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-0.024, -0.015, 0, 0.024, -0.015, 0, 0, 0.03, 0]), 3));
+  tri.computeVertexNormals();
+  const m = new THREE.InstancedMesh(tri, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), CONFETTI);
+  m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  m.frustumCulled = false;
+  scene.add(m);
+  return m;
+})();
+const confData = [];
+const CONF_COLS = [new THREE.Color(P.accent), new THREE.Color(P.gold), new THREE.Color(P.paper)];
+for (let i = 0; i < CONFETTI; i++) {
+  confData[i] = { life: 0, max: 1, p: new THREE.Vector3(0, -99, 0), v: new THREE.Vector3(), rot: new THREE.Euler(), rv: new THREE.Vector3() };
+  confMesh.setColorAt(i, CONF_COLS[i % CONF_COLS.length]);
+}
+confMesh.instanceColor.needsUpdate = true;
+let confCursor = 0;
+function confetti(x, y, z, n, speed = 1) {
+  for (let k = 0; k < n; k++) {
+    const i = confCursor = (confCursor + 1) % CONFETTI;
+    const d = confData[i];
+    const a = Math.random() * Math.PI * 2;
+    d.life = 0.0001;
+    d.max = 0.5 + Math.random() * 0.5;
+    d.p.set(x, y, z);
+    d.v.set(Math.cos(a) * (0.35 + Math.random() * 0.4) * speed, (0.7 + Math.random() * 0.8) * speed, Math.sin(a) * 0.25 * speed);
+    d.rot.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    d.rv.set((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12);
+  }
+}
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(1, 1, 1), _zero = new THREE.Vector3(0, -99, 0);
+function tickConfetti(dt) {
+  for (let i = 0; i < CONFETTI; i++) {
+    const d = confData[i];
+    if (d.life <= 0) { _s.setScalar(1); _m4.compose(_zero, _q.identity(), _s); confMesh.setMatrixAt(i, _m4); continue; }
+    d.life += dt;
+    if (d.life > d.max) { d.life = 0; continue; }
+    d.v.y -= 3.2 * dt;
+    d.p.addScaledVector(d.v, dt);
+    d.rot.x += d.rv.x * dt; d.rot.y += d.rv.y * dt; d.rot.z += d.rv.z * dt;
+    _q.setFromEuler(d.rot);
+    const u = d.life / d.max;
+    _s.setScalar(Math.max(u > 0.75 ? 1 - (u - 0.75) / 0.25 : 1, 0.001));
+    _m4.compose(d.p, _q, _s);
+    confMesh.setMatrixAt(i, _m4);
+  }
+  confMesh.instanceMatrix.needsUpdate = true;
+}
+
+/* ================================================================
+   Cycle: journey → hold → swap chips → replay
+   ================================================================ */
+let jt = 0, reqId = 1, phase = 'journey';
+const flippingChips = [];                          // { chip, t, delay, toText }
+const _dv = new THREE.Vector3();
+
+function resetJourney() {
+  jt = 0;
+  phase = 'journey';
+  reqId++;
+  ARRIVALS.forEach(a => { a.hit = false; });
+  dots.forEach(d => { d.m.visible = false; if (d.chip) d.chip.visible = false; });
+}
+
+function startSwap() {
+  if (phase === 'swap') return;
+  phase = 'swap';
+  jt = 0;
+  env = 1 - env;
+  let i = 0;
+  Object.values(nodes).forEach(n => {
+    if (!n.chip) return;
+    flippingChips.push({ chip: n.chip, t: 0, delay: i * 0.16, toText: ENV_PAIRS[n.key][env], swapped: false });
+    i++;
+  });
+  flippingChips.push({ chip: envTag, t: 0, delay: i * 0.16, toText: `env: ${env ? 'local' : 'production'}`, swapped: false });
+}
+
+function tickCycle(dt) {
+  jt += dt;
+  if (phase === 'journey') {
+    /* dots along their paths */
+    dots.forEach(({ def, m, chip }) => {
+      const first = def.path[0][1], die = def.die;
+      if (jt < first || jt > die) { m.visible = false; if (chip) chip.visible = false; return; }
+      m.visible = true;
+      let placed = false;
+      for (let s = 0; s < def.path.length - 1; s++) {
+        const [a, ta] = def.path[s], [b, tb] = def.path[s + 1];
+        if (jt <= tb || s === def.path.length - 2) {
+          const u = THREE.MathUtils.clamp((jt - ta) / (tb - ta), 0, 1);
+          edgePoint(a, b, easeIO(u), _dv);
+          m.position.copy(_dv).setZ(0.12);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) m.position.copy(nodePos(def.path[def.path.length - 1][0])).setZ(0.12);
+      const fade = Math.min((die - jt) / 0.2, 1);
+      m.scale.setScalar(Math.max(fade, 0.001) * (1 + Math.sin(jt * 9) * 0.12));
+      if (chip) {
+        chip.visible = m.visible;
+        chip.position.set(m.position.x, m.position.y + 0.26, 0.2);
+        chip.material.opacity = fade;
+      }
+    });
+    /* arrivals: pop + confetti */
+    ARRIVALS.forEach(a => {
+      if (!a.hit && jt >= a.t) {
+        a.hit = true;
+        const n = nodes[a.node];
+        if (n) { n.pulse = 1; confetti(n.pos.x, n.pos.y + 0.2, 0.15, 4, 0.5); }
+      }
+    });
+    trace.draw(Math.min(jt, JOURNEY_END), reqId);
+    if (jt >= HOLD_END) startSwap();
+  } else {
+    /* swap: chips page-flip, then replay */
+    let done = true;
+    flippingChips.forEach(f => {
+      f.t += dt;
+      const u = (f.t - f.delay) / 0.42;
+      if (u < 1) done = false;
+      if (u <= 0) return;
+      const w = Math.abs(Math.cos(Math.min(u, 1) * Math.PI));
+      f.chip.scale.x = f.chip.userData.baseSx * Math.max(w, 0.02);
+      if (u >= 0.5 && !f.swapped) {
+        f.swapped = true;
+        const [, bg, ink, border] = f.chip.userData.last;
+        f.chip.userData.draw(f.toText, bg, ink, border);
+      }
+      if (u >= 1) f.chip.scale.x = f.chip.userData.baseSx;
+    });
+    if (done && jt > 1.4) {
+      flippingChips.length = 0;
+      resetJourney();
+      trace.draw(0, reqId);
+    }
+  }
+  /* node pulses decay */
+  Object.values(nodes).forEach(n => {
+    if (n.pulse > 0) {
+      n.pulse = Math.max(n.pulse - dt * 2.6, 0);
+      n.g.scale.setScalar(1 + Math.sin(n.pulse * Math.PI) * 0.07);
+    }
+  });
+}
+
+/* ================================================================
+   Camera + loop
+   ================================================================ */
+const mouse = { x: 0, y: 0 };
+addEventListener('pointermove', (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = (e.clientY / innerHeight) * 2 - 1;
+});
+function tickCamera(dt, t) {
+  const px = CAM_BASE.x + mouse.x * 0.28 + Math.sin(t * 0.09) * 0.07;
+  const py = CAM_BASE.y - mouse.y * 0.15 + Math.sin(t * 0.06) * 0.04;
+  camera.position.x += (px - camera.position.x) * Math.min(dt * 2.2, 1);
+  camera.position.y += (py - camera.position.y) * Math.min(dt * 2.2, 1);
+  camera.lookAt(CAM_LOOK);
+}
+renderer.domElement.addEventListener('pointerdown', () => {
+  if (!REDUCED && phase === 'journey') startSwap();
+});
+
+const clock = new THREE.Clock();
+let booted = false;
+let simT = 0;
+function advance(dt, t) {
+  tickCycle(dt);
+  tickConfetti(dt);
+  tickCamera(dt, t);
+}
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  simT += dt;
+  advance(dt, simT);
+  renderer.render(scene, camera);
+  if (!booted) { booted = true; bootEl.classList.add('off'); }
+}
+
+Object.defineProperty(window, '__forge', { get: () => ({
+  phase, jt: +jt.toFixed(2), env: env ? 'local' : 'production',
+  reqId, t: +simT.toFixed(2), reduced: REDUCED
+})});
+window.__forgeStep = (sec) => {
+  const n = Math.max(1, Math.round(sec * 60));
+  for (let i = 0; i < n; i++) { simT += 1 / 60; advance(1 / 60, simT); }
+  renderer.render(scene, camera);
+  clock.getDelta();
+  return window.__forge;
+};
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  fitCamera();
+  renderer.setSize(innerWidth, innerHeight);
+  if (REDUCED) renderer.render(scene, camera);
+}
+addEventListener('resize', onResize);
+
+if (REDUCED) {
+  trace.draw(JOURNEY_END, 1);
+  pauseBtn.style.display = 'none';
+  renderer.render(scene, camera);
+  bootEl.classList.add('off');
+} else {
+  trace.draw(0, 1);
+  renderer.setAnimationLoop(frame);
+  let paused = false;
+  function setPaused(p) {
+    paused = p;
+    renderer.setAnimationLoop(paused ? null : frame);
+    if (!paused) clock.getDelta();
+    pauseBtn.textContent = paused ? 'play' : 'pause';
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+  }
+  pauseBtn.addEventListener('click', (e) => { e.stopPropagation(); setPaused(!paused); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) renderer.setAnimationLoop(null);
+    else if (!paused) { clock.getDelta(); renderer.setAnimationLoop(frame); }
+  });
+}
+</script>
+</body>
+</html>

@@ -229,21 +229,21 @@ router.GET("/users", func(c web.Context) error {
 Set `RouteCompositionPath` to the source file that assembles the application route groups. Scoping the index to that composition keeps unrelated fixtures and unused providers out of the published contract.
 
 ```go
-manifest, err := webindex.Run(context.Background(), webindex.IndexOptions{
+manifest, err := webindex.RunCached(context.Background(), webindex.IndexOptions{
 	Root:                 ".",
 	RouteCompositionPath: "internal/http/routes.go",
 	OutPath:              "build/webindex.json",
 	DiagnosticsPath:      "build/webindex.diagnostics.json",
 	OpenAPIPath:           "build/openapi.json",
 	Strict:                true,
-})
+}, "build/webindex.cache")
 if err != nil {
 	log.Fatal(err)
 }
 log.Printf("indexed %d operations", len(manifest.Operations))
 ```
 
-`Strict` promotes unresolved source evidence into an error instead of publishing an ambiguous contract. The returned manifest still contains structured diagnostics for reporting.
+`RunCached` reuses a content-validated analysis snapshot while artifact publication remains changed-only; use `Run` when persistent caching is unnecessary. `Strict` promotes unresolved source evidence into an error instead of publishing an ambiguous contract. The returned manifest still contains structured diagnostics for reporting.
 
 ### Add a WebSocket route {#add-a-websocket-route}
 
@@ -279,6 +279,28 @@ adapter.Echo().IPExtractor = echo.ExtractIPDirect()
 
 Behind a trusted proxy, configure `echo.ExtractIPFromXFFHeader` or `echo.ExtractIPFromRealIPHeader` with trust options that match the deployment, and ensure the edge proxy removes client-supplied forwarding headers before adding its own.
 
+## Performance {#performance}
+
+<!-- bench:embed:start -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/goforj/web/main/docs/bench/framework_comparison.svg" alt="Go HTTP stack loopback and in-process performance comparison">
+</p>
+
+Whiskers in every panel show the observed sample minimum and maximum. The first panel measures single-core HTTP/1.1 loopback requests per second over a reused connection. The other panels measure in-process `ServeHTTP` operations per second, and their allocation figures cover the complete route and handler dispatch. Middleware details show the median paired latency added above the plaintext route measured in the same benchmark process. Each primary value is the median of 7 samples at `1s` with `GOMAXPROCS=1`.
+
+Bars are scaled independently within each panel, and small differences should not be treated as rankings. These are microbenchmarks and loopback ceilings, not production capacity forecasts.
+
+Measured with `go1.26.1` on `linux/arm64` (arm64 (CPU model unavailable)), kernel `Linux 7.0.11-orbstack-00360-gc9bc4d96ac70`, revision `07fbcb90c743`. Build settings: `CGO_ENABLED=1`, `GOARM64=v8.0`, `GODEBUG=(unset)`, `GOEXPERIMENT=(unset)`, `GOFLAGS=(unset)`. Benchmark inputs: `sha256:e0bc4ee1182815f973c31c2bb571f3381750335af043730bc406839bdfd34814`. Dependencies: net/http go1.26.1, GoForj Web local checkout, Echo v5.1.0, Gin v1.12.0, Chi v5.3.1, Gorilla Mux v1.8.1, httprouter v1.3.0.
+
+Fiber is omitted because its `fasthttp` engine is not directly comparable in this shared `net/http` suite. See the [benchmark methodology](https://github.com/goforj/web/blob/main/docs/bench/README.md) and [recorded sample rows](https://github.com/goforj/web/blob/main/docs/bench/benchmarks_rows.json).
+
+Regenerate the measurement and image with:
+
+```sh
+make benchmark-svg
+```
+<!-- bench:embed:end -->
+
 ## API {#api}
 
 <!-- api:embed:start -->
@@ -287,7 +309,7 @@ Behind a trusted proxy, configure `echo.ExtractIPFromXFFHeader` or `echo.Extract
 | Group | Functions |
 |------:|:-----------|
 | **Adapter** | [Adapter.Echo](#echoweb-adapter-echo) · [Adapter.Router](#echoweb-adapter-router) · [Adapter.ServeHTTP](#echoweb-adapter-servehttp) · [New](#echoweb-new) · [NewServer](#echoweb-newserver) · [Server.Router](#echoweb-server-router) · [Server.Serve](#echoweb-server-serve) · [Server.ServeHTTP](#echoweb-server-servehttp) · [UnwrapContext](#echoweb-unwrapcontext) · [UnwrapWebSocketConn](#echoweb-unwrapwebsocketconn) · [Wrap](#echoweb-wrap) |
-| **Indexing** | [Run](#webindex-run) |
+| **Indexing** | [Run](#webindex-run) · [RunCached](#webindex-runcached) |
 | **Middleware<br>Auth** | [BasicAuth](#webmiddleware-basicauth) · [BasicAuthWithConfig](#webmiddleware-basicauthwithconfig) · [CSRF](#webmiddleware-csrf) · [CSRFWithConfig](#webmiddleware-csrfwithconfig) · [CreateExtractors](#webmiddleware-createextractors) · [KeyAuth](#webmiddleware-keyauth) · [KeyAuthWithConfig](#webmiddleware-keyauthwithconfig) |
 | **Middleware<br>Compression** | [Compress](#webmiddleware-compress) · [Decompress](#webmiddleware-decompress) · [DecompressWithConfig](#webmiddleware-decompresswithconfig) · [Gzip](#webmiddleware-gzip) · [GzipWithConfig](#webmiddleware-gzipwithconfig) |
 | **Middleware<br>Method Override** | [MethodFromForm](#webmiddleware-methodfromform) · [MethodFromHeader](#webmiddleware-methodfromheader) · [MethodFromQuery](#webmiddleware-methodfromquery) · [MethodOverride](#webmiddleware-methodoverride) · [MethodOverrideWithConfig](#webmiddleware-methodoverridewithconfig) |
@@ -469,6 +491,12 @@ manifest, err := webindex.Run(context.Background(), webindex.IndexOptions{
 fmt.Println(err == nil, manifest.Version != "")
 // true true
 ```
+
+#### webindex.RunCached {#webindex-runcached}
+
+RunCached indexes API metadata while reusing a content-validated analysis cache at cachePath.
+Relative cache paths resolve from opts.Root. An empty path behaves like Run.
+When the active build cannot be fingerprinted safely, RunCached falls back to a full run without persisting state.
 
 ### Auth Middleware {#auth-middleware}
 
@@ -1271,6 +1299,8 @@ router.GET("/healthz", func(c web.Context) error {
 #### webmiddleware.TimeoutWithConfig {#webmiddleware-timeoutwithconfig}
 
 TimeoutWithConfig returns a response-timeout middleware with config.
+Timed work may run on an isolated native adapter context; request state that
+must cross the timeout boundary should use web.Context.Set and web.Context.Get.
 
 ```go
 router := echoweb.New().Router()

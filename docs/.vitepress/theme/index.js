@@ -2,18 +2,28 @@ import DefaultTheme from 'vitepress/theme'
 import { useData, useRoute } from 'vitepress'
 import { defineAsyncComponent, h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
-import CodeVariantPicker from './components/CodeVariantPicker.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
 import StarterKitOptions from './components/StarterKitOptions.vue'
 import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
 
-const GoForjHeroStack = defineAsyncComponent(() => import('./components/GoForjHeroStack.vue'))
+/* The hero is imported STATICALLY on purpose. As an async component it
+   is the one thing on the page guaranteed to be late: the SSR HTML does
+   contain the hero, but Vue cannot hydrate an unresolved async subtree,
+   so on load it swaps the server markup for a placeholder until the
+   52KB chunk arrives. The hero occupies `min-height: calc(100vh - 140px)`,
+   so for that window the whole landing page shifts up and the second
+   section renders where the hero should be, then everything jumps back.
+
+   Lazy-loading the largest above-the-fold element trades a visible
+   layout shift for bytes on secondary pages. It is the wrong trade for
+   a hero. GoForjLiveTerminal stays async — it is 5KB and below the fold. */
+import GoForjHeroStack from './components/GoForjHeroStack.vue'
+
 const GoForjLiveTerminal = defineAsyncComponent(() => import('./components/GoForjLiveTerminal.vue'))
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
-const CODE_VARIANT_KEY = 'goforjCodeVariant'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
 const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
 const MERMAID_KEY = '__goforjMermaidState'
@@ -82,15 +92,6 @@ function preloadSidebarLinkImages(link, manifest) {
   const images = manifest[pageRouteForSidebarLink(link)]
   if (!Array.isArray(images)) return
   images.forEach(preloadPageImage)
-}
-
-function DocsPreviewBanner() {
-  return h('div', { class: 'gf-docs-preview-banner', role: 'note' }, [
-    h('div', { class: 'gf-docs-preview-banner-inner' }, [
-      h('span', { class: 'gf-docs-preview-banner-label' }, 'Documentation preview'),
-      h('span', { class: 'gf-docs-preview-banner-text' }, 'These docs are actively being built. Some pages may change as the framework and examples are finalized.')
-    ])
-  ])
 }
 
 function getLightboxState() {
@@ -478,35 +479,6 @@ function restoreDeferredInitialHash() {
   }
 }
 
-function applyCodeVariantPreference() {
-  if (typeof window === 'undefined') return
-  const allowed = new Set([
-    'halo',
-    'glass',
-    'ink',
-    'amber',
-    'forest',
-    'terminal',
-    'sunset',
-    'paper',
-    'chrome',
-    'obsidian',
-    'frost',
-    'midnight-gold',
-    'desert-dusk',
-    'retro-amber-crt',
-    'aurora',
-    'rose-metal',
-    'cobalt-luxe',
-    'mono-slate',
-    'mint-neon',
-    'sepia-noir'
-  ])
-  let variant = window.localStorage.getItem(CODE_VARIANT_KEY) || 'ink'
-  if (!allowed.has(variant)) variant = 'ink'
-  document.documentElement.dataset.gfCodeVariant = variant
-}
-
 function flashHashTarget() {
   if (typeof window === 'undefined' || !window.location.hash) return
   const target = getHashTarget(window.location.hash)
@@ -562,23 +534,58 @@ async function refreshMermaidDiagrams() {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: 'strict',
-          theme: 'dark',
+          // 'base' rather than 'dark': the dark theme hard-sets its
+          // own mainBkg/nodeBorder/nodeTextColor, which beat the
+          // primary* variables below — only lineColor was landing,
+          // so nodes rendered on stock #1F2020 with #CCC borders.
+          // 'base' is the one theme intended to be overridden.
+          theme: 'base',
+          // These cover the first paint only. The durable styling is
+          // the TEMPER — Mermaid block in custom.css, which drives
+          // everything from var(--gf-*): mermaid.initialize() runs
+          // once per session, so values set here cannot follow a
+          // light/dark toggle. Keep the two in agreement.
           themeVariables: {
             background: 'transparent',
-            primaryColor: '#172033',
-            primaryTextColor: '#e5edf7',
-            primaryBorderColor: '#5f7fb5',
-            lineColor: '#8aa4d6',
-            secondaryColor: '#1f2937',
-            tertiaryColor: '#111827',
-            fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            fontSize: '14px'
+            // Flowchart reads these, not primaryColor/primaryBorderColor.
+            mainBkg: '#2C2734',
+            nodeBorder: '#3D3349',
+            nodeTextColor: '#FFFFFF',
+            clusterBkg: '#1D1923',
+            clusterBorder: '#2A2333',
+            edgeLabelBackground: '#131017',
+            titleColor: '#FFFFFF',
+            primaryColor: '#2C2734',
+            primaryTextColor: '#FFFFFF',
+            primaryBorderColor: '#3D3349',
+            lineColor: '#FFC24D',
+            secondaryColor: '#1D1923',
+            tertiaryColor: '#131017',
+            fontFamily:
+              "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
+            // Set here, NOT in custom.css. Mermaid measures label text at
+            // render time to size every node box and lay out the graph, so
+            // a CSS-only bump leaves the boxes at the old dimensions and
+            // the text spills out of them. This is the layout-safe knob;
+            // the CSS block deliberately sets font-family only.
+            fontSize: '18px'
           },
+          // The readability problem was never the font size on its own.
+          // Mermaid lays the graph out at its own intrinsic width and the
+          // SVG is then scaled to fit the reading column: an LR flowchart
+          // of five long-labelled nodes came out 1104px wide against a
+          // 753px column, so everything rendered at 0.68 scale and a 16px
+          // label reached the screen at about 11px.
+          //
+          // The fix is to make the graph narrower, not the type bigger —
+          // tighter wrapping turns wide boxes into taller ones, which
+          // costs vertical space the page has and buys back the scale.
           flowchart: {
             curve: 'basis',
             htmlLabels: false,
-            nodeSpacing: 34,
-            rankSpacing: 42,
+            nodeSpacing: 26,
+            rankSpacing: 34,
+            wrappingWidth: 140,
             padding: 8
           }
         })
@@ -617,9 +624,8 @@ export default {
       ]),
       'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
       'home-hero-before': () => h(GoForjHeroStack),
-      'layout-top': () => h(DocsPreviewBanner),
       'doc-before': () => h(LibraryRepoHeader),
-      'layout-bottom': () => [h(ApiIndexJump), h(CodeVariantPicker), h(MotionPicker)]
+      'layout-bottom': () => [h(ApiIndexJump), h(MotionPicker)]
     })
   },
   setup() {
@@ -687,7 +693,6 @@ export default {
     let onBannerResize = null
 
     onMounted(() => {
-      applyCodeVariantPreference()
       revealNavbarSearch()
       initLightbox()
       updateBannerOffsetVar()
@@ -742,7 +747,6 @@ export default {
     })
 
     watch(() => route.path, () => {
-      applyCodeVariantPreference()
       resetOutlineScrollerPosition()
       refreshSoon()
       nextTick().then(replayDocEnter)

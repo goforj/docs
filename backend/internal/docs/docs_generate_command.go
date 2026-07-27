@@ -176,6 +176,18 @@ func (c *GenerateCommand) Run() error {
 			},
 		},
 		{
+			Slug:       "metrics",
+			Title:      "Metrics",
+			CloneURL:   "https://github.com/goforj/metrics.git",
+			Branch:     "main",
+			OutputPath: filepath.Join("libraries", "metrics.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Metrics",
+				Path:    "/operations/metrics",
+				Summary: "Generated Apps expose metrics through the observability and HTTP runtime. Keep registration close to the behavior being measured and configure scrape exposure through the App runtime.",
+			},
+		},
+		{
 			Slug:       "wire",
 			Title:      "Wire",
 			CloneURL:   "https://github.com/goforj/wire.git",

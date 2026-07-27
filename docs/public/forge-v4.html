@@ -1,0 +1,901 @@
+<!doctype html>
+<!--
+  GoForj — The Workbench (v4). The step-back illustration: instead of
+  dramatizing the NAME (forge.html, forge-v2, forge-v3), this one draws
+  the framework's actual mental model, warm and physical, so a new
+  developer parses it before reading a word:
+
+    - Centre board: THE APP — the GoForj mark mounted as a faceplate,
+      with its runtime surfaces chipped underneath (http · cli · jobs ·
+      schedules). One cohesive application, one binary.
+    - Six labelled bays cabled to it: database, cache, queue, events,
+      storage, mail. The cables are the CONTRACTS; they never move.
+    - Each bay holds a driver cartridge. A big two-position switch —
+      LOCAL / PRODUCTION — swaps every cartridge with its counterpart
+      from the shelf: sqlite⇄postgres, memory⇄redis, workerpool⇄redis,
+      inproc⇄nats, local⇄s3, log⇄smtp.
+    - An .env card rewrites itself line by line as cartridges seat —
+      the visual is literally the mechanism (DB_DRIVER=...).
+    - Request dots flow along the cables the whole time, INCLUDING
+      through the swap. That is the pitch: drivers swap, the app keeps
+      running, business logic never changes.
+
+  Click anywhere (or wait ~8s) to flip the switch. Paper-craft styling
+  shared with forge-v3: toon steps, white cut edges, confetti, blob
+  shadows, nothing glows.
+
+  Sources of truth: colour tokens from public/design-system.css (Temper
+  core); MARK_OUTER / MARK_HOLE copied verbatim from logo-lab.html's
+  frozen base; driver pairs from the landing page's env-swap block.
+
+  Motion policy + debug hooks match the other forge pages: `?static`
+  for a still, `window.__forge` reads state, `window.__forgeStep(sec)`
+  fast-forwards (the page pauses in hidden tabs).
+-->
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>GoForj — The Workbench</title>
+<link rel="icon" href="/favicon.svg?v=20260727" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --gf-accent: #FF5E3A;
+  --gf-nav: #FFC24D;
+  --gf-ground-deep: #0C0A0E;
+  --gf-surface: #2C2734;
+  --gf-line: #2A2333;
+  --gf-line-strong: #3D3349;
+  --gf-ink: #FFFFFF;
+  --gf-ink-2: #A9A1B3;
+  --gf-ink-3: #746C80;
+  --gf-font-display: 'Space Grotesk', sans-serif;
+  --gf-font-body: 'Inter', sans-serif;
+  --gf-font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--gf-ground-deep);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+#stage { position: fixed; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+#vignette {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 42%, transparent 42%, rgba(12,10,14,.55) 100%),
+    radial-gradient(60% 45% at 50% 50%, rgba(255,160,90,.06), transparent 70%);
+}
+.ov { position: fixed; z-index: 5; pointer-events: none; }
+.ov--head { top: clamp(22px, 4vh, 42px); left: clamp(22px, 4vw, 52px); max-width: 520px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px;
+  letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--gf-nav); margin: 0 0 12px;
+}
+.kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-nav); }
+h1 {
+  margin: 0 0 8px; font-family: var(--gf-font-display); font-weight: 700;
+  font-size: clamp(28px, 3.8vw, 46px); line-height: 1.06; letter-spacing: -0.032em;
+  text-shadow: 0 2px 26px rgba(12,10,14,.85);
+}
+h1 em { font-style: normal; color: var(--gf-accent); }
+.sub {
+  margin: 0; font-size: clamp(13px, 1.2vw, 15px); line-height: 1.6;
+  color: var(--gf-ink-2); max-width: 40ch;
+  text-shadow: 0 1px 18px rgba(12,10,14,.9);
+}
+.ov--foot { left: 0; right: 0; bottom: clamp(14px, 3vh, 26px); display: flex; justify-content: center; }
+.caption {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  padding: 8px 16px; border: 1px solid var(--gf-line); border-radius: 999px;
+  background: color-mix(in srgb, var(--gf-ground-deep) 72%, transparent);
+  backdrop-filter: blur(8px);
+}
+.caption b { color: var(--gf-ink-2); font-weight: 500; }
+.ov--ctl { right: clamp(16px, 2.4vw, 30px); bottom: clamp(14px, 3vh, 26px); pointer-events: auto; }
+#pause {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--gf-ink-2); background: transparent;
+  border: 1px solid var(--gf-line-strong); border-radius: 8px;
+  padding: 7px 13px; cursor: pointer;
+}
+#pause:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+#boot {
+  position: fixed; inset: 0; z-index: 4; display: grid; place-items: center;
+  font-family: var(--gf-font-mono); font-size: 12px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  background: var(--gf-ground-deep);
+  transition: opacity .8s ease; pointer-events: none;
+}
+#boot.off { opacity: 0; }
+#fallback {
+  position: fixed; inset: 0; z-index: 6; display: none;
+  place-items: center; background: var(--gf-ground-deep); text-align: center;
+}
+#fallback .mark { width: 120px; margin: 0 auto 22px; display: block; }
+#fallback p { font-size: 14px; color: var(--gf-ink-2); max-width: 40ch; margin: 0 auto; line-height: 1.6; }
+@media (max-width: 640px) { .ov--head { max-width: 80vw; } .caption { font-size: 9px; } }
+body.embed .ov--head, body.embed .ov--foot, body.embed .ov--ctl, body.embed #vignette { display: none; }
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="vignette"></div>
+<div id="boot">wiring the bench&hellip;</div>
+
+<header class="ov ov--head">
+  <p class="kicker">goforj &middot; how it works</p>
+  <h1>One app. Six sockets.<br><em>Swap the drivers.</em></h1>
+  <p class="sub">Your code talks to contracts — database, cache, queue,
+  events, storage, mail. An env var picks each backend. Local on your
+  laptop, production in prod, same binary.</p>
+</header>
+
+<div class="ov ov--foot">
+  <p class="caption">flip the switch — <b>drivers swap, the app keeps running</b></p>
+</div>
+
+<div class="ov ov--ctl"><button id="pause" aria-pressed="false">pause</button></div>
+
+<div id="fallback">
+  <div>
+    <svg class="mark" viewBox="-8.2 -6.2 100.4 112.4" aria-hidden="true">
+      <path d="M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z"
+            fill="#FF5E3A" fill-rule="evenodd"/>
+    </svg>
+    <p>The workbench needs WebGL. Your browser declined, so here is the
+    app, unplugged.</p>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ================================================================
+   Palette (Temper core, as paper)
+   ================================================================ */
+const P = {
+  accent: 0xFF5E3A, accentHi: 0xFF8257,
+  gold: 0xFFC24D, goldHi: 0xFFD37A,
+  paper: 0xF7F2E8, cream: 0xEFE3CF,
+  ink: 0x1D1923, deep: 0x0C0A0E,
+  board: 0x231E2B, bay: 0x14111a,
+  wood: 0x4A3628, woodDark: 0x33261C
+};
+
+/* FROZEN MARK — copied verbatim from logo-lab.html. Do not edit. */
+const MARK_OUTER = [
+  [40.59,0.0],[0.0,25.06],[0.0,74.9],[42.26,100.0],[84.01,75.99],[83.8,29.98],
+  [74.4,24.17],[80.24,21.88],[65.47,12.52],[56.15,18.37],[56.35,9.94]
+];
+const MARK_HOLE = [
+  [40.43,17.78],[40.01,22.31],[43.43,24.33],[23.04,36.46],[22.84,60.81],
+  [39.59,71.96],[39.39,45.17],[60.37,32.81],[67.34,37.11],[45.67,50.2],
+  [45.67,62.45],[47.88,63.68],[68.09,51.93],[67.88,65.78],[41.93,81.28],
+  [16.13,65.18],[16.13,32.2]
+];
+
+/* The six primitives, their env vars, and their two driver sets —
+   exactly the landing page's env-swap block. */
+const PRIMS = [
+  { label: 'database', env: 'DB_DRIVER',       local: 'sqlite',     prod: 'postgres' },
+  { label: 'cache',    env: 'CACHE_DRIVER',    local: 'memory',     prod: 'redis' },
+  { label: 'queue',    env: 'QUEUE_DRIVER',    local: 'workerpool', prod: 'redis' },
+  { label: 'events',   env: 'EVENTS_DRIVER',   local: 'inproc',     prod: 'nats' },
+  { label: 'storage',  env: 'STORAGE_DRIVER',  local: 'local',      prod: 's3' },
+  { label: 'mail',     env: 'MAIL_DRIVER',     local: 'log',        prod: 'smtp' }
+];
+
+/* ---- motion policy ---- */
+const params = new URLSearchParams(location.search);
+let stored = null;
+try { stored = localStorage.getItem('goforjMotion'); } catch (e) {}
+const osReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REDUCED = params.has('static') || stored === 'reduced' || (osReduced && stored !== 'on');
+
+const bootEl = document.getElementById('boot');
+const pauseBtn = document.getElementById('pause');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+} catch (e) {
+  document.getElementById('fallback').style.display = 'grid';
+  bootEl.style.display = 'none';
+  throw e;
+}
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.NoToneMapping;
+document.getElementById('stage').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(P.deep);
+
+const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 60);
+const CAM_BASE = new THREE.Vector3(0, 2.85, 11.4);
+const CAM_LOOK = new THREE.Vector3(0, 2.6, 0);
+/* fit the whole bench regardless of aspect — nothing may crop */
+function fitCamera() {
+  const halfH = 3.6, halfW = 6.7;
+  const f = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  CAM_BASE.z = Math.max(halfH / f, halfW / (f * camera.aspect));
+  camera.position.z = CAM_BASE.z;
+}
+fitCamera();
+camera.position.copy(CAM_BASE);
+camera.lookAt(CAM_LOOK);
+
+const ramp = new THREE.DataTexture(new Uint8Array([110, 180, 255]), 3, 1, THREE.RedFormat);
+ramp.minFilter = ramp.magFilter = THREE.NearestFilter;
+ramp.needsUpdate = true;
+scene.add(new THREE.AmbientLight(0xffe9d2, 1.35));
+const keyL = new THREE.DirectionalLight(0xfff1dc, 1.5);
+keyL.position.set(2.5, 5, 6);
+scene.add(keyL);
+const fillL = new THREE.DirectionalLight(0x8a7fae, 0.35);
+fillL.position.set(-4, 2, 3);
+scene.add(fillL);
+
+const toon = (color) => new THREE.MeshToonMaterial({ color, gradientMap: ramp });
+
+/* ---- card + tag kit (as in forge-v3) ---- */
+function roundedRect(w, h, r) {
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+function makeCard(shape, color, { edge = 1.05, holes = null } = {}) {
+  if (holes) shape.holes = holes;
+  const g = new THREE.Group();
+  const geo = new THREE.ShapeGeometry(shape);
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3();
+  geo.boundingBox.getCenter(c);
+  const front = new THREE.Mesh(geo, toon(color));
+  const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: P.paper, side: THREE.DoubleSide }));
+  back.scale.set(edge, edge, 1);
+  back.position.set(c.x * (1 - edge), c.y * (1 - edge), -0.012);
+  g.add(back, front);
+  g.userData.front = front;
+  return g;
+}
+
+const allTags = [];
+function tagSprite(text, { w = 288, h = 72, font = 27, bg = '#F7F2E8', ink = '#1D1923', border = null, sx = 0.85, sy = 0.21 } = {}) {
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(sx, sy, 1);
+  sp.userData.draw = (t2, bg2, ink2, border2) => {
+    sp.userData.last = [t2, bg2 || bg, ink2 || ink, border2 || border];
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = bg2 || bg;
+    x.beginPath();
+    if (x.roundRect) x.roundRect(6, 6, w - 12, h - 12, (h - 12) / 2); else x.rect(6, 6, w - 12, h - 12);
+    x.fill();
+    if (border2 || border) { x.strokeStyle = border2 || border; x.lineWidth = 5; x.stroke(); }
+    x.font = `600 ${font}px "JetBrains Mono", monospace`;
+    x.fillStyle = ink2 || ink;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(t2, w / 2, h / 2 + 1);
+    tex.needsUpdate = true;
+  };
+  sp.userData.draw(text, bg, ink, border);
+  allTags.push(sp);
+  return sp;
+}
+/* plain text, no pill — for small labels */
+function labelSprite(text, { w = 288, h = 56, font = 26, ink = '#A9A1B3', sx = 0.9, sy = 0.175 } = {}) {
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(sx, sy, 1);
+  sp.userData.draw = (t2) => {
+    sp.userData.last = [t2];
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.font = `500 ${font}px "JetBrains Mono", monospace`;
+    x.fillStyle = ink;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.letterSpacing = '2px';
+    x.fillText(t2, w / 2, h / 2 + 1);
+    tex.needsUpdate = true;
+  };
+  sp.userData.draw(text);
+  allTags.push(sp);
+  return sp;
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => allTags.forEach(sp => sp.userData.draw(...sp.userData.last)));
+}
+
+/* ================================================================
+   The bench scene
+   ================================================================ */
+/* floor + bench slab */
+{
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 18), toon(0x120e17));
+  floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+  const bench = makeCard(roundedRect(13.2, 1.0, 0.18), P.wood, { edge: 1.012 });
+  bench.position.set(0, 0.55, 0.3);
+  scene.add(bench);
+}
+
+/* pegboard */
+{
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 512;
+  const x = c.getContext('2d');
+  x.fillStyle = '#231E2B';
+  x.fillRect(0, 0, 1024, 512);
+  x.fillStyle = 'rgba(12,10,14,0.55)';
+  for (let py = 26; py < 512; py += 52) {
+    for (let px = 26; px < 1024; px += 52) {
+      x.beginPath(); x.arc(px, py, 6, 0, Math.PI * 2); x.fill();
+    }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(10.6, 5.3), new THREE.MeshToonMaterial({ map: tex, gradientMap: ramp }));
+  board.position.set(0, 3.35, -0.55);
+  scene.add(board);
+  const frame = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(10.9, 5.6, 0.2)), new THREE.MeshBasicMaterial({ color: P.paper }));
+  frame.position.set(0, 3.35, -0.57);
+  scene.add(frame);
+  /* fairy lights along the top */
+  for (let i = 0; i < 14; i++) {
+    const dot = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), new THREE.MeshBasicMaterial({ color: i % 2 ? P.gold : P.goldHi }));
+    dot.position.set(-4.9 + i * 0.755, 5.85 + Math.sin(i * 1.1) * 0.07, -0.5);
+    scene.add(dot);
+  }
+}
+
+/* THE APP — the mark as a mounted faceplate, runtime chips beneath */
+const app = new THREE.Group();
+{
+  const toL = ([x, y]) => [(x - 42.005) / 100, (50 - y) / 100];
+  const shape = new THREE.Shape(MARK_OUTER.map(p => new THREE.Vector2(...toL(p))));
+  const hole = new THREE.Path(MARK_HOLE.map(p => new THREE.Vector2(...toL(p))));
+  const card = makeCard(shape, P.accent, { edge: 1.05, holes: [hole] });
+  card.scale.setScalar(1.5);
+  card.position.y = 0.14;
+  app.add(card);
+  const plate = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(2.5, 2.62, 0.18)), toon(0x1a1521));
+  plate.position.z = -0.03;
+  app.add(plate);
+  const chips = labelSprite('http · cli · jobs · schedules', { w: 580, h: 56, font: 27, ink: '#A9A1B3', sx: 1.75, sy: 0.17 });
+  chips.position.set(0, -1.04, 0.05);
+  app.add(chips);
+  const name = labelSprite('your app', { w: 288, h: 56, font: 28, ink: '#F7F2E8', sx: 0.95, sy: 0.185 });
+  name.position.set(0, 1.46, 0.05);
+  app.add(name);
+  /* status LED — never blinks off, least of all mid-swap */
+  const led = new THREE.Mesh(new THREE.CircleGeometry(0.06, 12), new THREE.MeshBasicMaterial({ color: 0x5fcfa8 }));
+  led.position.set(1.08, 1.14, 0.06);
+  app.add(led);
+  app.userData.led = led;
+}
+app.position.set(0, 4.05, -0.35);
+scene.add(app);
+
+/* six bays across the board, cables up to the app */
+const BAY_Y = 1.78, BAY_STEP = 1.62, BAY_X0 = -(BAY_STEP * 2.5);
+const bays = [];
+const cableMats = [];
+{
+  const cableCurves = [];
+  PRIMS.forEach((prim, i) => {
+    const bx = BAY_X0 + i * BAY_STEP;
+    const bay = makeCard(roundedRect(1.42, 0.66, 0.12), P.bay, { edge: 1.035 });
+    bay.position.set(bx, BAY_Y, -0.4);
+    scene.add(bay);
+    const label = labelSprite(prim.label, { w: 288, h: 52, font: 27, ink: '#FFC24D', sx: 0.95, sy: 0.17 });
+    label.position.set(bx, BAY_Y - 0.62, -0.3);
+    scene.add(label);
+    /* cable: a fixed contract from the app to the bay */
+    const from = new THREE.Vector3(THREE.MathUtils.clamp(bx * 0.22, -0.9, 0.9), 2.68, -0.45);
+    const to = new THREE.Vector3(bx, BAY_Y + 0.36, -0.45);
+    const curve = new THREE.QuadraticBezierCurve3(from, new THREE.Vector3(bx * 0.62, 2.32, -0.45), to);
+    cableCurves.push(curve);
+    const mat = toon(0x8d8298);
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 20, 0.022, 6), mat);
+    scene.add(tube);
+    cableMats.push(mat);
+    bays.push({ prim, x: bx, curve, pulse: 0 });
+  });
+}
+
+/* driver cartridges: one local + one prod per bay; the inactive one
+   parks on the shelf */
+/* spares park on the bench, directly under their own bay — the swap
+   is a clean vertical exchange the eye can follow */
+{
+  const shelfLabel = labelSprite('spares', { w: 240, h: 48, font: 24, ink: '#746C80', sx: 0.72, sy: 0.14 });
+  shelfLabel.position.set(-5.05, 0.94, 0.5);
+  scene.add(shelfLabel);
+}
+function bayPos(i) { return new THREE.Vector3(bays[i].x, BAY_Y, -0.28); }
+function shelfPos(i) { return new THREE.Vector3(bays[i].x, 0.94, 0.44); }
+const carts = PRIMS.map((prim, i) => {
+  const spL = tagSprite(prim.local, { sx: 1.18, sy: 0.27, font: 30, bg: '#EFE3CF', ink: '#1D1923' });
+  const spP = tagSprite(prim.prod, { sx: 1.18, sy: 0.27, font: 30, bg: '#2C2734', ink: '#FFC24D', border: '#FFC24D' });
+  spL.position.copy(bayPos(i));
+  spP.position.copy(shelfPos(i));
+  spP.scale.multiplyScalar(0.72);                  // parked cartridges sit smaller
+  scene.add(spL, spP);
+  return { spL, spP, anim: 0 };
+});
+
+/* the switch: LOCAL / PRODUCTION, bench right */
+const lever = new THREE.Group();
+{
+  const sw = new THREE.Group();
+  const plate = makeCard(roundedRect(1.15, 1.5, 0.14), 0x1a1521);
+  sw.add(plate);
+  const top = labelSprite('production', { w: 320, h: 48, font: 25, ink: '#FFC24D', sx: 1.0, sy: 0.15 });
+  top.position.set(0, 1.0, 0.06);
+  sw.add(top);
+  const bottom = labelSprite('local', { w: 320, h: 48, font: 25, ink: '#A9A1B3', sx: 1.0, sy: 0.15 });
+  bottom.position.set(0, -1.0, 0.06);
+  sw.add(bottom);
+  const stem = makeCard(roundedRect(0.15, 0.6, 0.07), P.cream);
+  stem.position.set(0, 0.19, 0.03);
+  const knob = makeCard(roundedRect(0.34, 0.34, 0.17), P.accent);
+  knob.position.set(0, 0.5, 0.05);
+  lever.add(stem, knob);
+  lever.rotation.z = Math.PI;                      // start pointing DOWN: local
+  sw.add(lever);
+  sw.position.set(4.65, 1.9, 0.3);
+  sw.scale.setScalar(0.92);
+  scene.add(sw);
+}
+
+/* the .env card, pinned to the board top-right */
+const envCard = (() => {
+  const w = 460, h = 300;
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(2.15, 1.4, 1);
+  sp.position.set(3.55, 4.62, -0.2);
+  scene.add(sp);
+  const pin = new THREE.Mesh(new THREE.CircleGeometry(0.055, 12), new THREE.MeshBasicMaterial({ color: P.accent }));
+  pin.position.set(3.55, 5.28, -0.18);
+  scene.add(pin);
+  function draw(sides, hot = -1) {
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = '#F7F2E8';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(4, 4, w - 8, h - 8, 14); else x.rect(4, 4, w - 8, h - 8);
+    x.fill();
+    x.font = '600 24px "JetBrains Mono", monospace';
+    x.fillStyle = '#746C80';
+    x.textAlign = 'left';
+    x.fillText('# .env', 26, 40);
+    PRIMS.forEach((p, i) => {
+      const val = sides[i] ? p.prod : p.local;
+      const y = 76 + i * 37;
+      if (i === hot) {
+        x.fillStyle = 'rgba(255,194,77,0.4)';
+        x.fillRect(16, y - 24, w - 32, 33);
+      }
+      x.font = '500 23px "JetBrains Mono", monospace';
+      x.fillStyle = '#746C80';
+      x.fillText(p.env + '=', 26, y);
+      x.font = '600 23px "JetBrains Mono", monospace';
+      x.fillStyle = sides[i] ? '#C2410C' : '#1D1923';
+      x.fillText(val, 26 + (p.env.length + 1) * 14.2, y);
+    });
+    tex.needsUpdate = true;
+  }
+  return { draw };
+})();
+
+/* ---- inbound traffic: requests arrive at the app from the left ---- */
+const inCurve = new THREE.QuadraticBezierCurve3(
+  new THREE.Vector3(-4.85, 3.1, -0.45),
+  new THREE.Vector3(-3.1, 2.95, -0.45),
+  new THREE.Vector3(-1.28, 3.35, -0.45)
+);
+{
+  const chip = tagSprite('requests →', { sx: 1.05, sy: 0.24, font: 27, bg: '#2C2734', ink: '#F7F2E8', border: '#FF5E3A' });
+  chip.position.set(-4.85, 3.3, -0.2);
+  scene.add(chip);
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(inCurve, 20, 0.022, 6), toon(0x8d8298)));
+}
+const reqDots = [];
+for (let k = 0; k < 3; k++) {
+  const m = new THREE.Mesh(new THREE.CircleGeometry(0.05, 10), new THREE.MeshBasicMaterial({ color: P.accentHi }));
+  scene.add(m);
+  reqDots.push({ m, off: k / 3, speed: 0.55 });
+}
+
+/* ---- the proof: a request counter that never stops counting ---- */
+const counter = (() => {
+  const w = 380, h = 120;
+  const S = Math.min(devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = w * S; c.height = h * S;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, rotation: 0.02 }));
+  sp.scale.set(1.75, 0.55, 1);
+  sp.position.set(-3.55, 0.6, 0.5);
+  scene.add(sp);
+  function draw(n) {
+    const x = c.getContext('2d');
+    x.setTransform(S, 0, 0, S, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = '#F7F2E8';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(4, 4, w - 8, h - 8, 14); else x.rect(4, 4, w - 8, h - 8);
+    x.fill();
+    x.font = '500 22px "JetBrains Mono", monospace';
+    x.fillStyle = '#746C80';
+    x.textAlign = 'left';
+    x.fillText('requests served', 24, 40);
+    x.font = '600 40px "JetBrains Mono", monospace';
+    x.fillStyle = '#1D1923';
+    x.fillText(n.toLocaleString('en-US'), 24, 88);
+    tex.needsUpdate = true;
+  }
+  return { draw };
+})();
+let served = 47212, servedShown = 0;
+
+/* request dots: traffic flowing app ⇄ bays, through the swap */
+const DOTS_PER = 2;
+const dots = [];
+bays.forEach((bay, i) => {
+  for (let k = 0; k < DOTS_PER; k++) {
+    const m = new THREE.Mesh(new THREE.CircleGeometry(0.05, 10), new THREE.MeshBasicMaterial({ color: P.gold }));
+    scene.add(m);
+    dots.push({ m, bay: i, off: k / DOTS_PER + i * 0.13, speed: 0.5 + (i % 3) * 0.08 });
+  }
+});
+
+/* confetti (small, for cartridge seats) */
+const CONFETTI = 90;
+const confMesh = (() => {
+  const tri = new THREE.BufferGeometry();
+  tri.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-0.028, -0.018, 0, 0.028, -0.018, 0, 0, 0.034, 0]), 3));
+  tri.computeVertexNormals();
+  const m = new THREE.InstancedMesh(tri, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), CONFETTI);
+  m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  m.frustumCulled = false;
+  scene.add(m);
+  return m;
+})();
+const confData = [];
+const CONF_COLS = [new THREE.Color(P.accent), new THREE.Color(P.gold), new THREE.Color(P.paper)];
+for (let i = 0; i < CONFETTI; i++) {
+  confData[i] = { life: 0, max: 1, p: new THREE.Vector3(0, -99, 0), v: new THREE.Vector3(), rot: new THREE.Euler(), rv: new THREE.Vector3() };
+  confMesh.setColorAt(i, CONF_COLS[i % CONF_COLS.length]);
+}
+confMesh.instanceColor.needsUpdate = true;
+let confCursor = 0;
+function confetti(x, y, z, n, speed = 1) {
+  for (let k = 0; k < n; k++) {
+    const i = confCursor = (confCursor + 1) % CONFETTI;
+    const d = confData[i];
+    const a = Math.random() * Math.PI * 2;
+    d.life = 0.0001;
+    d.max = 0.7 + Math.random() * 0.6;
+    d.p.set(x, y, z);
+    d.v.set(Math.cos(a) * (0.4 + Math.random() * 0.5) * speed, (0.9 + Math.random()) * speed, Math.sin(a) * 0.3 * speed);
+    d.rot.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    d.rv.set((Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12);
+  }
+}
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(1, 1, 1), _zero = new THREE.Vector3(0, -99, 0);
+function tickConfetti(dt) {
+  for (let i = 0; i < CONFETTI; i++) {
+    const d = confData[i];
+    if (d.life <= 0) { _s.setScalar(1); _m4.compose(_zero, _q.identity(), _s); confMesh.setMatrixAt(i, _m4); continue; }
+    d.life += dt;
+    if (d.life > d.max) { d.life = 0; continue; }
+    d.v.y -= 3.8 * dt;
+    d.p.addScaledVector(d.v, dt);
+    d.rot.x += d.rv.x * dt; d.rot.y += d.rv.y * dt; d.rot.z += d.rv.z * dt;
+    _q.setFromEuler(d.rot);
+    const u = d.life / d.max;
+    _s.setScalar(Math.max(u > 0.8 ? 1 - (u - 0.8) / 0.2 : 1, 0.001));
+    _m4.compose(d.p, _q, _s);
+    confMesh.setMatrixAt(i, _m4);
+  }
+  confMesh.instanceMatrix.needsUpdate = true;
+}
+
+/* ================================================================
+   The swap — per bay, so the big switch throws everything and a
+   single cartridge can be swapped on its own (real teams mix:
+   sqlite locally, real S3).
+   ================================================================ */
+let env = 0;                      // 0 local, 1 production
+const sides = PRIMS.map(() => 0); // per-bay seated side (drives the env card)
+const STAGGER = 0.3, FLY = 0.62;
+const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeIn = t => t * t * t;
+let leverTarget = Math.PI;        // down = local, up = production, level = mixed
+let envCardClear = 0;
+
+envCard.draw(sides);
+
+const anySwapping = () => bays.some(b => b.anim);
+
+function startBay(i, to, delay = 0) {
+  if (bays[i].anim || sides[i] === to) return;
+  bays[i].anim = { t: 0, to, delay };
+}
+function startSwap() {
+  if (anySwapping()) return;
+  env = 1 - env;
+  PRIMS.forEach((p, i) => {
+    const order = env ? i : (PRIMS.length - 1 - i);  // the sweep follows the throw
+    startBay(i, env, 0.22 + order * STAGGER);
+  });
+}
+
+function arc(out, from, to, u, side = 1) {
+  out.lerpVectors(from, to, u);
+  out.y += Math.sin(u * Math.PI) * 0.4;
+  out.x += Math.sin(u * Math.PI) * 0.5 * side;     // out and in pass on opposite sides
+  return out;
+}
+const _v = new THREE.Vector3();
+
+function tickSwaps(dt) {
+  bays.forEach((b, i) => {
+    if (!b.anim) return;
+    b.anim.t += dt;
+    const u = THREE.MathUtils.clamp((b.anim.t - b.anim.delay) / FLY, 0, 1);
+    if (u <= 0) return;
+    const ct = carts[i];
+    const goingIn = b.anim.to ? ct.spP : ct.spL;
+    const goingOut = b.anim.to ? ct.spL : ct.spP;
+    const e = easeIO(u);
+    arc(_v, bayPos(i), shelfPos(i), e, 1);
+    goingOut.position.copy(_v);
+    const so = THREE.MathUtils.lerp(1, 0.72, e);
+    goingOut.scale.set(1.18 * so, 0.27 * so, 1);
+    arc(_v, shelfPos(i), bayPos(i), e, -1);
+    goingIn.position.copy(_v);
+    /* elastic seat: squash-and-stretch as it clicks home */
+    const k = u > 0.85 ? 1 + Math.sin((u - 0.85) / 0.15 * Math.PI) * 0.14 : 1;
+    const si = THREE.MathUtils.lerp(0.72, 1, e);
+    goingIn.scale.set(1.18 * si * k, 0.27 * si * (2 - k), 1);
+    if (u >= 1) {
+      b.anim = null;
+      sides[i] = ct.seatSide = goingIn === ct.spP ? 1 : 0;
+      goingIn.scale.set(1.18, 0.27, 1);
+      envCard.draw(sides, i);
+      confetti(bays[i].x, BAY_Y + 0.15, 0.1, 7, 0.6);
+      b.pulse = 1;
+      const all1 = sides.every(s => s), all0 = sides.every(s => !s);
+      if (all1) env = 1; else if (all0) env = 0;
+      leverTarget = all1 ? 0 : all0 ? Math.PI : Math.PI / 2;
+      if (!anySwapping()) envCardClear = 1.2;
+    }
+  });
+  if (envCardClear > 0) {
+    envCardClear -= dt;
+    if (envCardClear <= 0 && !anySwapping()) envCard.draw(sides);
+  }
+}
+
+/* ================================================================
+   Ambience, camera, loop
+   ================================================================ */
+const GOLDC = new THREE.Color(P.gold), CABLEC = new THREE.Color(0x8d8298);
+let autoT = 0;
+function tickAmbient(dt, t) {
+  /* the app breathes — running the whole time */
+  app.position.y = 4.05 + Math.sin(t * 1.3) * 0.035;
+  app.rotation.z = Math.sin(t * 0.6) * 0.012;
+  app.userData.led.scale.setScalar(1 + Math.sin(t * 2.6) * 0.18);
+
+  /* the lever settles toward its state, with a live micro-sway */
+  lever.rotation.z += (leverTarget - lever.rotation.z) * Math.min(dt * 6, 1);
+  lever.rotation.z += Math.sin(t * 2.1) * 0.006;
+
+  /* inbound requests never stop; the counter never stops counting */
+  reqDots.forEach(d => {
+    const u = (t * d.speed + d.off) % 1;
+    inCurve.getPoint(u, d.m.position);
+    d.m.position.z = -0.2;
+    d.m.scale.setScalar(0.8 + Math.sin(u * Math.PI) * 0.4);
+  });
+  served += dt * (11 + Math.sin(t * 0.7) * 4);
+  if (Math.floor(served) !== servedShown) {
+    servedShown = Math.floor(served);
+    counter.draw(servedShown);
+  }
+
+  /* primitive dots flow along the cables, pausing only mid-swap flight */
+  dots.forEach(d => {
+    const b = bays[d.bay];
+    const inFlight = b.anim && b.anim.t > b.anim.delay;
+    d.m.visible = !inFlight;
+    if (!inFlight) {
+      const u = (t * d.speed + d.off) % 1;
+      b.curve.getPoint(u, d.m.position);
+      d.m.position.z = -0.2;
+      d.m.scale.setScalar(0.8 + Math.sin(u * Math.PI) * 0.4);
+    }
+  });
+
+  /* cables flash gold when a cartridge seats, then settle */
+  bays.forEach((b, i) => {
+    if (b.pulse > 0) {
+      b.pulse = Math.max(b.pulse - dt * 1.6, 0);
+      cableMats[i].color.lerpColors(CABLEC, GOLDC, b.pulse);
+    }
+  });
+
+  autoT += dt;
+  if (autoT > 9 && !anySwapping()) { autoT = 0; startSwap(); }
+}
+
+const mouse = { x: 0, y: 0 };
+addEventListener('pointermove', (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = (e.clientY / innerHeight) * 2 - 1;
+});
+function tickCamera(dt, t) {
+  const px = CAM_BASE.x + mouse.x * 0.3 + Math.sin(t * 0.09) * 0.08;
+  const py = CAM_BASE.y - mouse.y * 0.16 + Math.sin(t * 0.06) * 0.04;
+  camera.position.x += (px - camera.position.x) * Math.min(dt * 2.2, 1);
+  camera.position.y += (py - camera.position.y) * Math.min(dt * 2.2, 1);
+  camera.lookAt(CAM_LOOK);
+}
+
+/* honest interaction: only the switch throws everything; a cartridge
+   click swaps just its own bay */
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+const switchHit = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 2.5), new THREE.MeshBasicMaterial({ visible: false }));
+switchHit.position.set(4.65, 1.9, 0.36);
+scene.add(switchHit);
+const hitTargets = [switchHit, ...carts.flatMap(c => [c.spL, c.spP])];
+function pick(e) {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+  const hits = raycaster.intersectObjects(hitTargets, false);
+  return hits.length ? hits[0].object : null;
+}
+renderer.domElement.addEventListener('pointermove', (e) => {
+  if (REDUCED) return;
+  renderer.domElement.style.cursor = pick(e) ? 'pointer' : 'default';
+});
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (REDUCED) return;
+  const h = pick(e);
+  if (!h) return;
+  autoT = -5;                                      // give the human room to play
+  if (h === switchHit) { startSwap(); return; }
+  const i = carts.findIndex(c => c.spL === h || c.spP === h);
+  if (i >= 0) startBay(i, 1 - sides[i]);
+});
+
+const clock = new THREE.Clock();
+let booted = false;
+let simT = 0;
+function advance(dt, t) {
+  tickSwaps(dt);
+  tickAmbient(dt, t);
+  tickConfetti(dt);
+  tickCamera(dt, t);
+}
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  simT += dt;
+  advance(dt, simT);
+  renderer.render(scene, camera);
+  if (!booted) { booted = true; bootEl.classList.add('off'); }
+}
+
+Object.defineProperty(window, '__forge', { get: () => ({
+  env: env ? 'production' : 'local', swapping: anySwapping(),
+  sides: sides.join(''), served: Math.floor(served),
+  t: +simT.toFixed(2), reduced: REDUCED
+})});
+window.__forgeStep = (sec) => {
+  const n = Math.max(1, Math.round(sec * 60));
+  for (let i = 0; i < n; i++) { simT += 1 / 60; advance(1 / 60, simT); }
+  renderer.render(scene, camera);
+  clock.getDelta();
+  return window.__forge;
+};
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  fitCamera();
+  renderer.setSize(innerWidth, innerHeight);
+  if (REDUCED) renderer.render(scene, camera);
+}
+addEventListener('resize', onResize);
+
+/* ?embed strips the page chrome for landing-page use */
+if (params.has('embed')) document.body.classList.add('embed');
+
+if (REDUCED) {
+  /* still: production seated, env card to match */
+  env = 1;
+  sides.fill(1);
+  carts.forEach((ct, i) => {
+    ct.spP.position.copy(bayPos(i));
+    ct.spP.scale.set(1.18, 0.27, 1);
+    ct.spL.position.copy(shelfPos(i));
+    ct.spL.scale.set(1.18 * 0.72, 0.27 * 0.72, 1);
+  });
+  lever.rotation.z = 0;
+  leverTarget = 0;
+  envCard.draw(sides);
+  counter.draw(Math.floor(served));
+  dots.forEach((d, k) => { bays[d.bay].curve.getPoint((k * 0.37) % 1, d.m.position); d.m.position.z = -0.2; });
+  reqDots.forEach((d, k) => { inCurve.getPoint((k * 0.31) % 1, d.m.position); d.m.position.z = -0.2; });
+  pauseBtn.style.display = 'none';
+  renderer.render(scene, camera);
+  bootEl.classList.add('off');
+} else {
+  renderer.setAnimationLoop(frame);
+  let paused = false;
+  function setPaused(p) {
+    paused = p;
+    renderer.setAnimationLoop(paused ? null : frame);
+    if (!paused) clock.getDelta();
+    pauseBtn.textContent = paused ? 'play' : 'pause';
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+  }
+  pauseBtn.addEventListener('click', () => setPaused(!paused));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) renderer.setAnimationLoop(null);
+    else if (!paused) { clock.getDelta(); renderer.setAnimationLoop(frame); }
+  });
+}
+</script>
+</body>
+</html>

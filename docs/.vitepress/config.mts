@@ -202,7 +202,6 @@ gtag('config', '${gaMeasurementId}');`]
   : []
 
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
-const codeVariantHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var key='goforjCodeVariant';var allowed={ink:1,obsidian:1,terminal:1,'desert-dusk':1,'retro-amber-crt':1,'sepia-noir':1,'mono-slate':1,paper:1,chrome:1,'rose-metal':1,'midnight-gold':1,halo:1,glass:1,amber:1,forest:1,sunset:1};var variant=localStorage.getItem(key)||'ink';document.documentElement.dataset.gfCodeVariant=allowed[variant]?variant:'ink';}catch(e){document.documentElement.dataset.gfCodeVariant='ink';}})();`]
 const searchHydrationHead: [string, Record<string, string>, string] = ['style', {}, `html:not(.gf-search-ready) .VPNavBarSearch{opacity:0}html.gf-search-ready .VPNavBarSearch{opacity:1;transition:opacity .12s ease}`]
 const motionPreferenceHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var v=localStorage.getItem('goforjMotion');if(v==='on'||v==='reduced'){document.documentElement.dataset.gfMotion=v;}}catch(e){}})();`]
 
@@ -536,6 +535,116 @@ async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string })
 }
 
 // https://vitepress.dev/reference/site-config
+/* ------------------------------------------------------------------
+   Ember — the Go syntax theme.
+
+   The site had NO theme configured, which resolves to github-dark.
+   Ember is a transposition of github-dark rather than a new palette:
+   it preserves that theme's luminance profile — every token a
+   high-luminance pastel, hues far apart, plain text near-white,
+   comments the only dim element — and shifts hue into the Temper
+   family. Where tokens differ they are brighter, because Temper's
+   code well is darker than GitHub's ground.
+
+   Two Go fidelity details, confirmed against live output and easy
+   to get wrong:
+     - built-in types (error, string) take the KEYWORD colour
+     - nil is a CONSTANT, not a keyword
+
+   Comments are lifted from github-dark's #6A737D (3.9:1) to
+   #8A8196 (5.1:1) — comments are content people actually read.
+
+   Palette + scope mapping: ai/design/handoff.md
+   ------------------------------------------------------------------ */
+const EMBER = {
+  plain: '#E4DDE8',
+  comment: '#8A8196',
+  keyword: '#FF8A6B',
+  builtin: '#FFAB8F',
+  type: '#9BD7C4',
+  func: '#FFC24D',
+  string: '#D9CE7A',
+  number: '#FFAB8F',
+  verb: '#B8D96B',
+  punct: '#9089A0'
+} as const
+
+/* Light-mode Ember. Not a tint of the dark palette — light needs
+   genuinely different hues to clear AA on a near-white ground, so
+   the cool anchor moves to a deep teal and the warm tokens darken
+   into brick and bronze. Values from the prototype, where all of
+   them were contrast-checked against the light code surface. */
+const EMBER_LIGHT = {
+  plain: '#24202B',
+  comment: '#6E6579',
+  keyword: '#B3350F',
+  builtin: '#A8452B',
+  type: '#0F6E62',
+  func: '#8A5A00',
+  string: '#5C5A14',
+  number: '#A8452B',
+  verb: '#3F6B14',
+  punct: '#6E6579'
+} as const
+
+const emberSettings = (p: typeof EMBER | typeof EMBER_LIGHT) => [
+  { scope: ['variable.other', 'source.go', 'meta.embedded'], settings: { foreground: p.plain } },
+  { scope: ['comment', 'comment.line', 'comment.block', 'punctuation.definition.comment'], settings: { foreground: p.comment, fontStyle: 'italic' } },
+  { scope: ['keyword', 'keyword.control', 'keyword.other', 'keyword.operator.new', 'storage.type.function', 'storage.modifier'], settings: { foreground: p.keyword } },
+  { scope: ['storage.type.built-in', 'support.type', 'storage.type.go', 'keyword.type'], settings: { foreground: p.builtin } },
+  { scope: ['entity.name.type', 'entity.name.class', 'entity.other.inherited-class', 'support.class'], settings: { foreground: p.type } },
+  { scope: ['entity.name.function', 'support.function', 'meta.function-call', 'entity.name.function.method'], settings: { foreground: p.func } },
+  { scope: ['string', 'string.quoted.double', 'string.quoted.single', 'string.quoted.raw', 'string.template'], settings: { foreground: p.string } },
+  { scope: ['constant.other.placeholder', 'constant.character.escape'], settings: { foreground: p.verb } },
+  { scope: ['constant.numeric', 'constant.language.numeric'], settings: { foreground: p.number } },
+  { scope: ['constant.language', 'constant.language.go', 'variable.language'], settings: { foreground: p.number } },
+  { scope: ['meta.struct-tag entity.name.tag', 'entity.name.tag', 'support.type.property-name'], settings: { foreground: p.verb } },
+  { scope: ['punctuation', 'punctuation.definition', 'punctuation.separator', 'punctuation.terminator', 'meta.brace', 'keyword.operator'], settings: { foreground: p.punct } },
+  { scope: ['entity.name.package', 'entity.name.namespace', 'entity.name.import'], settings: { foreground: p.type } },
+  { scope: ['variable.parameter', 'meta.parameter'], settings: { foreground: p.plain } },
+  { scope: ['markup.inserted', 'markup.inserted.diff'], settings: { foreground: '#5FCFA8' } },
+  { scope: ['markup.deleted', 'markup.deleted.diff'], settings: { foreground: '#FF6B85' } }
+]
+
+const emberLightTheme = {
+  name: 'temper-ember-light',
+  type: 'light' as const,
+  colors: {
+    'editor.background': '#F2EFF5',
+    'editor.foreground': EMBER_LIGHT.plain
+  },
+  settings: emberSettings(EMBER_LIGHT)
+}
+
+const emberTheme = {
+  name: 'temper-ember',
+  type: 'dark' as const,
+  colors: {
+    'editor.background': '#0C0A0E',
+    'editor.foreground': EMBER.plain
+  },
+  settings: [
+    { scope: ['variable.other', 'source.go', 'meta.embedded'], settings: { foreground: EMBER.plain } },
+    { scope: ['comment', 'comment.line', 'comment.block', 'punctuation.definition.comment'], settings: { foreground: EMBER.comment, fontStyle: 'italic' } },
+    { scope: ['keyword', 'keyword.control', 'keyword.other', 'keyword.operator.new', 'storage.type.function', 'storage.modifier'], settings: { foreground: EMBER.keyword } },
+    // Go paints built-in types with the keyword colour, not a type colour.
+    { scope: ['storage.type.built-in', 'support.type', 'storage.type.go', 'keyword.type'], settings: { foreground: EMBER.builtin } },
+    { scope: ['entity.name.type', 'entity.name.class', 'entity.other.inherited-class', 'support.class'], settings: { foreground: EMBER.type } },
+    { scope: ['entity.name.function', 'support.function', 'meta.function-call', 'entity.name.function.method'], settings: { foreground: EMBER.func } },
+    { scope: ['string', 'string.quoted.double', 'string.quoted.single', 'string.quoted.raw', 'string.template'], settings: { foreground: EMBER.string } },
+    { scope: ['constant.other.placeholder', 'constant.character.escape'], settings: { foreground: EMBER.verb } },
+    { scope: ['constant.numeric', 'constant.language.numeric'], settings: { foreground: EMBER.number } },
+    // nil / true / false / iota are constants.
+    { scope: ['constant.language', 'constant.language.go', 'variable.language'], settings: { foreground: EMBER.number } },
+    { scope: ['meta.struct-tag entity.name.tag', 'entity.name.tag', 'support.type.property-name'], settings: { foreground: EMBER.verb } },
+    { scope: ['punctuation', 'punctuation.definition', 'punctuation.separator', 'punctuation.terminator', 'meta.brace', 'keyword.operator'], settings: { foreground: EMBER.punct } },
+    { scope: ['entity.name.package', 'entity.name.namespace', 'entity.name.import'], settings: { foreground: EMBER.type } },
+    { scope: ['variable.parameter', 'meta.parameter'], settings: { foreground: EMBER.plain } },
+    { scope: ['markup.inserted', 'markup.inserted.diff'], settings: { foreground: '#5FCFA8' } },
+    { scope: ['markup.deleted', 'markup.deleted.diff'], settings: { foreground: '#FF6B85' } }
+  ]
+}
+
 export default defineConfig({
   title: "GoForj",
   description: siteDescription,
@@ -553,6 +662,9 @@ export default defineConfig({
     padding: 8
   },
   markdown: {
+    // Dual theme so light mode does not render dark-mode pastels
+    // on a near-white ground. Shiki emits both and CSS vars pick.
+    theme: { light: emberLightTheme, dark: emberTheme },
     config(md) {
       const defaultFence = md.renderer.rules.fence
       md.renderer.rules.fence = (tokens, idx, options, env, self) => {
@@ -602,8 +714,18 @@ export default defineConfig({
   buildEnd: generateLlmsFiles,
 
   head: [
+    /* Temper typography. Space Grotesk carries the display voice at 700
+       and -0.045em; JetBrains Mono replaces the system ui-monospace
+       fallback that every code block was landing on. Inter was already
+       loaded and stays as the body face.
+       display=swap so a slow font never blocks first paint. */
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    ['link', {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap'
+    }],
     searchHydrationHead,
-    codeVariantHead,
     motionPreferenceHead,
     deferredHashHead,
     ['link', { rel: 'icon', type: 'image/png', sizes: '180x180', href: socialIcon }],
@@ -721,52 +843,81 @@ export default defineConfig({
     logo: '/assets/goforj-v7.png',
 
     nav: [
+      // Four entries plus the version menu, arrived at by MERGING rather
+      // than deleting — nothing here became unreachable.
+      //
+      // The navbar competes with the sidebar, which already shows the full
+      // tree for whatever section you are in. So the navbar's job is not to
+      // expose structure, it is to switch MODE: I'm new / I'm building
+      // something specific / I need a package API / I need to look something
+      // up. Four modes, four entries.
+      //
+      // What changed and why:
+      //   Build + Runtime -> Guides. Neither was a destination anyone asks
+      //     for; they were shelves. "Build" also reads as `forj build`, and
+      //     "Runtime" collided with the Runtime Lifecycle and Runtime
+      //     Topology pages inside Core Concepts. Merged into one dropdown,
+      //     grouped, so the labels people actually search for — Security,
+      //     Testing, Async — are visible at the top level instead of two
+      //     clicks down behind an abstraction.
+      //   Starter Kits -> inside Getting Started. It is a first-visit
+      //     destination, and that is exactly the mode Getting Started owns.
+      //   What is GoForj? -> promoted to first. It is what someone reads
+      //     BEFORE the quickstart; it was sitting last.
+      //   Blog -> footer. Low frequency, and the version menu already
+      //     carries the "what changed" signal.
       {
         text: 'Getting Started',
         items: [
+          { text: 'What is GoForj?', link: '/about' },
           { text: 'Overview', link: '/getting-started/' },
           { text: 'Quickstart', link: '/getting-started/quickstart' },
-          { text: 'Cookbook', link: '/cookbook' },
-          { text: 'What is GoForj?', link: '/about' }
+          { text: 'Starter Kits', link: '/starter-kits' },
+          { text: 'Cookbook', link: '/cookbook' }
         ]
       },
       { text: 'Core Concepts', link: '/core/' },
       {
-        text: 'Build',
+        text: 'Guides',
         items: [
-          { text: 'Applications', link: '/applications/' },
-          { text: 'Runnable Scenarios', link: '/scenarios/' },
-          { text: 'Data and Persistence', link: '/data/' },
-          { text: 'Security', link: '/security/' },
-          { text: 'Frontend', link: '/frontend/' },
-          { text: 'Testing', link: '/testing/' }
-        ]
-      },
-      {
-        text: 'Runtime',
-        items: [
-          { text: 'Async', link: '/async/' },
-          { text: 'Operations', link: '/operations/' },
-          { text: 'Developer Tools', link: '/developer-tools/' }
+          {
+            text: 'Build',
+            items: [
+              { text: 'Applications', link: '/applications/' },
+              { text: 'Runnable Scenarios', link: '/scenarios/' },
+              { text: 'Data and Persistence', link: '/data/' },
+              { text: 'Security', link: '/security/' },
+              { text: 'Frontend', link: '/frontend/' },
+              { text: 'Testing', link: '/testing/' }
+            ]
+          },
+          {
+            text: 'Operate',
+            items: [
+              { text: 'Async', link: '/async/' },
+              { text: 'Operations', link: '/operations/' },
+              { text: 'Developer Tools', link: '/developer-tools/' }
+            ]
+          }
         ]
       },
       {
         text: 'Libraries',
         items: [
-          { text: 'Overview', link: '/libraries/' },
+          { text: 'All libraries', link: '/libraries/' },
           { text: 'Drivers', link: '/drivers' }
         ]
       },
-      { text: 'Starter Kits', link: '/starter-kits' },
-      { text: 'Blog', link: '/blog/' },
       { text: 'Reference', link: '/reference/' },
       {
+        // Was: 'Latest tag v0.20.0' and 'Changelog' both pointed at
+        // /versions/changelog, and 'Active development' pointed at the
+        // homepage. Three entries, two of them duplicates, one wrong.
         text: docsVersion,
         items: [
-          { text: 'Active development', link: '/' },
-          { text: 'Latest tag v0.20.0', link: '/versions/changelog' },
-          { text: 'Version Policy', link: '/versions/' },
-          { text: 'Changelog', link: '/versions/changelog' }
+          { text: 'Version policy', link: '/versions/' },
+          { text: 'Changelog', link: '/versions/changelog' },
+          { text: 'Blog', link: '/blog/' }
         ]
       }
     ],
