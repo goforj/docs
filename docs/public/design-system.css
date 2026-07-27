@@ -5897,6 +5897,79 @@ body:has(.gf-home) .VPContent {
 }
 .gf-hero-btn--secondary:hover { border-color: var(--gf-ink-3); }
 
+/* --- View selectors: chrome, not action buttons ----------
+   Primitive and environment switches replace content in place; they
+   do not commit an action. Their old orange pills borrowed the
+   primary-button treatment and glow, making six equal-looking CTAs.
+
+   The design-system tab pattern keeps the group on recessed chrome
+   and marks selection with one action-coloured edge. Internal corners
+   stay square because these are segments of one control, not a row of
+   independent pills. */
+.gf-home-swap__tabs,
+.gf-home-swap__toggle,
+.gf-home-ops__binary-tabs {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    max-width: 100%;
+    padding: 0;
+    border: 1px solid var(--gf-line);
+    border-radius: var(--gf-radius);
+    overflow-x: auto;
+    background: var(--gf-code-chrome);
+    box-shadow: none;
+    scrollbar-width: none;
+}
+.gf-home-swap__tabs::-webkit-scrollbar,
+.gf-home-swap__toggle::-webkit-scrollbar,
+.gf-home-ops__binary-tabs::-webkit-scrollbar {
+    display: none;
+}
+.gf-home-swap__tabs button,
+.gf-home-swap__toggle button,
+.gf-home-ops__binary-tabs button {
+    min-width: auto;
+    padding: 9px 16px 8px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--gf-ink-3);
+    box-shadow: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.gf-home-swap__tabs button + button,
+.gf-home-swap__toggle button + button,
+.gf-home-ops__binary-tabs button + button {
+    border-left: 1px solid var(--gf-line);
+}
+.gf-home-swap__tabs button:hover,
+.gf-home-swap__toggle button:hover,
+.gf-home-ops__binary-tabs button:hover {
+    background: var(--gf-ground-alt);
+    color: var(--gf-ink-2);
+}
+.gf-home-swap__tabs button.is-active,
+.gf-home-swap__toggle button.is-active,
+.gf-home-ops__binary-tabs button.is-active {
+    border-bottom-color: var(--gf-accent);
+    background: var(--gf-surface);
+    color: var(--gf-ink);
+    box-shadow: none;
+}
+.gf-home-swap__tabs button:focus-visible,
+.gf-home-swap__toggle button:focus-visible,
+.gf-home-ops__binary-tabs button:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid var(--gf-accent);
+    outline-offset: -3px;
+}
+
 /* --- Install prompt --------------------------------------
    Mock: a rectangle at the standard radius, $ in the accent,
    and COPY set off by a hairline DIVIDER rather than boxed in
