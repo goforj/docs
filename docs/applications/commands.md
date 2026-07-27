@@ -1,6 +1,6 @@
 ---
 title: Commands
-description: How to add application commands to generated GoForj Apps.
+description: How application commands run, receive dependencies, and delegate to services in GoForj Apps.
 ---
 
 # Commands
@@ -33,106 +33,98 @@ Inside a generated Project, native GoForj commands take precedence. If no native
 
 The command runs inside the generated app, not as an ad hoc shell script around it.
 
-## Command Shape
+## Create a Command
 
-Commands define a signature and a `Run` method:
+<MakeCommandTabs name="application-command">
+<template #usage>
 
-```go
-type ReconcileReportsCmd struct {
-	service *reports.Service
-}
-
-func (*ReconcileReportsCmd) Signature() string {
-	return `name:"reports:reconcile" help:"Reconcile report state"`
-}
-
-func NewReconcileReportsCmd(service *reports.Service) *ReconcileReportsCmd {
-	return &ReconcileReportsCmd{service: service}
-}
-
-func (c *ReconcileReportsCmd) Run() error {
-	return c.service.Reconcile(context.Background())
-}
-```
-
-Inject services through the constructor. Keep command code focused on flags, input translation, output, and calling application services.
-
-## Make Commands
-
-Use `forj make:command` when starting a new default app command:
+Create a command for the default App:
 
 ```bash
 forj make:command reports:reconcile
 ```
 
-Use the app prefix for a named app command:
+Prefix the generator when a named App owns the command:
 
 ```bash
 forj marketplace make:command reports:reconcile
 ```
 
-The make command generates the command and injects it into the active app's command wiring surfaces. In the normal flow, you do not hand-edit the command Wire set or command collection just to expose the new command.
+</template>
+<template #files>
 
-Use `category:action` names for application commands:
-
-```bash
-forj make:command reports:sync
+```text
+internal/reports/reconcile_cmd.go    created
+app/wire/inject_cmd_app.go           provider added
+app/commands.go                      command exposed
 ```
 
-This creates `internal/reports/sync_cmd.go` and exposes the generated command through the app command tree. If the command belongs in a deeper package, keep the command name short and use `-d` for placement:
+For a named App, the generated command stays under `internal/...`; the registration files live under `app/<name>/...`.
 
-```bash
-forj make:command reports:sync -d ./internal/billing/reports
+</template>
+<template #generated>
+
+The generated command starts with its CLI signature and the shared App logger:
+
+<CodeFile path="internal/reports/reconcile_cmd.go">
+
+```go
+type ReconcileCmd struct {
+	logger *logger.AppLogger
+}
+
+func (*ReconcileCmd) Signature() string {
+	return `name:"reports:reconcile" help:"Reconcile command"`
+}
+
+func NewReconcileCmd(logger *logger.AppLogger) *ReconcileCmd {
+	return &ReconcileCmd{logger: logger}
+}
+
+func (c *ReconcileCmd) Run(ctx context.Context) error {
+	_ = ctx
+	c.logger.Info().Msg("ReconcileCmd executed!")
+	return nil
+}
 ```
+</CodeFile>
 
-See [Naming Conventions](/core/naming-conventions) for command naming rules and examples.
+The generator adds the constructor to the App command provider set:
 
-Review what the make command created or updated:
+<CodeFile path="app/wire/inject_cmd_app.go">
 
-- the command type owns `Signature`, constructor, and `Run`
-- `app/wire/inject_cmd_app.go` provides the command constructor
-- `app/commands.go` exposes the command through the default app command tree
-
-For a named app, the same files live under `app/<name>/`.
-
-If the command delegates to an application service, make sure that service is wired through `app/wire/inject_services_app.go` or `app/<name>/wire/inject_services_app.go`. The make command wires the command; application services still belong in the app services set.
-
-Run:
-
-```bash
-forj build
-forj reports:reconcile
+```go
+var appCommandSet = wire.NewSet(
+	reports.NewReconcileCmd, // [!code highlight]
+)
 ```
+</CodeFile>
 
-For a named app, run:
+It also exposes the command through the collection Kong parses:
 
-```bash
-forj build
-forj marketplace reports:reconcile
+<CodeFile path="app/commands.go">
+
+```go
+type Commands struct {
+	ReportsReconcileCmd reports.ReconcileCmd `cmd:""` // [!code highlight]
+}
+
+func NewCommands(
+	reportsReconcileCmd *reports.ReconcileCmd, // [!code highlight]
+) *Commands {
+	return &Commands{
+		ReportsReconcileCmd: *reportsReconcileCmd, // [!code highlight]
+	}
+}
 ```
+</CodeFile>
 
-`forj build` verifies the generated graph. Running the command verifies the generated `Signature` is exposed through the app command tree. Use the command name from the generated or edited `Signature`.
+</template>
+</MakeCommandTabs>
 
-`forj make:command` checks the current GoForj and generated app command surfaces and rejects names that are already in use, such as `build`, `dev`, `new`, `generate`, and `run`. Choose an app-specific operator name such as `reports:sync` or `catalog:rebuild`.
+Replace the starter body with the application workflow and add its service to the constructor. Wire will satisfy the new dependency after its provider is in the App service set.
 
-## Registering Commands
-
-`forj make:command` handles command registration for generated commands.
-
-If you are reviewing generated output or wiring a command by hand, a command needs two registrations:
-
-- a constructor in `app/wire/inject_cmd_app.go`
-- a field in `app/commands.go`
-
-The command constructor should receive application services as parameters. It should not create repositories, managers, clients, or services itself.
-
-Run:
-
-```bash
-forj build
-```
-
-This refreshes generation, Wire, API indexing, and the binary.
+The [`make:command` reference](/core/make-commands#make-command) covers output overrides, removal, and the exact registration changes. Keep command code focused on flags, input translation, output, and calling application services.
 
 ## Command Responsibilities
 
@@ -149,11 +141,44 @@ Commands should not become unstructured backdoors around application services.
 
 ## Context and Cancellation
 
-For short commands, a background context may be acceptable when the command API does not provide a context.
+Generated commands can receive the CLI lifecycle context directly. Pass it to the service instead of replacing it with `context.Background()`:
 
-For long-running or cancellable work, prefer command patterns that receive or create a cancellable context and pass it to services.
+<CodeFile path="internal/reports/reconcile_cmd.go">
 
-Runtime commands such as HTTP, queue workers, and scheduler processes already use runtime-managed contexts.
+```go
+func (c *ReconcileCmd) Run(ctx context.Context) error {
+	return c.service.Reconcile(ctx)
+}
+```
+</CodeFile>
+
+Long-running services should check cancellation between units of work and pass the same context into repositories and clients:
+
+<CodeFile path="internal/reports/service.go">
+
+```go
+func (s *Service) Reconcile(ctx context.Context) error {
+	reportIDs, err := s.reports.PendingIDs(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, reportID := range reportIDs {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if err := s.reconcileOne(ctx, reportID); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+```
+</CodeFile>
+
+The CLI context is cancelled when the command lifecycle stops, including interrupt-driven shutdown. Runtime commands such as HTTP, queue workers, and the scheduler receive the same lifecycle-managed cancellation behavior.
+
+Use `context.Background()` only at a boundary that genuinely has no caller context. A generated command's `Run(ctx context.Context)` method already has one.
 
 ## Common Mistakes
 
@@ -167,7 +192,7 @@ Runtime commands such as HTTP, queue workers, and scheduler processes already us
 
 ## Next Steps
 
-- [Make Commands](/core/make-commands) explains grouped package placement and generated wiring updates.
+- [`make:command` Reference](/core/make-commands#make-command) shows generation, placement, and wiring.
 - [Naming Conventions](/core/naming-conventions) defines stable command names.
 - [Application Services](/applications/services) explains where command behavior should delegate.
 - [Wiring Recipes](/core/wiring-recipes) shows the command wiring flow.

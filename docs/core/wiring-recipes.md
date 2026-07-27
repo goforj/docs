@@ -27,30 +27,11 @@ For a named app, replace `app/...` with `app/<name>/...`.
 
 Use the most specific generated set that owns the surface. If a generated file is not present, the app probably does not have that component enabled.
 
-## Make Commands
+## Generated Resources
 
-For controllers and commands, start with the make command.
+When a resource has a make command, use it before editing provider sets by hand. The command creates the resource and updates the active App's generated wiring boundaries.
 
-The make command is not just a file generator. It also injects the generated resource into the active app's wiring harness. Generate first, then review what changed.
-
-| Flow | Start with | Verify |
-| --- | --- | --- |
-| HTTP controller | `forj make:controller Users` | controller file, HTTP controller set, route registry |
-| App command | `forj make:command reports:reconcile` | command type, command Wire set, command collection |
-| Queue job | `forj make:job GenerateReport` | job type, job Wire set |
-| Scheduled task | `forj make:schedule reports:daily --every 24h` | schedule type, schedule Wire set, schedule registration |
-| Model repository | `forj make:model users --package users` | model, repository, repository Wire set |
-
-Run the same flow through a named app when that app owns the resource:
-
-```bash
-forj marketplace make:controller checkout
-forj marketplace make:command catalog:rebuild
-```
-
-The wiring still matters because generated resources usually depend on application services. The make command wires the generated resource itself; you may still need to wire the application services it depends on.
-
-See [Make Commands](/core/make-commands) for grouped package placement, output overrides, and the full command map.
+The [Make Command Reference](/core/make-commands#command-reference) shows each generator in the same Usage / Files touched / Generated code format. This page begins where those flows stop: wiring the application services and adapters that generated entry points depend on.
 
 ## Service and Adapter
 
@@ -89,17 +70,7 @@ Wire can construct `*billing.Service` because `billing.ProvideGateway` provides 
 
 ## HTTP Controller
 
-Controllers belong to the HTTP controller set:
-
-```bash
-forj make:controller Users
-```
-
-After running the make command, verify the wiring it updated:
-
-- `internal/users/controller.go` exists
-- `users.NewController` is in `app/wire/inject_http_controllers_app.go`
-- the controller routes are included from `app/routes.go`
+The [controller generation workflow](/applications/controllers#generate-wire-and-verify) shows the command, files, and injected route registration together.
 
 The controller can depend on an application service already provided by the app service set. If Wire cannot provide that service, add the service constructor to `app/wire/inject_services_app.go`.
 
@@ -112,17 +83,7 @@ forj route:list
 
 ## Command
 
-Application commands are registered from:
-
-```bash
-forj make:command reports:reconcile
-```
-
-After running the make command, verify the wiring it updated:
-
-- the command type has `Signature`, constructor, and `Run`
-- the constructor is in `app/wire/inject_cmd_app.go`
-- the command is exposed through `app/commands.go`
+The [command creation workflow](/applications/commands#create-a-command) shows the command, generated type, provider, and App command collection together.
 
 Command constructors should receive application services as parameters. They should not create repositories, managers, clients, or services themselves.
 

@@ -35,33 +35,132 @@ Use the scheduler to decide when recurring work starts.
 
 The scheduler should not become the place where business workflows accumulate.
 
-## Registry
+## Generate a Schedule
 
-Schedule registration lives in:
-
-```text
-app/schedules.go
-```
-
-Keep the app schedule file declarative. Named apps use the same shape under `app/<name>/schedules.go`.
-
-Generate App-owned scheduled work with:
+<MakeCommandTabs name="async-schedule">
+<template #usage>
 
 ```bash
 forj make:schedule reports:daily --every 24h
 ```
 
-This creates a colocated schedule such as `internal/reports/daily_schedule.go`, wires its provider into `app/wire/inject_schedules_app.go`, and registers it with the stable `reports:daily` schedule name. The app-owned files are rendered once and preserved across re-renders.
+If `--every` is omitted, the generated starter interval is `1h`.
+
+</template>
+<template #files>
+
+```text
+internal/reports/daily_schedule.go      created
+app/wire/inject_schedules_app.go        provider added
+app/schedules.go                        recurring task registered
+```
+
+Named Apps use the same registration shape under `app/<name>/`.
+
+</template>
+<template #generated>
+
+The generated task owns its stable name and interval:
+
+<CodeFile path="internal/reports/daily_schedule.go">
 
 ```go
-func (s *Scheduler) Register() error {
-	s.DailyAt("04:11").
-		Name("sessions:cleanup").
-		Do(s.inspectTask("sessions:cleanup", s.authService.Cleanup))
+package reports
 
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+// DailyScheduleName is the operational name registered with the scheduler.
+const DailyScheduleName = "reports:daily"
+
+// DailyScheduleInterval is the schedule frequency as a Go duration string.
+const DailyScheduleInterval = "24h"
+
+// DailySchedule is a scheduled task.
+type DailySchedule struct{}
+
+// NewDailySchedule creates a new DailySchedule.
+func NewDailySchedule() *DailySchedule {
+	return &DailySchedule{}
+}
+
+// Name returns the operational schedule name.
+func (s *DailySchedule) Name() string {
+	return DailyScheduleName
+}
+
+// Interval returns how often the schedule should run.
+func (s *DailySchedule) Interval() (time.Duration, error) {
+	interval, err := time.ParseDuration(DailyScheduleInterval)
+	if err != nil {
+		return 0, fmt.Errorf("parse schedule interval %s: %w", DailyScheduleName, err)
+	}
+	return interval, nil
+}
+
+// Handle runs the scheduled task.
+func (s *DailySchedule) Handle(ctx context.Context) error {
 	return nil
 }
 ```
+</CodeFile>
+
+The concrete schedule provider is added to the App Wire set:
+
+<CodeFile path="app/wire/inject_schedules_app.go">
+
+```go
+var appScheduleSet = wire.NewSet(
+	ProvideAppSchedules,
+	app.NewScheduleRegistry,
+	wire.Bind(
+		new(schedules.ScheduleRegistry),
+		new(*app.ScheduleRegistry),
+	),
+	reports.NewDailySchedule, // [!code highlight]
+)
+```
+</CodeFile>
+
+`r.appSchedules.Register(s)` preserves schedules carried by the legacy `AppSchedules` container. New `make:schedule` resources use the direct `ScheduleRegistry` path:
+
+<CodeFile path="app/schedules.go">
+
+```go
+type ScheduleRegistry struct {
+	appSchedules  *schedules.AppSchedules
+	dailySchedule *reports.DailySchedule // [!code highlight]
+}
+
+func NewScheduleRegistry(
+	appSchedules *schedules.AppSchedules,
+	dailySchedule *reports.DailySchedule, // [!code highlight]
+) *ScheduleRegistry {
+	return &ScheduleRegistry{
+		appSchedules:  appSchedules,
+		dailySchedule: dailySchedule, // [!code highlight]
+	}
+}
+
+func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
+	if err := r.appSchedules.Register(s); err != nil {
+		return err
+	}
+	if err := schedules.RegisterRecurring(s, r.dailySchedule); err != nil { // [!code highlight]
+		return err // [!code highlight]
+	} // [!code highlight]
+	return nil
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+## Naming Schedules
 
 Schedules should have stable names.
 

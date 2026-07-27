@@ -18,37 +18,128 @@ Jobs make background work explicit, observable, retryable, and operable.
 | Start with | A small payload containing IDs and references to source-of-truth data. |
 | Upgrade to | Dedicated queues, retry policy, idempotency keys, and worker process planning as operational risk grows. |
 
-## Generated Package
+## Generate a Job
 
-Job code usually lives in:
-
-```text
-internal/jobs
-```
-
-Create a job:
-
-```bash
-forj make:job SendWelcomeEmail
-```
-
-Stamp a generated dispatch helper with a named queue when the job belongs to a specific operational lane:
+<MakeCommandTabs name="async-job">
+<template #usage>
 
 ```bash
 forj make:job reports:generate --queue reports
 ```
 
-For a named app, run the make command through that app:
+For a named App, prefix the generator:
 
 ```bash
 forj marketplace make:job sync-catalog --queue sync
 ```
 
-The app prefix routes the generated provider into the selected app's Wire files. In this example, GoForj updates `app/marketplace/wire/inject_jobs_app.go` instead of the default app's `app/wire/inject_jobs_app.go`.
-
 Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
 
-## Job Shape
+</template>
+<template #files>
+
+```text
+internal/reports/generate_job.go       created
+app/wire/inject_jobs_app.go            provider and handler registration added
+```
+
+For a named App, the job remains under `internal/...`; its Wire file is `app/<name>/wire/inject_jobs_app.go`.
+
+</template>
+<template #generated>
+
+The generated dispatch helper targets the selected queue:
+
+<CodeFile path="internal/reports/generate_job.go">
+
+```go
+package reports
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+
+	"github.com/goforj/queue"
+	"myapp/internal/queues"
+)
+
+// GenerateJobTypeName is the queue task identifier.
+const GenerateJobTypeName = "generate"
+
+// GenerateJobPayload is the payload for the GenerateJob job.
+type GenerateJobPayload struct {
+	// add your payload fields here
+}
+
+// GenerateJob is a queue job.
+type GenerateJob struct {
+	queues *queues.Manager
+}
+
+// NewGenerateJob creates a GenerateJob with the configured queue manager.
+func NewGenerateJob(queues *queues.Manager) *GenerateJob {
+	return &GenerateJob{queues: queues}
+}
+
+// Queue creates and enqueues a task.
+func (t *GenerateJob) Queue(ctx context.Context, name string) error {
+	var p GenerateJobPayload
+	// add your payload fields here
+	// p.User = name
+
+	payload, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+	_, err = t.queues.WithContext(ctx).Dispatch(
+		queue.NewJob(GenerateJobTypeName).Payload(payload).OnQueue("reports"),
+	)
+	return err
+}
+
+// HandleTask processes queue payloads.
+func (t *GenerateJob) HandleTask(_ context.Context, msg queue.Message) error {
+	var p GenerateJobPayload
+	if err := msg.Bind(&p); err != nil {
+		return fmt.Errorf("json.Unmarshal failed: %w", err)
+	}
+	return nil
+}
+```
+</CodeFile>
+
+The App Wire file constructs the job and registers its handler before workers start:
+
+<CodeFile path="app/wire/inject_jobs_app.go">
+
+```go
+var appJobSet = wire.NewSet(
+	registerJobHandlers,
+	reports.NewGenerateJob, // [!code highlight]
+)
+
+func registerJobHandlers(
+	queueManager *queues.Manager,
+	reportsGenerateJob *reports.GenerateJob, // [!code highlight]
+) *jobHandlerRegistration {
+	queueManager.Register( // [!code highlight]
+		reports.GenerateJobTypeName, // [!code highlight]
+		reportsGenerateJob.HandleTask, // [!code highlight]
+	) // [!code highlight]
+	return &jobHandlerRegistration{}
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+## Implement the Job
+
+The scaffold supplies dispatch and handler seams. Replace its placeholder payload with the smallest source-of-truth references the worker needs.
+
+### Payload and Dependencies
 
 ```go
 const SendWelcomeEmailTypeName = "emails:welcome"
@@ -69,7 +160,7 @@ func NewSendWelcomeEmail(queues *queues.Manager, users *users.Service) *SendWelc
 
 Job names should be stable operational identifiers.
 
-## Dispatch
+### Dispatch
 
 Jobs own their dispatch shape:
 
@@ -91,7 +182,7 @@ func (j *SendWelcomeEmail) Queue(ctx context.Context, userID string) error {
 
 Services can call `job.Queue(ctx, id)` without constructing raw queue messages.
 
-## Handling
+### Handling
 
 Handlers bind payloads and delegate business behavior:
 
@@ -108,9 +199,9 @@ func (j *SendWelcomeEmail) HandleTask(ctx context.Context, msg queue.Message) er
 
 Return errors when the job should fail and let queue behavior handle retry policy.
 
-## Registration
+## Existing Job Registration
 
-Generated App construction registers job handlers before workers start. `forj make:job` adds both the constructor and its handler registration to `app/wire/inject_jobs_app.go`, or `app/<name>/wire/inject_jobs_app.go` for a named App. The App-owned `registerJobHandlers` function is the extension point for a manually written job.
+The generated-code tab shows the registration path for new jobs. The App-owned `registerJobHandlers` function is also the extension point for a manually written job.
 
 Projects created before this registration seam may already contain custom job constructors that were never registered. Rerender migrates known framework jobs but does not guess whether an arbitrary provider is a job. Add each older custom job as a typed `registerJobHandlers` parameter and register its type name with `queueManager.Register`; future `make:job` calls maintain both entries automatically.
 

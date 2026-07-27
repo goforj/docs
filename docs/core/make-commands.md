@@ -21,7 +21,750 @@ The app prefix chooses the registration point. `forj marketplace make:*` creates
 
 This keeps app composition in the owning app while shared domain code can still live under `internal/...`.
 
-## Package Placement
+## Choose a Command
+
+- [`make:controller`](#make-controller) creates an HTTP controller and registers its routes.
+- [`make:command`](#make-command) creates an App command and exposes it to Kong.
+- [`make:job`](#make-job) creates a queue job and registers its handler.
+- [`make:queue`](#make-queue) creates named queue configuration and a generated accessor.
+- [`make:schedule`](#make-schedule) creates and registers a recurring task.
+- [`make:event`](#make-event) creates a typed application event.
+- [`make:subscriber`](#make-subscriber) creates and registers an event subscriber.
+- [`make:model`](#make-model) derives a model and repository from a database table.
+- [`make:migration`](#make-migration) creates timestamped up and down SQL files.
+
+<span id="command-map"></span>
+
+## Command Reference
+
+Some make commands are native GoForj commands and some are generated app commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
+
+For named apps, prefix the command with the app name. The generated resource stays under `internal/...`, while registration changes go to the owning app under `app/<name>/...`.
+
+<span id="examples"></span>
+<span id="what-gets-wired"></span>
+
+### `make:controller`
+
+Generate an HTTP controller for the package that owns the route.
+
+<MakeCommandTabs name="controller">
+<template #usage>
+
+```bash
+forj make:controller billing:reports
+```
+
+The grouped name controls both the package path and the starter route, `/billing/reports`.
+
+Prefix the command when a named App owns the route:
+
+```bash
+forj marketplace make:controller checkout
+```
+
+Remove the generated controller and its managed registrations with:
+
+```bash
+forj make:controller billing:reports --remove
+```
+
+</template>
+<template #files>
+
+```text
+internal/billing/reports/controller.go       created
+app/wire/inject_http_controllers_app.go      provider added
+app/routes.go                                routes registered
+```
+
+For a named App, the generated controller stays under `internal/...`; the two registration files live under `app/<name>/...`.
+
+</template>
+<template #generated>
+
+The generated controller includes a constructor, starter route, and replaceable handler:
+
+<CodeFile path="internal/billing/reports/controller.go">
+
+```go
+type Controller struct {
+	logger *logger.AppLogger
+}
+
+func NewController(logger *logger.AppLogger) *Controller {
+	return &Controller{logger: logger}
+}
+
+func (c *Controller) Routes() []web.Route {
+	return []web.Route{
+		web.NewRoute(http.MethodGet, "/billing/reports", c.Get),
+	}
+}
+
+func (c *Controller) Get(r web.Context) error {
+	c.logger.Info().Msg("Hello from billing reports controller")
+	return r.Text(http.StatusOK, "Hello from billing reports controller")
+}
+```
+</CodeFile>
+
+The HTTP controller Wire set gains the constructor:
+
+<CodeFile path="app/wire/inject_http_controllers_app.go">
+
+```go
+var appHttpControllerSet = wire.NewSet(
+	billingReports.NewController, // [!code highlight]
+)
+```
+</CodeFile>
+
+The App route registry receives the controller and appends its routes:
+
+<CodeFile path="app/routes.go">
+
+```go
+func ProvideRoutes(
+	billingReportsController *billingReports.Controller, // [!code highlight]
+) []web.RouteGroup {
+	publicRoutes := slices.Concat(
+		billingReportsController.Routes(), // [!code highlight]
+	)
+	return []web.RouteGroup{
+		web.NewRouteGroup("/api/v1", publicRoutes),
+	}
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:command`
+
+Generate an App command.
+
+<MakeCommandTabs name="command">
+<template #usage>
+
+```bash
+forj make:command reports:sync
+```
+
+Use `--name` to override the exposed command signature independently from the generated type and file:
+
+```bash
+forj make:command Sync -d ./internal/billing/reports --name reports:sync
+```
+
+```bash
+forj make:command reports:sync --remove
+```
+
+</template>
+<template #files>
+
+```text
+internal/reports/sync_cmd.go      created
+app/wire/inject_cmd_app.go        provider added
+app/commands.go                   command exposed
+```
+
+</template>
+<template #generated>
+
+The command keeps its CLI metadata with its implementation:
+
+<CodeFile path="internal/reports/sync_cmd.go">
+
+```go
+type SyncCmd struct {
+	logger *logger.AppLogger
+}
+
+func (*SyncCmd) Signature() string {
+	return `name:"reports:sync" help:"Sync command"`
+}
+
+func (c *SyncCmd) Run(ctx context.Context) error {
+	_ = ctx
+	c.logger.Info().Msg("SyncCmd executed!")
+	return nil
+}
+```
+</CodeFile>
+
+The App Wire set gains the provider:
+
+<CodeFile path="app/wire/inject_cmd_app.go">
+
+```go
+var appCommandSet = wire.NewSet(
+	reports.NewSyncCmd, // [!code highlight]
+)
+```
+</CodeFile>
+
+The App command collection exposes it to Kong:
+
+<CodeFile path="app/commands.go">
+
+```go
+type Commands struct {
+	ReportsSyncCmd reports.SyncCmd `cmd:""` // [!code highlight]
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:job`
+
+Generate a queue job and select its default queue.
+
+<MakeCommandTabs name="job">
+<template #usage>
+
+```bash
+forj make:job billing:sync-reports --queue billing
+```
+
+```bash
+forj make:job billing:sync-reports --remove
+```
+
+</template>
+<template #files>
+
+```text
+internal/billing/sync_reports_job.go    created
+app/wire/inject_jobs_app.go             provider and handler added
+```
+
+</template>
+<template #generated>
+
+The generated dispatch helper targets the selected queue:
+
+<CodeFile path="internal/billing/sync_reports_job.go">
+
+```go
+const SyncReportsJobTypeName = "syncreports"
+
+func (t *SyncReportsJob) Queue(ctx context.Context, name string) error {
+	var p SyncReportsJobPayload
+	payload, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+	_, err = t.queues.WithContext(ctx).Dispatch(
+		queue.NewJob(SyncReportsJobTypeName).Payload(payload).OnQueue("billing"),
+	)
+	return err
+}
+```
+</CodeFile>
+
+The job Wire file gains both construction and runtime registration:
+
+<CodeFile path="app/wire/inject_jobs_app.go">
+
+```go
+var appJobSet = wire.NewSet(
+	registerJobHandlers,
+	billing.NewSyncReportsJob, // [!code highlight]
+)
+
+func registerJobHandlers(
+	queueManager *queues.Manager,
+	billingSyncReportsJob *billing.SyncReportsJob, // [!code highlight]
+) *jobHandlerRegistration {
+	queueManager.Register( // [!code highlight]
+		billing.SyncReportsJobTypeName, // [!code highlight]
+		billingSyncReportsJob.HandleTask, // [!code highlight]
+	) // [!code highlight]
+	return &jobHandlerRegistration{}
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:queue`
+
+Add a named queue resource.
+
+<MakeCommandTabs name="queue">
+<template #usage>
+
+```bash
+forj make:queue reports --workers 2
+```
+
+Run `forj make:queue` without a name in an interactive terminal to use the resource wizard.
+
+Use `--name production-report-jobs` when the backend queue name should differ from the `reports` resource name. Use `--env-file` to update a file other than `.env`.
+
+```bash
+forj make:queue reports --remove
+```
+
+Pass the same `--env-file` during removal when creation did not update `.env`.
+
+</template>
+<template #files>
+
+```text
+.env                               named queue keys added
+internal/queues/accessors_gen.go   regenerated on build
+```
+
+With `--env-file`, the specified file replaces `.env`. No Wire file changes.
+
+</template>
+<template #generated>
+
+The queue resource is environment configuration:
+
+<CodeFile path=".env">
+
+```dotenv
+QUEUE_REPORTS_NAME=reports
+QUEUE_REPORTS_WORKERS=2
+```
+</CodeFile>
+
+Using `--name production-report-jobs` changes the first value while the stable resource key remains `REPORTS`.
+
+The next `forj build` or `forj generate --queue` derives a typed accessor from that resource key:
+
+<CodeFile path="internal/queues/accessors_gen.go">
+
+```go
+// Reports returns the "reports" queue instance.
+func (m *Manager) Reports() *queue.Queue {
+	return m.reports
+}
+```
+</CodeFile>
+
+`make:queue` does not invent an application service. In App-owned code, inject the generated queue manager into the service that owns the workflow:
+
+<CodeFile path="internal/reports/service.go">
+
+```go
+type Service struct {
+	queues *queues.Manager
+}
+
+func NewService(queues *queues.Manager) *Service {
+	return &Service{queues: queues}
+}
+
+func (s *Service) Generate(ctx context.Context) error {
+	reports := s.queues.Reports()
+	_, err := reports.WithContext(ctx).Dispatch(
+		queue.NewJob("reports:generate"),
+	)
+	return err
+}
+```
+</CodeFile>
+
+Register that constructor with the application service set:
+
+<CodeFile path="app/wire/inject_services_app.go">
+
+```go
+var appServiceSet = wire.NewSet(
+	reports.NewService,
+)
+```
+</CodeFile>
+
+Wire can then inject the service into a controller, command, job, or other application entry point:
+
+<CodeFile path="internal/reports/controller.go">
+
+```go
+type Controller struct {
+	service *Service
+}
+
+func NewController(service *Service) *Controller {
+	return &Controller{service: service}
+}
+
+func (c *Controller) Generate(r web.Context) error {
+	if err := c.service.Generate(r.Context()); err != nil {
+		return err
+	}
+	return r.NoContent(http.StatusAccepted)
+}
+```
+</CodeFile>
+
+The dependency direction stays one-way: the reports package imports `internal/queues`, while the App's Wire package imports reports and assembles the graph.
+
+Omit `OnQueue` when dispatching through the direct handle. When application code needs GoForj to translate the logical queue name to an App-prefixed backend name, dispatch through the injected manager and use `.OnQueue("reports")` instead.
+
+</template>
+</MakeCommandTabs>
+
+### `make:schedule`
+
+Generate a recurring task.
+
+<MakeCommandTabs name="schedule">
+<template #usage>
+
+```bash
+forj make:schedule reports:daily --every 24h
+```
+
+```bash
+forj make:schedule reports:daily --remove
+```
+
+If `--every` is omitted, the generated starter interval is `1h`.
+
+</template>
+<template #files>
+
+```text
+internal/reports/daily_schedule.go      created
+app/wire/inject_schedules_app.go        provider added
+app/schedules.go                        recurring task registered
+```
+
+</template>
+<template #generated>
+
+The generated task owns its stable name and interval:
+
+<CodeFile path="internal/reports/daily_schedule.go">
+
+```go
+const DailyScheduleName = "reports:daily"
+const DailyScheduleInterval = "24h"
+
+func (s *DailySchedule) Name() string {
+	return DailyScheduleName
+}
+
+func (s *DailySchedule) Handle(ctx context.Context) error {
+	return nil
+}
+```
+</CodeFile>
+
+The Wire set gains the provider:
+
+<CodeFile path="app/wire/inject_schedules_app.go">
+
+```go
+var appScheduleSet = wire.NewSet(
+	ProvideAppSchedules,
+	app.NewScheduleRegistry,
+	wire.Bind(
+		new(schedules.ScheduleRegistry),
+		new(*app.ScheduleRegistry),
+	),
+	reports.NewDailySchedule, // [!code highlight]
+)
+```
+</CodeFile>
+
+`r.appSchedules.Register(s)` preserves schedules carried by the legacy `AppSchedules` container. New `make:schedule` resources do not enter that container; the command injects the concrete schedule into `ScheduleRegistry` and adds the highlighted recurring registration:
+
+<CodeFile path="app/schedules.go">
+
+```go
+type ScheduleRegistry struct {
+	appSchedules  *schedules.AppSchedules
+	dailySchedule *reports.DailySchedule // [!code highlight]
+}
+
+func NewScheduleRegistry(
+	appSchedules *schedules.AppSchedules,
+	dailySchedule *reports.DailySchedule, // [!code highlight]
+) *ScheduleRegistry {
+	return &ScheduleRegistry{
+		appSchedules:  appSchedules,
+		dailySchedule: dailySchedule, // [!code highlight]
+	}
+}
+
+func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
+	if err := r.appSchedules.Register(s); err != nil {
+		return err
+	}
+	if err := schedules.RegisterRecurring(s, r.dailySchedule); err != nil { // [!code highlight]
+		return err // [!code highlight]
+	} // [!code highlight]
+	return nil
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:event`
+
+Generate an application event type.
+
+<MakeCommandTabs name="event">
+<template #usage>
+
+```bash
+forj make:event billing:invoice-paid
+```
+
+```bash
+forj make:event billing:invoice-paid --remove
+```
+
+Removal deletes the generated type, but it does not remove application code that refers to it.
+
+</template>
+<template #files>
+
+```text
+internal/billing/invoice_paid_event.go    created
+```
+
+Events are plain application types, so no Wire or registration file changes.
+
+</template>
+<template #generated>
+
+The generated event provides a stable topic and a place for the payload:
+
+<CodeFile path="internal/billing/invoice_paid_event.go">
+
+```go
+const InvoicePaidEventTopic = "invoicepaid"
+
+type InvoicePaidEvent struct {
+	// Add event fields.
+}
+
+func (InvoicePaidEvent) Topic() string {
+	return InvoicePaidEventTopic
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:subscriber`
+
+Generate a subscriber for an application event.
+
+<MakeCommandTabs name="subscriber">
+<template #usage>
+
+```bash
+forj make:subscriber billing:invoice-paid
+```
+
+Use `--bus audit` to target a named event bus configured by `EVENTS_AUDIT_DRIVER`.
+
+```bash
+forj make:subscriber billing:invoice-paid --remove
+```
+
+Pass the same `--bus` value used during creation. Removal deletes the generated subscriber, its provider, and its subscription block.
+
+</template>
+<template #files>
+
+```text
+internal/billing/invoice_paid_subscriber.go    created
+app/wire/inject_subscribers_app.go             provider and subscription added
+```
+
+</template>
+<template #generated>
+
+The generated subscriber starts with a typed handler:
+
+<CodeFile path="internal/billing/invoice_paid_subscriber.go">
+
+```go
+type InvoicePaidSubscriber struct{}
+
+func NewInvoicePaidSubscriber() *InvoicePaidSubscriber {
+	return &InvoicePaidSubscriber{}
+}
+
+func (s *InvoicePaidSubscriber) Handle(
+	ctx context.Context,
+	event InvoicePaidEvent,
+) error {
+	_ = ctx
+	_ = event
+	return nil
+}
+```
+</CodeFile>
+
+The App Wire file constructs it and performs the subscription:
+
+<CodeFile path="app/wire/inject_subscribers_app.go">
+
+```go
+var appSubscriberSet = wire.NewSet(
+	ProvideEventSubscribers,
+	billing.NewInvoicePaidSubscriber, // [!code highlight]
+)
+
+func ProvideEventSubscribers(
+	eventManager *events.Manager,
+	billingInvoicePaidSubscriber *billing.InvoicePaidSubscriber, // [!code highlight]
+) (*EventSubscribersReady, error) {
+	billingInvoicePaidSubscriberBus := eventManager.Named("default") // [!code highlight]
+	if billingInvoicePaidSubscriberBus == nil { // [!code highlight]
+		return nil, fmt.Errorf("event bus %q is not configured", "default") // [!code highlight]
+	} // [!code highlight]
+	if _, err := billingInvoicePaidSubscriberBus.Subscribe( // [!code highlight]
+		billingInvoicePaidSubscriber.Handle, // [!code highlight]
+	); err != nil { // [!code highlight]
+		return nil, err // [!code highlight]
+	} // [!code highlight]
+	return &EventSubscribersReady{}, nil
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:model`
+
+Generate a model and repository helpers in an explicit package.
+
+<MakeCommandTabs name="model">
+<template #usage>
+
+```bash
+forj make:model invoices --package billing
+```
+
+The generator inspects the existing `invoices` table through the default database connection, so that connection must be available. Models use `--package` rather than `-d` because their placement follows database table ownership.
+
+```bash
+forj make:model invoices --package billing --remove
+```
+
+If the model already exists, the command updates its schema-derived model definition while preserving the repository section.
+
+</template>
+<template #files>
+
+```text
+internal/billing/invoice.go                 created or updated
+app/wire/inject_repositories_app.go         repository provider added
+```
+
+Removal deletes the model file, including its repository helpers, and removes the provider.
+
+</template>
+<template #generated>
+
+Model fields reflect the columns discovered in the `invoices` table. The schema-independent repository portion of the same file starts with:
+
+<CodeFile path="internal/billing/invoice.go">
+
+```go
+type InvoiceRepo struct {
+	db  *database.Connections
+	ctx context.Context
+}
+
+func NewInvoiceRepo(db *database.Connections) *InvoiceRepo {
+	return &InvoiceRepo{db: db}
+}
+```
+</CodeFile>
+
+The repository Wire set gains:
+
+<CodeFile path="app/wire/inject_repositories_app.go">
+
+```go
+var repositorySet = wire.NewSet(
+	billing.NewInvoiceRepo, // [!code highlight]
+)
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+### `make:migration`
+
+Generate SQL migration files.
+
+<MakeCommandTabs name="migration">
+<template #usage>
+
+```bash
+forj make:migration create_invoice_tables
+```
+
+Use `--connection` for a non-default migration stream. Drivers come from `DB_SUPPORTED_DRIVERS`, falling back to `DB_DRIVER`.
+
+```bash
+forj make:migration create_invoice_tables --remove
+```
+
+Removal deletes timestamped up and down files matching the migration name.
+
+</template>
+<template #files>
+
+A single-driver App using the default connection creates:
+
+```text
+migrations/<timestamp>_create_invoice_tables.up.sql
+migrations/<timestamp>_create_invoice_tables.down.sql
+```
+
+Expanded App layouts write under `migrations/<app>/<connection>/`. Multi-driver Apps add the driver before `.up.sql` and `.down.sql`. No Wire files change.
+
+</template>
+<template #generated>
+
+For SQLite, the two starter files contain:
+
+<CodeFile path="migrations/&lt;timestamp&gt;_create_invoice_tables.up.sql">
+
+```sql
+-- Up migration (sqlite)
+```
+</CodeFile>
+
+<CodeFile path="migrations/&lt;timestamp&gt;_create_invoice_tables.down.sql">
+
+```sql
+-- Down migration (sqlite)
+```
+</CodeFile>
+
+The timestamp is UTC in `YYYY_MM_DD_HHMMSS` format. Replace the starter comments with the forward and rollback SQL.
+
+</template>
+</MakeCommandTabs>
+
+<span id="package-placement"></span>
+
+## How Package Placement Works
 
 Make commands prefer colocated packages, but command names should stay operationally short.
 
@@ -31,13 +774,7 @@ Use `category:action` for application command names:
 forj make:command reports:sync
 ```
 
-This creates a command in:
-
-```text
-internal/reports/sync_cmd.go
-```
-
-Use two segments unless the extra segment is truly part of the operator-facing command. When the command belongs in a deeper package, keep the command name short and use `-d` to control file placement.
+This creates `internal/reports/sync_cmd.go`. Use two segments unless the extra segment is truly part of the operator-facing command. When the command belongs in a deeper package, keep the command name short and use `-d` to control file placement.
 
 See [Naming Conventions](/core/naming-conventions) for command, job, event, schedule, route, and named resource names.
 
@@ -71,9 +808,9 @@ Generated package declarations use compact lowercase Go names. For example:
 forj make:controller BillingPortal
 ```
 
-creates a `billingportal` package, not `billing_portal`. File names can use underscores, but package names should remain short lowercase identifiers.
+This creates a `billingportal` package, not `billing_portal`. File names can use underscores, but package names should remain short lowercase identifiers.
 
-## Organize by package ownership
+### Organize by package ownership
 
 Make commands organize code around the package that owns the behavior, not around global `controllers`, `jobs`, `models`, or `commands` directories.
 
@@ -93,11 +830,9 @@ Every `.go` file in that directory declares `package reports`, so the package na
 
 Read grouped generator names from left to right:
 
-| Command | Creates |
-| --- | --- |
-| `forj make:controller reports` | `internal/reports/controller.go` |
-| `forj make:job reports:generate` | `internal/reports/generate_job.go` |
-| `forj make:schedule reports:daily` | `internal/reports/daily_schedule.go` |
+- `forj make:controller reports` creates `internal/reports/controller.go`.
+- `forj make:job reports:generate` creates `internal/reports/generate_job.go`.
+- `forj make:schedule reports:daily` creates `internal/reports/daily_schedule.go`.
 
 Controllers are package anchors, so the full grouped name becomes the controller package. For jobs and schedules, the leading segments select the package and the final segment names the generated entry point. Start with a flat package such as `internal/reports`; add nesting only when another package boundary clarifies ownership.
 
@@ -113,178 +848,42 @@ Event bus         -> reports.ReportGeneratedSubscriber
 
 They translate input, call package services, and return output. Services own workflows and receive repositories, clients, caches, queues, storage, and events through explicit constructor dependencies. Keeping related entry points together makes imports reveal ownership, keeps Wire constructors close to what they construct, and lets a feature move or shrink as one visible unit.
 
-## Command Map
+## Shared Options
 
-| Command | Generates | Default output and registration |
-| --- | --- | --- |
-| `forj make:controller <name>` | HTTP controller | Writes `internal/<group>/controller.go`; registers the controller and its routes. |
-| `forj make:command <name>` | App command | Writes `internal/<group>/<name>_cmd.go`; adds the command to the App command collection. |
-| `forj make:job <name>` | Queue job | Writes `internal/<group>/<name>_job.go`; registers the job provider. |
-| `forj make:queue <name>` | Named queue config | Updates the queue keys in `.env`; no Wire registration is needed. |
-| `forj make:schedule <name>` | Scheduled task | Writes `internal/<group>/<name>_schedule.go`; adds the schedule to the App scheduler. |
-| `forj make:event <name>` | Event type | Writes `internal/<group>/<name>_event.go`; no Wire registration is needed. |
-| `forj make:subscriber <name>` | Event subscriber | Writes `internal/<group>/<name>_subscriber.go`; registers the App event subscriber. |
-| `forj make:model <table>` | Model and repository | Writes to the package selected by `--package`; registers the repository provider. |
-| `forj make:migration <name>` | SQL migration files | Writes timestamped files to the migrations directory; no Wire registration is needed. |
+### Removing Generated Resources
 
-Some make commands are native GoForj commands and some are generated app commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
+Removal uses the same name, package, connection, bus, output, and env-file flags as creation. Pass the same options so the generator resolves the same file and registration entries.
 
-For named apps, the command map is the same, but the registration files change:
+Use `--dry-run` to preview file and wiring cleanup:
 
 ```bash
-forj marketplace make:controller checkout
+forj make:controller reports --remove --dry-run
 ```
 
-updates:
+`--remove` reverses only the files and registration entries managed by the matching make command. It does not inspect or delete business logic, tests, or manually added references.
 
-```text
-internal/checkout/controller.go
-app/marketplace/routes.go
-app/marketplace/wire/inject_http_controllers_app.go
-```
-
-while:
+After removing a wired resource, rebuild the graph:
 
 ```bash
-forj make:controller users
+forj build
 ```
 
-updates:
+The build exposes application code that still refers to the removed type, route, command, repository, job, schedule, or subscriber.
 
-```text
-internal/users/controller.go
-app/routes.go
-app/wire/inject_http_controllers_app.go
-```
+### Opening Generated Files
 
-## Opening Generated Files
-
-File-generating make commands support `--open` and `-o` to open the primary generated file after the command succeeds:
+File-generating make commands support `--open` and `-o`:
 
 ```bash
 forj make:controller billing:reports -o
 forj make:job billing:sync-reports --open
 ```
 
-Use `--no-open` to suppress editor opening for a single run. Generated Apps can also set `FORJ_MAKE_OPEN=auto`, `always`, or `never`, and `FORJ_EDITOR` can pin the editor command.
+Use `--no-open` to suppress editor opening for one run. Generated Apps can set `FORJ_MAKE_OPEN=auto`, `always`, or `never`, and `FORJ_EDITOR` can pin the editor command.
 
-See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and configuration.
+See [Opening Generated Files](/developer-tools/editor-open) for editor detection and configuration.
 
-## Removing Generated Resources
-
-Make commands also support `--remove` when you want to back out a generated resource:
-
-```bash
-forj make:controller reports --remove
-forj make:command reports:sync --remove
-forj make:job reports:generate --remove
-forj make:schedule reports:daily --remove
-forj make:event reports:report-generated --remove
-forj make:subscriber reports:report-generated --remove
-forj make:model reports --package reports --remove
-forj make:migration create_reports --remove
-forj make:queue reports --remove
-```
-
-Removal uses the same name, package, and output flags as creation. If you used `-d`, `--package`, `--connection`, or `--bus` when creating the resource, pass the same option when removing it.
-
-Use `--dry-run` to preview the delete and wiring cleanup:
-
-```bash
-forj make:controller reports --remove --dry-run
-```
-
-`--remove` is deterministic. It removes the generated file and the wiring that the matching make command knows how to add. It does not inspect your business logic, service code, tests, or manually added references.
-
-Removal reverses the default output and registration described in the [Command Map](#command-map). Three cases are worth calling out:
-
-- subscribers also remove their generated event subscription block;
-- migrations remove timestamped files matching the migration name;
-- named queues remove their generated environment keys.
-
-After removing a wired resource, run:
-
-```bash
-forj build
-```
-
-This catches any remaining application references that still point at the removed type, command, route, repository, job, schedule, or subscriber.
-
-## Examples
-
-Create a controller for a colocated HTTP package:
-
-```bash
-forj make:controller billing:reports
-```
-
-This creates `internal/billing/reports/controller.go`, wires the controller constructor, and adds the controller routes to the route registry. The default route path follows the grouped name, such as `/billing/reports`.
-
-Create an App command:
-
-```bash
-forj make:command reports:sync
-```
-
-This creates `internal/reports/sync_cmd.go`, wires the constructor, and exposes the generated command through the App command tree.
-
-Create a colocated job:
-
-```bash
-forj make:job billing:sync-reports --queue billing
-```
-
-This creates `internal/billing/sync_reports_job.go`, stamps the generated dispatch helper with `OnQueue("billing")`, and wires the job constructor into the generated job set.
-
-Create a named queue:
-
-```bash
-forj make:queue reports --workers 2
-```
-
-This updates the queue section in `.env` with `QUEUE_REPORTS_NAME=reports` and `QUEUE_REPORTS_WORKERS=2`. Run `forj make:queue` without arguments in an interactive terminal to use the resource wizard.
-
-Create a colocated schedule:
-
-```bash
-forj make:schedule reports:daily --every 24h
-```
-
-This creates `internal/reports/daily_schedule.go`, wires the schedule constructor into the app-owned `app/wire/inject_schedules_app.go`, and registers it through `app/schedules.go` with the `reports:daily` schedule name. If `--every` is omitted, GoForj writes a valid `1h` starter interval that you can edit in the generated file.
-
-Create a colocated event:
-
-```bash
-forj make:event billing:invoice-paid
-```
-
-This creates `internal/billing/invoice_paid_event.go`. Events are plain application types, so the generated file does not need a Wire registration by itself.
-
-Create a subscriber for a colocated event:
-
-```bash
-forj make:subscriber billing:invoice-paid
-```
-
-This creates `internal/billing/invoice_paid_subscriber.go`, wires the subscriber constructor into the app-owned `app/wire/inject_subscribers_app.go`, and subscribes it to the default event bus. Use `--bus audit` to subscribe through a named event bus configured by `EVENTS_AUDIT_DRIVER`.
-
-Create a model in an explicit package:
-
-```bash
-forj make:model invoices --package billing
-```
-
-This generates the model and repository in the selected package and wires the repository constructor.
-
-Create a database migration:
-
-```bash
-forj make:migration create_invoice_tables
-```
-
-This writes timestamped SQL migration files for the configured database drivers.
-
-## Output Overrides
+### Output Overrides
 
 Use `-d` when the default grouped package path is not the package you want:
 
@@ -300,21 +899,9 @@ The override controls the file location and package name. The grouped command na
 
 `make:model` uses `--package` instead of `-d` because models and repositories are generated around database table ownership.
 
-## What Gets Wired
+## Ownership and Verification
 
-Make commands update the framework-owned files that should not require hand edits for the common path:
-
-- `make:controller` adds the controller provider and route registry entry.
-- `make:command` adds the command provider and App command collection entry.
-- `make:job` adds the job provider.
-- `make:queue` updates `.env` queue resource keys.
-- `make:schedule` adds the schedule provider to `app/wire/inject_schedules_app.go` and the schedule registration to `app/schedules.go`, which are preserved across re-renders.
-- `make:subscriber` adds the subscriber provider and subscription to `app/wire/inject_subscribers_app.go`, which is preserved across re-renders.
-- `make:model` adds the repository provider.
-
-`make:event` and `make:migration` generate files that do not need a provider registration by default.
-
-## What Belongs To You
+### What Belongs To You
 
 Generated files are starting points. Your App still owns:
 
@@ -330,18 +917,7 @@ Generated files are starting points. Your App still owns:
 
 Keep dependencies explicit. If a generated controller, command, or job needs an application service, add that service constructor to the right provider set and let Wire pass it in.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not create one package per generated file.
-- Do not collect every controller, job, command, and service in one global package.
-- Do not make operator-facing command names longer merely to mirror package depth.
-- Do not use snake case package names.
-- Do not put business workflows directly in generated entry points.
-- Do not hand-edit generated wiring before using the make command path.
-:::
-
-## Verify
+### Verify
 
 After running a make command, verify the graph and the exposed runtime surface:
 
@@ -351,6 +927,17 @@ forj route:list
 ```
 
 Use `route:list` for controllers. For commands, run the generated command signature through `forj <command>`. Use `forj run <command>` only when you want to force App command execution explicitly.
+
+### Common Mistakes
+
+::: warning Common mistakes
+- Do not create one package per generated file.
+- Do not collect every controller, job, command, and service in one global package.
+- Do not make operator-facing command names longer merely to mirror package depth.
+- Do not use snake case package names.
+- Do not put business workflows directly in generated entry points.
+- Do not hand-edit generated wiring before using the make command path.
+:::
 
 ## Next Steps
 

@@ -38,18 +38,13 @@ The default app is enough for most Projects.
 
 ## Add a named app
 
+<MakeCommandTabs name="app">
+<template #usage>
+
 Use `make:app` when you need another app:
 
 ```bash
 forj make:app marketplace
-```
-
-That creates conventional app files:
-
-```text
-cmd/marketplace/main.go
-app/marketplace/
-app/marketplace/wire/
 ```
 
 You can choose the app surface explicitly:
@@ -70,6 +65,42 @@ forj make:app marketplace --remove
 ```
 
 Removal is conservative. It should not delete unknown app-owned files or migration history.
+
+</template>
+<template #files>
+
+`make:app marketplace` creates the binary entrypoint and App-owned composition surfaces:
+
+```text
+cmd/marketplace/main.go             binary entrypoint
+app/marketplace/root_cmd.go         App command composition
+app/marketplace/routes.go           HTTP exposure when selected
+app/marketplace/lifecycle.go        runtime lifecycle when selected
+app/marketplace/wire/               App-specific Wire graph
+.goforj.yml                         App component and starter-kit metadata
+```
+
+The exact composition files follow the selected components. Existing App migrations and unknown files are deliberately outside managed removal.
+
+</template>
+<template #generated>
+
+The generator records the App's selected surface in project configuration:
+
+<CodeFile path=".goforj.yml">
+
+```yaml
+apps:
+  marketplace:
+    components: [web_api, jobs]
+    starter_kit: none
+```
+</CodeFile>
+
+The generated `app/marketplace/` directory owns composition; its `wire/` directory contains the corresponding App-specific dependency graph.
+
+</template>
+</MakeCommandTabs>
 
 ## Use an app as a command prefix
 
@@ -187,14 +218,7 @@ app/<app>/
 
 `.goforj.yml` can store per-app component and starter-kit choices under `apps`, but layout decides which apps exist.
 
-```yaml
-apps:
-  marketplace:
-    components: [web_api, jobs]
-    starter_kit: none
-```
-
-This top-level `apps` metadata is separate from `dev.apps`, which selects the App lifecycles managed by `forj dev`.
+The generated-code tab under [Add a named app](#add-a-named-app) shows the configuration shape. This top-level `apps` metadata is separate from `dev.apps`, which selects the App lifecycles managed by `forj dev`.
 
 ## App-scoped output
 

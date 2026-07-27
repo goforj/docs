@@ -22,33 +22,62 @@ This guide follows events through a generated App's publishers, subscribers, and
 | Start with | `inproc` events for local same-process fan-out. |
 | Upgrade to | Transport-backed events when subscribers must run in other processes or hosts. |
 
-## Generated Package
+## Generate an Event
 
-Generated event code lives in:
+<MakeCommandTabs name="event">
+<template #usage>
 
-```text
-internal/events
-```
-
-Create an event type:
+Create an event type for the default App:
 
 ```bash
 forj make:event UserRegistered
 ```
 
-`make:event` generates a plain payload type and topic constant. It does not add a Wire provider because event payloads are created at publish time, not constructed once as App dependencies.
-
-Create subscribers separately:
+Use a grouped name to colocate an event with its owning package:
 
 ```bash
-forj make:subscriber users:registered
+forj make:event billing:invoice-paid
 ```
 
-`make:subscriber` creates a handler object and registers it in the App-owned event subscriber injector. Use `--bus <name>` when the subscriber should listen on a named bus configured by `EVENTS_<NAME>_DRIVER`.
+</template>
+<template #files>
+
+```text
+internal/billing/invoice_paid_event.go    created
+```
+
+Events are payload types created at publish time, so generation does not alter Wire or App registration files.
+
+</template>
+<template #generated>
+
+The generated type provides a stable topic and a place for the payload:
+
+<CodeFile path="internal/billing/invoice_paid_event.go">
+
+```go
+const InvoicePaidEventTopic = "invoicepaid"
+
+type InvoicePaidEvent struct {
+	// Add event fields.
+}
+
+func (InvoicePaidEvent) Topic() string {
+	return InvoicePaidEventTopic
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+Create event subscribers separately with the [Event Subscribers](/async/event-subscribers) workflow. Subscribers add App-owned wiring and can target a named bus with `--bus <name>`.
 
 Use `domain.past_tense` topics, such as `users.created` or `invoices.paid`. Review the generated topic constant before other code depends on it. See [Naming Conventions](/core/naming-conventions) for the full naming map.
 
-## Event Shape
+## Add the Payload
+
+Replace the generated placeholder with the fact subscribers need. The scaffold derives `invoicepaid` from the generated type; choose the stable domain topic before publishers or subscribers depend on it:
 
 ```go
 type UserRegisteredEvent struct {
