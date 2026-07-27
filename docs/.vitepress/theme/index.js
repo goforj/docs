@@ -5,6 +5,8 @@ import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
 import StarterKitOptions from './components/StarterKitOptions.vue'
+import CodeFile from './components/CodeFile.vue'
+import MakeCommandTabs from './components/MakeCommandTabs.vue'
 import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
 
@@ -607,6 +609,8 @@ export default {
     ctx.app.component('StarterKitHeroScreens', StarterKitHeroScreens)
     ctx.app.component('StarterKitOptions', StarterKitOptions)
     ctx.app.component('GoForjLiveTerminal', GoForjLiveTerminal)
+    ctx.app.component('CodeFile', CodeFile)
+    ctx.app.component('MakeCommandTabs', MakeCommandTabs)
   },
   Layout: () => {
     const { theme } = useData()

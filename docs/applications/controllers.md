@@ -13,7 +13,126 @@ Controllers should translate requests into application service calls and transla
 
 The complete Users example lives in [JSON API Route](/scenarios/json-api-route). It starts with `forj make:controller users`, then shows the generated location, service provider, service test, build, route listing, and `curl` result. Reuse that flow rather than copying it into each HTTP page.
 
-## Controller Shape
+## Generate, Wire, and Verify
+
+<MakeCommandTabs name="controller">
+<template #usage>
+
+Create a controller for the default App:
+
+```bash
+forj make:controller Users
+```
+
+Use grouped names to colocate controllers with their package:
+
+```bash
+forj make:controller billing:reports
+```
+
+For a named App, prefix the generator:
+
+```bash
+forj marketplace make:controller checkout
+```
+
+</template>
+<template #files>
+
+```text
+internal/billing/reports/controller.go       created
+app/wire/inject_http_controllers_app.go      provider added
+app/routes.go                                routes registered
+```
+
+For a named App, the controller remains under `internal/...`; the registration files live under `app/<name>/...`.
+
+</template>
+<template #generated>
+
+The generated controller owns its starter handlers and route list:
+
+<CodeFile path="internal/billing/reports/controller.go">
+
+```go
+type Controller struct {
+	logger *logger.AppLogger
+}
+
+func NewController(logger *logger.AppLogger) *Controller {
+	return &Controller{logger: logger}
+}
+
+func (c *Controller) Routes() []web.Route {
+	return []web.Route{
+		web.NewRoute(http.MethodGet, "/billing/reports", c.Get),
+	}
+}
+
+func (c *Controller) Get(r web.Context) error {
+	c.logger.Info().Msg("Hello from billing reports controller")
+	return r.Text(http.StatusOK, "Hello from billing reports controller")
+}
+```
+</CodeFile>
+
+The generator adds its constructor to the HTTP controller provider set:
+
+<CodeFile path="app/wire/inject_http_controllers_app.go">
+
+```go
+var appHttpControllerSet = wire.NewSet(
+	billingReports.NewController, // [!code highlight]
+)
+```
+</CodeFile>
+
+It also injects the controller into the App route registry:
+
+<CodeFile path="app/routes.go">
+
+```go
+func ProvideRoutes(
+	billingReportsController *billingReports.Controller, // [!code highlight]
+) []web.RouteGroup {
+	publicRoutes := slices.Concat(
+		billingReportsController.Routes(), // [!code highlight]
+	)
+	return []web.RouteGroup{
+		web.NewRouteGroup("/api/v1", publicRoutes),
+	}
+}
+```
+</CodeFile>
+
+</template>
+</MakeCommandTabs>
+
+In the normal flow, you do not hand-edit the controller provider set just to make the new controller constructible. Use `-d` only when you intentionally want to override the package directory.
+
+If the controller depends on a service, make sure the service constructor is wired from `app/wire/inject_services_app.go`. The make command wires the controller; the service provider still belongs in the app services set.
+
+```go
+var appSet = wire.NewSet(
+	// existing framework and app providers...
+	users.NewService,
+)
+```
+
+Run the full verification after the service provider is added:
+
+```bash
+forj build
+forj route:list
+```
+
+Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes the controller path. Start `forj api` and use the scenario's `curl` command to prove the public response.
+
+For a named app, run `forj marketplace route:list` after the build to verify its routes.
+
+## Implement the Controller
+
+Replace the generated starter response with a thin HTTP adapter around an application service:
 
 ```go
 package users
@@ -47,66 +166,6 @@ func (c *Controller) Show(ctx web.Context) error {
 }
 ```
 
-## Generate, Wire, and Verify
-
-Use `forj make:controller` when starting a new controller:
-
-```bash
-forj make:controller Users
-```
-
-The make command generates the controller and injects it into the generated HTTP wiring surfaces. In the normal flow, you do not hand-edit the controller provider set just to make the new controller constructible.
-
-Use grouped names to place controllers with the package they belong to:
-
-```bash
-forj make:controller billing:reports
-```
-
-This creates `internal/billing/reports/controller.go`, wires the controller constructor, and registers the controller routes. Use `-d` only when you intentionally want to override the package directory.
-
-Review what the make command created or updated:
-
-- `internal/users/controller.go` owns the controller type, constructor, handlers, and route list.
-- `app/wire/inject_http_controllers_app.go` provides the controller constructor.
-- `app/routes.go` includes the controller routes in the default app route registry.
-
-If the controller depends on a service, make sure the service constructor is wired from `app/wire/inject_services_app.go`. The make command wires the controller; the service provider still belongs in the app services set.
-
-```go
-var appSet = wire.NewSet(
-	// existing framework and app providers...
-	users.NewService,
-)
-```
-
-The controller itself belongs in the HTTP controller set. The make command adds this provider for you:
-
-```go
-var httpAppControllerSet = wire.NewSet(
-	// existing controllers...
-	users.NewController,
-)
-```
-
-Run the full verification after the service provider is added:
-
-```bash
-forj build
-forj route:list
-```
-
-Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes the controller path. Start `forj api` and use the scenario's `curl` command to prove the public response.
-
-For a named app, run the make command through that app:
-
-```bash
-forj marketplace make:controller checkout
-forj marketplace route:list
-```
-
-This creates `internal/checkout/controller.go`, then updates `app/marketplace/routes.go` and `app/marketplace/wire/inject_http_controllers_app.go`.
-
 ## Responsibilities
 
 Controllers should own:
@@ -123,17 +182,7 @@ Controllers should not own long-running business workflows, persistence details,
 
 ## Dependency Injection
 
-Controllers are constructed through providers and Wire.
-
-Inject services, not global state:
-
-```go
-func NewController(service *Service) *Controller {
-	return &Controller{service: service}
-}
-```
-
-If the service is required, keep it visible in the constructor. Optional collaborators should be modeled explicitly.
+Controllers are constructed through providers and Wire. The implementation above keeps its required service visible in `NewController`; follow that constructor-injection shape instead of reaching through global state. Model optional collaborators explicitly.
 
 ## Request Context
 

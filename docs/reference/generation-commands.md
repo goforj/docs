@@ -57,6 +57,8 @@ forj marketplace build:api-index --strict
 
 Create a named app when the Project needs another runnable boundary:
 
+The [Add a Named App](/core/apps#add-a-named-app) workflow shows usage, generated files, and representative composition code in the standard tabbed format.
+
 ```bash
 forj make:app marketplace
 forj make:app billing --components web-api,jobs --dev-run run
@@ -89,6 +91,8 @@ Removal is conservative. It removes conventional app files and metadata, but it 
 ## Make Command Removal
 
 Use `--remove` when you need to undo a resource created by a make command:
+
+The [Make Command Reference](/core/make-commands#command-reference) shows creation and removal beside each resource's generated files and wiring changes.
 
 ```bash
 forj make:controller reports --remove

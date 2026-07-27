@@ -1143,15 +1143,15 @@ export default defineConfig({
           { text: 'Apps', link: '/core/apps' },
           { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
           { text: 'Runtime Topology', link: '/core/runtime-topology' },
-          { text: 'Dependency Injection', link: '/core/dependency-injection' },
-          { text: 'Provider Patterns', link: '/core/provider-patterns' },
+          { text: 'Code Generation', link: '/core/code-generation' },
           { text: 'Make Commands', link: '/core/make-commands' },
           { text: 'Naming Conventions', link: '/core/naming-conventions' },
+          { text: 'Dependency Injection', link: '/core/dependency-injection' },
+          { text: 'Provider Patterns', link: '/core/provider-patterns' },
           { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
           { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
           { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
           { text: 'Named Resources', link: '/core/named-resources' },
-          { text: 'Code Generation', link: '/core/code-generation' },
           { text: 'Local-First Development', link: '/core/local-first-development' }
         ]
       },

@@ -4974,6 +4974,16 @@ div[class*='language-'] .lang {
     background-color: rgba(255, 194, 77, 0.085);
     box-shadow: inset 2px 0 0 var(--gf-nav);
 }
+
+/* VitePress extends highlighted backgrounds into the code gutter with a
+   negative margin, then restores the text inset with matching padding. The
+   general line reset above removes that padding, which makes highlighted
+   nested lines appear one indentation level too shallow. */
+.vp-doc div[class*='language-']:not(.line-numbers-mode) .line.highlighted {
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+}
+
 .vp-doc div[class*='language-'] .has-focused .line:not(.has-focus) {
     filter: blur(0.085rem);
     opacity: 0.5;
@@ -6833,4 +6843,92 @@ body,
     --gf-app-hover:    #1B1620;   /* L*  8.2  row hover                    */
     --gf-app-raised:   #1F1A24;   /* L* 10.2  popover, menu, dropdown      */
     --gf-app-overlay:  #241E29;   /* L* 12.4  dialog, sheet                */
+}
+/* Make-command references keep usage, file mutations, and generated output together without making the page visually dense. */
+.gf-make-command-tabs {
+  margin: 16px 0 28px;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+}
+
+.gf-make-command-tabs__list {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 6px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-alt);
+}
+
+.gf-make-command-tabs__tab {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--vp-c-text-2);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gf-make-command-tabs__tab:hover {
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-default-soft);
+}
+
+.gf-make-command-tabs__tab.is-active {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg);
+  box-shadow: 0 0 0 1px var(--vp-c-divider);
+}
+
+.gf-make-command-tabs__tab:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 1px;
+}
+
+.gf-make-command-tabs__panel {
+  padding: 4px 18px 18px;
+}
+
+.gf-make-command-tabs__panel > :last-child {
+  margin-bottom: 0;
+}
+
+.gf-make-command-tabs__legend {
+  margin: 14px 0 4px;
+  color: var(--gf-ink-2);
+  font-size: 13px;
+}
+
+.gf-make-command-tabs__panel div[class*='language-'] {
+  margin-bottom: 0;
+}
+
+.gf-code-file {
+  margin: 14px 0 0;
+  border: 1px solid var(--gf-code-border);
+  border-radius: var(--gf-code-radius);
+  background: var(--gf-code-bg);
+  overflow: hidden;
+}
+
+.gf-code-file__caption {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--gf-code-border);
+  color: var(--gf-ink-2);
+  font-family: var(--gf-font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.vp-doc .gf-code-file__body > div[class*='language-'] {
+  margin: 0 !important;
+  border: 0;
+  border-radius: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.012) !important;
 }

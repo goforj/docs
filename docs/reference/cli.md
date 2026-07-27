@@ -24,6 +24,8 @@ Use workflow pages for full context.
 | `forj make:command <name>` | Generate an application command and wire it into the App command tree. |
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
 
+See the [Make Command Reference](/core/make-commands#command-reference) for every generator, the files it touches, and representative generated code.
+
 Inside a generated Project, `forj <command>` is the normal default-app development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the default app through the same source-aware path as `forj run <command>`.
 
 Named apps use an app prefix:
@@ -152,7 +154,7 @@ forj make:command reports:reconcile
 forj make:migration create_users
 ```
 
-To register generated code into a named app, prefix the command:
+Prefix a resource command when a named App owns its registration:
 
 ```bash
 forj marketplace make:controller checkout
@@ -160,19 +162,7 @@ forj marketplace make:job sync-catalog --queue sync
 forj marketplace make:model order
 ```
 
-The prefix chooses the registration files. `forj marketplace make:controller checkout` creates `internal/checkout/controller.go`, then updates `app/marketplace/routes.go` and `app/marketplace/wire/inject_http_controllers_app.go`; unprefixed `forj make:controller users` creates `internal/users/controller.go`, then updates the default app's `app/routes.go` and `app/wire/inject_http_controllers_app.go`.
-
-File-generating make commands support `--open` / `-o` to open the generated file and `--no-open` to suppress opening. See [Opening Generated Files](/developer-tools/editor-open) for automatic editor detection and `FORJ_MAKE_OPEN` configuration.
-
-Make commands also support `--remove` to delete the generated file or resource config and undo the wiring that the command manages:
-
-```bash
-forj make:controller users --remove
-forj make:command reports:reconcile --remove
-forj make:migration create_users --remove
-```
-
-Use `--dry-run` with `--remove` to preview the changes. See [Make Commands](/core/make-commands#removing-generated-resources) for the command-by-command removal behavior.
+See [Apps](/core/apps#add-a-named-app) for App creation and prefix behavior. See the [Make Command Reference](/core/make-commands#command-reference) for generated files, wiring changes, output overrides, opening files, and removal.
 
 ## Maintainer Commands
 

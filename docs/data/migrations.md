@@ -23,13 +23,17 @@ Run migrations for a named app with the app prefix:
 forj marketplace migrate
 ```
 
-Generate a migration:
+## Create a Migration
+
+<MakeCommandTabs name="migration">
+<template #usage>
 
 ```bash
 forj make:migration create_users
+forj make:migration add_event_index --connection analytics
 ```
 
-Run this from the generated App root. Migration generation is a project-level `forj` command, while applying and rolling back migrations happens through the generated App command surface.
+Run these project-level commands from the generated App root. Applying and rolling back migrations happens through the generated App command surface.
 
 Remove generated migration files that match a migration name:
 
@@ -37,7 +41,45 @@ Remove generated migration files that match a migration name:
 forj make:migration create_users --remove
 ```
 
-The removal command matches timestamped files by migration name, including driver-specific files such as `.sqlite.up.sql` and `.postgres.down.sql`. Use `--connection analytics` when removing migration files from a named connection directory.
+Use `--connection analytics` when removing files from a named connection directory.
+
+</template>
+<template #files>
+
+The default connection writes under `migrations/`. Named connections use `migrations/<connection>/`; multi-App Projects add the App name first:
+
+```text
+migrations/<timestamp>_create_users.up.sql
+migrations/<timestamp>_create_users.down.sql
+migrations/analytics/<timestamp>_add_event_index.up.sql
+migrations/marketplace/archive/<timestamp>_add_event_index.up.sql
+```
+
+Multi-driver Apps insert the driver before `.up.sql` and `.down.sql`, such as `.postgres.up.sql`. No Go or Wire files change.
+
+</template>
+<template #generated>
+
+The generator creates paired starter files. Replace the comments with the forward and rollback SQL:
+
+<CodeFile path="migrations/&lt;timestamp&gt;_create_users.up.sql">
+
+```sql
+-- Up migration (sqlite)
+```
+</CodeFile>
+
+<CodeFile path="migrations/&lt;timestamp&gt;_create_users.down.sql">
+
+```sql
+-- Down migration (sqlite)
+```
+</CodeFile>
+
+The timestamp is UTC in `YYYY_MM_DD_HHMMSS` format. Removal matches that timestamped up/down pair by migration name.
+
+</template>
+</MakeCommandTabs>
 
 Rollback recent migrations:
 
@@ -53,47 +95,7 @@ forj marketplace migrate:rollback
 
 The generated migration command supports options such as step count, dry run, and connection selection.
 
-## Files
-
-Migration files live under:
-
-```text
-migrations/
-```
-
-Driver-specific migrations include the driver name:
-
-```text
-migrations/2026_01_01_000001_create_users.sqlite.up.sql
-migrations/2026_01_01_000001_create_users.sqlite.down.sql
-migrations/2026_01_01_000001_create_users.postgres.up.sql
-migrations/2026_01_01_000001_create_users.postgres.down.sql
-```
-
-## Named Connections
-
-Root migration files target the default connection.
-
-Subdirectories target named connections:
-
-```text
-migrations/analytics/2026_01_01_000001_add_events.postgres.up.sql
-migrations/analytics/2026_01_01_000001_add_events.postgres.down.sql
-```
-
-The `analytics` directory maps to `DB_ANALYTICS_*`.
-
 ## Multi-App Projects
-
-When a Project has multiple apps, migrations are grouped by app first and connection second:
-
-```text
-migrations/app/default/
-migrations/marketplace/default/
-migrations/marketplace/archive/
-```
-
-This keeps each app's schema changes easy to review while preserving named connection ownership.
 
 App-prefixed commands scope execution to that app:
 
@@ -104,7 +106,7 @@ forj marketplace migrate --connection archive
 
 The first command runs every migration stream under `migrations/marketplace/*`. The second runs only `migrations/marketplace/archive`.
 
-If two apps share one physical database, pick one app to own that database's migration stream. Do not duplicate the same schema history under two app directories.
+If two apps share one physical database, pick one app to own that database's migration stream. Do not duplicate the same schema history under two app directories. The `analytics` connection directory maps to `DB_ANALYTICS_*`.
 
 ## Migration Table
 
