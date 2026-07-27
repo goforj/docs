@@ -1,0 +1,1579 @@
+<!doctype html>
+<!--
+  GoForj — The Forge, v2. Everything in forge.html, plus:
+
+    - A molten heat shader on the mark: cooling runs edge-first with
+      noise mottling and a white-hot core, like actual steel, instead of
+      a uniform emissive. Injected via onBeforeCompile on the standard
+      material, so lights/shadows/env still behave.
+    - The cube's three seam edges (SEAM_EDGES from logo-lab.html, same
+      frozen geometry) are drawn INTO the material: they glow like
+      cracks while molten and read as engraved lines once tempered, so
+      the cooled mark carries the three-face identity.
+    - A quench: between the reveal and the rise the mark dips into a
+      slack tub — steam, hiss, and the orange snaps to temper gold.
+    - Driver chips (postgres, redis, nats, s3, smtp, sqlite) orbit the
+      finished application as it rises: components forged in, drivers
+      swapped ever after.
+    - The headline's "forged." ignites on the final strike.
+    - Interaction: click to hurry the hammer; embers drift away from
+      the cursor.
+    - THE TERMINAL (bottom left): attract mode types a `forj new`
+      command each cycle — the app being forged is that command. Click
+      it and it's yours: type a name and driver flags, hit enter, and
+      the forge builds YOUR app (nameplate on the mark, your drivers on
+      the chips) while the real command lands on your clipboard.
+      Unspecified primitives resolve to their local-first drivers.
+    - Camera choreography: push-in on the strikes, a step toward the
+      tub for the quench, pull-back for the rise.
+    - Clearcoat floor for warm glints, and synthesized sound (anvil
+      ring, coal crackle, quench hiss) — OFF by default, toggle bottom
+      right.
+
+  Sources of truth: colour tokens transcribed from public/design-system.css
+  (Temper core); MARK_OUTER / MARK_HOLE / seam rays copied verbatim from
+  logo-lab.html's frozen base. Do not edit them here; the lab owns them.
+
+  Motion policy follows the site: data-gf-motion / localStorage
+  `goforjMotion` (on | reduced), falling back to prefers-reduced-motion.
+  Reduced renders a single still tableau. `?static` forces it.
+
+  Debugging: the page pauses in hidden tabs (rAF), so `window.__forge`
+  reads live cycle state and `window.__forgeStep(seconds)` fast-forwards
+  the simulation and renders one frame. Strike ≈2.2s, molten reveal
+  ≈4.8s, quench ≈6.4s, chip-ringed rise ≈9.5s.
+-->
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>GoForj — The Forge v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Tokens transcribed from design-system.css — Temper core. */
+:root {
+  --gf-accent: #FF5E3A;
+  --gf-accent-hi: #FF8257;
+  --gf-nav: #FFC24D;
+  --gf-nav-hi: #FFD37A;
+  --gf-on-accent: #08070A;
+  --gf-ground-deep: #0C0A0E;
+  --gf-ground: #1A1620;
+  --gf-surface: #2C2734;
+  --gf-line: #2A2333;
+  --gf-line-strong: #3D3349;
+  --gf-ink: #FFFFFF;
+  --gf-ink-2: #A9A1B3;
+  --gf-ink-3: #746C80;
+  --gf-font-display: 'Space Grotesk', sans-serif;
+  --gf-font-body: 'Inter', sans-serif;
+  --gf-font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--gf-ground-deep);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+#stage { position: fixed; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+
+/* ---- overlay chrome (optional when embedding) ---- */
+.ov { position: fixed; z-index: 5; pointer-events: none; }
+.ov--head { top: clamp(22px, 4.5vh, 46px); left: clamp(22px, 4vw, 52px); max-width: 560px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px;
+  letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--gf-nav); margin: 0 0 14px;
+}
+.kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-nav); }
+h1 {
+  margin: 0 0 10px; font-family: var(--gf-font-display); font-weight: 700;
+  font-size: clamp(30px, 4.4vw, 52px); line-height: 1.06; letter-spacing: -0.032em;
+  text-shadow: 0 2px 26px rgba(12,10,14,.85);
+}
+h1 em { font-style: normal; color: var(--gf-accent); }
+h1 em.ignite { animation: ignite 1.1s ease-out; }
+@keyframes ignite {
+  0%   { text-shadow: 0 0 16px rgba(255,94,58,.95), 0 0 52px rgba(255,94,58,.55); color: var(--gf-accent-hi); }
+  100% { text-shadow: 0 0 0 rgba(255,94,58,0); color: var(--gf-accent); }
+}
+.sub {
+  margin: 0; font-size: clamp(13.5px, 1.25vw, 15.5px); line-height: 1.65;
+  color: var(--gf-ink-2); max-width: 44ch;
+  text-shadow: 0 1px 18px rgba(12,10,14,.9);
+}
+/* ---- the forge terminal: type `forj new`, watch it get forged ---- */
+.ov--term {
+  left: clamp(16px, 2.4vw, 30px); bottom: clamp(16px, 3.2vh, 30px);
+  pointer-events: auto;
+  width: min(460px, calc(100vw - 200px));
+}
+#term {
+  border: 1px solid var(--gf-line); border-radius: 10px; overflow: hidden;
+  background: color-mix(in srgb, var(--gf-ground-deep) 84%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 44px -18px rgba(0,0,0,.85);
+  cursor: text;
+}
+.t-bar {
+  display: flex; align-items: center; gap: 6px; padding: 8px 12px;
+  background: color-mix(in srgb, #131017 86%, transparent);
+  border-bottom: 1px solid var(--gf-line);
+}
+.t-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--gf-surface); display: block; }
+.t-bar i:first-child { background: var(--gf-accent); opacity: .85; }
+.t-title {
+  margin-left: auto; font-family: var(--gf-font-mono); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--gf-ink-3);
+}
+.t-body { padding: 10px 14px 11px; font-family: var(--gf-font-mono); font-size: 12.5px; }
+.t-hist { min-height: 15px; color: var(--gf-nav); opacity: .9; margin-bottom: 6px; font-size: 11px; }
+.t-line { display: flex; align-items: baseline; gap: 8px; }
+.t-prompt { color: var(--gf-accent); }
+#tghost { color: var(--gf-ink); white-space: nowrap; overflow: hidden; }
+#tghost::after { content: '\258D'; color: var(--gf-nav); animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+#tin {
+  flex: 1; min-width: 0; background: transparent; border: 0; outline: 0;
+  color: var(--gf-ink); font: inherit; caret-color: var(--gf-nav);
+  display: none; padding: 0;
+}
+#term.live #tghost { display: none; }
+#term.live #tin { display: block; }
+.t-hint { margin-top: 7px; font-size: 10px; color: var(--gf-ink-3); letter-spacing: 0.04em; }
+.ov--ctl {
+  right: clamp(16px, 2.4vw, 30px); bottom: clamp(16px, 3.2vh, 30px);
+  pointer-events: auto; display: flex; gap: 8px;
+}
+.ov--ctl button {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--gf-ink-2); background: transparent;
+  border: 1px solid var(--gf-line-strong); border-radius: 8px;
+  padding: 7px 13px; cursor: pointer;
+}
+.ov--ctl button:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+#boot {
+  position: fixed; inset: 0; z-index: 4; display: grid; place-items: center;
+  font-family: var(--gf-font-mono); font-size: 12px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  background: var(--gf-ground-deep);
+  transition: opacity .8s ease; pointer-events: none;
+}
+#boot.off { opacity: 0; }
+#fallback {
+  position: fixed; inset: 0; z-index: 6; display: none;
+  place-items: center; background: var(--gf-ground-deep); text-align: center;
+}
+#fallback .mark { width: 120px; margin: 0 auto 22px; display: block; }
+#fallback p { font-size: 14px; color: var(--gf-ink-2); max-width: 40ch; margin: 0 auto; line-height: 1.6; }
+@media (max-width: 640px) {
+  .ov--head { max-width: 78vw; }
+  .ov--term { width: calc(100vw - 32px); }
+  .ov--ctl { bottom: auto; top: clamp(16px, 3vh, 26px); right: clamp(16px, 2.4vw, 30px); }
+}
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="boot">warming the forge&hellip;</div>
+
+<header class="ov ov--head">
+  <p class="kicker">goforj &middot; the forge</p>
+  <h1>Applications, <em id="forged-word">forged</em>.</h1>
+  <p class="sub">One application model, explicit wiring, six swappable
+  primitives. The backends change; the business logic never goes back
+  in the fire.</p>
+</header>
+
+<div class="ov ov--term">
+  <div id="term">
+    <div class="t-bar"><i></i><i></i><i></i><span class="t-title">forge &middot; interactive</span></div>
+    <div class="t-body">
+      <div class="t-hist" id="thist"></div>
+      <div class="t-line">
+        <span class="t-prompt">$</span><span id="tghost"></span><input id="tin" spellcheck="false" autocomplete="off" aria-label="forj command">
+      </div>
+      <div class="t-hint">click &amp; type your own — enter forges it and copies the real command</div>
+    </div>
+  </div>
+</div>
+
+<div class="ov ov--ctl">
+  <button id="sound" aria-pressed="false">sound: off</button>
+  <button id="pause" aria-pressed="false">pause</button>
+</div>
+
+<div id="fallback">
+  <div>
+    <svg class="mark" viewBox="-8.2 -6.2 100.4 112.4" aria-hidden="true">
+      <path d="M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z"
+            fill="#FF5E3A" fill-rule="evenodd"/>
+    </svg>
+    <p>The forge needs WebGL to light. Your browser declined, so here is
+    the mark, already cooled.</p>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+/* ================================================================
+   Tokens (transcribed from design-system.css — Temper core)
+   ================================================================ */
+const T = {
+  accent:     0xFF5E3A,   // molten — ACTION
+  accentHi:   0xFF8257,
+  gold:       0xFFC24D,   // temper — NAV
+  goldHi:     0xFFD37A,
+  groundDeep: 0x0C0A0E,
+  ground:     0x1A1620,
+  groundAlt:  0x1D1923,
+  surface:    0x2C2734,
+  lineStrong: 0x3D3349,
+  ink2:       0xA9A1B3,
+  ink3:       0x746C80
+};
+
+/* ================================================================
+   FROZEN MARK — copied verbatim from logo-lab.html. Do not edit.
+   Bounding box 84.01 x 100, evenodd counter. The cube corners and
+   centre below are logo-lab's own CUBE / CUBE_C derivation; the
+   three seam rays are the sector boundaries.
+   ================================================================ */
+const MARK_OUTER = [
+  [40.59,0.0],[0.0,25.06],[0.0,74.9],[42.26,100.0],[84.01,75.99],[83.8,29.98],
+  [74.4,24.17],[80.24,21.88],[65.47,12.52],[56.15,18.37],[56.35,9.94]
+];
+const MARK_HOLE = [
+  [40.43,17.78],[40.01,22.31],[43.43,24.33],[23.04,36.46],[22.84,60.81],
+  [39.59,71.96],[39.39,45.17],[60.37,32.81],[67.34,37.11],[45.67,50.2],
+  [45.67,62.45],[47.88,63.68],[68.09,51.93],[67.88,65.78],[41.93,81.28],
+  [16.13,65.18],[16.13,32.2]
+];
+const CUBE = { T:[40.59,0], L1:[0,25.06], L2:[0,74.9], B:[42.26,100], R2:[84.01,75.99], R1:[84.01,25.06] };
+const CUBE_C = [
+  ((CUBE.L1[0] + CUBE.R1[0] - CUBE.T[0]) + (CUBE.L2[0] + CUBE.R2[0] - CUBE.B[0])) / 2,
+  ((CUBE.L1[1] + CUBE.R1[1] - CUBE.T[1]) + (CUBE.L2[1] + CUBE.R2[1] - CUBE.B[1])) / 2
+];
+
+/* mark local space: x' = (x-42.005)/100, y' = (50-y)/100 */
+const toLocal = ([x, y]) => [ (x - 42.005) / 100, (50 - y) / 100 ];
+const SEAM_C = toLocal(CUBE_C);
+const seamDir = (p) => {
+  const l = toLocal(p), d = [l[0] - SEAM_C[0], l[1] - SEAM_C[1]];
+  const m = Math.hypot(d[0], d[1]);
+  return new THREE.Vector2(d[0] / m, d[1] / m);
+};
+const SEAM_D1 = seamDir(CUBE.L1), SEAM_D2 = seamDir(CUBE.R1), SEAM_D3 = seamDir(CUBE.B);
+
+/* ---- motion policy: mirrors the site's data-gf-motion contract ---- */
+const params = new URLSearchParams(location.search);
+let stored = null;
+try { stored = localStorage.getItem('goforjMotion'); } catch (e) {}
+const osReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REDUCED = params.has('static') || stored === 'reduced' || (osReduced && stored !== 'on');
+
+const bootEl = document.getElementById('boot');
+const pauseBtn = document.getElementById('pause');
+const soundBtn = document.getElementById('sound');
+const forgedWord = document.getElementById('forged-word');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+} catch (e) {
+  document.getElementById('fallback').style.display = 'grid';
+  bootEl.style.display = 'none';
+  throw e;
+}
+
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.getElementById('stage').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(T.groundDeep);
+scene.fog = new THREE.FogExp2(T.groundDeep, 0.042);
+
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 60);
+const CAM_BASE = new THREE.Vector3(0, 2.35, 7.6);
+const CAM_LOOK = new THREE.Vector3(0, 1.7, 0);
+camera.position.copy(CAM_BASE);
+camera.lookAt(CAM_LOOK);
+
+{
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.45;
+  pmrem.dispose();
+}
+
+/* ================================================================
+   Materials
+   ================================================================ */
+const mat = {
+  ironDark:  new THREE.MeshStandardMaterial({ color: 0x18141d, metalness: 0.78, roughness: 0.42, envMapIntensity: 0.3 }),
+  iron:      new THREE.MeshStandardMaterial({ color: 0x231e2b, metalness: 0.72, roughness: 0.5,  envMapIntensity: 0.28 }),
+  wood:      new THREE.MeshStandardMaterial({ color: 0x2b201a, metalness: 0.0,  roughness: 0.86, envMapIntensity: 0.1 }),
+  woodDark:  new THREE.MeshStandardMaterial({ color: 0x1d1510, metalness: 0.0,  roughness: 0.9,  envMapIntensity: 0.08 }),
+  brick:     new THREE.MeshStandardMaterial({ color: 0x161219, metalness: 0.05, roughness: 0.92, envMapIntensity: 0.08 }),
+  /* clearcoat = the poor smith's wet stone: warm glints without a mirror pass */
+  floor:     new THREE.MeshPhysicalMaterial({ color: 0x0e0b12, metalness: 0.1, roughness: 0.55,
+               clearcoat: 0.55, clearcoatRoughness: 0.35, envMapIntensity: 0.12 }),
+  wall:      new THREE.MeshStandardMaterial({ color: 0x0d0b11, metalness: 0.0,  roughness: 1.0,  envMapIntensity: 0.04 })
+};
+
+/* ================================================================
+   THE HEAT SHADER. Standard material, with the emissive term replaced
+   by a physical-ish cooling model in the mark's own local space:
+
+     - edges cool before the core (edge mask on local radius)
+     - value-noise mottling so the surface is never one temperature
+     - a white-hot bias in the core at full heat
+     - the three seam rays glow like cracks while molten, then survive
+       as engraved lines once cooled
+     - cooled metal keeps faint gold ember veins in the noise
+
+   uHeat: 0 molten → 1 tempered. uSeam gates the seam (the billet is
+   seamless). Lights, shadows and env behave as usual.
+   ================================================================ */
+const heatMats = new Set();
+function makeHeatMaterial({ seam = 1 } = {}) {
+  const m = new THREE.MeshStandardMaterial({
+    color: T.surface, metalness: 0.62, roughness: 0.48,
+    emissive: 0x000000, envMapIntensity: 0.4
+  });
+  const u = {
+    uHeat: { value: 0 },
+    uTime: { value: 0 },
+    uSeam: { value: seam },
+    uSeamC: { value: new THREE.Vector2(SEAM_C[0], SEAM_C[1]) },
+    uSeamD1: { value: SEAM_D1 }, uSeamD2: { value: SEAM_D2 }, uSeamD3: { value: SEAM_D3 }
+  };
+  m.userData.u = u;
+  m.customProgramCacheKey = () => 'gf-forge-heat';
+  m.onBeforeCompile = (s) => {
+    Object.assign(s.uniforms, u);
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', `#include <common>
+        varying vec3 vGfLocal; varying vec3 vGfNormal;`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+        vGfLocal = position; vGfNormal = normal;`);
+    s.fragmentShader = s.fragmentShader
+      .replace('#include <common>', `#include <common>
+        varying vec3 vGfLocal; varying vec3 vGfNormal;
+        uniform float uHeat, uTime, uSeam;
+        uniform vec2 uSeamC, uSeamD1, uSeamD2, uSeamD3;
+        float gfHash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float gfNoise(vec2 p){
+          vec2 i = floor(p), f = fract(p); vec2 q = f * f * (3.0 - 2.0 * f);
+          return mix(mix(gfHash(i), gfHash(i + vec2(1, 0)), q.x),
+                     mix(gfHash(i + vec2(0, 1)), gfHash(i + vec2(1, 1)), q.x), q.y);
+        }
+        float gfRayD(vec2 p, vec2 d){ float t = max(dot(p, d), 0.0); return length(p - d * t); }
+        float gfSeam(vec2 q){
+          vec2 p = q - uSeamC;
+          return min(gfRayD(p, uSeamD1), min(gfRayD(p, uSeamD2), gfRayD(p, uSeamD3)));
+        }`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        float gfSeamLine = (1.0 - smoothstep(0.004, 0.012, gfSeam(vGfLocal.xy)))
+                         * smoothstep(0.45, 0.75, abs(vGfNormal.z)) * uSeam;
+        diffuseColor.rgb *= 1.0 - gfSeamLine * 0.5;`)
+      .replace('#include <emissivemap_fragment>', `
+        {
+          float d = length(vGfLocal.xy);
+          float edge = smoothstep(0.18, 0.58, d);
+          float n = gfNoise(vGfLocal.xy * 7.0 + uTime * 0.35) * 0.6
+                  + gfNoise(vGfLocal.xy * 17.0 - uTime * 0.2) * 0.4;
+          float cool = clamp(uHeat * 1.3 + edge * 0.14 - (1.0 - edge) * 0.26 + (n - 0.5) * 0.3, 0.0, 1.0);
+          vec3 molten = vec3(1.0, 0.30, 0.15);            /* deep molten, reads #FF5E3A after ACES */
+          vec3 gold   = vec3(1.0, 0.761, 0.302);          /* #FFC24D */
+          vec3 hotC = mix(molten, gold, smoothstep(0.15, 0.75, cool));
+          hotC = mix(vec3(1.0, 0.72, 0.5), hotC, smoothstep(0.0, 0.1, cool + d * 0.7));
+          float glow = pow(1.0 - cool, 1.6);
+          float flick = 0.9 + 0.1 * sin(uTime * 6.0 + n * 24.0);
+          vec3 em = hotC * glow * 0.95 * flick;
+          em += gold * smoothstep(0.72, 0.96, cool) * (0.4 + 0.6 * n) * 0.16;   /* ember veins */
+          em = em * (1.0 - gfSeamLine * 0.3) + hotC * gfSeamLine * glow * 1.5;  /* seams: cracks then engraving */
+          totalEmissiveRadiance = em;
+        }`);
+  };
+  heatMats.add(m);
+  return m;
+}
+function setHeat(mesh, t) {
+  const u = mesh.material.userData.u;
+  if (u) u.uHeat.value = t;
+  mesh.material.metalness = THREE.MathUtils.lerp(0.62, 0.9, Math.max(0, (t - 0.55) / 0.45));
+  mesh.material.roughness = THREE.MathUtils.lerp(0.48, 0.3, Math.max(0, (t - 0.55) / 0.45));
+}
+
+/* ================================================================
+   Lights
+   ================================================================ */
+scene.add(new THREE.HemisphereLight(0x2a2438, T.groundDeep, 0.22));
+
+const rim = new THREE.DirectionalLight(0x8a7fae, 0.4);
+rim.position.set(-4, 6, -6);
+scene.add(rim);
+
+const lampLight = new THREE.SpotLight(0xffb974, 110, 0, 0.4, 0.85, 1.5);
+lampLight.position.set(0.35, 5.0, 0.6);
+lampLight.castShadow = true;
+lampLight.shadow.mapSize.set(1024, 1024);
+lampLight.shadow.bias = -0.0015;
+const lampTarget = new THREE.Object3D();
+lampTarget.position.set(0, 1.2, 0);
+scene.add(lampTarget);
+lampLight.target = lampTarget;
+scene.add(lampLight);
+
+const hearthLight = new THREE.PointLight(T.accent, 13, 11, 1.9);
+hearthLight.position.set(-3.0, 1.6, -1.6);
+scene.add(hearthLight);
+
+const flash = new THREE.PointLight(0xffc9a3, 0, 8, 2);
+flash.position.set(0, 1.7, 0.3);
+scene.add(flash);
+
+/* ================================================================
+   Workshop
+   ================================================================ */
+const floor = new THREE.Mesh(new THREE.CircleGeometry(16, 48), mat.floor);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+const backWall = new THREE.Mesh(new THREE.PlaneGeometry(30, 12), mat.wall);
+backWall.position.set(0, 6, -6.2);
+scene.add(backWall);
+
+/* --- anvil on its stump --- */
+const anvil = new THREE.Group();
+{
+  const stump = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.7, 0.52, 22), mat.wood);
+  stump.position.y = 0.26;
+  stump.castShadow = stump.receiveShadow = true;
+  anvil.add(stump);
+  const base = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.18, 0.62), mat.ironDark);
+  base.position.y = 0.61;
+  const waist = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.24, 0.4), mat.ironDark);
+  waist.position.y = 0.82;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.3, 0.5), mat.iron);
+  body.position.y = 1.09;
+  const horn = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.62, 20), mat.iron);
+  horn.rotation.z = Math.PI / 2;
+  horn.position.set(-1.05, 1.09, 0);
+  [base, waist, body, horn].forEach(m => { m.castShadow = m.receiveShadow = true; anvil.add(m); });
+}
+scene.add(anvil);
+const ANVIL_TOP = 1.24;
+
+/* --- quench tub, right-front --- */
+const TUB_POS = new THREE.Vector3(1.55, 0, 0.95);
+{
+  const tub = new THREE.Group();
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.44, 0.78, 24, 1, true), mat.ironDark);
+  barrel.position.y = 0.39;
+  barrel.material = mat.ironDark;
+  barrel.castShadow = barrel.receiveShadow = true;
+  const rimT = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 10, 28), mat.iron);
+  rimT.rotation.x = Math.PI / 2;
+  rimT.position.y = 0.78;
+  const band = new THREE.Mesh(new THREE.TorusGeometry(0.47, 0.025, 8, 28), mat.iron);
+  band.rotation.x = Math.PI / 2;
+  band.position.y = 0.28;
+  const water = new THREE.Mesh(
+    new THREE.CircleGeometry(0.46, 28),
+    new THREE.MeshStandardMaterial({ color: 0x141220, metalness: 0.35, roughness: 0.08, envMapIntensity: 0.9 })
+  );
+  water.rotation.x = -Math.PI / 2;
+  water.position.y = 0.72;
+  tub.add(barrel, rimT, band, water);
+  tub.position.copy(TUB_POS);
+  scene.add(tub);
+}
+
+/* --- hearth, back-left --- */
+const hearth = new THREE.Group();
+hearth.position.set(-3.1, 0, -1.9);
+hearth.rotation.y = 0.42;
+{
+  const bed = new THREE.Mesh(new THREE.BoxGeometry(2.1, 1.0, 1.5), mat.brick);
+  bed.position.y = 0.5;
+  bed.castShadow = bed.receiveShadow = true;
+  hearth.add(bed);
+  const lip = new THREE.Mesh(new THREE.BoxGeometry(2.26, 0.1, 1.66), mat.ironDark);
+  lip.position.y = 1.03;
+  hearth.add(lip);
+  const hood = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 1.0, 1.05, 4, 1, true), mat.ironDark);
+  hood.rotation.y = Math.PI / 4;
+  hood.position.y = 2.35;
+  hearth.add(hood);
+  const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.52, 2.6, 0.52), mat.brick);
+  chimney.position.y = 3.9;
+  hearth.add(chimney);
+}
+const coals = [];
+{
+  const g = new THREE.DodecahedronGeometry(0.13, 0);
+  for (let i = 0; i < 14; i++) {
+    const m = new THREE.MeshStandardMaterial({
+      color: 0x1a0f0a, roughness: 0.9,
+      emissive: T.accent, emissiveIntensity: 0.4 + Math.random() * 0.9
+    });
+    const c = new THREE.Mesh(g, m);
+    c.position.set((Math.random() - 0.5) * 1.5, 1.1 + Math.random() * 0.1, (Math.random() - 0.5) * 1.0);
+    c.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    c.scale.setScalar(0.7 + Math.random() * 0.8);
+    coals.push(c);
+    hearth.add(c);
+  }
+}
+scene.add(hearth);
+
+/* --- hanging lamp over the anvil --- */
+{
+  const lamp = new THREE.Group();
+  const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 2.2, 6), mat.ironDark);
+  cord.position.y = 5.9;
+  const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.42, 0.34, 24, 1, true), mat.ironDark);
+  shade.position.y = 4.85;
+  const bulb = new THREE.Mesh(
+    new THREE.SphereGeometry(0.07, 12, 12),
+    new THREE.MeshBasicMaterial({ color: 0xffe6b8 })
+  );
+  bulb.position.y = 4.76;
+  const cone = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.2, 1.45, 3.9, 32, 1, true),
+    new THREE.MeshBasicMaterial({
+      color: 0xff9d5c, transparent: true, opacity: 0.02,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
+    })
+  );
+  cone.position.y = 2.95;
+  lamp.add(cord, shade, bulb, cone);
+  lamp.position.x = 0.35; lamp.position.z = 0.6;
+  scene.add(lamp);
+}
+
+/* --- shelves of earlier work, back-right; tongs on the wall --- */
+{
+  const shelves = new THREE.Group();
+  const boardG = new THREE.BoxGeometry(2.6, 0.07, 0.45);
+  [1.7, 2.5].forEach((y) => {
+    const board = new THREE.Mesh(boardG, mat.woodDark);
+    board.position.set(3.7, y, -5.9);
+    shelves.add(board);
+    for (let i = 0; i < 4; i++) {
+      const w = 0.2 + Math.random() * 0.3;
+      const h = 0.24 + Math.random() * 0.34;
+      const jar = new THREE.Mesh(
+        Math.random() > 0.5 ? new THREE.BoxGeometry(w, h, 0.3) : new THREE.CylinderGeometry(w * 0.5, w * 0.5, h, 12),
+        Math.random() > 0.5 ? mat.ironDark : mat.woodDark
+      );
+      jar.position.set(2.7 + i * 0.68 + (Math.random() - 0.5) * 0.15, y + 0.035 + h / 2, -5.9);
+      shelves.add(jar);
+    }
+  });
+  const slat = new THREE.BoxGeometry(0.05, 1.0, 0.04);
+  const t1 = new THREE.Mesh(slat, mat.ironDark); t1.rotation.z = 0.3;
+  const t2 = new THREE.Mesh(slat, mat.ironDark); t2.rotation.z = -0.3;
+  t1.position.set(-4.6, 2.9, -5.9); t2.position.set(-4.6, 2.9, -5.9);
+  shelves.add(t1, t2);
+  scene.add(shelves);
+}
+
+/* --- hammer on a pivot --- */
+const hammer = new THREE.Group();
+hammer.position.set(1.7, 1.05, 0);
+const hammerHead = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.44, 0.3), mat.iron);
+hammerHead.position.set(-1.5, 0, 0);
+hammerHead.castShadow = true;
+{
+  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 1.56, 10), mat.wood);
+  handle.rotation.z = Math.PI / 2;
+  handle.position.set(-0.75, 0, 0);
+  handle.castShadow = true;
+  hammer.add(handle, hammerHead);
+}
+scene.add(hammer);
+/* Head sits at local (-1.5,0,0): raising it means rotating the group by
+   MINUS the swing angle. setHammer owns the sign. */
+const HAMMER_REST = 0.52, HAMMER_UP = 1.32, HAMMER_HIT = 0.335;
+function setHammer(a) { hammer.rotation.z = -a; }
+setHammer(HAMMER_REST);
+
+/* ================================================================
+   The mark — extruded from the frozen base, heat-shaded
+   ================================================================ */
+const markGeom = (() => {
+  const toV2 = (p) => new THREE.Vector2(...toLocal(p));
+  const shape = new THREE.Shape(MARK_OUTER.map(toV2));
+  shape.holes.push(new THREE.Path(MARK_HOLE.map(toV2)));
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.11, bevelEnabled: true,
+    bevelThickness: 0.02, bevelSize: 0.016, bevelSegments: 2
+  });
+  g.center();
+  return g;
+})();
+
+const MARK_SCALE = 1.42;        // hero size, on the anvil
+const CONST_SCALE = 0.92;       // shipped size, in the constellation
+function makeMark() {
+  const m = new THREE.Mesh(markGeom, makeHeatMaterial({ seam: 1 }));
+  m.scale.setScalar(MARK_SCALE);
+  m.castShadow = true;
+  return m;
+}
+
+/* --- constellation of finished applications --- */
+const SLOTS = [
+  new THREE.Vector3( 3.05, 3.7,  -2.4),
+  new THREE.Vector3( 1.9,  4.35, -2.8),
+  new THREE.Vector3( 0.55, 4.6,  -3.0),
+  new THREE.Vector3(-0.85, 4.3,  -2.7),
+  new THREE.Vector3(-2.0,  3.6,  -2.2)
+];
+const constellation = [];
+function addToConstellation(mesh, slotIdx, plate = null, name = '') {
+  constellation.push({ mesh, plate, name, slot: slotIdx, phase: Math.random() * Math.PI * 2, dying: 0 });
+}
+const constellationNames = () => new Set(constellation.filter(c => !c.dying).map(c => c.name));
+/* the rising app's nameplate rides just below it */
+function placePlate(opacity) {
+  if (!currentPlate || !currentMark) return;
+  currentPlate.visible = opacity > 0.02;
+  currentPlate.material.opacity = opacity;
+  currentPlate.position.set(
+    currentMark.position.x,
+    Math.max(currentMark.position.y - 1.02, 1.18),
+    currentMark.position.z
+  );
+}
+function freeSlot() {
+  const used = new Set(constellation.filter(c => !c.dying).map(c => c.slot));
+  for (let i = 0; i < SLOTS.length; i++) if (!used.has(i)) return i;
+  const oldest = constellation.find(c => !c.dying);
+  if (oldest) { oldest.dying = 0.0001; return oldest.slot; }
+  return 0;
+}
+
+/* --- billet (heat-shaded, seamless) + orbiting component motes --- */
+const billet = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.4, 0.5), makeHeatMaterial({ seam: 0 }));
+billet.material.userData.u.uHeat.value = 0.04;
+billet.castShadow = true;
+billet.visible = false;
+scene.add(billet);
+
+const MOTES = 6;
+const motes = [];
+{
+  const g = new THREE.OctahedronGeometry(0.062, 0);
+  for (let i = 0; i < MOTES; i++) {
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+      color: 0x2a2010, metalness: 0.5, roughness: 0.4,
+      emissive: T.gold, emissiveIntensity: 1.3
+    }));
+    m.visible = false;
+    scene.add(m);
+    motes.push({ mesh: m, angle: (i / MOTES) * Math.PI * 2, absorbing: -1 });
+  }
+}
+
+/* ================================================================
+   The app being forged. Attract mode cycles examples through the
+   terminal; typing your own `forj new` takes over. Unspecified
+   primitives resolve to their LOCAL-FIRST drivers — the framework's
+   own default story.
+   ================================================================ */
+const PRIMS = ['db', 'queue', 'cache', 'events', 'storage', 'mail'];
+const LOCAL_DEFAULTS = { db: 'sqlite', queue: 'workerpool', cache: 'memory', events: 'inproc', storage: 'local', mail: 'log' };
+const EXAMPLES = [
+  { name: 'shop',        flags: { db: 'postgres', queue: 'redis', storage: 's3' } },
+  { name: 'billing-api', flags: { db: 'postgres', events: 'nats', mail: 'smtp' } },
+  { name: 'metrics-hub', flags: { db: 'sqlite', cache: 'redis' } },
+  { name: 'mailroom',    flags: { queue: 'redis', mail: 'ses' } },
+  { name: 'archive',     flags: { db: 'postgres', storage: 's3', cache: 'memcached' } },
+  { name: 'ledger',      flags: { db: 'postgres', events: 'kafka' } },
+  { name: 'courier',     flags: { queue: 'sqs', storage: 's3', mail: 'smtp' } },
+  { name: 'imageproxy',  flags: { cache: 'redis', storage: 'gcs' } },
+  { name: 'relay',       flags: { events: 'nats', queue: 'redis' } },
+  { name: 'jobsd',       flags: { db: 'sqlite', queue: 'workerpool' } }
+];
+function resolveApp(name, flags) {
+  const drivers = { ...LOCAL_DEFAULTS, ...flags };
+  const cmd = `forj new ${name}` + Object.keys(flags).map(k => ` --${k} ${flags[k]}`).join('');
+  return { name, drivers, cmd };
+}
+function parseCmd(str) {
+  const t = str.trim().split(/\s+/).filter(Boolean);
+  let i = 0;
+  if (t[i] === '$') i++;
+  if (t[i] === 'forj') i++;
+  if (t[i] === 'new') i++;
+  let name = null; const flags = {};
+  for (; i < t.length; i++) {
+    const w = t[i];
+    if (w.startsWith('--')) {
+      const k = w.slice(2);
+      if (PRIMS.includes(k) && t[i + 1] && !t[i + 1].startsWith('--')) flags[k] = t[++i].slice(0, 14);
+    } else if (!name) name = w;
+  }
+  name = (name || 'app').replace(/[^a-zA-Z0-9-_.]/g, '').slice(0, 16) || 'app';
+  return resolveApp(name, flags);
+}
+let exampleIdx = 0;
+let currentApp = resolveApp(EXAMPLES[0].name, EXAMPLES[0].flags);
+let queuedApp = null;
+
+/* --- gold pill sprites: driver chips + the app's nameplate --- */
+function pillSprite(w, h, scaleX, scaleY) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: tex, transparent: true, opacity: 0, depthWrite: false
+  }));
+  sp.scale.set(scaleX, scaleY, 1);
+  sp.visible = false;
+  sp.userData.draw = (text, fontPx, ink) => {
+    const x = c.getContext('2d');
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = 'rgba(18,15,23,0.82)';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(8, 8, w - 16, h - 16, (h - 16) / 2); else x.rect(8, 8, w - 16, h - 16);
+    x.fill();
+    x.strokeStyle = 'rgba(255,194,77,0.5)';
+    x.lineWidth = 2.5;
+    x.stroke();
+    x.font = `500 ${fontPx}px "JetBrains Mono", monospace`;
+    x.fillStyle = ink || '#FFC24D';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(text, w / 2, h / 2 + 1);
+    tex.needsUpdate = true;
+  };
+  scene.add(sp);
+  return sp;
+}
+const chips = PRIMS.map((k, i) => {
+  const sp = pillSprite(288, 76, 0.78, 0.205);
+  return { sp, off: (i / PRIMS.length) * Math.PI * 2 };
+});
+function setChipLabels(app) {
+  chips.forEach((ch, i) => ch.sp.userData.draw(`${PRIMS[i]}:${app.drivers[PRIMS[i]]}`, 26));
+}
+setChipLabels(currentApp);
+function makeNameplate(name) {
+  const sp = pillSprite(512, 92, 1.1, 0.2);
+  sp.userData.draw(name, 36, '#FFFFFF');
+  return sp;
+}
+function tickChips(u, t, markPos) {
+  const fade = THREE.MathUtils.smoothstep(u, 0.08, 0.22) * (1 - THREE.MathUtils.smoothstep(u, 0.84, 0.97));
+  chips.forEach((ch) => {
+    const a = t * 1.1 + ch.off;
+    ch.sp.visible = fade > 0.01;
+    ch.sp.material.opacity = fade * 0.95;
+    ch.sp.position.set(
+      markPos.x + Math.cos(a) * 1.08,
+      markPos.y + Math.sin(a * 1.35 + ch.off) * 0.2,
+      markPos.z + Math.sin(a) * 0.85
+    );
+  });
+}
+function hideChips() { chips.forEach(ch => { ch.sp.visible = false; ch.sp.material.opacity = 0; }); }
+function disposePlate(sp) {
+  scene.remove(sp);
+  sp.material.map.dispose();
+  sp.material.dispose();
+}
+
+/* --- shockwave ring --- */
+const ring = new THREE.Mesh(
+  new THREE.RingGeometry(0.46, 0.58, 48),
+  new THREE.MeshBasicMaterial({
+    color: T.gold, transparent: true, opacity: 0,
+    blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
+  })
+);
+ring.rotation.x = -Math.PI / 2;
+ring.position.y = ANVIL_TOP + 0.06;
+scene.add(ring);
+let ringT = 1;
+
+/* ================================================================
+   Particles
+   ================================================================ */
+const dotTex = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.35, 'rgba(255,255,255,.7)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+
+function makePoints(count, size) {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3).setUsage(THREE.DynamicDrawUsage));
+  geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(count * 3), 3).setUsage(THREE.DynamicDrawUsage));
+  const m = new THREE.Points(geo, new THREE.PointsMaterial({
+    size, map: dotTex, vertexColors: true, transparent: true,
+    blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+  }));
+  m.frustumCulled = false;
+  scene.add(m);
+  return m;
+}
+
+/* embers: perpetual, cozy, and shy of the cursor */
+const EMBERS = 150;
+const embers = makePoints(EMBERS, 0.105);
+const eData = [];
+function respawnEmber(i, warm) {
+  const nearHearth = Math.random() < 0.62;
+  const p = nearHearth
+    ? [-3.1 + (Math.random() - 0.5) * 1.6, 1.15 + Math.random() * 0.4, -1.9 + (Math.random() - 0.5) * 1.2]
+    : [(Math.random() - 0.5) * 9, 0.2 + Math.random() * (warm ? 3.4 : 0.8), (Math.random() - 0.5) * 6];
+  eData[i] = {
+    p, v: 0.22 + Math.random() * 0.4,
+    sway: 0.5 + Math.random() * 1.4, ph: Math.random() * Math.PI * 2,
+    life: 0, max: 4 + Math.random() * 6,
+    gold: Math.random() < 0.35, dx: 0, dz: 0
+  };
+}
+for (let i = 0; i < EMBERS; i++) respawnEmber(i, true);
+
+/* sparks: burst pool */
+const SPARKS = 320;
+const sparks = makePoints(SPARKS, 0.06);
+const sData = [];
+for (let i = 0; i < SPARKS; i++) sData[i] = { life: 0, max: 1, p: [0, -99, 0], v: [0, 0, 0], gold: false };
+let sparkCursor = 0;
+function burst(x, y, z, n, speed) {
+  for (let k = 0; k < n; k++) {
+    const i = sparkCursor = (sparkCursor + 1) % SPARKS;
+    const a = Math.random() * Math.PI * 2;
+    const up = 0.9 + Math.random() * 2.4;
+    const r = (0.4 + Math.random() * 1.1) * speed;
+    sData[i] = {
+      life: 0.0001, max: 0.45 + Math.random() * 0.75,
+      p: [x, y, z],
+      v: [Math.cos(a) * r, up * speed * 0.75, Math.sin(a) * r * 0.7],
+      gold: Math.random() < 0.4
+    };
+  }
+}
+
+/* steam: quench pool — pale, slow, short-lived */
+const STEAMS = 60;
+const steam = makePoints(STEAMS, 0.34);
+const stData = [];
+for (let i = 0; i < STEAMS; i++) stData[i] = { life: 0, max: 1, p: [0, -99, 0], v: [0, 0, 0] };
+let steamCursor = 0;
+function puff(x, y, z, n) {
+  for (let k = 0; k < n; k++) {
+    const i = steamCursor = (steamCursor + 1) % STEAMS;
+    const a = Math.random() * Math.PI * 2, r = Math.random() * 0.3;
+    stData[i] = {
+      life: 0.0001, max: 0.9 + Math.random() * 0.9,
+      p: [x + Math.cos(a) * r, y, z + Math.sin(a) * r],
+      v: [(Math.random() - 0.5) * 0.25, 0.55 + Math.random() * 0.5, (Math.random() - 0.5) * 0.25]
+    };
+  }
+}
+
+const EMBER_C1 = new THREE.Color(T.accent), EMBER_C2 = new THREE.Color(T.gold), WHITE_HOT = new THREE.Color(0xffe9c9);
+const STEAM_C = new THREE.Color(0x8d81a3);
+const _ray = new THREE.Vector3(), _w = new THREE.Vector3();
+
+function updateParticles(dt, t) {
+  /* cursor ray, for ember repulsion */
+  let haveRay = false;
+  if (!REDUCED && (mouse.x || mouse.y)) {
+    _ray.set(mouse.x, -mouse.y, 0.5).unproject(camera).sub(camera.position).normalize();
+    haveRay = true;
+  }
+
+  const ep = embers.geometry.attributes.position.array;
+  const ec = embers.geometry.attributes.color.array;
+  for (let i = 0; i < EMBERS; i++) {
+    const d = eData[i];
+    d.life += dt;
+    if (d.life > d.max) respawnEmber(i, false);
+    if (haveRay) {
+      _w.set(d.p[0], d.p[1], d.p[2]).sub(camera.position);
+      const along = _w.dot(_ray);
+      if (along > 0) {
+        const cx = camera.position.x + _ray.x * along;
+        const cz = camera.position.z + _ray.z * along;
+        const ddx = d.p[0] - cx, ddz = d.p[2] - cz;
+        const dist = Math.hypot(ddx, ddz);
+        if (dist < 0.8 && dist > 0.001) {
+          const push = (0.8 - dist) * 2.4 * dt;
+          d.dx += ddx / dist * push;
+          d.dz += ddz / dist * push;
+        }
+      }
+    }
+    d.dx *= 0.93; d.dz *= 0.93;
+    d.p[0] += d.dx + Math.sin(t * d.sway + d.ph) * 0.1 * dt;
+    d.p[1] += d.v * dt;
+    d.p[2] += d.dz + Math.cos(t * d.sway * 0.8 + d.ph) * 0.07 * dt;
+    ep[i * 3] = d.p[0]; ep[i * 3 + 1] = d.p[1]; ep[i * 3 + 2] = d.p[2];
+    const fade = Math.sin(Math.min(d.life / d.max, 1) * Math.PI);
+    const c = d.gold ? EMBER_C2 : EMBER_C1;
+    const twinkle = 0.55 + 0.45 * Math.sin(t * 3.1 + d.ph * 7);
+    const b = fade * twinkle * 1.15;
+    ec[i * 3] = c.r * b; ec[i * 3 + 1] = c.g * b; ec[i * 3 + 2] = c.b * b;
+  }
+  embers.geometry.attributes.position.needsUpdate = true;
+  embers.geometry.attributes.color.needsUpdate = true;
+
+  const sp = sparks.geometry.attributes.position.array;
+  const sc = sparks.geometry.attributes.color.array;
+  for (let i = 0; i < SPARKS; i++) {
+    const d = sData[i];
+    if (d.life <= 0) { sc[i * 3] = sc[i * 3 + 1] = sc[i * 3 + 2] = 0; sp[i * 3 + 1] = -99; continue; }
+    d.life += dt;
+    if (d.life > d.max) { d.life = 0; continue; }
+    d.v[1] -= 3.4 * dt;
+    d.v[0] *= 0.985; d.v[2] *= 0.985;
+    d.p[0] += d.v[0] * dt; d.p[1] += d.v[1] * dt; d.p[2] += d.v[2] * dt;
+    if (d.p[1] < 0.02) { d.p[1] = 0.02; d.v[1] *= -0.35; }
+    sp[i * 3] = d.p[0]; sp[i * 3 + 1] = d.p[1]; sp[i * 3 + 2] = d.p[2];
+    const u = d.life / d.max;
+    const c = u < 0.25 ? WHITE_HOT : (d.gold ? EMBER_C2 : EMBER_C1);
+    const b = (1 - u) * 1.4;
+    sc[i * 3] = c.r * b; sc[i * 3 + 1] = c.g * b; sc[i * 3 + 2] = c.b * b;
+  }
+  sparks.geometry.attributes.position.needsUpdate = true;
+  sparks.geometry.attributes.color.needsUpdate = true;
+
+  const tp = steam.geometry.attributes.position.array;
+  const tc = steam.geometry.attributes.color.array;
+  for (let i = 0; i < STEAMS; i++) {
+    const d = stData[i];
+    if (d.life <= 0) { tc[i * 3] = tc[i * 3 + 1] = tc[i * 3 + 2] = 0; tp[i * 3 + 1] = -99; continue; }
+    d.life += dt;
+    if (d.life > d.max) { d.life = 0; continue; }
+    d.v[1] *= 0.995;
+    d.p[0] += d.v[0] * dt; d.p[1] += d.v[1] * dt; d.p[2] += d.v[2] * dt;
+    tp[i * 3] = d.p[0]; tp[i * 3 + 1] = d.p[1]; tp[i * 3 + 2] = d.p[2];
+    const u = d.life / d.max;
+    const b = Math.sin(u * Math.PI) * 0.34;
+    tc[i * 3] = STEAM_C.r * b; tc[i * 3 + 1] = STEAM_C.g * b; tc[i * 3 + 2] = STEAM_C.b * b;
+  }
+  steam.geometry.attributes.position.needsUpdate = true;
+  steam.geometry.attributes.color.needsUpdate = true;
+}
+
+/* ================================================================
+   Sound — synthesized, OFF by default. Anvil ring, coal crackle,
+   quench hiss. Created lazily on the user's first toggle.
+   ================================================================ */
+let audio = null, soundOn = false;
+function makeAudio() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const master = ctx.createGain();
+  master.gain.value = 0.42;
+  master.connect(ctx.destination);
+
+  const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+  const ch = noiseBuf.getChannelData(0);
+  for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+
+  /* perpetual coal crackle: filtered noise + random pops */
+  const crackle = ctx.createBufferSource();
+  crackle.buffer = noiseBuf; crackle.loop = true;
+  const cf = ctx.createBiquadFilter(); cf.type = 'lowpass'; cf.frequency.value = 340;
+  const cg = ctx.createGain(); cg.gain.value = 0.014;
+  crackle.connect(cf).connect(cg).connect(master);
+  crackle.start();
+  const popTimer = setInterval(() => {
+    if (!soundOn || document.hidden || Math.random() > 0.55) return;
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+    src.playbackRate.value = 0.6 + Math.random();
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass';
+    f.frequency.value = 700 + Math.random() * 1600; f.Q.value = 6;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.012 + Math.random() * 0.025, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
+    src.connect(f).connect(g).connect(master);
+    src.start(); src.stop(ctx.currentTime + 0.12);
+  }, 240);
+
+  function ring(vel = 1) {
+    const t0 = ctx.currentTime;
+    /* thump */
+    const o0 = ctx.createOscillator(); o0.type = 'sine'; o0.frequency.value = 170;
+    const g0 = ctx.createGain();
+    g0.gain.setValueAtTime(0.2 * vel, t0);
+    g0.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.09);
+    o0.connect(g0).connect(master); o0.start(t0); o0.stop(t0 + 0.1);
+    /* metallic partials */
+    [[1160, 0.12, 0.9], [1730, 0.09, 1.1], [2330, 0.06, 0.7], [3460, 0.045, 0.5]].forEach(([f, a, tau]) => {
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.value = f * (1 + (Math.random() - 0.5) * 0.02);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(a * vel, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + tau);
+      o.connect(g).connect(master); o.start(t0); o.stop(t0 + tau + 0.05);
+    });
+    /* strike click */
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+    const hf = ctx.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 3800;
+    const hg = ctx.createGain();
+    hg.gain.setValueAtTime(0.1 * vel, t0);
+    hg.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.03);
+    src.connect(hf).connect(hg).connect(master); src.start(t0); src.stop(t0 + 0.05);
+  }
+
+  function hiss() {
+    const t0 = ctx.currentTime;
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2600; f.Q.value = 0.7;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.16, t0 + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+    src.connect(f).connect(g).connect(master);
+    src.start(t0); src.stop(t0 + 1.2);
+  }
+
+  return { ctx, ring, hiss, popTimer };
+}
+soundBtn.addEventListener('click', () => {
+  soundOn = !soundOn;
+  if (soundOn && !audio) audio = makeAudio();
+  if (audio) (soundOn ? audio.ctx.resume() : audio.ctx.suspend());
+  soundBtn.textContent = soundOn ? 'sound: on' : 'sound: off';
+  soundBtn.setAttribute('aria-pressed', String(soundOn));
+});
+
+/* ================================================================
+   Post: bloom
+   ================================================================ */
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.95, 0.6, 0.68);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ================================================================
+   The forging cycle: slide → 3 strikes → reveal → QUENCH → rise
+   ================================================================ */
+const D = {
+  slide: 1.5, windup: 0.5, hold: 0.12, strike: 0.1, recoil: 0.34,
+  reveal: 0.95, qTo: 0.55, qDip: 0.22, qHold: 0.6, qLift: 0.45,
+  rise: 4.2, dwell: 0.7
+};
+const STRIKES = 3;
+
+let phase = 'slide', phaseT = 0, strikeIdx = 0, struck = false;
+let currentMark = null, currentPlate = null, riseCurve = null, riseSlot = 0, markHeat = 0, hissed = false;
+let shake = 0;
+const HEARTH_MOUTH = new THREE.Vector3(-2.7, 1.5, -1.4);
+const ANVIL_POS = new THREE.Vector3(0, ANVIL_TOP + 0.2, 0);
+const Q_START = new THREE.Vector3(0, 1.99, 0);
+const Q_ABOVE = new THREE.Vector3(TUB_POS.x, 2.3, TUB_POS.z);
+const Q_DIP = new THREE.Vector3(TUB_POS.x, 1.06, TUB_POS.z);
+const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+const easeIn = t => t * t * t;
+
+function startCycle() {
+  phase = 'slide'; phaseT = 0; strikeIdx = 0; struck = false; hissed = false;
+  /* whose app is on the anvil this cycle */
+  if (queuedApp) { currentApp = queuedApp; queuedApp = null; }
+  else {
+    /* next example whose name isn't already floating up there */
+    const up = constellationNames();
+    let ex = EXAMPLES[++exampleIdx % EXAMPLES.length];
+    for (let k = 0; k < EXAMPLES.length && up.has(ex.name); k++) {
+      ex = EXAMPLES[++exampleIdx % EXAMPLES.length];
+    }
+    currentApp = resolveApp(ex.name, ex.flags);
+  }
+  /* reforging a name replaces the old piece — one app, one mark */
+  constellation.forEach(c => { if (!c.dying && c.name === currentApp.name) c.dying = 0.0001; });
+  setChipLabels(currentApp);
+  termAttract(currentApp.cmd);
+  hideChips();
+  if (currentPlate) { disposePlate(currentPlate); currentPlate = null; }
+  setHammer(HAMMER_REST);
+  billet.visible = true;
+  billet.scale.set(1, 1, 1);
+  motes.forEach((mo, i) => {
+    mo.mesh.visible = true;
+    mo.mesh.scale.setScalar(1);
+    mo.absorbing = -1;
+    mo.angle = (i / MOTES) * Math.PI * 2;
+  });
+}
+
+function igniteHeadline() {
+  forgedWord.classList.remove('ignite');
+  void forgedWord.offsetWidth;                     // restart the animation
+  forgedWord.classList.add('ignite');
+}
+
+function impact(final) {
+  const s = final ? 1.6 : 1;
+  burst(0, ANVIL_TOP + 0.22, 0, final ? 150 : 70, s);
+  flash.intensity = final ? 130 : 70;
+  shake = Math.min(shake + (final ? 0.06 : 0.035), 0.09);
+  if (soundOn && audio) audio.ring(final ? 1.25 : 0.9);
+  if (final) { ringT = 0; igniteHeadline(); }
+  for (let k = 0; k < MOTES; k++) {
+    const mo = motes[k];
+    if (mo.absorbing < 0 && Math.floor(k / 2) === strikeIdx) mo.absorbing = 0.0001;
+  }
+  if (!final) {
+    billet.scale.y *= 0.78;
+    billet.scale.x *= 1.1;
+    billet.scale.z *= 1.08;
+  } else {
+    billet.visible = false;
+    motes.forEach(mo => { if (mo.absorbing < 0) mo.absorbing = 0.0001; });
+    currentMark = makeMark();
+    currentMark.position.copy(Q_START);
+    currentMark.scale.setScalar(MARK_SCALE * 0.4);
+    markHeat = 0;
+    setHeat(currentMark, 0);
+    scene.add(currentMark);
+    currentPlate = makeNameplate(currentApp.name);
+    riseSlot = freeSlot();
+  }
+}
+
+function tickCycle(dt, t) {
+  phaseT += dt;
+  switch (phase) {
+
+    case 'slide': {
+      const u = easeIO(Math.min(phaseT / D.slide, 1));
+      billet.position.lerpVectors(HEARTH_MOUTH, ANVIL_POS, u);
+      billet.position.y += Math.sin(u * Math.PI) * 0.7;
+      billet.rotation.y = u * 1.8;
+      if (phaseT >= D.slide) { phase = 'forge'; phaseT = 0; strikeIdx = 0; struck = false; }
+      break;
+    }
+
+    case 'forge': {
+      const cyc = D.windup + D.hold + D.strike + D.recoil;
+      const lt = phaseT;
+      if (lt < D.windup) {
+        setHammer(THREE.MathUtils.lerp(strikeIdx ? HAMMER_HIT : HAMMER_REST, HAMMER_UP, easeOut(lt / D.windup)));
+      } else if (lt < D.windup + D.hold) {
+        setHammer(HAMMER_UP);
+      } else if (lt < D.windup + D.hold + D.strike) {
+        const u = (lt - D.windup - D.hold) / D.strike;
+        setHammer(THREE.MathUtils.lerp(HAMMER_UP, HAMMER_HIT, easeIn(u)));
+        if (!struck && u >= 0.96) { struck = true; impact(strikeIdx === STRIKES - 1); }
+      } else {
+        setHammer(HAMMER_HIT);
+        if (!struck) { struck = true; impact(strikeIdx === STRIKES - 1); }
+      }
+      if (lt >= cyc) {
+        phaseT = 0; struck = false; strikeIdx++;
+        if (strikeIdx >= STRIKES) { phase = 'reveal'; }
+      }
+      break;
+    }
+
+    case 'reveal': {
+      const u = Math.min(phaseT / D.reveal, 1);
+      if (currentMark) {
+        currentMark.scale.setScalar(MARK_SCALE * THREE.MathUtils.lerp(0.4, 1, easeOut(u)));
+        currentMark.rotation.y = Math.sin(u * Math.PI) * 0.12;
+        placePlate(u * 0.95);
+      }
+      setHammer(THREE.MathUtils.lerp(HAMMER_HIT, HAMMER_REST, easeIO(u)));
+      if (phaseT >= D.reveal) { phase = 'quench'; phaseT = 0; }
+      break;
+    }
+
+    case 'quench': {
+      const p = phaseT;
+      const t1 = D.qTo, t2 = t1 + D.qDip, t3 = t2 + D.qHold, t4 = t3 + D.qLift;
+      if (currentMark) {
+        if (p < t1) {
+          const u = easeIO(p / t1);
+          currentMark.position.lerpVectors(Q_START, Q_ABOVE, u);
+          currentMark.position.y += Math.sin(u * Math.PI) * 0.35;
+          currentMark.rotation.y = u * 0.5;
+        } else if (p < t2) {
+          const u = easeIn((p - t1) / D.qDip);
+          currentMark.position.lerpVectors(Q_ABOVE, Q_DIP, u);
+        } else if (p < t3) {
+          const u = (p - t2) / D.qHold;
+          currentMark.position.copy(Q_DIP);
+          currentMark.position.y += Math.sin(u * Math.PI * 5) * 0.015;    // sizzle judder
+          markHeat = THREE.MathUtils.lerp(0, 0.62, easeOut(u));
+          setHeat(currentMark, markHeat);
+          if (!hissed) {
+            hissed = true;
+            if (soundOn && audio) audio.hiss();
+            puff(TUB_POS.x, 1.0, TUB_POS.z, 26);
+          }
+          if (Math.random() < 0.65) puff(TUB_POS.x, 1.0, TUB_POS.z, 2);
+        } else if (p < t4) {
+          const u = easeOut((p - t3) / D.qLift);
+          currentMark.position.lerpVectors(Q_DIP, Q_ABOVE, u);
+          markHeat = THREE.MathUtils.lerp(0.62, 0.66, u);
+          setHeat(currentMark, markHeat);
+          if (Math.random() < 0.3) puff(currentMark.position.x, currentMark.position.y - 0.4, currentMark.position.z, 1);
+        }
+      }
+      if (currentMark) placePlate(0.95);
+      if (p >= t4) {
+        phase = 'rise'; phaseT = 0;
+        const slot = SLOTS[riseSlot];
+        riseCurve = new THREE.CatmullRomCurve3([
+          Q_ABOVE.clone(),
+          new THREE.Vector3(0.8, 3.1, -0.6),
+          slot.clone().add(new THREE.Vector3(0, -0.4, 0.3)),
+          slot.clone()
+        ]);
+      }
+      break;
+    }
+
+    case 'rise': {
+      const u = Math.min(phaseT / D.rise, 1);
+      const e = easeIO(u);
+      if (currentMark && riseCurve) {
+        riseCurve.getPoint(e, currentMark.position);
+        currentMark.rotation.y = e * Math.PI * 2;
+        currentMark.scale.setScalar(THREE.MathUtils.lerp(MARK_SCALE, CONST_SCALE, e));
+        markHeat = THREE.MathUtils.lerp(0.66, 1, u);
+        setHeat(currentMark, markHeat);
+        tickChips(u, t, currentMark.position);
+        placePlate(0.95 - easeIn(u) * 0.55);
+      }
+      if (phaseT >= D.rise) {
+        hideChips();
+        if (currentMark) addToConstellation(currentMark, riseSlot, currentPlate, currentApp.name);
+        currentMark = null; currentPlate = null;
+        phase = 'dwell'; phaseT = 0;
+      }
+      break;
+    }
+
+    case 'dwell':
+      if (phaseT >= D.dwell) startCycle();
+      break;
+  }
+
+  /* motes orbit the billet; absorbed ones dive in */
+  const bp = billet.position;
+  motes.forEach((mo) => {
+    if (!mo.mesh.visible) return;
+    if (mo.absorbing > 0) {
+      mo.absorbing += dt * 4;
+      const u = Math.min(mo.absorbing, 1);
+      mo.mesh.position.lerp(bp, u);
+      mo.mesh.scale.setScalar(1 - u);
+      if (u >= 1) mo.mesh.visible = false;
+    } else {
+      mo.angle += dt * 1.6;
+      const r = 0.62, tilt = 0.35;
+      mo.mesh.position.set(
+        bp.x + Math.cos(mo.angle) * r,
+        bp.y + Math.sin(mo.angle * 2) * 0.13 + tilt * Math.sin(mo.angle),
+        bp.z + Math.sin(mo.angle) * r * 0.8
+      );
+      mo.mesh.rotation.y += dt * 3;
+      mo.mesh.rotation.x += dt * 2;
+    }
+  });
+}
+
+/* constellation idle: bob, sway, retire */
+function tickConstellation(dt, t) {
+  for (let i = constellation.length - 1; i >= 0; i--) {
+    const c = constellation[i];
+    const base = SLOTS[c.slot];
+    if (c.dying > 0) {
+      c.dying += dt / 1.4;
+      const u = Math.min(c.dying, 1);
+      c.mesh.scale.setScalar(CONST_SCALE * (1 - easeIn(u)));
+      c.mesh.position.y = base.y + u * 0.8;
+      if (c.plate) c.plate.material.opacity = 0.3 * (1 - u);
+      if (u >= 1) {
+        scene.remove(c.mesh);
+        heatMats.delete(c.mesh.material);
+        c.mesh.material.dispose();
+        if (c.plate) disposePlate(c.plate);
+        constellation.splice(i, 1);
+      }
+      continue;
+    }
+    c.mesh.position.set(
+      base.x,
+      base.y + Math.sin(t * 0.6 + c.phase) * 0.07,
+      base.z
+    );
+    c.mesh.rotation.y = Math.sin(t * 0.25 + c.phase) * 0.16;
+    if (c.plate) {
+      c.plate.visible = true;
+      c.plate.material.opacity = 0.3;
+      c.plate.position.set(base.x, base.y - 0.74 + Math.sin(t * 0.6 + c.phase) * 0.035, base.z);
+    }
+  }
+}
+
+/* prefill cooled applications so the constellation reads at once */
+const PREFILL_ORDER = [1, 3, 0, 2, 4];   // spread; slot 4 last — it sits nearest the headline
+function prefill(n) {
+  for (let i = 0; i < n; i++) {
+    const slot = PREFILL_ORDER[i];
+    const m = makeMark();
+    m.scale.setScalar(CONST_SCALE);
+    setHeat(m, 1);
+    m.position.copy(SLOTS[slot]);
+    scene.add(m);
+    /* earlier work, already named — drawn from the same rotation the
+       attract loop starts after, so nothing gets forged twice */
+    const ex = EXAMPLES[i];
+    addToConstellation(m, slot, makeNameplate(ex.name), ex.name);
+  }
+  exampleIdx = n - 1;   // attract resumes with EXAMPLES[n]
+}
+
+/* ================================================================
+   Camera: parallax, strike shake, phase choreography
+   ================================================================ */
+const mouse = { x: 0, y: 0 };
+addEventListener('pointermove', (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = (e.clientY / innerHeight) * 2 - 1;
+});
+
+function tickCamera(dt, t) {
+  /* phase choreography: push in for the strikes, step toward the tub,
+     pull back to admire the rise */
+  const tz = phase === 'forge' ? 7.15 : phase === 'quench' ? 7.4 : phase === 'rise' ? 7.95 : 7.6;
+  CAM_BASE.z += (tz - CAM_BASE.z) * Math.min(dt * 1.1, 1);
+  const lx = phase === 'quench' ? 0.55 : 0;
+  CAM_LOOK.x += (lx - CAM_LOOK.x) * Math.min(dt * 1.4, 1);
+
+  const px = CAM_BASE.x + mouse.x * 0.45 + Math.sin(t * 0.11) * 0.14;
+  const py = CAM_BASE.y - mouse.y * 0.22 + Math.sin(t * 0.07) * 0.08;
+  camera.position.x += (px - camera.position.x) * Math.min(dt * 2.2, 1);
+  camera.position.y += (py - camera.position.y) * Math.min(dt * 2.2, 1);
+  camera.position.z = CAM_BASE.z;
+  if (shake > 0.0005) {
+    camera.position.x += (Math.random() - 0.5) * shake;
+    camera.position.y += (Math.random() - 0.5) * shake;
+    shake *= Math.pow(0.0001, dt);
+  }
+  camera.lookAt(CAM_LOOK);
+}
+
+/* click: hurry the smith */
+renderer.domElement.addEventListener('pointerdown', () => {
+  if (REDUCED) return;
+  if (phase === 'forge' && phaseT < D.windup) phaseT = D.windup;
+  else if (phase === 'dwell') phaseT = D.dwell;
+  else if (phase === 'slide') { /* let it land */ }
+  else burst(0, ANVIL_TOP + 0.25, 0, 8, 0.35);
+  shake = Math.min(shake + 0.015, 0.05);
+});
+
+/* ================================================================
+   The terminal. Attract mode types each cycle's command; click it
+   and it's yours — enter forges YOUR app and puts the real command
+   on the clipboard.
+   ================================================================ */
+const termEl = document.getElementById('term');
+const tin = document.getElementById('tin');
+const tghost = document.getElementById('tghost');
+const thist = document.getElementById('thist');
+let interacted = false, termTarget = '', termTyped = 0;
+
+function termAttract(cmd) {
+  termTarget = cmd;
+  termTyped = 0;
+  if (interacted) thist.textContent ||= '';       // user owns the line now
+}
+function tickTerminal(dt) {
+  if (interacted || REDUCED) return;
+  termTyped = Math.min(termTyped + dt * 26, termTarget.length);
+  tghost.textContent = termTarget.slice(0, Math.floor(termTyped));
+}
+termEl.addEventListener('pointerdown', () => {
+  if (!interacted) {
+    interacted = true;
+    termEl.classList.add('live');
+    tin.value = termTarget;
+    thist.textContent = 'yours now — name it, pick drivers, hit enter';
+  }
+  tin.focus();
+});
+tin.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const app = parseCmd(tin.value);
+  tin.value = app.cmd;                             // echo the canonical command
+  try { navigator.clipboard.writeText(app.cmd); } catch (err) {}
+  if (REDUCED) {
+    thist.textContent = `✓ ${app.name} — command copied (motion is off, so no fire today)`;
+    return;
+  }
+  queuedApp = app;
+  if (phase === 'slide' || phase === 'forge' || phase === 'dwell') {
+    startCycle();
+    thist.textContent = `✓ forging ${app.name} — command copied`;
+  } else {
+    thist.textContent = `↻ ${app.name} queued behind the current piece — command copied`;
+  }
+  if (soundOn && audio) audio.ring(0.5);
+});
+
+/* ================================================================
+   Frame loop
+   ================================================================ */
+const clock = new THREE.Clock();
+let booted = false;
+let simT = 0;
+
+function advance(dt, t) {
+  tickCycle(dt, t);
+  tickConstellation(dt, t);
+  updateParticles(dt, t);
+  tickCamera(dt, t);
+  tickTerminal(dt);
+
+  for (const m of heatMats) m.userData.u.uTime.value = t;
+
+  hearthLight.intensity = 11 + Math.sin(t * 7.3) * 2 + Math.sin(t * 13.7) * 1.6 + Math.random() * 1.2;
+  coals.forEach((c, i) => {
+    c.material.emissiveIntensity = 0.7 + Math.sin(t * (2.3 + i * 0.37) + i * 2.1) * 0.4 + Math.random() * 0.1;
+  });
+  if (flash.intensity > 0.2) flash.intensity *= Math.pow(0.0005, dt); else flash.intensity = 0;
+  if (ringT < 1) {
+    ringT = Math.min(ringT + dt / 0.55, 1);
+    ring.scale.setScalar(0.3 + easeOut(ringT) * 2.6);
+    ring.material.opacity = 0.38 * (1 - ringT);
+  } else ring.material.opacity = 0;
+}
+
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  simT += dt;
+  advance(dt, simT);
+  composer.render();
+  if (!booted) { booted = true; bootEl.classList.add('off'); }
+}
+
+/* Debug hooks: __forge reads state, __forgeStep(sec) fast-forwards. */
+Object.defineProperty(window, '__forge', { get: () => ({
+  phase, phaseT: +phaseT.toFixed(3), strikeIdx, struck, t: +simT.toFixed(2),
+  heat: +markHeat.toFixed(2),
+  app: currentApp.name, queued: queuedApp ? queuedApp.name : null,
+  billet: billet.position.toArray().map(v => +v.toFixed(2)),
+  billetVisible: billet.visible,
+  hammer: +hammer.rotation.z.toFixed(3),
+  mark: currentMark ? currentMark.position.toArray().map(v => +v.toFixed(2)) : null,
+  constellation: constellation.length,
+  reduced: REDUCED
+})});
+window.__forgeStep = (sec) => {
+  const n = Math.max(1, Math.round(sec * 60));
+  for (let i = 0; i < n; i++) { simT += 1 / 60; advance(1 / 60, simT); }
+  composer.render();
+  clock.getDelta();
+  return window.__forge;
+};
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+  if (REDUCED) renderStill();
+}
+addEventListener('resize', onResize);
+
+/* ---- reduced motion: one warm, complete tableau ---- */
+function renderStill() {
+  composer.render();
+  bootEl.classList.add('off');
+}
+
+if (REDUCED) {
+  prefill(4);
+  const ex = EXAMPLES[4];                          // first name NOT already floating
+  currentApp = resolveApp(ex.name, ex.flags);
+  const m = makeMark();
+  setHeat(m, 0.45);
+  m.position.set(0, ANVIL_TOP + 0.78, 0);
+  scene.add(m);
+  setHammer(HAMMER_REST);
+  tghost.textContent = currentApp.cmd;             // the still shows a finished line
+  for (const hm of heatMats) hm.userData.u.uTime.value = 1.7;
+  updateParticles(0.016, 1.7);
+  for (let i = 0; i < 90; i++) updateParticles(0.05, 2 + i * 0.05);
+  pauseBtn.style.display = 'none';
+  soundBtn.style.display = 'none';
+  renderStill();
+} else {
+  prefill(2);
+  startCycle();
+  renderer.setAnimationLoop(frame);
+
+  let paused = false;
+  function setPaused(p) {
+    paused = p;
+    renderer.setAnimationLoop(paused ? null : frame);
+    if (!paused) clock.getDelta();
+    pauseBtn.textContent = paused ? 'play' : 'pause';
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+  }
+  pauseBtn.addEventListener('click', () => setPaused(!paused));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) renderer.setAnimationLoop(null);
+    else if (!paused) { clock.getDelta(); renderer.setAnimationLoop(frame); }
+  });
+}
+</script>
+</body>
+</html>

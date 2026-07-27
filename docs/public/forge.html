@@ -27,6 +27,12 @@
   `goforjMotion` (on | reduced), falling back to prefers-reduced-motion.
   Reduced renders a single still tableau. `?static` forces it.
 
+  Debugging: the page pauses in hidden tabs (rAF), which makes manual QA
+  awkward — so `window.__forge` reads live cycle state and
+  `window.__forgeStep(seconds)` fast-forwards the simulation and renders
+  one frame. Step to 2.2s for the first strike, 4.8s for the molten
+  reveal, 7.8s for the temper-gold rise.
+
   To embed on the landing page: lift the <canvas> host + module script;
   the text overlay is this page's own chrome and is optional.
 -->
@@ -485,7 +491,7 @@ function applyHeat(mesh, t) {
   } else {
     const u = (t - 0.55) / 0.45;
     m.emissive.copy(C_GOLD);
-    m.emissiveIntensity = THREE.MathUtils.lerp(0.9, 0.14, u);
+    m.emissiveIntensity = THREE.MathUtils.lerp(0.9, 0.2, u);
     m.metalness = THREE.MathUtils.lerp(0.62, 0.9, u);
     m.roughness = THREE.MathUtils.lerp(0.48, 0.3, u);
   }
@@ -635,7 +641,7 @@ function updateParticles(dt, t) {
     const fade = Math.sin(Math.min(d.life / d.max, 1) * Math.PI);           // in & out
     const c = d.gold ? EMBER_C2 : EMBER_C1;
     const twinkle = 0.55 + 0.45 * Math.sin(t * 3.1 + d.ph * 7);
-    const b = fade * twinkle * 0.85;
+    const b = fade * twinkle * 1.15;
     ec[i * 3] = c.r * b; ec[i * 3 + 1] = c.g * b; ec[i * 3 + 2] = c.b * b;
   }
   embers.geometry.attributes.position.needsUpdate = true;
@@ -755,9 +761,11 @@ function tickCycle(dt, t) {
       } else if (lt < D.windup + D.hold + D.strike) {
         const u = (lt - D.windup - D.hold) / D.strike;
         setHammer(THREE.MathUtils.lerp(HAMMER_UP, HAMMER_HIT, easeIn(u)));
-        if (!struck && u > 0.96) { struck = true; impact(strikeIdx === STRIKES - 1); }
+        if (!struck && u >= 0.96) { struck = true; impact(strikeIdx === STRIKES - 1); }
       } else {
         setHammer(HAMMER_HIT);
+        /* frames can hop the strike window entirely — never skip the hit */
+        if (!struck) { struck = true; impact(strikeIdx === STRIKES - 1); }
       }
       if (lt >= cyc) {
         phaseT = 0; struck = false; strikeIdx++;
@@ -857,7 +865,7 @@ function tickConstellation(dt, t) {
 }
 
 /* prefill cooled applications so the constellation reads at once */
-const PREFILL_ORDER = [1, 3, 0, 4, 2];   // spread, not clustered
+const PREFILL_ORDER = [1, 3, 0, 2, 4];   // spread; slot 4 last — it sits nearest the headline
 function prefill(n) {
   for (let i = 0; i < n; i++) {
     const slot = PREFILL_ORDER[i];
@@ -897,31 +905,54 @@ function tickCamera(dt, t) {
    ================================================================ */
 const clock = new THREE.Clock();
 let booted = false;
+let simT = 0;
 
-function frame() {
-  const dt = Math.min(clock.getDelta(), 0.05);
-  const t = clock.elapsedTime;
-
+/* One tick of simulation, no rendering. */
+function advance(dt, t) {
   tickCycle(dt, t);
   tickConstellation(dt, t);
   updateParticles(dt, t);
   tickCamera(dt, t);
 
   /* flicker */
-  hearthLight.intensity = 20 + Math.sin(t * 7.3) * 3 + Math.sin(t * 13.7) * 2.4 + Math.random() * 1.6;
+  hearthLight.intensity = 11 + Math.sin(t * 7.3) * 2 + Math.sin(t * 13.7) * 1.6 + Math.random() * 1.2;
   coals.forEach((c, i) => {
     c.material.emissiveIntensity = 0.7 + Math.sin(t * (2.3 + i * 0.37) + i * 2.1) * 0.4 + Math.random() * 0.1;
   });
   if (flash.intensity > 0.2) flash.intensity *= Math.pow(0.0005, dt); else flash.intensity = 0;
   if (ringT < 1) {
-    ringT = Math.min(ringT + dt / 0.7, 1);
-    ring.scale.setScalar(0.3 + easeOut(ringT) * 3.4);
-    ring.material.opacity = 0.55 * (1 - ringT);
+    ringT = Math.min(ringT + dt / 0.55, 1);
+    ring.scale.setScalar(0.3 + easeOut(ringT) * 2.6);
+    ring.material.opacity = 0.38 * (1 - ringT);
   } else ring.material.opacity = 0;
+}
 
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  simT += dt;
+  advance(dt, simT);
   composer.render();
   if (!booted) { booted = true; bootEl.classList.add('off'); }
 }
+
+/* Debug hooks (harmless in prod): __forge reads state, __forgeStep(sec)
+   fast-forwards the simulation and renders one frame. */
+Object.defineProperty(window, '__forge', { get: () => ({
+  phase, phaseT: +phaseT.toFixed(3), strikeIdx, struck, t: +simT.toFixed(2),
+  billet: billet.position.toArray().map(v => +v.toFixed(2)),
+  billetVisible: billet.visible,
+  hammer: +hammer.rotation.z.toFixed(3),
+  mark: currentMark ? currentMark.position.toArray().map(v => +v.toFixed(2)) : null,
+  constellation: constellation.length,
+  reduced: REDUCED
+})});
+window.__forgeStep = (sec) => {
+  const n = Math.max(1, Math.round(sec * 60));
+  for (let i = 0; i < n; i++) { simT += 1 / 60; advance(1 / 60, simT); }
+  composer.render();
+  clock.getDelta();
+  return window.__forge;
+};
 
 function onResize() {
   camera.aspect = innerWidth / innerHeight;

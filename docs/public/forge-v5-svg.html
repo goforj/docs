@@ -1,0 +1,620 @@
+<!doctype html>
+<!--
+  GoForj — The Request Journey, SVG edition. The same illustration as
+  forge-v5.html with identical timings, rebuilt without three.js:
+  inline SVG + CSS + ~300 lines of vanilla JS.
+
+  What the port buys:
+    - ~20KB self-contained vs ~330KB gzipped of three.js from a CDN,
+      plus no WebGL context and no 60fps GPU loop.
+    - Real text: crisp at any zoom, selectable, visible to screen
+      readers and search engines.
+    - LIVE design tokens: this page links /design-system.css and every
+      colour below is var(--gf-*). If the theme changes, the
+      illustration changes — no second source, per the design system's
+      own rule. (Fallback values inline for standalone viewing.)
+    - Trivially portable to a Vue component in the VitePress theme,
+      sharing state with the landing page's env-swap tabs.
+
+  What it gives up vs three.js: nothing this illustration used.
+  (The cinematic forge.html/v2 DO need WebGL — bloom, heat shader,
+  extruded mark. This page replaces v5, not those.)
+
+  Same behavior: journey → hold → chips flip environments → replay.
+  Click to swap and replay. `?embed` strips chrome; `?static` or
+  reduced-motion renders the completed trace. `window.__forge` and
+  `window.__forgeStep(sec)` debug hooks as in the rest of the series.
+-->
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>GoForj — The Request Journey (SVG)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Fallback tokens, defined FIRST so the real theme below wins when present. */
+:root {
+  --gf-accent: #FF5E3A;
+  --gf-accent-hi: #FF8257;
+  --gf-nav: #FFC24D;
+  --gf-ground-deep: #0C0A0E;
+  --gf-ground-alt: #1D1923;
+  --gf-surface: #2C2734;
+  --gf-line: #2A2333;
+  --gf-line-strong: #3D3349;
+  --gf-ink: #FFFFFF;
+  --gf-ink-2: #A9A1B3;
+  --gf-ink-3: #746C80;
+  --gf-font-display: 'Space Grotesk', sans-serif;
+  --gf-font-body: 'Inter', sans-serif;
+  --gf-font-mono: 'JetBrains Mono', monospace;
+  /* page-local roles */
+  --fj-paper: #F7F2E8;
+  --fj-ok: #5FCFA8;
+  --fj-card: #14111a;
+  --fj-code: #201a28;
+}
+</style>
+<link rel="stylesheet" href="/design-system.css">
+<style>
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--gf-ground-deep);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+#vignette {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 42%, transparent 42%, rgba(12,10,14,.55) 100%),
+    radial-gradient(60% 45% at 50% 45%, rgba(255,160,90,.05), transparent 70%);
+}
+.ov { position: fixed; z-index: 5; pointer-events: none; }
+.ov--head { top: clamp(20px, 3.6vh, 40px); left: clamp(22px, 4vw, 52px); max-width: 520px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px;
+  letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--gf-nav); margin: 0 0 12px;
+}
+.kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-nav); }
+h1 {
+  margin: 0 0 8px; font-family: var(--gf-font-display); font-weight: 700;
+  font-size: clamp(26px, 3.5vw, 42px); line-height: 1.06; letter-spacing: -0.032em;
+  text-shadow: 0 2px 26px rgba(12,10,14,.85);
+}
+h1 em { font-style: normal; color: var(--gf-accent); }
+.sub {
+  margin: 0; font-size: clamp(12.5px, 1.15vw, 14.5px); line-height: 1.6;
+  color: var(--gf-ink-2); max-width: 42ch;
+  text-shadow: 0 1px 18px rgba(12,10,14,.9);
+}
+.ov--foot { left: 0; right: 0; bottom: clamp(12px, 2.6vh, 22px); display: flex; justify-content: center; }
+.caption {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  padding: 8px 16px; border: 1px solid var(--gf-line); border-radius: 999px;
+  background: color-mix(in srgb, var(--gf-ground-deep) 72%, transparent);
+  backdrop-filter: blur(8px);
+}
+.caption b { color: var(--gf-ink-2); font-weight: 500; }
+.ov--ctl { right: clamp(16px, 2.4vw, 30px); bottom: clamp(12px, 2.6vh, 22px); pointer-events: auto; }
+#pause {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--gf-ink-2); background: transparent;
+  border: 1px solid var(--gf-line-strong); border-radius: 8px;
+  padding: 7px 13px; cursor: pointer;
+}
+#pause:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+body.embed .ov--head, body.embed .ov--foot, body.embed .ov--ctl, body.embed #vignette { display: none; }
+@media (max-width: 640px) { .ov--head { max-width: 80vw; } .caption { font-size: 9px; } }
+
+/* ---- SVG styling: every colour is a live token ---- */
+#scene text { font-family: var(--gf-font-mono); user-select: none; }
+.node-card { fill: var(--fj-card); stroke: var(--fj-paper); stroke-width: 3; }
+.node-card--code { fill: var(--fj-code); }
+.node-title { fill: var(--gf-nav); font-size: 15px; font-weight: 500; text-anchor: middle; }
+.node-title--code { fill: var(--fj-paper); }
+.chip rect { fill: var(--gf-surface); stroke: var(--gf-nav); stroke-width: 2.5; }
+.chip text { fill: var(--gf-nav); font-size: 15px; font-weight: 600; text-anchor: middle; }
+.chip, .node { transform-box: fill-box; transform-origin: center; }
+.edge { fill: none; stroke: var(--gf-ink-3); stroke-width: 3.5; opacity: 0.55; stroke-linecap: round; }
+.dot { fill: var(--gf-accent); }
+.dot--async { fill: var(--gf-nav); }
+.dot--ok { fill: var(--fj-ok); }
+.dotchip rect { fill: var(--fj-paper); stroke: var(--fj-ok); stroke-width: 2; }
+.dotchip text { fill: var(--gf-ground-alt); font-size: 13px; font-weight: 600; text-anchor: middle; }
+.dotchip--req rect { stroke: var(--gf-accent); }
+.zone-label { fill: var(--gf-ink-3); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; text-anchor: middle; }
+.zone-line { stroke: var(--gf-ink-3); opacity: .25; stroke-dasharray: 5 7; fill: none; }
+.trace-axis { fill: var(--gf-ink-3); font-size: 11px; text-anchor: middle; opacity: .75; }
+.trace-ghost { fill: none; stroke: var(--gf-ink-3); opacity: .45; stroke-dasharray: 4 4; stroke-width: 1.5; }
+.trace-label.hot, .trace-label.hov { fill: var(--gf-nav); }
+.node.hl rect { stroke: var(--gf-nav); }
+.edge.hl { stroke: var(--gf-nav); opacity: 1; }
+.trace-mark { fill: var(--gf-accent); fill-rule: evenodd; }
+.backdrop rect { fill: var(--gf-ground-alt); }
+.conf { fill: var(--gf-accent); }
+.conf--gold { fill: var(--gf-nav); }
+.conf--paper { fill: var(--fj-paper); }
+
+.trace-bg { fill: var(--fj-card); stroke: var(--fj-paper); stroke-width: 3; }
+.trace-brand { fill: var(--gf-nav); font-size: 17px; font-weight: 600; }
+.trace-meta { fill: var(--gf-ink-3); font-size: 14px; }
+.trace-grid { stroke: var(--gf-ink-2); opacity: 0.08; }
+.trace-label { fill: var(--gf-ink-2); font-size: 14px; }
+.trace-label--root { fill: var(--fj-paper); }
+.trace-bar { fill: var(--gf-accent); }
+.trace-bar--async { fill: var(--gf-nav); }
+.trace-ms { fill: var(--gf-ink-3); font-size: 13px; }
+.trace-ok { fill: var(--fj-ok); font-size: 14px; font-weight: 600; }
+.trace-okline { stroke: var(--fj-ok); stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<svg id="scene" viewBox="0 0 1440 820" preserveAspectRatio="xMidYMid meet" role="img"
+     aria-label="One request traced through a GoForj app: controller, service, database, queue, events, then a worker sends mail and a subscriber warms the cache, all recorded in a Lighthouse trace.">
+  <g class="backdrop">
+    <rect x="-40" y="120" width="1520" height="150" rx="20" opacity="0.5"></rect>
+    <rect x="-40" y="90" width="1520" height="110" rx="20" opacity="0.3"></rect>
+  </g>
+  <g id="world">
+    <g id="edges"></g>
+    <g id="nodes"></g>
+    <g id="dots"></g>
+    <g id="confetti"></g>
+  </g>
+  <g id="trace"></g>
+</svg>
+<div id="vignette"></div>
+
+<header class="ov ov--head">
+  <p class="kicker">goforj &middot; one request, end to end</p>
+  <h1>Your code answers in 12ms.<br><em>The work keeps going.</em></h1>
+  <p class="sub">POST /orders hits your controller, writes the database,
+  queues a job, publishes an event — then the worker mails, the
+  subscriber caches. One app model, and every run leaves this trace.</p>
+</header>
+
+<div class="ov ov--foot">
+  <p class="caption">click to swap drivers and replay — <b>same code, same trace, different backends</b></p>
+</div>
+
+<div class="ov ov--ctl"><button id="pause" aria-pressed="false">pause</button></div>
+
+<script>
+'use strict';
+const SVG = (tag, attrs = {}, parent = null) => {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(el);
+  return el;
+};
+const $ = id => document.getElementById(id);
+
+/* ---- motion policy ---- */
+const params = new URLSearchParams(location.search);
+let stored = null;
+try { stored = localStorage.getItem('goforjMotion'); } catch (e) {}
+const osReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REDUCED = params.has('static') || stored === 'reduced' || (osReduced && stored !== 'on');
+if (params.has('embed')) document.body.classList.add('embed');
+
+/* ================================================================
+   The system graph — same data as forge-v5.html
+   ================================================================ */
+const ENV_PAIRS = { db: ['postgres', 'sqlite'], queue: ['redis', 'workerpool'], events: ['nats', 'inproc'], mail: ['smtp', 'log'], cache: ['redis', 'memory'] };
+let env = 0;                       // 0 production, 1 local
+
+const NODES = {
+  client:  { x: 105,  y: 300, w: 115, code: 1, title: 'client' },
+  http:    { x: 350,  y: 300, w: 195, code: 1, title: 'http · controller' },
+  service: { x: 585,  y: 300, w: 185, code: 1, title: 'orders service' },
+  db:      { x: 815,  y: 195, w: 185, title: 'database' },
+  queue:   { x: 815,  y: 305, w: 185, title: 'queue' },
+  events:  { x: 815,  y: 415, w: 185, title: 'events' },
+  worker:  { x: 1040, y: 305, w: 175, code: 1, title: 'job · worker' },
+  mail:    { x: 1250, y: 305, w: 165, title: 'mail' },
+  sub:     { x: 1040, y: 415, w: 175, code: 1, title: 'subscriber' },
+  cache:   { x: 1250, y: 415, w: 165, title: 'cache' }
+};
+const pos = k => NODES[k];
+
+const EDGES = [
+  ['client', 'http'], ['http', 'service'],
+  ['service', 'db'], ['service', 'queue'], ['service', 'events'],
+  ['queue', 'worker'], ['worker', 'mail'],
+  ['events', 'sub'], ['sub', 'cache']
+];
+/* each node's inbound contract, for hover highlighting */
+const EDGE_IN = { http: 'client>http', service: 'http>service', db: 'service>db', queue: 'service>queue', events: 'service>events', worker: 'queue>worker', mail: 'worker>mail', sub: 'events>sub', cache: 'sub>cache' };
+const edgeEls = {};
+EDGES.forEach(([a, b]) => {
+  const A = pos(a), B = pos(b);
+  const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+  const dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy);
+  const cx = mx - dy / len * 18, cy = my + dx / len * 18;
+  const el = SVG('path', { class: 'edge', d: `M${A.x} ${A.y} Q${cx} ${cy} ${B.x} ${B.y}` }, $('edges'));
+  edgeEls[a + '>' + b] = { el, len: el.getTotalLength() };
+});
+function edgePoint(a, b, u) {
+  const fwd = edgeEls[a + '>' + b];
+  if (fwd) return fwd.el.getPointAtLength(u * fwd.len);
+  const rev = edgeEls[b + '>' + a];
+  return rev.el.getPointAtLength((1 - u) * rev.len);
+}
+
+/* nodes: card + real-text title + driver chip */
+const chipTexts = {};
+Object.entries(NODES).forEach(([key, n]) => {
+  const g = SVG('g', { class: 'node' }, $('nodes'));
+  const prim = ENV_PAIRS[key];
+  const h = prim ? 92 : 62;
+  SVG('rect', { class: 'node-card' + (n.code ? ' node-card--code' : ''), x: n.x - n.w / 2, y: n.y - h / 2, width: n.w, height: h, rx: 14 }, g);
+  SVG('text', { class: 'node-title' + (n.code ? ' node-title--code' : ''), x: n.x, y: n.y + (prim ? -12 : 5) }, g).textContent = n.title;
+  if (prim) {
+    const chip = SVG('g', { class: 'chip' }, g);
+    SVG('rect', { x: n.x - 62, y: n.y + 4, width: 124, height: 30, rx: 15 }, chip);
+    const t = SVG('text', { x: n.x, y: n.y + 25 }, chip);
+    t.textContent = prim[env];
+    chipTexts[key] = { chip, text: t };
+  }
+  n.el = g;
+  n.rect = g.querySelector('rect');
+  n.pulse = 0;
+  /* hover a node → light its row(s) in the trace */
+  g.addEventListener('pointerenter', () => hlSync(key, true));
+  g.addEventListener('pointerleave', () => hlSync(key, false));
+});
+
+/* the async frontier: everything right of this line runs AFTER the 201 */
+SVG('line', { class: 'zone-line', x1: 932, y1: 258, x2: 932, y2: 470 }, $('world'));
+SVG('text', { class: 'zone-label', x: 1145, y: 246 }, $('world')).textContent = 'after the response';
+
+function hlSync(key, on) {
+  const n = NODES[key];
+  if (n) n.el.classList.toggle('hl', on);
+  const e = edgeEls[EDGE_IN[key]];
+  if (e) e.el.classList.toggle('hl', on);
+  rowEls.forEach(r => {
+    if (r.spn.node === key && r.label) r.label.classList.toggle('hov', on);
+  });
+}
+
+/* env tag */
+const envTag = (() => {
+  const g = SVG('g', { class: 'chip' }, $('world'));
+  SVG('rect', { x: 1180, y: 118, width: 200, height: 34, rx: 17 }, g);
+  const t = SVG('text', { x: 1280, y: 141 }, g);
+  t.textContent = 'env: production';
+  return { chip: g, text: t };
+})();
+
+/* ================================================================
+   Journey script — timings identical to forge-v5.html
+   ================================================================ */
+const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const DOT_DEFS = [
+  { cls: 'dot', chip: 'POST /orders', chipW: 128, chipCls: 'dotchip--req', path: [['client', 0], ['http', 0.75], ['service', 1.5]], die: 1.75 },
+  { cls: 'dot', path: [['service', 1.7], ['db', 2.4]], die: 2.95 },
+  { cls: 'dot', path: [['service', 1.7], ['queue', 2.35]], die: 2.7 },
+  { cls: 'dot', path: [['service', 1.7], ['events', 2.5]], die: 2.8 },
+  { cls: 'dot--ok', chip: '201', path: [['service', 2.6], ['http', 3.2], ['client', 3.85]], die: 3.9 },
+  { cls: 'dot--async', path: [['queue', 3.15], ['worker', 3.9]], die: 4.25 },
+  { cls: 'dot--async', path: [['worker', 4.2], ['mail', 4.9]], die: 5.6 },
+  { cls: 'dot--async', path: [['events', 2.95], ['sub', 3.6]], die: 3.85 },
+  { cls: 'dot--async', path: [['sub', 3.8], ['cache', 4.5]], die: 5.0 }
+];
+const dots = DOT_DEFS.map(def => {
+  const m = SVG('circle', { class: 'dot ' + def.cls, r: 8, cx: -50, cy: -50, visibility: 'hidden' }, $('dots'));
+  let chip = null;
+  if (def.chip) {
+    const cw = def.chipW || 48;
+    chip = SVG('g', { class: 'dotchip ' + (def.chipCls || ''), visibility: 'hidden' }, $('dots'));
+    SVG('rect', { x: -cw / 2, y: -34, width: cw, height: 22, rx: 11 }, chip);
+    SVG('text', { x: 0, y: -18 }, chip).textContent = def.chip;
+  }
+  return { def, m, chip };
+});
+const ARRIVALS = DOT_DEFS.flatMap(d => d.path.slice(1).map(([node, t]) => ({ node, t, hit: false })));
+
+/* one journey-second reads as 5ms, so bars and labels agree with the axis */
+const MS = 5;
+const SPANS = [
+  { row: 0, ind: 0, node: 'http',    label: 'POST /orders', start: 0.75, end: 3.2, kind: 'sync', ms: '12ms' },
+  { row: 1, ind: 1, node: 'service', label: 'orders.service.Create', start: 1.5, end: 2.7, kind: 'sync', ms: '6ms' },
+  { row: 2, ind: 2, node: 'db',      label: 'database · INSERT orders', start: 2.4, end: 2.9, kind: 'sync', ms: '2.5ms' },
+  { row: 3, ind: 2, node: 'queue',   label: 'queue · dispatch confirm', start: 2.35, end: 2.6, kind: 'sync', ms: '1.2ms' },
+  { row: 4, ind: 2, node: 'events',  label: 'events · orders.created', start: 2.5, end: 2.72, kind: 'sync', ms: '1.1ms' },
+  { row: 5, ind: 0, node: 'client',  label: 'response', start: 3.2, end: 3.2, kind: 'mark', ms: '201 · 12ms' },
+  { row: 6, ind: 0, node: 'worker',  label: 'job confirm · worker', start: 3.9, end: 4.9, kind: 'async', ms: '5ms' },
+  { row: 7, ind: 1, node: 'mail',    label: 'mail · send confirmation', start: 4.9, end: 5.6, kind: 'async', ms: '3.5ms' },
+  { row: 8, ind: 0, node: 'cache',   label: 'sub orders.created → cache', start: 4.5, end: 4.9, kind: 'async', ms: '2ms' }
+];
+const JOURNEY_END = 5.9, HOLD_END = 8.1;
+
+/* ================================================================
+   Trace panel — real text, real rects
+   ================================================================ */
+const TR = { x: 70, y: 490, w: 1300, h: 270, x0: 470, pps: 146, row0: 570, rowh: 22 };
+const MARK_PATH = 'M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z';
+const trace_ = (() => {
+  const g = $('trace');
+  SVG('rect', { class: 'trace-bg', x: TR.x, y: TR.y, width: TR.w, height: TR.h, rx: 16 }, g);
+  /* the FROZEN mark from logo-lab.html — the brand belongs in the product */
+  SVG('path', { class: 'trace-mark', d: MARK_PATH, transform: `translate(${TR.x + 24} ${TR.y + 14}) scale(0.21)` }, g);
+  const brand = SVG('text', { class: 'trace-brand', x: TR.x + 52, y: TR.y + 36 }, g);
+  brand.textContent = 'lighthouse · trace';
+  const meta = SVG('text', { class: 'trace-meta', x: TR.x + 268, y: TR.y + 36 }, g);
+  const right = SVG('text', { class: 'trace-meta', x: TR.x + TR.w - 24, y: TR.y + 36, 'text-anchor': 'end' }, g);
+  right.textContent = 'built into every app';
+  for (let i = 0; i <= 6; i++) {
+    SVG('line', { class: 'trace-grid', x1: TR.x0 + i * TR.pps, y1: TR.y + 52, x2: TR.x0 + i * TR.pps, y2: TR.y + TR.h - 14 }, g);
+    SVG('text', { class: 'trace-axis', x: TR.x0 + i * TR.pps, y: TR.y + 66 }, g).textContent = i === 0 ? '0' : `${i * MS}ms`;
+  }
+  return { meta, right };
+})();
+const traceMeta = trace_.meta;
+const rowEls = SPANS.map(spn => {
+  const g = $('trace');
+  const y = TR.row0 + spn.row * TR.rowh;
+  if (spn.kind === 'mark') {
+    const mx = TR.x0 + spn.start * TR.pps;
+    const line = SVG('line', { class: 'trace-okline', x1: mx, y1: y - 14, x2: mx, y2: y + 3, visibility: 'hidden' }, g);
+    const txt = SVG('text', { class: 'trace-ok', x: mx + 9, y: y }, g);
+    txt.textContent = spn.ms;
+    txt.setAttribute('visibility', 'hidden');
+    return { spn, line, txt };
+  }
+  const label = SVG('text', { class: 'trace-label' + (spn.ind === 0 ? ' trace-label--root' : ''), x: TR.x + 24 + spn.ind * 22, y, visibility: 'hidden' }, g);
+  label.textContent = spn.label;
+  /* ghost of the previous run: appears after the first swap, so the
+     replay visibly fills the identical silhouette */
+  const ghost = SVG('rect', { class: 'trace-ghost', x: TR.x0 + spn.start * TR.pps, y: y - 12, width: Math.max((spn.end - spn.start) * TR.pps, 4), height: 14, rx: 7, visibility: 'hidden' }, g);
+  const bar = SVG('rect', { class: 'trace-bar' + (spn.kind === 'async' ? ' trace-bar--async' : ''), x: TR.x0 + spn.start * TR.pps, y: y - 12, width: 0, height: 14, rx: 7, visibility: 'hidden' }, g);
+  const ms = SVG('text', { class: 'trace-ms', x: 0, y, visibility: 'hidden' }, g);
+  ms.textContent = spn.ms;
+  /* hover the row → light the node and its contract */
+  const hit = SVG('rect', { x: TR.x + 8, y: y - 15, width: TR.w - 16, height: 20, fill: 'transparent' }, g);
+  hit.style.pointerEvents = 'all';
+  hit.addEventListener('pointerenter', () => hlSync(spn.node, true));
+  hit.addEventListener('pointerleave', () => hlSync(spn.node, false));
+  return { spn, label, bar, ms, ghost, hotT: 0 };
+});
+let ghostsOn = false;
+function drawTrace(jt, reqId) {
+  traceMeta.textContent = `req_01hf${(300 + reqId).toString(36)}  env=${env ? 'local' : 'production'}`;
+  rowEls.forEach(r => {
+    const on = jt >= r.spn.start;
+    if (r.spn.kind === 'mark') {
+      r.line.setAttribute('visibility', on ? 'visible' : 'hidden');
+      r.txt.setAttribute('visibility', on ? 'visible' : 'hidden');
+      return;
+    }
+    if (r.ghost) r.ghost.setAttribute('visibility', ghostsOn ? 'visible' : 'hidden');
+    r.label.setAttribute('visibility', on ? 'visible' : 'hidden');
+    r.bar.setAttribute('visibility', on ? 'visible' : 'hidden');
+    if (on) {
+      const w = Math.max((Math.min(jt, r.spn.end) - r.spn.start) * TR.pps, 4);
+      r.bar.setAttribute('width', w);
+      const done = jt >= r.spn.end;
+      /* durations count up with the bar, settle on the exact figure */
+      r.ms.setAttribute('visibility', 'visible');
+      r.ms.textContent = done ? r.spn.ms
+        : `${Math.max((Math.min(jt, r.spn.end) - r.spn.start) * MS, 0.1).toFixed(1)}ms`;
+      r.ms.setAttribute('x', TR.x0 + r.spn.start * TR.pps + w + 9);
+    } else {
+      r.ms.setAttribute('visibility', 'hidden');
+    }
+  });
+}
+
+/* ================================================================
+   Confetti — a small pool of paper triangles
+   ================================================================ */
+const CONF = [];
+for (let i = 0; i < 26; i++) {
+  const cls = i % 3 === 0 ? 'conf--gold' : i % 3 === 1 ? 'conf--paper' : '';
+  const el = SVG('path', { class: 'conf ' + cls, d: 'M-5,-3 L5,-3 L0,6 Z', visibility: 'hidden' }, $('confetti'));
+  CONF.push({ el, life: 0, max: 1, x: 0, y: 0, vx: 0, vy: 0, r: 0, vr: 0 });
+}
+let confCursor = 0;
+function confetti(x, y, n) {
+  for (let k = 0; k < n; k++) {
+    const d = CONF[confCursor = (confCursor + 1) % CONF.length];
+    const a = Math.random() * Math.PI * 2;
+    d.life = 0.0001; d.max = 0.5 + Math.random() * 0.4;
+    d.x = x; d.y = y;
+    d.vx = Math.cos(a) * (30 + Math.random() * 40);
+    d.vy = -(60 + Math.random() * 70);
+    d.r = Math.random() * 360; d.vr = (Math.random() - 0.5) * 720;
+  }
+}
+function tickConfetti(dt) {
+  CONF.forEach(d => {
+    if (d.life <= 0) { d.el.setAttribute('visibility', 'hidden'); return; }
+    d.life += dt;
+    if (d.life > d.max) { d.life = 0; d.el.setAttribute('visibility', 'hidden'); return; }
+    d.vy += 300 * dt;
+    d.x += d.vx * dt; d.y += d.vy * dt; d.r += d.vr * dt;
+    const s = d.life / d.max > 0.75 ? 1 - (d.life / d.max - 0.75) / 0.25 : 1;
+    d.el.setAttribute('visibility', 'visible');
+    d.el.setAttribute('transform', `translate(${d.x} ${d.y}) rotate(${d.r}) scale(${Math.max(s, 0.01)})`);
+  });
+}
+
+/* ================================================================
+   Cycle: journey → hold → flip chips → replay
+   ================================================================ */
+let jt = 0, reqId = 1, phase = 'journey';
+const flips = [];
+
+function resetJourney() {
+  jt = 0; phase = 'journey'; reqId++;
+  ARRIVALS.forEach(a => { a.hit = false; });
+  dots.forEach(d => { d.m.setAttribute('visibility', 'hidden'); if (d.chip) d.chip.setAttribute('visibility', 'hidden'); });
+  drawTrace(0, reqId);
+}
+function startSwap() {
+  if (phase === 'swap') return;
+  phase = 'swap'; jt = 0;
+  env = 1 - env;
+  if (!ghostsOn) {
+    ghostsOn = true;
+    trace_.right.textContent = 'ghost = previous run · identical shape';
+  }
+  let i = 0;
+  Object.entries(chipTexts).forEach(([key, c]) => {
+    flips.push({ ...c, t: 0, delay: i++ * 0.16, toText: ENV_PAIRS[key][env], swapped: false });
+  });
+  flips.push({ ...envTag, t: 0, delay: i * 0.16, toText: `env: ${env ? 'local' : 'production'}`, swapped: false });
+}
+
+function tickCycle(dt) {
+  jt += dt;
+  if (phase === 'journey') {
+    dots.forEach(({ def, m, chip }) => {
+      const first = def.path[0][1];
+      if (jt < first || jt > def.die) {
+        m.setAttribute('visibility', 'hidden');
+        if (chip) chip.setAttribute('visibility', 'hidden');
+        return;
+      }
+      let p = null;
+      for (let s = 0; s < def.path.length - 1; s++) {
+        const [a, ta] = def.path[s], [b, tb] = def.path[s + 1];
+        if (jt <= tb || s === def.path.length - 2) {
+          const u = Math.min(Math.max((jt - ta) / (tb - ta), 0), 1);
+          p = edgePoint(a, b, easeIO(u));
+          break;
+        }
+      }
+      const fade = Math.min((def.die - jt) / 0.2, 1);
+      m.setAttribute('visibility', 'visible');
+      m.setAttribute('cx', p.x); m.setAttribute('cy', p.y);
+      m.setAttribute('r', 8 * Math.max(fade, 0.01) * (1 + Math.sin(jt * 9) * 0.12));
+      if (chip) {
+        chip.setAttribute('visibility', 'visible');
+        chip.setAttribute('transform', `translate(${p.x} ${p.y})`);
+        chip.setAttribute('opacity', fade);
+      }
+    });
+    ARRIVALS.forEach(a => {
+      if (!a.hit && jt >= a.t) {
+        a.hit = true;
+        const n = NODES[a.node];
+        if (n) { n.pulse = 1; confetti(n.x, n.y - 20, 4); }
+        if (a.node === 'client' && a.t > 3) clientFlash = 0.8;   // the 201 landed
+        rowEls.forEach(r => { if (r.spn.node === a.node && r.label) r.hotT = 0.55; });
+      }
+    });
+    drawTrace(Math.min(jt, JOURNEY_END), reqId);
+    if (jt >= HOLD_END) startSwap();
+  } else {
+    let done = true;
+    flips.forEach(f => {
+      f.t += dt;
+      const u = (f.t - f.delay) / 0.42;
+      if (u < 1) done = false;
+      if (u <= 0) return;
+      const w = Math.abs(Math.cos(Math.min(u, 1) * Math.PI));
+      f.chip.style.transform = `scaleX(${Math.max(w, 0.02)})`;
+      if (u >= 0.5 && !f.swapped) { f.swapped = true; f.text.textContent = f.toText; }
+      if (u >= 1) f.chip.style.transform = '';
+    });
+    if (done && jt > 1.4) { flips.length = 0; resetJourney(); }
+  }
+  Object.values(NODES).forEach(n => {
+    if (n.pulse > 0) {
+      n.pulse = Math.max(n.pulse - dt * 2.6, 0);
+      n.el.style.transform = `scale(${1 + Math.sin(n.pulse * Math.PI) * 0.06})`;
+    } else if (n.el.style.transform) n.el.style.transform = '';
+  });
+  /* arrival flashes: trace rows + the client's green 201 moment */
+  rowEls.forEach(r => {
+    if (!r.label) return;
+    if (r.hotT > 0) { r.hotT -= dt; r.label.classList.add('hot'); }
+    else r.label.classList.remove('hot');
+  });
+  if (clientFlash > 0) {
+    clientFlash -= dt;
+    NODES.client.rect.style.stroke = 'var(--fj-ok)';
+  } else if (NODES.client.rect.style.stroke) {
+    NODES.client.rect.style.stroke = '';
+  }
+}
+let clientFlash = 0;
+
+/* parallax: one transform on the world layer */
+const world = $('world');
+let mx = 0, my = 0, px = 0, py = 0;
+addEventListener('pointermove', e => {
+  mx = (e.clientX / innerWidth) * 2 - 1;
+  my = (e.clientY / innerHeight) * 2 - 1;
+});
+
+document.getElementById('scene').addEventListener('pointerdown', () => {
+  if (!REDUCED && phase === 'journey') startSwap();
+});
+
+/* ================================================================
+   Loop + debug hooks
+   ================================================================ */
+let last = 0, paused = false, raf = 0, simT = 0;
+function advance(dt) {
+  simT += dt;
+  tickCycle(dt);
+  tickConfetti(dt);
+  px += (mx * 10 - px) * Math.min(dt * 3, 1);
+  py += (my * 6 - py) * Math.min(dt * 3, 1);
+  world.setAttribute('transform', `translate(${(-px).toFixed(2)} ${(-py).toFixed(2)})`);
+}
+function frame(ts) {
+  raf = requestAnimationFrame(frame);
+  const dt = Math.min((ts - last) / 1000 || 0.016, 0.05);
+  last = ts;
+  advance(dt);
+}
+
+Object.defineProperty(window, '__forge', { get: () => ({
+  phase, jt: +jt.toFixed(2), env: env ? 'local' : 'production',
+  reqId, t: +simT.toFixed(2), reduced: REDUCED
+})});
+window.__forgeStep = (sec) => {
+  const n = Math.max(1, Math.round(sec * 60));
+  for (let i = 0; i < n; i++) advance(1 / 60);
+  return window.__forge;
+};
+
+const pauseBtn = $('pause');
+if (REDUCED) {
+  drawTrace(JOURNEY_END, 1);
+  pauseBtn.style.display = 'none';
+} else {
+  drawTrace(0, 1);
+  raf = requestAnimationFrame(frame);
+  function setPaused(p) {
+    paused = p;
+    if (paused) cancelAnimationFrame(raf);
+    else { last = performance.now(); raf = requestAnimationFrame(frame); }
+    pauseBtn.textContent = paused ? 'play' : 'pause';
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+  }
+  pauseBtn.addEventListener('click', e => { e.stopPropagation(); setPaused(!paused); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf);
+    else if (!paused) { last = performance.now(); raf = requestAnimationFrame(frame); }
+  });
+}
+</script>
+</body>
+</html>

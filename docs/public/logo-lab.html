@@ -202,6 +202,10 @@ body {
   letter-spacing: -0.025em; color: var(--gf-ink);
 }
 .cropgrid figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
+.cropgrid .swatchbox {
+  display: block; padding: 9px; border-radius: 8px;
+  border: 1px solid rgba(128,128,128,.25);
+}
 .cropgrid figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-3); }
 .photo {
   background:
@@ -293,9 +297,20 @@ figure:hover > svg { transform: translateY(-1px); }
    OS preference, and the [data-gf-motion] attribute. Nothing here
    animates unless BOTH allow it. The static state is the mark, so a
    reduced-motion user gets a logo rather than a broken spinner. */
-.gf-ldr .gf-f { opacity: .24; transform-box: fill-box; }
-.gf-ldr .gf-f.lead { opacity: 1; }
+/* Base state is the COMPLETE mark: every face fully opaque, seam fully
+   drawn, nothing offset. The keyframes take it away and give it back,
+   so when motion is gated off the result is not a frozen frame of an
+   animation — it is the logo. An earlier version set the resting
+   opacity to .24 with one face lit, which froze into a two-tone mark
+   of exactly the kind this page spent three sections arguing against. */
+.gf-ldr .gf-f { opacity: 1; transform-box: fill-box; }
 .gf-ldr .gf-seam { stroke-dasharray: 62; stroke-dashoffset: 0; }
+/* Resting states again chosen so that gating motion off leaves the
+   complete mark: the sweep band parked outside, the level filled, the
+   orbit segment closed into a solid outline. */
+.gf-ldr .gf-band { transform: translateX(-96px); }
+.gf-ldr .gf-level { transform: translateY(0); }
+.gf-ldr .gf-track { stroke-dasharray: 100 0; stroke-dashoffset: 0; }
 
 @media (prefers-reduced-motion: no-preference) {
   html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f {
@@ -304,11 +319,32 @@ figure:hover > svg { transform: translateY(-1px); }
   html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f2 { animation-delay: -.45s; }
   html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f3 { animation-delay: -.90s; }
 
+  /* SETTLE — and the two rewrites it took to get here.
+
+     v1 gave all three faces delay 0, so they moved as one blob, and
+     its first keyframe was exploded while its last was seated, so
+     every loop ended in a hard snap.
+
+     v2 fixed both and was still wrong, which stepping the animation
+     frame by frame made obvious: with a large travel and an opacity
+     fade, a missing face does not read as "a part that has not
+     arrived". It reads as a damaged logo — because the three sectors
+     are REGIONS OF ONE SILHOUETTE, not components. This is the same
+     reason Exploded scores badly in the variants table; the flaw was
+     inherited by animating it.
+
+     So the travel is now small and opacity is constant. The mark is
+     never incomplete — its seams widen and close. That is honest to
+     what the geometry actually is. */
   html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f {
-    opacity: 1; animation: gfAsmT 1.6s cubic-bezier(.22,1,.36,1) infinite;
+    animation: gfAsmT 2s cubic-bezier(.37,0,.24,1) infinite;
   }
-  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f2 { animation-name: gfAsmR; }
-  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f3 { animation-name: gfAsmL; }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f2 {
+    animation-name: gfAsmR; animation-delay: .13s;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f3 {
+    animation-name: gfAsmL; animation-delay: .26s;
+  }
 
   html[data-gf-motion="full"] .gf-ldr[data-anim="draw"] .gf-seam {
     animation: gfDraw 1.5s ease-in-out infinite;
@@ -316,11 +352,36 @@ figure:hover > svg { transform: translateY(-1px); }
   html[data-gf-motion="full"] .gf-ldr[data-anim="breathe"] .gf-mark {
     animation: gfBreathe 1.5s ease-in-out infinite;
   }
+  /* Signal by AREA rather than by a hairline — which is the whole
+     reason Draw is limited and these three are not. */
+  html[data-gf-motion="full"] .gf-ldr[data-anim="sweep"] .gf-band {
+    animation: gfSweep 1.6s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="fill"] .gf-level {
+    animation: gfFill 2.1s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="orbit"] .gf-track {
+    animation: gfOrbit 1.5s linear infinite;
+  }
 }
+@keyframes gfSweep { 0% { transform: translateX(-96px) } 100% { transform: translateX(96px) } }
+@keyframes gfFill  { 0%, 8% { transform: translateY(112px) } 78%, 100% { transform: translateY(0) } }
+@keyframes gfOrbit { to { stroke-dashoffset: -100 } }
 @keyframes gfCycle { 0%, 62%, 100% { opacity: .24 } 16% { opacity: 1 } }
-@keyframes gfAsmT { 0% { transform: translate(0,-9px) } 55%, 100% { transform: translate(0,0) } }
-@keyframes gfAsmR { 0% { transform: translate(7.8px,4.5px) } 55%, 100% { transform: translate(0,0) } }
-@keyframes gfAsmL { 0% { transform: translate(-7.8px,4.5px) } 55%, 100% { transform: translate(0,0) } }
+/* Small travel, constant opacity: the seams open and close, and the
+   mark is legible at every frame of the loop. */
+@keyframes gfAsmT {
+  0%, 100% { transform: translate(0,-3.6px) }
+  46%, 62% { transform: translate(0,0) }
+}
+@keyframes gfAsmR {
+  0%, 100% { transform: translate(3.1px,1.8px) }
+  46%, 62% { transform: translate(0,0) }
+}
+@keyframes gfAsmL {
+  0%, 100% { transform: translate(-3.1px,1.8px) }
+  46%, 62% { transform: translate(0,0) }
+}
 @keyframes gfDraw { 0% { stroke-dashoffset: 62 } 55%, 100% { stroke-dashoffset: 0 } }
 @keyframes gfBreathe { 0%, 100% { opacity: .38 } 50% { opacity: 1 } }
 
@@ -379,6 +440,24 @@ figure:hover > svg { transform: translateY(-1px); }
 [data-gf-motion="reduced"] #gfToast { transition: opacity .18s ease; }
 
 @media (max-width: 760px) { .wrap, .head { padding-left: 18px; padding-right: 18px; } }
+
+/* The aligned grids are the one thing that forced the whole document
+   to scroll sideways on a phone — measured at 581px of scroll width
+   in a 390px viewport. Reading down a column is the entire point of
+   them, so they keep their columns and scroll INSIDE their own box
+   rather than dragging the page with them. */
+@media (max-width: 880px) {
+  .cropgrid {
+    grid-template-columns: 84px repeat(4, minmax(56px, 1fr));
+    gap: 10px 8px; padding: 14px 12px;
+  }
+  .cropgrid .colhd { font-size: 11px; }
+  .cropgrid .rowlbl { font-size: 9px; letter-spacing: .06em; }
+  .cropgrid svg { max-width: 100%; height: auto; }
+  .cropgrid .swatchbox { padding: 5px; }
+  table.t { display: block; overflow-x: auto; }
+  pre { font-size: 11px; }
+}
 </style>
 </head>
 <body>
@@ -391,6 +470,7 @@ figure:hover > svg { transform: translateY(-1px); }
     <a href="#rule">Rule</a>
     <a href="#variants">Variants</a>
     <a href="#measure">Measured</a>
+    <a href="#otherground">Ground</a>
     <a href="#lightship">Light</a>
     <a href="#forever">Forever</a>
     <a href="#loader">Loader</a>
@@ -656,7 +736,7 @@ figure:hover > svg { transform: translateY(-1px); }
     <em>cut</em> as transparency, across the system's light grounds and then off
     the system entirely.
   </p>
-  <div class="cropgrid" id="seamModeGrid" style="grid-template-columns:124px repeat(4,1fr)"></div>
+  <div class="cropgrid" id="seamModeGrid"></div>
   <div class="note pick" id="seamModeFinding"></div>
 
   <h3>The recommendation</h3>
@@ -751,6 +831,14 @@ figure:hover > svg { transform: translateY(-1px); }
   </p>
   <div class="strip dark" id="ldrContext"></div>
 
+  <h3>Fill, driven by a real value</h3>
+  <p>
+    Fill is the only determinate loader here. Because the level is a transform on
+    a clipped rect, it can be set to an actual percentage rather than looped —
+    the mark becomes the progress bar instead of sitting next to one.
+  </p>
+  <div class="strip dark" id="ldrFillSteps"></div>
+
   <h3>Which survive small</h3>
   <p>
     The same constraint that decided the variants applies here. A loader that
@@ -824,6 +912,12 @@ figure:hover > svg { transform: translateY(-1px); }
     </tr></thead>
     <tbody id="assess"></tbody>
   </table>
+  <h3>The decided set</h3>
+  <p>
+    Three roles, one geometry. Everything below is the same frozen silhouette —
+    what changes between them is the job, not the drawing.
+  </p>
+  <div class="ldrs" id="decidedSet"></div>
   <div class="note pick" id="recommendation"></div>
 
   <h3>The rules, in one place</h3>
@@ -1349,10 +1443,20 @@ const VARIANTS = [
   },
   {
     id: 'seam', name: 'Seam', tag: 'new', hot: true,
-    render: (px, P) => rSeam(px, P),
+    /*
+      CUT, not painted.
+
+      This card and its exports used rSeam — the painted version —
+      while the light-mode section, the decided set and the
+      recommendation had all moved to the cut seam. So "Copy SVG" on
+      the page's own primary mark handed you the variant the page
+      argues against. The painted renderer is still used, but only in
+      the light-mode comparison, where it is the counter-example.
+    */
+    render: (px, P) => rSeamCut(px, P),
     pairs: P => [[P.accent, P.bg]],
     tones: P => [P.accent],
-    why: '<b>Detail as a function of size.</b> Flat fill plus the cube\'s three interior edges stroked in the ground colour and clipped inside the silhouette — the same three edges that define the face partition, so the two can never drift apart. The stroke is 2 units on a 112-unit viewBox, so its device width is a fixed fraction of the mark: crisp at display size, sub-pixel by 16px. The mark degrades into the base on its own — one definition, not an isometric primary plus a separate flat favicon.',
+    why: '<b>Detail as a function of size.</b> Flat fill with the cube\'s three interior edges <em>cut out</em> as transparency — the same three edges that define the face partition, so the two can never drift apart. Cut rather than painted, so the gap shows whatever is actually behind the mark and the asset carries no assumption about its background. The seam is 2 units on a 112-unit viewBox, so its device width is a fixed fraction of the mark: crisp at display size, sub-pixel by 16px. The mark converges on the flat base on its own — one definition, not an isometric primary plus a separate flat favicon.',
     seamWidth: px => 2 * px / 112,
     paletteFree: true, says: 'a cube, until it is too small to be one'
   },
@@ -1847,8 +1951,10 @@ const GRAPHIC_MIN = 3.0;
     ['off-system', OFF[0], OFF[1]]
   ];
   const grid = document.getElementById('seamModeGrid');
+  /* Class rather than inline padding, so the narrow-viewport rules can
+     shrink it — inline styles cannot be responded to without !important. */
   const box = (bg, svg) =>
-    `<figure><span style="display:block;padding:9px;border-radius:8px;background:${bg};border:1px solid rgba(128,128,128,.25)">${svg}</span></figure>`;
+    `<figure><span class="swatchbox" style="background:${bg}">${svg}</span></figure>`;
 
   grid.innerHTML =
     `<span></span>` +
@@ -1951,11 +2057,17 @@ document.getElementById('lightRecs').innerHTML = [
    ================================================================== */
 const polyPts = pts => pts.map(p => p.join(',')).join(' ');
 
+/* Flatten a translucent fill against its ground. Used both to build
+   the dim states below and to measure whether they separate. */
+function composite(fg, bg, alpha) {
+  const a = toRgb(fg), b = toRgb(bg);
+  return 'rgb(' + a.map((v, i) => Math.round(v * alpha + b[i] * (1 - alpha))).join(',') + ')';
+}
+
 function rLoader(size, P, anim, o = {}) {
   const F = frame(o.cover ?? 0.89);
   const id = 'ld' + (++_uid);
   const fill = o.fill || P.accent;
-  const lead = o.lead ?? 1;   // which face is lit in the STATIC state
 
   if (anim === 'draw') {
     return `<svg class="gf-ldr" data-anim="draw" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
@@ -1965,6 +2077,60 @@ function rLoader(size, P, anim, o = {}) {
         `<path class="gf-seam" d="${SEAM_EDGES}" fill="none" stroke="${o.seam || P.bg || P.deep}" ` +
         `stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
       `</g></svg>`;
+  }
+
+  /*
+    SWEEP — a light band travelling along the isometric axis, clipped
+    to the mark. Signals with a large area rather than a hairline, so
+    unlike Draw it is still visible when the mark is 16px.
+  */
+  if (anim === 'sweep') {
+    const g = 'sg' + (++_uid);
+    return `<svg class="gf-ldr" data-anim="sweep" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath>` +
+        `<linearGradient id="${g}" x1="0" y1="0" x2="1" y2="0">` +
+          `<stop offset="0" stop-color="#fff" stop-opacity="0"/>` +
+          `<stop offset="0.5" stop-color="#fff" stop-opacity="0.55"/>` +
+          `<stop offset="1" stop-color="#fff" stop-opacity="0"/>` +
+        `</linearGradient></defs>` +
+      `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+      `<g clip-path="url(#${id})">` +
+        `<g transform="rotate(-30 ${F.cx} ${F.cy})">` +
+          `<rect class="gf-band" x="${F.cx - 17}" y="${F.y0 - 60}" width="34" height="${F.S + 120}" fill="url(#${g})"/>` +
+        `</g></g></svg>`;
+  }
+
+  /*
+    FILL — the mark as a level. The only DETERMINATE loader here: the
+    boundary is a hard horizontal edge across a large area, so it
+    reads at any size and can be driven by a real percentage instead
+    of looping.
+  */
+  if (anim === 'fill') {
+    const pct = o.pct;
+    const dim = composite(fill, P.bg || P.deep, 0.26);
+    const shift = pct == null ? '' : ` style="transform:translateY(${(1 - pct) * F.S}px)"`;
+    return `<svg class="gf-ldr" data-anim="fill" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+      `<g clip-path="url(#${id})">` +
+        `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${dim}"/>` +
+        `<rect class="gf-level" x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${fill}"${shift}/>` +
+      `</g></svg>`;
+  }
+
+  /*
+    ORBIT — a segment running the silhouette's own perimeter. Classic
+    spinner semantics, but the track is the mark's outline rather than
+    a circle borrowed from somewhere else. pathLength normalises the
+    hexagon to 100 units so the dash maths is readable.
+  */
+  if (anim === 'orbit') {
+    const dim = composite(fill, P.bg || P.deep, 0.22);
+    return `<svg class="gf-ldr" data-anim="orbit" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<path d="${MARK_PATH}" fill="${dim}" fill-rule="evenodd"/>` +
+      `<path class="gf-track" d="${MARK_OUTER}" fill="none" stroke="${fill}" stroke-width="${o.w || 5}" ` +
+        `stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="22 78"/>` +
+      `</svg>`;
   }
 
   if (anim === 'breathe') {
@@ -1977,7 +2143,7 @@ function rLoader(size, P, anim, o = {}) {
     `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
     `<g clip-path="url(#${id})">` +
       faces.map((s, i) =>
-        `<polygon class="gf-f gf-f${i + 1}${i + 1 === lead ? ' lead' : ''}" points="${polyPts(s)}" fill="${fill}"/>`
+        `<polygon class="gf-f gf-f${i + 1}" points="${polyPts(s)}" fill="${fill}"/>`
       ).join('') +
     `</g></svg>`;
 }
@@ -1989,14 +2155,29 @@ const LOADERS = [
     use: 'Indeterminate waits — fetches, builds, navigation'
   },
   {
-    id: 'assemble', name: 'Assemble', anim: 'assemble', signal: 'position',
-    why: '<b>The mark building itself.</b> Each face travels in along its own isometric axis and seats — the Exploded variant resolving, on a loop. Reads as construction rather than waiting, which suits a framework whose job is compiling things.',
-    use: 'First paint, cold starts, one-shot transitions'
+    id: 'assemble', name: 'Settle', anim: 'assemble', signal: 'position',
+    why: '<b>The seams opening and closing.</b> Each face travels a short way along its own isometric axis and seats, in sequence. It began as a full assemble — faces flying in from far out, fading up from zero — and that version was <em>wrong</em>: stepping it frame by frame showed that a missing face does not read as a part still arriving, it reads as a damaged logo. The three sectors are regions of one silhouette, not components, which is the same reason Exploded scores badly above. Travel is now small and opacity constant, so the mark is legible at every frame.',
+    use: 'First paint and cold starts — motion with the mark always whole'
   },
   {
     id: 'draw', name: 'Draw', anim: 'draw', signal: 'stroke',
     why: '<b>The seam, drawing itself.</b> The three interior edges extend from the centre vertex outward. The most restrained of the four and the most obviously <em>this</em> mark — but it is carried entirely by the seam, which is sub-pixel below about 24px.',
     use: 'Large or hero-scale loading states only'
+  },
+  {
+    id: 'sweep', name: 'Sweep', anim: 'sweep', signal: 'area — light band',
+    why: '<b>A band of light crossing the mark.</b> Travels along the isometric axis, clipped to the silhouette. This is the answer to Draw being underwhelming: it signals with a <em>large area</em> rather than a hairline, so it is still obvious at 16px where a 2-unit stroke has nothing left to show. The mark stays whole and fully opaque throughout.',
+    use: 'The strongest small-size option — inline, nav, favicon'
+  },
+  {
+    id: 'fill', name: 'Fill', anim: 'fill', signal: 'area — level',
+    why: '<b>The mark as a level.</b> The only <strong>determinate</strong> loader here — the boundary is a hard horizontal edge across a large area, so it can be driven by a real percentage rather than looped. Use it wherever you actually know the progress, which is most build and upload cases.',
+    use: 'Determinate progress — builds, uploads, migrations'
+  },
+  {
+    id: 'orbit', name: 'Orbit', anim: 'orbit', signal: 'stroke — perimeter',
+    why: '<b>A segment running the silhouette\'s own perimeter.</b> Classic spinner semantics, except the track is the mark\'s outline rather than a circle borrowed from a component library. The hexagon is normalised with <code>pathLength</code> so the dash maths stays readable. Carried by a stroke like Draw, but a thicker one on a much longer path, which is why it lands at less than half Draw\'s floor.',
+    use: 'Medium and large indeterminate waits'
   },
   {
     id: 'breathe', name: 'Breathe', anim: 'breathe', signal: 'whole-mark opacity',
@@ -2016,10 +2197,19 @@ document.getElementById('loaders').innerHTML = LOADERS.map(l => `
     <p class="ldr__why">${l.why}</p>
   </div>`).join('');
 
+/* Determinate steps — the animation switched off entirely and the
+   level set from a value instead. */
+document.getElementById('ldrFillSteps').innerHTML =
+  `<div style="display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap">` +
+  [0, 0.25, 0.5, 0.75, 1].map(p =>
+    `<figure>${rLoader(56, P_DARK, 'fill', { pct: p })}` +
+    `<figcaption>${Math.round(p * 100)}%</figcaption></figure>`).join('') +
+  `</div>`;
+
 /* In context: inline, at the size a loader is actually judged. */
 document.getElementById('ldrContext').innerHTML =
   `<div style="display:grid;gap:14px">` +
-  LOADERS.map(l => `<span class="inline-ldr">${rLoader(20, P_DARK, l.anim)}` +
+  LOADERS.map(l => `<span class="inline-ldr" data-dlname="${l.name} inline">${rLoader(20, P_DARK, l.anim)}` +
     `<span>${l.name} — building your project…</span></span>`).join('') +
   `</div>`;
 
@@ -2032,10 +2222,6 @@ document.getElementById('ldrContext').innerHTML =
   composited over the ground. If those two land within ~8 ΔL* they
   merge and the motion stops reading as motion.
 */
-function composite(fg, bg, alpha) {
-  const a = toRgb(fg), b = toRgb(bg);
-  return 'rgb(' + a.map((v, i) => Math.round(v * alpha + b[i] * (1 - alpha))).join(',') + ')';
-}
 (function ldrAssess() {
   const trailAlpha = 0.24;
   const lead = P_DARK.accent;
@@ -2043,45 +2229,95 @@ function composite(fg, bg, alpha) {
   const sep = Math.abs(lstar(lead) - lstar(trail));
   const seam16 = byId('seam').seamWidth(16);
 
+  /*
+    Floors derived, not asserted.
+
+    A loader's signal is either a THIN geometry — a stroke or a small
+    travel, whose size scales with the mark and eventually falls under
+    one device pixel — or an AREA, which does not. So each loader
+    declares the width of its signal in user units on the ~112-unit
+    frame, and the floor is the smallest standard size at which that
+    signal is still at least one device pixel wide.
+
+    This immediately explains why Draw felt underwhelming and Sweep
+    does not: 2 units versus 34.
+  */
+  const SIZES_LADDER = [16, 20, 24, 32, 40, 48, 64];
+  const SIGNAL = {           // signal width in user units, or null = area-based
+    cycle: null, assemble: 3.6, draw: 2, orbit: 5, sweep: null, fill: null, breathe: null
+  };
+  const toPx = (units, px) => units * px / 112;
+  const floorFor = anim => {
+    const u = SIGNAL[anim];
+    if (u == null) return FLOOR;                       // area-based: the mark's own floor
+    return SIZES_LADDER.find(px => toPx(u, px) >= 1) || 64;
+  };
+
+  /*
+    Each area-based loader gets ITS OWN separation, not a borrowed
+    one. A first pass printed Cycle's ΔL* against Sweep and Fill too,
+    which was simply the wrong number on the wrong row — they lighten
+    or dim by different amounts and against different references.
+  */
+  const ground = P_DARK.deep, acc = P_DARK.accent;
+  const SEP = {
+    cycle:   Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.24))),
+    sweep:   Math.abs(lstar(acc) - lstar(composite('#FFFFFF', acc, 0.55))),
+    fill:    Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.26))),
+    breathe: Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.38))),
+    orbit:   Math.abs(lstar(acc) - lstar(composite(acc, ground, 0.22)))
+  };
+
   const rows = LOADERS.map(l => {
-    let floor, note;
-    if (l.anim === 'breathe') { floor = FLOOR; note = 'one tone — same floor as the mark'; }
-    else if (l.anim === 'draw') { floor = 32; note = `seam is ${seam16.toFixed(2)}px at 16` ; }
-    else { floor = 24; note = `ΔL* ${sep.toFixed(1)} between lead and trail`; }
-    return { l, floor, note, sep };
+    const u = SIGNAL[l.anim];
+    const floor = floorFor(l.anim);
+    const sepL = SEP[l.anim];
+    let note;
+    if (u == null) {
+      note = sepL != null
+        ? `area · ΔL* ${sepL.toFixed(1)}`
+        : 'area signal';
+    } else {
+      note = `${u} units → ${toPx(u, 16).toFixed(2)}px at 16`;
+    }
+    return { l, floor, note, areaBased: u == null, sepL };
   });
 
   document.getElementById('ldrAssess').innerHTML = rows.map(r => `
     <tr>
       <td><strong>${r.l.name}</strong></td>
       <td class="mono">${r.l.signal}</td>
-      <td><span class="chip ${r.l.anim === 'breathe' ? 'ok' : r.sep >= 8 ? 'ok' : 'bad'}">${r.note}</span></td>
+      <td><span class="chip ${r.areaBased ? 'ok' : r.floor <= 24 ? 'warn' : 'bad'}">${r.note}</span></td>
       <td class="mono"><span class="chip ${r.floor <= 16 ? 'ok' : r.floor <= 24 ? 'warn' : 'bad'}">${r.floor}px</span></td>
       <td>${r.l.use}</td>
     </tr>`).join('');
+  window.__ldrRows = rows;
 
+  const areaOnes = rows.filter(r => r.areaBased).map(r => r.l.name);
+  const thinOnes = rows.filter(r => !r.areaBased);
   document.getElementById('ldrVerdict').innerHTML = `
-    <b>Cycle as the default, Breathe below 24px</b>
+    <b>The split is area versus hairline, and it decides everything</b>
     <p>
-      Lead and trail separate by <strong>ΔL* ${sep.toFixed(1)}</strong>, which is
-      ${sep >= 8 ? 'comfortably above' : 'below'} the ~8 threshold where tones
-      merge — so <strong>Cycle</strong> holds down to about 24px and is the right
-      default for indeterminate waits. <strong>Assemble</strong> shares that floor
-      and is better for a first paint, because it resolves rather than loops
-      forever.
+      ${areaOnes.length} of the ${rows.length} signal with an <strong>area</strong> —
+      ${areaOnes.join(', ')} — so their signal does not shrink out of existence
+      and they inherit the mark's own ${FLOOR}px floor. The rest are carried by a
+      thin geometry that scales with the mark:
+      ${thinOnes.map(r => `<strong>${r.l.name}</strong> at ${r.floor}px`).join(', ')}.
     </p>
     <p>
-      <strong>Draw</strong> is the most characteristic of the four and the most
-      limited: it is carried entirely by the seam, which measures
-      ${seam16.toFixed(2)}px at 16px. Below roughly 32px there is nothing left to
-      animate. Treat it as a hero-scale device.
+      That is precisely why <strong>Draw</strong> underwhelms. Its seam is 2 units
+      on a 112-unit frame — ${seam16.toFixed(2)}px at favicon size — so there is
+      almost nothing on screen to animate. <strong>Sweep</strong> is the same idea
+      done with 34 units instead of 2, and it is the one to reach for when the
+      mark is small.
     </p>
     <p>
-      Below 24px — favicon, inline spinner, a nav-bar busy state — use
-      <strong>Breathe</strong>. It is one tone, so it cannot merge, and it stays
-      legible at the mark's own ${FLOOR}px floor. That is the same conclusion the
-      variants reached, arrived at independently: <em>when it gets small, stop
-      relying on a second tone.</em>
+      Defaults: <strong>Sweep</strong> for indeterminate waits at any size,
+      <strong>Fill</strong> whenever the progress is actually known — it is the
+      only determinate one here — and <strong>Cycle</strong> when you want the
+      cube's structure to read rather than a moving highlight. Keep
+      <strong>Draw</strong> and <strong>Orbit</strong> for hero scale, and
+      <strong>Breathe</strong> as the last resort below everything else.
     </p>`;
 })();
 
@@ -2341,6 +2577,62 @@ const PASSERS = VARIANTS.filter(v =>
   Math.min(...v.pairs(P_DARK).map(([a, b]) => wcag(a, b))) >= 3
 );
 
+/*
+  The decided set, shown rather than described.
+
+  The verdict used to be a paragraph naming three variants, which
+  meant scrolling back up to see what it was actually recommending.
+  Each role now renders its own mark, in both palettes, at the sizes
+  that role is used at — and carries its own download.
+*/
+(function decidedSet() {
+  const roles = [
+    {
+      role: 'Primary', name: 'Seam', id: 'seam',
+      why: 'The mark. Cut seam rather than painted, so it carries no assumption about its background.',
+      sizes: [64, 40, 24, 16],
+      dark: px => rSeamCut(px, P_DARK),
+      light: px => rSeamCut(px, P_LIGHT)
+    },
+    {
+      role: 'OS derivative', name: 'Tile', id: 'tile',
+      why: 'Every operating system demands a filled square. Glyph at the 0.62 safe zone, radius 22.37%.',
+      sizes: [64, 48, 32],
+      dark: px => rTile(px, P_DARK, { seam: true }),
+      light: px => rTile(px, P_LIGHT, { seam: true })
+    },
+    {
+      role: 'Utility', name: 'Keyline', id: 'keyline',
+      why: 'Etch, emboss, foil, single-plate print, and any ground nobody controls.',
+      sizes: [64, 48, 32],
+      dark: px => rKeyline(px, P_DARK),
+      light: px => rKeyline(px, P_LIGHT)
+    }
+  ];
+  document.getElementById('decidedSet').innerHTML = roles.map(r => {
+    const contrast = Math.min(...byId(r.id).pairs(P_DARK).map(([a, b]) => wcag(a, b)));
+    return `
+    <div class="ldr">
+      <div class="ldr__head">
+        <span class="ldr__name">${r.name}</span>
+        <span class="mark__tag hot" style="margin-left:auto">${r.role}</span>
+      </div>
+      <div class="ldr__stage">
+        ${r.sizes.map(px => `<figure>${r.dark(px)}<figcaption>${px}</figcaption></figure>`).join('')}
+      </div>
+      <div class="ldr__stage" data-dlname="light" style="background:#FFFFFF">
+        ${r.sizes.map(px => `<figure>${r.light(px)}<figcaption style="color:#867E90">${px}</figcaption></figure>`).join('')}
+      </div>
+      <p class="ldr__why">${r.why}</p>
+      <div class="mark__act">
+        <button class="btn-s" data-dl="${r.id}">Dark</button>
+        <button class="btn-s" data-dl="${r.id}" data-mode="light">Light</button>
+        <button class="btn-s" data-set="${r.id}">Asset set</button>
+      </div>
+    </div>`;
+  }).join('');
+})();
+
 /* --- recommendation, written against the measurements --- */
 (function () {
   const seamLight = Math.min(...byId('seam').pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
@@ -2390,6 +2682,14 @@ const PASSERS = VARIANTS.filter(v =>
   const seam16 = byId('seam').seamWidth(16);
   const lightR = Math.min(...byId('seam').pairs(P_LIGHT).map(([a, b]) => wcag(a, b)));
   const darkR  = Math.min(...byId('seam').pairs(P_DARK).map(([a, b]) => wcag(a, b)));
+  /* Loader floors read from the loader section's own computation, so
+     the specification cannot state a number the table disagrees with. */
+  const ANIM_OF = { sweep:'sweep', fill:'fill', cycle:'cycle', breathe:'breathe',
+                    orbit:'orbit', settle:'assemble', draw:'draw' };
+  const floorOf = key => {
+    const row = (window.__ldrRows || []).find(r => r.l.anim === ANIM_OF[key]);
+    return row ? String(row.floor).padStart(2) : '--';
+  };
   const spec = `GoForj mark — specification (draft)
 
 GEOMETRY
@@ -2421,11 +2721,36 @@ SEAM
   Consequence       one asset. Do not ship a separate flat favicon.
 
 ASSETS
-  Primary           Seam, accent fill
+  Primary           Seam, accent fill, seam CUT not painted
   OS icon           Tile, glyph knocked out of an accent plate
   Utility           Keyline, for etch, emboss and uncontrolled grounds
   Avatar            plate + 0.58 safe zone. The silhouette is circle-safe:
-                    every vertex sits inside the crop at normal size.`;
+                    every vertex sits inside the crop at normal size.
+
+MOTION
+  Gate              prefers-reduced-motion AND [data-gf-motion="full"].
+                    Both must permit it. Never animate on one alone.
+  Resting state     the COMPLETE mark — full opacity, seam closed,
+                    nothing offset. Gating motion off must leave a
+                    logo, not a frozen frame of an animation.
+  Never             translate a face far enough to read as missing.
+                    The three sectors are regions of one silhouette,
+                    not components; a gap reads as damage.
+
+LOADERS            signal            floor
+  Sweep             area, light band  ${floorOf('sweep')}px   default, indeterminate
+  Fill              area, level       ${floorOf('fill')}px   determinate — takes a real %
+  Cycle             area, face light  ${floorOf('cycle')}px   when the cube should read
+  Breathe           area, whole mark  ${floorOf('breathe')}px   last resort, smallest sizes
+  Orbit             stroke, perimeter ${floorOf('orbit')}px   medium and large only
+  Settle            position          ${floorOf('settle')}px   first paint
+  Draw              stroke, seam      ${floorOf('draw')}px   hero scale only
+
+  The rule behind that table: a signal made of AREA keeps working as
+  the mark shrinks; a signal made of a hairline or a small travel
+  scales with the mark and eventually falls under one device pixel.
+  Prefer area at small sizes. This is the same lesson as one tone
+  beating three.`;
   const el = document.getElementById('specBlock');
   if (el) el.textContent = spec;
   const btn = document.getElementById('copySpec');
@@ -2514,6 +2839,36 @@ function downloadText(name, text) {
    per-section download-all controls added below.
    ================================================================== */
 
+/* Keyframes for a downloaded loader, so the file animates on its own.
+   Kept in one place and generated per animation, so an exported asset
+   carries only what it uses. */
+const LOADER_CSS = anim => {
+  const base = `.gf-f{opacity:1;transform-box:fill-box}.gf-seam{stroke-dasharray:62;stroke-dashoffset:0}` +
+    `.gf-band{transform:translateX(-96px)}.gf-level{transform:translateY(0)}.gf-track{stroke-dasharray:100 0}`;
+  const bodies = {
+    cycle: `.gf-f{animation:gfCycle 1.35s cubic-bezier(.4,0,.2,1) infinite}` +
+           `.gf-f2{animation-delay:-.45s}.gf-f3{animation-delay:-.9s}` +
+           `@keyframes gfCycle{0%,62%,100%{opacity:.24}16%{opacity:1}}`,
+    assemble: `.gf-f{animation:gfAsmT 2s cubic-bezier(.37,0,.24,1) infinite}` +
+           `.gf-f2{animation-name:gfAsmR;animation-delay:.13s}` +
+           `.gf-f3{animation-name:gfAsmL;animation-delay:.26s}` +
+           `@keyframes gfAsmT{0%,100%{transform:translate(0,-3.6px)}46%,62%{transform:translate(0,0)}}` +
+           `@keyframes gfAsmR{0%,100%{transform:translate(3.1px,1.8px)}46%,62%{transform:translate(0,0)}}` +
+           `@keyframes gfAsmL{0%,100%{transform:translate(-3.1px,1.8px)}46%,62%{transform:translate(0,0)}}`,
+    draw: `.gf-seam{animation:gfDraw 1.5s ease-in-out infinite}` +
+           `@keyframes gfDraw{0%{stroke-dashoffset:62}55%,100%{stroke-dashoffset:0}}`,
+    sweep: `.gf-band{transform:translateX(-96px);animation:gfSweep 1.6s cubic-bezier(.5,0,.5,1) infinite}` +
+           `@keyframes gfSweep{0%{transform:translateX(-96px)}100%{transform:translateX(96px)}}`,
+    fill: `.gf-level{animation:gfFill 2.1s cubic-bezier(.5,0,.5,1) infinite}` +
+           `@keyframes gfFill{0%,8%{transform:translateY(112px)}78%,100%{transform:translateY(0)}}`,
+    orbit: `.gf-track{animation:gfOrbit 1.5s linear infinite}` +
+           `@keyframes gfOrbit{to{stroke-dashoffset:-100}}`,
+    breathe: `.gf-mark{animation:gfBreathe 1.5s ease-in-out infinite}` +
+           `@keyframes gfBreathe{0%,100%{opacity:.38}50%{opacity:1}}`
+  };
+  return `${base}@media (prefers-reduced-motion:no-preference){${bodies[anim] || ''}}`;
+};
+
 /* Turn a live <svg> node into a standalone, portable file. */
 function serialiseSVG(node, nameHint) {
   const clone = node.cloneNode(true);
@@ -2524,6 +2879,19 @@ function serialiseSVG(node, nameHint) {
   clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
   clone.setAttribute('role', 'img');
   clone.setAttribute('aria-label', `GoForj — ${nameHint}`);
+
+  /*
+    A loader's animation lives in the page stylesheet, so a naive
+    serialisation would hand someone a file that silently does not
+    move — the one thing they downloaded it for. Inline the keyframes
+    it needs, gated on prefers-reduced-motion so the exported asset
+    carries the same accessibility contract as the page.
+  */
+  if (clone.classList && clone.classList.contains('gf-ldr')) {
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.textContent = LOADER_CSS(clone.dataset.anim);
+    clone.insertBefore(style, clone.firstChild);
+  }
 
   let out = new XMLSerializer().serializeToString(clone);
 
@@ -2560,8 +2928,14 @@ function describe(node) {
   const card = node.closest('.mark');
   if (card) bits.push(txt(card.querySelector('.mark__name')));
 
+  /* Loader and decided-set cards. Without this every loader ladder
+     exported as goforj-64.svg, goforj-40.svg … repeated seven times,
+     because the only text near them is the size caption. */
+  const ldr = node.closest('.ldr');
+  if (ldr) bits.push(txt(ldr.querySelector('.ldr__name')));
+
   const panel = node.closest('.panel');
-  if (panel && !card) bits.push(txt(panel.querySelector('b')));
+  if (panel && !card && !ldr) bits.push(txt(panel.querySelector('b')));
 
   /* Column and row headers in the aligned grids, found by counting
      cells — the grid is a flat child list, not nested rows. */

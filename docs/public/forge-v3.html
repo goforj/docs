@@ -1,0 +1,1056 @@
+<!doctype html>
+<!--
+  GoForj — The Paper Forge (v3). The same story as forge.html and
+  forge-v2.html, retold as a paper-craft diorama: warm, fuzzy, friendly.
+  Paper Mario rules apply — everything is a flat card with a white cut
+  edge, light is toon-stepped, motion squashes and stretches, and
+  nothing glows because paper doesn't.
+
+  The loop:
+    1. A little orange paper packet hops in from the hearth.
+    2. The popsicle-stick hammer gives it three bouncy taps —
+       confetti, not sparks.
+    3. Page-turn reveal: the packet flips into the GoForj mark, a
+       paper cutout of the FROZEN logo geometry from logo-lab.html
+       (you see the white paper back mid-turn).
+    4. A quick dip behind the paper water cup — cotton-puff steam —
+       and the orange tempers to gold.
+    5. A string descends, and the finished paper app is hung on the
+       mobile with the others, swaying. When the mobile is full, the
+       oldest string is snipped and its card flutters away.
+
+  Style notes:
+    - Toon ramp (3 steps) on MeshToonMaterial; NoToneMapping so the
+      Temper palette lands exactly as authored.
+    - The white cut edge is a second, slightly larger card behind each
+      shape — which doubles as the paper BACK during flips.
+    - No bloom, no fog, no PBR. Blob-sprite shadows.
+
+  Sources of truth: colour tokens from public/design-system.css
+  (Temper core); MARK_OUTER / MARK_HOLE copied verbatim from
+  logo-lab.html's frozen base. Do not edit them here.
+
+  Motion policy and debug hooks match the other forge pages:
+  data-gf-motion / prefers-reduced-motion / `?static` for a still;
+  `window.__forge` reads cycle state, `window.__forgeStep(seconds)`
+  fast-forwards (the page pauses in hidden tabs). Taps ≈2.5s, the
+  page-turn reveal ≈4.6s, the dip ≈5.6s, the string lift ≈7.5s.
+-->
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>GoForj — The Paper Forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --gf-accent: #FF5E3A;
+  --gf-accent-hi: #FF8257;
+  --gf-nav: #FFC24D;
+  --gf-nav-hi: #FFD37A;
+  --gf-ground-deep: #0C0A0E;
+  --gf-ground: #1A1620;
+  --gf-surface: #2C2734;
+  --gf-line: #2A2333;
+  --gf-line-strong: #3D3349;
+  --gf-ink: #FFFFFF;
+  --gf-ink-2: #A9A1B3;
+  --gf-ink-3: #746C80;
+  --gf-font-display: 'Space Grotesk', sans-serif;
+  --gf-font-body: 'Inter', sans-serif;
+  --gf-font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--gf-ground-deep);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+#stage { position: fixed; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+/* warm vignette — the desk lamp's pool of light, done in CSS */
+#vignette {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 42%, transparent 40%, rgba(12,10,14,.55) 100%),
+    radial-gradient(60% 45% at 50% 55%, rgba(255,160,90,.07), transparent 70%);
+}
+.ov { position: fixed; z-index: 5; pointer-events: none; }
+.ov--head { top: clamp(22px, 4.5vh, 46px); left: clamp(22px, 4vw, 52px); max-width: 560px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--gf-font-mono); font-size: 11px;
+  letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--gf-nav); margin: 0 0 14px;
+}
+.kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-nav); }
+h1 {
+  margin: 0 0 10px; font-family: var(--gf-font-display); font-weight: 700;
+  font-size: clamp(30px, 4.4vw, 52px); line-height: 1.06; letter-spacing: -0.032em;
+  text-shadow: 0 2px 26px rgba(12,10,14,.85);
+}
+h1 em { font-style: normal; color: var(--gf-accent); }
+.sub {
+  margin: 0; font-size: clamp(13.5px, 1.25vw, 15.5px); line-height: 1.65;
+  color: var(--gf-ink-2); max-width: 44ch;
+  text-shadow: 0 1px 18px rgba(12,10,14,.9);
+}
+.ov--ctl { right: clamp(16px, 2.4vw, 30px); bottom: clamp(16px, 3.2vh, 30px); pointer-events: auto; }
+#pause {
+  font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--gf-ink-2); background: transparent;
+  border: 1px solid var(--gf-line-strong); border-radius: 8px;
+  padding: 7px 13px; cursor: pointer;
+}
+#pause:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+#boot {
+  position: fixed; inset: 0; z-index: 4; display: grid; place-items: center;
+  font-family: var(--gf-font-mono); font-size: 12px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gf-ink-3);
+  background: var(--gf-ground-deep);
+  transition: opacity .8s ease; pointer-events: none;
+}
+#boot.off { opacity: 0; }
+#fallback {
+  position: fixed; inset: 0; z-index: 6; display: none;
+  place-items: center; background: var(--gf-ground-deep); text-align: center;
+}
+#fallback .mark { width: 120px; margin: 0 auto 22px; display: block; }
+#fallback p { font-size: 14px; color: var(--gf-ink-2); max-width: 40ch; margin: 0 auto; line-height: 1.6; }
+@media (max-width: 640px) { .ov--head { max-width: 78vw; } }
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="vignette"></div>
+<div id="boot">folding the forge&hellip;</div>
+
+<header class="ov ov--head">
+  <p class="kicker">goforj &middot; the forge &middot; paper edition</p>
+  <h1>Applications, <em>forged</em>.</h1>
+  <p class="sub">One application model, six swappable primitives, and a
+  workshop made entirely of paper. The backends change; the paper never
+  goes back in the fire.</p>
+</header>
+
+<div class="ov ov--ctl"><button id="pause" aria-pressed="false">pause</button></div>
+
+<div id="fallback">
+  <div>
+    <svg class="mark" viewBox="-8.2 -6.2 100.4 112.4" aria-hidden="true">
+      <path d="M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z"
+            fill="#FF5E3A" fill-rule="evenodd"/>
+    </svg>
+    <p>The paper forge needs WebGL. Your browser declined, so here is
+    the mark, pre-cut.</p>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ================================================================
+   Palette (Temper core, as paper)
+   ================================================================ */
+const P = {
+  accent: 0xFF5E3A, accentHi: 0xFF8257,
+  gold: 0xFFC24D, goldHi: 0xFFD37A,
+  paper: 0xF7F2E8,            // the white cut edge / paper backs
+  cream: 0xEFE3CF,
+  ink: 0x1D1923,
+  deep: 0x0C0A0E,
+  card1: 0x241F2C, card2: 0x1D1923, card3: 0x161219,   // backdrop layers
+  wood: 0x4A3628, woodDark: 0x33261C,
+  violet: 0xA9A1B3
+};
+
+/* FROZEN MARK — copied verbatim from logo-lab.html. Do not edit. */
+const MARK_OUTER = [
+  [40.59,0.0],[0.0,25.06],[0.0,74.9],[42.26,100.0],[84.01,75.99],[83.8,29.98],
+  [74.4,24.17],[80.24,21.88],[65.47,12.52],[56.15,18.37],[56.35,9.94]
+];
+const MARK_HOLE = [
+  [40.43,17.78],[40.01,22.31],[43.43,24.33],[23.04,36.46],[22.84,60.81],
+  [39.59,71.96],[39.39,45.17],[60.37,32.81],[67.34,37.11],[45.67,50.2],
+  [45.67,62.45],[47.88,63.68],[68.09,51.93],[67.88,65.78],[41.93,81.28],
+  [16.13,65.18],[16.13,32.2]
+];
+
+/* ---- motion policy ---- */
+const params = new URLSearchParams(location.search);
+let stored = null;
+try { stored = localStorage.getItem('goforjMotion'); } catch (e) {}
+const osReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const REDUCED = params.has('static') || stored === 'reduced' || (osReduced && stored !== 'on');
+
+const bootEl = document.getElementById('boot');
+const pauseBtn = document.getElementById('pause');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+} catch (e) {
+  document.getElementById('fallback').style.display = 'grid';
+  bootEl.style.display = 'none';
+  throw e;
+}
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.NoToneMapping;      // paper colours land as authored
+document.getElementById('stage').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(P.deep);
+
+const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 60);
+const CAM_BASE = new THREE.Vector3(0, 2.7, 8.6);
+const CAM_LOOK = new THREE.Vector3(0, 2.1, 0);
+camera.position.copy(CAM_BASE);
+camera.lookAt(CAM_LOOK);
+
+/* toon lighting: one warm key, generous ambient, three flat steps */
+const ramp = new THREE.DataTexture(new Uint8Array([110, 180, 255]), 3, 1, THREE.RedFormat);
+ramp.minFilter = ramp.magFilter = THREE.NearestFilter;
+ramp.needsUpdate = true;
+
+scene.add(new THREE.AmbientLight(0xffe9d2, 1.35));
+const key = new THREE.DirectionalLight(0xfff1dc, 1.5);
+key.position.set(2.5, 5, 6);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x8a7fae, 0.35);
+fill.position.set(-4, 2, 3);
+scene.add(fill);
+
+const toon = (color) => new THREE.MeshToonMaterial({ color, gradientMap: ramp });
+
+/* ================================================================
+   Card kit. A card = coloured front + slightly larger paper-white
+   card just behind it. From the front that back reads as the white
+   cut edge; mid-flip it reads as the paper's back. Exactly the trick
+   Paper Mario plays.
+   ================================================================ */
+function shapeFrom(points) {
+  const s = new THREE.Shape();
+  s.moveTo(points[0][0], points[0][1]);
+  for (let i = 1; i < points.length; i++) s.lineTo(points[i][0], points[i][1]);
+  s.closePath();
+  return s;
+}
+function roundedRect(w, h, r) {
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+function makeCard(shape, color, { edge = 1.06, holes = null, edgeColor = P.paper } = {}) {
+  if (holes) shape.holes = holes;
+  const g = new THREE.Group();
+  const geo = new THREE.ShapeGeometry(shape);
+  geo.computeBoundingBox();
+  const c = new THREE.Vector3();
+  geo.boundingBox.getCenter(c);
+  const front = new THREE.Mesh(geo, toon(color));
+  const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: edgeColor, side: THREE.DoubleSide }));
+  back.scale.set(edge, edge, 1);
+  back.position.set(c.x * (1 - edge), c.y * (1 - edge), -0.012);
+  g.add(back, front);
+  g.userData.front = front;
+  g.userData.back = back;
+  return g;
+}
+
+/* soft blob shadow */
+const blobTex = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const x = c.getContext('2d');
+  const gr = x.createRadialGradient(64, 64, 6, 64, 64, 62);
+  gr.addColorStop(0, 'rgba(0,0,0,.55)');
+  gr.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = gr;
+  x.fillRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+})();
+function blob(w, d, opacity = 0.5) {
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, d),
+    new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, opacity, depthWrite: false })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = 0.012;
+  return m;
+}
+
+/* ================================================================
+   The diorama
+   ================================================================ */
+/* desk + cutting mat */
+{
+  const desk = new THREE.Mesh(new THREE.PlaneGeometry(34, 16), toon(P.woodDark));
+  desk.rotation.x = -Math.PI / 2;
+  scene.add(desk);
+  const matCard = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(8.4, 4.6, 0.35)), toon(P.wood));
+  matCard.rotation.x = -Math.PI / 2;
+  matCard.position.set(0, 0.006, 0.4);
+  scene.add(matCard);
+}
+
+/* layered backdrop strips — cardboard hills of a pop-up book.
+   No white edges here: at this width the cut line would streak
+   across the headline. Depth alone carries the layering. */
+[[34, 2.4, -3.4, P.card1], [34, 3.3, -4.8, P.card2], [34, 4.4, -6.2, P.card3]].forEach(([w, h, z, col]) => {
+  const card = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(w, h, 0.5)), toon(col));
+  card.position.set(0, h / 2 - 0.2, z);
+  scene.add(card);
+});
+
+/* hearth: cardboard box + arch + three wiggling paper flames + smoke */
+const flames = [];
+{
+  const hearth = new THREE.Group();
+  const box = makeCard(roundedRect(2.1, 1.6, 0.14), 0x2C2734);
+  box.position.y = 0.8;
+  hearth.add(box);
+  const arch = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(1.3, 0.95, 0.45)), toon(0x0f0c13));
+  arch.position.set(0, 0.62, 0.01);
+  hearth.add(arch);
+  const flameShape = () => {
+    const s = new THREE.Shape();
+    s.moveTo(0, 0);
+    s.quadraticCurveTo(0.3, 0.05, 0.22, 0.42);
+    s.quadraticCurveTo(0.18, 0.62, 0, 0.85);
+    s.quadraticCurveTo(-0.18, 0.62, -0.22, 0.42);
+    s.quadraticCurveTo(-0.3, 0.05, 0, 0);
+    return s;
+  };
+  [[P.accent, 1.0, -0.22, 0], [P.gold, 0.72, 0.16, 0.02], [P.goldHi, 0.45, -0.02, 0.04]].forEach(([col, sc, dx, dz], i) => {
+    const f = makeCard(flameShape(), col, { edge: 1.09 });
+    f.scale.setScalar(sc);
+    f.position.set(dx, 0.28, 0.03 + dz);
+    flames.push({ g: f, ph: i * 2.1 });
+    hearth.add(f);
+  });
+  hearth.position.set(-2.9, 0, -0.6);
+  hearth.rotation.y = 0.12;
+  scene.add(hearth);
+  const sh = blob(2.6, 1.4, 0.45);
+  sh.position.set(-2.9, 0.012, -0.5);
+  scene.add(sh);
+}
+
+/* anvil: cutout silhouette on a paper log */
+const ANVIL_X = 0, ANVIL_TOP = 1.55;
+{
+  const log = makeCard(roundedRect(1.7, 0.55, 0.22), P.wood);
+  log.position.set(ANVIL_X, 0.28, 0);
+  scene.add(log);
+  /* three simple layered cards — a hand-authored single silhouette
+     self-intersected and triangulated into butterflies; paper craft
+     builds from simple pieces anyway */
+  const base = makeCard(shapeFrom([[-0.72, 0], [0.72, 0], [0.44, 0.5], [-0.44, 0.5]]), 0x241F2C);
+  base.position.set(ANVIL_X, 0.56, 0.02);
+  scene.add(base);
+  const slab = makeCard(roundedRect(1.9, 0.42, 0.12), 0x2C2734);
+  slab.position.set(ANVIL_X + 0.1, 1.22, 0.04);
+  scene.add(slab);
+  const horn = makeCard(shapeFrom([[0, 0], [0, 0.34], [-0.62, 0.24]]), 0x241F2C);
+  horn.position.set(ANVIL_X - 0.92, 1.04, 0.03);
+  scene.add(horn);
+  const sh = blob(3.0, 1.5, 0.5);
+  sh.position.set(ANVIL_X, 0.014, 0.1);
+  scene.add(sh);
+}
+
+/* hammer: flat cutout on a popsicle-stick pivot, off to the right */
+const hammer = new THREE.Group();
+{
+  const handle = makeCard(roundedRect(1.7, 0.16, 0.08), P.cream);
+  handle.position.set(-0.85, 0, 0);
+  const head = makeCard(roundedRect(0.52, 0.72, 0.16), 0x2C2734);
+  head.position.set(-1.7, 0, 0.02);
+  const band = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(0.52, 0.14, 0.06)), toon(P.gold));
+  band.position.set(-1.7, 0.18, 0.05);
+  hammer.add(handle, head, band);
+  hammer.position.set(1.95, 1.9, 0.05);
+  scene.add(hammer);
+}
+const HAM_REST = 0.5, HAM_UP = 1.15, HAM_HIT = 0.06;
+function setHammer(a) { hammer.rotation.z = -a; }
+setHammer(HAM_REST);
+
+/* the paper water cup, for tempering */
+const CUP_X = 2.35, CUP_Z = 0.55;
+{
+  const cup = makeCard(shapeFrom([[-0.42, 0], [0.42, 0], [0.34, 0.62], [-0.34, 0.62]]), P.cream);
+  const band = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(0.74, 0.1, 0.05)), toon(P.gold));
+  band.position.set(0, 0.5, 0.02);
+  cup.add(band);
+  const water = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(0.62, 0.09, 0.04)), toon(0x746C80));
+  water.position.set(0, 0.6, 0.015);
+  cup.add(water);
+  cup.position.set(CUP_X, 0, CUP_Z);
+  cup.renderOrder = 5;                             // the dip happens behind it
+  scene.add(cup);
+  const sh = blob(1.2, 0.7, 0.4);
+  sh.position.set(CUP_X, 0.013, CUP_Z);
+  scene.add(sh);
+}
+
+/* ================================================================
+   The mark, as a paper cutout of the frozen geometry
+   ================================================================ */
+const toLocal = ([x, y]) => [(x - 42.005) / 100, (50 - y) / 100];
+function markCard(color) {
+  const shape = shapeFrom(MARK_OUTER.map(toLocal));
+  const hole = new THREE.Path();
+  const hp = MARK_HOLE.map(toLocal);
+  hole.moveTo(hp[0][0], hp[0][1]);
+  for (let i = 1; i < hp.length; i++) hole.lineTo(hp[i][0], hp[i][1]);
+  hole.closePath();
+  const card = makeCard(shape, color, { edge: 1.05, holes: [hole] });
+  card.scale.setScalar(1.35);
+  return card;
+}
+
+/* ================================================================
+   Paper tags — where the framework's value gets said out loud.
+
+   - Six COMPONENT tags (queue, cache, events, storage, db, mail)
+     appear around the anvil and get tapped into the packet, two per
+     hammer tap: components forged into one application.
+   - Every shipped app hangs with a gold NAME tag and a kite-tail of
+     DRIVER tags that page-flip between local-first and production
+     drivers (sqlite ⇄ postgres, workerpool ⇄ redis) while the app
+     card itself never changes: swap drivers, not business logic.
+   ================================================================ */
+const allTags = [];
+function tagSprite(text, { w = 256, h = 64, font = 26, bg = '#F7F2E8', ink = '#1D1923', border = null, sx = 0.75, sy = 0.19 } = {}) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  sp.scale.set(sx, sy, 1);
+  sp.userData.baseSx = sx;
+  sp.userData.draw = (t2, bg2, ink2, border2) => {
+    sp.userData.last = [t2, bg2, ink2, border2];
+    const x = c.getContext('2d');
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = bg2 || bg;
+    x.beginPath();
+    if (x.roundRect) x.roundRect(6, 6, w - 12, h - 12, (h - 12) / 2); else x.rect(6, 6, w - 12, h - 12);
+    x.fill();
+    if (border2 || border) { x.strokeStyle = border2 || border; x.lineWidth = 4; x.stroke(); }
+    x.font = `600 ${font}px "JetBrains Mono", monospace`;
+    x.fillStyle = ink2 || ink;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(t2, w / 2, h / 2 + 1);
+    tex.needsUpdate = true;
+  };
+  sp.userData.draw(text, bg, ink, border);
+  allTags.push(sp);
+  return sp;
+}
+/* crisp text once the mono font arrives */
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => allTags.forEach(sp => sp.userData.draw(...sp.userData.last)));
+}
+
+/* the apps this workshop ships, with two showcased driver pairs each */
+const APPS = [
+  { name: 'shop',        tags: [['db', 'sqlite', 'postgres'], ['queue', 'workerpool', 'redis']] },
+  { name: 'billing-api', tags: [['events', 'inproc', 'nats'], ['mail', 'log', 'smtp']] },
+  { name: 'metrics-hub', tags: [['cache', 'memory', 'redis'], ['db', 'sqlite', 'postgres']] },
+  { name: 'mailroom',    tags: [['mail', 'log', 'ses'], ['queue', 'workerpool', 'redis']] },
+  { name: 'archive',     tags: [['storage', 'local', 's3'], ['cache', 'memory', 'memcached']] },
+  { name: 'relay',       tags: [['events', 'inproc', 'nats'], ['storage', 'local', 's3']] }
+];
+let appIdx = 0;
+let currentApp = APPS[0];
+
+/* component tags, pinned in a row above the anvil */
+const PRIM_LABELS = ['queue', 'cache', 'events', 'storage', 'db', 'mail'];
+const compTags = PRIM_LABELS.map((label, i) => {
+  const sp = tagSprite(label, { border: '#FF5E3A', sx: 0.62, sy: 0.155 });
+  sp.visible = false;
+  scene.add(sp);
+  return {
+    sp, i, state: 'hidden', ab: 0, pop: 0,
+    home: new THREE.Vector3(ANVIL_X + (i - 2.5) * 0.78, ANVIL_TOP + 1.62 + (i % 2 ? 0.26 : 0), 0.4)
+  };
+});
+function resetCompTags() {
+  compTags.forEach(ct => { ct.state = 'waiting'; ct.ab = 0; ct.pop = 0; ct.sp.visible = false; ct.sp.material.opacity = 1; });
+}
+function absorbPair(idx) {
+  compTags.forEach(ct => {
+    if (Math.floor(ct.i / 2) === idx && ct.state !== 'absorbing' && ct.state !== 'gone') ct.state = 'absorbing';
+  });
+}
+function tickTags(dt, t) {
+  compTags.forEach((ct, i) => {
+    if (ct.state === 'waiting') {
+      /* pop in one by one while the packet hops over */
+      if (phase === 'hop' && phaseT > 0.25 + i * 0.16) { ct.state = 'pop'; ct.sp.visible = true; }
+    } else if (ct.state === 'pop') {
+      ct.pop = Math.min(ct.pop + dt * 3.2, 1);
+      const s = easeBack(ct.pop);
+      ct.sp.scale.set(0.62 * s, 0.155 * s, 1);
+      ct.sp.position.copy(ct.home);
+      if (ct.pop >= 1) ct.state = 'idle';
+    } else if (ct.state === 'idle') {
+      ct.sp.position.set(ct.home.x, ct.home.y + Math.sin(t * 1.4 + i * 1.7) * 0.05, ct.home.z);
+    } else if (ct.state === 'absorbing') {
+      ct.ab = Math.min(ct.ab + dt * 3.4, 1);
+      ct.sp.position.lerpVectors(ct.home, billet.position, easeIn(ct.ab));
+      const s = 1 - ct.ab;
+      ct.sp.scale.set(0.62 * s + 0.001, 0.155 * s + 0.001, 1);
+      if (ct.ab >= 1) {
+        ct.state = 'gone';
+        ct.sp.visible = false;
+        confetti(billet.position.x, billet.position.y + 0.1, billet.position.z + 0.1, 5, 0.4);
+      }
+    }
+  });
+}
+
+/* billet: a folded paper packet */
+const billet = makeCard(roundedRect(0.62, 0.5, 0.1), P.accent);
+{
+  const crease = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(0.5, 0.05, 0.025)), toon(0xD8492B));
+  crease.position.set(0, 0.06, 0.01);
+  billet.add(crease);
+}
+billet.visible = false;
+scene.add(billet);
+const billetShadow = blob(0.9, 0.5, 0.4);
+billetShadow.visible = false;
+scene.add(billetShadow);
+
+/* ================================================================
+   The mobile — finished apps hang on strings and sway
+   ================================================================ */
+const ANCHOR_Y = 7.4;
+const HOOKS = [
+  { x: -3.05, len: 4.45 }, { x: -1.1, len: 3.55 }, { x: 1.2, len: 3.7 }, { x: 2.65, len: 4.25 }
+];
+const stringGeo = new THREE.PlaneGeometry(0.016, 1);
+stringGeo.translate(0, -0.5, 0);                   // pivot at the top
+const mobile = [];                                 // { card, string, hook, ph, dying, app, nameTag, dTags }
+const hangingNames = () => new Set(mobile.filter(m => !m.dying).map(m => m.app.name));
+function hangCard(card, hookIdx, app, ph = Math.random() * Math.PI * 2) {
+  const string = new THREE.Mesh(stringGeo, new THREE.MeshBasicMaterial({ color: P.cream, transparent: true, opacity: 0.55 }));
+  string.position.set(HOOKS[hookIdx].x, ANCHOR_Y, -1.2);
+  string.scale.y = HOOKS[hookIdx].len;
+  scene.add(string);
+  scene.add(card);                                 // idempotent for cards already in-scene
+  const nameTag = tagSprite(app.name, { bg: '#FFC24D', ink: '#1D1923', font: 28, sx: 0.8, sy: 0.2 });
+  scene.add(nameTag);
+  const dTags = app.tags.map(([k, local, prod]) => {
+    const sp = tagSprite(`${k}:${local}`, { sx: 0.72, sy: 0.165 });
+    scene.add(sp);
+    return { sp, k, local, prod, side: 0, flip: 0 };
+  });
+  mobile.push({ card, string, hook: hookIdx, ph, dying: 0, app, nameTag, dTags });
+}
+function removeEntry(m) {
+  scene.remove(m.card); scene.remove(m.string); scene.remove(m.nameTag);
+  m.dTags.forEach(d => scene.remove(d.sp));
+}
+/* the swap, performed live: a driver tag page-flips to the other
+   backend — the app card above it never changes */
+function flipTag(d) {
+  if (d.flip > 0) return;
+  d.flip = 0.0001;
+}
+function freeHook() {
+  const used = new Set(mobile.filter(m => !m.dying).map(m => m.hook));
+  for (let i = 0; i < HOOKS.length; i++) if (!used.has(i)) return i;
+  const oldest = mobile.find(m => !m.dying);
+  if (oldest) { oldest.dying = 0.0001; return oldest.hook; }
+  return 0;
+}
+function tickMobile(dt, t) {
+  for (let i = mobile.length - 1; i >= 0; i--) {
+    const m = mobile[i];
+    const hk = HOOKS[m.hook];
+    if (m.dying > 0) {
+      /* snip: string fades, the card and its tags flutter down and away */
+      m.dying += dt / 1.6;
+      const u = Math.min(m.dying, 1);
+      m.string.material.opacity = Math.max(0.55 * (1 - u * 2.5), 0);
+      m.card.position.y -= dt * (0.8 + u * 2.2);
+      m.card.position.x += dt * 0.7;
+      m.card.rotation.z = Math.sin(u * 9) * 0.5 * u + u * 0.6;
+      m.card.rotation.y += dt * 3;
+      m.card.scale.setScalar(1.35 * 0.72 * (1 - u * 0.4));
+      const fade = 1 - u;
+      m.nameTag.material.opacity = fade;
+      m.nameTag.position.set(m.card.position.x, m.card.position.y - 0.72, m.card.position.z);
+      m.dTags.forEach((d, j) => {
+        d.sp.material.opacity = fade;
+        d.sp.position.set(m.card.position.x + 0.15, m.card.position.y - 0.98 - j * 0.22, m.card.position.z);
+      });
+      if (u >= 1) {
+        removeEntry(m);
+        mobile.splice(i, 1);
+      }
+      continue;
+    }
+    const swing = Math.sin(t * 0.55 + m.ph) * 0.055;
+    m.string.rotation.z = swing;
+    m.card.position.set(
+      hk.x + Math.sin(swing) * hk.len,
+      ANCHOR_Y - Math.cos(swing) * hk.len,
+      -1.2
+    );
+    m.card.rotation.z = swing * 1.4;
+    m.card.rotation.y = Math.sin(t * 0.3 + m.ph) * 0.22;
+    /* the kite tail: name, then the driver tags, trailing the sway */
+    const cx = m.card.position.x, cy = m.card.position.y;
+    m.nameTag.position.set(cx + Math.sin(swing) * 0.3, cy - 0.74, -1.2);
+    m.dTags.forEach((d, j) => {
+      d.sp.position.set(cx + Math.sin(swing) * (0.45 + j * 0.2), cy - 1.02 - j * 0.235, -1.2);
+      if (d.flip > 0) {
+        d.flip = Math.min(d.flip + dt * 2.6, 1);
+        const w = Math.abs(Math.cos(d.flip * Math.PI));
+        d.sp.scale.x = d.sp.userData.baseSx * Math.max(w, 0.02);
+        if (d.flip >= 0.5 && !d.swapped) {
+          d.swapped = true;
+          d.side = 1 - d.side;
+          d.sp.userData.draw(`${d.k}:${d.side ? d.prod : d.local}`,
+            d.side ? '#2C2734' : '#F7F2E8', d.side ? '#FFC24D' : '#1D1923', null);
+          confetti(d.sp.position.x, d.sp.position.y + 0.08, d.sp.position.z + 0.1, 4, 0.3);
+        }
+        if (d.flip >= 1) { d.flip = 0; d.swapped = false; d.sp.scale.x = d.sp.userData.baseSx; }
+      }
+    });
+  }
+}
+
+/* ================================================================
+   Confetti — sparks, but friendly. Instanced paper triangles.
+   ================================================================ */
+const CONFETTI = 160;
+const confMesh = (() => {
+  const tri = new THREE.BufferGeometry();
+  tri.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+    -0.032, -0.02, 0, 0.032, -0.02, 0, 0, 0.038, 0
+  ]), 3));
+  tri.computeVertexNormals();
+  const m = new THREE.InstancedMesh(tri, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), CONFETTI);
+  m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  m.frustumCulled = false;
+  scene.add(m);
+  return m;
+})();
+const confData = [];
+const CONF_COLS = [new THREE.Color(P.accent), new THREE.Color(P.gold), new THREE.Color(P.paper), new THREE.Color(P.accentHi)];
+for (let i = 0; i < CONFETTI; i++) {
+  confData[i] = { life: 0, max: 1, p: new THREE.Vector3(0, -99, 0), v: new THREE.Vector3(), rot: new THREE.Euler(), rv: new THREE.Vector3() };
+  confMesh.setColorAt(i, CONF_COLS[i % CONF_COLS.length]);
+}
+confMesh.instanceColor.needsUpdate = true;
+let confCursor = 0;
+function confetti(x, y, z, n, speed = 1) {
+  for (let k = 0; k < n; k++) {
+    const i = confCursor = (confCursor + 1) % CONFETTI;
+    const d = confData[i];
+    const a = Math.random() * Math.PI * 2;
+    d.life = 0.0001;
+    d.max = 0.9 + Math.random() * 0.9;
+    d.p.set(x, y, z);
+    d.v.set(Math.cos(a) * (0.5 + Math.random()) * speed, (1.2 + Math.random() * 1.6) * speed, Math.sin(a) * (0.4 + Math.random() * 0.6) * speed);
+    d.rot.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    d.rv.set((Math.random() - 0.5) * 14, (Math.random() - 0.5) * 14, (Math.random() - 0.5) * 14);
+  }
+}
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(1, 1, 1), _zero = new THREE.Vector3(0, -99, 0);
+function tickConfetti(dt) {
+  for (let i = 0; i < CONFETTI; i++) {
+    const d = confData[i];
+    if (d.life <= 0) { _s.setScalar(1); _m4.compose(_zero, _q.identity(), _s); confMesh.setMatrixAt(i, _m4); continue; }
+    d.life += dt;
+    if (d.life > d.max) { d.life = 0; continue; }
+    d.v.y -= 4.2 * dt;
+    d.v.multiplyScalar(0.995);
+    d.p.addScaledVector(d.v, dt);
+    if (d.p.y < 0.03) { d.p.y = 0.03; d.v.set(0, 0, 0); d.rv.multiplyScalar(0.85); }  // rests on the desk
+    d.rot.x += d.rv.x * dt; d.rot.y += d.rv.y * dt; d.rot.z += d.rv.z * dt;
+    _q.setFromEuler(d.rot);
+    const sc = d.life / d.max > 0.85 ? (1 - (d.life / d.max - 0.85) / 0.15) : 1;
+    _s.setScalar(Math.max(sc, 0.001));
+    _m4.compose(d.p, _q, _s);
+    confMesh.setMatrixAt(i, _m4);
+  }
+  confMesh.instanceMatrix.needsUpdate = true;
+}
+
+/* cotton smoke puffs (hearth + quench steam): little circle clusters */
+const puffs = [];
+function puff(x, y, z, big = false) {
+  const s = new THREE.Shape();
+  s.absarc(-0.08, 0, 0.09, 0, Math.PI * 2);
+  s.absarc(0.07, 0.03, 0.11, 0, Math.PI * 2);
+  s.absarc(0, 0.09, 0.08, 0, Math.PI * 2);
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(s), new THREE.MeshBasicMaterial({
+    color: P.paper, transparent: true, opacity: 0.85
+  }));
+  m.position.set(x, y, z);
+  m.scale.setScalar(big ? 1.2 : 0.7 + Math.random() * 0.5);
+  scene.add(m);
+  puffs.push({ m, life: 0, max: 1.1 + Math.random() * 0.6, drift: (Math.random() - 0.5) * 0.3 });
+}
+function tickPuffs(dt) {
+  for (let i = puffs.length - 1; i >= 0; i--) {
+    const p = puffs[i];
+    p.life += dt;
+    const u = p.life / p.max;
+    p.m.position.y += dt * 0.55;
+    p.m.position.x += dt * p.drift;
+    p.m.scale.multiplyScalar(1 + dt * 0.4);
+    p.m.material.opacity = Math.max(0.85 * (1 - u), 0);
+    if (u >= 1) { scene.remove(p.m); p.m.geometry.dispose(); p.m.material.dispose(); puffs.splice(i, 1); }
+  }
+}
+
+/* ================================================================
+   The cycle: hop in → three taps → page-turn → dip → hang
+   ================================================================ */
+const D = { hop: 1.6, windup: 0.42, tap: 0.1, settle: 0.38, flip: 0.9, toCup: 0.7, dip: 0.9, lift: 2.9, dwell: 0.9 };
+const TAPS = 3;
+const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+const easeIn = t => t * t * t;
+const easeBack = t => { const c = 1.70158 + 1; return 1 + c * Math.pow(t - 1, 3) + (c - 1) * Math.pow(t - 1, 2); };
+
+let phase = 'hop', phaseT = 0, tapIdx = 0, tapped = false;
+let currentCard = null, hookIdx = 0;
+const C_MOLTEN = new THREE.Color(P.accent), C_GOLD = new THREE.Color(P.gold);
+const HOP_FROM = new THREE.Vector3(-2.9, 1.1, 0.1);
+const BILLET_POS = new THREE.Vector3(ANVIL_X, ANVIL_TOP + 0.26, 0.06);
+const MARK_POS = new THREE.Vector3(ANVIL_X, ANVIL_TOP + 0.68, 0.06);
+const CUP_TOP = new THREE.Vector3(CUP_X, 1.35, CUP_Z - 0.25);
+const CUP_DOWN = new THREE.Vector3(CUP_X, 0.72, CUP_Z - 0.25);
+
+function startCycle() {
+  phase = 'hop'; phaseT = 0; tapIdx = 0; tapped = false;
+  /* next app not already hanging; reforging a name replaces it */
+  const up = hangingNames();
+  let ex = APPS[++appIdx % APPS.length];
+  for (let k = 0; k < APPS.length && up.has(ex.name); k++) ex = APPS[++appIdx % APPS.length];
+  currentApp = ex;
+  mobile.forEach(m => { if (!m.dying && m.app.name === currentApp.name) m.dying = 0.0001; });
+  resetCompTags();
+  billet.visible = true;
+  billetShadow.visible = true;
+  billet.scale.set(1, 1, 1);
+  billet.rotation.set(0, 0, 0);
+  setHammer(HAM_REST);
+}
+
+function squash(card, sx, sy) { card.scale.set(sx, sy, 1); }
+
+function tickCycle(dt, t) {
+  phaseT += dt;
+  switch (phase) {
+
+    case 'hop': {
+      /* three little parabolic hops from the hearth to the anvil */
+      const u = Math.min(phaseT / D.hop, 1);
+      const x = THREE.MathUtils.lerp(HOP_FROM.x, BILLET_POS.x, easeIO(u));
+      const hops = 3;
+      const hu = (u * hops) % 1;
+      const baseY = THREE.MathUtils.lerp(HOP_FROM.y, BILLET_POS.y, u);
+      billet.position.set(x, baseY + Math.sin(hu * Math.PI) * 0.4, BILLET_POS.z);
+      const land = Math.abs(Math.sin(hu * Math.PI));
+      squash(billet, 1 + (1 - land) * 0.18, 1 - (1 - land) * 0.18);  // squash on each landing
+      billetShadow.position.set(x, 0.015, BILLET_POS.z);
+      billetShadow.material.opacity = 0.4 - Math.sin(hu * Math.PI) * 0.18;
+      if (phaseT >= D.hop) { phase = 'taps'; phaseT = 0; tapIdx = 0; tapped = false; billet.position.copy(BILLET_POS); squash(billet, 1, 1); }
+      break;
+    }
+
+    case 'taps': {
+      const cyc = D.windup + D.tap + D.settle;
+      const lt = phaseT;
+      if (lt < D.windup) {
+        setHammer(THREE.MathUtils.lerp(tapIdx ? HAM_HIT : HAM_REST, HAM_UP, easeOut(lt / D.windup)));
+        /* anticipation: the packet leans away a little */
+        billet.rotation.z = -easeOut(lt / D.windup) * 0.06;
+      } else if (lt < D.windup + D.tap) {
+        const u = (lt - D.windup) / D.tap;
+        setHammer(THREE.MathUtils.lerp(HAM_UP, HAM_HIT, easeIn(u)));
+        if (!tapped && u >= 0.9) {
+          tapped = true;
+          const final = tapIdx === TAPS - 1;
+          confetti(ANVIL_X, ANVIL_TOP + 0.3, 0.2, final ? 70 : 26, final ? 1.15 : 0.8);
+          squash(billet, 1.35, 0.6);
+          billet.rotation.z = 0;
+          absorbPair(tapIdx);
+        }
+      } else {
+        setHammer(HAM_HIT);
+        if (!tapped) {
+          tapped = true;
+          confetti(ANVIL_X, ANVIL_TOP + 0.3, 0.2, tapIdx === TAPS - 1 ? 70 : 26, 1);
+          squash(billet, 1.35, 0.6);
+          billet.rotation.z = 0;
+          absorbPair(tapIdx);
+        }
+        /* elastic recovery */
+        const u = Math.min((lt - D.windup - D.tap) / D.settle, 1);
+        const k = 1 + Math.sin(u * Math.PI * 3) * 0.18 * (1 - u);
+        squash(billet, 1.35 - 0.35 * easeOut(u) * k, 0.6 + 0.4 * easeOut(u) * k);
+      }
+      if (lt >= cyc) {
+        phaseT = 0; tapped = false; tapIdx++;
+        if (tapIdx >= TAPS) {
+          phase = 'flip'; phaseT = 0;
+          billet.visible = false;
+          billetShadow.visible = false;
+          currentCard = markCard(P.accent);
+          currentCard.position.copy(MARK_POS);
+          scene.add(currentCard);
+        }
+      }
+      break;
+    }
+
+    case 'flip': {
+      /* the page-turn: full spin, elastic pop to size, white back visible mid-turn */
+      const u = Math.min(phaseT / D.flip, 1);
+      if (currentCard) {
+        currentCard.rotation.y = easeIO(u) * Math.PI * 2;
+        currentCard.scale.setScalar(1.35 * (0.45 + 0.55 * easeBack(u)));
+        currentCard.position.y = MARK_POS.y + Math.sin(u * Math.PI) * 0.25;
+      }
+      setHammer(THREE.MathUtils.lerp(HAM_HIT, HAM_REST, easeIO(u)));
+      if (phaseT >= D.flip) { phase = 'toCup'; phaseT = 0; }
+      break;
+    }
+
+    case 'toCup': {
+      const u = Math.min(phaseT / D.toCup, 1);
+      if (currentCard) {
+        currentCard.position.lerpVectors(MARK_POS, CUP_TOP, easeIO(u));
+        currentCard.position.y += Math.sin(u * Math.PI) * 0.55;
+        currentCard.rotation.z = Math.sin(u * Math.PI) * -0.12;
+      }
+      if (phaseT >= D.toCup) { phase = 'dip'; phaseT = 0; }
+      break;
+    }
+
+    case 'dip': {
+      const u = Math.min(phaseT / D.dip, 1);
+      if (currentCard) {
+        /* down and back up, tempering orange → gold behind the cup */
+        const w = Math.sin(u * Math.PI);
+        currentCard.position.lerpVectors(CUP_TOP, CUP_DOWN, w);
+        currentCard.userData.front.material.color.lerpColors(C_MOLTEN, C_GOLD, Math.min(u * 1.6, 1));
+        if (u > 0.25 && u < 0.75 && Math.random() < 0.28) {
+          puff(CUP_X + (Math.random() - 0.5) * 0.4, 1.15, CUP_Z - 0.1);
+        }
+      }
+      if (phaseT >= D.dip) {
+        phase = 'lift'; phaseT = 0;
+        hookIdx = freeHook();
+      }
+      break;
+    }
+
+    case 'lift': {
+      const u = Math.min(phaseT / D.lift, 1);
+      if (currentCard) {
+        const hk = HOOKS[hookIdx];
+        const end = new THREE.Vector3(hk.x, ANCHOR_Y - hk.len, -1.2);
+        const e = easeIO(u);
+        currentCard.position.lerpVectors(CUP_TOP, end, e);
+        currentCard.position.y += Math.sin(u * Math.PI) * 0.4;
+        currentCard.rotation.z = Math.sin(t * 2 + 1) * 0.05 * (1 - u);
+        currentCard.rotation.y = Math.sin(u * Math.PI) * 0.6;        // half page-turn on the way up
+        currentCard.scale.setScalar(1.35 * THREE.MathUtils.lerp(1, 0.72, e));
+      }
+      if (phaseT >= D.lift) {
+        if (currentCard) hangCard(currentCard, hookIdx, currentApp);
+        currentCard = null;
+        phase = 'dwell'; phaseT = 0;
+      }
+      break;
+    }
+
+    case 'dwell':
+      if (phaseT >= D.dwell) startCycle();
+      break;
+  }
+}
+
+/* ================================================================
+   Ambience + camera
+   ================================================================ */
+let emberTimer = 0;
+function tickAmbience(dt, t) {
+  flames.forEach((f) => {
+    f.g.scale.y = f.g.scale.x * (1 + Math.sin(t * 5 + f.ph) * 0.1);
+    f.g.rotation.z = Math.sin(t * 3.4 + f.ph) * 0.07;
+  });
+  emberTimer += dt;
+  if (emberTimer > 0.55) {
+    emberTimer = 0;
+    confetti(-2.9 + (Math.random() - 0.5) * 0.8, 1.35, -0.4, 1, 0.28);   // lazy hearth confetti
+    if (Math.random() < 0.35) puff(-2.9 + (Math.random() - 0.5) * 0.5, 1.7, -0.55);
+  }
+  /* the swap, ambient: every few seconds some app flips a driver */
+  swapTimer += dt;
+  if (swapTimer > 3.1) {
+    swapTimer = 0;
+    const alive = mobile.filter(m => !m.dying);
+    if (alive.length) {
+      const m = alive[Math.floor(Math.random() * alive.length)];
+      flipTag(m.dTags[Math.floor(Math.random() * m.dTags.length)]);
+    }
+  }
+}
+let swapTimer = 0;
+
+const mouse = { x: 0, y: 0 };
+addEventListener('pointermove', (e) => {
+  mouse.x = (e.clientX / innerWidth) * 2 - 1;
+  mouse.y = (e.clientY / innerHeight) * 2 - 1;
+});
+function tickCamera(dt, t) {
+  const px = CAM_BASE.x + mouse.x * 0.3 + Math.sin(t * 0.1) * 0.1;
+  const py = CAM_BASE.y - mouse.y * 0.16 + Math.sin(t * 0.07) * 0.05;
+  camera.position.x += (px - camera.position.x) * Math.min(dt * 2.2, 1);
+  camera.position.y += (py - camera.position.y) * Math.min(dt * 2.2, 1);
+  camera.lookAt(CAM_LOOK);
+}
+
+/* click: a friendly poke — confetti wherever the piece is */
+renderer.domElement.addEventListener('pointerdown', () => {
+  if (REDUCED) return;
+  const p = currentCard ? currentCard.position : (billet.visible ? billet.position : new THREE.Vector3(ANVIL_X, ANVIL_TOP, 0));
+  confetti(p.x, p.y, p.z + 0.1, 12, 0.6);
+});
+
+/* ================================================================
+   Frame loop + debug hooks
+   ================================================================ */
+const clock = new THREE.Clock();
+let booted = false;
+let simT = 0;
+
+function advance(dt, t) {
+  tickCycle(dt, t);
+  tickTags(dt, t);
+  tickMobile(dt, t);
+  tickConfetti(dt);
+  tickPuffs(dt);
+  tickAmbience(dt, t);
+  tickCamera(dt, t);
+}
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  simT += dt;
+  advance(dt, simT);
+  renderer.render(scene, camera);
+  if (!booted) { booted = true; bootEl.classList.add('off'); }
+}
+
+Object.defineProperty(window, '__forge', { get: () => ({
+  phase, phaseT: +phaseT.toFixed(3), tapIdx, t: +simT.toFixed(2),
+  billet: billet.position.toArray().map(v => +v.toFixed(2)),
+  billetVisible: billet.visible,
+  card: currentCard ? currentCard.position.toArray().map(v => +v.toFixed(2)) : null,
+  mobile: mobile.length,
+  reduced: REDUCED
+})});
+window.__forgeStep = (sec) => {
+  const n = Math.max(1, Math.round(sec * 60));
+  for (let i = 0; i < n; i++) { simT += 1 / 60; advance(1 / 60, simT); }
+  renderer.render(scene, camera);
+  clock.getDelta();
+  return window.__forge;
+};
+
+function onResize() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  if (REDUCED) { renderer.render(scene, camera); }
+}
+addEventListener('resize', onResize);
+
+/* ---- reduced motion: one finished tableau ---- */
+if (REDUCED) {
+  [0, 1, 2].forEach(i => {
+    const c = markCard(P.gold);
+    c.scale.setScalar(1.35 * 0.72);
+    hangCard(c, i, APPS[i], i * 1.3);
+  });
+  /* show both sides of the swap in the still */
+  mobile.forEach((m, i) => m.dTags.forEach((d, j) => {
+    if ((i + j) % 2) {
+      d.side = 1;
+      d.sp.userData.draw(`${d.k}:${d.prod}`, '#2C2734', '#FFC24D', null);
+    }
+  }));
+  const hero = markCard(P.gold);
+  hero.position.copy(MARK_POS);
+  scene.add(hero);
+  phase = 'hop'; phaseT = 2;                       // component tags visible in the still
+  compTags.forEach(ct => { ct.state = 'idle'; ct.sp.visible = true; ct.sp.position.copy(ct.home); });
+  tickMobile(0.016, 1.2);
+  for (let i = 0; i < 30; i++) { tickAmbience(0.1, i * 0.1); tickConfetti(0.05); tickPuffs(0.05); }
+  pauseBtn.style.display = 'none';
+  renderer.render(scene, camera);
+  bootEl.classList.add('off');
+} else {
+  [1, 2].forEach((hk, i) => {
+    const c = markCard(P.gold);
+    c.scale.setScalar(1.35 * 0.72);
+    hangCard(c, hk, APPS[i], i * 2.2);
+  });
+  appIdx = 1;                                      // attract resumes after the prefill
+  startCycle();
+  renderer.setAnimationLoop(frame);
+
+  let paused = false;
+  function setPaused(p) {
+    paused = p;
+    renderer.setAnimationLoop(paused ? null : frame);
+    if (!paused) clock.getDelta();
+    pauseBtn.textContent = paused ? 'play' : 'pause';
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+  }
+  pauseBtn.addEventListener('click', () => setPaused(!paused));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) renderer.setAnimationLoop(null);
+    else if (!paused) { clock.getDelta(); renderer.setAnimationLoop(frame); }
+  });
+}
+</script>
+</body>
+</html>
