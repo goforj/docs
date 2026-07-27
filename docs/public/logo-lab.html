@@ -288,6 +288,76 @@ figure:hover > svg { transform: translateY(-1px); }
 .ref img, #beforeRow img { cursor: pointer; }
 [data-gf-motion="reduced"] svg { transition: none; }
 
+/* ---- loaders ----
+   Motion is gated twice, per the handoff's implementation notes: the
+   OS preference, and the [data-gf-motion] attribute. Nothing here
+   animates unless BOTH allow it. The static state is the mark, so a
+   reduced-motion user gets a logo rather than a broken spinner. */
+.gf-ldr .gf-f { opacity: .24; transform-box: fill-box; }
+.gf-ldr .gf-f.lead { opacity: 1; }
+.gf-ldr .gf-seam { stroke-dasharray: 62; stroke-dashoffset: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f {
+    animation: gfCycle 1.35s cubic-bezier(.4,0,.2,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f2 { animation-delay: -.45s; }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="cycle"] .gf-f3 { animation-delay: -.90s; }
+
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f {
+    opacity: 1; animation: gfAsmT 1.6s cubic-bezier(.22,1,.36,1) infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f2 { animation-name: gfAsmR; }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="assemble"] .gf-f3 { animation-name: gfAsmL; }
+
+  html[data-gf-motion="full"] .gf-ldr[data-anim="draw"] .gf-seam {
+    animation: gfDraw 1.5s ease-in-out infinite;
+  }
+  html[data-gf-motion="full"] .gf-ldr[data-anim="breathe"] .gf-mark {
+    animation: gfBreathe 1.5s ease-in-out infinite;
+  }
+}
+@keyframes gfCycle { 0%, 62%, 100% { opacity: .24 } 16% { opacity: 1 } }
+@keyframes gfAsmT { 0% { transform: translate(0,-9px) } 55%, 100% { transform: translate(0,0) } }
+@keyframes gfAsmR { 0% { transform: translate(7.8px,4.5px) } 55%, 100% { transform: translate(0,0) } }
+@keyframes gfAsmL { 0% { transform: translate(-7.8px,4.5px) } 55%, 100% { transform: translate(0,0) } }
+@keyframes gfDraw { 0% { stroke-dashoffset: 62 } 55%, 100% { stroke-dashoffset: 0 } }
+@keyframes gfBreathe { 0%, 100% { opacity: .38 } 50% { opacity: 1 } }
+
+.ldrs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 20px 0; }
+.ldr {
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground); overflow: hidden;
+}
+.ldr__head {
+  display: flex; align-items: center; gap: 10px; padding: 10px 15px;
+  border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.ldr__name {
+  font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.03em;
+  font-size: 14px; color: var(--gf-ink);
+}
+.ldr__stage {
+  display: flex; align-items: flex-end; justify-content: center; gap: 26px;
+  padding: 26px 18px; background: var(--gf-ground-deep); min-height: 130px;
+}
+.ldr__stage figure { margin: 0; display: grid; justify-items: center; gap: 7px; }
+.ldr__stage figcaption { font-family: var(--gf-font-mono); font-size: 9px; color: var(--gf-ink-3); }
+.ldr__why {
+  margin: 0; padding: 12px 16px; border-top: 1px solid var(--gf-line);
+  background: var(--gf-ground-alt); font-size: 12.5px; line-height: 1.55; color: var(--gf-ink-2);
+}
+.ldr__why b { color: var(--gf-ink); font-weight: 600; }
+.motionbar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  border: 1px solid var(--gf-nav-line); background: var(--gf-nav-soft);
+  border-radius: var(--gf-radius); padding: 12px 16px; margin: 16px 0;
+}
+.motionbar span { font-size: 13px; color: var(--gf-ink-2); }
+.inline-ldr {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 13.5px; color: var(--gf-ink-2);
+}
 .dlhint {
   display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-2);
@@ -323,6 +393,7 @@ figure:hover > svg { transform: translateY(-1px); }
     <a href="#measure">Measured</a>
     <a href="#lightship">Light</a>
     <a href="#forever">Forever</a>
+    <a href="#loader">Loader</a>
     <a href="#surfaces">Surfaces</a>
     <a href="#verdict">Verdict</a>
   </nav>
@@ -633,6 +704,65 @@ figure:hover > svg { transform: translateY(-1px); }
     tonal range at all.
   </p>
   <div class="strip dark"><span class="lbl">1-bit</span><div id="bitRow"></div></div>
+</section>
+
+<section class="sec" id="loader">
+  <p class="kicker">Loader</p>
+  <h2>The one place a logo may <em>move</em></h2>
+  <p>
+    Seam resolves the mark into three faces meeting at a single interior vertex.
+    That is already the structure of a loading indicator — three parts, one
+    centre, a natural order to travel in — so a loader here is not a new drawing.
+    It is the same frozen silhouette with one of its faces leading.
+  </p>
+  <p>
+    This matters more than it sounds. Most product loaders are a generic spinner
+    that happens to sit near a logo. This one <strong>is</strong> the logo, so the
+    moment a page is waiting is still a moment the mark is on screen.
+  </p>
+
+  <div class="motionbar">
+    <button class="btn-s" id="motionToggle">Enable motion</button>
+    <span id="motionState"></span>
+  </div>
+  <div class="note warn">
+    <b>Gated twice, and the static state is the mark</b>
+    <p>
+      The handoff requires every animation to use the
+      <code>prefers-reduced-motion</code> + <code>[data-gf-motion]</code> pattern,
+      so nothing here animates unless <em>both</em> permit it. The button above
+      is an explicit opt-in for previewing; it does not override anyone's OS
+      setting silently.
+    </p>
+    <p>
+      The important part is what a reduced-motion user sees: not a frozen
+      spinner, but <strong>the mark itself</strong>. Every loader below degrades
+      to a legitimate static logo, because the animation only ever changes which
+      face leads — never the geometry.
+    </p>
+  </div>
+
+  <div class="ldrs" id="loaders"></div>
+
+  <h3>In context</h3>
+  <p>
+    A loader is judged inline at 16–24px beside text, not at 64px on a swatch
+    board.
+  </p>
+  <div class="strip dark" id="ldrContext"></div>
+
+  <h3>Which survive small</h3>
+  <p>
+    The same constraint that decided the variants applies here. A loader that
+    signals by <em>tone</em> is a multi-tone mark for as long as it is animating,
+    so it inherits the merge problem — measured below as the ΔL* between a
+    leading face and a trailing one, composited over the ground.
+  </p>
+  <table class="t">
+    <thead><tr><th>Loader</th><th>Signal</th><th>Lead vs trail</th><th>Floor</th><th>Use for</th></tr></thead>
+    <tbody id="ldrAssess"></tbody>
+  </table>
+  <div class="note pick" id="ldrVerdict"></div>
 </section>
 
 <section class="sec" id="surfaces">
@@ -1807,6 +1937,180 @@ document.getElementById('lightRecs').innerHTML = [
     <p class="cap">${x.d}</p>
     ${x.r(P_LIGHT)}
   </div>`).join('');
+
+/* ==================================================================
+   LOADERS
+
+   Built from the same three sectors as the face partition, so a
+   loader cannot drift from the mark: change the geometry and the
+   loader changes with it. The animation only ever alters which face
+   LEADS — opacity, or a short travel along its own isometric axis.
+   Nothing rotates, nothing scales, and the silhouette is never
+   touched, which is why the static state is a legitimate logo rather
+   than a stalled spinner.
+   ================================================================== */
+const polyPts = pts => pts.map(p => p.join(',')).join(' ');
+
+function rLoader(size, P, anim, o = {}) {
+  const F = frame(o.cover ?? 0.89);
+  const id = 'ld' + (++_uid);
+  const fill = o.fill || P.accent;
+  const lead = o.lead ?? 1;   // which face is lit in the STATIC state
+
+  if (anim === 'draw') {
+    return `<svg class="gf-ldr" data-anim="draw" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+      `<path d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/>` +
+      `<g clip-path="url(#${id})">` +
+        `<path class="gf-seam" d="${SEAM_EDGES}" fill="none" stroke="${o.seam || P.bg || P.deep}" ` +
+        `stroke-width="${o.w || 2}" stroke-linecap="round"/>` +
+      `</g></svg>`;
+  }
+
+  if (anim === 'breathe') {
+    return `<svg class="gf-ldr" data-anim="breathe" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+      `<path class="gf-mark" d="${MARK_PATH}" fill="${fill}" fill-rule="evenodd"/></svg>`;
+  }
+
+  const faces = [SECTOR.top, SECTOR.right, SECTOR.left];
+  return `<svg class="gf-ldr" data-anim="${anim}" width="${size}" height="${size}" viewBox="${F.vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">` +
+    `<defs><clipPath id="${id}"><path d="${MARK_PATH}" clip-rule="evenodd"/></clipPath></defs>` +
+    `<g clip-path="url(#${id})">` +
+      faces.map((s, i) =>
+        `<polygon class="gf-f gf-f${i + 1}${i + 1 === lead ? ' lead' : ''}" points="${polyPts(s)}" fill="${fill}"/>`
+      ).join('') +
+    `</g></svg>`;
+}
+
+const LOADERS = [
+  {
+    id: 'cycle', name: 'Cycle', anim: 'cycle', signal: 'opacity',
+    why: '<b>The default.</b> Each face takes the light in turn, travelling around the cube in the direction the isometric already implies. Indeterminate, endlessly loopable, and it never leaves the silhouette — at any frozen instant it is still the mark with one face lit.',
+    use: 'Indeterminate waits — fetches, builds, navigation'
+  },
+  {
+    id: 'assemble', name: 'Assemble', anim: 'assemble', signal: 'position',
+    why: '<b>The mark building itself.</b> Each face travels in along its own isometric axis and seats — the Exploded variant resolving, on a loop. Reads as construction rather than waiting, which suits a framework whose job is compiling things.',
+    use: 'First paint, cold starts, one-shot transitions'
+  },
+  {
+    id: 'draw', name: 'Draw', anim: 'draw', signal: 'stroke',
+    why: '<b>The seam, drawing itself.</b> The three interior edges extend from the centre vertex outward. The most restrained of the four and the most obviously <em>this</em> mark — but it is carried entirely by the seam, which is sub-pixel below about 24px.',
+    use: 'Large or hero-scale loading states only'
+  },
+  {
+    id: 'breathe', name: 'Breathe', anim: 'breathe', signal: 'whole-mark opacity',
+    why: '<b>One tone, no structure.</b> The whole mark fades in and out. Says the least, and is the only one that cannot fail on tone separation, because there are never two tones on screen at once.',
+    use: 'Favicon-scale and anywhere below the floor'
+  }
+];
+
+const LDR_SIZES = [64, 40, 24, 16];
+document.getElementById('loaders').innerHTML = LOADERS.map(l => `
+  <div class="ldr">
+    <div class="ldr__head"><span class="ldr__name">${l.name}</span>
+      <span class="mark__tag" style="margin-left:auto">${l.signal}</span></div>
+    <div class="ldr__stage">
+      ${LDR_SIZES.map(px => `<figure>${rLoader(px, P_DARK, l.anim)}<figcaption>${px}</figcaption></figure>`).join('')}
+    </div>
+    <p class="ldr__why">${l.why}</p>
+  </div>`).join('');
+
+/* In context: inline, at the size a loader is actually judged. */
+document.getElementById('ldrContext').innerHTML =
+  `<div style="display:grid;gap:14px">` +
+  LOADERS.map(l => `<span class="inline-ldr">${rLoader(20, P_DARK, l.anim)}` +
+    `<span>${l.name} — building your project…</span></span>`).join('') +
+  `</div>`;
+
+/*
+  Tone separation for the animating state.
+
+  While a loader runs it is, briefly, a multi-tone mark — so it
+  inherits exactly the constraint that eliminated Crest and Facet. The
+  lead face sits at full accent; a trailing face sits at 24% accent
+  composited over the ground. If those two land within ~8 ΔL* they
+  merge and the motion stops reading as motion.
+*/
+function composite(fg, bg, alpha) {
+  const a = toRgb(fg), b = toRgb(bg);
+  return 'rgb(' + a.map((v, i) => Math.round(v * alpha + b[i] * (1 - alpha))).join(',') + ')';
+}
+(function ldrAssess() {
+  const trailAlpha = 0.24;
+  const lead = P_DARK.accent;
+  const trail = composite(P_DARK.accent, P_DARK.deep, trailAlpha);
+  const sep = Math.abs(lstar(lead) - lstar(trail));
+  const seam16 = byId('seam').seamWidth(16);
+
+  const rows = LOADERS.map(l => {
+    let floor, note;
+    if (l.anim === 'breathe') { floor = FLOOR; note = 'one tone — same floor as the mark'; }
+    else if (l.anim === 'draw') { floor = 32; note = `seam is ${seam16.toFixed(2)}px at 16` ; }
+    else { floor = 24; note = `ΔL* ${sep.toFixed(1)} between lead and trail`; }
+    return { l, floor, note, sep };
+  });
+
+  document.getElementById('ldrAssess').innerHTML = rows.map(r => `
+    <tr>
+      <td><strong>${r.l.name}</strong></td>
+      <td class="mono">${r.l.signal}</td>
+      <td><span class="chip ${r.l.anim === 'breathe' ? 'ok' : r.sep >= 8 ? 'ok' : 'bad'}">${r.note}</span></td>
+      <td class="mono"><span class="chip ${r.floor <= 16 ? 'ok' : r.floor <= 24 ? 'warn' : 'bad'}">${r.floor}px</span></td>
+      <td>${r.l.use}</td>
+    </tr>`).join('');
+
+  document.getElementById('ldrVerdict').innerHTML = `
+    <b>Cycle as the default, Breathe below 24px</b>
+    <p>
+      Lead and trail separate by <strong>ΔL* ${sep.toFixed(1)}</strong>, which is
+      ${sep >= 8 ? 'comfortably above' : 'below'} the ~8 threshold where tones
+      merge — so <strong>Cycle</strong> holds down to about 24px and is the right
+      default for indeterminate waits. <strong>Assemble</strong> shares that floor
+      and is better for a first paint, because it resolves rather than loops
+      forever.
+    </p>
+    <p>
+      <strong>Draw</strong> is the most characteristic of the four and the most
+      limited: it is carried entirely by the seam, which measures
+      ${seam16.toFixed(2)}px at 16px. Below roughly 32px there is nothing left to
+      animate. Treat it as a hero-scale device.
+    </p>
+    <p>
+      Below 24px — favicon, inline spinner, a nav-bar busy state — use
+      <strong>Breathe</strong>. It is one tone, so it cannot merge, and it stays
+      legible at the mark's own ${FLOOR}px floor. That is the same conclusion the
+      variants reached, arrived at independently: <em>when it gets small, stop
+      relying on a second tone.</em>
+    </p>`;
+})();
+
+/*
+  Motion gating. Respects the OS by default and lets the user opt in
+  explicitly for previewing — an escape hatch that is user-initiated
+  rather than a silent override.
+*/
+(function motionGate() {
+  const btn = document.getElementById('motionToggle');
+  const state = document.getElementById('motionState');
+  if (!btn) return;
+  const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const paint = () => {
+    const on = document.documentElement.getAttribute('data-gf-motion') === 'full';
+    btn.textContent = on ? 'Disable motion' : 'Enable motion';
+    state.innerHTML = prefersReduce
+      ? `Your system asks for reduced motion, so the loaders stay static — which is the point. ${on ? 'The attribute is set to <code>full</code>, but the media query still blocks the animation.' : ''}`
+      : (on ? 'Motion on. Every loader is gated on this attribute plus the OS preference.'
+            : 'Motion off. This is what a reduced-motion visitor sees — the mark, not a stalled spinner.');
+  };
+  btn.addEventListener('click', () => {
+    const on = document.documentElement.getAttribute('data-gf-motion') === 'full';
+    document.documentElement.setAttribute('data-gf-motion', on ? 'reduced' : 'full');
+    paint();
+  });
+  if (!prefersReduce) document.documentElement.setAttribute('data-gf-motion', 'full');
+  paint();
+})();
 
 /* --- palette swap --- */
 function swapStrip(P) {
