@@ -2646,7 +2646,6 @@ const PASSERS = VARIANTS.filter(v =>
     }
   ];
   document.getElementById('decidedSet').innerHTML = roles.map(r => {
-    const contrast = Math.min(...byId(r.id).pairs(P_DARK).map(([a, b]) => wcag(a, b)));
     return `
     <div class="ldr">
       <div class="ldr__head">
