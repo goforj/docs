@@ -7,32 +7,20 @@ description: Build HTTP services, commands, controllers, middleware, mail delive
 
 Applications covers normal product code inside a GoForj App.
 
-Use these pages when you are adding HTTP routes, controllers, services, commands, middleware, mail delivery, responses, and API documentation to a generated App.
+Use these guides when product behavior needs an HTTP, CLI, mail, or outbound-service boundary.
 
-## Recommended Path
+## Choose a Task
 
-1. [HTTP Services](/applications/http-services) explains the HTTP runtime and application-owned route surface.
-2. [Routes](/applications/routes) shows how route registration stays explicit.
-3. [Controllers](/applications/controllers) shows the HTTP boundary around services.
-4. [Application Services](/applications/services) explains where product behavior belongs.
-5. [HTTP Clients](/applications/http-clients) covers outbound HTTP dependencies.
-6. [Mail](/applications/mail) covers generated mail wiring and delivery from App services.
-7. [Commands](/applications/commands) covers App-owned CLI entry points.
-
-## All Application Pages
-
-- [HTTP Services](/applications/http-services)
-- [Routes](/applications/routes)
-- [Controllers](/applications/controllers)
-- [Middleware](/applications/middleware)
-- [Requests and Validation](/applications/requests-validation)
-- [Responses and Errors](/applications/responses-errors)
-- [Application Services](/applications/services)
-- [HTTP Clients](/applications/http-clients)
-- [Mail](/applications/mail)
-- [Commands](/applications/commands)
-- [API Index](/applications/api-index)
-- [OpenAPI](/applications/openapi)
+| Task | Read |
+| --- | --- |
+| Understand the generated HTTP runtime and framework routes | [HTTP Services](/applications/http-services) |
+| Register an endpoint or apply route policy | [Routes](/applications/routes) and [Middleware](/applications/middleware) |
+| Turn an HTTP request into a service call | [Controllers](/applications/controllers), [Requests and Validation](/applications/requests-validation), and [Responses and Errors](/applications/responses-errors) |
+| Place reusable product behavior | [Application Services](/applications/services) |
+| Call another HTTP service | [HTTP Clients](/applications/http-clients) |
+| Send application mail | [Mail](/applications/mail) |
+| Add a CLI entry point | [Commands](/applications/commands) |
+| Inspect or publish the source-derived API contract | [API Index and OpenAPI](/applications/api-index) |
 
 ## Related Sections
 

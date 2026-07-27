@@ -53,6 +53,16 @@ Use integration tests for Redis, S3, GCS, FTP, SFTP, SQL-backed cache, and other
 
 Keep those tests explicit and isolated because they may need containers, emulators, credentials, or network access.
 
+## Verify
+
+With the relevant generated component enabled and the local driver environment set for the test process, run the owning package tests:
+
+```bash
+CACHE_DRIVER=memory STORAGE_DRIVER=local STORAGE_ROOT=/tmp/app-storage-test go test ./internal/...
+```
+
+Expected result: packages that exercise cache or storage report `ok` without requiring a remote backend. Use a test-owned temporary directory when writing a new test; `/tmp/app-storage-test` is only a local command example.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

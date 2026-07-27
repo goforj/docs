@@ -54,7 +54,7 @@ Check file headers and local package READMEs before editing.
 ## Related Pages
 
 - [Apps](/core/apps)
-- [Generated Components](/core/generated-components)
-- [Generated Extension Points](/core/generated-extension-points)
+- [Generated Components](/core/code-generation)
+- [Generated Extension Points](/core/code-generation#choose-a-safe-extension-point)
 - [Code Generation](/core/code-generation)
 - [Backup and Restore](/operations/backups)

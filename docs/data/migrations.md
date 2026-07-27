@@ -143,4 +143,4 @@ forj migrate --dry-run
 
 - [Database Strategy](/data/database-strategy) explains connection configuration.
 - [Repositories](/data/repositories) explains where query code should live.
-- [Testing Overview](/testing/overview) explains generated App testing direction.
+- [Testing Overview](/testing/#choose-a-test-layer) explains generated App testing direction.

@@ -1,5 +1,6 @@
 ---
 title: ExecX
+description: "Command execution helpers with streaming, decoding, and TTY support."
 repoSlug: execx
 repoUrl: https://github.com/goforj/execx
 ---

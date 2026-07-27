@@ -1,70 +1,27 @@
 ---
 title: Runtime Lifecycle
-description: How a GoForj app starts, runs commands and runtimes, and shuts down.
+description: How a GoForj App constructs, starts, executes work, and shuts down.
 ---
 
 # Runtime Lifecycle
 
-The runtime lifecycle is the ordered path from app construction to startup, command execution, runtime work, and graceful shutdown.
+The Execution Lifecycle is the ordered path from App construction through runtime work to graceful shutdown. GoForj keeps it visible: Wire constructs the App, lifecycle hooks run at startup and shutdown, and a command owns its Runtime boundary.
 
-GoForj keeps this path explicit. Startup and shutdown behavior belongs in documented hooks, not package globals or hidden runtime registration.
-
-## Start Here
-
-Use lifecycle hooks when app behavior must run at startup or shutdown with injected dependencies.
-
-Default app:
-
-```text
-app/lifecycle.go
-```
-
-Named app:
-
-```text
-app/marketplace/lifecycle.go
-```
-
-Do not use lifecycle hooks for ordinary request, job, schedule, command, or constructor work.
-
-## Execution Flow
-
-An app command follows this shape:
-
-1. load environment configuration
-2. initialize the app through its Wire graph
-3. parse the selected command
-4. start lifecycle phases
-5. run the command or runtime
-6. shut down with bounded timeouts
+## The Runtime Path
 
 ```mermaid
 flowchart LR
-  entry["cmd/<app>/main.go"] --> wire["app/<app>/wire"]
-  wire --> startup["BeforeStartup → Startup → AfterStartup"]
-  startup --> command["run command or runtime"]
-  command --> shutdown["BeforeShutdown → Shutdown → AfterShutdown"]
+  entry["cmd/app"] --> wire["app/wire: construct App"]
+  wire --> start["BeforeStartup → Startup → AfterStartup"]
+  start --> run["command or runtime execution"]
+  run --> stop["BeforeShutdown → Shutdown → AfterShutdown"]
 ```
 
-## Lifecycle Support
+The generated `App.Run` starts the lifecycle before executing a parsed command and defers shutdown with the App shutdown timeout. Startup phases run in registration order. Shutdown phases run in reverse registration order, so dependent resources can stop before what they rely on.
 
-Reusable lifecycle machinery lives in:
+## Add an App-Owned Hook
 
-```text
-internal/runtime
-```
-
-Generated app metadata lives in:
-
-```text
-internal/runtime/apps.go
-```
-
-App owners should edit `app/lifecycle.go`, not `internal/runtime`.
-
-## Register Hooks
-
-Example:
+`app/lifecycle.go` is render-once and is the supported extension point. Wire can inject required dependencies into its constructor:
 
 ```go
 package app
@@ -77,8 +34,13 @@ func NewLifecycleRegistry(reports *reports.Service) *LifecycleRegistry {
 	return &LifecycleRegistry{reports: reports}
 }
 
-func (r *LifecycleRegistry) Startup(ctx context.Context) error {
-	return r.reports.WarmCache(ctx)
+func (r *LifecycleRegistry) Register(lifecycle *runtime.Lifecycle) {
+	lifecycle.On(runtime.BeforeStartup, r.BeforeStartup)
+	lifecycle.On(runtime.Shutdown, r.Shutdown)
+}
+
+func (r *LifecycleRegistry) BeforeStartup(ctx context.Context) error {
+	return r.reports.CheckPrerequisites(ctx)
 }
 
 func (r *LifecycleRegistry) Shutdown(ctx context.Context) error {
@@ -86,35 +48,43 @@ func (r *LifecycleRegistry) Shutdown(ctx context.Context) error {
 }
 ```
 
-`NewLifecycleRegistry` is built by Wire, so it can receive services and repositories.
+This is an illustrative fragment: retain the generated phase methods you do not change. Use `BeforeStartup` for prerequisite checks that must fail fast, `Startup` for App-owned process-lifetime resources, and shutdown phases to stop accepting work, flush, and release App-owned resources. Do not put ordinary request, job, or schedule behavior in hooks.
 
-## Runtime Boundaries
+## Execute and Verify
 
-The lifecycle applies to generated commands, but commands do different work:
-
-- `forj route:list` starts, lists routes, and shuts down.
-- `forj api` starts the HTTP runtime and blocks.
-- `forj worker` starts workers and blocks.
-- `forj scheduler` starts scheduler work and blocks.
-- `forj app` starts enabled runtimes together.
-
-Named apps use the same shape:
+After changing lifecycle wiring, build and run a bounded command:
 
 ```bash
-forj marketplace api
-forj marketplace worker
+forj build
+go test ./...
+forj route:list
 ```
+
+Expected result: the build regenerates the Wire graph, tests pass, and `route:list` starts the App, prints registered routes, then runs shutdown. For a long-running HTTP Runtime, run `forj api`; stop it with `Ctrl+C` and confirm shutdown hooks complete within the configured timeout.
+
+Runtime-capable built Apps use the standalone runtime when started with no arguments:
+
+```bash
+./bin/app
+./bin/app run
+```
+
+Those commands are equivalent. Explicit runtime commands remain explicit: `./bin/app api`, `./bin/app worker`, and `./bin/app scheduler` each own a different process surface.
+
+## Boundaries
+
+`internal/runtime` owns reusable lifecycle coordination and App timeout policy. `app/lifecycle.go` owns App-specific hooks. HTTP, worker, and scheduler packages own their runtime behavior. Constructors and providers must not start long-lived work because construction can also happen for short-lived commands and tests.
 
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not put startup behavior in `cmd/<app>/main.go`.
-- Do not put app-specific startup behavior in `internal/runtime`.
-- Do not make required dependencies appear optional.
-- Do not start long-lived runtime work from constructors.
+- Do not put App-specific hooks in `internal/runtime` or `cmd/app/main.go`.
+- Do not assume a constructor is a startup hook.
+- Do not make required lifecycle dependencies optional to avoid a Wire failure.
+- Do not treat `forj route:list` and `forj api` as the same runtime duration.
 :::
 
 ## Next Steps
 
-- [Runtime Topology](/core/runtime-topology) explains app and runtime process shapes.
-- [Project Structure](/getting-started/project-structure) explains where runtime packages live.
+- [Runtime Topology](/core/runtime-topology) explains process shapes.
+- [Dependency Injection](/core/dependency-injection) explains App construction.

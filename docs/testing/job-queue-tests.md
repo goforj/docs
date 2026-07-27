@@ -67,6 +67,16 @@ Test worker lifecycle when you need confidence in:
 
 Do not use worker tests for ordinary service behavior.
 
+## Verify
+
+With jobs enabled, run the job-owning package using a local driver:
+
+```bash
+QUEUE_DRIVER=sync QUEUE_SUPPORTED_DRIVERS=sync,workerpool go test ./internal/jobs/...
+```
+
+Expected result: the package reports `ok` without a broker. Add a worker-runtime test only when handler registration, delivery, retries, lifecycle, or shutdown is the behavior under test.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

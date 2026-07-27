@@ -33,6 +33,19 @@ func NewService(repo *Repository, queue Queue, cache Cache, events Events) *Serv
 
 Required dependencies stay required. Optional dependencies should be modeled explicitly.
 
+## One Service, Multiple Callers
+
+The [JSON API Route](/scenarios/json-api-route) is the smallest complete example: `users.Service.Find` is constructed by Wire, called by a controller, unit-tested without HTTP, and observed through the generated route. A command, job handler, subscriber, or schedule can call the same typed service method without importing `web` or copying the workflow.
+
+Verify a service-first change before running the HTTP runtime:
+
+```bash
+forj build
+go test ./...
+```
+
+Expected result: generated wiring succeeds and service tests pass without starting a listener, worker, or scheduler. Use the scenario's `forj api` and `curl` check only when confirming the HTTP boundary.
+
 ## Inputs and Outputs
 
 Use typed inputs for service operations:

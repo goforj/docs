@@ -264,4 +264,4 @@ Local Apps enable inspect capture with `LIGHTHOUSE_INSPECT_ENABLED=true` in `.en
 - [Metrics](/operations/metrics) explains metric surfaces.
 - [Inspects](/operations/inspects) explains execution records.
 - [Lighthouse](/operations/lighthouse) explains the operator UI.
-- [Production Checklist](/operations/production-checklist) collects production readiness checks.
+- [Production Checklist](/operations/deployment-basics#production-checklist) collects production readiness checks.

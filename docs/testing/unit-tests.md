@@ -17,6 +17,18 @@ From the generated App root:
 go test ./...
 ```
 
+Expected result: the package containing the service reports `ok`. To run only the Users service test from [JSON API Route](/scenarios/json-api-route):
+
+```bash
+go test ./internal/users -run 'TestService(FindsUser|RejectsEmptyID)$'
+```
+
+Expected result:
+
+```text
+ok   your/module/internal/users
+```
+
 ## Service Tests
 
 Test services directly:
@@ -52,7 +64,7 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 }
 ```
 
-This matches the service from [JSON API Route](/scenarios/json-api-route). Use fakes, in-memory repositories, or local drivers when they make behavior clear.
+This matches the service from [JSON API Route](/scenarios/json-api-route). Use fakes, in-memory repositories, or local drivers when they make behavior clear. The scenario contains the complete file; this excerpt focuses on the assertion pattern.
 
 ## What To Unit Test
 

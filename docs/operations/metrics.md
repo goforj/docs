@@ -9,6 +9,10 @@ Metrics are numeric operational signals emitted by the App.
 
 Generated Apps expose Prometheus-compatible metrics through `github.com/goforj/metrics`.
 
+::: info Metrics package reference
+This operations guide covers the endpoints, configuration, and runtime signals of a generated App. The [metrics library page](/metrics) documents standalone registries, exposition, metric types, and the complete package API.
+:::
+
 ## Endpoints
 
 Standalone host mode prefers one shared metrics endpoint:

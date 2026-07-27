@@ -26,6 +26,8 @@ forj backup:create
 
 The default location is `.goforj/backups/backup-<UTC timestamp>`. Each completed set contains `manifest.json`, `checksums.txt`, and the database or storage artifacts named by the manifest.
 
+## Verify a Backup
+
 List completed backups and verify the selected set:
 
 ```bash
@@ -177,7 +179,7 @@ forj backup:list --path /var/backups/example
 
 ## Next Steps
 
-- [Production Checklist](/operations/production-checklist)
+- [Deployment Basics](/operations/deployment-basics#production-checklist)
 - [Driver Selection](/data/driver-selection)
 - [Environment Reference](/reference/env-vars)
 - [CLI Reference](/reference/cli)

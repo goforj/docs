@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -287,8 +288,9 @@ func withFrontmatter(repo RepoConfig, content string) string {
 		autoTitle = "noAutoTitle: true\n"
 	}
 	frontmatter := fmt.Sprintf(
-		"---\ntitle: %s\nrepoSlug: %s\nrepoUrl: %s\n%s---\n\n",
+		"---\ntitle: %s\ndescription: %s\nrepoSlug: %s\nrepoUrl: %s\n%s---\n\n",
 		title,
+		strconv.Quote(repo.Description),
 		repo.Slug,
 		repoURL,
 		autoTitle,

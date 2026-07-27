@@ -1,5 +1,6 @@
 ---
 title: Mail
+description: "Portable message composition with local, SMTP, and provider delivery drivers."
 repoSlug: mail
 repoUrl: https://github.com/goforj/mail
 ---

@@ -59,11 +59,12 @@ func TestRewriteMarkdownLinksPreservesLinksInsideCodeFences(t *testing.T) {
 // TestTransformReadmeAppendsFrameworkGuide verifies generated library pages link back to their canonical App workflow.
 func TestTransformReadmeAppendsFrameworkGuide(t *testing.T) {
 	repo := RepoConfig{
-		Slug:       "queue",
-		Title:      "Queue",
-		CloneURL:   "https://github.com/goforj/queue.git",
-		Branch:     "main",
-		OutputPath: "libraries/queue.md",
+		Slug:        "queue",
+		Title:       "Queue",
+		Description: "Queued work with pluggable backend drivers.",
+		CloneURL:    "https://github.com/goforj/queue.git",
+		Branch:      "main",
+		OutputPath:  "libraries/queue.md",
 		FrameworkGuide: FrameworkGuide{
 			Title:   "Queues",
 			Path:    "/async/queues",
@@ -73,6 +74,7 @@ func TestTransformReadmeAppendsFrameworkGuide(t *testing.T) {
 
 	got := transformReadme("# Queue\n\nStandalone package documentation.\n", repo, "https://raw.githubusercontent.com/goforj/queue/main/")
 	wants := []string{
+		`description: "Queued work with pluggable backend drivers."`,
 		"## Using With GoForj {#using-with-goforj}",
 		"Generated Apps expose named queues through generated accessors.",
 		"For generated App integration, see [Queues](/async/queues).",
@@ -81,6 +83,22 @@ func TestTransformReadmeAppendsFrameworkGuide(t *testing.T) {
 		if !strings.Contains(got, want) {
 			t.Fatalf("transformReadme() missing %q in:\n%s", want, got)
 		}
+	}
+}
+
+// TestTransformReadmeQuotesFrontmatterDescription verifies punctuation cannot break generated YAML.
+func TestTransformReadmeQuotesFrontmatterDescription(t *testing.T) {
+	repo := RepoConfig{
+		Slug:        "cache",
+		Title:       "Cache",
+		Description: `Cache helpers: local, distributed, and "typed".`,
+		CloneURL:    "https://github.com/goforj/cache.git",
+		Branch:      "main",
+	}
+
+	got := transformReadme("# Cache\n", repo, "https://raw.githubusercontent.com/goforj/cache/main/")
+	if !strings.Contains(got, `description: "Cache helpers: local, distributed, and \"typed\"."`) {
+		t.Fatalf("transformReadme() did not quote the description safely:\n%s", got)
 	}
 }
 

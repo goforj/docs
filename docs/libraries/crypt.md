@@ -1,5 +1,6 @@
 ---
 title: Crypt
+description: "Encryption helpers with key generation and rotation support."
 repoSlug: crypt
 repoUrl: https://github.com/goforj/crypt
 ---

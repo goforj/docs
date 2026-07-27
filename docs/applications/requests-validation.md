@@ -9,6 +9,10 @@ Request handling should make invalid input visible at the HTTP boundary before a
 
 Controllers own request translation. Services own application behavior.
 
+## Golden Path
+
+The [JSON API Route](/scenarios/json-api-route) demonstrates the complete HTTP path with a service-backed `GET` request. For a mutating route, preserve that same ownership: controller binds and normalizes HTTP input, a typed service input crosses into application behavior, and the controller maps known validation errors to an explicit client response.
+
 ## Bind Input
 
 Use `web.Context` to bind request payloads:
@@ -103,6 +107,7 @@ This preserves request cancellation and deadlines across service, repository, qu
 
 ## Next Steps
 
+- [JSON API Route](/scenarios/json-api-route) provides the complete generate/build/test/curl workflow.
 - [Controllers](/applications/controllers) explains request handler structure.
 - [Responses and Errors](/applications/responses-errors) explains error response policy.
 - [Application Services](/applications/services) explains service inputs.

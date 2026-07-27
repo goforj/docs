@@ -5,6 +5,8 @@ description: How GoForj Projects use the default app and optional named apps.
 
 # Apps
 
+An app is a runnable boundary inside a GoForj Project. It has a binary, command surface, composition files, Wire graph, and runtime defaults.
+
 Start with one app. Add another only when the Project needs another runnable boundary.
 
 That rule keeps GoForj simple: one Project, shared application behavior under `internal/`, and clear app composition under `app/`.
@@ -29,6 +31,8 @@ internal/
   users/
   reports/
 ```
+
+`cmd/app/main.go` is the binary entrypoint and stays small. `app/` owns composition such as routes, commands, schedules, lifecycle hooks, and app-level exposure. `app/wire/` owns the Wire graph. Application behavior belongs under `internal/`.
 
 The default app is enough for most Projects.
 
@@ -129,6 +133,17 @@ app/routes.go
 app/wire/inject_http_controllers_app.go
 ```
 
+## Apps and runtimes
+
+An app can expose several runtimes:
+
+- HTTP
+- jobs
+- scheduler
+- CLI commands
+
+For example, `forj marketplace api`, `forj marketplace worker`, and `forj marketplace scheduler` run different process roles inside the same `marketplace` app. The app is the composition boundary; the runtime is the role the process is currently running.
+
 ## What Belongs Where
 
 `internal/` owns behavior. Apps own exposure.
@@ -147,6 +162,19 @@ app/marketplace/wire/inject_http_controllers_app.go
 ```
 
 This keeps the code reusable inside the Project without pretending each app is a separate repository.
+
+Use these boundaries when deciding where code belongs:
+
+| Concern | Belongs in |
+| --- | --- |
+| Project configuration and selected components | `.goforj.yml` |
+| App composition | `app/` or `app/<name>/` |
+| App Wire graph | `app/wire/` or `app/<name>/wire/` |
+| Binary entrypoint | `cmd/app/` or `cmd/<name>/` |
+| Business behavior | `internal/...` |
+| Reusable runtime machinery | `internal/runtime`, `internal/http`, `internal/jobs`, `internal/schedules` |
+
+Do not bypass the composition files with package globals. If rerendering should preserve a behavior change for all future Projects, change the GoForj template or generator. Keep application-specific behavior in the generated Project.
 
 ## App Metadata
 

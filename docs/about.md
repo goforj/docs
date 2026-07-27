@@ -1,3 +1,8 @@
+---
+title: What Is GoForj?
+description: Understand what GoForj provides, the problems it addresses, and when it fits a Go project.
+---
+
 # What is GoForj?
 
 GoForj is a composable application stack for Go.

@@ -610,7 +610,7 @@ export default {
   },
   Layout: () => {
     const { theme } = useData()
-    const docsVersion = theme.value.docsVersion || 'v0.20'
+    const docsVersion = theme.value.docsVersion || 'Unreleased'
 
     return h(DefaultTheme.Layout, null, {
       'not-found': () => h('div', { class: 'gf-notfound' }, [

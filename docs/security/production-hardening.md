@@ -109,7 +109,7 @@ Then verify in the deployment environment:
 
 ## Next Steps
 
-- [Production Checklist](/operations/production-checklist) covers the broader runtime release path.
+- [Production Checklist](/operations/deployment-basics#production-checklist) covers the broader runtime release path.
 - [Sessions and Cookies](/security/sessions-cookies) explains browser credential policy.
 - [OAuth](/security/oauth) explains provider identity policy.
 - [Health and Readiness](/operations/health-readiness) explains protected diagnostics.

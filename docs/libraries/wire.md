@@ -1,5 +1,6 @@
 ---
 title: Wire
+description: "Fast, explicit compile-time dependency injection for Go."
 repoSlug: wire
 repoUrl: https://github.com/goforj/wire
 ---

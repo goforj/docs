@@ -130,4 +130,4 @@ Local-first docs should avoid:
 
 - [Runtime Topology](/core/runtime-topology) explains combined and split process shapes.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains driver selection.
-- [Generated Components](/core/generated-components) explains how driver support is compiled into the App.
+- [Generated Components](/core/code-generation) explains how driver support is compiled into the App.

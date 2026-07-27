@@ -1,5 +1,6 @@
 ---
 title: GoDump
+description: "Readable, configurable value dumps for debugging Go programs."
 repoSlug: godump
 repoUrl: https://github.com/goforj/godump
 ---

@@ -30,6 +30,34 @@ The app route file composes those controller routes into route groups. Named app
 app/marketplace/routes.go
 ```
 
+## End-to-End Users Route
+
+Use [JSON API Route](/scenarios/json-api-route) as the canonical, runnable Users workflow. From an HTTP-enabled generated App, it uses the real generator, edits the generated feature, rebuilds Wire, tests the App, and verifies the served endpoint:
+
+```bash
+forj make:controller users
+# add internal/users/service.go and replace internal/users/controller.go
+# add users.NewService to app/wire/inject_services_app.go
+forj build
+go test ./...
+forj route:list
+forj api
+```
+
+In a second terminal, while `forj api` is running:
+
+```bash
+curl http://localhost:3000/api/v1/users/42
+```
+
+Expected response:
+
+```json
+{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
+```
+
+`route:list` must include `/api/v1/users/:id`. The generator updates `internal/users/controller.go`, `app/wire/inject_http_controllers_app.go`, and `app/routes.go`; adding the service constructor to `app/wire/inject_services_app.go` makes the controller constructible. The scenario contains the complete files and its service test, so these pages can explain their boundaries without maintaining a second copy.
+
 ## Controller Routes
 
 Controllers return `[]web.Route`:
@@ -121,6 +149,7 @@ Do not add application behavior by editing framework route registration.
 
 ## Next Steps
 
+- [JSON API Route](/scenarios/json-api-route) is the complete runnable workflow.
 - [Controllers](/applications/controllers) explains handler structure.
 - [Middleware](/applications/middleware) explains route and group policy.
 - [Naming Conventions](/core/naming-conventions) defines route naming.

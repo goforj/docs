@@ -41,21 +41,91 @@ Use two segments unless the extra segment is truly part of the operator-facing c
 
 See [Naming Conventions](/core/naming-conventions) for command, job, event, schedule, route, and named resource names.
 
-See [Organizing Generated Code](/core/organizing-generated-code) for the broader package ownership model behind colocated controllers, commands, jobs, schedules, events, subscribers, models, and services.
+### Bare commands
+
+A bare application command is App-wide:
+
+```bash
+forj make:command sync
+```
+
+It creates `internal/cmd/sync_cmd.go`. Use a grouped name when a feature package owns the command:
+
+```bash
+forj make:command reports:sync
+```
+
+This creates `internal/reports/sync_cmd.go` and exposes `reports:sync`. If operator naming and package placement differ, keep the command name short and use `-d`:
+
+```bash
+forj make:command reports:sync -d ./internal/ops
+```
+
+The file moves to `internal/ops/sync_cmd.go`, but the exposed command remains `reports:sync`.
+
+### Go package names
+
+Generated package declarations use compact lowercase Go names. For example:
+
+```bash
+forj make:controller BillingPortal
+```
+
+creates a `billingportal` package, not `billing_portal`. File names can use underscores, but package names should remain short lowercase identifiers.
+
+## Organize by package ownership
+
+Make commands organize code around the package that owns the behavior, not around global `controllers`, `jobs`, `models`, or `commands` directories.
+
+```text
+internal/reports/
+  controller.go
+  sync_cmd.go
+  generate_job.go
+  daily_schedule.go
+  report_generated_event.go
+  report_generated_subscriber.go
+  report.go
+  service.go
+```
+
+Every `.go` file in that directory declares `package reports`, so the package name provides the scope. `Controller`, `SyncCmd`, `GenerateJob`, `DailySchedule`, `Report`, and `Service` are different entry points and collaborators inside one ownership boundary.
+
+Read grouped generator names from left to right:
+
+| Command | Creates |
+| --- | --- |
+| `forj make:controller reports` | `internal/reports/controller.go` |
+| `forj make:job reports:generate` | `internal/reports/generate_job.go` |
+| `forj make:schedule reports:daily` | `internal/reports/daily_schedule.go` |
+
+Controllers are package anchors, so the full grouped name becomes the controller package. For jobs and schedules, the leading segments select the package and the final segment names the generated entry point. Start with a flat package such as `internal/reports`; add nesting only when another package boundary clarifies ownership.
+
+The generated entry points should stay thin:
+
+```text
+HTTP request      -> reports.Controller                -> reports.Service
+CLI command       -> reports.SyncCmd                   -> reports.Service
+Queue worker      -> reports.GenerateJob               -> reports.Service
+Scheduler process -> reports.DailySchedule             -> reports.Service
+Event bus         -> reports.ReportGeneratedSubscriber
+```
+
+They translate input, call package services, and return output. Services own workflows and receive repositories, clients, caches, queues, storage, and events through explicit constructor dependencies. Keeping related entry points together makes imports reveal ownership, keeps Wire constructors close to what they construct, and lets a feature move or shrink as one visible unit.
 
 ## Command Map
 
-| Command | Generates | Default package behavior | Updates wiring |
-| --- | --- | --- | --- |
-| `forj make:controller <name>` | HTTP controller | grouped name maps to `internal/<group>/controller.go` | HTTP controller set and route registry |
-| `forj make:command <name>` | App command | grouped name maps to `internal/<group>/<name>_cmd.go` | command set and App command collection |
-| `forj make:job <name>` | Queue job | grouped name maps to `internal/<group>/<name>_job.go` | job set |
-| `forj make:queue <name>` | Named queue config | updates `.env` queue keys | none |
-| `forj make:schedule <name>` | Scheduled task | grouped name maps to `internal/<group>/<name>_schedule.go` | App scheduler set |
-| `forj make:event <name>` | Event type | grouped name maps to `internal/<group>/<name>_event.go` | none |
-| `forj make:subscriber <name>` | Event subscriber | grouped name maps to `internal/<group>/<name>_subscriber.go` | App event subscriber set |
-| `forj make:model <table>` | Model and repository | `--package` controls the model package | repository set |
-| `forj make:migration <name>` | SQL migration files | writes to the migrations directory | none |
+| Command | Generates | Default output and registration |
+| --- | --- | --- |
+| `forj make:controller <name>` | HTTP controller | Writes `internal/<group>/controller.go`; registers the controller and its routes. |
+| `forj make:command <name>` | App command | Writes `internal/<group>/<name>_cmd.go`; adds the command to the App command collection. |
+| `forj make:job <name>` | Queue job | Writes `internal/<group>/<name>_job.go`; registers the job provider. |
+| `forj make:queue <name>` | Named queue config | Updates the queue keys in `.env`; no Wire registration is needed. |
+| `forj make:schedule <name>` | Scheduled task | Writes `internal/<group>/<name>_schedule.go`; adds the schedule to the App scheduler. |
+| `forj make:event <name>` | Event type | Writes `internal/<group>/<name>_event.go`; no Wire registration is needed. |
+| `forj make:subscriber <name>` | Event subscriber | Writes `internal/<group>/<name>_subscriber.go`; registers the App event subscriber. |
+| `forj make:model <table>` | Model and repository | Writes to the package selected by `--package`; registers the repository provider. |
+| `forj make:migration <name>` | SQL migration files | Writes timestamped files to the migrations directory; no Wire registration is needed. |
 
 Some make commands are native GoForj commands and some are generated app commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
 
@@ -126,17 +196,11 @@ forj make:controller reports --remove --dry-run
 
 `--remove` is deterministic. It removes the generated file and the wiring that the matching make command knows how to add. It does not inspect your business logic, service code, tests, or manually added references.
 
-| Command | Remove behavior |
-| --- | --- |
-| `make:controller` | removes the controller file, HTTP controller provider, and route registry entry |
-| `make:command` | removes the command file, command provider, and App command collection entry |
-| `make:job` | removes the job file and job provider |
-| `make:schedule` | removes the schedule file and App schedule provider |
-| `make:event` | removes the event file |
-| `make:subscriber` | removes the subscriber file, subscriber provider, and event subscription block |
-| `make:model` | removes the model file and repository provider |
-| `make:migration` | removes timestamped migration files matching the migration name |
-| `make:queue` | removes the named queue env keys |
+Removal reverses the default output and registration described in the [Command Map](#command-map). Three cases are worth calling out:
+
+- subscribers also remove their generated event subscription block;
+- migrations remove timestamped files matching the migration name;
+- named queues remove their generated environment keys.
 
 After removing a wired resource, run:
 
@@ -266,6 +330,17 @@ Generated files are starting points. Your App still owns:
 
 Keep dependencies explicit. If a generated controller, command, or job needs an application service, add that service constructor to the right provider set and let Wire pass it in.
 
+## Common Mistakes
+
+::: warning Common mistakes
+- Do not create one package per generated file.
+- Do not collect every controller, job, command, and service in one global package.
+- Do not make operator-facing command names longer merely to mirror package depth.
+- Do not use snake case package names.
+- Do not put business workflows directly in generated entry points.
+- Do not hand-edit generated wiring before using the make command path.
+:::
+
 ## Verify
 
 After running a make command, verify the graph and the exposed runtime surface:
@@ -281,7 +356,6 @@ Use `route:list` for controllers. For commands, run the generated command signat
 
 - [Controllers](/applications/controllers) shows the HTTP boundary around services.
 - [Commands](/applications/commands) shows App-owned CLI entry points.
-- [Organizing Generated Code](/core/organizing-generated-code) explains the package ownership model behind generated files.
 - [Naming Conventions](/core/naming-conventions) defines stable operational names.
 - [Wiring Recipes](/core/wiring-recipes) shows where generated and hand-written providers belong.
 - [CLI Reference](/reference/cli) lists project-level commands and generated App command patterns.

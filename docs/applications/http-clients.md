@@ -9,6 +9,10 @@ Outbound HTTP clients call services outside your App.
 
 Use `httpx` when application code needs typed request helpers, retries, request options, or diagnostic dumps around outbound HTTP calls.
 
+::: info HTTPX package reference
+This page shows how to construct and inject outbound clients in a generated GoForj App. The [HTTPX library page](/httpx) provides standalone usage and the complete client API reference.
+:::
+
 ## Where Clients Live
 
 Keep outbound clients in application-owned packages:

@@ -1,5 +1,6 @@
 ---
 title: Metrics
+description: "Counters, gauges, histograms, snapshots, and Prometheus-compatible export."
 repoSlug: metrics
 repoUrl: https://github.com/goforj/metrics
 ---

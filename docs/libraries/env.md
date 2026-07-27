@@ -1,5 +1,6 @@
 ---
 title: Env
+description: "Layered environment loading and typed configuration helpers for Go."
 repoSlug: env
 repoUrl: https://github.com/goforj/env
 ---

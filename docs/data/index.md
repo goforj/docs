@@ -7,28 +7,19 @@ description: Durable data, cache, storage, transactions, repositories, and drive
 
 Data and Persistence explains how GoForj applications work with durable data, derived data, and files.
 
-Use these pages to keep durable database state, temporary cache data, and file/blob storage separate while still using generated App resources consistently.
+Use these guides to keep source-of-truth records, derived data, and files separate while accessing each through generated App resources.
 
-## Recommended Path
+## Choose a Data Task
 
-1. [Database Strategy](/data/database-strategy) explains source-of-truth data.
-2. [Database Shell](/data/database-shell) explains interactive and non-interactive shell access.
-3. [Repositories](/data/repositories) explains query ownership.
-4. [Transactions](/data/transactions) explains workflow boundaries.
-5. [Cache Patterns](/data/cache-patterns) explains temporary and derived data.
-6. [Storage Patterns](/data/storage-patterns) explains files and blobs.
-7. [Driver Selection](/data/driver-selection) explains backend choices.
-
-## All Data Pages
-
-- [Database Strategy](/data/database-strategy)
-- [Database Shell](/data/database-shell)
-- [Migrations](/data/migrations)
-- [Repositories](/data/repositories)
-- [Transactions](/data/transactions)
-- [Cache Patterns](/data/cache-patterns)
-- [Storage Patterns](/data/storage-patterns)
-- [Driver Selection](/data/driver-selection)
+| Task | Read |
+| --- | --- |
+| Select, configure, or inspect a database | [Database Strategy](/data/database-strategy) |
+| Change schema safely | [Migrations](/data/migrations) |
+| Own and test database queries | [Repositories](/data/repositories) |
+| Coordinate durable writes | [Transactions](/data/transactions) |
+| Store temporary or derived values | [Cache Patterns](/data/cache-patterns) |
+| Store files and objects | [Storage Patterns](/data/storage-patterns) |
+| Compare local and production backends | [Driver Selection](/data/driver-selection) |
 
 ## Related Sections
 

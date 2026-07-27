@@ -46,6 +46,26 @@ func TestControllerShow(t *testing.T) {
 
 This matches the controller from [JSON API Route](/scenarios/json-api-route). Use [Web](/web) for package-level testing helpers.
 
+The snippet is a focused test fragment. For the runnable generated-App HTTP path, complete the scenario and run:
+
+```bash
+forj build
+go test ./...
+forj api
+```
+
+Then request the route from another terminal:
+
+```bash
+curl http://localhost:3000/api/v1/users/42
+```
+
+Expected response:
+
+```json
+{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
+```
+
 ## Route Tests
 
 Use route or server-level tests when you need to verify:

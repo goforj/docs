@@ -1,5 +1,6 @@
 ---
 title: Strings
+description: "Rune-safe string construction, matching, transformation, and inflection helpers."
 repoSlug: str
 repoUrl: https://github.com/goforj/str
 ---

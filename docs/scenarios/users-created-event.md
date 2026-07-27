@@ -44,6 +44,12 @@ After this scenario, creating a user also publishes a typed `users.created` fact
 
 This scenario edits or creates:
 
+**Configuration**
+
+```text
+.env
+```
+
 **Events**
 
 ```text
@@ -76,14 +82,16 @@ app/lifecycle.go
 app/wire/inject_services_app.go
 ```
 
-The event generator may update generated event manager files.
+The event generator updates manager files, and the rendered App includes the tested concurrent logger implementation.
 
 ```text
 internal/events/accessors_gen.go
 internal/events/manager_gen.go
+internal/logger/app.go
+internal/logger/dedupe_test.go
 ```
 
-Do not edit generated event files by hand.
+Do not edit generated event or logger files by hand.
 
 ## Step 1: Refresh Event Resources
 

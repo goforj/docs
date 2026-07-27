@@ -1,5 +1,6 @@
 ---
 title: Scheduler
+description: "Recurring work primitives with cron, intervals, overlap protection, and runtime controls."
 repoSlug: scheduler
 repoUrl: https://github.com/goforj/scheduler
 ---

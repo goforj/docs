@@ -11,9 +11,9 @@ GoForj is still pre-`v1.0`, but the project has a real development history. The 
 
 ## Current Version
 
-`v0.20.0` is the latest tagged framework release. The root documentation also includes implemented changes recorded under [Unreleased](/versions/changelog#unreleased).
+`v0.22.0` is the latest tagged framework release. The root documentation follows `main`, which is one visual-style commit ahead of that tag and has no additional user-facing framework behavior to document yet.
 
-Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, check the Unreleased section before relying on behavior added after `v0.20.0`.
+Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [v0.22.0](/versions/changelog#v0220) for the released behavior.
 
 ## Historical Milestones
 
@@ -35,7 +35,7 @@ That matters because GoForj has evolved through several real layers:
 
 The library ecosystem is part of the version story. GoForj is not only a renderer around one repository. It is backed by first-party packages for HTTP, queues, events, cache, storage, mail, scheduler, metrics, environment loading, cryptography, command execution, console presentation, strings, collections, debugging output, dependency wiring, and local agent tooling. Many of those packages have their own tagged release lines, driver module tags, examples, integration suites, and documentation generation workflows.
 
-The [Changelog](/versions/changelog) starts with a dedicated first-party library history before the framework milestone ledger.
+The [Changelog](/versions/changelog) starts with current framework releases, followed by the first-party library history and earlier framework milestones.
 
 See [Changelog](/versions/changelog) for the detailed ledger.
 

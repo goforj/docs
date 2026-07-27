@@ -1,9 +1,10 @@
 {
   "scripts": {
     "sync:design": "node .vitepress/scripts/sync-design-css.mjs",
+    "audit:content": "node .vitepress/scripts/audit-content-value.mjs",
     "predev": "npm run sync:design",
     "dev": "vitepress dev .",
-    "prebuild": "npm run sync:design",
+    "prebuild": "npm run sync:design && npm run audit:content",
     "build": "vitepress build .",
     "preview": "vitepress preview ."
   },

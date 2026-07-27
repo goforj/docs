@@ -122,4 +122,4 @@ Optional facilities should report degraded state instead of crashing unrelated r
 ## Next Steps
 
 - [HTTP Server](/operations/http-server)
-- [Production Checklist](/operations/production-checklist)
+- [Deployment Basics](/operations/deployment-basics#production-checklist)

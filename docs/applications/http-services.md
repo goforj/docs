@@ -9,6 +9,10 @@ HTTP services in GoForj are built from generated HTTP runtime code, application 
 
 The framework owns server composition and runtime behavior. Application code owns routes, controllers, services, validation, and response decisions.
 
+::: info Web package reference
+This guide stays at the generated App integration layer. See the [web library page](/web) for standalone router setup and the complete API for contexts, routing, middleware, testing, metrics, and indexing.
+:::
+
 ## When To Use It
 
 Use HTTP services when your App exposes APIs, web endpoints, health checks, readiness probes, frontend assets, Lighthouse, Swagger, or metrics.

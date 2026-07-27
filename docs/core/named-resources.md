@@ -138,7 +138,7 @@ Avoid raw paths, raw SQL, user IDs, emails, or arbitrary payload values.
 
 ## Next Steps
 
-- [Generated Components](/core/generated-components) explains regeneration.
+- [Generated Components](/core/code-generation) explains regeneration.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains backend selection.
 - [Naming Conventions](/core/naming-conventions) defines stable resource names.
 - [Libraries](/libraries/) contains package-level resource behavior.

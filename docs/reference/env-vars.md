@@ -249,7 +249,7 @@ The default connection uses `DB_<SUFFIX>`. Named connections use `DB_<NAME>_<SUF
 | `MYSQL_MAX_OPEN_CONNECTIONS` | Driver default | Compatibility fallback for `DB_MAX_OPEN_CONNECTIONS`. Prefer the `DB_` key. |
 | `DB_CONNECTIONS`, `DB_SUPPORTED_CONNECTIONS` | Empty | Legacy comma-separated connection-name discovery used by backup commands. New Apps discover `DB_<NAME>_*` directly. |
 
-The renderer supplies usable local MySQL or Postgres connection values when those services are selected. Active driver values also accept the compatibility aliases `sqlite3`, `mariadb`, and `postgresql`; supported-driver lists and new configuration should use the canonical names above. See [Database Strategy](/data/database-strategy) and [Database Shell](/data/database-shell).
+The renderer supplies usable local MySQL or Postgres connection values when those services are selected. Active driver values also accept the compatibility aliases `sqlite3`, `mariadb`, and `postgresql`; supported-driver lists and new configuration should use the canonical names above. See [Database Strategy](/data/database-strategy) and [Database Shell](/data/database-strategy#database-shell).
 
 ## Shared Redis and NATS
 
@@ -572,6 +572,6 @@ These controls exist only when the demo monitoring and Lighthouse benchmark surf
 
 - [Configuration](/getting-started/configuration)
 - [Driver Selection](/data/driver-selection)
-- [Generated Components](/core/generated-components)
+- [Generated Components](/core/code-generation)
 - [Named Resources](/core/named-resources)
 - [Production Hardening](/security/production-hardening)

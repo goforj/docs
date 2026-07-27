@@ -7,32 +7,20 @@ description: Run, observe, inspect, and deploy GoForj applications with explicit
 
 Operations explains how GoForj applications run outside the happy path.
 
-Use these pages when you need to run, split, observe, deploy, or troubleshoot an App in local and production environments.
+Use these guides when you need to run, split, observe, deploy, or recover an App.
 
-## Recommended Path
+## Choose an Operational Task
 
-1. [Runtime Processes](/operations/runtime-processes) explains App process shapes.
-2. [Standalone versus Distributed](/operations/standalone-vs-distributed) explains topology choices.
-3. [Health and Readiness](/operations/health-readiness) explains probes and diagnostics.
-4. [Logging](/operations/logging), [Metrics](/operations/metrics), and [Inspects](/operations/inspects) explain runtime visibility.
-5. [Backup and Restore](/operations/backups) covers durable App data and recovery.
-6. [Production Checklist](/operations/production-checklist) collects deployment checks.
-
-## All Operations Pages
-
-- [Deployment Basics](/operations/deployment-basics)
-- [Runtime Processes](/operations/runtime-processes)
-- [HTTP Server](/operations/http-server)
-- [Queue Workers](/operations/queue-workers)
-- [Scheduler Processes](/operations/scheduler-processes)
-- [Health and Readiness](/operations/health-readiness)
-- [Logging](/operations/logging)
-- [Metrics](/operations/metrics)
-- [Inspects](/operations/inspects)
-- [Lighthouse](/operations/lighthouse)
-- [Backup and Restore](/operations/backups)
-- [Standalone versus Distributed](/operations/standalone-vs-distributed)
-- [Production Checklist](/operations/production-checklist)
+| Task | Read |
+| --- | --- |
+| Choose combined or split processes and understand shutdown | [Runtime Processes](/operations/runtime-processes) |
+| Operate the HTTP runtime | [HTTP Server](/operations/http-server) |
+| Run background work | [Queue Workers](/operations/queue-workers) or [Scheduler Processes](/operations/scheduler-processes) |
+| Configure probes | [Health and Readiness](/operations/health-readiness) |
+| Investigate runtime behavior | [Logging](/operations/logging), [Metrics](/operations/metrics), and [Inspects](/operations/inspects) |
+| Use the operator interface | [Lighthouse](/operations/lighthouse) |
+| Protect and recover durable state | [Backup and Restore](/operations/backups) |
+| Build, roll out, verify, and roll back a release | [Deployment Basics](/operations/deployment-basics) |
 
 ## Related Sections
 

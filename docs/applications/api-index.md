@@ -1,13 +1,13 @@
 ---
-title: API Index
-description: How GoForj discovers and safely publishes App-scoped HTTP API metadata.
+title: API Index and OpenAPI
+description: Discover, publish, and serve an App-scoped HTTP contract and its OpenAPI projection.
 ---
 
-# API Index
+# API Index and OpenAPI
 
-The API Index is the source-derived contract for one App's HTTP surface.
+The API Index is the source-derived contract for one App's HTTP surface. OpenAPI is a projection of that contract, not a separate source of truth.
 
-It records discovered operations, handler identities, middleware, request inputs, response outputs, typed schemas, human-authored metadata, and deterministic diagnostics. GoForj projects that contract into OpenAPI output.
+The index records discovered operations, handler identities, middleware, request inputs, response outputs, typed schemas, human-authored metadata, and deterministic diagnostics. GoForj projects it into an OpenAPI 3.0.3 document that the generated HTTP runtime can serve through a version-pinned Scalar API reference.
 
 ## Generate the Contract
 
@@ -50,7 +50,7 @@ build/marketplace/api_index.diagnostics.json
 build/marketplace/openapi.json
 ```
 
-Manifest version 2 keeps operations, typed schemas, metadata, and diagnostics in one canonical API index.
+Manifest version 2 keeps operations, typed schemas, metadata, and diagnostics in one canonical API index. `openapi.json` is regenerated from that indexed contract and should not be edited independently.
 
 Apps without Web API support do not have an HTTP contract. Indexing a known CLI-only App removes stale App-scoped API artifacts instead of preserving an obsolete contract.
 
@@ -60,7 +60,7 @@ The focused command reports the selected App, whether the generation changed, an
 app marketplace, changed, 12 operations, 9 schemas, 0 diagnostics
 ```
 
-## Diagnostics and Strict Mode
+## Diagnostics and Strict CI
 
 Normal indexing publishes a valid contract when it contains warnings, and writes those warnings to the diagnostics artifact. Errors prevent publication.
 
@@ -81,6 +81,14 @@ forj run --api-index-strict
 A strict failure does not replace the last successfully published artifact set.
 
 Diagnostics include stable codes and source locations when GoForj cannot prove a route, input, response, schema, metadata, or middleware policy from source. Review `api_index.diagnostics.json` when an operation or schema is missing or less specific than expected.
+
+GoForj also includes a hidden maintainer command:
+
+```bash
+forj test:openapi
+```
+
+It validates generated OpenAPI behavior, generates a client with the framework-pinned generator image, and compiles that client. Application development and CI should use `build:api-index --strict` or `build --api-index-strict`.
 
 ## Build Tags
 
@@ -138,26 +146,60 @@ The three artifacts form one generation:
 
 This means a failed compile or process-start attempt cannot replace the last working API contract with candidate output from a broken App.
 
+## Serve OpenAPI
+
+When HTTP and Swagger support are enabled, the generated runtime serves:
+
+```text
+GET /swagger
+GET /swagger/
+GET /swagger/doc.json
+```
+
+`/swagger` and `/swagger/` serve the Scalar UI. `/swagger/doc.json` serves the active App's OpenAPI JSON:
+
+- default App: `build/openapi.json`
+- named App: `build/<app>/openapi.json`
+
+A named App never falls back to the default App document. If its artifact is missing, `/swagger/doc.json` returns a JSON `404` with the exact `forj <app> build:api-index` command needed to create it.
+
+Enable these routes with:
+
+```text
+API_SWAGGER_ENABLED=true
+```
+
+`SWAGGER_ENABLED` remains a legacy fallback. Use `OPENAPI_SPEC_PATH` only as an explicit serving override for an arbitrary document:
+
+```text
+OPENAPI_SPEC_PATH=build/contracts/public.json
+```
+
+Do not use that override merely to select a named App; the runtime already selects the document from the active App identity.
+
 ## Current Limits
 
 API indexing analyzes source. It does not execute the runtime router or record traffic.
 
-Dynamic route registration, computed status codes, indirect response construction, reflection-heavy contracts, and other behavior that is not statically visible can remain unresolved. Keep that behavior explicitly documented and tested.
+Dynamic route registration, computed status codes, indirect response construction, reflection-heavy contracts, and other behavior that is not statically visible can produce diagnostics or intentionally broad schemas. Neither the index nor its OpenAPI projection replaces runtime route, validation, authorization, or integration tests.
 
 WebSocket routes are visible to route tooling but are not projected as OpenAPI HTTP operations.
 
 ## Common Mistakes
 
 ::: warning Common mistakes
-- Do not hand-edit generated API artifacts.
+- Do not hand-edit the API index, diagnostics, or OpenAPI artifacts.
 - Do not assume API indexing replaces route or authorization tests.
+- Do not assume generated security metadata proves runtime authorization behavior.
 - Do not ignore diagnostics when generated operations are missing or unconstrained.
 - Do not index with different build tags than the binary.
+- Do not set `OPENAPI_SPEC_PATH` just to serve a named App's normal artifact.
+- Do not expose the API reference where deployment policy disables it.
 :::
 
 ## Next Steps
 
-- [OpenAPI](/applications/openapi)
 - [Routes](/applications/routes)
+- [HTTP Services](/applications/http-services)
 - [Generated Files](/reference/generated-files)
 - [Web](/web)
