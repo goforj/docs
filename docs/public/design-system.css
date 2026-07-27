@@ -176,22 +176,115 @@
     border-radius: 6px 0 0 6px !important;
 }
 
+/* ============================================================
+   TEMPER — Mermaid diagrams
+   ------------------------------------------------------------
+   A diagram is a fenced block sitting in prose, exactly like a
+   code block, so it takes the SAME well: code background, code
+   border, code radius. Nodes then sit LIFTED on --gf-surface
+   above it, which gives the same three-step ladder the code
+   blocks use — page ground, recessed well, lifted content.
+
+   Why this is CSS and not just mermaid themeVariables: mermaid
+   injects its own <style> into each SVG and several of its
+   flowchart colours come from `mainBkg` / `nodeBorder` /
+   `nodeTextColor` rather than the `primary*` variables, so the
+   config in theme/index.js was only landing `lineColor` — nodes
+   were still rendering on mermaid's stock dark #1F2020 with
+   #CCC borders and text. On top of that, mermaid.initialize()
+   runs once per session, so JS values cannot follow a light/dark
+   toggle. Driving it from var(--gf-*) here fixes both: it tracks
+   the tokens and it flips with the theme.
+
+   Colour role: connectors and node borders take NAVIGATION gold.
+   A diagram is structure, not an action, so nothing is filled
+   with the accent.
+   ============================================================ */
 .vp-doc .gf-mermaid {
     margin: 22px 0;
     padding: 14px;
     overflow: auto;
     max-height: 460px;
-    border: 1px solid rgba(166, 156, 176, 0.18);
-    border-radius: 8px;
-    background:
-        linear-gradient(180deg, rgba(34, 27, 42, 0.78), rgba(28, 21, 36, 0.62));
+    border: 1px solid var(--gf-code-border);
+    border-radius: var(--gf-code-radius);
+    background: var(--gf-code-bg);
     white-space: pre;
+}
+
+/* Nodes: lifted surface, strong hairline, Temper radius. */
+.vp-doc .gf-mermaid svg .node rect.basic,
+.vp-doc .gf-mermaid svg .node rect.label-container,
+.vp-doc .gf-mermaid svg .node polygon,
+.vp-doc .gf-mermaid svg .node circle {
+    fill: var(--gf-surface) !important;
+    stroke: var(--gf-line-strong) !important;
+    stroke-width: 1px !important;
+    rx: 6px;
+    ry: 6px;
+}
+.vp-doc .gf-mermaid svg .nodeLabel,
+.vp-doc .gf-mermaid svg .nodeLabel p,
+.vp-doc .gf-mermaid svg .node text {
+    color: var(--gf-ink) !important;
+    fill: var(--gf-ink) !important;
+    font-family: var(--gf-font-body) !important;
+}
+
+/* Connectors and arrowheads: navigation gold. */
+.vp-doc .gf-mermaid svg .flowchart-link,
+.vp-doc .gf-mermaid svg .edgePath path {
+    stroke: var(--gf-nav) !important;
+    stroke-width: 1.25px !important;
+}
+.vp-doc .gf-mermaid svg marker path,
+.vp-doc .gf-mermaid svg .arrowMarkerPath {
+    fill: var(--gf-nav) !important;
+    stroke: var(--gf-nav) !important;
+}
+
+/* Edge labels sit on the well, not on a stock white plate. */
+.vp-doc .gf-mermaid svg .edgeLabel,
+.vp-doc .gf-mermaid svg .edgeLabel p {
+    color: var(--gf-ink-2) !important;
+    background: var(--gf-code-chrome) !important;
+    font-family: var(--gf-font-body) !important;
+}
+.vp-doc .gf-mermaid svg .edgeLabel rect,
+.vp-doc .gf-mermaid svg .edgeLabel .background {
+    fill: var(--gf-code-chrome) !important;
+    opacity: 1 !important;
+}
+
+/* Subgraph containers: the middle plane, quieter than a node. */
+.vp-doc .gf-mermaid svg .cluster rect {
+    fill: var(--gf-ground-alt) !important;
+    stroke: var(--gf-line) !important;
+    rx: 8px;
+    ry: 8px;
+}
+.vp-doc .gf-mermaid svg .cluster-label,
+.vp-doc .gf-mermaid svg .cluster-label p {
+    color: var(--gf-ink-2) !important;
+}
+
+/* Nothing in Temper carries simulated lighting — mermaid attaches
+   feDropShadow filters to nodes and clusters by default. */
+.vp-doc .gf-mermaid svg .node,
+.vp-doc .gf-mermaid svg .cluster,
+.vp-doc .gf-mermaid svg .node rect,
+.vp-doc .gf-mermaid svg .cluster rect {
+    filter: none !important;
 }
 
 .vp-doc .gf-mermaid svg {
     display: block;
     width: auto !important;
-    max-width: min(100%, 720px);
+    /* Was capped at 720px. The reading column is ~732px inside the
+       well, so anything wider than the cap got scaled down — which
+       silently shrinks the label text below the size mermaid laid
+       it out at, undoing the point of setting fontSize. Let it use
+       the column it has. */
+    max-width: 100%;
     max-height: 420px;
     height: auto !important;
     margin: 0 auto;
@@ -4681,7 +4774,7 @@ body:has(.gf-home) {
         inset 0 1px 0 rgba(0, 0, 0, 0.45),
         0 8px 24px rgba(0, 0, 0, 0.22);
     --gf-code-overlay: none;
-    --gf-code-lang: var(--gf-ink-3);
+    --gf-code-lang: var(--gf-ink-2);
     --gf-code-line-gutter-bg: rgba(255, 255, 255, 0.014);
     --gf-code-line-gutter-border: rgba(255, 255, 255, 0.05);
 }
@@ -5101,7 +5194,7 @@ html:not(.dark) {
     --gf-code-shadow:
         inset 0 2px 5px -3px rgba(20, 10, 30, 0.16),
         inset 0 1px 0 rgba(20, 10, 30, 0.06);
-    --gf-code-lang: var(--gf-ink-3);
+    --gf-code-lang: var(--gf-ink-2);
     --gf-code-line-gutter-bg: rgba(20, 10, 30, 0.018);
     --gf-code-line-gutter-border: rgba(20, 10, 30, 0.07);
 
@@ -5369,6 +5462,13 @@ html.dark {
 .VPDoc.has-sidebar .vp-doc h2 {
     padding-bottom: 9px;
     margin-top: 44px;
+    /* VitePress ships h2 as `border-top: 1px solid` + `padding-top: 24px`,
+       where the padding exists for one reason: to hold the heading text off
+       its own top rule. We removed that border above and redrew the rule as
+       a border-BOTTOM, but the 24px stayed behind — so every h2 carried 68px
+       of space above it (44 margin + 24 padding) and 24 of it was clearing a
+       line that is no longer there. margin-top is now the only knob. */
+    padding-top: 0;
     border-bottom: 1px solid;
     border-image: linear-gradient(90deg, var(--gf-line-strong), transparent) 1;
 }
@@ -6325,4 +6425,322 @@ body,
 }
 @media (max-width: 640px) {
     .gf-starter-pillars { grid-template-columns: 1fr; }
+}
+
+/* --- Anchor vertical alignment ---------------------------
+   VitePress absolutely positions .header-anchor at a hardcoded
+   `top: 24px`, which is calibrated for its own default heading
+   size and line-height. Temper changed the display face, the
+   line-height and added padding-bottom for the section rule, so
+   24px stopped meaning "the first text line" and started
+   meaning "somewhere near the bottom border".
+
+   Anchoring to top:0 with the heading's own line-height instead,
+   so it aligns with the first line at every level and stays
+   aligned if the type scale moves again. */
+.VPDoc .vp-doc h1 > .header-anchor,
+.VPDoc .vp-doc h2 > .header-anchor,
+.VPDoc .vp-doc h3 > .header-anchor,
+.VPDoc .vp-doc h4 > .header-anchor,
+.VPDoc .vp-doc h5 > .header-anchor,
+.VPDoc .vp-doc h6 > .header-anchor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: -0.87em;
+    line-height: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: normal;
+}
+.VPDoc .vp-doc h1,
+.VPDoc .vp-doc h2,
+.VPDoc .vp-doc h3,
+.VPDoc .vp-doc h4,
+.VPDoc .vp-doc h5,
+.VPDoc .vp-doc h6 { position: relative; }
+
+/* ============================================================
+   TEMPER — blog imagery
+   ------------------------------------------------------------
+   The previous art was three floating rounded squares and a grey
+   slab on a 38px perspective grid. Three problems, two of them
+   rules violations we have already enforced elsewhere:
+
+     1. One block was rgba(125,222,169) — the TIP green. A
+        decorative shape wearing a status colour, exactly the
+        fault corrected on the starter kit cards.
+     2. The perspective grid is the same schematic texture
+        removed from .VPDoc::before. A grid says "blueprint";
+        Temper's premise is heat.
+     3. The slab's highlight was rgba(255,255,255,.22) — a cool
+        white specular on a warm system.
+
+   Rebuilt from the system's own material. The composition is
+   the PLANE STACK: four plates at the real ground / column /
+   surface tokens, seen edge-on, with the accent reading as heat
+   in the gaps between them rather than as paint on top.
+
+   So the blog art is a picture of the thing the design system
+   is actually about — layers, and the temperature between them.
+   No status colours, no grid, no cool highlights.
+   ============================================================ */
+.gf-blog-visual {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    min-height: 460px;
+    background:
+        /* the forge: heat from below and behind the stack */
+        radial-gradient(60% 40% at 26% 108%, rgba(255, 94, 58, 0.42), transparent 68%),
+        radial-gradient(46% 30% at 72% 96%, rgba(255, 194, 77, 0.16), transparent 70%),
+        radial-gradient(80% 60% at 50% 120%, rgba(255, 94, 58, 0.14), transparent 72%),
+        linear-gradient(180deg, var(--gf-ground-deep) 0%, #150F14 58%, #1C1016 100%);
+}
+
+/* The temper scale. These are the oxide colours steel actually
+   passes through as it is tempered — straw, bronze, ember,
+   violet — which is where the direction takes its name. A thin
+   band of it sits along the top edge as a signature. */
+.gf-blog-visual__grid {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    transform: none;
+    opacity: 0.9;
+    mask-image: linear-gradient(90deg, transparent, black 12%, black 74%, transparent);
+    background-image: linear-gradient(90deg,
+        #FFC24D 0%, #FF9A4D 22%, #FF5E3A 46%, #C4452B 68%, #5A3350 86%, #2A2333 100%);
+    background-size: auto;
+}
+
+/* Plates. Each is a real plane token, stacked and offset so the
+   ember shows in the gaps. */
+.gf-blog-visual__slab,
+.gf-blog-visual__block {
+    position: absolute;
+    display: block;
+    border-radius: var(--gf-radius);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 160, 120, 0.10);
+    transform: rotate(-9deg) skewX(-11deg);
+}
+.gf-blog-visual__slab {
+    right: 8%; bottom: 14%;
+    width: min(62%, 600px); height: 128px;
+    background: var(--gf-surface-2);
+}
+.gf-blog-visual__block {
+    right: 18%; bottom: 30%;
+    width: min(52%, 500px); height: 104px;
+    background: var(--gf-surface);
+}
+.gf-blog-visual__block--b {
+    right: 26%; bottom: 44%;
+    width: min(43%, 420px); height: 88px;
+    background: var(--gf-ground);
+}
+.gf-blog-visual__block--c {
+    right: 33%; bottom: 57%;
+    width: min(34%, 340px); height: 74px;
+    background: var(--gf-ground-deep);
+    border-color: rgba(255, 160, 120, 0.14);
+}
+
+/* The heat line — the accent, doing what the accent does: a
+   filled mark, once, where the eye should land. */
+.gf-blog-visual__line {
+    position: absolute;
+    display: block;
+    height: 2px;
+    border: 0;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--gf-accent), transparent);
+    box-shadow: 0 0 18px 2px rgba(255, 94, 58, 0.45);
+    transform: rotate(-9deg);
+}
+.gf-blog-visual__line--a { right: 21%; bottom: 41%; width: 34%; opacity: 0.85; }
+.gf-blog-visual__line--b { right: 30%; bottom: 54.5%; width: 26%; opacity: 0.55; }
+
+/* Post header variant keeps the frame but sits shorter. */
+.gf-blog-visual--post {
+    min-height: clamp(200px, 26vw, 300px);
+    margin-top: 24px;
+    margin-bottom: 34px;
+    border: 1px solid var(--gf-line);
+    border-radius: var(--gf-radius-lg);
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+}
+
+/* Per-card variation without introducing a single new colour:
+   move the forge, and the whole composition re-lights. */
+.gf-blog-card:nth-child(3n+2) .gf-blog-visual,
+.gf-blog-feature-card:nth-child(3n+2) .gf-blog-visual {
+    background-position: 30% 0, -20% 0, 0 0, 0 0;
+    filter: hue-rotate(-6deg);
+}
+.gf-blog-card:nth-child(3n+3) .gf-blog-visual,
+.gf-blog-feature-card:nth-child(3n+3) .gf-blog-visual {
+    background-position: -25% 0, 25% 0, 0 0, 0 0;
+    filter: hue-rotate(6deg);
+}
+
+/* --- Info callout title ----------------------------------
+   Found while reviewing the design system page against its own
+   rules. Info callouts were given a gold RULE (correct — a line
+   is fine) and a gold TITLE (not correct — a title is a label,
+   and gold means "this takes you somewhere").
+
+   Status callout titles keep their colours, because for tip,
+   warning and danger the colour IS the meaning. Info is not a
+   status level, so its title is ink. */
+.VPDoc .vp-doc .custom-block.info .custom-block-title {
+    color: var(--gf-ink);
+}
+
+/* --- ink-3 used where AA applies -------------------------
+   Surfaced by auditing the design system page against its own
+   rules, then confirmed on the live site. Three labels were on
+   --gf-ink-3 (#746C80):
+
+     sidebar group label   10px      3.94:1
+     TOC heading           10px      3.56:1
+     code language label   12.5px    3.56:1
+
+   The colour page states ink-3 sits in AA-large and "should not
+   be used for content". None of these are large enough for the
+   AA-large exemption — that needs 18.66px bold or 24px — so all
+   three simply fail. Group labels and the TOC heading are
+   wayfinding, which is content by any reading.
+
+   ink-2 keeps them quiet while clearing AA. The visual weight
+   barely moves; these are uppercase 10px kickers either way. */
+.VPSidebarItem.level-0 > .item > .text,
+.VPSidebarItem.is-group > .item > .text,
+.VPDocAsideOutline .outline-title,
+.vp-doc div[class*='language-'] .lang {
+    color: var(--gf-ink-2);
+}
+
+/* --- Code language label ---------------------------------
+   Last AA failure on the site. Two causes compounding: the
+   colour, and an `opacity: 0.75` I added to make it recede —
+   which multiplies against the background and drops the
+   rendered ratio below what the computed colour suggests.
+
+   Opacity is the wrong tool for "quiet" when the result has to
+   clear a contrast floor, because it moves the rendered colour
+   somewhere no token accounts for. Let the token carry it. */
+.vp-doc div[class*='language-'] .lang {
+    color: var(--gf-ink-2);
+    opacity: 1;
+}
+.vp-doc div[class*='language-']:hover .lang {
+    color: var(--gf-ink);
+    opacity: 1;
+}
+
+/* The .lang colour is applied with !important further up, so the variable is
+   the real control — overriding the element was never going to take. Same
+   shape as --gf-code-radius earlier: when a value is declared !important
+   through a token, edit the token. */
+
+/* ============================================================
+   TEMPER — focus
+   ------------------------------------------------------------
+   Every focusable element on the site computed to
+   `outline-style: none` — links, sidebar items, the copy button,
+   search. Keyboard users had no visible focus indicator at all.
+
+   That is WCAG 2.4.7 Focus Visible, a Level AA criterion, and it
+   is the most serious accessibility defect found in this work.
+   It came from the base theme's reset rather than from anything
+   deliberate, which is exactly why it survived: nobody chose it,
+   so nobody reviewed it.
+
+   THE RING. Focus is not action and not navigation — it is
+   system feedback about where you are. It uses the accent
+   because "you are about to act here" is the closest of the
+   three roles, and because at 2px on any Temper ground it
+   clears the 3:1 non-text contrast floor (WCAG 1.4.11) with
+   room to spare.
+
+   :focus-visible rather than :focus, so pointer users never see
+   it and keyboard users always do. Offset by 2px so it reads as
+   a ring around the element rather than a border on it — a
+   border would collide with the four-role form rule.
+   ============================================================ */
+:focus-visible {
+    outline: 2px solid var(--gf-accent);
+    outline-offset: 2px;
+    border-radius: var(--gf-radius-sm);
+}
+/* Elements that already own a radius keep their own shape. */
+.VPButton:focus-visible,
+.vp-doc div[class*='language-'] .copy:focus-visible,
+.VPSidebarItem .link:focus-visible,
+.pager-link:focus-visible,
+.vp-doc a:focus-visible,
+.VPNavBarMenuLink:focus-visible,
+.gf-hero-btn:focus-visible,
+.gf-starter-actions a:focus-visible {
+    outline: 2px solid var(--gf-accent);
+    outline-offset: 2px;
+    border-radius: inherit;
+}
+/* Inside the code well the ground is darker, so the ring gets a
+   touch more room to stay legible against the syntax colours. */
+.vp-doc div[class*='language-'] :focus-visible {
+    outline-offset: 3px;
+}
+/* Never suppress it. If a component needs a different shape, it
+   changes the shape — not the visibility. */
+*:focus-visible {
+    outline-style: solid;
+}
+
+/* --- Code chrome labels, pre-emptively --------------------
+   The design system's specimens exposed two more ink-3 labels
+   that fail AA at their size. Neither appears on the pages
+   sampled so far — code groups and line numbers are used
+   sparsely — but they will the moment someone writes one, and
+   the specimen was documenting the failing value.
+
+   Fixed here rather than waiting for the page that reveals it. */
+.vp-doc .vp-code-group .tabs label,
+.vp-doc .line-numbers-wrapper {
+    color: var(--gf-ink-2);
+}
+
+/* The hero install prompt's COPY divider label — same ink-3-at-9px problem
+   as the rest, found via the design system specimen. */
+.gf-hero-install__state { color: var(--gf-ink-2); }
+
+/* ============================================================
+   TEMPER — product surface tokens
+   ------------------------------------------------------------
+   The docs planes are a READING accommodation, not defaults. An
+   app has no single reading column — almost every surface is a
+   working surface — so applying "content lifts" to all of them
+   lifts everything and the interface goes mid-grey.
+
+   An app also needs a deeper ladder than docs: chrome, panel,
+   row, hover, popover, dialog, plus inputs and data wells going
+   the other way. Starting that ladder at the lifted ground
+   (L* 8.1) exhausts the range by the third step. Starting at
+   the deep ground leaves the whole range available.
+
+   Derived from --gf-ground-deep multiplicatively, so the violet
+   hue survives at every step.
+   ============================================================ */
+:root {
+    --gf-app-well:     #050506;   /* L*  1.4  logs, terminal, code, diffs  */
+    --gf-app-input:    #09080A;   /* L*  2.3  fields — recessed            */
+    --gf-app-chrome:   #0C0A0E;   /* L*  2.9  window, sidebar, title bar   */
+    --gf-app-panel:    #16121A;   /* L*  6.1  panels, cards, rows          */
+    --gf-app-hover:    #1B1620;   /* L*  8.2  row hover                    */
+    --gf-app-raised:   #1F1A24;   /* L* 10.2  popover, menu, dropdown      */
+    --gf-app-overlay:  #241E29;   /* L* 12.4  dialog, sheet                */
 }

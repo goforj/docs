@@ -6717,3 +6717,30 @@ body,
 /* The hero install prompt's COPY divider label — same ink-3-at-9px problem
    as the rest, found via the design system specimen. */
 .gf-hero-install__state { color: var(--gf-ink-2); }
+
+/* ============================================================
+   TEMPER — product surface tokens
+   ------------------------------------------------------------
+   The docs planes are a READING accommodation, not defaults. An
+   app has no single reading column — almost every surface is a
+   working surface — so applying "content lifts" to all of them
+   lifts everything and the interface goes mid-grey.
+
+   An app also needs a deeper ladder than docs: chrome, panel,
+   row, hover, popover, dialog, plus inputs and data wells going
+   the other way. Starting that ladder at the lifted ground
+   (L* 8.1) exhausts the range by the third step. Starting at
+   the deep ground leaves the whole range available.
+
+   Derived from --gf-ground-deep multiplicatively, so the violet
+   hue survives at every step.
+   ============================================================ */
+:root {
+    --gf-app-well:     #050506;   /* L*  1.4  logs, terminal, code, diffs  */
+    --gf-app-input:    #09080A;   /* L*  2.3  fields — recessed            */
+    --gf-app-chrome:   #0C0A0E;   /* L*  2.9  window, sidebar, title bar   */
+    --gf-app-panel:    #16121A;   /* L*  6.1  panels, cards, rows          */
+    --gf-app-hover:    #1B1620;   /* L*  8.2  row hover                    */
+    --gf-app-raised:   #1F1A24;   /* L* 10.2  popover, menu, dropdown      */
+    --gf-app-overlay:  #241E29;   /* L* 12.4  dialog, sheet                */
+}

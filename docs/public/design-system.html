@@ -528,6 +528,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     <a href="#space">Space</a>
     <a href="#motion">Motion</a>
     <a href="#stress">Stress</a>
+    <a href="#product">Product</a>
   </nav>
 </header>
 
@@ -1788,6 +1789,108 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <p class="why">One action, filled. Empty states are where systems reach for illustration and end up inventing colour.</p>
     </figure>
   </div>
+</section>
+
+<section class="ds-sec" id="product">
+  <p class="ds-kicker">Product surfaces</p>
+  <h2>Apps start from the <em>deep ground</em></h2>
+
+  <div class="ds-note warn">
+    <b>The docs planes are not the defaults</b>
+    <p>
+      <code>--gf-ground</code> does not mean “the background”. It means
+      <em>the surface long-form content is read on</em>, and the lift exists for
+      one reason: a single column of prose, read for minutes, where near-black
+      halates under white body text. That is a reading accommodation.
+    </p>
+    <p style="margin-top:9px">
+      An app has no single reading column — almost every surface is a working
+      surface. Apply “content lifts” to all of them and you lift everything,
+      and the interface goes mid-grey. This section exists because the system
+      previously documented only the marketing and docs cases, so anyone
+      building product would reasonably assume the docs values were defaults.
+    </p>
+  </div>
+
+  <h3>Why the docs ladder breaks</h3>
+  <p>
+    <strong>It runs out of headroom.</strong> Docs need three planes. An app
+    needs eight — chrome, panel, row, hover, popover, dialog, plus inputs and
+    data wells going the other way. Start at L* 8.1 and by the third nested
+    step you are at L* 25 and everything is the same grey. Start at L* 2.9 and
+    the whole range is available.
+  </p>
+  <p>
+    <strong>Data surfaces invert.</strong> Log output, terminal, code and diffs
+    are the densest content in an app and they are <em>wells</em> — the darkest
+    thing in the window, not the brightest. A log panel rendered lighter than
+    its surroundings is the same mistake as a code block styled as a card.
+  </p>
+
+  <h3>The ladder</h3>
+  <div data-planes='["--gf-app-chrome",[
+    ["Data well · logs, terminal, code","--gf-app-well"],
+    ["Input / field","--gf-app-input"],
+    ["Window chrome, sidebar","--gf-app-chrome"],
+    ["Panel / card / row","--gf-app-panel"],
+    ["Row hover","--gf-app-hover"],
+    ["Popover / menu","--gf-app-raised"],
+    ["Dialog / sheet","--gf-app-overlay"]]]'></div>
+  <p>
+    Every value is derived multiplicatively from <code>--gf-ground-deep</code>,
+    so the violet neutral survives at each step rather than drifting toward
+    grey. Selection uses <code>--gf-nav-soft</code> over the panel, exactly as
+    the sidebar does — a wash plus a gold rule, not a lighter plate.
+  </p>
+
+  <h3>Docs values in an app</h3>
+  <div class="pair">
+    <div class="no">
+      <div class="lbl">✕ Docs ladder, applied to product</div>
+      <div class="body" style="padding:0">
+        <div style="background:#1A1620;padding:12px">
+          <div style="background:#2C2734;border:1px solid #3D3349;border-radius:8px;padding:10px;margin-bottom:8px">
+            <div style="font-size:11.5px;color:var(--gf-ink);margin-bottom:6px">Panel</div>
+            <div style="background:#332B3C;border-radius:6px;padding:8px;font-family:var(--gf-font-mono);font-size:10.5px;color:var(--gf-ink-2)">log output — lighter than the panel</div>
+          </div>
+          <div style="background:#2C2734;border:1px solid #3D3349;border-radius:8px;padding:8px;font-size:11px;color:var(--gf-ink-2)">Another panel</div>
+        </div>
+      </div>
+      <p class="why">Everything lifted, the ladder exhausted by the third step, and the log — the densest content — is the brightest thing in view.</p>
+    </div>
+    <div class="yes">
+      <div class="lbl">✓ Product ladder</div>
+      <div class="body" style="padding:0">
+        <div style="background:var(--gf-app-chrome);padding:12px">
+          <div style="background:var(--gf-app-panel);border:1px solid var(--gf-line);border-radius:8px;padding:10px;margin-bottom:8px">
+            <div style="font-size:11.5px;color:var(--gf-ink);margin-bottom:6px">Panel</div>
+            <div style="background:var(--gf-app-well);border:1px solid var(--gf-line);border-radius:6px;padding:8px;font-family:var(--gf-font-mono);font-size:10.5px;color:#E4DDE8;box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.8)">log output — a well</div>
+          </div>
+          <div style="background:var(--gf-app-panel);border:1px solid var(--gf-line);border-radius:8px;padding:8px;font-size:11px;color:var(--gf-ink-2)">Another panel</div>
+        </div>
+      </div>
+      <p class="why">Chrome on the deep ground, panels a modest step up, the log cut back down below everything. Room left for hover, popover and dialog above.</p>
+    </div>
+  </div>
+
+  <h3>The rule, for handing to someone</h3>
+  <div class="ds-note">
+    <b>Product surfaces</b>
+    <p>
+      Start from <code>--gf-ground-deep</code>, not <code>--gf-ground</code>.
+      Chrome and sidebar sit on the deep ground. Panels step up 3–5 L*. Data
+      surfaces — logs, terminal, code, diffs — step <em>down</em> below the
+      panel containing them. Selection is a gold rule plus
+      <code>--gf-nav-soft</code>, never a lighter plate. The lifted ground is
+      documentation-only.
+    </p>
+  </div>
+  <p>
+    One more thing worth checking in any product build: the neutral ramp must be
+    the violet one at hue ~270. A generic dark-grey or blue-grey palette will
+    read as foreign next to the landing page even when the lightness is right —
+    and lightness is usually what gets debugged, so the hue survives unnoticed.
+  </p>
 </section>
 
 <section class="ds-sec">
