@@ -25,7 +25,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Shape JSON responses and errors. [Responses and Errors](/applications/responses-errors)
 - Add middleware to a route or group. [Middleware](/applications/middleware)
 - See every route the App serves: `forj route:list`. [Routes](/applications/routes)
-- Serve Swagger and OpenAPI. [OpenAPI](/applications/openapi)
+- Serve Swagger and OpenAPI. [OpenAPI](/applications/api-index#serve-openapi)
 - Call an external API with a typed client. [HTTP Clients](/applications/http-clients)
 - Add health and readiness checks. [Health and Readiness](/operations/health-readiness)
 
@@ -51,17 +51,17 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Add locks, counters, or rate limits. [Cache Patterns](/data/cache-patterns)
 - Accept file uploads. [File Upload Storage](/scenarios/file-upload-storage)
 - Add a named storage disk. [Storage Patterns](/data/storage-patterns)
-- Query the database from a shell: `forj db`. [Database Shell](/data/database-shell)
+- Query the database from a shell: `forj db`. [Database Shell](/data/database-strategy#database-shell)
 
 ## CLI and Wiring
 
 - Add a CLI command. [Commands](/applications/commands)
 - Keep business logic out of controllers. [Services](/applications/services)
-- Provide a new dependency. [Dependency Injection](/core/dependency-injection) and [Providers](/core/providers)
+- Provide a new dependency. [Dependency Injection](/core/dependency-injection) and [Providers](/core/dependency-injection#providers)
 - Copy a known-good wiring shape. [Wiring Recipes](/core/wiring-recipes)
 - Decode a Wire build failure. [Reading Wire Errors](/core/reading-wire-errors)
 - See every generator, or undo one with `--remove`. [Make Commands](/core/make-commands)
-- Keep a feature's files together. [Organizing Generated Code](/core/organizing-generated-code)
+- Keep a feature's files together. [Organizing Generated Code](/core/make-commands#organize-by-package-ownership)
 - Name things the way the framework expects. [Naming Conventions](/core/naming-conventions)
 
 ## Email and Security
@@ -72,7 +72,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 
 ## Operations
 
-- Run everything as one process. [Standalone versus Distributed](/operations/standalone-vs-distributed)
+- Run everything as one process. [Standalone versus Distributed](/operations/runtime-processes#standalone-versus-distributed)
 - Split into separate processes for scale. [Runtime Processes](/operations/runtime-processes)
 - Expose Prometheus metrics. [Metrics](/operations/metrics)
 - See what a request, job, or schedule run actually did. [Inspects](/operations/inspects)
@@ -81,11 +81,11 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Back up and restore durable App data. [Backup and Restore](/operations/backups)
 - Keep workers healthy in production. [Queue Workers](/operations/queue-workers)
 - Ship a binary to a server. [Deployment Basics](/operations/deployment-basics)
-- Check readiness before launch. [Production Checklist](/operations/production-checklist)
+- Check readiness before launch. [Production Checklist](/operations/deployment-basics#production-checklist)
 
 ## Testing
 
-- Decide what kind of test to write. [Testing Overview](/testing/overview)
+- Decide what kind of test to write. [Testing Overview](/testing/#choose-a-test-layer)
 - Test a route without starting a browser. [HTTP Tests](/testing/http-tests)
 - Test jobs and queues. [Job and Queue Tests](/testing/job-queue-tests)
 - Test event publish and subscribe. [Event Tests](/testing/event-tests)

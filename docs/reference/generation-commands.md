@@ -134,6 +134,6 @@ Use `forj build` when unsure.
 ## Related Pages
 
 - [Code Generation](/core/code-generation)
-- [Generated Components](/core/generated-components)
+- [Generated Components](/core/code-generation)
 - [Make Commands](/core/make-commands)
 - [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests)

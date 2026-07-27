@@ -7,7 +7,7 @@ description: Practical provider examples for typed configuration, required adapt
 
 Provider functions are normal Go constructors.
 
-Use these patterns after the basic [Providers](/core/providers) and [Dependency Injection](/core/dependency-injection) model is clear. The goal is explicit construction: providers return the domain values the App actually needs, configuration is resolved near the App boundary, required dependencies fail early, and optional behavior is modeled directly.
+Use these patterns after the basic [Providers](/core/dependency-injection#providers) and [Dependency Injection](/core/dependency-injection) model is clear. The goal is explicit construction: providers return the domain values the App actually needs, configuration is resolved near the App boundary, required dependencies fail early, and optional behavior is modeled directly.
 
 ## Provide the Usable Value
 
@@ -183,37 +183,67 @@ This is useful when a package has a small configuration surface shared by severa
 When an App talks to multiple services, give each integration its own domain adapter. Avoid injecting several raw values of the same type, such as multiple `*httpx.Client` values, into the graph.
 
 ```go
+// internal/billing/gateway.go
 package billing
 
+import "github.com/goforj/httpx/v2"
+
+// Gateway adapts the billing service for application code.
 type Gateway struct {
 	http *httpx.Client
 }
 
-func ProvideGateway(cfg Config) (*Gateway, error) {
-	// build the billing gateway
+// ProvideGateway constructs the billing adapter from billing configuration.
+func ProvideGateway() (*Gateway, error) {
+	cfg := loadGatewayConfig()
+	client := httpx.New(
+		httpx.BaseURL(cfg.BaseURL),
+		httpx.Timeout(cfg.Timeout),
+	)
+	return &Gateway{http: client}, nil
 }
 ```
 
 ```go
+// internal/search/indexer.go
 package search
 
+import "github.com/goforj/httpx/v2"
+
+// Indexer adapts the search service for application code.
 type Indexer struct {
 	http *httpx.Client
 }
 
-func ProvideIndexer(cfg Config) (*Indexer, error) {
-	// build the search indexer
+// ProvideIndexer constructs the search adapter from search configuration.
+func ProvideIndexer() (*Indexer, error) {
+	cfg := loadIndexerConfig()
+	client := httpx.New(
+		httpx.BaseURL(cfg.BaseURL),
+		httpx.Timeout(cfg.Timeout),
+	)
+	return &Indexer{http: client}, nil
 }
 ```
 
 The package and type names make the graph readable:
 
 ```go
+// internal/checkout/service.go
+package checkout
+
+import (
+	"myapp/internal/billing"
+	"myapp/internal/search"
+)
+
+// Service coordinates checkout through domain-specific integrations.
 type Service struct {
 	billing *billing.Gateway
 	search  *search.Indexer
 }
 
+// NewService constructs a checkout service from its required integrations.
 func NewService(billing *billing.Gateway, search *search.Indexer) *Service {
 	return &Service{
 		billing: billing,
@@ -222,7 +252,41 @@ func NewService(billing *billing.Gateway, search *search.Indexer) *Service {
 }
 ```
 
-This also gives each adapter a natural place for service-specific methods, retry policy, headers, dumps, and test doubles.
+`checkout` imports the packages that own the adapters. Register the two providers and the consumer constructor in the App-local Wire set:
+
+```go
+// app/wire/inject_services_app.go
+package wire
+
+import (
+	"github.com/google/wire"
+
+	"myapp/internal/billing"
+	"myapp/internal/checkout"
+	"myapp/internal/search"
+)
+
+var appServiceSet = wire.NewSet(
+	// existing App service providers...
+	billing.ProvideGateway,
+	search.ProvideIndexer,
+	checkout.NewService,
+)
+```
+
+Wire resolves the `*billing.Gateway` and `*search.Indexer` parameters required by `checkout.NewService`. The package dependency direction remains one-way:
+
+```text
+app/wire ──> checkout ──> billing
+         ├──────────────> billing
+         └──────────────> search
+```
+
+Application packages do not import `app/wire`; it is the composition root, not a package that owns domain types. That one-way dependency keeps Wire out of application code.
+
+If `billing` also needs checkout behavior, do not make the packages import each other. Define the narrow interface in the consuming package and bind the concrete adapter in `app/wire`. The composition root can reference both packages without creating a package cycle.
+
+This structure also gives each adapter a natural place for service-specific methods, retry policy, headers, dumps, and test doubles.
 
 ## Common Mistakes
 
@@ -238,7 +302,7 @@ This also gives each adapter a natural place for service-specific methods, retry
 
 ## Next Steps
 
-- [Providers](/core/providers) explains the underlying constructor model.
+- [Providers](/core/dependency-injection#providers) explains the underlying constructor model.
 - [Dependency Injection](/core/dependency-injection) explains Wire generation and provider sets.
 - [Wiring Recipes](/core/wiring-recipes) shows where providers are registered.
 - [Reading Wire Errors](/core/reading-wire-errors) explains how to debug missing and duplicate providers.

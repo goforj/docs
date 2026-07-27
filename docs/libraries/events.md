@@ -1,5 +1,6 @@
 ---
 title: Events
+description: "Typed event publication and subscription with local and distributed transports."
 repoSlug: events
 repoUrl: https://github.com/goforj/events
 ---

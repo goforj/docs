@@ -1,5 +1,6 @@
 ---
 title: Cache
+description: "One cache API with local, distributed, and database-backed stores."
 repoSlug: cache
 repoUrl: https://github.com/goforj/cache
 ---

@@ -15,6 +15,11 @@ backend/frontend/dist/
 !/bin/collect-proof-stats.mjs
 _data/
 
-# Local env file
+# Local environment files
 .env
+.env.*
+!.env.example
+
+# FUSE cleanup artifacts
+.fuse_hidden*
 .DS_Store

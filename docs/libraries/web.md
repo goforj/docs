@@ -1,5 +1,6 @@
 ---
 title: Web
+description: "Server-side HTTP contracts, routing, middleware, testing, and an Echo-backed runtime."
 repoSlug: web
 repoUrl: https://github.com/goforj/web
 ---

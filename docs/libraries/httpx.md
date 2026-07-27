@@ -1,5 +1,6 @@
 ---
 title: HTTPX
+description: "HTTP client helpers for typed requests, authentication, retries, and diagnostics."
 repoSlug: httpx
 repoUrl: https://github.com/goforj/httpx
 ---

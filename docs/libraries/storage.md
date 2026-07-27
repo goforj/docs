@@ -1,5 +1,6 @@
 ---
 title: Storage
+description: "Named file and object-storage disks with local and remote drivers."
 repoSlug: storage
 repoUrl: https://github.com/goforj/storage
 noAutoTitle: true

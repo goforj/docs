@@ -1,5 +1,6 @@
 ---
 title: Collections
+description: "Fluent, typed collection operations for Go with explicit mutation behavior."
 repoSlug: collection
 repoUrl: https://github.com/goforj/collection
 ---

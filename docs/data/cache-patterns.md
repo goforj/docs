@@ -9,6 +9,10 @@ Cache is for temporary, derived, or performance-oriented data.
 
 It is not durable business storage.
 
+::: info Cache library reference
+This guide focuses on using cache inside a generated GoForj App. See the [cache library page](/cache) for standalone construction, the complete package API, and the full driver and capability matrix.
+:::
+
 ## When To Use Cache
 
 | Question | Guidance |

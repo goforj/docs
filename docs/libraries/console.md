@@ -1,5 +1,6 @@
 ---
 title: Console
+description: "Semantic CLI output, ANSI-aware layout, prompts, loaders, and progress."
 repoSlug: console
 repoUrl: https://github.com/goforj/console
 noAutoTitle: true

@@ -126,5 +126,5 @@ Do not introduce distributed infrastructure just to make a first example look pr
 ## Next Steps
 
 - [Named Resources](/core/named-resources) explains default and named accessors.
-- [Generated Components](/core/generated-components) explains supported driver generation.
+- [Generated Components](/core/code-generation) explains supported driver generation.
 - [Libraries](/libraries/) contains package-level driver details.

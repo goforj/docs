@@ -6,6 +6,7 @@ import "strings"
 type RepoConfig struct {
 	Slug           string
 	Title          string
+	Description    string
 	CloneURL       string
 	Branch         string
 	OutputPath     string

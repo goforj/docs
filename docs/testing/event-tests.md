@@ -48,6 +48,16 @@ Test subscriber behavior directly when it delegates to a service or dispatches a
 
 If the subscriber does durable work, prefer asserting that it dispatches the right job rather than treating the event bus as the retry system.
 
+## Verify
+
+With the events component enabled, run the event-owning package with the in-process driver:
+
+```bash
+EVENTS_DRIVER=inproc EVENTS_SUPPORTED_DRIVERS=inproc go test ./internal/events/...
+```
+
+Expected result: the package reports `ok` without a broker. The publish/subscribe snippet is a fragment; a runnable test must also wait for and assert the received event, rather than only calling `Publish`.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

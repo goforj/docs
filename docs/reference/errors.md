@@ -21,7 +21,7 @@ Likely causes:
 
 Start with:
 
-- [Generated Components](/core/generated-components)
+- [Generated Components](/core/code-generation)
 - [Generation Commands](/reference/generation-commands)
 - [Configuration Reference](/reference/configuration)
 
@@ -37,7 +37,7 @@ Likely causes:
 Start with:
 
 - [Dependency Injection](/core/dependency-injection)
-- [Providers](/core/providers)
+- [Providers](/core/dependency-injection#providers)
 - [Wiring Recipes](/core/wiring-recipes)
 - [Reading Wire Errors](/core/reading-wire-errors)
 - [Generated Files](/reference/generated-files)
@@ -72,7 +72,7 @@ Likely causes:
 Start with:
 
 - [API Index](/applications/api-index)
-- [OpenAPI](/applications/openapi)
+- [OpenAPI](/applications/api-index#serve-openapi)
 - [Routes](/applications/routes)
 
 ## Backup and Restore Errors

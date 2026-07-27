@@ -67,6 +67,14 @@ Use the `webtest` helpers from [Web](/web) when testing middleware behavior dire
 
 For full App behavior, prefer HTTP tests against the generated route surface so middleware, routing, and controllers run together.
 
+Run the App suite from its root:
+
+```bash
+go test ./...
+```
+
+Expected result: all tests pass. Add a route-level test that asserts the policy's status code and response when changing application middleware; use a direct handler test only when route composition is not the behavior under test.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

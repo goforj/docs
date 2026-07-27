@@ -1,5 +1,6 @@
 ---
 title: Queue
+description: "Queued work, workers, retries, workflows, and pluggable backend drivers."
 repoSlug: queue
 repoUrl: https://github.com/goforj/queue
 noAutoTitle: true

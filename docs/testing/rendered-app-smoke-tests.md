@@ -19,6 +19,8 @@ GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go run ./cmd/forj/main.go test:r
 
 This renders a temporary App, builds it, and runs its tests.
 
+Expected result: the command exits successfully after rendering, building, and testing the disposable App. Run it from the `goforj` repository, not from a generated App.
+
 ## What It Catches
 
 Rendered smoke tests catch:
@@ -74,4 +76,4 @@ render:
 
 - [Integration Tests](/testing/integration-tests) covers backend and rendered integration.
 - [Code Generation](/core/code-generation) explains generated file ownership.
-- [Practical maintainer workflows are tracked internally in GoForj context files.](/core/generated-extension-points)
+- [Practical maintainer workflows are tracked internally in GoForj context files.](/core/code-generation#choose-a-safe-extension-point)

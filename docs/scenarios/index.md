@@ -55,7 +55,7 @@ The examples are intentionally local-first. Production drivers, distributed back
 
 Finishing all seven leaves you with the App this whole documentation set describes. From there:
 
-- [Production Checklist](/operations/production-checklist) when you want to ship it.
+- [Production Checklist](/operations/deployment-basics#production-checklist) when you want to ship it.
 - [Cookbook](/cookbook) when you come back with a specific task.
 - [Apps](/core/apps) when the Project outgrows a single app.
 

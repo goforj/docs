@@ -189,7 +189,7 @@ These are mainly for framework contributors:
 - [Quickstart](/getting-started/quickstart)
 - [Make Commands](/core/make-commands)
 - [Opening Generated Files](/developer-tools/editor-open)
-- [Database Shell](/data/database-shell)
+- [Database Shell](/data/database-strategy#database-shell)
 - [Backup and Restore](/operations/backups)
 - [forj dev](/developer-tools/forj-dev)
 - [Generation Commands](/reference/generation-commands)

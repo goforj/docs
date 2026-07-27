@@ -9,6 +9,10 @@ An Event is a typed fact that something happened.
 
 Use events for fan-out and decoupled reactions. Use queues and jobs for durable background work, retries, delays, timeouts, and worker lifecycle.
 
+::: info Events library reference
+This guide follows events through a generated App's publishers, subscribers, and configuration. The [events library page](/events) contains the standalone usage, complete package reference, and distributed-driver matrix.
+:::
+
 ## When To Use Events
 
 | Question | Guidance |

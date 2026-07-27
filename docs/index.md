@@ -470,7 +470,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </ul>
 <div class="gf-home-links">
 <a href="/core/make-commands">Make commands →</a>
-<a href="/core/organizing-generated-code">Organizing generated code →</a>
+<a href="/core/make-commands#organize-by-package-ownership">Organizing generated code →</a>
 </div>
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">

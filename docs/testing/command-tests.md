@@ -39,6 +39,16 @@ Prefer testing their owned runtime components directly unless the command wiring
 
 For named apps, the prefix is routing, not business behavior. Test command logic at the command type or service boundary; use a rendered smoke test only when you need confidence that `forj marketplace <command>` reaches the marketplace app command tree.
 
+## Verify
+
+Run command-package tests from the generated App root:
+
+```bash
+go test ./internal/cmd/...
+```
+
+Expected result: every command package reports `ok`. If the command is registered through App wiring, also run `forj build`; expected result: Wire generation succeeds before the package tests run.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

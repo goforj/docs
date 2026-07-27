@@ -9,6 +9,10 @@ The Mail component gives a generated App one portable message API with local and
 
 Use it for account email, invitations, receipts, reports, and other outbound messages. Application code composes message intent; generated providers choose the transport.
 
+::: info Mail package reference
+This guide explains generated App mailers, configuration, and delivery workflows. The [mail library page](/mail) covers standalone composition and delivery, the complete API, and the driver capability matrix.
+:::
+
 ## Generated Ownership
 
 Generated mail integration lives in:

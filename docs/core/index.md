@@ -5,42 +5,24 @@ description: The framework model behind GoForj Apps, runtimes, providers, driver
 
 # Core Concepts
 
-Core Concepts explains the mental model shared by every GoForj App.
+Core Concepts explains the model shared by every generated GoForj App. Start with the question you need to answer rather than reading the section in order.
 
-Read these pages when you want to understand the generated App model, runtime lifecycle, wiring, providers, generated extension points, drivers, and named resources.
+## Choose a Concept
 
-## Start Here
-
-- [App](/core/app) defines the generated application model.
-- [Runtime Lifecycle](/core/runtime-lifecycle) explains startup, execution, and shutdown.
-- [Dependency Injection](/core/dependency-injection) explains how providers and Wire construct the App.
-- [Make Commands](/core/make-commands) explains how resource generators place files and update wiring.
-- [Organizing Generated Code](/core/organizing-generated-code) explains how generated controllers, commands, jobs, schedules, events, subscribers, models, and services fit into owning Go packages.
-- [Naming Conventions](/core/naming-conventions) defines stable names for commands, jobs, schedules, events, routes, and named resources.
-- [Wiring Recipes](/core/wiring-recipes) shows where to register services, adapters, controllers, commands, jobs, and resources.
-- [Generated Extension Points](/core/generated-extension-points) explains where application-owned code belongs.
-
-## All Concept Pages
-
-- [App](/core/app)
-- [Runtime Lifecycle](/core/runtime-lifecycle)
-- [Runtime Topology](/core/runtime-topology)
-- [Dependency Injection](/core/dependency-injection)
-- [Providers](/core/providers)
-- [Provider Patterns](/core/provider-patterns)
-- [Make Commands](/core/make-commands)
-- [Organizing Generated Code](/core/organizing-generated-code)
-- [Naming Conventions](/core/naming-conventions)
-- [Wiring Recipes](/core/wiring-recipes)
-- [Reading Wire Errors](/core/reading-wire-errors)
-- [Generated Components](/core/generated-components)
-- [Generated Extension Points](/core/generated-extension-points)
-- [Drivers and Adapters](/core/drivers-and-adapters)
-- [Named Resources](/core/named-resources)
-- [Code Generation](/core/code-generation)
-- [Local-First Development](/core/local-first-development)
+| Question | Read |
+| --- | --- |
+| Where does an App begin and how do named Apps differ? | [Apps](/core/apps) |
+| What starts, runs, and shuts down? | [Runtime Lifecycle](/core/runtime-lifecycle) and [Runtime Topology](/core/runtime-topology) |
+| How does a constructor become part of the App? | [Dependency Injection](/core/dependency-injection), then [Provider Patterns](/core/provider-patterns) for conditional or shared construction |
+| Why did Wire fail? | [Reading Wire Errors](/core/reading-wire-errors) |
+| How do I add or remove an application resource? | [Make Commands](/core/make-commands) |
+| Which files are regenerated, render-once, or App-owned? | [Code Generation](/core/code-generation) |
+| Where does a specific service, controller, job, or command get wired? | [Wiring Recipes](/core/wiring-recipes) |
+| How do names map to packages and generated resources? | [Naming Conventions](/core/naming-conventions) and [Named Resources](/core/named-resources) |
+| How does runtime configuration select compiled integrations? | [Drivers and Adapters](/core/drivers-and-adapters) |
+| How can the same App begin locally and move to shared infrastructure? | [Local-First Development](/core/local-first-development) |
 
 ## Related Sections
 
 - [Getting Started](/getting-started/) is the practical entry point.
-- [Operations](/operations/) explains how the same runtime model behaves in production.
+- [Operations](/operations/) applies the runtime model in production.

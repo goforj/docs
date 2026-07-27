@@ -534,6 +534,203 @@ async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string })
   fs.writeFileSync(path.join(siteConfig.outDir, 'llms-full.txt'), fullChunks.join('\n') + '\n')
 }
 
+type ConsolidatedPageRedirect = {
+  to: string
+  fragments: Record<string, string>
+}
+
+const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
+  'applications/openapi': {
+    to: '/applications/api-index',
+    fragments: {
+      'generate-the-document': 'generate-the-contract',
+      'api-reference-routes': 'serve-openapi',
+      configuration: 'serve-openapi',
+      'improve-generated-metadata': 'what-goforj-infers',
+      'ci-policy': 'diagnostics-and-strict-ci',
+      'current-limits': 'current-limits',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'next-steps'
+    }
+  },
+  'core/app': {
+    to: '/core/apps',
+    fragments: {
+      'default-app': 'the-default-shape',
+      'named-apps': 'add-a-named-app',
+      'app-versus-runtime': 'apps-and-runtimes',
+      'app-versus-project': 'what-belongs-where',
+      'extension-points': 'what-belongs-where',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'next-steps'
+    }
+  },
+  'core/generated-components': {
+    to: '/core/code-generation',
+    fragments: {
+      'why-they-exist': 'choose-the-generated-project-shape',
+      'project-rendering': 'choose-the-generated-project-shape',
+      'build-time-generation': 'run-generation',
+      'focused-generation': 'run-generation',
+      'generated-managers': 'use-generated-resources',
+      'named-resources': 'use-generated-resources',
+      'driver-support': 'compile-driver-support',
+      'render-once-files': 'choose-a-safe-extension-point',
+      'when-to-regenerate': 'regenerate-after-input-changes',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'next-steps'
+    }
+  },
+  'core/generated-extension-points': {
+    to: '/core/code-generation',
+    fragments: {
+      'ownership-model': 'choose-a-safe-extension-point',
+      'lifecycle-hooks': 'choose-a-safe-extension-point',
+      routes: 'choose-a-safe-extension-point',
+      commands: 'choose-a-safe-extension-point',
+      schedules: 'choose-a-safe-extension-point',
+      'jobs-and-events': 'choose-a-safe-extension-point',
+      'lighthouse-and-operator-glue': 'choose-a-safe-extension-point',
+      'when-to-change-the-framework': 'decide-whether-to-change-the-app-or-framework',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'next-steps'
+    }
+  },
+  'core/organizing-generated-code': {
+    to: '/core/make-commands',
+    fragments: {
+      'what-package-scope-means-in-go': 'organize-by-package-ownership',
+      'the-mental-model': 'organize-by-package-ownership',
+      'why-this-shape': 'organize-by-package-ownership',
+      'names-become-packages': 'organize-by-package-ownership',
+      'a-complete-package-example': 'organize-by-package-ownership',
+      'commands-are-slightly-different': 'package-placement',
+      'bare-commands-stay-in-internal-cmd': 'package-placement',
+      'package-names-are-go-names': 'package-placement',
+      'what-each-make-command-adds': 'command-map',
+      'removing-generated-package-entries': 'removing-generated-resources',
+      'a-good-package-shape': 'organize-by-package-ownership',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'next-steps'
+    }
+  },
+  'core/providers': {
+    to: '/core/dependency-injection',
+    fragments: {
+      shape: 'providers',
+      'what-providers-build': 'providers',
+      'what-they-should-not-do': 'provider-boundaries',
+      'required-dependencies': 'providers',
+      'golden-path': 'providers',
+      'when-a-dedicated-provider-helps': 'when-a-dedicated-provider-helps',
+      boundaries: 'provider-boundaries',
+      verify: 'providers',
+      'next-steps': 'next-steps'
+    }
+  },
+  'data/database-shell': {
+    to: '/data/database-strategy',
+    fragments: {
+      'open-a-connection': 'database-shell',
+      'named-connections': 'database-shell',
+      'launch-method': 'database-shell',
+      'non-interactive-sql': 'database-shell',
+      'client-arguments': 'database-shell',
+      notes: 'database-shell'
+    }
+  },
+  'operations/production-checklist': {
+    to: '/operations/deployment-basics',
+    fragments: {
+      'build-and-configuration': 'production-checklist',
+      'runtime-topology': 'production-checklist',
+      data: 'production-checklist',
+      observability: 'production-checklist',
+      async: 'production-checklist',
+      'final-check': 'production-checklist',
+      'next-steps': 'next-steps'
+    }
+  },
+  'operations/standalone-vs-distributed': {
+    to: '/operations/runtime-processes',
+    fragments: {
+      standalone: 'standalone-versus-distributed',
+      distributed: 'standalone-versus-distributed',
+      'choosing-the-topology': 'standalone-versus-distributed',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'next-steps'
+    }
+  },
+  'testing/overview': {
+    to: '/testing/',
+    fragments: {
+      'testing-layers': 'choose-a-test-layer',
+      'local-test-command': 'choose-a-test-layer',
+      'test-services-directly': 'keep-domain-behavior-direct',
+      'test-http-behavior': 'choose-a-test-layer',
+      'test-events': 'keep-domain-behavior-direct',
+      'test-queues-and-jobs': 'keep-domain-behavior-direct',
+      'test-scheduler-work': 'keep-domain-behavior-direct',
+      'rendered-app-smoke-tests': 'maintainer-workflows',
+      'integration-tests': 'maintainer-workflows',
+      'common-mistakes': 'common-mistakes',
+      'next-steps': 'related-sections'
+    }
+  }
+}
+
+// generateConsolidatedPageRedirects preserves published URLs after overlapping guides move to one canonical page.
+function generateConsolidatedPageRedirects(outDir: string) {
+  for (const [from, redirect] of Object.entries(consolidatedPageRedirects)) {
+    const { to, fragments } = redirect
+    const outputPath = path.join(outDir, `${from}.html`)
+    const canonicalURL = `${siteUrl}${to}`
+    const target = JSON.stringify(to)
+    const fragmentLookup = JSON.stringify(fragments)
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+    fs.writeFileSync(outputPath, [
+      '<!doctype html>',
+      '<html lang="en-US">',
+      '<head>',
+      '<meta charset="utf-8">',
+      `<meta http-equiv="refresh" content="0; url=${to}">`,
+      `<link rel="canonical" href="${canonicalURL}">`,
+      '<meta name="robots" content="noindex">',
+      '<title>Redirecting… | GoForj</title>',
+      '</head>',
+      '<body>',
+      `<script>const fragments=${fragmentLookup};const old=location.hash.slice(1);const hash=fragments[old]?"#"+fragments[old]:"";location.replace(${target}+location.search+hash)</script>`,
+      `<p>This guide moved to <a href="${to}">${to}</a>.</p>`,
+      '</body>',
+      '</html>',
+      ''
+    ].join('\n'))
+  }
+}
+
+// validateConsolidatedPageRedirects makes renamed headings a build failure instead of a broken published deep link.
+function validateConsolidatedPageRedirects(outDir: string) {
+  for (const { to, fragments } of Object.values(consolidatedPageRedirects)) {
+    const route = to.replace(/^\/|\/$/g, '')
+    const targetPath = to.endsWith('/')
+      ? path.join(outDir, route, 'index.html')
+      : path.join(outDir, `${route}.html`)
+    const targetHTML = fs.readFileSync(targetPath, 'utf8')
+    for (const fragment of new Set(Object.values(fragments))) {
+      if (!targetHTML.includes(`id="${fragment}"`)) {
+        throw new Error(`consolidated redirect target is missing: ${to}#${fragment}`)
+      }
+    }
+  }
+}
+
+// finishBuild produces the machine-readable corpus and compatibility routes from one finalized page graph.
+async function finishBuild(siteConfig: { srcDir: string; outDir: string }) {
+  await generateLlmsFiles(siteConfig)
+  generateConsolidatedPageRedirects(siteConfig.outDir)
+  validateConsolidatedPageRedirects(siteConfig.outDir)
+}
+
 // https://vitepress.dev/reference/site-config
 /* ------------------------------------------------------------------
    Ember — the Go syntax theme.
@@ -681,6 +878,7 @@ export default defineConfig({
       md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
         let headerColumn = 0
         let variableColumn = 0
+        let commandColumn = 0
         for (let tokenIndex = idx + 1; tokenIndex < tokens.length; tokenIndex += 1) {
           const candidate = tokens[tokenIndex]
           if (candidate.type === 'thead_close' || candidate.type === 'table_close') break
@@ -690,12 +888,16 @@ export default defineConfig({
           if (content?.type === 'inline' && /\bvariables?\b/i.test(normalizeText(content.content))) {
             variableColumn = headerColumn
           }
+          if (content?.type === 'inline' && normalizeText(content.content).trim().toLowerCase() === 'command') {
+            commandColumn = headerColumn
+          }
         }
         const table = defaultTableOpen
           ? defaultTableOpen(tokens, idx, options, env, self)
           : self.renderToken(tokens, idx, options)
         const variableColumnClass = variableColumn > 0 ? ` gf-table-variable-column-${variableColumn}` : ''
-        return `<div class="gf-table-scroll${variableColumnClass}" tabindex="0">\n${table.replace(' tabindex="0"', '')}`
+        const commandColumnClass = commandColumn > 0 ? ` gf-table-command-column-${commandColumn}` : ''
+        return `<div class="gf-table-scroll${variableColumnClass}${commandColumnClass}" tabindex="0">\n${table.replace(' tabindex="0"', '')}`
       }
       md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
         const table = defaultTableClose
@@ -711,7 +913,7 @@ export default defineConfig({
     hostname: siteUrl
   },
 
-  buildEnd: generateLlmsFiles,
+  buildEnd: finishBuild,
 
   head: [
     /* Temper typography. Space Grotesk carries the display voice at 700
@@ -910,9 +1112,7 @@ export default defineConfig({
       },
       { text: 'Reference', link: '/reference/' },
       {
-        // Was: 'Latest tag v0.20.0' and 'Changelog' both pointed at
-        // /versions/changelog, and 'Active development' pointed at the
-        // homepage. Three entries, two of them duplicates, one wrong.
+        // Keep one version menu for release policy, the changelog, and the blog.
         text: docsVersion,
         items: [
           { text: 'Version policy', link: '/versions/' },
@@ -940,20 +1140,15 @@ export default defineConfig({
         text: 'Core Concepts',
         items: [
           { text: 'Overview', link: '/core/' },
-          { text: 'App', link: '/core/app' },
           { text: 'Apps', link: '/core/apps' },
           { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
           { text: 'Runtime Topology', link: '/core/runtime-topology' },
           { text: 'Dependency Injection', link: '/core/dependency-injection' },
-          { text: 'Providers', link: '/core/providers' },
           { text: 'Provider Patterns', link: '/core/provider-patterns' },
           { text: 'Make Commands', link: '/core/make-commands' },
-          { text: 'Organizing Generated Code', link: '/core/organizing-generated-code' },
           { text: 'Naming Conventions', link: '/core/naming-conventions' },
           { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
           { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
-          { text: 'Generated Components', link: '/core/generated-components' },
-          { text: 'Generated Extension Points', link: '/core/generated-extension-points' },
           { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
           { text: 'Named Resources', link: '/core/named-resources' },
           { text: 'Code Generation', link: '/core/code-generation' },
@@ -974,8 +1169,7 @@ export default defineConfig({
           { text: 'HTTP Clients', link: '/applications/http-clients' },
           { text: 'Mail', link: '/applications/mail' },
           { text: 'Commands', link: '/applications/commands' },
-          { text: 'API Index', link: '/applications/api-index' },
-          { text: 'OpenAPI', link: '/applications/openapi' }
+          { text: 'API Index and OpenAPI', link: '/applications/api-index' }
         ]
       },
       {
@@ -1002,7 +1196,6 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/data/' },
           { text: 'Database Strategy', link: '/data/database-strategy' },
-          { text: 'Database Shell', link: '/data/database-shell' },
           { text: 'Migrations', link: '/data/migrations' },
           { text: 'Repositories', link: '/data/repositories' },
           { text: 'Transactions', link: '/data/transactions' },
@@ -1029,7 +1222,6 @@ export default defineConfig({
         text: 'Testing',
         items: [
           { text: 'Overview', link: '/testing/' },
-          { text: 'Testing Overview', link: '/testing/overview' },
           { text: 'Unit Tests', link: '/testing/unit-tests' },
           { text: 'HTTP Tests', link: '/testing/http-tests' },
           { text: 'Command Tests', link: '/testing/command-tests' },
@@ -1067,9 +1259,7 @@ export default defineConfig({
           { text: 'Metrics', link: '/operations/metrics' },
           { text: 'Inspects', link: '/operations/inspects' },
           { text: 'Lighthouse', link: '/operations/lighthouse' },
-          { text: 'Backup and Restore', link: '/operations/backups' },
-          { text: 'Standalone versus Distributed', link: '/operations/standalone-vs-distributed' },
-          { text: 'Production Checklist', link: '/operations/production-checklist' }
+          { text: 'Backup and Restore', link: '/operations/backups' }
         ]
       },
       {
@@ -1122,7 +1312,7 @@ export default defineConfig({
         text: 'Versions',
         items: [
           { text: 'Active development', link: '/versions/' },
-          { text: 'Latest tag v0.20.0', link: '/versions/changelog' },
+          { text: 'Latest tag v0.22.0', link: '/versions/changelog#v0220' },
           { text: 'Changelog', link: '/versions/changelog' }
         ]
       },

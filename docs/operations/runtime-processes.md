@@ -37,11 +37,26 @@ forj marketplace migrate
 forj marketplace make:job sync-catalog
 ```
 
+## Standalone versus Distributed
+
+Topology is selected by the commands the process manager starts; it does not require a build flag or a change to App code.
+
+| Topology | Choose it when |
+| --- | --- |
+| Standalone | One deployment unit should own the enabled runtimes, as in local development, demos, small deployments, or simple operational environments. |
+| Distributed | HTTP, workers, and the scheduler need independent scaling, restart policies, metrics targets, or resource limits. |
+
+Use the combined command in the process table for one standalone service. Distributed deployments should start the explicit `api`, `worker`, and `scheduler` commands so ownership remains visible. Named Apps make the same choice through their own binaries, such as `./bin/marketplace api`.
+
+Driver selection is separate from process topology. If API and worker processes share cache, queue, events, or files, configure backends that cross process boundaries. Splitting commands does not make process-local drivers shared or make jobs correct without idempotency and backend planning.
+
 ## Combined Runtime
 
 `run` starts enabled runtimes together. A runtime-capable generated binary selects `run` when launched without arguments, so the bare and explicit forms are equivalent.
 
 The runtime host cancels sibling runtimes when one fails and returns the first runtime failure with the runtime name.
+
+Explicit commands still win: `./bin/app api` starts only HTTP rather than selecting `run`. CLI-only App binaries retain root help behavior because they do not have a standalone runtime.
 
 ## Split Runtime
 
@@ -72,6 +87,8 @@ SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
 - Do not make business behavior depend on process topology.
 - Do not assume worker shutdown is instant when jobs are in flight.
 - Do not scale scheduler processes like stateless HTTP processes without locks or singleton control.
+- Do not dismiss standalone topology when one supervised deployment unit is the right operational boundary.
+- Do not expect distributed topology alone to provide cross-process state or job correctness.
 :::
 
 ## Next Steps

@@ -9,6 +9,10 @@ A Controller is an HTTP-facing type that groups related route handlers.
 
 Controllers should translate requests into application service calls and translate service results into responses. Business workflows belong in services, jobs, or domain-owned types.
 
+## Golden Path
+
+The complete Users example lives in [JSON API Route](/scenarios/json-api-route). It starts with `forj make:controller users`, then shows the generated location, service provider, service test, build, route listing, and `curl` result. Reuse that flow rather than copying it into each HTTP page.
+
 ## Controller Shape
 
 ```go
@@ -43,7 +47,7 @@ func (c *Controller) Show(ctx web.Context) error {
 }
 ```
 
-## Make Commands
+## Generate, Wire, and Verify
 
 Use `forj make:controller` when starting a new controller:
 
@@ -85,14 +89,14 @@ var httpAppControllerSet = wire.NewSet(
 )
 ```
 
-Run:
+Run the full verification after the service provider is added:
 
 ```bash
 forj build
 forj route:list
 ```
 
-`forj build` verifies the generated graph. `route:list` verifies the controller routes are registered where the App can serve them.
+Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes the controller path. Start `forj api` and use the scenario's `curl` command to prove the public response.
 
 For a named app, run the make command through that app:
 

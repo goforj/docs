@@ -9,6 +9,10 @@ The Scheduler defines recurring work.
 
 Use it for work that should run on an interval, cron expression, or calendar schedule.
 
+::: info Scheduler API
+This guide covers how a generated GoForj App registers and runs schedules. For standalone construction, the complete fluent API, adapters, and locking options, see the [scheduler library page](/scheduler).
+:::
+
 ## When To Use Scheduler
 
 | Question | Guidance |

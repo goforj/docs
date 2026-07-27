@@ -5293,6 +5293,23 @@ html:not(.dark) body:has(.gf-home) {
     text-transform: uppercase;
 }
 .VPDoc .vp-doc th:first-child { border-top-left-radius: 0; }
+
+/* Command cells stay readable as one token; the table wrapper provides horizontal scrolling when needed. */
+.VPDoc .vp-doc .gf-table-command-column-1 :is(th, td):nth-child(1),
+.VPDoc .vp-doc .gf-table-command-column-2 :is(th, td):nth-child(2),
+.VPDoc .vp-doc .gf-table-command-column-3 :is(th, td):nth-child(3),
+.VPDoc .vp-doc .gf-table-command-column-4 :is(th, td):nth-child(4) {
+    white-space: nowrap;
+}
+
+.VPDoc .vp-doc .gf-table-command-column-1 td:nth-child(1) code,
+.VPDoc .vp-doc .gf-table-command-column-2 td:nth-child(2) code,
+.VPDoc .vp-doc .gf-table-command-column-3 td:nth-child(3) code,
+.VPDoc .vp-doc .gf-table-command-column-4 td:nth-child(4) code {
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
+}
 .VPDoc .vp-doc th:last-child  { border-top-right-radius: 0; }
 .VPDoc .vp-doc tr:last-child td { border-bottom: none; }
 .VPDoc .vp-doc td { color: var(--gf-ink-2); }

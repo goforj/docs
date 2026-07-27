@@ -1,5 +1,6 @@
 ---
 title: Atlas
+description: "Project context, skills, diagnostics, and MCP tooling for GoForj coding agents."
 repoSlug: atlas
 repoUrl: https://github.com/goforj/atlas
 ---

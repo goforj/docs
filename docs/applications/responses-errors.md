@@ -58,6 +58,8 @@ if err != nil {
 
 Unknown errors can be returned to the framework error path.
 
+The [JSON API Route](/scenarios/json-api-route) uses this exact boundary for a user lookup: an empty or missing user becomes a `404` JSON error, while a successful `GET /api/v1/users/42` returns the stable user JSON contract. Keep the status decision in the controller; the service returns domain errors without HTTP types.
+
 ## Local Error Detail
 
 Generated Apps can capture local HTTP error response bodies for debugging in local environments.
@@ -86,6 +88,7 @@ Authorization: Bearer $APP_DIAG_TOKEN
 
 ## Next Steps
 
+- [JSON API Route](/scenarios/json-api-route) is the runnable HTTP verification path.
 - [Requests and Validation](/applications/requests-validation) explains invalid input handling.
 - [Controllers](/applications/controllers) explains where HTTP decisions belong.
 - [HTTP Services](/applications/http-services) explains framework health and readiness routes.

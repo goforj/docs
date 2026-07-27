@@ -278,4 +278,4 @@ forj atlas:mcp
 - [Quickstart](/getting-started/quickstart)
 - [Make Commands](/core/make-commands)
 - [Apps](/core/apps)
-- [Organizing Generated Code](/core/organizing-generated-code)
+- [Organizing Generated Code](/core/make-commands#organize-by-package-ownership)
