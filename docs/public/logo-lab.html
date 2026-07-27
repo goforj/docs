@@ -916,10 +916,11 @@ figure:hover > svg { transform: translateY(-1px); }
   </table>
   <h3>The decided set</h3>
   <p>
-    Three roles, one geometry. Everything below is the same frozen silhouette —
-    what changes between them is the job, not the drawing. The 256px and 128px
-    variants expose display-scale detail; click one for SVG or Alt-click for a
-    PNG at the displayed size.
+    Three logo roles, one geometry, plus a square delivery asset for avatar
+    croppers. Everything below is the same frozen silhouette — what changes
+    between them is the job, not the drawing. The 256px and 128px variants
+    expose display-scale detail; click one for SVG or Alt-click for a PNG at
+    the displayed size. The avatar tile also has direct 1024px PNG downloads.
   </p>
   <div class="ldrs" id="decidedSet"></div>
   <div class="note pick" id="recommendation"></div>
@@ -1364,6 +1365,17 @@ function rTile(size, P, o = {}) {
     platedGlyph(P, o, plate) + '</svg>';
 }
 
+/* Avatar uploaders want an uncropped source square so their own circle
+   or rounded mask remains the only crop. The smaller avatar safe zone
+   keeps the glyph clear even when the destination imposes a circle. */
+function rAvatarTile(size, P, o = {}) {
+  const F = frame(o.cover ?? 0.58);
+  const plate = o.plate || P.accent;
+  return svgOpen(size, F.vb, o.label) +
+    `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${plate}"/>` +
+    platedGlyph(P, o, plate) + '</svg>';
+}
+
 /* Circular avatar — the crop GitHub, Slack, npm and Discord impose.
    `ring` adds a hairline so a plate close to the page ground still
    reads as a plate rather than as a floating glyph. */
@@ -1531,6 +1543,18 @@ const VARIANTS = [
 ];
 
 const byId = id => VARIANTS.find(v => v.id === id);
+
+/* Delivery assets are exported like variants without entering the
+   aesthetic assessment: packaging for a cropper is not a fourth logo
+   direction and should not change the verdict's measured pass count. */
+const DELIVERY_VARIANTS = {
+  'avatar-tile': {
+    id: 'avatar-tile',
+    name: 'Avatar tile',
+    render: (px, P, o = {}) => rAvatarTile(px, P, { ...o, seam: true })
+  }
+};
+const exportableById = id => byId(id) || DELIVERY_VARIANTS[id];
 
 /* ------------------------------------------------------------------
    MEASUREMENT
@@ -2606,6 +2630,14 @@ const PASSERS = VARIANTS.filter(v =>
       light: px => rTile(px, P_LIGHT, { seam: true })
     },
     {
+      role: 'Avatar upload', name: 'Avatar tile', id: 'avatar-tile',
+      why: 'A full-bleed square with no corner radius. The 0.58 safe zone leaves GitHub, Slack, Discord, and similar croppers room to impose their own circular mask.',
+      sizes: [256, 128, 64, 48, 32],
+      png: 1024,
+      dark: px => rAvatarTile(px, P_DARK, { seam: true }),
+      light: px => rAvatarTile(px, P_LIGHT, { seam: true })
+    },
+    {
       role: 'Utility', name: 'Keyline', id: 'keyline',
       why: 'Etch, emboss, foil, single-plate print, and any ground nobody controls.',
       sizes: [256, 128, 64, 48, 32],
@@ -2631,6 +2663,8 @@ const PASSERS = VARIANTS.filter(v =>
       <div class="mark__act">
         <button class="btn-s" data-dl="${r.id}">Dark</button>
         <button class="btn-s" data-dl="${r.id}" data-mode="light">Light</button>
+        ${r.png ? `<button class="btn-s" data-png="${r.id}" data-png-size="${r.png}">Dark PNG ${r.png}</button>
+        <button class="btn-s" data-png="${r.id}" data-png-size="${r.png}" data-mode="light">Light PNG ${r.png}</button>` : ''}
         <button class="btn-s" data-set="${r.id}">Asset set</button>
       </div>
     </div>`;
@@ -2786,7 +2820,7 @@ LOADERS            signal            floor
   ------------------------------------------------------------------
 */
 function exportSVG(id, P = P_DARK, opts = {}) {
-  const v = byId(id);
+  const v = exportableById(id);
   let svg = v.render(1000, P, { label: opts.label || `GoForj — ${v.name}` });
 
   // Drop the fixed size; keep the viewBox so the asset is resolution-free.
@@ -2808,7 +2842,6 @@ function exportSVG(id, P = P_DARK, opts = {}) {
 
 /* The full set a handoff actually needs, rather than one mark. */
 function assetSet(id) {
-  const v = byId(id);
   return [
     [`goforj-${id}-dark.svg`,   exportSVG(id, P_DARK)],
     [`goforj-${id}-light.svg`,  exportSVG(id, P_LIGHT)],
@@ -2976,15 +3009,9 @@ function describe(node) {
   return (name ? name : secName || 'mark').trim();
 }
 
-/* Rasterise the live node at what it actually measures on screen,
-   multiplied by DPR — which is the point of PNG here, since the
-   favicon and app-icon rows are the reason anyone wants raster. */
-function rasterise(node, name) {
-  const rect = node.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  const w = Math.max(1, Math.round(rect.width * dpr));
-  const h = Math.max(1, Math.round(rect.height * dpr));
-  const src = serialiseSVG(node, name).replace(/^<!--[\s\S]*?-->\n/, '');
+/* Rasterise an SVG source through the browser so generated PNGs use
+   the exact same geometry and palette as their vector counterparts. */
+function rasteriseSource(src, name, w, h) {
   const blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const img = new Image();
@@ -3004,6 +3031,28 @@ function rasterise(node, name) {
   };
   img.onerror = () => { URL.revokeObjectURL(url); toast('Could not rasterise that one'); };
   img.src = url;
+}
+
+/* Rasterise the live node at what it actually measures on screen,
+   multiplied by DPR — which is the point of PNG here, since the
+   favicon and app-icon rows are the reason anyone wants raster. */
+function rasterise(node, name) {
+  const rect = node.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(rect.width * dpr));
+  const h = Math.max(1, Math.round(rect.height * dpr));
+  const src = serialiseSVG(node, name).replace(/^<!--[\s\S]*?-->\n/, '');
+  rasteriseSource(src, name, w, h);
+}
+
+/* Avatar uploaders generally want a large raster rather than an SVG,
+   so the decided-set action can produce a predictable source size
+   without rendering a 1024px preview into the page. */
+function rasteriseExport(id, P, size) {
+  const src = exportSVG(id, P)
+    .replace(/^<!--[\s\S]*?-->\n/, '')
+    .replace('<svg ', `<svg width="${size}" height="${size}" `);
+  rasteriseSource(src, `${id}-${P.id}`, size, size);
 }
 
 /*
@@ -3208,6 +3257,7 @@ document.addEventListener('click', e => {
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-copy]');
   const dl = e.target.closest('[data-dl]');
+  const png = e.target.closest('[data-png]');
   const set = e.target.closest('[data-set]');
   const flash = (el, msg) => {
     const t = el.textContent; el.textContent = msg;
@@ -3222,6 +3272,11 @@ document.addEventListener('click', e => {
   if (dl) {
     const P = dl.dataset.mode === 'light' ? P_LIGHT : P_DARK;
     downloadText(`goforj-${dl.dataset.dl}-${P.id}.svg`, exportSVG(dl.dataset.dl, P));
+  }
+  if (png) {
+    const P = png.dataset.mode === 'light' ? P_LIGHT : P_DARK;
+    rasteriseExport(png.dataset.png, P, Number(png.dataset.pngSize));
+    flash(png, 'Rendering…');
   }
   if (set) {
     const files = assetSet(set.dataset.set);
