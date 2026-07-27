@@ -275,6 +275,39 @@ table.t td strong { color: var(--gf-ink); }
 .ref img { background: #fff; border-radius: var(--gf-radius-sm); display: block; }
 .ref b { display: block; color: var(--gf-ink); font-weight: 600; font-size: 14px; margin-bottom: 5px; }
 .ref p { margin: 0; font-size: 13.5px; color: var(--gf-ink-2); max-width: 52ch; }
+/* ---- click-to-download affordance ----
+   Every illustration is a file. The cue has to be present enough to be
+   discoverable and quiet enough not to compete with the marks, which
+   are the actual subject of the page. */
+svg { cursor: pointer; transition: filter .12s ease, transform .12s ease; }
+figure:hover > svg,
+.mark__stage:hover > svg,
+.strip svg:hover,
+.panel svg:hover { filter: brightness(1.06) drop-shadow(0 0 8px var(--gf-accent-line)); }
+figure:hover > svg { transform: translateY(-1px); }
+.ref img, #beforeRow img { cursor: pointer; }
+[data-gf-motion="reduced"] svg { transition: none; }
+
+.dlhint {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-2);
+  border: 1px solid var(--gf-line-strong); border-radius: 999px;
+  padding: 5px 12px; margin: 0 0 4px;
+}
+.dlhint b { color: var(--gf-nav); font-weight: 500; }
+
+#gfToast {
+  position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(8px);
+  background: var(--gf-surface); color: var(--gf-ink);
+  border: 1px solid var(--gf-line-strong); border-radius: 999px;
+  padding: 10px 18px; font-family: var(--gf-font-mono); font-size: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.45);
+  opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+  z-index: 60; max-width: 80vw; text-align: center;
+}
+#gfToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+[data-gf-motion="reduced"] #gfToast { transition: opacity .18s ease; }
+
 @media (max-width: 760px) { .wrap, .head { padding-left: 18px; padding-right: 18px; } }
 </style>
 </head>
@@ -300,6 +333,10 @@ table.t td strong { color: var(--gf-ink); }
 <section class="sec" id="base">
   <p class="kicker">The base</p>
   <h2>The geometry is <em>settled</em></h2>
+  <p class="dlhint">
+    <b>↓</b> Click any illustration on this page to download it as SVG.
+    Alt-click for PNG at the size shown.
+  </p>
   <p>
     The traced silhouette is frozen. <code>MARK_OUTER</code> and
     <code>MARK_HOLE</code> are carried over unchanged, and nothing on this page
@@ -479,7 +516,7 @@ table.t td strong { color: var(--gf-ink); }
   </div>
 </section>
 
-<section class="sec">
+<section class="sec" id="otherground">
   <p class="kicker">The other ground</p>
   <h2>Light mode, with the <em>light tokens</em></h2>
   <p>
@@ -1909,7 +1946,7 @@ document.getElementById('bitRow').innerHTML =
 document.getElementById('navbars').innerHTML =
   ['true', 'seam', 'crest', 'counter'].map(id => {
     const v = byId(id);
-    return `<div class="navbar">
+    return `<div class="navbar" data-dlname="navbar ${v.name}">
       ${v.render(24, Object.assign({}, P_DARK, { bg: P_DARK.groundAlt }))}
       <span class="brand">GoForj</span>
       <span class="links"><span>Docs</span><span>Guide</span><span>API</span><span>Blog</span></span>
@@ -1921,7 +1958,7 @@ document.getElementById('lock').innerHTML =
   ['seam', 'true', 'counter', 'facet'].map(id => {
     const v = byId(id);
     const px = 32;
-    return `<div class="lock__row" style="gap:${Math.round(px * 0.42)}px">
+    return `<div class="lock__row" data-dlname="lockup ${v.name}" style="gap:${Math.round(px * 0.42)}px">
       ${v.render(px, P_DARK)}
       <span class="lock__word" style="font-size:25px">GoForj</span>
       <span class="lock__badge" style="margin-left:auto">${v.name}</span>
@@ -2089,9 +2126,9 @@ ASSETS
   if (el) el.textContent = spec;
   const btn = document.getElementById('copySpec');
   if (btn) btn.addEventListener('click', () => {
-    navigator.clipboard.writeText(spec).then(() => {
-      btn.textContent = 'Copied ✓';
-      setTimeout(() => btn.textContent = 'Copy specification', 1400);
+    copyText(spec, 'goforj-mark-spec.txt').then(ok => {
+      btn.textContent = ok ? 'Copied ✓' : 'Downloaded instead';
+      setTimeout(() => btn.textContent = 'Copy specification', 1600);
     });
   });
 })();
@@ -2155,6 +2192,337 @@ function downloadText(name, text) {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
+/* ==================================================================
+   CLICK-TO-DOWNLOAD, ON EVERY ILLUSTRATION
+
+   Rather than registering ~183 handlers, this serialises the LIVE DOM
+   node on click. That means it works for illustrations built by any
+   of the renderers, including composites like the crop grid and the
+   plated forms, with no per-illustration bookkeeping to keep in sync.
+
+   Accessibility note. These illustrations are aria-hidden and stay
+   OUT of the tab order deliberately. Making 183 of them focusable
+   buttons would be strictly correct per WCAG and genuinely hostile in
+   practice — 183 tab stops and 183 announcements, undoing the fix
+   that took this page from 144 announcements to 1. So the click is a
+   mouse convenience layered on top, and every asset also remains
+   reachable through real buttons: the per-variant controls and the
+   per-section download-all controls added below.
+   ================================================================== */
+
+/* Turn a live <svg> node into a standalone, portable file. */
+function serialiseSVG(node, nameHint) {
+  const clone = node.cloneNode(true);
+  clone.removeAttribute('width');
+  clone.removeAttribute('height');
+  clone.removeAttribute('aria-hidden');
+  clone.removeAttribute('focusable');
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  clone.setAttribute('role', 'img');
+  clone.setAttribute('aria-label', `GoForj — ${nameHint}`);
+
+  let out = new XMLSerializer().serializeToString(clone);
+
+  /* Namespace internal ids so a downloaded file can sit alongside any
+     other in the same document without its clip-path or mask silently
+     binding to the wrong definition. */
+  const stamp = 'gf-' + slug(nameHint);
+  [...new Set([...out.matchAll(/id="([^"]+)"/g)].map(m => m[1]))].forEach((old, i) => {
+    const safe = `${stamp}-${i}`;
+    out = out.split(`id="${old}"`).join(`id="${safe}"`)
+             .split(`url(#${old})`).join(`url(#${safe})`);
+  });
+  return `<!-- GoForj — ${nameHint}. Minimum size ${FLOOR}px. Clear space 0.23x. -->\n${out}\n`;
+}
+
+const slug = s => String(s).toLowerCase().trim()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'mark';
+
+/*
+  Name the file from where the illustration actually sits. A page full
+  of files called download.svg would make this feature pointless, so
+  the name is assembled from the nearest caption, the variant card
+  heading, the column header in a grid, and the section.
+*/
+function describe(node) {
+  const bits = [];
+  const sec = node.closest('section.sec');
+  const secName = sec && sec.id ? sec.id : '';
+  /* innerText, not textContent: several labels use <br>, and
+     textContent glues the words either side of it into one
+     ("As suppliedsquare asset"). */
+  const txt = el => (el ? (el.innerText || el.textContent || '') : '').replace(/\s+/g, ' ').trim();
+
+  const card = node.closest('.mark');
+  if (card) bits.push(txt(card.querySelector('.mark__name')));
+
+  const panel = node.closest('.panel');
+  if (panel && !card) bits.push(txt(panel.querySelector('b')));
+
+  /* Column and row headers in the aligned grids, found by counting
+     cells — the grid is a flat child list, not nested rows. */
+  const grid = node.closest('.cropgrid');
+  if (grid) {
+    const cells = [...grid.children];
+    const mine = cells.find(c => c.contains(node));
+    const cols = cells.filter(c => c.classList.contains('colhd'));
+    if (mine && cols.length) {
+      const idx = cells.indexOf(mine);
+      const perRow = cols.length + 1;
+      const col = (idx % perRow) - 1;
+      if (col >= 0 && cols[col]) bits.push(txt(cols[col]));
+      const rows = cells.filter(c => c.classList.contains('rowlbl') && cells.indexOf(c) < idx);
+      if (rows.length) bits.push(txt(rows[rows.length - 1]));
+    }
+  }
+
+  /* Explicit override, for illustrations that carry no caption of
+     their own — the lockups and nav bars, which would otherwise all
+     fall back to the section name and collide. */
+  const named = node.closest('[data-dlname]');
+  if (named) bits.push(named.dataset.dlname);
+
+  const strip = node.closest('.strip');
+  if (strip) bits.push(txt(strip.querySelector('.lbl')));
+
+  const cap = txt(node.closest('figure')?.querySelector('figcaption'));
+  if (cap) bits.push(cap);
+
+  /* Section prefix only when nothing more specific was found, so names
+     stay short enough to be useful in a downloads folder. */
+  const name = bits.filter(Boolean).join(' ');
+  return (name ? name : secName || 'mark').trim();
+}
+
+/* Rasterise the live node at what it actually measures on screen,
+   multiplied by DPR — which is the point of PNG here, since the
+   favicon and app-icon rows are the reason anyone wants raster. */
+function rasterise(node, name) {
+  const rect = node.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(rect.width * dpr));
+  const h = Math.max(1, Math.round(rect.height * dpr));
+  const src = serialiseSVG(node, name).replace(/^<!--[\s\S]*?-->\n/, '');
+  const blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    c.toBlob(b => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = `goforj-${slug(name)}-${w}px.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/png');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('Could not rasterise that one'); };
+  img.src = url;
+}
+
+/*
+  Clipboard writes fail more often than the happy path suggests — an
+  unfocused document, a denied permission, a non-secure origin. The
+  original code chained .then() with no .catch(), so any of those
+  produced silence and a user left wondering whether the click
+  registered. This always resolves, and falls back to a download so
+  the content is never simply lost.
+*/
+function copyText(text, filename = 'goforj-mark.svg') {
+  if (!navigator.clipboard || !window.isSecureContext) {
+    downloadText(filename, text);
+    return Promise.resolve(false);
+  }
+  return navigator.clipboard.writeText(text)
+    .then(() => true)
+    .catch(() => { downloadText(filename, text); return false; });
+}
+
+/* Brief confirmation, so a click is never silent. */
+let _toastTimer;
+function toast(msg) {
+  let el = document.getElementById('gfToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'gfToast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/*
+  ------------------------------------------------------------------
+  A MINIMAL ZIP WRITER.
+
+  The first version of the bulk download fired one anchor per file on
+  a 160ms stagger. Chrome and Safari treat more than ~10 automatic
+  downloads as hostile and put up a permission prompt or silently drop
+  the rest, so "download all 55" would have half-failed — and failed
+  quietly, which is worse.
+
+  Store-only (no compression) keeps this to about sixty lines with no
+  external dependency, which matters because this page loads nothing
+  but fonts and the theme stylesheet. SVG would compress well, but
+  correctness beats file size for a handful of kilobytes.
+  ------------------------------------------------------------------
+*/
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[i] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(bytes) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function makeZip(files) {
+  const enc = new TextEncoder();
+  const chunks = [], central = [];
+  let offset = 0;
+
+  const u16 = n => [n & 0xFF, (n >>> 8) & 0xFF];
+  const u32 = n => [n & 0xFF, (n >>> 8) & 0xFF, (n >>> 16) & 0xFF, (n >>> 24) & 0xFF];
+
+  /*
+    Two things a round-trip test through our own parser cannot catch,
+    both found by running the output through a real `unzip`:
+
+    1. Bit 11 of the general-purpose flag declares the filename as
+       UTF-8. Without it, extractors fall back to CP437 and an em dash
+       in a name comes out as mojibake. slug() forces ASCII today, so
+       this is latent rather than live — but it is one word to be
+       correct instead of accidentally correct.
+
+    2. A zero time/date field is 1980-00-00, which is not a real date.
+       Some extractors show it as invalid. Writing the actual time in
+       DOS format costs two expressions.
+  */
+  const UTF8_FLAG = 0x0800;
+  const now = new Date();
+  const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+  const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+
+  files.forEach(([name, text]) => {
+    const nameB = enc.encode(name), data = enc.encode(text);
+    const crc = crc32(data);
+    const local = [
+      ...u32(0x04034b50), ...u16(20), ...u16(UTF8_FLAG), ...u16(0),
+      ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(data.length), ...u32(data.length),
+      ...u16(nameB.length), ...u16(0)
+    ];
+    chunks.push(new Uint8Array(local), nameB, data);
+    central.push([
+      ...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(UTF8_FLAG), ...u16(0),
+      ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(data.length), ...u32(data.length),
+      ...u16(nameB.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
+      ...u32(0), ...u32(offset)
+    ].concat([...nameB]));
+    offset += local.length + nameB.length + data.length;
+  });
+
+  const cd = central.flat();
+  const end = [
+    ...u32(0x06054b50), ...u16(0), ...u16(0),
+    ...u16(files.length), ...u16(files.length),
+    ...u32(cd.length), ...u32(offset), ...u16(0)
+  ];
+  return new Blob([...chunks, new Uint8Array(cd), new Uint8Array(end)],
+    { type: 'application/zip' });
+}
+function downloadBlob(name, blob) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/*
+  The keyboard path.
+
+  Because the illustrations are deliberately not focusable, every
+  section that contains any gets a real button that downloads all of
+  them. This is what keeps the mouse shortcut a shortcut rather than
+  the only way to obtain an asset — roughly eight tab stops instead of
+  183, and nothing is reachable by mouse alone.
+*/
+function addSectionDownloads() {
+  document.querySelectorAll('section.sec').forEach(sec => {
+    const svgs = [...sec.querySelectorAll('svg')];
+    if (!svgs.length || sec.querySelector('[data-secdl]')) return;
+    const bar = document.createElement('div');
+    bar.style.cssText = 'margin:18px 0 0;display:flex;gap:8px;flex-wrap:wrap';
+    /* No id lookup — the button finds its own section by walking up.
+       An earlier version keyed off sec.id, which threw on the one
+       section that had no id. */
+    bar.innerHTML = `<button class="btn-s" data-secdl>` +
+      `Download all ${svgs.length} illustrations (.zip)</button>`;
+    sec.appendChild(bar);
+  });
+}
+addSectionDownloads();
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-secdl]');
+  if (!b) return;
+  const sec = b.closest('section.sec');
+  if (!sec) return;
+  const svgs = [...sec.querySelectorAll('svg')];
+  const seen = new Map();
+  const files = svgs.map(s => {
+    const label = describe(s);
+    let name = slug(label);
+    const n = (seen.get(name) || 0) + 1;
+    seen.set(name, n);
+    if (n > 1) name += `-${n}`;                 // de-duplicate within the zip
+    return [`goforj-${name}.svg`, serialiseSVG(s, label)];
+  });
+  const secName = slug(sec.id || 'section');
+  downloadBlob(`goforj-${secName}.zip`, makeZip(files));
+  toast(`${files.length} files — goforj-${secName}.zip`);
+});
+
+document.addEventListener('click', e => {
+  /* Never hijack a real control. */
+  if (e.target.closest('button, a, input, select, textarea')) return;
+
+  const svg = e.target.closest('svg');
+  const img = e.target.closest('img[src$=".png"]');
+
+  if (svg) {
+    const name = describe(svg);
+    if (e.altKey) { rasterise(svg, name); toast(`PNG — ${name}`); }
+    else {
+      downloadText(`goforj-${slug(name)}.svg`, serialiseSVG(svg, name));
+      toast(`SVG — ${name}  ·  alt-click for PNG`);
+    }
+    return;
+  }
+  if (img) {
+    const a = document.createElement('a');
+    a.href = img.getAttribute('src');
+    a.download = img.getAttribute('src').split('/').pop();
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Downloaded the current mark, as it ships');
+  }
+}, true);
+
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-copy]');
   const dl = e.target.closest('[data-dl]');
@@ -2165,17 +2533,18 @@ document.addEventListener('click', e => {
   };
   if (c) {
     const P = c.dataset.mode === 'light' ? P_LIGHT : P_DARK;
-    navigator.clipboard.writeText(exportSVG(c.dataset.copy, P))
-      .then(() => flash(c, 'Copied ✓'));
+    copyText(exportSVG(c.dataset.copy, P))
+      .then(ok => flash(c, ok ? 'Copied ✓' : 'Downloaded instead'))
+      .catch(() => flash(c, 'Copy failed'));
   }
   if (dl) {
     const P = dl.dataset.mode === 'light' ? P_LIGHT : P_DARK;
     downloadText(`goforj-${dl.dataset.dl}-${P.id}.svg`, exportSVG(dl.dataset.dl, P));
   }
   if (set) {
-    assetSet(set.dataset.set).forEach(([name, text], i) =>
-      setTimeout(() => downloadText(name, text), i * 220));
-    flash(set, 'Downloading…');
+    const files = assetSet(set.dataset.set);
+    downloadBlob(`goforj-${set.dataset.set}-assets.zip`, makeZip(files));
+    flash(set, 'Zipped ✓');
   }
 });
 </script>
