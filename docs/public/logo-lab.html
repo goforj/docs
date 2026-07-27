@@ -144,13 +144,27 @@ body {
 .chip.ok   { color: var(--vp-c-tip-1);     border-color: color-mix(in srgb, var(--vp-c-tip-1) 40%, transparent); }
 .chip.warn { color: var(--vp-c-warning-1); border-color: color-mix(in srgb, var(--vp-c-warning-1) 40%, transparent); }
 .chip.bad  { color: var(--vp-c-danger-1);  border-color: color-mix(in srgb, var(--vp-c-danger-1) 40%, transparent); }
-.mark__act { display: flex; gap: 8px; padding: 11px 16px; border-top: 1px solid var(--gf-line); }
+.mark__act { display: flex; gap: 8px; flex-wrap: wrap; padding: 11px 16px; border-top: 1px solid var(--gf-line); }
 .btn-s {
   font-family: var(--gf-font-body); font-size: 11.5px; font-weight: 500;
   padding: 6px 12px; border-radius: var(--gf-radius-sm); cursor: pointer;
   background: transparent; color: var(--gf-ink-2); border: 1px solid var(--gf-line-strong);
 }
 .btn-s:hover { color: var(--gf-ink); border-color: var(--gf-ink-3); }
+.tile-scale {
+  display: grid; grid-template-columns: minmax(150px, 1fr) minmax(180px, 2fr);
+  align-items: center; gap: 8px 18px; padding: 13px 16px;
+  border-top: 1px solid var(--gf-line); background: var(--gf-ground-alt);
+}
+.tile-scale label {
+  display: flex; justify-content: space-between; gap: 12px;
+  color: var(--gf-ink-2); font-size: 12px;
+}
+.tile-scale output { color: var(--gf-ink); font-family: var(--gf-font-mono); }
+.tile-scale input { width: 100%; accent-color: var(--gf-accent); cursor: ew-resize; }
+.tile-scale small {
+  grid-column: 1 / -1; color: var(--gf-ink-3); font-size: 11px; line-height: 1.45;
+}
 
 /* ---- generic test strips ---- */
 .strip {
@@ -442,6 +456,10 @@ figure:hover > svg { transform: translateY(-1px); }
 [data-gf-motion="reduced"] #gfToast { transition: opacity .18s ease; }
 
 @media (max-width: 760px) { .wrap, .head { padding-left: 18px; padding-right: 18px; } }
+@media (max-width: 560px) {
+  .tile-scale { grid-template-columns: 1fr; }
+  .tile-scale small { grid-column: auto; }
+}
 
 /* The aligned grids are the one thing that forced the whole document
    to scroll sideways on a phone — measured at 581px of scroll width
@@ -920,7 +938,9 @@ figure:hover > svg { transform: translateY(-1px); }
     croppers. Everything below is the same frozen silhouette — what changes
     between them is the job, not the drawing. The 256px and 128px variants
     expose display-scale detail; click one for SVG or Alt-click for a PNG at
-    the displayed size. The avatar tile also has direct 1024px PNG downloads.
+    the displayed size. The tile controls scale the inner mark without changing
+    the outer plate, and every export follows the preview. The avatar tile also
+    has direct 1024px PNG downloads.
   </p>
   <div class="ldrs" id="decidedSet"></div>
   <div class="note pick" id="recommendation"></div>
@@ -1368,8 +1388,9 @@ function rTile(size, P, o = {}) {
 /* Avatar uploaders want an uncropped source square so their own circle
    or rounded mask remains the only crop. The smaller avatar safe zone
    keeps the glyph clear even when the destination imposes a circle. */
+const AVATAR_TILE_COVER = 0.58;
 function rAvatarTile(size, P, o = {}) {
-  const F = frame(o.cover ?? 0.58);
+  const F = frame(o.cover ?? AVATAR_TILE_COVER);
   const plate = o.plate || P.accent;
   return svgOpen(size, F.vb, o.label) +
     `<rect x="${F.x0}" y="${F.y0}" width="${F.S}" height="${F.S}" fill="${plate}"/>` +
@@ -2626,16 +2647,20 @@ const PASSERS = VARIANTS.filter(v =>
       role: 'OS derivative', name: 'Tile', id: 'tile',
       why: 'Every operating system demands a filled square. Glyph at the 0.62 safe zone, radius 22.37%.',
       sizes: [256, 128, 64, 48, 32],
-      dark: px => rTile(px, P_DARK, { seam: true }),
-      light: px => rTile(px, P_LIGHT, { seam: true })
+      cover: 0.62, coverMin: 52,
+      coverNote: '62% is the OS-safe default. Larger settings may exceed an app platform’s recommended glyph zone.',
+      dark: (px, cover = 0.62) => rTile(px, P_DARK, { seam: true, cover }),
+      light: (px, cover = 0.62) => rTile(px, P_LIGHT, { seam: true, cover })
     },
     {
       role: 'Avatar upload', name: 'Avatar tile', id: 'avatar-tile',
       why: 'A full-bleed square with no corner radius. The 0.58 safe zone leaves GitHub, Slack, Discord, and similar croppers room to impose their own circular mask.',
       sizes: [256, 128, 64, 48, 32],
       png: 1024,
-      dark: px => rAvatarTile(px, P_DARK, { seam: true }),
-      light: px => rAvatarTile(px, P_LIGHT, { seam: true })
+      cover: AVATAR_TILE_COVER, coverMin: 48,
+      coverNote: '58% is the crop-safe default. Larger settings trade away margin for more visual weight.',
+      dark: (px, cover = AVATAR_TILE_COVER) => rAvatarTile(px, P_DARK, { seam: true, cover }),
+      light: (px, cover = AVATAR_TILE_COVER) => rAvatarTile(px, P_LIGHT, { seam: true, cover })
     },
     {
       role: 'Utility', name: 'Keyline', id: 'keyline',
@@ -2647,7 +2672,7 @@ const PASSERS = VARIANTS.filter(v =>
   ];
   document.getElementById('decidedSet').innerHTML = roles.map(r => {
     return `
-    <div class="ldr">
+    <div class="ldr" data-decided-role="${r.id}">
       <div class="ldr__head">
         <span class="ldr__name">${r.name}</span>
         <span class="mark__tag hot" style="margin-left:auto">${r.role}</span>
@@ -2659,6 +2684,11 @@ const PASSERS = VARIANTS.filter(v =>
         ${r.sizes.map(px => `<figure>${r.light(px)}<figcaption style="color:#867E90">${px}px</figcaption></figure>`).join('')}
       </div>
       <p class="ldr__why">${r.why}</p>
+      ${r.cover ? `<div class="tile-scale">
+        <label for="${r.id}Scale">Inner mark size <output for="${r.id}Scale" data-cover-output>${Math.round(r.cover * 100)}%</output></label>
+        <input id="${r.id}Scale" type="range" min="${r.coverMin}" max="76" step="1" value="${Math.round(r.cover * 100)}" data-mark-cover aria-label="${r.name} inner mark size">
+        <small>${r.coverNote}</small>
+      </div>` : ''}
       <div class="mark__act">
         <button class="btn-s" data-dl="${r.id}">Dark</button>
         <button class="btn-s" data-dl="${r.id}" data-mode="light">Light</button>
@@ -2668,6 +2698,25 @@ const PASSERS = VARIANTS.filter(v =>
       </div>
     </div>`;
   }).join('');
+
+  /* Re-render the live ladders from the same cover value the export
+     actions read, so experimentation never produces a mismatched file. */
+  document.getElementById('decidedSet').addEventListener('input', e => {
+    const slider = e.target.closest('[data-mark-cover]');
+    if (!slider) return;
+    const card = slider.closest('[data-decided-role]');
+    const role = roles.find(r => r.id === card.dataset.decidedRole);
+    const cover = Number(slider.value) / 100;
+    card.querySelector('[data-cover-output]').value = `${slider.value}%`;
+    card.querySelectorAll('.ldr__stage').forEach((stage, mode) => {
+      stage.querySelectorAll('figure').forEach(figure => {
+        const px = Number.parseInt(figure.querySelector('figcaption').textContent, 10);
+        figure.querySelector('svg').outerHTML = mode === 0
+          ? role.dark(px, cover)
+          : role.light(px, cover);
+      });
+    });
+  });
 })();
 
 /* --- recommendation, written against the measurements --- */
@@ -2820,7 +2869,7 @@ LOADERS            signal            floor
 */
 function exportSVG(id, P = P_DARK, opts = {}) {
   const v = exportableById(id);
-  let svg = v.render(1000, P, { label: opts.label || `GoForj — ${v.name}` });
+  let svg = v.render(1000, P, { ...opts, label: opts.label || `GoForj — ${v.name}` });
 
   // Drop the fixed size; keep the viewBox so the asset is resolution-free.
   svg = svg.replace(/^<svg width="\d+" height="\d+" /, '<svg ');
@@ -2835,15 +2884,16 @@ function exportSVG(id, P = P_DARK, opts = {}) {
              .split(`url(#${old})`).join(`url(#${safe})`);
   });
 
+  const cover = opts.cover ? ` Glyph cover ${Math.round(opts.cover * 100)}%.` : '';
   return `<!-- GoForj ${v.name} — ${P.id === 'light' ? 'light' : 'dark'} palette. `
-       + `Minimum size ${FLOOR}px. Clear space 0.23x. -->\n` + svg + '\n';
+       + `Minimum size ${FLOOR}px. Clear space 0.23x.${cover} -->\n` + svg + '\n';
 }
 
 /* The full set a handoff actually needs, rather than one mark. */
-function assetSet(id) {
+function assetSet(id, opts = {}) {
   return [
-    [`goforj-${id}-dark.svg`,   exportSVG(id, P_DARK)],
-    [`goforj-${id}-light.svg`,  exportSVG(id, P_LIGHT)],
+    [`goforj-${id}-dark.svg`,   exportSVG(id, P_DARK, opts)],
+    [`goforj-${id}-light.svg`,  exportSVG(id, P_LIGHT, opts)],
     ['goforj-tile.svg',         exportSVG('tile', P_DARK)],
     ['goforj-keyline.svg',      exportSVG('keyline', P_DARK)]
   ];
@@ -3047,8 +3097,8 @@ function rasterise(node, name) {
 /* Avatar uploaders generally want a large raster rather than an SVG,
    so the decided-set action can produce a predictable source size
    without rendering a 1024px preview into the page. */
-function rasteriseExport(id, P, size) {
-  const src = exportSVG(id, P)
+function rasteriseExport(id, P, size, opts = {}) {
+  const src = exportSVG(id, P, opts)
     .replace(/^<!--[\s\S]*?-->\n/, '')
     .replace('<svg ', `<svg width="${size}" height="${size}" `);
   rasteriseSource(src, `${id}-${P.id}`, size, size);
@@ -3208,6 +3258,13 @@ function addSectionDownloads() {
 }
 addSectionDownloads();
 
+/* Read card-local controls at action time so every download reflects
+   the preview currently in front of the user. */
+function exportOptionsFor(node) {
+  const slider = node.closest('.ldr')?.querySelector('[data-mark-cover]');
+  return slider ? { cover: Number(slider.value) / 100 } : {};
+}
+
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-secdl]');
   if (!b) return;
@@ -3270,15 +3327,15 @@ document.addEventListener('click', e => {
   }
   if (dl) {
     const P = dl.dataset.mode === 'light' ? P_LIGHT : P_DARK;
-    downloadText(`goforj-${dl.dataset.dl}-${P.id}.svg`, exportSVG(dl.dataset.dl, P));
+    downloadText(`goforj-${dl.dataset.dl}-${P.id}.svg`, exportSVG(dl.dataset.dl, P, exportOptionsFor(dl)));
   }
   if (png) {
     const P = png.dataset.mode === 'light' ? P_LIGHT : P_DARK;
-    rasteriseExport(png.dataset.png, P, Number(png.dataset.pngSize));
+    rasteriseExport(png.dataset.png, P, Number(png.dataset.pngSize), exportOptionsFor(png));
     flash(png, 'Rendering…');
   }
   if (set) {
-    const files = assetSet(set.dataset.set);
+    const files = assetSet(set.dataset.set, exportOptionsFor(set));
     downloadBlob(`goforj-${set.dataset.set}-assets.zip`, makeZip(files));
     flash(set, 'Zipped ✓');
   }
