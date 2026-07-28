@@ -14,6 +14,14 @@ const taskPages = [
   'operations/deployment-basics.md'
 ]
 
+const sourceCheckedExamplePages = [
+  'applications/http-clients.md',
+  'applications/middleware.md',
+  'async/retries-idempotency.md',
+  'operations/queue-workers.md',
+  'testing/event-tests.md'
+]
+
 const scenarioRoot = path.join(docsRoot, 'scenarios')
 for (const entry of fs.readdirSync(scenarioRoot, { withFileTypes: true })) {
   if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'index.md') {
@@ -21,13 +29,14 @@ for (const entry of fs.readdirSync(scenarioRoot, { withFileTypes: true })) {
   }
 }
 
-const failures = []
+const editorialFailures = []
+const sourceFailures = []
 
 for (const relativePath of publicMarkdownFiles(docsRoot)) {
   const source = fs.readFileSync(path.join(docsRoot, relativePath), 'utf8')
   const frontmatter = readFrontmatter(source)
   if (!frontmatter.description) {
-    failures.push(`${relativePath}: add a concrete frontmatter description`)
+    editorialFailures.push(`${relativePath}: add a concrete frontmatter description`)
   }
 }
 
@@ -45,10 +54,19 @@ for (const relativePath of taskPages) {
 
   for (const [requirement, passed] of checks) {
     if (!passed) {
-      failures.push(`${relativePath}: task page needs ${requirement}`)
+      editorialFailures.push(`${relativePath}: task page needs ${requirement}`)
     }
   }
+
+  auditTaskVerification(relativePath, body)
+  auditTaskSnippets(relativePath, body)
 }
+
+for (const relativePath of sourceCheckedExamplePages) {
+  auditTaskSnippets(relativePath, stripFrontmatter(readDoc(relativePath)))
+}
+
+auditForbiddenPatterns()
 
 for (const trackedPath of trackedFiles()) {
   if (
@@ -59,7 +77,7 @@ for (const trackedPath of trackedFiles()) {
       trackedPath.includes('.fuse_hidden')
     )
   ) {
-    failures.push(`${trackedPath}: local environment or filesystem artifact must not be tracked`)
+    sourceFailures.push(`${trackedPath}: local environment or filesystem artifact must not be tracked`)
   }
 }
 
@@ -71,15 +89,134 @@ if (fs.existsSync(eventsRoot)) {
   auditEventDriverParity()
 }
 
-if (failures.length > 0) {
+if (editorialFailures.length > 0 || sourceFailures.length > 0) {
   console.error('Documentation value audit failed:')
-  for (const failure of failures) {
-    console.error(`- ${failure}`)
-  }
+  reportFailures('Editorial contract checks', editorialFailures)
+  reportFailures('Source contract checks', sourceFailures)
   process.exit(1)
 }
 
 console.log(`Documentation value audit passed (${taskPages.length} task pages checked).`)
+console.log('Editorial contract checks: task outcomes, verification evidence, safe examples, and snippet consistency passed.')
+console.log('Source contract checks: framework, event-source, dependency-path, and local task-import parity passed where source is available.')
+console.log('Go snippets are checked for imports and known source contracts, but are not type-checked here. Rendered-app compilation remains an integration-test responsibility.')
+
+// reportFailures keeps editorial guidance separate from source-backed failures so a content edit is not mistaken for executable proof.
+function reportFailures(heading, failures) {
+  if (failures.length === 0) return
+  console.error(`${heading}:`)
+  for (const failure of failures) console.error(`- ${failure}`)
+}
+
+// auditTaskVerification requires each task page to show a command that produces observable evidence, rather than only promising verification in prose.
+function auditTaskVerification(relativePath, body) {
+  const verificationSections = markdownSections(body, /^(?:Build and )?Verify\b|^Try\b|^Check\b/i)
+  if (verificationSections.length === 0) return
+
+  const hasExecutableEvidence = verificationSections.some((section) => {
+    const commands = fencedBlocks(section, 'bash').map(({ content }) => content)
+    return commands.some((command) => /\S/.test(command))
+  })
+  if (!hasExecutableEvidence) {
+    editorialFailures.push(`${relativePath}: verification guidance must include an executable bash command`)
+  }
+}
+
+// auditTaskSnippets catches mistakes that prose review can miss without pretending that partial snippets are complete rendered applications.
+function auditTaskSnippets(relativePath, body) {
+  for (const [index, block] of fencedBlocks(body, 'go').entries()) {
+    const imports = goImports(block.content)
+    const withoutImports = block.content.replace(/import\s*(?:\(\s*[\s\S]*?\s*\)|"[^"\n]+")/g, '')
+    for (const imported of imports) {
+      auditLocalGoForjImport(relativePath, imported.path)
+      if (imported.alias === '_' || imported.alias === '.') continue
+      if (!new RegExp(`\\b${escapeRegExp(imported.alias)}\\s*\\.`).test(withoutImports)) {
+        editorialFailures.push(`${relativePath}: Go snippet ${index + 1} imports ${imported.path} but does not use ${imported.alias}`)
+      }
+    }
+  }
+}
+
+// auditLocalGoForjImport verifies task imports against sibling module metadata when those source repositories are present.
+function auditLocalGoForjImport(relativePath, importPath) {
+  const match = importPath.match(/^github\.com\/goforj\/([^/]+)/)
+  if (!match) return
+
+  const moduleRoot = path.resolve(repoRoot, '..', match[1])
+  const goModPath = path.join(moduleRoot, 'go.mod')
+  if (!fs.existsSync(goModPath)) return
+
+  const moduleName = fs.readFileSync(goModPath, 'utf8').match(/^module\s+(\S+)$/m)?.[1]
+  if (!moduleName || (importPath !== moduleName && !importPath.startsWith(`${moduleName}/`))) {
+    const generatedDependencies = fs.existsSync(path.join(frameworkRoot, 'internal/coredeps/modules.go'))
+      ? readFramework('internal/coredeps/modules.go')
+      : ''
+    if (generatedDependencies.includes(`"${importPath}"`)) return
+    sourceFailures.push(`${relativePath}: import ${importPath} does not match local module ${moduleName ?? goModPath}`)
+    return
+  }
+
+  const packagePath = importPath.slice(moduleName.length).replace(/^\//, '')
+  if (!fs.existsSync(path.join(moduleRoot, packagePath))) {
+    sourceFailures.push(`${relativePath}: imported GoForj package ${importPath} is absent from the local module source`)
+  }
+}
+
+// auditForbiddenPatterns blocks examples that execute an unreviewed remote response as shell code, a high-risk pattern with no documentation value.
+function auditForbiddenPatterns() {
+  for (const relativePath of publicMarkdownFiles(docsRoot)) {
+    const source = fs.readFileSync(path.join(docsRoot, relativePath), 'utf8')
+    if (/\b(?:curl|wget)\b[^\n]*\|\s*(?:sh|bash)\b/i.test(source)) {
+      editorialFailures.push(`${relativePath}: do not pipe curl or wget output directly into sh or bash`)
+    }
+  }
+}
+
+// fencedBlocks returns complete, language-specific fenced blocks and deliberately ignores partial prose snippets.
+function fencedBlocks(source, language) {
+  const blocks = []
+  const expression = new RegExp(`^\`\`\`${escapeRegExp(language)}\\s*\\n([\\s\\S]*?)^\`\`\`\\s*$`, 'gmi')
+  for (const match of source.matchAll(expression)) blocks.push({ content: match[1] })
+  return blocks
+}
+
+// goImports extracts imports from a complete Go snippet without requiring that a pedagogical fragment compile as a standalone file.
+function goImports(source) {
+  const imports = []
+  const declaration = /import\s*(?:\(\s*([\s\S]*?)\s*\)|("[^"\n]+"))/g
+  for (const match of source.matchAll(declaration)) {
+    const entries = match[1] ?? match[2]
+    for (const line of entries.split('\n')) {
+      const imported = line.match(/^\s*(?:(\.|_|[A-Za-z_]\w*)\s+)?"([^"\n]+)"\s*(?:\/\/.*)?$/)
+      if (!imported) continue
+      const importPath = imported[2]
+      const pathParts = importPath.split('/').filter(Boolean)
+      const packageName = pathParts.at(-1)
+      imports.push({
+        alias: imported[1] ?? (/^v\d+$/.test(packageName) ? pathParts.at(-2) : packageName),
+        path: importPath
+      })
+    }
+  }
+  return imports
+}
+
+// markdownSections returns level-two sections whose headings match expression, including their contents up to the next peer heading.
+function markdownSections(source, expression) {
+  const sections = []
+  const headings = [...source.matchAll(/^##\s+(.+)$/gm)]
+  for (const [index, match] of headings.entries()) {
+    if (!expression.test(match[1])) continue
+    const end = headings[index + 1]?.index ?? source.length
+    sections.push(source.slice(match.index, end))
+  }
+  return sections
+}
+
+// escapeRegExp makes source-derived names safe when testing their use in a snippet.
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 
 // auditFrameworkContracts catches documentation drift at the source surfaces that define public defaults and commands.
 function auditFrameworkContracts() {
@@ -112,11 +249,11 @@ function auditFrameworkContracts() {
     const source = readFramework(relativePath)
     const command = source.match(/return `name:"([^"]+)"\s+help:/)?.[1]
     if (!command) {
-      failures.push(`${relativePath}: cannot derive the public command name from Signature`)
+      sourceFailures.push(`${relativePath}: cannot derive the public command name from Signature`)
       continue
     }
     if (!cliSource.includes(`\`forj ${command}`)) {
-      failures.push(`reference/cli.md: document framework command "forj ${command}"`)
+      sourceFailures.push(`reference/cli.md: document framework command "forj ${command}"`)
     }
   }
 
@@ -138,9 +275,9 @@ function auditFrameworkContracts() {
 
   for (const [relativePath, sourceToken, docsToken] of optionContracts) {
     if (!readFramework(relativePath).includes(sourceToken)) {
-      failures.push(`${relativePath}: CLI audit source token changed: ${sourceToken}`)
+      sourceFailures.push(`${relativePath}: CLI audit source token changed: ${sourceToken}`)
     } else if (!cliSource.includes(`\`${docsToken}\``)) {
-      failures.push(`reference/cli.md: document framework option ${docsToken}`)
+      sourceFailures.push(`reference/cli.md: document framework option ${docsToken}`)
     }
   }
 
@@ -148,9 +285,9 @@ function auditFrameworkContracts() {
   const timezone = envTemplate.match(/^TZ=(.+)$/m)?.[1]?.trim()
   const envReference = readDoc('reference/env-vars.md')
   if (!timezone) {
-    failures.push('templates/.env.tmpl: cannot derive the generated TZ default')
+    sourceFailures.push('templates/.env.tmpl: cannot derive the generated TZ default')
   } else if (!envReference.includes(`| \`TZ\` | \`${timezone}\` |`)) {
-    failures.push(`reference/env-vars.md: generated TZ default must match ${timezone}`)
+    sourceFailures.push(`reference/env-vars.md: generated TZ default must match ${timezone}`)
   }
 
   const componentCatalog = readFramework('project/components_catalog.go')
@@ -159,12 +296,24 @@ function auditFrameworkContracts() {
     ?.toLowerCase()
   const driversReference = readDoc('drivers.md')
   if (!defaultDatabase) {
-    failures.push('project/components_catalog.go: cannot derive the default database component')
+    sourceFailures.push('project/components_catalog.go: cannot derive the default database component')
   } else {
     const databaseSection = markdownSection(driversReference, 'Database')
     const defaultRow = databaseSection.split('\n').find((line) => line.startsWith(`| \`${defaultDatabase}\` |`))
     if (!defaultRow?.includes('current `forj new` default')) {
-      failures.push(`drivers.md: identify ${defaultDatabase} as the current forj new default`)
+      sourceFailures.push(`drivers.md: identify ${defaultDatabase} as the current forj new default`)
+    }
+  }
+
+  const coreDependencies = readFramework('internal/coredeps/modules.go')
+  const httpxModule = coreDependencies.match(/"github\.com\/goforj\/httpx(?:\/v\d+)?"\s*:\s*"([^"]+)"/)?.[0]
+  const httpClientGuide = readDoc('applications/http-clients.md')
+  if (!httpxModule) {
+    sourceFailures.push('internal/coredeps/modules.go: cannot derive the generated App HTTPX module')
+  } else {
+    const generatedImport = httpxModule.match(/"([^"]+)"/)?.[1]
+    if (!httpClientGuide.includes(`"${generatedImport}"`)) {
+      sourceFailures.push(`applications/http-clients.md: import ${generatedImport} to match generated App dependencies`)
     }
   }
 
@@ -188,10 +337,10 @@ function auditLatestFrameworkTag() {
   const versions = readDoc('versions/index.md')
   const config = fs.readFileSync(path.join(docsRoot, '.vitepress', 'config.mts'), 'utf8')
   if (!versions.includes(`\`${latestTag}\` is the latest tagged framework release`)) {
-    failures.push(`versions/index.md: latest tagged framework release must match ${latestTag}`)
+    sourceFailures.push(`versions/index.md: latest tagged framework release must match ${latestTag}`)
   }
   if (!config.includes(`Latest tag ${latestTag}`)) {
-    failures.push(`.vitepress/config.mts: latest tag navigation must match ${latestTag}`)
+    sourceFailures.push(`.vitepress/config.mts: latest tag navigation must match ${latestTag}`)
   }
 }
 
@@ -217,7 +366,7 @@ function auditEventDriverParity() {
   )
   const proofDrivers = [...proofStats.drivers.events].sort()
   if (sourceDrivers.join('\0') !== proofDrivers.join('\0')) {
-    failures.push(`.vitepress/data/proof-stats.json: event drivers must match published modules (${sourceDrivers.join(', ')})`)
+    sourceFailures.push(`.vitepress/data/proof-stats.json: event drivers must match published modules (${sourceDrivers.join(', ')})`)
   }
 
   const tableDrivers = markdownSection(readDoc('drivers.md'), 'Events')
@@ -226,7 +375,7 @@ function auditEventDriverParity() {
     .filter(Boolean)
     .sort()
   if (proofDrivers.join('\0') !== tableDrivers.join('\0')) {
-    failures.push(`drivers.md: event table must match proof data (${proofDrivers.join(', ')})`)
+    sourceFailures.push(`drivers.md: event table must match proof data (${proofDrivers.join(', ')})`)
   }
 }
 
