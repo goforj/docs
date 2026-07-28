@@ -1648,7 +1648,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-compare-kit--react .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgba(255, 194, 77);
+    --gf-starter-compare-accent: rgb(97, 218, 251);
 }
 
 .gf-starter-compare-kit--vue .gf-starter-compare-kit__icon {
@@ -1726,7 +1726,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-kit-card--react {
-    --gf-starter-kit-accent: rgba(255, 194, 77);
+    --gf-starter-kit-accent: rgb(97, 218, 251);
 }
 
 .gf-starter-kit-card--vue {
@@ -1883,8 +1883,7 @@ html.gf-lightbox-open body {
     .gf-starter-kit-card {
         grid-template-columns: auto minmax(0, 1fr);
         min-height: 0;
-        border-right: 0;
-        border-bottom: 1px solid rgba(166, 156, 176, 0.14);
+        border: 1px solid var(--gf-line);
     }
 
     .gf-starter-kit-card code {
@@ -1900,10 +1899,6 @@ html.gf-lightbox-open body {
     .gf-starter-support-cta {
         display: grid;
         justify-content: stretch;
-    }
-
-    .gf-starter-kit-card:last-child {
-        border-bottom: 0;
     }
 
     /* Command row: drop the Copy button onto its own line, and let the command
@@ -6296,7 +6291,7 @@ body,
    That is a FIFTH meaning for colour in a system that allows
    four, and it collides with three of them outright:
 
-     React  rgba(255,194,77)  = Temper's NAVIGATION gold exactly
+     React  previously used Temper's NAVIGATION gold exactly
      Vue    rgb(66,184,131)   ~ Temper's TIP green
      templ  rgb(255,154,96)   ~ Temper's ACTION orange
 
@@ -6313,33 +6308,119 @@ body,
    it goes neutral, which is also what makes the marks read as
    logos instead of as status chips.
    ============================================================ */
+/* Match the design-system card specimen: compact neutral surface, one
+   hairline, one radius. Interior metadata stays typographic so the card
+   does not become a stack of smaller controls. */
+.gf-starter-kit-grid {
+    gap: 14px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
 .gf-starter-kit-card {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: 14px;
+    padding: 20px;
     background: var(--gf-surface);
     border: 1px solid var(--gf-line);
+    border-radius: var(--gf-radius);
     box-shadow: none;
 }
 .gf-starter-kit-card::before {
     background: none;
 }
 .gf-starter-kit-card:hover {
-    border-color: var(--gf-line-strong);
+    border-color: var(--gf-line);
     box-shadow: none;
 }
-/* Mark: neutral tile, glyph keeps the framework colour. */
+/* The design-system mark is a small neutral tile. Only the glyph carries
+   the external framework colour. */
 .gf-starter-kit-card__mark {
+    width: 48px;
+    height: 48px;
     border: 1px solid var(--gf-line-strong);
-    background: var(--gf-surface-2);
+    border-radius: var(--gf-radius);
+    background: var(--gf-ground);
     box-shadow: none;
 }
-/* Subtitle was the framework colour; it is a label, so it is ink. */
-.gf-starter-kit-card strong {
-    color: var(--gf-ink);
+.gf-starter-kit-card__mark--combo {
+    width: 48px;
 }
-/* Tag pills: neutral surface, muted ink. */
-.gf-starter-kit-card code {
-    background: var(--gf-surface-2);
-    border: 1px solid var(--gf-line);
+.gf-starter-kit-card__mark svg,
+.gf-starter-kit-card__mark img {
+    width: 34px;
+    height: 34px;
+}
+.gf-starter-kit-card__mark--combo svg {
+    width: 22px;
+    height: 22px;
+}
+.gf-starter-kit-card__mark--combo span {
+    font-size: 0.72rem;
+}
+.gf-starter-kit-card h3 {
+    font-size: clamp(1.08rem, 1.2vw, 1.3rem);
+}
+/* Subtitle was the framework colour; it is supporting copy, so it is muted ink. */
+.gf-starter-kit-card strong {
+    margin-top: 7px;
     color: var(--gf-ink-2);
+    font-size: 0.82rem;
+}
+/* The kit value is quiet metadata, not another accent competing with the
+   framework mark and the navigation link below it. */
+.gf-starter-kit-card code {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--gf-ink-2);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+/* Technology names are metadata. Dots preserve scanability without adding
+   another row of pills inside an already bounded card. */
+.gf-starter-kit-card__tags {
+    gap: 0;
+    margin-top: 12px;
+}
+.gf-starter-kit-card__tags span {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--gf-ink-2);
+    font-family: var(--gf-font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+.gf-starter-kit-card__tags span + span::before {
+    content: "·";
+    margin: 0 8px;
+    color: var(--gf-ink-3);
+}
+.gf-starter-kit-card__includes {
+    margin-top: 0;
+    padding-top: 16px;
+    border-top-color: var(--gf-line);
+}
+.gf-starter-kit-card__includes li {
+    padding-left: 13px;
+    color: var(--gf-ink-2);
+}
+.gf-starter-kit-card__includes li::before {
+    top: 0.58em;
+    width: 3px;
+    height: 3px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--gf-ink-3);
+    box-shadow: none;
+}
+.gf-starter-kit-card__includes li::after {
+    content: none;
 }
 
 /* --- Card planes on the deep marketing ground -------------
@@ -6365,18 +6446,53 @@ body,
    four boxes with no interior space. Removed; styled as facts
    further down. A rule that says "cards on the deep ground"
    should name cards, not every direct child of a container. */
-.gf-home:not(.VPDoc) .gf-starter-kit-card,
-.gf-starter-page .gf-starter-kit-card,
-.gf-starter-page .gf-starter-command-card,
 .gf-home-card,
 .gf-hero-principle {
     background: var(--gf-ground);
     border: 1px solid var(--gf-line);
 }
-.gf-starter-page .gf-starter-kit-card__mark,
-.gf-starter-page .gf-starter-kit-card code {
-    background: var(--gf-surface);
-    border-color: var(--gf-line-strong);
+
+/* The option panels are one decision family. Reusing the comparison panel's
+   exact light wash gives the command, choices, comparison, and closing prompt
+   one consistent level of emphasis while their contents provide hierarchy. */
+.gf-starter-page .gf-starter-command-card,
+.gf-starter-page .gf-starter-kit-card,
+.gf-starter-page .gf-starter-compare,
+.gf-starter-page .gf-starter-support-cta {
+    background:
+        radial-gradient(560px 260px at 0% 0%, rgba(255, 94, 58, 0.12), transparent 74%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.022)),
+        rgba(29, 25, 33, 0.90);
+    border-color: rgba(166, 156, 176, 0.24);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 24px 68px rgba(0, 0, 0, 0.14);
+}
+.gf-starter-page .gf-starter-kit-card__mark {
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--gf-starter-kit-accent) 18%, var(--gf-ground)),
+            var(--gf-ground) 72%
+        );
+    border-color: color-mix(in srgb, var(--gf-starter-kit-accent) 46%, var(--gf-line));
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--gf-starter-kit-accent) 22%, transparent),
+        0 10px 28px color-mix(in srgb, var(--gf-starter-kit-accent) 10%, transparent);
+}
+.gf-starter-page .gf-starter-kit-card h3,
+.gf-starter-page .gf-starter-kit-card__includes p {
+    color: var(--gf-ink);
+}
+.gf-starter-page .gf-starter-kit-card > div:nth-child(2) > p:not(.gf-starter-kit-card__credit),
+.gf-starter-page .gf-starter-kit-card__includes li {
+    color: color-mix(in srgb, var(--gf-ink-2) 88%, var(--gf-ink));
+}
+.gf-starter-page .gf-starter-kit-card code,
+.VPDoc .vp-doc .gf-starter-page .gf-starter-kit-card code {
+    background: transparent;
+    border-color: transparent;
+    color: var(--gf-ink-2);
 }
 
 /* ============================================================
