@@ -143,7 +143,7 @@ forj scheduler
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace scheduler
+forj admin scheduler
 ```
 
 Schedules should have stable names and point to domain-owned methods or command work.

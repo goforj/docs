@@ -20,7 +20,7 @@ forj migrate
 Run migrations for an additional app by prefixing the command with the app name:
 
 ```bash
-forj marketplace migrate
+forj admin migrate
 ```
 
 ## Create a Migration
@@ -52,7 +52,7 @@ The default connection writes under `migrations/`. Named connections use `migrat
 migrations/<timestamp>_create_users.up.sql
 migrations/<timestamp>_create_users.down.sql
 migrations/analytics/<timestamp>_add_event_index.up.sql
-migrations/marketplace/archive/<timestamp>_add_event_index.up.sql
+migrations/admin/archive/<timestamp>_add_event_index.up.sql
 ```
 
 Multi-driver Apps insert the driver before `.up.sql` and `.down.sql`, such as `.postgres.up.sql`. No Go or Wire files change.
@@ -90,7 +90,7 @@ forj migrate:rollback
 For an additional app:
 
 ```bash
-forj marketplace migrate:rollback
+forj admin migrate:rollback
 ```
 
 The generated migration command supports options such as step count, dry run, and connection selection.
@@ -100,11 +100,11 @@ The generated migration command supports options such as step count, dry run, an
 App-prefixed commands scope execution to that app:
 
 ```bash
-forj marketplace migrate
-forj marketplace migrate --connection archive
+forj admin migrate
+forj admin migrate --connection archive
 ```
 
-The first command runs every migration stream under `migrations/marketplace/*`. The second runs only `migrations/marketplace/archive`.
+The first command runs every migration stream under `migrations/admin/*`. The second runs only `migrations/admin/archive`.
 
 If two apps share one physical database, pick one app to own that database's migration stream. Do not duplicate the same schema history under two app directories. The `analytics` connection directory maps to `DB_ANALYTICS_*`.
 

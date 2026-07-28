@@ -22,7 +22,7 @@ Choose the topology before creating units:
 
 A runtime-capable App selects `run` when the bare binary is launched. It starts its enabled runtimes together and cancels sibling runtimes if one fails. Split commands start only their named runtime. Changing commands does not make in-memory drivers shared between processes; use cross-process drivers for infrastructure that HTTP and workers must share.
 
-For an additional app, replace `app` with the app name, for example `./bin/marketplace api`.
+For a staff operations App named `admin`, replace `app` with its name, for example `./bin/admin api`.
 
 ## Build an Artifact
 

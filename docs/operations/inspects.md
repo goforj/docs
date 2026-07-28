@@ -28,7 +28,7 @@ Inspects can include:
 - source runtime identity
 - duration and status
 
-In a multi-app Project, inspect records should preserve app identity as well as runtime/source identity. That lets Lighthouse and operators distinguish a `marketplace` HTTP request from the default app or a `backstage` scheduler run.
+In a multi-app Project, inspect records should preserve app identity as well as runtime/source identity. That lets Lighthouse and operators distinguish an `admin` staff-action request from the default app or a `statuspage` scheduler run that publishes current availability.
 
 The source determines the record shape:
 

@@ -48,7 +48,7 @@ Availability comes from the selected components in `.goforj.yml`. Cache, Storage
 `forj build:api-index` is the focused API contract command. It publishes the API index, diagnostics, and OpenAPI document together. Use `--strict` in CI and prefix the command with the app name:
 
 ```bash
-forj marketplace build:api-index --strict
+forj admin build:api-index --strict
 ```
 
 ## Creation and Removal Workflows

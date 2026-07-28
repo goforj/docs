@@ -163,7 +163,7 @@ Released June 16, 2026.
 - Added first-class support for one GoForj Project containing multiple runnable Apps.
 - Added the default App at `app/` with its binary entrypoint at `cmd/app/main.go`.
 - Added named Apps under `app/<name>/` with matching binary entrypoints under `cmd/<name>/main.go`.
-- Added app-prefixed command routing such as `forj marketplace route:list`, `forj marketplace make:controller checkout`, and `forj marketplace build`.
+- Added app-prefixed command routing such as `forj admin route:list`, `forj admin make:controller reports`, and `forj admin build`.
 - Updated `make:*` commands so an app prefix writes generated code into the selected App's registration and Wire files.
 - Moved App composition into app-owned files such as `commands.go`, `routes.go`, `schedules.go`, `lifecycle.go`, and `root_cmd.go`.
 - Renamed the public domain model from app targets to Apps.

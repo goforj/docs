@@ -83,10 +83,10 @@ Expected result: `cmd/app/frontend/dist` contains the production frontend and `b
 To create an additional app with the same frontend stack:
 
 ```bash
-forj make:app marketplace --components web-api,web-ui --starter-kit vue
+forj make:app admin --components web-api,web-ui --starter-kit vue
 ```
 
-Its frontend lives in `cmd/marketplace/frontend/`.
+Its frontend lives in `cmd/admin/frontend/`.
 
 ## Next Steps
 

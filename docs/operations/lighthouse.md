@@ -32,14 +32,16 @@ In a multi-app Project, Lighthouse should present the app first and the runtime 
 
 ```text
 photodrop
-  marketplace
+  admin
     http
     jobs
 
-  backstage
+  statuspage
     http
     scheduler
 ```
+
+In this example, `admin` handles staff operations and background jobs. `statuspage` is an independently available public surface whose HTTP runtime serves health and incident information while its scheduler refreshes availability.
 
 Lighthouse payloads may still use implementation fields such as `agent` or `source` internally. Read `source` as the process role, such as `http`, `jobs`, `scheduler`, `cli`, or `app`. User-facing labels should stay close to the Project -> app -> runtime hierarchy.
 

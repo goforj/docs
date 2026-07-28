@@ -20,14 +20,14 @@ This page owns the deployable command shapes, process separation, and shutdown b
 
 The bare runtime-capable binary selects `run`; `./bin/app run` is the explicit equivalent. This operations page uses direct binaries because a supervisor should execute the artifact being deployed. For source-aware development commands, see [Local-First Development](/core/local-first-development).
 
-For an additional app, use that app's binary:
+For a staff operations App named `admin`, use its binary:
 
 | Process | Supervised command |
 | --- | --- |
-| Combined runtime | `./bin/marketplace` |
-| HTTP | `./bin/marketplace api` |
-| Queue workers | `./bin/marketplace worker` |
-| Scheduler | `./bin/marketplace scheduler` |
+| Combined runtime | `./bin/admin` |
+| HTTP | `./bin/admin api` |
+| Queue workers | `./bin/admin worker` |
+| Scheduler | `./bin/admin scheduler` |
 
 ## Choose the Processes to Supervise
 
@@ -38,7 +38,7 @@ Topology is selected by the commands the process manager starts; it does not req
 | Standalone | One deployment unit should own the enabled runtimes, as in local development, demos, small deployments, or simple operational environments. |
 | Distributed | HTTP, workers, and the scheduler need independent scaling, restart policies, metrics targets, or resource limits. |
 
-Use the combined command in the process table for one standalone service. Distributed deployments should start the explicit `api`, `worker`, and `scheduler` commands so ownership remains visible. Additional apps make the same choice through their own binaries, such as `./bin/marketplace api`.
+Use the combined command in the process table for one standalone service. Distributed deployments should start the explicit `api`, `worker`, and `scheduler` commands so ownership remains visible. The `admin` App can make the same choice when staff HTTP traffic, reporting workers, and operational schedules need separate ownership, such as `./bin/admin api`.
 
 Driver selection is separate from process topology. If API and worker processes share cache, queue, events, or files, configure backends that cross process boundaries. Splitting commands does not make process-local drivers shared or make jobs correct without idempotency and backend planning.
 

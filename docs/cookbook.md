@@ -14,7 +14,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Add or remove components after the first render. [Configuration](/getting-started/configuration)
 - Change ports, drivers, or settings. [Configuration](/getting-started/configuration) and [Environment Reference](/reference/env-vars)
 - Start with a frontend included. [Starter Kits](/getting-started/starter-kits)
-- Add another runnable app: `forj make:app marketplace`. [Apps](/core/apps)
+- Add another runnable app: `forj make:app admin`. [Apps](/core/apps)
 
 ## HTTP
 

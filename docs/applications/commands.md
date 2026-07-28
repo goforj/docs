@@ -23,10 +23,10 @@ forj scheduler
 Use the app name first to select an additional app:
 
 ```bash
-forj marketplace route:list
-forj marketplace reports:reconcile
-forj marketplace worker
-forj marketplace scheduler
+forj admin route:list
+forj admin reports:reconcile
+forj admin worker
+forj admin scheduler
 ```
 
 Inside a GoForj Project, native GoForj commands take precedence. If no native command matches, GoForj delegates to the active App. Use `forj run <command>` when you want to force default App command execution explicitly, and use `./bin/<app> <command>` when running a built binary.
@@ -47,7 +47,7 @@ forj make:command reports:reconcile
 Prefix the generator when an additional app owns the command:
 
 ```bash
-forj marketplace make:command reports:reconcile
+forj admin make:command reports:reconcile
 ```
 
 </template>
@@ -143,7 +143,7 @@ Expected output includes:
 ReconcileCmd executed!
 ```
 
-For an additional app, use `forj marketplace build` and `forj marketplace reports:reconcile`.
+For an additional app, use `forj admin build` and `forj admin reports:reconcile`.
 
 Replace the starter body with the application workflow and add its service to the constructor. Wire will satisfy the new dependency after its provider is in the App service set.
 

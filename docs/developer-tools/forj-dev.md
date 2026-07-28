@@ -81,15 +81,20 @@ flowchart TB
 
     subgraph main["app"]
       direction TB
-      admin["Admin SPA"] --> appBuild["Build app"]
-      site["Public SPA"] --> appBuild
+      site["Public SPA"] --> appBuild["Build app"]
       appBuild --> appRuntime["app Runtime"]
     end
 
-    subgraph marketplace["marketplace"]
+    subgraph admin["admin"]
       direction TB
-      store["Storefront SPA"] --> marketBuild["Build marketplace"]
-      marketBuild --> marketRuntime["marketplace Runtime"]
+      operations["Staff operations SPA"] --> adminBuild["Build admin"]
+      adminBuild --> adminRuntime["admin Runtime"]
+    end
+
+    subgraph statuspage["statuspage"]
+      direction TB
+      availability["Public availability SPA"] --> statusBuild["Build statuspage"]
+      statusBuild --> statusRuntime["statuspage Runtime"]
     end
   end
 
@@ -100,7 +105,8 @@ flowchart TB
   end
 
   dev --> main
-  dev --> marketplace
+  dev --> admin
+  dev --> statuspage
   dev --> watches
 ```
 
@@ -164,7 +170,7 @@ When `dev.apps` is present, its keys form the local development allowlist.
 dev:
   apps:
     app: true
-    marketplace: true
+    admin: true
 ```
 
 `true` uses the conventional lifecycle. Omit an App to leave it unmanaged by `forj dev`; do not set an App entry to `false`. An explicit `dev.apps: {}` means no Apps are managed, while sibling custom watches can still run.
@@ -261,7 +267,7 @@ For a single-app Project, `forj dev` normally manages the default app listed und
 For a multi-app Project, unqualified `forj dev` manages every listed App together. Use an App prefix to focus the App graph:
 
 ```bash
-forj marketplace dev
+forj admin dev
 ```
 
 Project-level `dev.watches` remain active when an App prefix is used.
@@ -270,8 +276,8 @@ Apps get deterministic per-app runtime ports from App metadata maintained by GoF
 
 ```text
 app          HTTP 3000
-marketplace  HTTP 3001
-backstage    HTTP 3002
+admin        HTTP 3001
+statuspage   HTTP 3002
 ```
 
 If you override app-specific ports in `.env`, keep them unique. Additional apps do not consume globals for the default app, such as `PORT` or `API_HTTP_PORT`.

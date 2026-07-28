@@ -216,7 +216,7 @@ One generated queue resource represents one queue. The resource name is the app-
 
 In a multi-app Project, app code still uses the logical queue name, such as `reports`. Additional apps prefix backend queue names by default so two apps do not collide on the same backend.
 
-For example, the `marketplace` app dispatches to logical queue `default` while the backend receives `marketplace_default`. Application code still says `default`; GoForj owns the app-aware backend name.
+For example, the `admin` app dispatches to logical queue `default` while the backend receives `admin_default`. Application code still says `default`; GoForj owns the app-aware backend name.
 
 ## Driver Configuration
 
@@ -283,7 +283,7 @@ forj worker
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace worker
+forj admin worker
 ```
 
 Without `--queue`, the worker process starts workers for every configured generated queue. To run only one queue:

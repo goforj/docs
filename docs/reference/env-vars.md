@@ -20,7 +20,7 @@ GoForj Apps load .env files before their Wire graph is initialized. See [Configu
 
 GoForj uses two reusable naming patterns:
 
-- App overlay: `<APP>_<KEY>` overrides `<KEY>` for one selected App. For example, `BILLING_APP_URL` overlays `APP_URL`, and `BILLING_CACHE_SESSIONS_DRIVER` overlays `CACHE_SESSIONS_DRIVER` while the `billing` App runs.
+- App overlay: `<APP>_<KEY>` overrides `<KEY>` for one selected App. For example, `ADMIN_APP_URL` overlays `APP_URL`, and `ADMIN_CACHE_SESSIONS_DRIVER` overlays `CACHE_SESSIONS_DRIVER` while the `admin` App runs.
 - Named resource: `<FAMILY>_<NAME>_<SUFFIX>` configures one generated resource. For example, `CACHE_SESSIONS_DRIVER` selects the `sessions` cache driver and `STORAGE_UPLOADS_BUCKET` configures the `uploads` disk.
 
 The default resource omits `<NAME>`. Unless a section says otherwise, each default variable below also accepts a named form by inserting `<NAME>` after its family prefix.
@@ -153,7 +153,7 @@ Only values with an explicit frontend prefix are exposed to generated browser co
 | Variable Pattern | Purpose |
 | --- | --- |
 | `FRONTEND_<KEY>` | Exposes `VITE_<KEY>` to every generated frontend. |
-| `<APP>_FRONTEND_<KEY>` | Overrides one App frontend, such as `MARKETPLACE_FRONTEND_BACKEND_URL`. |
+| `<APP>_FRONTEND_<KEY>` | Overrides one App frontend, such as `ADMIN_FRONTEND_BACKEND_URL`. |
 | `VITE_BACKEND_URL` | Compatibility fallback for `FRONTEND_BACKEND_URL`. Prefer the GoForj frontend prefix in shared environment files. |
 | `FRONTEND_BACKEND_URL` | Backend proxy target. Resolution falls back to `<APP>_APP_URL`, `APP_URL`, then the App HTTP port. |
 | `FRONTEND_AUTH_PASSWORD_MIN_LENGTH` | Vue password guidance matching `AUTH_PASSWORD_MIN_LENGTH`. |
@@ -181,7 +181,7 @@ Generated runtime metadata assigns the default App ports `3000`, `10000`, `10001
 | `JOBS_METRICS_PORT` | `10002` | Accepted jobs metrics alias. |
 | `METRICS_JOBS_PORT` | `10002` | Canonical generated jobs metrics port. |
 
-Every port key accepts the `<APP>_` overlay. For example, the first additional app can use `MARKETPLACE_METRICS_PORT=10010`, `MARKETPLACE_METRICS_SCHEDULER_PORT=10011`, and `MARKETPLACE_METRICS_JOBS_PORT=10012`.
+Every port key accepts the `<APP>_` overlay. For example, the first additional app can use `ADMIN_METRICS_PORT=10010`, `ADMIN_METRICS_SCHEDULER_PORT=10011`, and `ADMIN_METRICS_JOBS_PORT=10012`.
 
 Framework-owned instrumentation toggles all default to `true` when their component exists:
 

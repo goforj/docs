@@ -298,10 +298,10 @@ Add browser-level coverage when behavior depends on swap timing, focus managemen
 To add the same frontend stack to an additional app:
 
 ```bash
-forj make:app backstage --components web-api,web-ui --starter-kit templ_htmx
+forj make:app admin --components web-api,web-ui --starter-kit templ_htmx
 ```
 
-Expected result: the additional app receives its own assets under `cmd/backstage/frontend/`. The server-rendered starter remains the shared `internal/starterui` package; the command does not create a second app-local copy of those views and controllers.
+Expected result: the additional app receives its own assets under `cmd/admin/frontend/`. The server-rendered starter remains the shared `internal/starterui` package; the command does not create a second app-local copy of those views and controllers.
 
 ## Next Steps
 

@@ -22,7 +22,7 @@ The generated `app` command hosts enabled runtimes together in one process. Topo
 For an additional app, add the app name:
 
 ```bash
-forj marketplace app
+forj admin app
 ```
 
 Use direct runtime commands when you need explicit process boundaries:
@@ -36,9 +36,9 @@ forj scheduler
 Select an additional app by name:
 
 ```bash
-forj marketplace api
-forj marketplace worker
-forj marketplace scheduler
+forj admin api
+forj admin worker
+forj admin scheduler
 ```
 
 Apps get deterministic per-app local defaults, so the default app can listen on `3000`, the first additional app on `3001`, and the next additional app on `3002` without manual port edits.
@@ -99,9 +99,9 @@ Production runs the built binary form of the same split process shape:
 Additional apps use their own binaries:
 
 ```bash
-./bin/marketplace api
-./bin/marketplace worker
-./bin/marketplace scheduler
+./bin/admin api
+./bin/admin worker
+./bin/admin scheduler
 ```
 
 The App should not contain business logic that depends on whether these runtimes are hosted together or separately.

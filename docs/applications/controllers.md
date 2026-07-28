@@ -23,7 +23,7 @@ forj make:controller reports
 For an additional app, prefix the generator with the app name:
 
 ```bash
-forj marketplace make:controller checkout
+forj admin make:controller reports
 ```
 
 Replace the starter response with a thin HTTP adapter around an application service:
@@ -168,7 +168,7 @@ forj route:list
 
 Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes `/reports/:id`. Start `forj api` and request the route to prove the public response.
 
-For an additional app, run `forj marketplace route:list` after the build to verify its routes.
+For an additional app, run `forj admin route:list` after the build to verify its routes.
 
 ## Responsibilities
 

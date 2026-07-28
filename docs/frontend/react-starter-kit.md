@@ -102,10 +102,10 @@ Rendering the React starter kit writes its conventional frontend files. Review a
 To create an additional app with the same frontend stack:
 
 ```bash
-forj make:app marketplace --components web-api,web-ui --starter-kit react
+forj make:app admin --components web-api,web-ui --starter-kit react
 ```
 
-Its frontend lives in `cmd/marketplace/frontend/`. App-specific frontend variables use the app prefix, such as `MARKETPLACE_FRONTEND_BACKEND_URL`.
+Its frontend lives in `cmd/admin/frontend/`. App-specific frontend variables use the app prefix, such as `ADMIN_FRONTEND_BACKEND_URL`.
 
 ## Next Steps
 

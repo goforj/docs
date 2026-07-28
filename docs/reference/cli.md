@@ -49,9 +49,9 @@ Inside a GoForj Project, `forj <command>` is the normal default-app development 
 Select an additional app by prefixing the command with its app name:
 
 ```bash
-forj marketplace route:list
-forj marketplace build
-forj marketplace worker
+forj admin route:list
+forj admin build
+forj admin worker
 ```
 
 The prefix is part of the ergonomics. It selects the active app for App commands and app-aware native commands without forcing you to change directories or pass an `--app` flag.
@@ -62,10 +62,10 @@ The command surface communicates intent:
 
 | Intent | Default App | Additional App |
 | --- | --- | --- |
-| Develop from current source | `forj <command>` | `forj marketplace <command>` |
-| Run the built artifact | `./bin/app <command>` | `./bin/marketplace <command>` |
-| Develop the combined Runtime | `forj app` | `forj marketplace app` |
-| Run the combined artifact | `./bin/app` | `./bin/marketplace` |
+| Develop from current source | `forj <command>` | `forj admin <command>` |
+| Run the built artifact | `./bin/app <command>` | `./bin/admin <command>` |
+| Develop the combined Runtime | `forj app` | `forj admin app` |
+| Run the combined artifact | `./bin/app` | `./bin/admin` |
 
 `forj` uses the source-aware App path so current source does not silently run through a stale binary. Direct binary commands run exactly the artifact on disk and are the deployment and process-supervision surface.
 
@@ -105,8 +105,8 @@ forj db
 forj cache
 forj make:job reports:generate
 forj make:schedule reports:daily --every 24h
-forj marketplace route:list
-forj marketplace worker
+forj admin route:list
+forj admin worker
 ```
 
 Built-artifact examples:
@@ -119,8 +119,8 @@ Built-artifact examples:
 ./bin/app scheduler
 ./bin/app db
 ./bin/app cache
-./bin/marketplace route:list
-./bin/marketplace worker
+./bin/admin route:list
+./bin/admin worker
 ```
 
 For runtime-capable Apps, bare `./bin/app` selects `run`; CLI-only binaries print root help when no command is supplied. Passing `--help` or an explicit command retains normal CLI behavior.
@@ -147,8 +147,8 @@ Backup commands are framework-owned operator commands. They use the selected App
 Prefix the command with the app name to operate on an additional app:
 
 ```bash
-forj marketplace backup:plan
-forj marketplace backup:create
+forj admin backup:plan
+forj admin backup:create
 ```
 
 Use `--resource` to select one database or storage resource. `backup:create --portable` and `backup:restore --portable` provide database-neutral SQL transfer when a same-driver native restore is not appropriate.
@@ -196,7 +196,7 @@ forj cache sessions -- GET user:1
 App and resource generation are project-level `forj` commands:
 
 ```bash
-forj make:app marketplace
+forj make:app admin
 forj make:controller users
 forj make:command reports:reconcile
 forj make:migration create_users
@@ -205,9 +205,9 @@ forj make:migration create_users
 Prefix a resource command when an additional app owns its registration:
 
 ```bash
-forj marketplace make:controller checkout
-forj marketplace make:job sync-catalog --queue sync
-forj marketplace make:model order
+forj admin make:controller users
+forj admin make:job reports:export --queue reports
+forj admin make:model audit-log
 ```
 
 See [Apps](/core/apps#add-another-app) for App creation and prefix behavior. See the [Make Command Reference](/core/make-commands#command-reference) for generated files, wiring changes, output overrides, opening files, and removal.

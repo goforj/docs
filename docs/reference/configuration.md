@@ -249,15 +249,15 @@ Top-level `apps` and `dev.apps` have different responsibilities:
 Additional apps are discovered from layout:
 
 ```text
-cmd/marketplace/main.go
-app/marketplace/
+cmd/admin/main.go
+app/admin/
 ```
 
 When an additional app has app-specific render choices, `.goforj.yml` records them under `apps`:
 
 ```yaml
 apps:
-  marketplace:
+  admin:
     components: [web_api, jobs]
     starter_kit: none
     help_format: guided

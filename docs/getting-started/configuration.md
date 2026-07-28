@@ -58,7 +58,7 @@ It includes fields such as:
 project_name: Example
 module_name: example.com/example
 apps:
-  marketplace:
+  admin:
     components: [web_api, jobs]
 dev:
   auto_migrate: true
@@ -75,7 +75,7 @@ dev:
         postpone: true
       run:
         exec: ./bin/app
-    marketplace: true
+    admin: true
 render:
   starter_kit: none
   components: [cli, web_api, database_mysql, scheduler, jobs]

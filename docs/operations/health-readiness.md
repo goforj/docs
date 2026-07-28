@@ -85,16 +85,16 @@ GoForj Apps include a generated `health` command that queries a live App without
 
 The command defaults to `http://127.0.0.1:3000`, uses `ready` by default, and automatically sends `Authorization: Bearer $APP_DIAG_TOKEN` for readiness when the token is configured.
 
-For an additional app, use that app's binary:
+For the staff operations App, use the `admin` binary:
 
 ```bash
-./bin/marketplace health --probe ready --fail
+./bin/admin health --probe ready --fail
 ```
 
-If you override the app's HTTP port, pass the matching base URL or full probe URL as the command's URL argument.
+If you override `admin`'s HTTP port, pass the matching base URL or full probe URL as the command's URL argument.
 
 ```bash
-./bin/marketplace health http://127.0.0.1:3100 --probe ready --fail
+./bin/admin health http://127.0.0.1:3100 --probe ready --fail
 ```
 
 ## What To Check

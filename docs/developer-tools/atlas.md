@@ -89,15 +89,15 @@ Keep them short and specific. A good project skill tells the agent what to do di
 Example:
 
 ```md
-# Checkout Rules
+# Refund Review Rules
 
-Use this skill when changing checkout, cart, payment, or order creation code.
+Use this skill when changing staff refund review, payment adjustment, or order-dispute workflows.
 
 Rules:
 
-- Keep payment provider calls behind `internal/checkout.PaymentGateway`.
-- Use `forj marketplace make:*` for generated marketplace entry points.
-- Run `forj marketplace test:checkout` before marking checkout work done.
+- Keep payment provider calls behind `internal/refunds.PaymentGateway`.
+- Use `forj admin make:*` for generated staff operations entry points.
+- Run `forj admin test:refund-review` before marking refund-review work done.
 - Do not add direct provider SDK calls inside HTTP controllers.
 ```
 
@@ -198,17 +198,17 @@ validation-plan task="add users route"
 
 That sequence gives the agent the preferred command, app registration points, focused route/controller/Wire docs, file ownership guidance, and the checks that prove the route is registered.
 
-For a job owned by an additional app:
+For an operations job owned by the additional admin app:
 
 ```text
-workflow-plan app="marketplace" task="add sync catalog job"
+workflow-plan app="admin" task="add reconcile refunds job"
 docs-section-pack workflow_id="goforj-add-job"
 resource-inventory
-command-advice app="marketplace" task="add sync catalog job" resource="sync-catalog"
-validation-plan app="marketplace" task="add sync catalog job"
+command-advice app="admin" task="add reconcile refunds job" resource="reconcile-refunds"
+validation-plan app="admin" task="add reconcile refunds job"
 ```
 
-That should lead to `forj marketplace make:job sync-catalog`, app-scoped Wire registration, small typed queue payloads, and worker validation rather than an untracked goroutine or anonymous queue callback.
+That should lead to `forj admin make:job reconcile-refunds`, app-scoped Wire registration, small typed queue payloads, and worker validation rather than an untracked goroutine or anonymous queue callback.
 
 For a Wire failure:
 

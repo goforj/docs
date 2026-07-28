@@ -69,13 +69,13 @@ Use:
 
 for the full route table.
 
-For an additional app, use that app's binary:
+For a staff operations App named `admin`, use its binary:
 
 ```bash
-./bin/marketplace route:list
+./bin/admin route:list
 ```
 
-Expected result: a complete, human-readable table of methods, paths, and handlers. The command constructs the App route surface but does not start the HTTP listener.
+Expected result: a complete, human-readable table of the staff-facing methods, paths, and handlers registered by `admin`. The command constructs the App route surface but does not start the HTTP listener.
 
 ## Health, Readiness, and Verification
 

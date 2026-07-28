@@ -111,14 +111,14 @@ forj db:shell
 Additional apps use the app-name prefix during source-aware development:
 
 ```bash
-forj marketplace db
+forj admin db
 ```
 
 When validating a built artifact directly, use its binary:
 
 ```bash
 ./bin/app db
-./bin/marketplace db
+./bin/admin db
 ```
 
 Named connections use the App-facing connection name:

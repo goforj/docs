@@ -27,7 +27,7 @@ internal/reports/controller.go
 The app route file composes those controller routes into route groups. Additional apps use the same pattern under the owning app's directory:
 
 ```text
-app/marketplace/routes.go
+app/admin/routes.go
 ```
 
 ## Follow the Complete Users Route
@@ -101,7 +101,7 @@ forj route:list
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace route:list
+forj admin route:list
 ```
 
 Use `route:list` as the source of truth for what the App registered. Do not rely only on startup logs.

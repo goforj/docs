@@ -65,8 +65,8 @@ forj route:list
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace api
-forj marketplace route:list
+forj admin api
+forj admin route:list
 ```
 
 ## Server Configuration

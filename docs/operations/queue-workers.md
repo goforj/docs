@@ -17,15 +17,17 @@ Use the built binary under a supervisor in deployment. For source-aware developm
 | --- | --- |
 | Every configured queue | `./bin/app worker` |
 | One queue | `./bin/app worker --queue reports` |
-| Additional app | `./bin/marketplace worker` |
+| Admin staff operations | `./bin/admin worker` |
 | Combined Runtime | `./bin/app` |
 
 Repeat `--queue` when one process should work a subset. Names remain logical from the selected App's point of view:
 
 ```bash
 ./bin/app worker --queue emails --queue reports
-./bin/marketplace worker --queue sync
+./bin/admin worker --queue reports
 ```
+
+The `admin` worker example isolates staff-requested report exports from the default App's customer-facing email and report queues.
 
 ## Configuration
 
@@ -56,13 +58,13 @@ Verify queue inventory before deploying a worker topology:
 ./bin/app about
 ```
 
-For an additional app, prefix the command with the app name:
+For the staff operations App, inspect the `admin` binary:
 
 ```bash
-./bin/marketplace about
+./bin/admin about
 ```
 
-The queue section should show each queue, its driver, backend queue name, and worker count.
+The queue section should show `admin`'s reports queue, its driver, backend queue name, and worker count.
 
 ## Startup Verification
 
