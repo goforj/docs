@@ -4543,7 +4543,7 @@ html[data-gf-motion='on'] .VPDoc .vp-doc details.details[open] > *:not(summary) 
 
      Action      molten orange   always FILLED     buttons, install prompt
      Navigation  temper gold     always TEXT/LINE  links, sidebar, TOC
-     Reference   warm frame      filled, WHITE ink inline code
+     Reference   warm mono ink   TYPEFACE, no box  inline code
      Neither     neutral surface surface+hairline  tables, chrome
 
    Nothing in CSS enforces this. It belongs in review.
@@ -4553,6 +4553,8 @@ html[data-gf-motion='on'] .VPDoc .vp-doc details.details[open] > *:not(summary) 
     /* --- Temper core ------------------------------------- */
     --gf-accent: #FF5E3A;          /* ACTION  — always filled  */
     --gf-accent-hi: #FF8257;
+    --gf-reference: #FFAA91;       /* REFERENCE — mono ink only */
+    --gf-reference-line: rgba(255, 170, 145, 0.30);
     --gf-nav: #FFC24D;             /* NAV     — always text/line */
     --gf-nav-hi: #FFD37A;
     --gf-on-accent: #08070A;
@@ -4682,23 +4684,36 @@ body:has(.gf-home) {
 }
 
 /* --- Reference: inline code ------------------------------
-   Warm frame, WHITE ink. Salience comes from material, not
-   from a semantic colour, so a code-dense paragraph never
-   reads as a row of alerts and no chip looks clickable.
+   Warm mono ink. The typeface and restrained colour distinguish
+   literals without a frame that makes them look interactive.
 
    Scoped to .VPDoc rather than .vp-doc on purpose — the home
    layout also renders markdown inside .vp-doc.            */
 .VPDoc .vp-doc :not(pre) > code {
-    background: var(--gf-accent-soft);
-    color: var(--gf-ink);
+    background: transparent;
+    color: var(--gf-reference);
     border: 0;
-    border-radius: 6px;
-    padding: 1px 6px;
+    border-radius: 0;
+    padding: 0;
     font-size: 0.92em;                 /* matches Inter's x-height */
     font-weight: 500;
 }
 .VPDoc .vp-doc a > code {
     color: var(--gf-nav);              /* a linked chip is still a link */
+}
+/* Dense identifier columns already have the table as their frame.
+   Repeating a filled frame in every cell turns values into a field of
+   badges and falsely suggests interaction, so identifiers keep only
+   the mono voice here. Linked identifiers remain navigation gold. */
+.VPDoc .vp-doc table :where(td, td p, td a) > code {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--gf-reference);
+}
+.VPDoc .vp-doc table td a > code {
+    color: var(--gf-nav);
 }
 
 /* --- Navigation: always text or line, never filled ------- */
@@ -5181,6 +5196,8 @@ div[class*='language-'] .lang {
 html:not(.dark) {
     --gf-accent: #D6351A;
     --gf-accent-hi: #B32B13;
+    --gf-reference: #9F2C19;
+    --gf-reference-line: rgba(159, 44, 25, 0.28);
     --gf-nav: #8F5D00;             /* bronze, not gold */
     --gf-nav-hi: #6E4700;
     --gf-on-accent: #FFFFFF;
@@ -5450,16 +5467,18 @@ html.dark {
     --vp-c-purple-soft: var(--gf-accent-soft);
 }
 
-/* Landing inline code follows the docs treatment: warm frame,
-   white ink — the same Reference role, so it should look the
-   same on both sides of the site. */
+/* Landing inline code follows the same typographic Reference
+   treatment, so a literal never borrows the Action form. */
 .gf-home-lead code,
 .gf-home-points code,
 .gf-home-ops__surface code,
 .gf-home-atlas code {
     border: 0;
-    background: var(--gf-accent-soft);
-    color: var(--gf-ink);
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--gf-reference);
+    font-weight: 500;
 }
 
 /* ============================================================

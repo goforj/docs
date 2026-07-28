@@ -88,9 +88,10 @@ body {
 .ds-sec p strong { color: var(--gf-ink); font-weight: 600; }
 .ds-sec code {
   font-family: var(--gf-font-mono); font-size: 0.92em;
-  background: var(--gf-accent-soft); color: var(--gf-ink);
-  padding: 1px 6px; border-radius: var(--gf-radius-sm);
+  background: transparent; color: var(--gf-reference); font-weight: 500;
+  border: 0; padding: 0; border-radius: 0;
 }
+table.ds code { background: transparent; border: 0; padding: 0; border-radius: 0; }
 .ds-sec a { color: var(--gf-nav); text-decoration-color: var(--gf-nav-line); text-underline-offset: 3px; }
 
 table.ds {
@@ -227,6 +228,57 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   font-size: 12.5px; line-height: 1.55; color: var(--gf-ink-2);
 }
 .gal .why b { font-weight: 600; }
+
+/* Inline-code candidates deliberately share one sentence. Differences in
+   salience should come from treatment, not from shorter or friendlier copy. */
+.inline-code-options {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.inline-code-options .box p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.inline-code-options code {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.inline-code-options .warm-ink code {
+  color: var(--gf-reference);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.inline-code-options .soft-ember code {
+  color: var(--gf-ink);
+  background: color-mix(in srgb, var(--gf-accent) 6%, transparent);
+  border: 0;
+  border-radius: 2px;
+  padding: .02em .18em;
+}
+.inline-code-options .neutral-wash code {
+  color: var(--gf-ink);
+  background: var(--gf-code-chrome);
+  border: 0;
+  border-radius: 2px;
+  padding: .02em .18em;
+}
+.inline-code-options .warm-rule code {
+  color: var(--gf-reference);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--gf-reference-line);
+  border-radius: 0;
+  padding: 0;
+}
+.inline-code-options .quiet-outline code {
+  color: var(--gf-ink);
+  background: transparent;
+  border: 1px solid var(--gf-line-strong);
+  border-radius: 2px;
+  padding: .02em .18em;
+}
 
 /* Skeleton — neutral only. A loading state pulsing in the accent would be an
    action colour firing with nobody having acted. */
@@ -563,7 +615,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     <tbody>
       <tr><td><strong>Action</strong></td><td>Molten orange</td><td>Always <strong>filled</strong></td><td>Primary button, install prompt, h1 rule, headline emphasis</td></tr>
       <tr><td><strong>Navigation</strong></td><td>Temper gold</td><td>Always <strong>text or line</strong></td><td>Links, active sidebar, TOC marker, callout rule</td></tr>
-      <tr><td><strong>Reference</strong></td><td>Warm frame, white ink</td><td>Filled, ink is white</td><td>Inline code</td></tr>
+      <tr><td><strong>Reference</strong></td><td>Warm mono ink</td><td>Typeface and colour, no frame</td><td>Inline code</td></tr>
       <tr><td><strong>Neither</strong></td><td>Neutral surface</td><td>Surface + hairline</td><td>Tables, cards, chrome, dividers</td></tr>
     </tbody>
   </table>
@@ -746,7 +798,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     ["Accent","--gf-accent","fills"],
     ["Accent hover","--gf-accent-hi","hover fills"],
     ["On accent","--gf-on-accent","ink on a fill"],
-    ["Accent soft","--gf-accent-soft","inline code frame"],
+    ["Accent soft","--gf-accent-soft","soft action fields"],
     ["Accent line","--gf-accent-line","edges"]]'></div>
   <div class="ds-note warn">
     <b>Ink on the accent must be --gf-on-accent, not white</b>
@@ -1158,8 +1210,8 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     Seven references in two sentences is the stress test. Inline code is not a
     semantic role at all — it is a typographic <strong>register</strong>. It says
     “this is a literal quotation from the machine’s language”, not “this will do
-    something if you touch it”, and it already owns the strongest register signal
-    available: it changes typeface.
+    something if you touch it.” Monospace and restrained warm ink make that
+    register visible without wrapping every literal in an interactive-looking box.
   </p>
 
   <h3>The code well</h3>
@@ -1207,6 +1259,44 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     family rather than a type colour, and <code>nil</code> is a
     <strong>constant</strong>, not a keyword.
   </p>
+  <h4>Inline-code treatment candidates</h4>
+  <div class="gal inline-code-options">
+    <figure class="warm-ink">
+      <figcaption>A · Warm ink</figcaption>
+      <div class="box">
+        <p><code>error</code>, <code>string</code> and <code>byte</code> use the keyword family; <code>nil</code> is a constant.</p>
+      </div>
+      <p class="why">Live VitePress treatment: colour and typeface only, with no frame.</p>
+    </figure>
+    <figure class="soft-ember">
+      <figcaption>B · Soft ember</figcaption>
+      <div class="box">
+        <p><code>error</code>, <code>string</code> and <code>byte</code> use the keyword family; <code>nil</code> is a constant.</p>
+      </div>
+      <p class="why">A 6% warm wash, no border, and only enough padding to separate adjacent text.</p>
+    </figure>
+    <figure class="neutral-wash">
+      <figcaption>C · Neutral wash</figcaption>
+      <div class="box">
+        <p><code>error</code>, <code>string</code> and <code>byte</code> use the keyword family; <code>nil</code> is a constant.</p>
+      </div>
+      <p class="why">The same quiet code chrome as the well, without borrowing the action colour.</p>
+    </figure>
+    <figure class="warm-rule">
+      <figcaption>D · Warm rule</figcaption>
+      <div class="box">
+        <p><code>error</code>, <code>string</code> and <code>byte</code> use the keyword family; <code>nil</code> is a constant.</p>
+      </div>
+      <p class="why">Warm ink plus a fine baseline instead of a rectangular frame.</p>
+    </figure>
+    <figure class="quiet-outline">
+      <figcaption>E · Quiet outline</figcaption>
+      <div class="box">
+        <p><code>error</code>, <code>string</code> and <code>byte</code> use the keyword family; <code>nil</code> is a constant.</p>
+      </div>
+      <p class="why">The restrained border case, included to test whether any enclosure still feels too much like a control.</p>
+    </figure>
+  </div>
   <p>
     The well sits below the page rather than above it.
   </p>
@@ -1775,7 +1865,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
           <code>forj dev</code>.
         </p>
       </div>
-      <p class="why">Eight chips in one sentence — the case that ruled out the accent-ink treatment, which would have made this strobe.</p>
+      <p class="why">Eight literals in one sentence — the case that ruled out a warm filled frame, which made every value compete for attention.</p>
     </figure>
 
     <figure>
