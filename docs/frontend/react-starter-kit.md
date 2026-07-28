@@ -11,15 +11,17 @@ It uses React 19, Vite, TypeScript, Tailwind CSS, shadcn/ui, and React Router. I
 
 ## Select the Kit
 
-Choose React during `forj new`, or when creating an additional app:
+Start with the interactive Project wizard:
 
 ```bash
-forj make:app marketplace --components web-api,web-ui --starter-kit react
+forj new
 ```
 
-The kit requires Web UI. It remains optional; choose `none` when the App owns a different frontend.
+Enable Web UI and choose React when prompted. The new default app will include the React starter kit without requiring you to know component or starter-kit flags up front.
 
-## Generated Ownership
+The React kit requires Web UI. Starter kits remain optional; choose `none` when the App owns a different frontend.
+
+## What the Kit Creates
 
 The default App receives:
 
@@ -37,15 +39,13 @@ cmd/app/frontend/
     lib/
 ```
 
-An additional app uses `cmd/<app>/frontend/`.
-
-These files become App-owned after creation. Edit components, routes, forms, styles, and API calls as normal application source.
+These files are application source. Edit components, routes, forms, styles, and API calls as you would in any React project.
 
 ## Backend Integration
 
 `goforj.env.ts` resolves the active App and backend URL from Project configuration. Vite proxies `/api` to that backend during development.
 
-Project variables prefixed with `FRONTEND_` become `VITE_` values for the frontend. Additional apps can override them with an app prefix such as `MARKETPLACE_FRONTEND_BACKEND_URL`.
+Project variables prefixed with `FRONTEND_` become `VITE_` values for the frontend.
 
 Keep credentials and server-only secrets out of frontend variables.
 
@@ -67,18 +67,19 @@ npm install
 npm run dev
 ```
 
-## Production Build
+## Build for Deployment
 
-Build frontend assets before compiling the embedded App binary:
+The default deployment remains one App binary. React compiles into `frontend/dist`, then `forj build` embeds those assets alongside the Go application.
+
+`forj dev` already performs this sequence while you work. In CI or a release build, run it explicitly:
 
 ```bash
-cd cmd/app/frontend
-npm run build
-cd ../../..
-forj build
+npm --prefix cmd/app/frontend ci &&
+  npm --prefix cmd/app/frontend run build &&
+  forj build
 ```
 
-The HTTP runtime serves the generated `dist` assets through the owning App's embedded frontend.
+Expected result: `cmd/app/frontend/dist` contains the production frontend and `bin/app` contains the App that serves it. The default deployment does not need a separate frontend server or static-site release.
 
 ## Auth-Aware Surfaces
 
@@ -95,6 +96,16 @@ Run a production frontend build before shipping changes that affect routing, ass
 ::: warning Rendering again
 Rendering the React starter kit writes its conventional frontend files. Review and preserve customized files before rerendering the kit into an existing app.
 :::
+
+## Additional Apps
+
+To create an additional app with the same frontend stack:
+
+```bash
+forj make:app marketplace --components web-api,web-ui --starter-kit react
+```
+
+Its frontend lives in `cmd/marketplace/frontend/`. App-specific frontend variables use the app prefix, such as `MARKETPLACE_FRONTEND_BACKEND_URL`.
 
 ## Next Steps
 

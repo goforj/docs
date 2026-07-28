@@ -98,25 +98,32 @@ func (m *Manager) Reports() *queue.Queue {
 ```
 </CodeFile>
 
+That is the complete `make:queue` output: environment configuration plus the accessor produced by the next build or queue generation pass. The following application-owned example shows how a generated job can use that named queue; `make:queue` does not write the job, service, or Wire registration.
+
 Keep the payload beside the generated job and its handler:
 
 <CodeFile path="internal/reports/generate_job.go">
 
 ```go
-const GenerateJobTypeName = "generate"
+// GenerateJobTypeName identifies the job during dispatch and handler registration.
+const GenerateJobTypeName = "reports:generate"
 
+// GenerateJobPayload identifies the report whose current state should be loaded.
 type GenerateJobPayload struct {
 	ReportID string `json:"report_id"`
 }
 
+// GenerateJob handles report generation work.
 type GenerateJob struct {
 	service *Service
 }
 
+// NewGenerateJob constructs the report generation handler.
 func NewGenerateJob(service *Service) *GenerateJob {
 	return &GenerateJob{service: service}
 }
 
+// HandleTask loads the queued report and delegates generation to the service.
 func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
 	var payload GenerateJobPayload
 	if err := msg.Bind(&payload); err != nil {
@@ -134,12 +141,14 @@ This example carries an ID because the worker should load the report's current s
 <CodeFile path="internal/reports/service.go">
 
 ```go
+// Service coordinates report lookup, rendering, and queue dispatch.
 type Service struct {
 	queues   *queues.Manager
 	reports  *Repository
 	renderer *Renderer
 }
 
+// NewService constructs the report workflow from its explicit dependencies.
 func NewService(
 	queues *queues.Manager,
 	reports *Repository,
@@ -152,6 +161,7 @@ func NewService(
 	}
 }
 
+// QueueGeneration dispatches report generation by ID.
 func (s *Service) QueueGeneration(ctx context.Context, reportID string) error {
 	payload, err := json.Marshal(GenerateJobPayload{ReportID: reportID})
 	if err != nil {
@@ -165,6 +175,7 @@ func (s *Service) QueueGeneration(ctx context.Context, reportID string) error {
 	return err
 }
 
+// Generate loads the current report state and renders it.
 func (s *Service) Generate(ctx context.Context, reportID string) error {
 	report, err := s.reports.Find(ctx, reportID)
 	if err != nil {
@@ -180,6 +191,7 @@ Add that constructor to the App service set:
 <CodeFile path="app/wire/inject_services_app.go">
 
 ```go
+// appSet provides application-level services and dependencies.
 var appSet = wire.NewSet(
 	app.NewLifecycleRegistry,
 	runtime.NewTimeouts,

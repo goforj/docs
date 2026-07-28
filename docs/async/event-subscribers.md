@@ -46,12 +46,15 @@ The generated subscriber starts with a typed handler:
 <CodeFile path="internal/billing/invoice_paid_subscriber.go">
 
 ```go
+// InvoicePaidSubscriber handles InvoicePaidEvent messages from the configured event bus.
 type InvoicePaidSubscriber struct{}
 
+// NewInvoicePaidSubscriber constructs the invoice-paid subscriber.
 func NewInvoicePaidSubscriber() *InvoicePaidSubscriber {
 	return &InvoicePaidSubscriber{}
 }
 
+// Handle processes an invoice-paid event.
 func (s *InvoicePaidSubscriber) Handle(
 	ctx context.Context,
 	event InvoicePaidEvent,
@@ -68,11 +71,13 @@ The App Wire file constructs the subscriber and subscribes it to the selected bu
 <CodeFile path="app/wire/inject_subscribers_app.go">
 
 ```go
+// appSubscriberSet contains application-owned event subscriber providers.
 var appSubscriberSet = wire.NewSet(
 	ProvideEventSubscribers,
 	billing.NewInvoicePaidSubscriber, // [!code highlight]
 )
 
+// ProvideEventSubscribers registers application subscribers with configured event buses.
 func ProvideEventSubscribers(
 	eventManager *events.Manager,
 	billingInvoicePaidSubscriber *billing.InvoicePaidSubscriber, // [!code highlight]

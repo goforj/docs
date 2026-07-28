@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useData } from 'vitepress'
 
 const props = defineProps({
   name: {
@@ -15,6 +16,12 @@ const tabs = [
 ]
 
 const activeTab = ref('usage')
+const { hash: routeHash } = useData()
+let stopHashWatch
+
+function cardID() {
+  return `make-${props.name}-card`
+}
 
 function tabID(key) {
   return `make-${props.name}-${key}-tab`
@@ -22,6 +29,47 @@ function tabID(key) {
 
 function panelID(key) {
   return `make-${props.name}-${key}-panel`
+}
+
+function tabAnchorID(key) {
+  return `${cardID()}-${key}`
+}
+
+function tabHash(key) {
+  return key === 'usage' ? `#${cardID()}` : `#${tabAnchorID(key)}`
+}
+
+function selectTab(key, updateURL = true) {
+  if (!tabs.some((tab) => tab.key === key)) return
+
+  activeTab.value = key
+  if (!updateURL || typeof window === 'undefined') return
+
+  const hash = tabHash(key)
+  if (window.location.hash === hash) return
+
+  window.history.replaceState(
+    window.history.state,
+    '',
+    `${window.location.pathname}${window.location.search}${hash}`
+  )
+}
+
+function syncTabFromHash(hash) {
+  if (typeof window === 'undefined') return
+
+  const selectedHash = hash || window.location.hash
+  if (selectedHash === `#${cardID()}` || selectedHash === `#${tabID('usage')}` || selectedHash === `#${panelID('usage')}`) {
+    selectTab('usage', false)
+    return
+  }
+
+  for (const tab of tabs) {
+    if (selectedHash === tabHash(tab.key) || selectedHash === `#${tabID(tab.key)}` || selectedHash === `#${panelID(tab.key)}`) {
+      selectTab(tab.key, false)
+      return
+    }
+  }
 }
 
 function selectAdjacentTab(event, index) {
@@ -33,14 +81,33 @@ function selectAdjacentTab(event, index) {
   if (nextIndex === index && !['Home', 'End'].includes(event.key)) return
 
   event.preventDefault()
-  activeTab.value = tabs[nextIndex].key
+  selectTab(tabs[nextIndex].key)
   const buttons = event.currentTarget.parentElement?.querySelectorAll('[role="tab"]')
   buttons?.[nextIndex]?.focus()
 }
+
+onMounted(() => {
+  stopHashWatch = watch(routeHash, syncTabFromHash, {
+    immediate: true,
+    flush: 'post'
+  })
+  window.requestAnimationFrame(() => syncTabFromHash())
+})
+
+onBeforeUnmount(() => {
+  stopHashWatch?.()
+})
 </script>
 
 <template>
-  <div class="gf-make-command-tabs">
+  <div :id="cardID()" class="gf-make-command-tabs">
+    <span
+      v-for="tab in tabs.slice(1)"
+      :id="tabAnchorID(tab.key)"
+      :key="`${tab.key}-anchor`"
+      class="gf-make-command-tabs__anchor"
+      aria-hidden="true"
+    ></span>
     <div class="gf-make-command-tabs__list" role="tablist" :aria-label="`${name} details`">
       <button
         v-for="(tab, index) in tabs"
@@ -53,7 +120,7 @@ function selectAdjacentTab(event, index) {
         :aria-selected="activeTab === tab.key ? 'true' : 'false'"
         :aria-controls="panelID(tab.key)"
         :tabindex="activeTab === tab.key ? 0 : -1"
-        @click="activeTab = tab.key"
+        @click="selectTab(tab.key)"
         @keydown="selectAdjacentTab($event, index)"
       >
         {{ tab.label }}

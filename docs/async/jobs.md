@@ -61,25 +61,26 @@ import (
 	"myapp/internal/queues"
 )
 
-// GenerateJobTypeName is the queue task identifier.
-const GenerateJobTypeName = "generate"
+// GenerateJobTypeName identifies the job during dispatch and handler registration.
+const GenerateJobTypeName = "reports:generate"
 
 // GenerateJobPayload is the payload for the GenerateJob job.
 type GenerateJobPayload struct {
 	// add your payload fields here
 }
 
-// GenerateJob is a queue job.
+// GenerateJob dispatches and handles its queue workflow.
 type GenerateJob struct {
 	queues *queues.Manager
 }
 
-// NewGenerateJob creates a GenerateJob with the configured queue manager.
+// NewGenerateJob constructs the job with the configured queue manager.
 func NewGenerateJob(queues *queues.Manager) *GenerateJob {
 	return &GenerateJob{queues: queues}
 }
 
-// Queue creates and enqueues a task.
+// Queue creates a task and dispatches it to the selected queue.
+// Add application inputs as arguments when defining the payload contract.
 func (t *GenerateJob) Queue(ctx context.Context, name string) error {
 	var p GenerateJobPayload
 	// add your payload fields here
@@ -111,11 +112,13 @@ The App Wire file constructs the job and registers its handler before workers st
 <CodeFile path="app/wire/inject_jobs_app.go">
 
 ```go
+// appJobSet contains application-level jobs.
 var appJobSet = wire.NewSet(
 	registerJobHandlers,
 	reports.NewGenerateJob, // [!code highlight]
 )
 
+// registerJobHandlers binds every application job to each configured queue runtime.
 func registerJobHandlers(
 	queueManager *queues.Manager,
 	reportsGenerateJob *reports.GenerateJob, // [!code highlight]
@@ -139,17 +142,21 @@ The scaffold supplies dispatch and handler seams. Replace its placeholder payloa
 ### Payload and Dependencies
 
 ```go
+// SendWelcomeEmailTypeName identifies the job during dispatch and handler registration.
 const SendWelcomeEmailTypeName = "emails:welcome"
 
+// SendWelcomeEmailPayload identifies the user whose current state the worker should load.
 type SendWelcomeEmailPayload struct {
 	UserID string `json:"user_id"`
 }
 
+// SendWelcomeEmail dispatches and handles the welcome-email workflow.
 type SendWelcomeEmail struct {
 	queues *queues.Manager
 	users  *users.Service
 }
 
+// NewSendWelcomeEmail constructs the job with its queue and application dependencies.
 func NewSendWelcomeEmail(queues *queues.Manager, users *users.Service) *SendWelcomeEmail {
 	return &SendWelcomeEmail{queues: queues, users: users}
 }
@@ -162,6 +169,7 @@ Job names should be stable operational identifiers.
 Jobs own their dispatch shape. Add `time` to the file's imports when applying this policy:
 
 ```go
+// Queue dispatches the welcome-email job with its retry and timeout policy.
 func (j *SendWelcomeEmail) Queue(ctx context.Context, userID string) error {
 	payload, err := json.Marshal(SendWelcomeEmailPayload{UserID: userID})
 	if err != nil {
@@ -189,6 +197,7 @@ Services can call `job.Queue(ctx, id)` without constructing raw queue messages.
 Handlers bind payloads and delegate business behavior:
 
 ```go
+// HandleTask loads the queued user reference and delegates delivery to the user service.
 func (j *SendWelcomeEmail) HandleTask(ctx context.Context, msg queue.Message) error {
 	var payload SendWelcomeEmailPayload
 	if err := msg.Bind(&payload); err != nil {

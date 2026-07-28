@@ -69,18 +69,22 @@ The generated command starts with its CLI signature and the shared App logger:
 <CodeFile path="internal/reports/reconcile_cmd.go">
 
 ```go
+// ReconcileCmd handles the reports:reconcile app command.
 type ReconcileCmd struct {
 	logger *logger.AppLogger
 }
 
+// Signature keeps command metadata with the implementation so generated wiring stays package-local.
 func (*ReconcileCmd) Signature() string {
 	return `name:"reports:reconcile" help:"Reconcile command"`
 }
 
+// NewReconcileCmd receives shared app services through Wire for this command.
 func NewReconcileCmd(logger *logger.AppLogger) *ReconcileCmd {
 	return &ReconcileCmd{logger: logger}
 }
 
+// Run is the entrypoint Kong calls after parsing reports:reconcile.
 func (c *ReconcileCmd) Run(ctx context.Context) error {
 	_ = ctx
 	c.logger.Info().Msg("ReconcileCmd executed!")
@@ -94,6 +98,7 @@ The generator adds the constructor to the App command provider set:
 <CodeFile path="app/wire/inject_cmd_app.go">
 
 ```go
+// appCommandSet provides app-owned command providers.
 var appCommandSet = wire.NewSet(
 	reports.NewReconcileCmd, // [!code highlight]
 )
@@ -105,10 +110,12 @@ It also exposes the command through the collection Kong parses:
 <CodeFile path="app/commands.go">
 
 ```go
+// Commands wires application-specific commands into the CLI.
 type Commands struct {
 	ReportsReconcileCmd reports.ReconcileCmd `cmd:""` // [!code highlight]
 }
 
+// NewCommands constructs the application command collection.
 func NewCommands(
 	reportsReconcileCmd *reports.ReconcileCmd, // [!code highlight]
 ) *Commands {
@@ -162,6 +169,7 @@ Generated commands can receive the CLI lifecycle context directly. Pass it to th
 <CodeFile path="internal/reports/reconcile_cmd.go">
 
 ```go
+// Run delegates reconciliation to the service while preserving CLI cancellation.
 func (c *ReconcileCmd) Run(ctx context.Context) error {
 	return c.service.Reconcile(ctx)
 }
@@ -173,6 +181,7 @@ Long-running services should check cancellation between units of work and pass t
 <CodeFile path="internal/reports/service.go">
 
 ```go
+// Reconcile processes pending reports until the work completes or the caller cancels.
 func (s *Service) Reconcile(ctx context.Context) error {
 	reportIDs, err := s.reports.PendingIDs(ctx)
 	if err != nil {

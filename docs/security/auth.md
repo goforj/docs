@@ -27,7 +27,7 @@ Generated Auth includes:
 
 OAuth is an optional component layered on top of Auth. It is not required for local username/email auth.
 
-## Generated Ownership
+## Application Structure
 
 Auth requires a database and implies Mail. OAuth requires Auth and a database.
 

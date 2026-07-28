@@ -60,10 +60,10 @@ Generate an HTTP controller for the package that owns the route.
 <template #usage>
 
 ```bash
-forj make:controller billing:reports
+forj make:controller reports
 ```
 
-The grouped name controls both the package path and the starter route, `/billing/reports`.
+The name controls both the package path and the starter route, `/reports`.
 
 Prefix the command when an additional app owns the route:
 
@@ -74,14 +74,14 @@ forj marketplace make:controller checkout
 Remove the generated controller and its managed registrations with:
 
 ```bash
-forj make:controller billing:reports --remove
+forj make:controller reports --remove
 ```
 
 </template>
 <template #files>
 
 ```text
-internal/billing/reports/controller.go       created
+internal/reports/controller.go               created
 app/wire/inject_http_controllers_app.go      provider added
 app/routes.go                                routes registered
 ```
@@ -93,26 +93,30 @@ For an additional app, the generated controller stays under `internal/...`; the 
 
 The generated controller includes a constructor, starter route, and replaceable handler:
 
-<CodeFile path="internal/billing/reports/controller.go">
+<CodeFile path="internal/reports/controller.go">
 
 ```go
+// Controller handles HTTP requests.
 type Controller struct {
 	logger *logger.AppLogger
 }
 
+// NewController creates a Controller.
 func NewController(logger *logger.AppLogger) *Controller {
 	return &Controller{logger: logger}
 }
 
+// Routes returns the HTTP routes handled by Controller.
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
-		web.NewRoute(http.MethodGet, "/billing/reports", c.Get),
+		web.NewRoute(http.MethodGet, "/reports", c.Get),
 	}
 }
 
+// Get handles the controller's GET route.
 func (c *Controller) Get(r web.Context) error {
-	c.logger.Info().Msg("Hello from billing reports controller")
-	return r.Text(http.StatusOK, "Hello from billing reports controller")
+	c.logger.Info().Msg("Hello from reports controller")
+	return r.Text(http.StatusOK, "Hello from reports controller")
 }
 ```
 </CodeFile>
@@ -122,8 +126,9 @@ The HTTP controller Wire set gains the constructor:
 <CodeFile path="app/wire/inject_http_controllers_app.go">
 
 ```go
+// appHttpControllerSet provides all HTTP route controllers.
 var appHttpControllerSet = wire.NewSet(
-	billingReports.NewController, // [!code highlight]
+	reports.NewController, // [!code highlight]
 )
 ```
 </CodeFile>
@@ -133,11 +138,12 @@ The App route registry receives the controller and appends its routes:
 <CodeFile path="app/routes.go">
 
 ```go
+// ProvideRoutes provides route groups for the HTTP server.
 func ProvideRoutes(
-	billingReportsController *billingReports.Controller, // [!code highlight]
+	reportsController *reports.Controller, // [!code highlight]
 ) []web.RouteGroup {
 	publicRoutes := slices.Concat(
-		billingReportsController.Routes(), // [!code highlight]
+		reportsController.Routes(), // [!code highlight]
 	)
 	return []web.RouteGroup{
 		web.NewRouteGroup("/api/v1", publicRoutes),
@@ -187,14 +193,17 @@ The command keeps its CLI metadata with its implementation:
 <CodeFile path="internal/reports/sync_cmd.go">
 
 ```go
+// SyncCmd handles the reports:sync app command.
 type SyncCmd struct {
 	logger *logger.AppLogger
 }
 
+// Signature keeps command metadata with the implementation so generated wiring stays package-local.
 func (*SyncCmd) Signature() string {
 	return `name:"reports:sync" help:"Sync command"`
 }
 
+// Run is the entrypoint Kong calls after parsing reports:sync.
 func (c *SyncCmd) Run(ctx context.Context) error {
 	_ = ctx
 	c.logger.Info().Msg("SyncCmd executed!")
@@ -208,6 +217,7 @@ The App Wire set gains the provider:
 <CodeFile path="app/wire/inject_cmd_app.go">
 
 ```go
+// appCommandSet provides app-owned command providers.
 var appCommandSet = wire.NewSet(
 	reports.NewSyncCmd, // [!code highlight]
 )
@@ -219,6 +229,7 @@ The App command collection exposes it to Kong:
 <CodeFile path="app/commands.go">
 
 ```go
+// Commands wires application-specific commands into the CLI.
 type Commands struct {
 	ReportsSyncCmd reports.SyncCmd `cmd:""` // [!code highlight]
 }
@@ -259,10 +270,31 @@ The generated dispatch helper targets the selected queue:
 <CodeFile path="internal/billing/sync_reports_job.go">
 
 ```go
+// SyncReportsJobTypeName identifies the job during dispatch and handler registration.
 const SyncReportsJobTypeName = "billing:sync-reports"
 
+// SyncReportsJobPayload is the payload for the SyncReportsJob job.
+type SyncReportsJobPayload struct {
+	// add your payload fields here
+}
+
+// SyncReportsJob dispatches and handles its queue workflow.
+type SyncReportsJob struct {
+	queues *queues.Manager
+}
+
+// NewSyncReportsJob constructs the job with the configured queue manager.
+func NewSyncReportsJob(queues *queues.Manager) *SyncReportsJob {
+	return &SyncReportsJob{queues: queues}
+}
+
+// Queue creates a task and dispatches it to the selected queue.
+// Add application inputs as arguments when defining the payload contract.
 func (t *SyncReportsJob) Queue(ctx context.Context, name string) error {
 	var p SyncReportsJobPayload
+	// add your payload fields here
+	// p.User = name
+
 	payload, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -272,6 +304,15 @@ func (t *SyncReportsJob) Queue(ctx context.Context, name string) error {
 	)
 	return err
 }
+
+// HandleTask processes queue payloads.
+func (t *SyncReportsJob) HandleTask(_ context.Context, msg queue.Message) error {
+	var p SyncReportsJobPayload
+	if err := msg.Bind(&p); err != nil {
+		return fmt.Errorf("json.Unmarshal failed: %w", err)
+	}
+	return nil
+}
 ```
 </CodeFile>
 
@@ -280,11 +321,13 @@ The job Wire file gains both construction and runtime registration:
 <CodeFile path="app/wire/inject_jobs_app.go">
 
 ```go
+// appJobSet provides app-owned jobs and their runtime registration.
 var appJobSet = wire.NewSet(
 	registerJobHandlers,
 	billing.NewSyncReportsJob, // [!code highlight]
 )
 
+// registerJobHandlers binds every application job to each configured queue runtime.
 func registerJobHandlers(
 	queueManager *queues.Manager,
 	billingSyncReportsJob *billing.SyncReportsJob, // [!code highlight]
@@ -359,25 +402,32 @@ func (m *Manager) Reports() *queue.Queue {
 ```
 </CodeFile>
 
+That is the complete `make:queue` output: environment configuration plus the accessor produced by the next build or queue generation pass. The following application-owned example shows how a generated job can use that named queue; `make:queue` does not write the job, service, Wire registration, or controller.
+
 Keep the payload beside the generated job and its handler:
 
 <CodeFile path="internal/reports/generate_job.go">
 
 ```go
+// GenerateJobTypeName identifies the job during dispatch and handler registration.
 const GenerateJobTypeName = "reports:generate"
 
+// GenerateJobPayload is the durable contract passed to the report worker.
 type GenerateJobPayload struct {
 	ReportID string `json:"report_id"`
 }
 
+// GenerateJob handles queued report generation through the application service.
 type GenerateJob struct {
 	service *Service
 }
 
+// NewGenerateJob constructs the worker with the service that owns report generation.
 func NewGenerateJob(service *Service) *GenerateJob {
 	return &GenerateJob{service: service}
 }
 
+// HandleTask decodes the queue message and delegates report generation to the service.
 func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
 	var payload GenerateJobPayload
 	if err := msg.Bind(&payload); err != nil {
@@ -395,12 +445,14 @@ This example carries an ID because the worker should load the report's current s
 <CodeFile path="internal/reports/service.go">
 
 ```go
+// Service coordinates report persistence, rendering, and asynchronous dispatch.
 type Service struct {
 	queues   *queues.Manager
 	reports  *Repository
 	renderer *Renderer
 }
 
+// NewService constructs the report service with its queue and domain dependencies.
 func NewService(
 	queues *queues.Manager,
 	reports *Repository,
@@ -413,6 +465,7 @@ func NewService(
 	}
 }
 
+// QueueGeneration dispatches report work through the named reports queue.
 func (s *Service) QueueGeneration(ctx context.Context, reportID string) error {
 	payload, err := json.Marshal(GenerateJobPayload{ReportID: reportID})
 	if err != nil {
@@ -426,6 +479,7 @@ func (s *Service) QueueGeneration(ctx context.Context, reportID string) error {
 	return err
 }
 
+// Generate reloads the report before rendering so the worker uses current state.
 func (s *Service) Generate(ctx context.Context, reportID string) error {
 	report, err := s.reports.Find(ctx, reportID)
 	if err != nil {
@@ -441,6 +495,7 @@ Register that constructor with the application service set:
 <CodeFile path="app/wire/inject_services_app.go">
 
 ```go
+// appSet provides application services to Wire.
 var appSet = wire.NewSet(
 	reports.NewRenderer,
 	reports.NewService,
@@ -453,14 +508,17 @@ Wire can then inject the service into a controller, command, job, or other appli
 <CodeFile path="internal/reports/controller.go">
 
 ```go
+// Controller exposes report operations over HTTP.
 type Controller struct {
 	service *Service
 }
 
+// NewController constructs the HTTP adapter with the report service.
 func NewController(service *Service) *Controller {
 	return &Controller{service: service}
 }
 
+// Generate queues report generation and returns without waiting for the worker.
 func (c *Controller) Generate(r web.Context) error {
 	if err := c.service.QueueGeneration(r.Context(), r.Param("reportID")); err != nil {
 		return err
@@ -511,13 +569,35 @@ The generated task owns its stable name and interval:
 <CodeFile path="internal/reports/daily_schedule.go">
 
 ```go
+// DailyScheduleName is the operational name registered with the scheduler.
 const DailyScheduleName = "reports:daily"
+
+// DailyScheduleInterval is the schedule frequency as a Go duration string.
 const DailyScheduleInterval = "24h"
 
+// DailySchedule is a scheduled task.
+type DailySchedule struct{}
+
+// NewDailySchedule creates a new DailySchedule.
+func NewDailySchedule() *DailySchedule {
+	return &DailySchedule{}
+}
+
+// Name returns the operational schedule name.
 func (s *DailySchedule) Name() string {
 	return DailyScheduleName
 }
 
+// Interval returns how often the schedule should run.
+func (s *DailySchedule) Interval() (time.Duration, error) {
+	interval, err := time.ParseDuration(DailyScheduleInterval)
+	if err != nil {
+		return 0, fmt.Errorf("parse schedule interval %s: %w", DailyScheduleName, err)
+	}
+	return interval, nil
+}
+
+// Handle runs the scheduled task.
 func (s *DailySchedule) Handle(ctx context.Context) error {
 	return nil
 }
@@ -529,6 +609,7 @@ The Wire set gains the provider:
 <CodeFile path="app/wire/inject_schedules_app.go">
 
 ```go
+// appScheduleSet contains application-owned schedule providers.
 var appScheduleSet = wire.NewSet(
 	ProvideAppSchedules,
 	app.NewScheduleRegistry,
@@ -546,11 +627,13 @@ var appScheduleSet = wire.NewSet(
 <CodeFile path="app/schedules.go">
 
 ```go
+// ScheduleRegistry registers scheduled work for this app.
 type ScheduleRegistry struct {
 	appSchedules  *schedules.AppSchedules
 	dailySchedule *reports.DailySchedule // [!code highlight]
 }
 
+// NewScheduleRegistry constructs the registry with its generated schedules.
 func NewScheduleRegistry(
 	appSchedules *schedules.AppSchedules,
 	dailySchedule *reports.DailySchedule, // [!code highlight]
@@ -561,6 +644,7 @@ func NewScheduleRegistry(
 	}
 }
 
+// Register attaches app schedules to the scheduler.
 func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
 	if err := r.appSchedules.Register(s); err != nil {
 		return err
@@ -610,12 +694,15 @@ The generated event converts the grouped name to a dotted stable topic and provi
 <CodeFile path="internal/billing/invoice_paid_event.go">
 
 ```go
+// InvoicePaidEventTopic is the stable routing key for InvoicePaidEvent.
 const InvoicePaidEventTopic = "billing.invoice-paid"
 
+// InvoicePaidEvent is the event payload for InvoicePaidEventTopic.
 type InvoicePaidEvent struct {
 	// Add event fields.
 }
 
+// Topic returns the event bus topic for InvoicePaidEvent.
 func (InvoicePaidEvent) Topic() string {
 	return InvoicePaidEventTopic
 }
@@ -660,12 +747,15 @@ The generated subscriber starts with a typed handler:
 <CodeFile path="internal/billing/invoice_paid_subscriber.go">
 
 ```go
+// InvoicePaidSubscriber handles InvoicePaidEvent messages from the configured event bus.
 type InvoicePaidSubscriber struct{}
 
+// NewInvoicePaidSubscriber constructs an InvoicePaidEvent subscriber.
 func NewInvoicePaidSubscriber() *InvoicePaidSubscriber {
 	return &InvoicePaidSubscriber{}
 }
 
+// Handle processes InvoicePaidEvent messages.
 func (s *InvoicePaidSubscriber) Handle(
 	ctx context.Context,
 	event InvoicePaidEvent,
@@ -682,11 +772,13 @@ The App Wire file constructs it and performs the subscription:
 <CodeFile path="app/wire/inject_subscribers_app.go">
 
 ```go
+// appSubscriberSet contains application-owned event subscriber providers.
 var appSubscriberSet = wire.NewSet(
 	ProvideEventSubscribers,
 	billing.NewInvoicePaidSubscriber, // [!code highlight]
 )
 
+// ProvideEventSubscribers registers application subscribers with configured event buses.
 func ProvideEventSubscribers(
 	eventManager *events.Manager,
 	billingInvoicePaidSubscriber *billing.InvoicePaidSubscriber, // [!code highlight]
@@ -745,11 +837,13 @@ Model fields reflect the columns discovered in the `invoices` table. The schema-
 <CodeFile path="internal/billing/invoice.go">
 
 ```go
+// InvoiceRepo provides persistence helpers for Invoice.
 type InvoiceRepo struct {
 	db  *database.Connections
 	ctx context.Context
 }
 
+// NewInvoiceRepo creates a new Invoice repository.
 func NewInvoiceRepo(db *database.Connections) *InvoiceRepo {
 	return &InvoiceRepo{db: db}
 }
@@ -761,6 +855,7 @@ The repository Wire set gains:
 <CodeFile path="app/wire/inject_repositories_app.go">
 
 ```go
+// repositorySet is a wire set for generated repositories.
 var repositorySet = wire.NewSet(
 	billing.NewInvoiceRepo, // [!code highlight]
 )
@@ -938,7 +1033,7 @@ The build exposes application code that still refers to the removed type, route,
 Source-generating make commands can open their primary generated file after a successful run:
 
 ```bash
-forj make:controller billing:reports -o
+forj make:controller reports -o
 forj make:job billing:sync-reports --open
 ```
 
