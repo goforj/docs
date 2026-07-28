@@ -27,7 +27,7 @@ forj make:job reports:generate --queue reports
 For an additional app, prefix the generator with the app name:
 
 ```bash
-forj marketplace make:job sync-catalog --queue sync
+forj admin make:job reports:generate --queue reports
 ```
 
 Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.

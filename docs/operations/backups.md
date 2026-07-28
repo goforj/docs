@@ -55,14 +55,14 @@ The exact confirmation phrase is required for every destructive restore. Native 
 
 ## Select an App or Resource
 
-Unprefixed commands use the default App. Use the normal app-name prefix for an additional app:
+Unprefixed commands use the default App. To plan or create a backup for the staff operations App, use its `admin` prefix:
 
 ```bash
-forj marketplace backup:plan
-forj marketplace backup:create
+forj admin backup:plan
+forj admin backup:create
 ```
 
-The prefix loads the selected App's environment and resource contract before the framework command runs.
+The prefix loads `admin`'s environment and resource contract before the framework command runs, so the backup covers the data stores configured for staff operations rather than the default App's resources.
 
 Use `--resource` for one database connection or storage disk:
 

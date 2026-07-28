@@ -178,7 +178,7 @@ forj scheduler
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace scheduler
+forj admin scheduler
 ```
 
 Run it with other enabled local runtimes:
@@ -190,7 +190,7 @@ forj app
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace app
+forj admin app
 ```
 
 ## Recommended Shape

@@ -56,7 +56,7 @@ Golden path for local development:
 - `forj dev` for the normal development loop
 - `forj build` for generation, Wire, API indexing, and binary build
 - `forj ...` for generated App commands when working inside a generated App
-- `forj <app> ...` to select an app by name, such as `forj marketplace route:list`
+- `forj <app> ...` to select an app by name, such as `forj admin route:list`
 - `forj run ...` only when the docs need the explicit App-command path or collision escape hatch
 - `forj app` when intentionally running the combined generated App runtime
 - `dev.apps` for App-aware build, SPA, and runtime lifecycle ownership
@@ -69,7 +69,7 @@ Golden path for built binaries:
 - `./bin/app worker` for queue workers
 - `./bin/app scheduler` for scheduler runtime
 - `./bin/app migrate` for migrations
-- `./bin/<app> ...` for app-specific binaries, such as `./bin/marketplace worker`
+- `./bin/<app> ...` for app-specific binaries, such as `./bin/admin worker`
 
 For runtime-capable Apps, `./bin/app` and `./bin/app run` are equivalent. Explicit commands still take precedence, while CLI-only binaries keep their root help behavior when no command is supplied.
 
@@ -157,7 +157,7 @@ Golden path:
 - Use local `sync` or `workerpool` drivers for development and tests.
 - Use durable or broker-backed drivers when production requirements require them.
 - Use named queues for distinct operational classes such as `emails`, `reports`, or `critical`.
-- Keep queue names logical in app code. In a multi-app Project, additional apps physicalize backend queue names with the app prefix, for example `billing_default`, while the app still dispatches to `default`.
+- Keep queue names logical in app code. In a multi-app Project, additional apps physicalize backend queue names with the app prefix, for example `admin_default`, while the app still dispatches to `default`.
 - Prioritize queues by worker allocation and process sizing, for example `QUEUE_EMAILS_WORKERS=6` versus `QUEUE_REPORTS_WORKERS=2`.
 - Use `worker --queue <name>` when a process should work only one named queue.
 - Treat retries as part of job design.

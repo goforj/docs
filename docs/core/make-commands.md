@@ -12,12 +12,12 @@ They are the normal starting point for controllers, commands, jobs, schedules, e
 In a multi-app Project, run make commands through the app that owns the resource:
 
 ```bash
-forj marketplace make:controller checkout
-forj marketplace make:job sync-catalog
-forj backstage make:schedule nightly-cleanup
+forj admin make:controller users
+forj admin make:job reports:export
+forj admin make:schedule audit:cleanup
 ```
 
-The app prefix chooses the registration point. `forj marketplace make:*` creates the generated resource under `internal/...` and writes the registration and Wire changes into `app/marketplace/...`; unprefixed `forj make:*` creates the resource under `internal/...` and writes registration changes to the default app under `app/...`.
+The app prefix chooses the registration point. `forj admin make:*` creates the generated resource under `internal/...` and writes the registration and Wire changes into `app/admin/...`; unprefixed `forj make:*` creates the resource under `internal/...` and writes registration changes to the default app under `app/...`.
 
 This keeps app composition in the owning app while shared domain code can still live under `internal/...`.
 
@@ -68,7 +68,7 @@ The name controls both the package path and the starter route, `/reports`.
 Prefix the command when an additional app owns the route:
 
 ```bash
-forj marketplace make:controller checkout
+forj admin make:controller users
 ```
 
 Remove the generated controller and its managed registrations with:

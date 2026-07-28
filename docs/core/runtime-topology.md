@@ -9,7 +9,7 @@ Runtime topology describes whether an app hosts its long-running work in one pro
 
 Apps and runtimes are different:
 
-- an App is the runnable boundary, such as `app` or `marketplace`
+- an App is the runnable boundary, such as `app` or `admin`
 - a Runtime is a process role inside an App, such as HTTP, jobs, or scheduler
 
 ## Start with One Process
@@ -25,7 +25,7 @@ This starts enabled runtimes together for the default app.
 Select an additional app by name:
 
 ```bash
-forj marketplace app
+forj admin app
 ```
 
 This is one app with several runtime roles. It is usually the simplest topology for local development and deployments that do not need independent scaling.
@@ -56,8 +56,8 @@ Generated `internal/runtime/apps.go` gives each app deterministic local defaults
 Additional apps do not consume default-app globals such as `PORT=3000`. Override one app with its uppercase app prefix:
 
 ```text
-MARKETPLACE_PORT=3100
-MARKETPLACE_METRICS_PORT=10110
+ADMIN_PORT=3100
+ADMIN_METRICS_PORT=10110
 ```
 
 ## Observability Identity

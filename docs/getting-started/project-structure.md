@@ -63,7 +63,7 @@ It should stay small. It starts the generated command surface for the app; it sh
 Additional apps use the same pattern:
 
 ```text
-cmd/marketplace/main.go
+cmd/admin/main.go
 ```
 
 ## `app`
@@ -81,8 +81,8 @@ Common files include:
 Additional apps compose through the owning app's `app/<name>/` directory:
 
 ```text
-app/marketplace/routes.go
-app/marketplace/wire/
+app/admin/routes.go
+app/admin/wire/
 ```
 
 ## `internal`
@@ -126,7 +126,7 @@ When Web UI is enabled, frontend source and embedded build output live next to t
 
 ```text
 cmd/app/frontend/
-cmd/marketplace/frontend/
+cmd/admin/frontend/
 ```
 
 This keeps each app's embedded assets local to the binary that serves them.

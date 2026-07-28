@@ -9,21 +9,21 @@ An app is a runnable program inside a GoForj Project. It has its own binary, com
 
 Every Project starts with the default app, whose binary is `bin/app`. Most Projects need only that app.
 
-When the same Project needs another independently runnable program, `forj make:app backstage` creates an additional app named `backstage`, with its own `bin/backstage` binary, routes, commands, runtime choices, and dependency graph. Its app name prefixes files and commands:
+When the same Project needs another independently runnable program, `forj make:app admin` creates an additional app named `admin`, with its own `bin/admin` binary, routes, commands, runtime choices, and dependency graph. Its app name prefixes files and commands:
 
 ```bash
-forj backstage api
-forj backstage worker
+forj admin api
+forj admin worker
 ```
 
-For example, one commerce Project might contain:
+For example, one Project might contain:
 
 | App | What it runs | Binary |
 | --- | --- | --- |
-| Default app | Public API and checkout workers | `bin/app` |
-| Additional app named `backstage` | Internal administration API and scheduler | `bin/backstage` |
+| Default app | Customer-facing HTTP and background work | `bin/app` |
+| Additional app named `admin` | Internal administration API and scheduler | `bin/admin` |
 
-Both apps can use shared application behavior under `internal/orders`, while their routes, commands, schedules, lifecycle hooks, and wiring remain separate.
+Both apps can use shared application behavior under packages such as `internal/users` and `internal/reports`, while their routes, commands, schedules, lifecycle hooks, and wiring remain separate.
 
 An additional app is not a package namespace, a worker process, or automatically a separate service or repository. Use packages under `internal/` to organize code, and use runtime commands such as `forj api` and `forj worker` to split processes inside one app. Add another app only when you need another binary, deployment boundary, or independently selected set of capabilities.
 
@@ -62,14 +62,14 @@ The default app is enough for most Projects.
 Use `make:app` when the Project needs another runnable program:
 
 ```bash
-forj make:app marketplace
+forj make:app admin
 ```
 
 You can choose which capabilities the app includes:
 
 ```bash
-forj make:app billing --components web-api,jobs --dev-run run
-forj make:app backstage --components web-api,scheduler --starter-kit vue
+forj make:app admin --components web-api,jobs --dev-run run
+forj make:app admin --components web-api,web-ui,scheduler --starter-kit vue
 ```
 
 The interactive wizard includes a Dev Run choice. Apps with HTTP, jobs, or schedules default to the conventional `run` command, while CLI-only or explicitly disabled apps remain absent from `dev.apps`.
@@ -79,7 +79,7 @@ When scripting `make:app` with flags, use `--dev-run run` to enroll the app in `
 Remove conventional generated app files with:
 
 ```bash
-forj make:app marketplace --remove
+forj make:app admin --remove
 ```
 
 Removal is conservative. It should not delete unknown app-owned files or migration history.
@@ -87,15 +87,15 @@ Removal is conservative. It should not delete unknown app-owned files or migrati
 </template>
 <template #files>
 
-`make:app marketplace` creates the binary entrypoint and app-owned files:
+`make:app admin` creates the binary entrypoint and app-owned files:
 
 ```text
-cmd/marketplace/main.go             binary entrypoint
-app/marketplace/root_cmd.go         app commands
-app/marketplace/routes.go           HTTP exposure when selected
-app/marketplace/lifecycle.go        runtime lifecycle when selected
-app/marketplace/wire/               app-specific Wire graph
-.goforj.yml                         app component and starter-kit metadata
+cmd/admin/main.go                  binary entrypoint
+app/admin/root_cmd.go              app commands
+app/admin/routes.go                HTTP exposure when selected
+app/admin/lifecycle.go             runtime lifecycle when selected
+app/admin/wire/                    app-specific Wire graph
+.goforj.yml                        app component and starter-kit metadata
 ```
 
 The exact files follow the selected components. Existing app migrations and unknown files are deliberately outside managed removal.
@@ -109,13 +109,13 @@ The generator records the app's selected components in project configuration:
 
 ```yaml
 apps:
-  marketplace:
+  admin:
     components: [web_api, jobs]
     starter_kit: none
 ```
 </CodeFile>
 
-The `app/marketplace/` directory owns the app's routes, commands, schedules, and lifecycle hooks; its `wire/` directory contains the corresponding dependency graph.
+The `app/admin/` directory owns the app's routes, commands, schedules, and lifecycle hooks; its `wire/` directory contains the corresponding dependency graph.
 
 </template>
 </MakeCommandTabs>
@@ -125,20 +125,17 @@ The `app/marketplace/` directory owns the app's routes, commands, schedules, and
 Prefix the command with the app name:
 
 ```bash
-forj marketplace route:list
-forj marketplace api
-forj marketplace worker
-forj marketplace build
-
-forj backstage scheduler
-forj backstage dev
+forj admin route:list
+forj admin api
+forj admin worker
+forj admin build
 ```
 
 Built binaries use the same command names:
 
 ```bash
-./bin/marketplace api
-./bin/marketplace worker
+./bin/admin api
+./bin/admin worker
 ```
 
 Unqualified commands use the default app:
@@ -155,20 +152,20 @@ That means single-app Projects do not get a more complicated workflow. Multi-app
 The app prefix also chooses which route, command, job, or provider files receive new registrations.
 
 ```bash
-forj marketplace make:controller checkout
-forj marketplace make:job sync-catalog
-forj marketplace make:model order
+forj admin make:controller users
+forj admin make:job reports:export
+forj admin make:model audit-log
 ```
 
-These commands create behavior under `internal/`, then register it with the selected app. For the controller above, that means:
+These commands create staff-facing behavior under `internal/`, then register it with the selected app. For the controller above, that means:
 
 ```text
-internal/checkout/controller.go
-app/marketplace/routes.go
-app/marketplace/wire/inject_http_controllers_app.go
+internal/users/controller.go
+app/admin/routes.go
+app/admin/wire/inject_http_controllers_app.go
 ```
 
-The job and model commands follow the same rule: generated behavior lives under `internal/...`, and the selected app receives the matching Wire registration in files such as `app/marketplace/wire/inject_jobs_app.go` or `app/marketplace/wire/inject_repositories_app.go`.
+The job and model commands follow the same rule: generated behavior lives under `internal/...`, and the selected app receives the matching Wire registration in files such as `app/admin/wire/inject_jobs_app.go` or `app/admin/wire/inject_repositories_app.go`.
 
 Unprefixed make commands keep writing to the default app:
 
@@ -191,7 +188,7 @@ An app can expose several runtimes:
 - scheduler
 - CLI commands
 
-For example, `forj marketplace api`, `forj marketplace worker`, and `forj marketplace scheduler` run different process roles inside the same `marketplace` app. The app owns the binary and dependency graph; the runtime is the role the process is currently running.
+For example, `forj admin api`, `forj admin worker`, and `forj admin scheduler` run different process roles inside the same `admin` app. The app owns the binary and dependency graph; the runtime is the role the process is currently running.
 
 Separate app processes do not share memory-backed cache, queue, or event drivers. Choose a shared backend when work or state must cross process boundaries.
 
@@ -199,17 +196,17 @@ Separate app processes do not share memory-backed cache, queue, or event drivers
 
 `internal/` owns behavior. Apps register that behavior with a runnable binary; do not put business workflows in `app/` or `cmd/<app>/`.
 
-For example, a checkout controller can live in:
+For example, a user-management controller can live in:
 
 ```text
-internal/checkout/controller.go
+internal/users/controller.go
 ```
 
-The `marketplace` app exposes it through:
+The `admin` app exposes it through:
 
 ```text
-app/marketplace/routes.go
-app/marketplace/wire/inject_http_controllers_app.go
+app/admin/routes.go
+app/admin/wire/inject_http_controllers_app.go
 ```
 
 This keeps the code reusable inside the Project without pretending each app is a separate repository.
@@ -254,16 +251,16 @@ build/openapi.json
 Additional apps write under their app name:
 
 ```text
-build/marketplace/api_index.json
-build/marketplace/openapi.json
+build/admin/api_index.json
+build/admin/openapi.json
 ```
 
-Frontend source and embedded assets follow the app entrypoint:
+Frontend source and embedded assets follow the app entrypoint. For example, a Project can have separate public, staff administration, and public availability frontends:
 
 ```text
 cmd/app/frontend/
-cmd/marketplace/frontend/
-cmd/backstage/frontend/
+cmd/admin/frontend/
+cmd/statuspage/frontend/
 ```
 
 ## Runtime Defaults
@@ -281,8 +278,8 @@ Default ports are deterministic:
 Overrides for an additional app use its uppercase app name as a prefix:
 
 ```text
-MARKETPLACE_PORT=3100
-MARKETPLACE_WORKER_METRICS_PORT=10112
+ADMIN_PORT=3100
+ADMIN_WORKER_METRICS_PORT=10112
 ```
 
 Default-app globals such as `PORT` and `METRICS_PORT` do not apply to additional apps.
@@ -291,15 +288,15 @@ When `make:app` writes local env defaults, it uses the next available app HTTP p
 
 ## Queue and Migration Boundaries
 
-App code uses logical queue names such as `default` or `sync`. In a multi-app Project, additional apps prefix backend queue names with the app name, such as `marketplace_default`, so multiple apps can share a queue backend safely.
+App code uses logical queue names such as `default` or `sync`. In a multi-app Project, additional apps prefix backend queue names with the app name, such as `admin_default`, so multiple apps can share a queue backend safely.
 
 Migrations are app-owned when a Project has multiple apps:
 
 ```text
 migrations/
   app/default/
-  marketplace/default/
-  marketplace/archive/
+  admin/default/
+  admin/archive/
 ```
 
 If two apps share one physical database, choose one app to own that database's migration stream.

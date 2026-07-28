@@ -19,11 +19,13 @@ app/<app>/schedules.go
 | Scope | Supervised command |
 | --- | --- |
 | Default App scheduler only | `./bin/app scheduler` |
-| Additional app scheduler only | `./bin/marketplace scheduler` |
+| Admin operations scheduler only | `./bin/admin scheduler` |
 | Default App combined Runtime | `./bin/app` |
-| Additional app combined Runtime | `./bin/marketplace` |
+| Admin operations combined Runtime | `./bin/admin` |
 
 Use the explicit scheduler command in split deployments so process ownership and singleton policy stay visible. For source-aware development commands, see [Scheduler](/async/scheduler#start-scheduler).
+
+In this example, the `admin` scheduler owns recurring staff operations such as audit exports or operational cleanup. Keep those schedules with the App that owns the underlying workflow.
 
 ## Startup Behavior
 

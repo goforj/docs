@@ -9,7 +9,7 @@ Logs should make runtime behavior understandable without creating noise.
 
 GoForj favors high-signal startup, shutdown, and degraded-state logs over large boot dumps.
 
-In multi-app Projects, logs should make the app identity visible. A line from `marketplace` should not be mistaken for the default app, especially when `forj dev` is running several apps together.
+In multi-app Projects, logs should make the app identity visible. A staff operation logged by `admin` should not be mistaken for work from the default app, especially when `forj dev` is running several apps together.
 
 ## Good Default Logs
 
@@ -63,10 +63,10 @@ Use:
 
 for complete route visibility.
 
-For an additional app, prefix the command with the app name:
+For the staff operations App, use the `admin` binary:
 
 ```bash
-./bin/marketplace route:list
+./bin/admin route:list
 ```
 
 ## HTTP Access Logs

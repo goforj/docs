@@ -28,8 +28,8 @@ forj build:api-index
 For an additional app, prefix either command with the app name:
 
 ```bash
-forj marketplace build
-forj marketplace build:api-index
+forj admin build
+forj admin build:api-index
 ```
 
 ## App-Scoped Outputs
@@ -45,9 +45,9 @@ build/openapi.json
 An additional app writes per-app artifacts:
 
 ```text
-build/marketplace/api_index.json
-build/marketplace/api_index.diagnostics.json
-build/marketplace/openapi.json
+build/admin/api_index.json
+build/admin/api_index.diagnostics.json
+build/admin/openapi.json
 ```
 
 Manifest version 2 keeps operations, typed schemas, metadata, and diagnostics in one canonical API index. `openapi.json` is regenerated from that indexed contract and should not be edited independently.
@@ -57,7 +57,7 @@ Apps without Web API support do not have an HTTP contract. Indexing a known CLI-
 The focused command reports the selected App, whether the generation changed, and operation, schema, and diagnostic counts:
 
 ```text
-app marketplace, changed, 12 operations, 9 schemas, 0 diagnostics
+app admin, changed, 12 operations, 9 schemas, 0 diagnostics
 ```
 
 ## Diagnostics and Strict CI
@@ -68,7 +68,7 @@ Use strict mode in CI when warnings should also fail the command:
 
 ```bash
 forj build:api-index --strict
-forj marketplace build:api-index --strict
+forj admin build:api-index --strict
 ```
 
 The complete build and source-run pipelines use a more specific flag:

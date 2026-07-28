@@ -14,13 +14,13 @@ Latest audit on 2026-06-16 tightened the docs around the multi-app model:
 - Public scheduler guidance now points to app-owned schedule composition, `app/schedules.go` and `app/<app>/schedules.go`, instead of stale scheduler registry paths.
 - Scenario specs in `../goforj/internal/scenarios/specs` were updated for app-owned schedule registration and regenerated into `docs/scenarios`.
 - Scenario heading generation now follows the docs style guide by using `and` in headings instead of `And`.
-- AI guidance now uses `marketplace` and `backstage` as the main named-app examples.
+- AI guidance now uses `admin` as the canonical additional-App example and reserves `statuspage` for genuine third-App or availability-boundary examples.
 
 Latest audit on 2026-06-15 updated public docs to better showcase the stabilized multi-app model:
 
 - `forj <app> <command>` is now presented as the primary named-app workflow.
 - App-prefixed `make:*` commands are documented as routing generated registrations into the selected app's `app/<app>/...` and `app/<app>/wire/...` files.
-- Central examples now use `marketplace` and `backstage` for approachable named-app examples instead of treating `billing` and `reporting` as the canonical model.
+- Central examples now use `admin` as the canonical additional-App example, with `statuspage` only for genuine third-App or availability-boundary examples.
 - App-scoped API index, OpenAPI, frontend, migration, queue, metric, Lighthouse, and runtime-process examples were refreshed.
 - Named app local env defaults now mention sequential app creation using the next available HTTP port, avoiding duplicate `3001` defaults.
 - `npm run build` passed from `docs/` after the documentation updates.
@@ -55,19 +55,22 @@ GoForj Project
     Runtime: http
     Runtime: jobs
     Runtime: scheduler
-  App: marketplace
+  App: admin
     Runtime: http
     Runtime: jobs
-  App: backstage
-    Runtime: jobs
+  App: statuspage
+    Runtime: http
+    Runtime: scheduler
 ```
+
+Here, `admin` owns staff operations while `statuspage` is a distinct public availability boundary for health and incident communication.
 
 Use this vocabulary in public docs:
 
 - `Project`: the repository/project created by `forj new`.
 - `app`: a runnable application boundary inside a Project.
 - `default app`: the conventional app named `app`.
-- `named app`: an additional app such as `marketplace` or `backstage`.
+- `named app`: an additional app such as `admin`.
 - `runtime`: HTTP, jobs, scheduler, CLI, or similar runtime surface inside an app.
 - `instance`: a concrete running process or replica.
 
@@ -158,7 +161,7 @@ Update these AI context files before broad public-doc rewrites:
   - Avoid `App target`, `runtime target`, and domain-level `target`.
 - `ai/golden-paths.md`
   - Replace root `main.go`, root `wire/`, `internal/app`, and `internal/cmd/app_commands.go` with `cmd/app`, `app`, `app/wire`, and `internal/runtime`.
-  - Add named-app command examples such as `forj marketplace route:list`, `forj marketplace build`, and `./bin/marketplace worker`.
+  - Add named-app command examples such as `forj admin route:list`, `forj admin build`, and `./bin/admin worker`.
   - Update generator guidance so make commands update the active app's `app/...` and `app/.../wire/...` files.
   - Add queue physicalization guidance: logical queue names in app code, app-prefixed backend queue names for named apps.
 - `ai/source-context-map.md`
@@ -201,7 +204,7 @@ These pages are currently the highest-risk source of stale guidance:
 - `docs/core/runtime-topology.md`
   - Add apps as a composition/deployment dimension above runtimes.
   - Keep standalone versus distributed runtime modes distinct from app fan-out.
-  - Add examples for `forj app`, `forj marketplace`, `./bin/app`, and `./bin/marketplace`.
+  - Add examples for `forj app`, `forj admin`, `./bin/app`, and `./bin/admin`.
 - `docs/core/dependency-injection.md`
   - Replace root `wire/` guidance with app-local `app/wire` and `app/<app>/wire`.
   - Explain that each app has its own Wire graph and binary entrypoint.
@@ -246,15 +249,15 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
   - Document `forj dev` as all-app orchestration in multi-app Projects.
 - `docs/reference/generation-commands.md`
   - Add `make:app` examples:
-    - `forj make:app marketplace`
-    - `forj make:app marketplace --components web-api,jobs`
-    - `forj make:app backstage --components web-api,web-ui --starter-kit vue`
-    - `forj make:app backstage --without web-ui --skip-wire`
-    - `forj make:app marketplace --remove`
+    - `forj make:app admin`
+    - `forj make:app admin --components web-api,jobs`
+    - `forj make:app admin --components web-api,web-ui --starter-kit vue`
+    - `forj make:app admin --without web-ui --skip-wire`
+    - `forj make:app admin --remove`
   - Update make command outputs to app-local files.
 - `docs/core/make-commands.md`
   - Add active-app behavior.
-  - Use examples such as `forj marketplace make:controller checkout`.
+  - Use staff-workflow examples such as `forj admin make:controller users`.
   - Remove stale `wire/inject_scheduler_schedules.go` and `internal/cmd/app_commands.go` references.
 - `docs/applications/commands.md`
   - Replace command exposure path with `app/commands.go` and `app/wire/inject_cmd_app.go`.
@@ -264,7 +267,7 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
   - Replace route registration path with `app/routes.go` or `app/<app>/routes.go`.
 - `docs/applications/routes.md`
   - Explain that `route:list` is scoped to the active app.
-  - Add `forj marketplace route:list` as the named-app example.
+  - Add `forj admin route:list` as the named-app example.
 - `docs/core/wiring-recipes.md`
   - Update all Wire file references to app-local `app/wire/...`.
   - Explain how to choose the active app before editing examples.
@@ -318,15 +321,15 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
   - Document app-scoped API index output:
     - default app: `build/api_index.json`
     - named app: `build/<app>/api_index.json`
-  - Explain status output such as `app billing`.
-  - Use the verified public command `forj marketplace build:api-index`.
+  - Explain status output such as `app admin`.
+  - Use the verified public command `forj admin build:api-index`.
 - `docs/applications/openapi.md`
   - Document app-scoped OpenAPI output:
     - default app: `build/openapi.json`
     - named app: `build/<app>/openapi.json`
   - Explain that served Swagger/OpenAPI belongs to the active app's HTTP surface.
 - `docs/operations/runtime-processes.md`
-  - Add named-app binary examples such as `./bin/marketplace api`, `./bin/marketplace worker`, and `./bin/backstage scheduler`.
+  - Add named-app binary examples such as `./bin/admin api`, `./bin/admin worker`, and `./bin/admin scheduler`.
 - `docs/operations/standalone-vs-distributed.md`
   - Clarify how bare runtime binaries default to `run` for each runtime-capable App.
 
@@ -340,17 +343,17 @@ Add the page to the Core Concepts sidebar after `App` or `Project Structure`, th
   - Explain that if two apps share a physical database, one app should own the migration stream.
 - `docs/data/database-strategy.md`
   - Add app-owned migration source guidance.
-  - Explain app-scoped database connection naming such as `billing` and `billing_ledger` when relevant.
+  - Explain app-scoped database connection naming such as `admin` and `admin_audit` when relevant.
 - `docs/data/repositories.md`
   - Update Wire paths to `app/wire/inject_repositories_app.go` or `app/<app>/wire/inject_repositories_app.go`.
 - `docs/async/queues.md`
   - Explain logical queue names versus backend queue names.
-  - Document that named apps prefix physical backend queue names, such as `billing_default`, while app code still uses `default`.
+  - Document that named apps prefix physical backend queue names, such as `admin_default`, while app code still uses `default`.
   - Note that no separate queue namespace env var is needed for normal multi-app usage.
 - `docs/async/jobs.md`
   - Explain app-scoped job registration and worker process examples.
 - `docs/async/workers.md`
-  - Add named-app worker examples: `forj marketplace worker` and `./bin/marketplace worker`.
+  - Add named-app worker examples: `forj admin worker` and `./bin/admin worker`.
 - `docs/async/scheduler.md`
   - Update schedule registration paths to `app/schedules.go` and `app/<app>/schedules.go`.
 

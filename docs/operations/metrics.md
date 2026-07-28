@@ -36,18 +36,20 @@ Apps get deterministic per-app local defaults so their runtimes do not fight for
 | App | HTTP metrics | Scheduler metrics | Worker metrics |
 | --- | ---: | ---: | ---: |
 | `app` | `10000` | `10001` | `10002` |
-| first additional app | `10010` | `10011` | `10012` |
-| second additional app | `10020` | `10021` | `10022` |
+| `admin` | `10010` | `10011` | `10012` |
+| `statuspage` | `10020` | `10021` | `10022` |
+
+Here `admin` serves staff operations, while `statuspage` is a separately available public surface for service health and incidents.
 
 When the HTTP runtime exposes `/metrics`, local scraping may use each app's HTTP port instead:
 
 | App | HTTP `/metrics` |
 | --- | ---: |
 | `app` | `3000` |
-| first additional app | `3001` |
-| second additional app | `3002` |
+| `admin` | `3001` |
+| `statuspage` | `3002` |
  
-Override ports for an additional app with app-prefixed env vars such as `MARKETPLACE_API_HTTP_PORT`, `MARKETPLACE_METRICS_PORT`, `MARKETPLACE_SCHEDULER_METRICS_PORT`, and `MARKETPLACE_WORKER_METRICS_PORT`.
+Override ports for the staff operations App with app-prefixed env vars such as `ADMIN_API_HTTP_PORT`, `ADMIN_METRICS_PORT`, `ADMIN_SCHEDULER_METRICS_PORT`, and `ADMIN_WORKER_METRICS_PORT`.
 
 When the HTTP runtime and metrics component are enabled, the App also exposes:
 
@@ -96,14 +98,14 @@ Framework metric families emit `app` directly. Many runtime-aware families also 
 The local observability stack adds scrape-time metadata such as `process`, `service`, and `environment`:
 
 ```text
-app=marketplace
+app=admin
 source=jobs
 process=jobs
 service=Example
 environment=local
 ```
 
-Use `source` for logical runtime attribution and `process` for scrape topology.
+This label set identifies a background staff-operations job from `admin`. Use `source` for logical runtime attribution and `process` for scrape topology.
 
 Avoid user IDs, emails, raw URLs, raw SQL, cache keys, filenames, request IDs, and arbitrary error strings.
 

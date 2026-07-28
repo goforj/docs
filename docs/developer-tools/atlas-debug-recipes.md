@@ -221,27 +221,27 @@ Atlas tools:
 
 ```text
 application-info
-workflow-plan app="marketplace" task="add checkout route"
-registration-points app="marketplace"
-generated-file-policy path="app/marketplace/routes.go"
+workflow-plan app="admin" task="add refund review route"
+registration-points app="admin"
+generated-file-policy path="app/admin/routes.go"
 generated-file-policy path="app/routes.go"
 ```
 
 GoForj commands:
 
 ```bash
-forj marketplace make:controller checkout
-forj marketplace route:list
-forj marketplace build
+forj admin make:controller refund-review
+forj admin route:list
+forj admin build
 ```
 
 Expected evidence:
 
-- selected app is `marketplace`
-- registration points live under `app/marketplace`
+- selected app is `admin`
+- registration points live under `app/admin`
 - default app files are not part of the planned edit
 
 Validation:
 
-- `forj marketplace route:list`
-- `forj marketplace build`
+- `forj admin route:list`
+- `forj admin build`
