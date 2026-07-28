@@ -11,14 +11,14 @@ Workers are long-running runtime processes with explicit startup, shutdown, queu
 
 ## Process Commands
 
-Use the built binary under a supervisor in deployment. Use the `forj` form for development because it refreshes generated code before delegating to the App command.
+Use the built binary under a supervisor in deployment. For source-aware development commands, see [Queues](/async/queues#workers).
 
-| Scope | Built binary | Development alias |
-| --- | --- | --- |
-| Every configured queue | `./bin/app worker` | `forj worker` |
-| One queue | `./bin/app worker --queue reports` | `forj worker --queue reports` |
-| Additional app | `./bin/marketplace worker` | `forj marketplace worker` |
-| Combined Runtime | `./bin/app` | `forj app` |
+| Scope | Supervised command |
+| --- | --- |
+| Every configured queue | `./bin/app worker` |
+| One queue | `./bin/app worker --queue reports` |
+| Additional app | `./bin/marketplace worker` |
+| Combined Runtime | `./bin/app` |
 
 Repeat `--queue` when one process should work a subset. Names remain logical from the selected App's point of view:
 

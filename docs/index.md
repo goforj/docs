@@ -577,14 +577,14 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-ops__topology">
 <div class="gf-home-ops__shape" data-reveal>
 <p class="gf-home-ops__shape-title">Standalone</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj app</span>  <span class="t-dim"># → ./bin/app</span>
+<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
 <span class="t-dim">one process:</span> http <span class="t-dim">+</span> jobs <span class="t-dim">+</span> scheduler</code></pre>
 </div>
 <div class="gf-home-ops__shape" data-reveal style="--reveal-delay: 0.1s">
 <p class="gf-home-ops__shape-title">Distributed</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj api</span>  <span class="t-dim"># → ./bin/app api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj worker --queue media</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj scheduler</span></code></pre>
+<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">./bin/app api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app worker --queue media</span>
+<span class="t-prompt">$</span> <span class="t-cmd">./bin/app scheduler</span></code></pre>
 </div>
 </div>
 <div class="gf-home-ops__surfaces">
@@ -644,8 +644,8 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <span class="t-tree">├──</span> app/marketplace/ <span class="t-dim"># routes, commands, wiring</span>
 <span class="t-tree">└──</span> internal/        <span class="t-hl"># shared behavior, one module</span>
 <span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj api</span>             <span class="t-dim"># → ./bin/app api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj marketplace worker</span> <span class="t-dim"># → ./bin/marketplace worker</span></code></pre>
+<span class="t-prompt">$</span> <span class="t-cmd">forj api</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj marketplace worker</span></code></pre>
 </div>
 </div>
 </div>

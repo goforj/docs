@@ -56,13 +56,24 @@ forj marketplace worker
 
 The prefix is part of the ergonomics. It selects the active app for App commands and app-aware native commands without forcing you to change directories or pass an `--app` flag.
 
-Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands. Use `./bin/app <command>` for the built binary and deployment/runtime process supervision.
+Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands.
+
+The command surface communicates intent:
+
+| Intent | Default App | Additional App |
+| --- | --- | --- |
+| Develop from current source | `forj <command>` | `forj marketplace <command>` |
+| Run the built artifact | `./bin/app <command>` | `./bin/marketplace <command>` |
+| Develop the combined Runtime | `forj app` | `forj marketplace app` |
+| Run the combined artifact | `./bin/app` | `./bin/marketplace` |
+
+`forj` uses the source-aware App path so current source does not silently run through a stale binary. Direct binary commands run exactly the artifact on disk and are the deployment and process-supervision surface.
 
 `build:api-index --strict` rejects warnings as well as errors. Complete `build` and `run` commands use `--api-index-strict`. See [API Index](/applications/api-index) for build-tag and publication behavior.
 
 ## Common App Commands
 
-Run these as `forj <command>` during development or directly through `./bin/app <command>` after build. For an additional app, use `forj <app> <command>` or `./bin/<app> <command>`.
+The command names below are shared by the source-aware development and built-artifact surfaces. Choose the surface from the intent table above.
 
 Prefer the short aliases in day-to-day commands. The canonical command names remain available.
 
@@ -82,7 +93,7 @@ Prefer the short aliases in day-to-day commands. The canonical command names rem
 | `make:schedule` | `make:schedule` | Generate a scheduled task and wire it into the scheduler. |
 | `make:model` | `make:model` | Generate a model and repository when database support is enabled. |
 
-Examples:
+Development examples:
 
 ```bash
 forj app
@@ -94,7 +105,13 @@ forj db
 forj cache
 forj make:job reports:generate
 forj make:schedule reports:daily --every 24h
+forj marketplace route:list
+forj marketplace worker
+```
 
+Built-artifact examples:
+
+```bash
 ./bin/app
 ./bin/app run
 ./bin/app api
@@ -102,8 +119,7 @@ forj make:schedule reports:daily --every 24h
 ./bin/app scheduler
 ./bin/app db
 ./bin/app cache
-
-forj marketplace route:list
+./bin/marketplace route:list
 ./bin/marketplace worker
 ```
 

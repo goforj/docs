@@ -201,31 +201,44 @@ Use fenced `bash` blocks.
 
 Show commands from the project root unless stated otherwise.
 
-Prefer:
+Choose the command surface from the reader's intent:
+
+- Use `forj [<app>] <command>` while working from current Project source.
+- Use `./bin/<app> <command>` while operating or validating a built artifact.
+
+`forj` is source-aware and prevents a stale binary from silently standing in for current source. A direct binary command runs exactly the artifact on disk. They can reach the same App command, but they are not interchangeable workflows.
+
+Development and task pages should use the `forj` surface:
 
 ```bash
 forj route:list
+forj worker
+forj marketplace worker
 ```
 
-For app binaries, prefer deployment-ready commands:
+Operations and deployment pages should use built binaries:
 
 ```bash
 ./bin/app
 ./bin/app api
 ./bin/app worker
-./bin/app scheduler
+./bin/marketplace worker
 ```
 
-Use `forj app`, `forj api`, `forj worker`, and `forj scheduler` when documenting development commands inside an app. Use `forj run <command>` only when the page is specifically explaining the explicit app-command path or collision escape hatch.
+Use `forj run <command>` only when the page specifically explains the explicit App-command path or collision escape hatch.
 
-When an operations page lists common runtime processes, show both forms side by side:
+Reference material may compare the two surfaces:
 
-| Process | Built binary | Development alias |
+| Intent | Default App | Additional App |
 | --- | --- | --- |
-| Combined runtime | `./bin/app` or `./bin/app run` | `forj app` |
-| HTTP | `./bin/app api` | `forj api` |
-| Queue workers | `./bin/app worker` | `forj worker` |
-| Scheduler | `./bin/app scheduler` | `forj scheduler` |
+| Develop from current source | `forj worker` | `forj marketplace worker` |
+| Run the built artifact | `./bin/app worker` | `./bin/marketplace worker` |
+| Develop the combined Runtime | `forj app` | `forj marketplace app` |
+| Run the combined artifact | `./bin/app` | `./bin/marketplace` |
+
+Do not put both surfaces on one example line with comments such as `# or ./bin/app worker` or `# → ./bin/app worker`. Pick the surface that matches the page. If a page crosses from development into deployment, introduce the second surface once in an explicitly labeled paragraph or section.
+
+Use concrete app names such as `marketplace` in copyable examples. Reserve placeholders such as `<app>` and `<command>` for explanatory prose and reference tables.
 
 When documenting bare binaries, state that runtime-capable apps default to `run` without requiring a build flag. Explicit commands still take precedence, and CLI-only binaries retain root help behavior when no command is supplied.
 

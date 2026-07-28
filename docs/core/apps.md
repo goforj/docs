@@ -13,7 +13,7 @@ When the same Project needs another independently runnable program, `forj make:a
 
 ```bash
 forj backstage api
-./bin/backstage worker
+forj backstage worker
 ```
 
 For example, one commerce Project might contain:

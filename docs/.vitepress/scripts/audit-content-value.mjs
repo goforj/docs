@@ -97,7 +97,7 @@ if (editorialFailures.length > 0 || sourceFailures.length > 0) {
 }
 
 console.log(`Documentation value audit passed (${taskPages.length} task pages checked).`)
-console.log('Editorial contract checks: task outcomes, verification evidence, safe examples, and snippet consistency passed.')
+console.log('Editorial contract checks: task outcomes, verification evidence, safe examples, command-surface consistency, and snippet consistency passed.')
 console.log('Source contract checks: framework, event-source, dependency-path, and local task-import parity passed where source is available.')
 console.log('Go snippets are checked for imports and known source contracts, but are not type-checked here. Rendered-app compilation remains an integration-test responsibility.')
 
@@ -162,12 +162,22 @@ function auditLocalGoForjImport(relativePath, importPath) {
   }
 }
 
-// auditForbiddenPatterns blocks examples that execute an unreviewed remote response as shell code, a high-risk pattern with no documentation value.
+// auditForbiddenPatterns blocks unsafe shell examples and command-surface ambiguity that would make readers choose between different lifecycle intents.
 function auditForbiddenPatterns() {
   for (const relativePath of publicMarkdownFiles(docsRoot)) {
     const source = fs.readFileSync(path.join(docsRoot, relativePath), 'utf8')
     if (/\b(?:curl|wget)\b[^\n]*\|\s*(?:sh|bash)\b/i.test(source)) {
       editorialFailures.push(`${relativePath}: do not pipe curl or wget output directly into sh or bash`)
+    }
+    if (
+      /#\s*(?:or|→)\s+\.\/bin\//i.test(source) ||
+      /`forj[^`\n]*`\s+or\s+`\.\/bin\//i.test(source) ||
+      /\bforj[^\n`]*\s+or\s+\.\/bin\//i.test(source)
+    ) {
+      editorialFailures.push(`${relativePath}: choose the source-aware forj surface or the built-artifact binary surface from the page intent instead of presenting an inline alternative`)
+    }
+    if (relativePath.startsWith('operations/') && /\|\s*Development alias\s*\|/i.test(source)) {
+      editorialFailures.push(`${relativePath}: operations pages must lead with supervised binary commands; link to development guidance instead of adding an alias column`)
     }
   }
 }
