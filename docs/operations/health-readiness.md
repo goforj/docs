@@ -15,7 +15,7 @@ Health says the process is alive. Readiness says the App can serve traffic safel
 curl http://localhost:3000/-/health
 ```
 
-For a named app running on its generated local default:
+For an additional app running on its generated local default:
 
 ```bash
 curl http://localhost:3001/-/health
@@ -35,7 +35,7 @@ Health does not run dependency checks. Use it for container liveness and "is the
 curl http://localhost:3000/-/ready
 ```
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 curl http://localhost:3001/-/ready
@@ -85,7 +85,7 @@ GoForj Apps include a generated `health` command that queries a live App without
 
 The command defaults to `http://127.0.0.1:3000`, uses `ready` by default, and automatically sends `Authorization: Bearer $APP_DIAG_TOKEN` for readiness when the token is configured.
 
-For a named app, use that app's binary:
+For an additional app, use that app's binary:
 
 ```bash
 ./bin/marketplace health --probe ready --fail

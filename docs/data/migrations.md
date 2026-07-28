@@ -17,7 +17,7 @@ Run pending migrations:
 forj migrate
 ```
 
-Run migrations for a named app with the app prefix:
+Run migrations for an additional app by prefixing the command with the app name:
 
 ```bash
 forj marketplace migrate
@@ -87,7 +87,7 @@ Rollback recent migrations:
 forj migrate:rollback
 ```
 
-For a named app:
+For an additional app:
 
 ```bash
 forj marketplace migrate:rollback
@@ -138,7 +138,7 @@ forj migrate --dry-run
 - Do not manually edit migration history unless you are intentionally repairing a database.
 - Do not run migrations outside the App path when the generated command owns connection selection.
 - Do not forget that each connection has its own migration table.
-- Do not mix named app migrations into another app's migration directory.
+- Do not mix one app's migrations into another app's migration directory.
 :::
 
 ## Next Steps

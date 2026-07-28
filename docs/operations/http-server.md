@@ -69,7 +69,7 @@ Use:
 
 for the full route table.
 
-For a named app binary, use that app's binary:
+For an additional app, use that app's binary:
 
 ```bash
 ./bin/marketplace route:list

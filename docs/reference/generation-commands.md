@@ -45,7 +45,7 @@ Running `forj generate` without flags refreshes available generators for the cur
 
 Availability comes from the selected components in `.goforj.yml`. Cache, Storage, Events, and Queue generation run only when Cache, File Storage, Events, and Background Jobs are enabled. An explicit flag for a disabled component returns an error rather than recreating a package outside that selection.
 
-`forj build:api-index` is the focused API contract command. It publishes the API index, diagnostics, and OpenAPI document together. Use `--strict` in CI and prefix the command for a named App:
+`forj build:api-index` is the focused API contract command. It publishes the API index, diagnostics, and OpenAPI document together. Use `--strict` in CI and prefix the command with the app name:
 
 ```bash
 forj marketplace build:api-index --strict
@@ -55,7 +55,7 @@ forj marketplace build:api-index --strict
 
 This reference does not duplicate each make command's files, injected code, and removal behavior:
 
-- [Add a Named App](/core/apps#add-a-named-app) covers `make:app`.
+- [Add Another App](/core/apps#add-another-app) covers `make:app`.
 - [Make Commands](/core/make-commands) covers controllers, commands, jobs,
   schedules, events, subscribers, models, migrations, and queues.
 

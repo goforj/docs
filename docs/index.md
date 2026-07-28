@@ -621,9 +621,9 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <h2 class="gf-home-h2">Start with one app. <em>Grow into many</em></h2>
 <p class="gf-home-lead">Most products stay in one app. When a Project needs another deployment or scaling boundary, one command adds another runnable app in the same repo: shared code, separate wiring, and separate binaries.</p>
 <ul class="gf-home-points">
-<li><strong>Apps are runnable boundaries, not automatic microservices.</strong> Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
+<li><strong>Apps are runnable boundaries, not automatic microservices.</strong> Apps in a multi-app Project share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
 <li><strong>Each app deploys on its own terms.</strong> Its own binary, ports, wiring, and runtime identity in logs, metrics, and Lighthouse - scale <code>marketplace</code> without touching the rest.</li>
-<li><strong>Nothing changes until you need it.</strong> A single-app Project never pays for this. Add named apps only when larger systems, teams, or monorepos need separate runnable boundaries.</li>
+<li><strong>Nothing changes until you need it.</strong> A single-app Project never pays for this. Add another app only when larger systems, teams, or monorepos need separate runnable boundaries.</li>
 </ul>
 <div class="gf-home-links">
 <a href="/core/apps">Apps →</a>
@@ -631,7 +631,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </div>
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
-<div class="gf-home-terminal" aria-label="Adding a named app to a GoForj Project">
+<div class="gf-home-terminal" aria-label="Adding another app to a GoForj Project">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one project · many apps</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app marketplace</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj marketplace make:controller checkout</span>
@@ -640,7 +640,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <span></span>
 <span class="t-tree">photodrop/</span>
 <span class="t-tree">├──</span> cmd/app/         <span class="t-dim"># default app</span>
-<span class="t-tree">├──</span> cmd/marketplace/ <span class="t-dim"># named app binary</span>
+<span class="t-tree">├──</span> cmd/marketplace/ <span class="t-dim"># additional app binary</span>
 <span class="t-tree">├──</span> app/marketplace/ <span class="t-dim"># routes, commands, wiring</span>
 <span class="t-tree">└──</span> internal/        <span class="t-hl"># shared behavior, one module</span>
 <span></span>

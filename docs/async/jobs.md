@@ -24,7 +24,7 @@ A direct function call is simpler for synchronous behavior. Publish an event ins
 forj make:job reports:generate --queue reports
 ```
 
-For a named App, prefix the generator:
+For an additional app, prefix the generator with the app name:
 
 ```bash
 forj marketplace make:job sync-catalog --queue sync
@@ -40,7 +40,7 @@ internal/reports/generate_job.go       created
 app/wire/inject_jobs_app.go            provider and handler registration added
 ```
 
-For a named App, the job remains under `internal/...`; its Wire file is `app/<name>/wire/inject_jobs_app.go`.
+For an additional app, the job remains under `internal/...`; its Wire file is in the owning app at `app/<name>/wire/inject_jobs_app.go`.
 
 </template>
 <template #generated>

@@ -50,9 +50,9 @@ It records:
 - optional starter kit
 - App dev lifecycles and independent custom watches
 - optional local module replacements
-- per-app component metadata under `apps` when named apps exist
+- per-app component metadata under `apps` when the Project contains additional apps
 
-App discovery is layout-based. A named app exists when its conventional files exist under `cmd/<app>` and `app/<app>`.
+App discovery is layout-based. An additional app exists when its conventional files appear under `cmd/<app>` and `app/<app>`. It is another runnable binary in the same Project, not merely another package.
 
 ## `cmd/app`
 
@@ -60,7 +60,7 @@ App discovery is layout-based. A named app exists when its conventional files ex
 
 It should stay small. It starts the generated command surface for the app; it should not own routes, jobs, services, provider sets, or business workflows.
 
-Named apps use the same pattern:
+Additional apps use the same pattern:
 
 ```text
 cmd/marketplace/main.go
@@ -78,7 +78,7 @@ Common files include:
 - `app/schedules.go`
 - `app/wire/...`
 
-Named apps compose through `app/<name>/`:
+Additional apps compose through the owning app's `app/<name>/` directory:
 
 ```text
 app/marketplace/routes.go
@@ -140,10 +140,10 @@ Prefer these files before editing generated runtime glue:
 - commands in `app/commands.go`
 - schedules in `app/schedules.go`
 - providers in `app/wire/...`
-- named app equivalents under `app/<name>/`
+- additional app equivalents under `app/<name>/`
 
 ## Next Steps
 
-- [Apps](/core/apps) explains default and named apps.
+- [Apps](/core/apps) explains when one Project needs more than one runnable app.
 - [Configuration](/getting-started/configuration) explains project and runtime configuration.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown.

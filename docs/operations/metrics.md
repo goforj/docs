@@ -31,23 +31,23 @@ http://localhost:10001/metrics  # scheduler
 http://localhost:10002/metrics  # workers
 ```
 
-Named apps get deterministic local defaults so app runtimes do not fight for the same ports.
+Apps get deterministic per-app local defaults so their runtimes do not fight for the same ports.
 
 | App | HTTP metrics | Scheduler metrics | Worker metrics |
 | --- | ---: | ---: | ---: |
 | `app` | `10000` | `10001` | `10002` |
-| first named app | `10010` | `10011` | `10012` |
-| second named app | `10020` | `10021` | `10022` |
+| first additional app | `10010` | `10011` | `10012` |
+| second additional app | `10020` | `10021` | `10022` |
 
 When the HTTP runtime exposes `/metrics`, local scraping may use each app's HTTP port instead:
 
 | App | HTTP `/metrics` |
 | --- | ---: |
 | `app` | `3000` |
-| first named app | `3001` |
-| second named app | `3002` |
+| first additional app | `3001` |
+| second additional app | `3002` |
  
-Override named app ports with app-prefixed env vars such as `MARKETPLACE_API_HTTP_PORT`, `MARKETPLACE_METRICS_PORT`, `MARKETPLACE_SCHEDULER_METRICS_PORT`, and `MARKETPLACE_WORKER_METRICS_PORT`.
+Override ports for an additional app with app-prefixed env vars such as `MARKETPLACE_API_HTTP_PORT`, `MARKETPLACE_METRICS_PORT`, `MARKETPLACE_SCHEDULER_METRICS_PORT`, and `MARKETPLACE_WORKER_METRICS_PORT`.
 
 When the HTTP runtime and metrics component are enabled, the App also exposes:
 

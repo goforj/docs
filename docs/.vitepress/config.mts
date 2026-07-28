@@ -557,7 +557,7 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
     to: '/core/apps',
     fragments: {
       'default-app': 'the-default-app',
-      'named-apps': 'add-a-named-app',
+      'named-apps': 'add-another-app',
       'app-versus-runtime': 'apps-and-runtimes',
       'app-versus-project': 'what-belongs-where',
       'extension-points': 'what-belongs-where',

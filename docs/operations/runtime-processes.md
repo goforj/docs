@@ -20,7 +20,7 @@ This page owns the deployable command shapes, process separation, and shutdown b
 
 Both forms start the same App command. Use the built binary form for deployment and process supervision. Use the `forj <command>` development surface when you want GoForj to refresh generated code before running the App command. Use `forj run <command>` when you need to force App command execution explicitly.
 
-For a named app, use that App's binary or prefix the app name:
+For an additional app, use that app's binary or prefix the command with the app name:
 
 | Process | Built binary | Development alias |
 | --- | --- | --- |
@@ -46,7 +46,7 @@ Topology is selected by the commands the process manager starts; it does not req
 | Standalone | One deployment unit should own the enabled runtimes, as in local development, demos, small deployments, or simple operational environments. |
 | Distributed | HTTP, workers, and the scheduler need independent scaling, restart policies, metrics targets, or resource limits. |
 
-Use the combined command in the process table for one standalone service. Distributed deployments should start the explicit `api`, `worker`, and `scheduler` commands so ownership remains visible. Named Apps make the same choice through their own binaries, such as `./bin/marketplace api`.
+Use the combined command in the process table for one standalone service. Distributed deployments should start the explicit `api`, `worker`, and `scheduler` commands so ownership remains visible. Additional apps make the same choice through their own binaries, such as `./bin/marketplace api`.
 
 Driver selection is separate from process topology. If API and worker processes share cache, queue, events, or files, configure backends that cross process boundaries. Splitting commands does not make process-local drivers shared or make jobs correct without idempotency and backend planning.
 

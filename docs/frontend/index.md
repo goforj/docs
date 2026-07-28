@@ -7,7 +7,7 @@ description: Frontend integration, starter kits, embedded assets, and generated 
 
 Frontend covers generated UI support, embedded frontend assets, and starter kits.
 
-Frontend source is app-scoped. The default app uses `cmd/app/frontend/`; named apps use `cmd/<app>/frontend/`.
+Frontend source is app-scoped. The default app uses `cmd/app/frontend/`; additional apps use `cmd/<app>/frontend/`.
 
 First-party starter kits currently include Vue, React, and templ + htmx. Use the [Starter Kits guide](/getting-started/starter-kits) to compare the available choices, or browse the [Starter Kit Showcase](/starter-kits) for screenshots.
 

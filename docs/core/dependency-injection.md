@@ -72,7 +72,7 @@ app/wire/wire_gen.go                          generated construction output
 app/routes.go                                 App-owned route composition
 ```
 
-Named Apps use the same shape under `app/<name>/wire/` and `app/<name>/routes.go`.
+Additional apps use the same shape under `app/<name>/wire/` and `app/<name>/routes.go`.
 
 ## Providers
 

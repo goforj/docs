@@ -140,7 +140,7 @@ Start the scheduler:
 forj scheduler
 ```
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 forj marketplace scheduler

@@ -25,7 +25,7 @@ The Vue starter kit writes:
 cmd/app/frontend/
 ```
 
-For a named app, it writes under that app's binary directory:
+For an additional app, it writes under that app's binary directory:
 
 ```text
 cmd/marketplace/frontend/

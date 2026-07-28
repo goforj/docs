@@ -11,7 +11,7 @@ It uses React 19, Vite, TypeScript, Tailwind CSS, shadcn/ui, and React Router. I
 
 ## Select the Kit
 
-Choose React during `forj new`, or when creating a named App:
+Choose React during `forj new`, or when creating an additional app:
 
 ```bash
 forj make:app marketplace --components web-api,web-ui --starter-kit react
@@ -37,7 +37,7 @@ cmd/app/frontend/
     lib/
 ```
 
-A named App uses `cmd/<app>/frontend/`.
+An additional app uses `cmd/<app>/frontend/`.
 
 These files become App-owned after creation. Edit components, routes, forms, styles, and API calls as normal application source.
 
@@ -45,7 +45,7 @@ These files become App-owned after creation. Edit components, routes, forms, sty
 
 `goforj.env.ts` resolves the active App and backend URL from Project configuration. Vite proxies `/api` to that backend during development.
 
-Project variables prefixed with `FRONTEND_` become `VITE_` values for the frontend. Named Apps can override them with an app prefix such as `MARKETPLACE_FRONTEND_BACKEND_URL`.
+Project variables prefixed with `FRONTEND_` become `VITE_` values for the frontend. Additional apps can override them with an app prefix such as `MARKETPLACE_FRONTEND_BACKEND_URL`.
 
 Keep credentials and server-only secrets out of frontend variables.
 

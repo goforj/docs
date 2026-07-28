@@ -266,7 +266,7 @@ forj marketplace dev
 
 Project-level `dev.watches` remain active when an App prefix is used.
 
-Named Apps get deterministic runtime ports from App metadata maintained by GoForj and App-scoped `.env` defaults:
+Apps get deterministic per-app runtime ports from App metadata maintained by GoForj and app-scoped `.env` defaults:
 
 ```text
 app          HTTP 3000
@@ -274,7 +274,7 @@ marketplace  HTTP 3001
 backstage    HTTP 3002
 ```
 
-If you override App-specific ports in `.env`, keep them unique. Named apps do not consume globals for the default app, such as `PORT` or `API_HTTP_PORT`.
+If you override app-specific ports in `.env`, keep them unique. Additional apps do not consume globals for the default app, such as `PORT` or `API_HTTP_PORT`.
 
 ## Environment Changes
 

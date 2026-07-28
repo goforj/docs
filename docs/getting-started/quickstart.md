@@ -142,4 +142,4 @@ When you want the map instead of the trail:
 
 - [Project structure](/getting-started/project-structure) explains the generated layout.
 - [Configuration](/getting-started/configuration) explains `.goforj.yml` and `.env`.
-- [Apps](/core/apps) explains the default app and named apps.
+- [Apps](/core/apps) explains when a Project needs an additional runnable app.

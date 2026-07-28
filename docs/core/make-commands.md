@@ -47,7 +47,7 @@ Shared workflows apply across those generators:
 
 Some make commands are native GoForj commands and some are App commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
 
-For named apps, prefix the command with the app name. The generated resource stays under `internal/...`, while registration changes go to the owning app under `app/<name>/...`.
+For an additional app, prefix the command with the app name. The generated resource stays under `internal/...`, while registration changes go to the owning app under `app/<name>/...`.
 
 <span id="examples"></span>
 <span id="what-gets-wired"></span>
@@ -65,7 +65,7 @@ forj make:controller billing:reports
 
 The grouped name controls both the package path and the starter route, `/billing/reports`.
 
-Prefix the command when a named App owns the route:
+Prefix the command when an additional app owns the route:
 
 ```bash
 forj marketplace make:controller checkout
@@ -86,7 +86,7 @@ app/wire/inject_http_controllers_app.go      provider added
 app/routes.go                                routes registered
 ```
 
-For a named App, the generated controller stays under `internal/...`; the two registration files live under `app/<name>/...`.
+For an additional app, the generated controller stays under `internal/...`; the two registration files live under the owning app's `app/<name>/...`.
 
 </template>
 <template #generated>

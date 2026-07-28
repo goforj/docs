@@ -23,7 +23,7 @@ GoForj apps use explicit provider sets. Your package owns constructors. The app'
 | Event subscriber | `app/wire/inject_subscribers_app.go` | `billing.NewInvoicePaidSubscriber` |
 | Named resource adapter | Usually `app/wire/inject_services_app.go` | `provideUploadsDisk` |
 
-For a named app, replace `app/...` with `app/<name>/...`.
+For an additional app, replace `app/...` with the owning app's `app/<name>/...`.
 
 Use the most specific generated set that owns the surface. If a generated file is not present, the app probably does not have that component enabled.
 

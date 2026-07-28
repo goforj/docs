@@ -213,7 +213,9 @@ Validation:
 - migration applies in the expected environment
 - repository/service tests pass
 
-## Named-app confusion
+<span id="named-app-confusion"></span>
+
+## App-selection confusion
 
 Atlas tools:
 

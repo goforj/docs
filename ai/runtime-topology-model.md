@@ -25,7 +25,7 @@ These logical runtimes may run:
 
 Docs must not collapse these into one vague "app runtime".
 
-An app is the runnable boundary above these runtimes. A single Project may contain the default app plus named apps, and each app may expose HTTP, jobs, scheduler, CLI, or other runtimes.
+An app is the runnable boundary above these runtimes. A multi-app Project contains the default app plus one or more additional apps, and each app may expose HTTP, jobs, scheduler, CLI, or other runtimes.
 
 ## Commands
 
@@ -61,10 +61,10 @@ When explaining command execution, keep the surfaces distinct:
 
 - `forj <native-command>` runs Framework-owned commands.
 - `forj <app-command>` delegates to the default app when no native command matches.
-- `forj <app> <command>` selects a named app when `<app>` matches a conventional app.
+- `forj <app> <command>` selects an app when `<app>` matches a conventional app name.
 - `forj run <app-command>` forces the source-aware App-command path.
 - `./bin/app <command>` runs the built binary and is the deployment/runtime surface.
-- `./bin/<app> <command>` runs a named app binary.
+- `./bin/<app> <command>` runs the selected app's binary.
 
 Do not imply App-owned generation logic moved into the Framework CLI. `forj` may route commands, but App-owned generators and commands remain generated App code so they can use App configuration, dependencies, and wiring.
 

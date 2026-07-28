@@ -42,7 +42,7 @@ Atlas installs lightweight project files that teach agents the GoForj way to bui
 - prefer `forj make:*` commands over hand-created framework files
 - keep business code package-scoped under `internal/`
 - register routes, commands, jobs, schedules, subscribers, and providers through the App composition points GoForj creates
-- use the selected app when a project has named apps
+- use the selected app in a multi-app Project
 - read local docs and project metadata before changing code
 
 The goal is not to make agents louder. The goal is to make them less surprising.
@@ -198,7 +198,7 @@ validation-plan task="add users route"
 
 That sequence gives the agent the preferred command, app registration points, focused route/controller/Wire docs, file ownership guidance, and the checks that prove the route is registered.
 
-For a named app job:
+For a job owned by an additional app:
 
 ```text
 workflow-plan app="marketplace" task="add sync catalog job"
@@ -242,7 +242,7 @@ For human-readable versions of common evidence loops, see [Atlas Debug Recipes](
 
 `runtime-snapshot` and `debug-plan` are evidence tools. They report missing logs, URLs, routes, browser entries, metrics targets, or resource links instead of inventing values.
 
-`generated-file-policy` reports classification, preferred action, and ownership for generated files, app-owned files, named-app files, migrations, frontend files, config, docs, and unknown paths. Projects can override ownership rules in `.goforj/atlas.json`.
+`generated-file-policy` reports classification, preferred action, and ownership for generated files, app-owned files, app-specific files, migrations, frontend files, config, docs, and unknown paths. Projects can override ownership rules in `.goforj/atlas.json`.
 
 ## Daily use
 

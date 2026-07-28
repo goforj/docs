@@ -20,7 +20,7 @@ forj worker
 forj scheduler
 ```
 
-Use the app name first for a named app:
+Use the app name first to select an additional app:
 
 ```bash
 forj marketplace route:list
@@ -44,7 +44,7 @@ Create a command for the default App:
 forj make:command reports:reconcile
 ```
 
-Prefix the generator when a named App owns the command:
+Prefix the generator when an additional app owns the command:
 
 ```bash
 forj marketplace make:command reports:reconcile
@@ -59,7 +59,7 @@ app/wire/inject_cmd_app.go           provider added
 app/commands.go                      command exposed
 ```
 
-For a named App, the generated command stays under `internal/...`; the registration files live under `app/<name>/...`.
+For an additional app, the generated command stays under `internal/...`; the registration files live under the owning app's `app/<name>/...`.
 
 </template>
 <template #generated>
@@ -136,7 +136,7 @@ Expected output includes:
 ReconcileCmd executed!
 ```
 
-For a named App, use `forj marketplace build` and `forj marketplace reports:reconcile`.
+For an additional app, use `forj marketplace build` and `forj marketplace reports:reconcile`.
 
 Replace the starter body with the application workflow and add its service to the constructor. Wire will satisfy the new dependency after its provider is in the App service set.
 
