@@ -1,6 +1,6 @@
 ---
 title: Health and Readiness
-description: How generated GoForj Apps expose liveness and readiness checks.
+description: How GoForj Apps expose liveness and readiness checks.
 ---
 
 # Health and Readiness
@@ -21,7 +21,7 @@ For a named app running on its generated local default:
 curl http://localhost:3001/-/health
 ```
 
-Generated Apps return a fixed `200` response:
+GoForj Apps return a fixed `200` response:
 
 ```json
 {"status":"ok"}
@@ -41,7 +41,7 @@ For a named app:
 curl http://localhost:3001/-/ready
 ```
 
-Generated Apps return:
+GoForj Apps return:
 
 - `200` with `{"status":"ready"}` when all readiness checks pass
 - `503` with `{"status":"not_ready"}` when any readiness check fails
@@ -77,7 +77,7 @@ Example authorized failure shape:
 
 ## Health Command
 
-Generated Apps include a `health` command that queries a live App without booting local runtime dependencies.
+GoForj Apps include a generated `health` command that queries a live App without booting local runtime dependencies.
 
 ```bash
 ./bin/app health --probe ready --fail

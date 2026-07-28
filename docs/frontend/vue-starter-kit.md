@@ -7,7 +7,7 @@ description: How the Vue starter kit is generated, owned, built, and served insi
 
 The Vue starter kit is a generated frontend scaffold for apps that enable the Web UI component.
 
-It gives the app a frontend project with Vue, Vite, TypeScript, routing, styling, and an initial build artifact.
+It gives the app a frontend project with Vue, Vite, TypeScript, routing, and styling. The development lifecycle or an explicit frontend build creates the initial `dist` artifact.
 
 ## When It Appears
 
@@ -39,7 +39,6 @@ Important files include:
 - `cmd/app/frontend/src/main.ts`
 - `cmd/app/frontend/src/router.ts`
 - `cmd/app/frontend/src/style.css`
-- `cmd/app/frontend/dist/index.html`
 
 The generated frontend is App-owned after it is created. Edit it like normal application code.
 
@@ -65,7 +64,7 @@ Use:
 forj dev
 ```
 
-for the generated local App lifecycle.
+for the default local App lifecycle.
 
 ## Serving Assets
 

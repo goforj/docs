@@ -9,48 +9,22 @@ Queue workers execute registered jobs.
 
 Workers are long-running runtime processes with explicit startup, shutdown, queue selection, metrics, and failure behavior.
 
-## Start
+## Process Commands
 
-```bash
-forj worker # or ./bin/app worker
-```
+Use the built binary under a supervisor in deployment. Use the `forj` form for development because it refreshes generated code before delegating to the App command.
 
-For a named app:
+| Scope | Built binary | Development alias |
+| --- | --- | --- |
+| Every configured queue | `./bin/app worker` | `forj worker` |
+| One queue | `./bin/app worker --queue reports` | `forj worker --queue reports` |
+| Named App | `./bin/marketplace worker` | `forj marketplace worker` |
+| Combined Runtime | `./bin/app` | `forj app` |
 
-```bash
-forj marketplace worker # or ./bin/marketplace worker
-```
-
-or, in standalone mode:
-
-```bash
-forj app # or ./bin/app
-```
-
-For a named app in standalone mode:
-
-```bash
-forj marketplace app # or ./bin/marketplace
-```
-
-The built binary form is what supervisors usually run. The `forj` form is the development surface that refreshes generated code before running the App command.
-
-Without flags, `worker` starts every configured generated queue. To dedicate a process to one queue:
-
-```bash
-forj worker --queue reports # or ./bin/app worker --queue reports
-```
-
-For a named app, the queue name remains logical from that app's point of view:
-
-```bash
-forj marketplace worker --queue sync # or ./bin/marketplace worker --queue sync
-```
-
-Repeat the flag when one process should work a subset:
+Repeat `--queue` when one process should work a subset. Names remain logical from the selected App's point of view:
 
 ```bash
 ./bin/app worker --queue emails --queue reports
+./bin/marketplace worker --queue sync
 ```
 
 ## Configuration
@@ -90,11 +64,24 @@ For a named app:
 
 The queue section should show each queue, its driver, backend queue name, and worker count.
 
+## Startup Verification
+
+Start the exact supervised command as the deployment service account. Successful startup should identify the worker lifecycle and selected queues without reporting an unregistered handler, unsupported driver, or backend connection failure.
+
+Dispatch one safe test job through the normal application path. Expected result:
+
+- the selected worker receives the named job
+- logs or an Inspect identify the App, queue, job name, and outcome
+- queue metrics record the attempt
+- a durable backend no longer reports the job as pending after success
+
+Do not use process existence alone as proof that handlers are registered or that the backend is reachable.
+
 ## Shutdown
 
-Worker shutdown may wait for active jobs or backend shutdown behavior.
+On `SIGINT` or `SIGTERM`, worker shutdown may wait for active jobs or backend cleanup. `QUEUE_SHUTDOWN_TIMEOUT` bounds the queue drain inside the App lifecycle; keep the supervisor stop timeout longer than both the queue and App shutdown budgets.
 
-That is expected when it remains bounded by the configured shutdown budget. Useful diagnostics should show whether workers are waiting for active work.
+Useful diagnostics show whether workers are waiting for active work. A forced stop can cause broker redelivery, so jobs must remain idempotent even when normal drains succeed.
 
 ## Scaling
 
@@ -111,6 +98,27 @@ Runtime queue controls depend on the selected backend.
 Redis-backed queues support the full admin surface today. Other drivers may support only part of the contract or return an unsupported error for admin actions such as listing, retrying, canceling, deleting, clearing, or reading queue history.
 
 Design operational workflows around the backend you deploy, and expose unsupported queue controls clearly in Lighthouse or CLI tooling.
+
+## Failure Modes
+
+| Failure | Behavior | Operator action |
+| --- | --- | --- |
+| Unsupported or unreachable driver | Worker startup fails or readiness remains degraded. | Verify `QUEUE_SUPPORTED_DRIVERS`, the active driver, credentials, and network reachability. |
+| Unknown `--queue` value | The process cannot own the intended queue. | Compare the logical name with `./bin/app about` and the generated accessor configuration. |
+| Handler is not registered | Delivery fails instead of running application behavior. | Check `app/wire/inject_jobs_app.go`, rebuild, and restart workers before redispatching. |
+| Job repeatedly fails | Attempts consume the configured retry budget and can become terminal. | Inspect the handler error and payload reference before retrying; do not loop operator retries blindly. |
+| Shutdown exceeds its budget | The supervisor can force termination while work is active. | Make the job resumable and idempotent, then align queue, App, and supervisor timeouts. |
+| Queue depth grows | Work arrives faster than successful processing. | Check failure rate and backend health before adding workers; then scale the affected named queue. |
+
+## Production Checklist
+
+- The artifact includes every active queue driver in `QUEUE_SUPPORTED_DRIVERS`.
+- `./bin/app about` reports the intended logical and backend queue names.
+- Each worker process owns an explicit queue set and concurrency budget.
+- Retry, backoff, timeout, and idempotency behavior is tested for critical jobs.
+- The supervisor stop timeout exceeds graceful App and queue shutdown budgets.
+- Logs, metrics, Inspects, queue depth, and terminal failures are collected.
+- Operator retry and delete actions are limited to drivers that support them.
 
 ## Common Mistakes
 

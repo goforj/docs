@@ -205,7 +205,7 @@ Use these boundaries when deciding where code belongs:
 | Business behavior | `internal/...` |
 | Reusable runtime machinery | `internal/runtime`, `internal/http`, `internal/jobs`, `internal/schedules` |
 
-Do not bypass the composition files with package globals. If rerendering should preserve a behavior change for all future Projects, change the GoForj template or generator. Keep application-specific behavior in the generated Project.
+Do not bypass the composition files with package globals. If rerendering should preserve a behavior change for all future Projects, change the GoForj template or generator. Keep application-specific behavior in your Project.
 
 ## App Metadata
 

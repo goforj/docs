@@ -1,13 +1,13 @@
 ---
 title: Routes
-description: How routes are registered, grouped, protected, listed, and operated in generated GoForj Apps.
+description: How routes are registered, grouped, protected, listed, and operated in GoForj Apps.
 ---
 
 # Routes
 
 Routes connect HTTP methods and paths to handlers through the `web` routing contract.
 
-Generated GoForj Apps keep route registration explicit so HTTP behavior is discoverable through code, `route:list`, metrics, inspects, and Lighthouse.
+GoForj Apps keep route registration explicit so HTTP behavior is discoverable through code, `route:list`, metrics, inspects, and Lighthouse.
 
 ## Where Routes Live
 
@@ -32,7 +32,7 @@ app/marketplace/routes.go
 
 ## End-to-End Users Route
 
-Use [JSON API Route](/scenarios/json-api-route) as the canonical, runnable Users workflow. From an HTTP-enabled generated App, it uses the real generator, edits the generated feature, rebuilds Wire, tests the App, and verifies the served endpoint:
+Use [JSON API Route](/scenarios/json-api-route) as the canonical, runnable Users workflow. From an HTTP-enabled App, it uses the real generator, edits the generated feature, rebuilds Wire, tests the App, and verifies the served endpoint:
 
 ```bash
 forj make:controller users

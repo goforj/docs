@@ -44,7 +44,7 @@ Adapters translate boundaries. Drivers select backends.
 
 ## Compile-Time Support
 
-Generated Apps compile only the drivers they support.
+GoForj Apps compile only the drivers they support.
 
 Examples:
 

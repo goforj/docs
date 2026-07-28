@@ -11,7 +11,7 @@ Use them for generated wiring, database behavior, backend drivers, runtime bound
 
 ## Command
 
-Generated Apps can use normal Go integration tags:
+GoForj Apps can use normal Go integration tags:
 
 ```bash
 go test -tags=integration ./...

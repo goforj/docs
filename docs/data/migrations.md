@@ -1,13 +1,13 @@
 ---
 title: Migrations
-description: How generated GoForj Apps create, run, rollback, and organize database migrations.
+description: How GoForj Apps create, run, rollback, and organize database migrations.
 ---
 
 # Migrations
 
 Migrations describe database schema changes as ordered files.
 
-Generated GoForj Apps include migration commands when database support is enabled.
+GoForj Apps include generated migration commands when database support is enabled.
 
 ## Commands
 
@@ -33,7 +33,7 @@ forj make:migration create_users
 forj make:migration add_event_index --connection analytics
 ```
 
-Run these project-level commands from the generated App root. Applying and rolling back migrations happens through the generated App command surface.
+Run these project-level commands from your App root. Applying and rolling back migrations happens through the App's generated command surface.
 
 Remove generated migration files that match a migration name:
 
@@ -145,4 +145,4 @@ forj migrate --dry-run
 
 - [Database Strategy](/data/database-strategy) explains connection configuration.
 - [Repositories](/data/repositories) explains where query code should live.
-- [Testing Overview](/testing/#choose-a-test-layer) explains generated App testing direction.
+- [Testing Overview](/testing/#choose-a-test-layer) explains GoForj App testing direction.

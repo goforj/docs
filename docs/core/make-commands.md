@@ -37,7 +37,7 @@ This keeps app composition in the owning app while shared domain code can still 
 
 ## Command Reference
 
-Some make commands are native GoForj commands and some are generated app commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
+Some make commands are native GoForj commands and some are App commands. During development, use the same `forj` prefix for both. Native GoForj commands win on name collisions; otherwise GoForj delegates to the active app through the same source-aware path as `forj run`.
 
 For named apps, prefix the command with the app name. The generated resource stays under `internal/...`, while registration changes go to the owning app under `app/<name>/...`.
 
@@ -251,7 +251,7 @@ The generated dispatch helper targets the selected queue:
 <CodeFile path="internal/billing/sync_reports_job.go">
 
 ```go
-const SyncReportsJobTypeName = "syncreports"
+const SyncReportsJobTypeName = "billing:sync-reports"
 
 func (t *SyncReportsJob) Queue(ctx context.Context, name string) error {
 	var p SyncReportsJobPayload
@@ -356,7 +356,7 @@ Keep the payload beside the generated job and its handler:
 <CodeFile path="internal/reports/generate_job.go">
 
 ```go
-const GenerateJobTypeName = "generate"
+const GenerateJobTypeName = "reports:generate"
 
 type GenerateJobPayload struct {
 	ReportID string `json:"report_id"`
@@ -597,12 +597,12 @@ Events are plain application types, so no Wire or registration file changes.
 </template>
 <template #generated>
 
-The generated event provides a stable topic and a place for the payload:
+The generated event converts the grouped name to a dotted stable topic and provides a place for the payload:
 
 <CodeFile path="internal/billing/invoice_paid_event.go">
 
 ```go
-const InvoicePaidEventTopic = "invoicepaid"
+const InvoicePaidEventTopic = "billing.invoice-paid"
 
 type InvoicePaidEvent struct {
 	// Add event fields.
@@ -927,16 +927,49 @@ The build exposes application code that still refers to the removed type, route,
 
 ### Opening Generated Files
 
-File-generating make commands support `--open` and `-o`:
+Source-generating make commands can open their primary generated file after a
+successful run:
 
 ```bash
 forj make:controller billing:reports -o
 forj make:job billing:sync-reports --open
 ```
 
-Use `--no-open` to suppress editor opening for one run. Generated Apps can set `FORJ_MAKE_OPEN=auto`, `always`, or `never`, and `FORJ_EDITOR` can pin the editor command.
+This applies to controllers, commands, events, subscribers, jobs, schedules,
+models, and migrations. A migration opens its first generated up migration.
+`make:queue` only updates configuration, so it has no source file to open.
 
-See [Opening Generated Files](/developer-tools/editor-open) for editor detection and configuration.
+Use `--no-open` to suppress opening for one run. Apps can set:
+
+```dotenv
+FORJ_MAKE_OPEN=auto
+FORJ_EDITOR=
+```
+
+`FORJ_MAKE_OPEN` accepts:
+
+| Value | Behavior |
+| --- | --- |
+| `auto` | Open only in an interactive terminal when CI is not active. |
+| `always` | Try to open after every successful generator run. |
+| `never` | Open only when the command explicitly uses `--open` or `-o`. |
+
+Automatic opening stays quiet when it cannot resolve an editor. An explicit
+`--open`, or `FORJ_MAKE_OPEN=always`, prints a warning instead.
+
+Set `FORJ_EDITOR` to pin the command when automatic detection is not what you
+want:
+
+```dotenv
+FORJ_EDITOR="code --reuse-window --goto {location}"
+FORJ_EDITOR="goland --line {line} {file}"
+```
+
+The command supports `{file}` for the absolute generated path, `{line}` for the
+line number, and `{location}` for both as `path:line`. Without `FORJ_EDITOR`,
+GoForj checks terminal editor hints, then running GUI editors, then commands on
+`PATH`. Its editor preference is GoLand, Cursor, VS Code, Zed, then IntelliJ
+IDEA, while preferring an already-running editor over launching a different one.
 
 ### Output Overrides
 
@@ -1000,4 +1033,4 @@ Use `route:list` for controllers. For commands, run the generated command signat
 - [Commands](/applications/commands) shows App-owned CLI entry points.
 - [Naming Conventions](/core/naming-conventions) defines stable operational names.
 - [Wiring Recipes](/core/wiring-recipes) shows where generated and hand-written providers belong.
-- [CLI Reference](/reference/cli) lists project-level commands and generated App command patterns.
+- [CLI Reference](/reference/cli) lists project-level commands and App command patterns.

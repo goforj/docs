@@ -710,6 +710,10 @@
     cursor: zoom-in;
 }
 
+.gf-lightboxable[role='button'] {
+    border-radius: var(--gf-radius-sm);
+}
+
 html.gf-lightbox-open,
 html.gf-lightbox-open body {
     overflow: hidden;
@@ -725,14 +729,17 @@ html.gf-lightbox-open body {
     background: rgba(11, 8, 15, 0.82);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 120ms ease;
+    transition: opacity 120ms ease, visibility 0s linear 120ms;
 }
 
 .gf-lightbox-overlay.is-open {
+    visibility: visible;
     opacity: 1;
     pointer-events: auto;
+    transition: opacity 120ms ease;
 }
 
 .gf-lightbox-close {
@@ -6124,7 +6131,7 @@ body,
 .VPNav,
 .VPNavBar,
 .VPNavBar .wrapper,
-.VPNavBar.has-sidebar .curtain {
+.VPSidebar .curtain {
     background-color: var(--gf-ground-deep);
 }
 /* The reading column stays lifted — this is the plane the

@@ -41,7 +41,7 @@ For named apps, the prefix is routing, not business behavior. Test command logic
 
 ## Verify
 
-Run command-package tests from the generated App root:
+Run command-package tests from your App root:
 
 ```bash
 go test ./internal/cmd/...

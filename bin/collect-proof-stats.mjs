@@ -22,24 +22,63 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+const root = path.resolve(process.argv[2] || path.join(process.cwd(), '..'))
+const outFile = path.join(process.cwd(), 'docs', '.vitepress', 'data', 'proof-stats.json')
+
 const LIBS = [
   'atlas', 'cache', 'collection', 'console', 'crypt', 'env', 'events', 'execx', 'godump',
   'httpx', 'mail', 'metrics', 'queue', 'scheduler', 'storage', 'str',
   'web', 'wire'
 ]
 
-// Published driver matrices per swap primitive.
+// discoverEventDrivers derives available event backends from the root
+// constructors and independently published driver modules. Planned backends
+// have no module and therefore cannot inflate the public availability count.
+const discoverEventDrivers = (reposRoot) => {
+  const eventsRoot = path.join(reposRoot, 'events')
+  const rootDriverSource = fs.readFileSync(path.join(eventsRoot, 'eventscore', 'driver.go'), 'utf8')
+  const rootDrivers = [
+    ['sync', /\bDriverSync\s+Driver\s*=/],
+    ['null', /\bDriverNull\s+Driver\s*=/]
+  ].flatMap(([name, pattern]) => pattern.test(rootDriverSource) ? [name] : [])
+
+  if (rootDrivers.length !== 2) {
+    throw new Error('events: expected sync and null root drivers in eventscore/driver.go')
+  }
+
+  const moduleRoot = path.join(eventsRoot, 'driver')
+  const moduleDrivers = fs.readdirSync(moduleRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(moduleRoot, entry.name, 'go.mod')))
+    .map((entry) => {
+      if (!entry.name.endsWith('events')) {
+        throw new Error(`events: cannot derive driver name from module ${entry.name}`)
+      }
+      const name = entry.name.slice(0, -'events'.length)
+      return name === 'natsjetstream' ? 'jetstream' : name
+    })
+
+  const available = new Set([...rootDrivers, ...moduleDrivers])
+  const displayOrder = ['sync', 'null', 'nats', 'jetstream', 'redis', 'kafka', 'sns', 'gcppubsub']
+  const ordered = displayOrder.filter((name) => available.delete(name))
+  if (available.size > 0) {
+    throw new Error(`events: add display names for discovered drivers: ${[...available].sort().join(', ')}`)
+  }
+  if (ordered.length !== rootDrivers.length + moduleDrivers.length) {
+    throw new Error('events: duplicate driver names discovered')
+  }
+  return ordered
+}
+
+// Published driver matrices per swap primitive. Event availability is
+// discovered because its README also shows planned capability rows.
 const DRIVERS = {
   queue: ['null', 'sync', 'workerpool', 'mysql', 'postgres', 'sqlite', 'redis', 'nats', 'sqs', 'rabbitmq'],
-  events: ['sync', 'null', 'nats', 'jetstream', 'redis', 'kafka', 'sns', 'gcppubsub', 'sqs'],
+  events: discoverEventDrivers(root),
   cache: ['null', 'file', 'memory', 'memcached', 'redis', 'nats', 'dynamodb', 'sqlite', 'postgres', 'mysql'],
   storage: ['local', 'memory', 'redis', 'ftp', 'sftp', 's3', 'gcs', 'dropbox', 'rclone'],
   mail: ['smtp', 'resend', 'postmark', 'mailgun', 'sendgrid', 'ses', 'log', 'fake'],
   database: ['sqlite', 'postgres', 'mysql']
 }
-
-const root = path.resolve(process.argv[2] || path.join(process.cwd(), '..'))
-const outFile = path.join(process.cwd(), 'docs', '.vitepress', 'data', 'proof-stats.json')
 
 const walkGoTestFiles = (dir, files = []) => {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

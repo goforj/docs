@@ -24,5 +24,5 @@ Use these guides when product behavior needs an HTTP, CLI, mail, or outbound-ser
 
 ## Related Sections
 
-- [Core Concepts](/core/) explains the generated App and runtime boundaries these pages build on.
+- [Core Concepts](/core/) explains the GoForj App and runtime boundaries these pages build on.
 - [Libraries](/libraries/) contains standalone package details for lower-level primitives.

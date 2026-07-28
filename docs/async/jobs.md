@@ -7,7 +7,7 @@ description: How to define named queued work with typed payloads and handlers.
 
 A Job is a named unit of queued work with a payload and a registered handler.
 
-Jobs make background work explicit, observable, retryable, and operable.
+Jobs make background work explicit, observable, and operable. Retry policy is opt-in: a generated job does not gain application retries until dispatch sets a retry budget.
 
 ## When To Use Jobs
 
@@ -162,7 +162,7 @@ Job names should be stable operational identifiers.
 
 ### Dispatch
 
-Jobs own their dispatch shape:
+Jobs own their dispatch shape. Add `time` to the file's imports when applying this policy:
 
 ```go
 func (j *SendWelcomeEmail) Queue(ctx context.Context, userID string) error {
@@ -174,13 +174,18 @@ func (j *SendWelcomeEmail) Queue(ctx context.Context, userID string) error {
 	_, err = j.queues.WithContext(ctx).Dispatch(
 		queue.NewJob(SendWelcomeEmailTypeName).
 				Payload(payload).
-				OnQueue("emails"),
+				OnQueue("emails").
+				Retry(3).
+				Backoff(2*time.Second).
+				Timeout(30*time.Second),
 	)
 	return err
 }
 ```
 
 Services can call `job.Queue(ctx, id)` without constructing raw queue messages.
+
+`Retry(3)` permits up to three application retry attempts after the first attempt. `Backoff` delays those retries, and `Timeout` bounds each attempt. Choose values from the side effect and service-level objective rather than copying these example values unchanged.
 
 ### Handling
 
@@ -197,7 +202,16 @@ func (j *SendWelcomeEmail) HandleTask(ctx context.Context, msg queue.Message) er
 }
 ```
 
-Return errors when the job should fail and let queue behavior handle retry policy.
+Return errors for retryable failures so the queue can apply the policy attached at dispatch. With `errors` imported, return `queue.Permanent(err)` for a terminal failure that should not spend the remaining application retry budget:
+
+```go
+if errors.Is(err, users.ErrInvalidEmail) {
+	return queue.Permanent(err)
+}
+return err
+```
+
+Broker redelivery after an infrastructure failure is distinct from the application retry budget. Review acknowledgement and durability behavior for the selected driver, and keep handlers idempotent even when `Retry(0)` is intentional.
 
 ## Existing Job Registration
 
@@ -214,6 +228,7 @@ Do not register handlers after workers are already running.
 - Do not put all business logic in `HandleTask`; delegate to services.
 - Do not use untyped `map[string]any` payloads when a typed payload is clearer.
 - Do not swallow handler errors that should be retried or observed.
+- Do not assume generated jobs retry without an explicit retry budget.
 - Do not dispatch jobs from repositories unless persistence code intentionally owns that side effect.
 :::
 

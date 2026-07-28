@@ -1,6 +1,6 @@
 ---
 title: Production Hardening
-description: Security checks for deploying generated GoForj Apps with auth, cookies, mail, observability, and infrastructure drivers.
+description: Security checks for deploying GoForj Apps with auth, cookies, mail, observability, and infrastructure drivers.
 ---
 
 # Production Hardening

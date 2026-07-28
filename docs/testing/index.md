@@ -29,10 +29,10 @@ Use the narrowest layer that proves the behavior:
 | Job handlers and dispatch | [Job and Queue Tests](/testing/job-queue-tests) | Retries, worker lifecycle, shutdown, or backend behavior matters |
 | Event publishing and subscribers | [Event Tests](/testing/event-tests) | Delivery through an external backend matters |
 | Cache and storage behavior | [Cache and Storage Tests](/testing/cache-storage-tests) | Driver-specific semantics matter |
-| Database, external backends, or App boundaries | [Integration Tests](/testing/integration-tests) with `go test -tags=integration ./...` | A freshly generated App must also be exercised |
+| Database, external backends, or App boundaries | [Integration Tests](/testing/integration-tests) with `go test -tags=integration ./...` | A new App must also be exercised |
 | Template and generated-App compile confidence | [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests) | A targeted framework integration suite is required |
 
-Most App teams should begin from the generated App root:
+Most App teams should begin from their App root:
 
 ```bash
 go test ./...
@@ -40,7 +40,7 @@ go test ./...
 
 Expected result: each package reports `ok`; a failure identifies the package and test name to investigate.
 
-Generated Apps include tests for enabled framework-owned surfaces such as lifecycle idempotency, runtime topology defaults, health and readiness, Swagger serving, metrics, events, database connections, and generated commands.
+GoForj Apps include generated tests for enabled framework-owned surfaces such as lifecycle idempotency, runtime topology defaults, health and readiness, Swagger serving, metrics, events, database connections, and generated commands.
 
 ## Keep Domain Behavior Direct
 

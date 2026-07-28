@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Create and run a generated GoForj Project in two commands.
+description: Create and run a new GoForj Project in two commands.
 ---
 
 # Quickstart

@@ -66,7 +66,7 @@ GoForj is the stack I always wanted.
 A developer should be able to start with a real application, not a skeleton that only becomes useful after the infrastructure is assembled.
 
 ```bash
-forj new app
+forj new
 forj dev
 ```
 

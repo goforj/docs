@@ -11,7 +11,7 @@ GoForj is pre-`v1.0`, and several early versions were assigned retrospectively t
 
 ## Unreleased
 
-The current documentation follows `main`. It is one visual-style commit ahead of `v0.22.0`; no additional user-facing framework behavior is pending release.
+The current documentation follows `main`. Changes remain in this section until they are included in a tagged framework release.
 
 ## v0.22.0
 
@@ -35,9 +35,9 @@ Released July 22, 2026.
 
 ## First-Party Library Ecosystem
 
-GoForj's framework depth comes from a set of standalone first-party libraries. These packages are not incidental helpers hidden behind the generator. They have their own repositories, version tags, docs, examples, tests, and integration contracts, and they can be used outside a generated GoForj App.
+GoForj's framework depth comes from a set of standalone first-party libraries. These packages are not incidental helpers hidden behind the generator. They have their own repositories, version tags, docs, examples, tests, and integration contracts, and they can be used outside a GoForj App.
 
-That tag hygiene is intentional. The framework can move quickly because lower-level packages are versioned independently, and generated Apps can pin concrete package versions instead of depending on an untracked internal snapshot.
+That tag hygiene is intentional. The framework can move quickly because lower-level packages are versioned independently, and Apps can pin concrete package versions instead of depending on an untracked internal snapshot.
 
 ### Library Release Lines
 
@@ -74,7 +74,7 @@ The early standalone package work made the framework feel like a cohesive Go sta
 - `httpx` reached `v2.0.1` after freezing `v1`, then moved to clearer `v2` request helpers, auth helpers, browser profiles, client options, tracing, debugging, and generated examples.
 - `execx` reached `v1.1.3` with shadow printing, decoder pipelines, TTY passthrough, PTY behavior, and cleaner command-output ergonomics.
 - `console` reached `v0.1.1` with global and isolated APIs for semantic output, ANSI-aware layout, tables, trees, prompts, loaders, progress, and generated examples with verified output.
-- `crypt` reached `v1.2.0` with key generation, key rotation, and instanced methods so generated Apps can avoid global-only crypto helpers.
+- `crypt` reached `v1.2.0` with key generation, key rotation, and instanced methods so Apps can avoid global-only crypto helpers.
 - `env` reached `v2.6.0` with `.env` layering, `APP_ENV` helpers, typed getters, map/slice parsing, scoped child prefixes, multi-word child discovery, `Load` aliases, reload support, and container/runtime detection.
 - `wire` reached `v1.2.0` after GoForj forked the Google Wire lineage, added a watch workflow, and introduced a custom loader with major performance improvements while keeping explicit compile-time dependency injection.
 
@@ -89,7 +89,7 @@ The application primitives were built as reusable libraries before and alongside
 - `cache` reached `v0.4.0` with memory/file/null stores, SQL/Redis/NATS/Memcached/DynamoDB drivers, ready checks, lock support, cache inspectors, `WithContext` facade behavior, observer event payloads, examples, integration modules, and driver-specific release tags.
 - `storage` reached `v0.5.0` with local, memory, Redis, FTP, SFTP, S3, GCS, Dropbox, and rclone drivers; named disk management; deterministic listing; directory operations; file counting; context variants; fake/test packages; benchmarks; driver capability matrices; and per-driver tags.
 - `mail` reached `v0.3.1` with core message composition, defaults, attachments, fake/log drivers, SMTP, SES, Mailgun, Postmark, Resend, SendGrid, Gmail-over-SMTP guidance, driver capability docs, and package coverage badges across transports.
-- `metrics` reached `v0.2.0` with counters, gauges, histograms, snapshots, units, Prometheus export, and the primitive model used by generated App observability.
+- `metrics` reached `v0.2.0` with counters, gauges, histograms, snapshots, units, Prometheus export, and the primitive model used by App observability.
 
 ### Driver and Test Hygiene
 
@@ -101,7 +101,7 @@ The heavier infrastructure packages use separate module and tag lines for driver
 - `storage` publishes driver and helper tags such as `driver/localstorage`, `driver/memorystorage`, `driver/redisstorage`, `driver/ftpstorage`, `driver/sftpstorage`, `driver/s3storage`, `driver/gcsstorage`, `driver/dropboxstorage`, `driver/rclonestorage`, `storagecore`, `storagetest`, `examples`, `integration`, and benchmark docs.
 - `mail` keeps provider transports split and tested, with coverage tracked across `mail`, `mailfake`, `maillog`, `mailsmtp`, `mailses`, `mailmailgun`, `mailpostmark`, `mailresend`, and `mailsendgrid`.
 
-That hygiene is what lets GoForj generated Apps choose only the drivers they need while still depending on tagged, tested package boundaries.
+That hygiene is what lets GoForj Apps choose only the drivers they need while still depending on tagged, tested package boundaries.
 
 ### Docs and Example Discipline
 
@@ -112,7 +112,7 @@ The libraries also carry documentation infrastructure that feeds the main docs s
 - Example generation and compile checks are part of the maintenance workflow.
 - Test count, coverage, driver matrix, benchmark, and capability sections are embedded directly in library docs where they help users choose a primitive.
 
-The framework changelog below focuses on how those independently versioned libraries became a cohesive generated App experience.
+The framework changelog below focuses on how those independently versioned libraries became a cohesive App experience.
 
 ## Earlier Framework Releases
 
@@ -146,7 +146,7 @@ Released June 24, 2026.
 ### Command Experience
 
 - Added configurable generated CLI help formats.
-- Fixed Atlas rendering and updated the Atlas dependency used by generated Projects.
+- Fixed Atlas rendering and updated the Atlas dependency used by new Projects.
 
 ## v0.18.1
 
@@ -165,7 +165,7 @@ Released June 16, 2026.
 - Added named Apps under `app/<name>/` with matching binary entrypoints under `cmd/<name>/main.go`.
 - Added app-prefixed command routing such as `forj marketplace route:list`, `forj marketplace make:controller checkout`, and `forj marketplace build`.
 - Updated `make:*` commands so an app prefix writes generated code into the selected App's registration and Wire files.
-- Moved generated app composition into app-owned files such as `commands.go`, `routes.go`, `schedules.go`, `lifecycle.go`, and `root_cmd.go`.
+- Moved App composition into app-owned files such as `commands.go`, `routes.go`, `schedules.go`, `lifecycle.go`, and `root_cmd.go`.
 - Renamed the public domain model from app targets to Apps.
 - Added app-aware rendering, discovery, configuration, runtime metadata, and generated tests.
 
@@ -199,7 +199,7 @@ Released June 3, 2026.
 - Added event subscriber generation.
 - Added queue resource maker workflow.
 - Added editor-open hooks for generated controller and make command flows.
-- Moved make generators deeper into the generated app command surface.
+- Moved make generators deeper into the App command surface.
 - Simplified generated CLI help output.
 - Stabilized rendered app tests around the expanded generator surface.
 
@@ -207,10 +207,10 @@ Released June 3, 2026.
 
 Released June 1, 2026.
 
-### Generated App Command Ergonomics
+### App Command Ergonomics
 
 - Added schedule generator support.
-- Cleaned up generated app command UX.
+- Cleaned up App command UX.
 - Simplified app command delegation in the CLI.
 - Improved generated queue developer experience.
 - Logged queue worker allocations on startup.
@@ -223,7 +223,7 @@ Released May 26, 2026.
 
 ### Runtime Command Aliases and Build Stabilization
 
-- Added runtime aliases for generated app commands.
+- Added runtime aliases for App commands.
 - Passed local app commands through the `forj` command surface.
 - Made run progress transient so command output stays easier to scan.
 - Simplified release version output.
@@ -321,7 +321,7 @@ Released April 20, 2026.
 ### Web, Auth, Mail, and Lighthouse Foundations
 
 - Expanded generated web, auth, mail, and Lighthouse foundations.
-- Integrated the standalone `web`, `mail`, `queue`, `cache`, `storage`, and `scheduler` libraries into the generated App model.
+- Integrated the standalone `web`, `mail`, `queue`, `cache`, `storage`, and `scheduler` libraries into the GoForj App model.
 - Added generated auth implementation, including users, sessions, password reset, email verification, login attempts, and OAuth provider scaffolding.
 - Added generated auth commands for creating users and setting passwords.
 - Added generated mail support and auth delivery integration.
@@ -344,7 +344,7 @@ Released February 13, 2026.
 - Added startup and lifecycle hooks.
 - Added health and readiness probes.
 - Added queue and cache abstractions.
-- Adopted standalone `queue`, `events`, and `cache` package behavior for generated App primitives.
+- Adopted standalone `queue`, `events`, and `cache` package behavior for App primitives.
 - Added graceful workerpool and dispatcher shutdown behavior.
 - Ported database integration tests.
 - Added `test:openapi`.
@@ -363,7 +363,7 @@ Released February 10, 2026.
 - Added demo persistence and repository consolidation.
 - Added demo seeding and diagnostics pages.
 - Avoided embedding frontend node dependencies in rendered output.
-- Exercised the generated database, queue, scheduler, cache, storage, command, and frontend paths through a realistic generated product.
+- Exercised the database, queue, scheduler, cache, storage, command, and frontend paths through a realistic App.
 
 ## v0.6.0
 
@@ -383,10 +383,10 @@ Released February 6, 2026.
 
 Released January 14, 2026.
 
-### Generated Logging
+### Application Logging
 
-- Added structured generated application logging work.
-- Improved logging behavior in generated apps.
+- Added structured application logging.
+- Improved logging behavior in GoForj Apps.
 - Prepared the local runtime surface for richer dev console and watcher behavior.
 
 ## v0.4.0
@@ -429,7 +429,7 @@ Released May 28, 2025.
 - Added route list command support.
 - Split registration points for commands, controllers, schedules, and HTTP wiring.
 - Added initial CI render coverage.
-- Added many missing templates for generated Apps.
+- Added many missing App templates.
 - Improved `make:command` and `make:controller` injection behavior.
 - Hardened rendered test coverage around generated projects.
 
@@ -440,7 +440,7 @@ Released May 26 through December 6, 2025.
 ### Early Framework and Package Foundation
 
 - Established the early GoForj repository and CLI shape.
-- Added the first project renderer and generated app templates.
+- Added the first project renderer and App templates.
 - Added early `make:command` behavior.
 - Added early build and render test workflows.
 - Added the table package.

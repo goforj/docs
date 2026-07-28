@@ -1,15 +1,15 @@
 ---
 title: Runnable Scenarios
-description: End-to-end GoForj examples that show how generated Apps are built, wired, run, tested, and observed.
+description: End-to-end GoForj examples that show how Apps are built, wired, run, tested, and observed.
 ---
 
 # Runnable Scenarios
 
-Runnable scenarios show complete framework workflows inside a generated GoForj App.
+Runnable scenarios show complete framework workflows inside a GoForj App.
 
 Use these after the Quickstart when you want to build real application behavior instead of only reading individual feature pages.
 
-If you are learning GoForj for the first time, treat this section as the main guided tutorial after Getting Started. Feature pages explain one surface at a time; scenarios show how those surfaces compose inside a generated App.
+If you are learning GoForj for the first time, treat this section as the main guided tutorial after Getting Started. Feature pages explain one surface at a time; scenarios show how those surfaces compose inside your App.
 
 ## The Path
 
@@ -37,7 +37,7 @@ flowchart LR
 
 | Step | App State Before | App State After |
 | --- | --- | --- |
-| JSON API Route | Generated App with HTTP enabled | One tested user lookup route is registered and visible in `route:list`. |
+| JSON API Route | App with HTTP enabled | One tested user lookup route is registered and visible in `route:list`. |
 | Cached User Profile | User route exists | User lookup has a repository boundary and named `profiles` cache. |
 | File Upload to Storage | App has HTTP and generated storage support | Uploads write to a named `uploads` storage disk. |
 | Users Created Event | User service owns read/write behavior | Creating a user publishes a typed `users.created` event and a subscriber reacts to it. |

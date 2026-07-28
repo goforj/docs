@@ -7,109 +7,50 @@ description: How queue workers run jobs, handle shutdown, and fit into GoForj ru
 
 Workers execute queued jobs.
 
-They are long-running runtime processes with explicit startup, shutdown, metrics, and queue configuration.
+They are the execution side of the queue model: handlers are registered before startup, workers receive named jobs, and handler results become success, retry, or terminal failure outcomes.
 
-## Start Workers
+## Execution Lifecycle
 
-Run workers directly:
+The worker lifecycle is:
 
-```bash
-forj worker # or ./bin/app worker
-```
+1. construct the App and queue manager
+2. register typed job handlers
+3. start workers for the selected logical queues
+4. deliver each job with cancellation and attempt metadata
+5. record logs, metrics, and inspects
+6. drain or stop within the shutdown budget
 
-For a named app, keep the same command shape and add the app name:
+Do not hide handler registration or worker startup in package globals. Generated wiring keeps registration visible and completes it before workers begin delivery.
 
-```bash
-forj marketplace worker # or ./bin/marketplace worker
-```
+## Queue Selection
 
-Run workers with other enabled runtimes in local standalone mode:
-
-```bash
-forj app # or ./bin/app
-```
-
-For a named app:
+One worker runtime can consume every configured queue or a selected subset. Queue names remain logical App resource names such as `emails` or `reports`; backend physical names and driver configuration stay behind the generated queue manager.
 
 ```bash
-forj marketplace app # or ./bin/marketplace
+forj worker --queue emails --queue reports
 ```
 
-## Runtime Boundary
+Use named queues when work needs separate concurrency, resources, or operational priority. Process allocation is the default priority mechanism: give urgent queues more workers or their own worker process rather than teaching handlers about topology.
 
-The worker command starts the App lifecycle, starts the queue worker runtime, blocks while workers run, and shuts down on cancellation.
+## Delivery and Retry
 
-This makes workers a clear operational boundary separate from HTTP and scheduler processes when needed.
+Handler errors use the retry budget attached to the job. Retries are not implied by starting a worker, and backend redelivery can still repeat a job after infrastructure failure.
 
-By default, `worker` starts workers for every configured generated queue. Use `--queue` when a process should work only one named queue:
+Keep handlers idempotent, use stable payload references, and return terminal errors with `queue.Permanent(err)` when retrying cannot succeed. See [Retries and Idempotency](/async/retries-idempotency) for a runnable policy and test.
 
-```bash
-forj worker --queue reports # or ./bin/app worker --queue reports
-```
+## Topology Independence
 
-For a named app:
+Workers can run inside the combined `run` Runtime or in explicit `worker` processes. Job and handler code should not change when operations split or scale those processes.
 
-```bash
-forj marketplace worker --queue sync # or ./bin/marketplace worker --queue sync
-```
-
-Repeat the flag to work a subset:
-
-```bash
-forj worker --queue emails --queue reports # or ./bin/app worker --queue emails --queue reports
-```
-
-## Configuration
-
-Common worker-related variables include:
-
-```text
-QUEUE_DRIVER=workerpool
-QUEUE_WORKERS=30
-QUEUE_NAME=default
-QUEUE_SHUTDOWN_TIMEOUT=10s
-```
-
-Named queues use `QUEUE_<NAME>_*` variables. If a named queue does not set its own driver, it inherits `QUEUE_DRIVER`.
-
-```text
-QUEUE_DRIVER=redis
-QUEUE_EMAILS_WORKERS=6
-QUEUE_REPORTS_WORKERS=2
-```
-
-Prefer named queues for operational priority. Give higher-priority work more worker capacity, and run dedicated `worker --queue <name>` processes when it needs separate scaling, CPU, memory, or deployment policy.
-
-Some drivers support additional backend-specific queue weighting. Keep that as a driver detail; use [Queue](/queue) for the full package behavior.
-
-## Metrics
-
-When metrics are enabled, worker processes can expose a dedicated metrics endpoint. The generated worker command includes metrics configuration when the App has metrics support.
-
-Use metrics, inspects, logs, queue backend state, and Lighthouse to understand worker behavior.
-
-## Scaling
-
-Use standalone mode first for local development.
-
-Use explicit worker processes when production needs:
-
-- independent scaling
-- different resource limits
-- restart isolation
-- separate deploy topology
-- queue-specific concurrency tuning
-- queue-specific priority through worker allocation
-
-The job code should not change when topology changes.
+Use the [Queue Workers runbook](/operations/queue-workers) for deployment commands, driver and concurrency configuration, startup verification, shutdown, scaling, and failure response.
 
 ## Common Mistakes
 
 ::: warning Common mistakes
 - Do not run workers from HTTP handlers.
-- Do not assume `forj app` is the only runtime shape.
-- Do not start multiple scheduler processes accidentally when scaling workers.
-- Do not ignore shutdown timeouts for long-running jobs.
+- Do not make job behavior depend on whether workers are combined or split.
+- Do not assume a handler error will retry unless the job has a retry budget.
+- Do not use queue names as arbitrary payload values.
 - Do not hide worker startup in constructors or package globals.
 :::
 
@@ -117,4 +58,4 @@ The job code should not change when topology changes.
 
 - [Runtime Topology](/core/runtime-topology) explains process shapes.
 - [Jobs](/async/jobs) explains job handlers.
-- [Operations](/operations/) covers production runtime behavior.
+- [Queue Workers](/operations/queue-workers) is the production runbook.

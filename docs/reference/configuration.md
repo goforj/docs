@@ -16,7 +16,7 @@ The project file records render-time choices and local development workflow.
 
 | Key | Purpose |
 | --- | --- |
-| `project_name` | Generated Project display name. |
+| `project_name` | Project display name. |
 | `module_name` | Go module path. |
 | `updated_at` | Timestamp written by rendering workflows. |
 | `render.components` | Selected framework components. |
@@ -88,7 +88,7 @@ These are lifecycle graphs rather than flat watcher entries. A successful SPA bu
 | `dev.apps: {}` | Use native dev mode with no managed Apps. |
 | Entire `dev.apps` key omitted | Retain legacy discovery and watcher compatibility. |
 
-Runtime-capable means the App has Web API, Web UI, Scheduler, or Jobs support. Generated CLI-only Apps are omitted from `dev.apps` by default because they do not need a long-running runtime. Listing a CLI-only App with `true` enrolls its conventional build without starting a runtime; set `run` to a command string or mapping when the dev loop should invoke a specific command.
+Runtime-capable means the App has Web API, Web UI, Scheduler, or Jobs support. CLI-only Apps are omitted from `dev.apps` by default because they do not need a long-running runtime. Listing a CLI-only App with `true` enrolls its conventional build without starting a runtime; set `run` to a command string or mapping when the dev loop should invoke a specific command.
 
 App names must be safe lowercase slugs. `wire` is reserved by the generated layout.
 
@@ -277,7 +277,7 @@ Render component keys include:
 
 | Key | Purpose |
 | --- | --- |
-| `cli` | Generated App command surface. |
+| `cli` | App command surface. |
 | `demo_app` | Demo application surface. |
 | `mail` | Generated mail manager and delivery integration. |
 | `auth` | Generated auth, session, and account support. |
@@ -300,7 +300,7 @@ Catalog dependencies are resolved in memory by the renderer. For example, metric
 
 ## Module Replaces
 
-Use paths that are stable from the generated project root. For local sibling repositories, prefer a relative path:
+Use paths that are stable from the Project root. For local sibling repositories, prefer a relative path:
 
 ```yaml
 render:

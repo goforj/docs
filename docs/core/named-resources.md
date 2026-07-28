@@ -1,6 +1,6 @@
 ---
 title: Named Resources
-description: How generated GoForj Apps expose named caches, disks, queues, event buses, metrics, jobs, schedules, and routes.
+description: How GoForj Apps expose named caches, disks, queues, event buses, metrics, jobs, schedules, and routes.
 ---
 
 # Named Resources
@@ -27,7 +27,7 @@ Use stable names because they appear in logs, metrics, inspects, route lists, wo
 
 ## Default and Named Scopes
 
-Generated Apps usually provide a default resource and optional named resources when the owning component is enabled. A Project without Cache, File Storage, Background Jobs, or Events does not render accessors for that resource family.
+GoForj Apps usually provide a default resource and optional named resources when the owning component is enabled. A Project without Cache, File Storage, Background Jobs, or Events does not render accessors for that resource family.
 
 Examples:
 

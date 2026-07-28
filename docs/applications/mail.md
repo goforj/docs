@@ -5,12 +5,12 @@ description: Send application and auth email through generated default and named
 
 # Mail
 
-The Mail component gives a generated App one portable message API with local and production delivery drivers.
+The Mail component gives your App one portable message API with local and production delivery drivers.
 
 Use it for account email, invitations, receipts, reports, and other outbound messages. Application code composes message intent; generated providers choose the transport.
 
 ::: info Mail package reference
-This guide explains generated App mailers, configuration, and delivery workflows. The [mail library page](/mail) covers standalone composition and delivery, the complete API, and the driver capability matrix.
+This guide explains your App's generated mailers, configuration, and delivery workflows. The [mail library page](/mail) covers standalone composition and delivery, the complete API, and the driver capability matrix.
 :::
 
 ## Generated Ownership
@@ -40,7 +40,7 @@ MAIL_LOG_BODIES=false
 
 The log driver writes delivery metadata to application output. Message bodies stay hidden unless `MAIL_LOG_BODIES=true`.
 
-When local Docker support is selected, generated Apps can use SMTP with Mailpit:
+When local Docker support is selected, GoForj Apps can use SMTP with Mailpit:
 
 ```dotenv
 MAIL_DRIVER=smtp
@@ -98,6 +98,7 @@ forj build
 Use a named mailer when one App needs distinct senders or providers:
 
 ```dotenv
+MAIL_SUPPORTED_DRIVERS=log,resend
 MAIL_TRANSACTIONAL_DRIVER=resend
 MAIL_TRANSACTIONAL_FROM_ADDRESS=transactions@example.com
 MAIL_TRANSACTIONAL_FROM_NAME=Example Transactions
@@ -113,6 +114,13 @@ err := manager.Transactional().
 	Subject("Receipt ready").
 	Text("Your receipt is ready.").
 	Send(ctx)
+```
+
+Refresh the generated mail manager and accessor after adding or changing the named scope:
+
+```bash
+forj generate --mail
+forj build
 ```
 
 `manager.Named("transactional")` is available for dynamic operator-oriented lookup. Business code should prefer generated typed accessors when the mailer name is known at compile time.
@@ -141,7 +149,7 @@ Use the [Mail library page](/mail) for transport capabilities and [Environment R
 
 ## Testing
 
-For generated App integration, use the `log` driver and capture output or exercise the owning service with a local manager.
+For GoForj App integration, use the `log` driver and capture output or exercise the owning service with a local manager.
 
 For isolated service tests, place a narrow mail boundary around the workflow and use the library's `mailfake` driver. Assert recipient, subject, body, and send count without contacting a provider.
 

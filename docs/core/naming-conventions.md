@@ -46,6 +46,14 @@ Use extra command segments only when the extra segment is truly part of the oper
 
 Jobs should name the unit of background work, not the queue, package, or handler type.
 
+Use a grouped make-command name so package placement and the operator-facing identity begin in sync:
+
+```bash
+forj make:job reports:generate
+```
+
+This creates `internal/reports/generate_job.go` with `GenerateJobTypeName = "reports:generate"`.
+
 Prefer:
 
 ```go
@@ -60,6 +68,12 @@ const GenerateReportJobTypeName = "reports"
 ```
 
 Job names should stay stable because they appear in dispatch records, worker logs, metrics, retries, and queue administration.
+
+Ungrouped generator names retain their older compact identity for compatibility, such as `SyncReports` becoming `syncreports`. Prefer grouped names for new jobs instead of depending on that legacy shape.
+
+::: warning Regenerating older grouped resources
+Older generators also compacted grouped job and event names. Regenerating one of those files now adopts the documented grouped identity. Before replacing an existing file, coordinate queued job names, subscriber topics, broker state, dashboards, and external publishers that still use the old compact value.
+:::
 
 ## Schedules
 
@@ -85,6 +99,14 @@ The schedule name is an identifier, not a lock. Add explicit overlap protection 
 
 Events should be facts that already happened.
 
+Use a grouped make-command name to create a dotted topic:
+
+```bash
+forj make:event users:created
+```
+
+This creates `internal/users/created_event.go` with `CreatedEventTopic = "users.created"`.
+
 Use dotted topics with a domain noun and past-tense verb:
 
 ```go
@@ -92,7 +114,9 @@ const UserCreatedEventTopic = "users.created"
 const InvoicePaidEventTopic = "invoices.paid"
 ```
 
-Generated event files are starting points. Review the generated topic constant and make it a stable external contract before other code or infrastructure depends on it.
+Grouped event names use kebab-case within each segment and dots between segments. For example, `billing:invoice-paid` becomes `billing.invoice-paid`. Ungrouped generator names retain their older compact topic for compatibility, so prefer the grouped form for new event contracts.
+
+Generated event files remain App-owned starting points. Review the topic constant before other code or infrastructure depends on it.
 
 Avoid imperative event names:
 

@@ -10,7 +10,7 @@ Storage is for files and blobs.
 Use storage disks for uploads, generated files, public assets, private files, and remote object stores. Use the database for relational state and metadata.
 
 ::: info Storage library reference
-This page covers generated App disks and their configuration. The [storage library reference](/storage) documents standalone use, the complete package API, and the available driver and capability matrices.
+This page covers your App's generated disks and their configuration. The [storage library reference](/storage) documents standalone use, the complete package API, and the available driver and capability matrices.
 :::
 
 ## When To Use Storage
@@ -24,7 +24,7 @@ This page covers generated App disks and their configuration. The [storage libra
 
 ## Generated Disks
 
-Generated Apps expose default and named disks:
+GoForj Apps expose generated default and named disks:
 
 ```go
 app.Storage()

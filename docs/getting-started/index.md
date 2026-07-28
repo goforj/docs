@@ -7,7 +7,7 @@ description: Start here to build and understand a GoForj application.
 
 This section is the entry point for building a GoForj App.
 
-Start here when you want to create a generated App, run it locally, and understand the files GoForj creates before moving into feature-specific guides.
+Start here when you want to create a new App, run it locally, and understand the files GoForj creates before moving into feature-specific guides.
 
 ## Recommended Path
 
@@ -22,7 +22,7 @@ Start here when you want to create a generated App, run it locally, and understa
 
 - [Local-First Development](/core/local-first-development) explains the local runtime loop after the first build.
 - [Runtime Observability](/scenarios/runtime-observability) shows how to prove an App workflow through metrics, inspects, Lighthouse, and logs.
-- [Commands](/applications/commands) explains generated App commands and custom command placement.
+- [Commands](/applications/commands) explains App commands and custom command placement.
 
 ## Related Sections
 

@@ -145,7 +145,7 @@ Security-sensitive values must not be logged:
 
 Generated Auth includes integration coverage for login, registration, sessions, refresh rotation, revocation, password changes, reset, verification, rate limits, lockout, provider identity policy, cleanup, and concurrent refresh recovery.
 
-Run normal generated App tests first:
+Run your App's normal tests first:
 
 ```bash
 go test ./...

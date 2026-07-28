@@ -5,7 +5,7 @@ description: Plan, create, verify, retain, and safely restore GoForj App data.
 
 # Backup and Restore
 
-GoForj provides framework-owned backup commands for durable resources configured by a generated App.
+GoForj provides framework-owned backup commands for durable resources configured by your App.
 
 The commands run through `forj`, not the deployed App binary. They discover the selected App's database and storage resource contract, choose driver-aware strategies, and create manifest-backed backup sets with checksums.
 

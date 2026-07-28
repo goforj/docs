@@ -20,27 +20,61 @@ Use distributed event driver tests only when transport behavior matters.
 
 ## Publish and Subscribe
 
+Add this test to `internal/events/bus_delivery_test.go`. Keeping the test in the generated package lets it exercise the App-facing bus without inventing another constructor:
+
 ```go
-bus, err := events.NewBus(context.Background())
-if err != nil {
-	t.Fatalf("new bus: %v", err)
-}
-defer bus.Close(context.Background())
+package events
 
-received := make(chan UserRegisteredEvent, 1)
-sub, err := bus.Subscribe(func(ctx context.Context, event UserRegisteredEvent) error {
-	received <- event
-	return nil
-})
-if err != nil {
-	t.Fatalf("subscribe: %v", err)
-}
-defer sub.Close()
+import (
+	"context"
+	"testing"
+	"time"
+)
 
-if err := bus.Publish(UserRegisteredEvent{UserID: "user_123"}); err != nil {
-	t.Fatalf("publish: %v", err)
+// userRegisteredEvent keeps this transport test independent from application examples.
+type userRegisteredEvent struct {
+	UserID string
+}
+
+// Topic keeps the test independent from optional application event examples.
+func (userRegisteredEvent) Topic() string {
+	return "users.registered"
+}
+
+// TestInprocPublishAndSubscribe proves typed delivery without a broker.
+func TestInprocPublishAndSubscribe(t *testing.T) {
+	t.Setenv("EVENTS_DRIVER", "inproc")
+
+	ctx := context.Background()
+	bus := NewBus(ctx)
+	t.Cleanup(func() { _ = bus.Close(ctx) })
+
+	received := make(chan userRegisteredEvent, 1)
+	sub, err := bus.WithContext(ctx).Subscribe(func(_ context.Context, event userRegisteredEvent) error {
+		received <- event
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("subscribe: %v", err)
+	}
+	t.Cleanup(func() { _ = sub.Close() })
+
+	if err := bus.WithContext(ctx).Publish(userRegisteredEvent{UserID: "user_123"}); err != nil {
+		t.Fatalf("publish: %v", err)
+	}
+
+	select {
+	case event := <-received:
+		if event.UserID != "user_123" {
+			t.Fatalf("user ID = %q, want %q", event.UserID, "user_123")
+		}
+	case <-time.After(500 * time.Millisecond):
+		t.Fatal("timed out waiting for in-process event delivery")
+	}
 }
 ```
+
+`NewBus` returns one lifecycle-aware `Bus`. Use `NewManagerWithContext` instead when the test specifically needs to assert manager initialization errors.
 
 ## Subscriber Tests
 
@@ -56,7 +90,7 @@ With the events component enabled, run the event-owning package with the in-proc
 EVENTS_DRIVER=inproc EVENTS_SUPPORTED_DRIVERS=inproc go test ./internal/events/...
 ```
 
-Expected result: the package reports `ok` without a broker. The publish/subscribe snippet is a fragment; a runnable test must also wait for and assert the received event, rather than only calling `Publish`.
+Expected result: the package reports `ok` without a broker, and the test fails rather than hanging if delivery does not occur.
 
 ## Common Mistakes
 

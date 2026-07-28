@@ -1,6 +1,6 @@
 ---
 title: Responses and Errors
-description: How generated GoForj Apps should shape HTTP responses and error behavior.
+description: How GoForj Apps should shape HTTP responses and error behavior.
 ---
 
 # Responses and Errors
@@ -62,7 +62,7 @@ The [JSON API Route](/scenarios/json-api-route) uses this exact boundary for a u
 
 ## Local Error Detail
 
-Generated Apps can capture local HTTP error response bodies for debugging in local environments.
+GoForj Apps can capture local HTTP error response bodies for debugging in local environments.
 
 Do not rely on detailed error bodies as an operational data source in production. Use logs, metrics, inspects, readiness, and Lighthouse surfaces for runtime investigation.
 

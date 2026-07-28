@@ -120,7 +120,7 @@ Local-first docs should avoid:
 
 ::: warning Common mistakes
 - Do not use production-only infrastructure in first examples unless the page is specifically about that driver.
-- Do not teach low-level package construction before generated App integration.
+- Do not teach low-level package construction before App integration.
 - Do not make services depend directly on local-only drivers.
 - Do not skip regeneration when changing supported drivers.
 - Do not treat standalone topology as a toy. It is the normal local and small-deployment path.

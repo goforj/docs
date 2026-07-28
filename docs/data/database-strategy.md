@@ -1,11 +1,11 @@
 ---
 title: Database Strategy
-description: How generated GoForj Apps model database connections, driver support, and durable data ownership.
+description: How GoForj Apps model database connections, driver support, and durable data ownership.
 ---
 
 # Database Strategy
 
-Database connections are the source-of-truth path for durable relational data in a generated GoForj App.
+Database connections are the source-of-truth path for durable relational data in a GoForj App.
 
 GoForj keeps database configuration explicit and generated. The generated database package opens and caches connections on first access through its connection registry.
 
@@ -35,7 +35,7 @@ DB_DRIVER=sqlite
 DB_DATABASE=./_data/sqlite/app.db
 ```
 
-If `DB_DRIVER` is unset, generated Apps use SQLite. If a SQLite connection does not set `DB_DATABASE`, the default connection uses `_data/sqlite/app.db`.
+If `DB_DRIVER` is unset, GoForj Apps use SQLite. If a SQLite connection does not set `DB_DATABASE`, the default connection uses `_data/sqlite/app.db`.
 
 For networked databases, the App can use host, database, username, password, port, pool, and query logging settings.
 
@@ -113,7 +113,7 @@ forj db analytics
 forj db --connection analytics
 ```
 
-Connection selectors match generated App resource names: `DB_ANALYTICS_*` maps to `analytics`. With multiple shellable connections, an interactive terminal shows a compact selector. A non-interactive command uses the default connection unless you pass a name; scripts should select one explicitly when they must not depend on that default.
+Connection selectors match generated resource names: `DB_ANALYTICS_*` maps to `analytics`. With multiple shellable connections, an interactive terminal shows a compact selector. A non-interactive command uses the default connection unless you pass a name; scripts should select one explicitly when they must not depend on that default.
 
 ### Method Selection
 

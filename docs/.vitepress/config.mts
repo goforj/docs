@@ -568,8 +568,8 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
   'core/generated-components': {
     to: '/core/code-generation',
     fragments: {
-      'why-they-exist': 'choose-the-generated-project-shape',
-      'project-rendering': 'choose-the-generated-project-shape',
+      'why-they-exist': 'choose-the-project-shape',
+      'project-rendering': 'choose-the-project-shape',
       'build-time-generation': 'run-generation',
       'focused-generation': 'run-generation',
       'generated-managers': 'use-generated-resources',
@@ -637,6 +637,15 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
       'non-interactive-sql': 'database-shell',
       'client-arguments': 'database-shell',
       notes: 'database-shell'
+    }
+  },
+  'developer-tools/editor-open': {
+    to: '/core/make-commands',
+    fragments: {
+      'supported-commands': 'opening-generated-files',
+      'automatic-opening': 'opening-generated-files',
+      'editor-resolution': 'opening-generated-files',
+      'related-pages': 'shared-options'
     }
   },
   'operations/production-checklist': {
@@ -840,6 +849,249 @@ const emberTheme = {
     { scope: ['markup.inserted', 'markup.inserted.diff'], settings: { foreground: '#5FCFA8' } },
     { scope: ['markup.deleted', 'markup.deleted.diff'], settings: { foreground: '#FF6B85' } }
   ]
+}
+
+const sectionSidebar = (text: string, items: { text: string; link: string }[]) => [{
+  text,
+  items
+}]
+
+const gettingStartedSidebar = sectionSidebar('Getting Started', [
+  { text: 'Overview', link: '/getting-started/' },
+  { text: 'Quickstart', link: '/getting-started/quickstart' },
+  { text: 'Cookbook', link: '/cookbook' },
+  { text: 'Project Structure', link: '/getting-started/project-structure' },
+  { text: 'Configuration', link: '/getting-started/configuration' },
+  { text: 'Starter Kit Guide', link: '/getting-started/starter-kits' }
+])
+
+const coreSidebar = sectionSidebar('Core Concepts', [
+  { text: 'Overview', link: '/core/' },
+  { text: 'Apps', link: '/core/apps' },
+  { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
+  { text: 'Runtime Topology', link: '/core/runtime-topology' },
+  { text: 'Code Generation', link: '/core/code-generation' },
+  { text: 'Make Commands', link: '/core/make-commands' },
+  { text: 'Naming Conventions', link: '/core/naming-conventions' },
+  { text: 'Dependency Injection', link: '/core/dependency-injection' },
+  { text: 'Provider Patterns', link: '/core/provider-patterns' },
+  { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
+  { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
+  { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
+  { text: 'Named Resources', link: '/core/named-resources' },
+  { text: 'Local-First Development', link: '/core/local-first-development' }
+])
+
+const applicationsSidebar = sectionSidebar('Applications', [
+  { text: 'Overview', link: '/applications/' },
+  { text: 'HTTP Services', link: '/applications/http-services' },
+  { text: 'Routes', link: '/applications/routes' },
+  { text: 'Controllers', link: '/applications/controllers' },
+  { text: 'Middleware', link: '/applications/middleware' },
+  { text: 'Requests and Validation', link: '/applications/requests-validation' },
+  { text: 'Responses and Errors', link: '/applications/responses-errors' },
+  { text: 'Application Services', link: '/applications/services' },
+  { text: 'HTTP Clients', link: '/applications/http-clients' },
+  { text: 'Mail', link: '/applications/mail' },
+  { text: 'Commands', link: '/applications/commands' },
+  { text: 'API Index and OpenAPI', link: '/applications/api-index' }
+])
+
+const securitySidebar = sectionSidebar('Security', [
+  { text: 'Overview', link: '/security/' },
+  { text: 'Auth', link: '/security/auth' },
+  { text: 'Sessions and Cookies', link: '/security/sessions-cookies' },
+  { text: 'OAuth', link: '/security/oauth' },
+  { text: 'Production Hardening', link: '/security/production-hardening' }
+])
+
+const frontendSidebar = sectionSidebar('Frontend', [
+  { text: 'Overview', link: '/frontend/' },
+  { text: 'Vue Starter Kit', link: '/frontend/vue-starter-kit' },
+  { text: 'React Starter Kit', link: '/frontend/react-starter-kit' },
+  { text: 'templ + htmx Starter Kit', link: '/frontend/templ-htmx-starter-kit' }
+])
+
+const dataSidebar = sectionSidebar('Data and Persistence', [
+  { text: 'Overview', link: '/data/' },
+  { text: 'Database Strategy', link: '/data/database-strategy' },
+  { text: 'Migrations', link: '/data/migrations' },
+  { text: 'Repositories', link: '/data/repositories' },
+  { text: 'Transactions', link: '/data/transactions' },
+  { text: 'Cache Patterns', link: '/data/cache-patterns' },
+  { text: 'Storage Patterns', link: '/data/storage-patterns' },
+  { text: 'Driver Selection', link: '/data/driver-selection' }
+])
+
+const asyncSidebar = sectionSidebar('Async and Workflows', [
+  { text: 'Overview', link: '/async/' },
+  { text: 'Events versus Queues', link: '/async/events-vs-queues' },
+  { text: 'Queues', link: '/async/queues' },
+  { text: 'Jobs', link: '/async/jobs' },
+  { text: 'Workers', link: '/async/workers' },
+  { text: 'Events', link: '/async/events' },
+  { text: 'Event Subscribers', link: '/async/event-subscribers' },
+  { text: 'Scheduler', link: '/async/scheduler' },
+  { text: 'Retries and Idempotency', link: '/async/retries-idempotency' }
+])
+
+const testingSidebar = sectionSidebar('Testing', [
+  { text: 'Overview', link: '/testing/' },
+  { text: 'Unit Tests', link: '/testing/unit-tests' },
+  { text: 'HTTP Tests', link: '/testing/http-tests' },
+  { text: 'Command Tests', link: '/testing/command-tests' },
+  { text: 'Job and Queue Tests', link: '/testing/job-queue-tests' },
+  { text: 'Event Tests', link: '/testing/event-tests' },
+  { text: 'Cache and Storage Tests', link: '/testing/cache-storage-tests' },
+  { text: 'Integration Tests', link: '/testing/integration-tests' },
+  { text: 'Rendered App Smoke Tests', link: '/testing/rendered-app-smoke-tests' }
+])
+
+const scenariosSidebar = sectionSidebar('Runnable Scenarios', [
+  { text: 'Overview', link: '/scenarios/' },
+  { text: 'JSON API Route', link: '/scenarios/json-api-route' },
+  { text: 'Cached User Profile', link: '/scenarios/cached-user-profile' },
+  { text: 'File Upload To Storage', link: '/scenarios/file-upload-storage' },
+  { text: 'Users Created Event', link: '/scenarios/users-created-event' },
+  { text: 'Reports Generate Job', link: '/scenarios/reports-generate-job' },
+  { text: 'Reports Daily Schedule', link: '/scenarios/reports-daily-schedule' },
+  { text: 'Runtime Observability', link: '/scenarios/runtime-observability' }
+])
+
+const operationsSidebar = sectionSidebar('Operations', [
+  { text: 'Overview', link: '/operations/' },
+  { text: 'Deployment Basics', link: '/operations/deployment-basics' },
+  { text: 'Runtime Processes', link: '/operations/runtime-processes' },
+  { text: 'HTTP Server', link: '/operations/http-server' },
+  { text: 'Queue Workers', link: '/operations/queue-workers' },
+  { text: 'Scheduler Processes', link: '/operations/scheduler-processes' },
+  { text: 'Health and Readiness', link: '/operations/health-readiness' },
+  { text: 'Logging', link: '/operations/logging' },
+  { text: 'Metrics', link: '/operations/metrics' },
+  { text: 'Inspects', link: '/operations/inspects' },
+  { text: 'Lighthouse', link: '/operations/lighthouse' },
+  { text: 'Backup and Restore', link: '/operations/backups' }
+])
+
+const developerToolsSidebar = sectionSidebar('Developer Tools', [
+  { text: 'Overview', link: '/developer-tools/' },
+  { text: 'Atlas', link: '/developer-tools/atlas' },
+  { text: 'Atlas Debug Recipes', link: '/developer-tools/atlas-debug-recipes' },
+  { text: 'forj dev', link: '/developer-tools/forj-dev' }
+])
+
+const librariesSidebar = sectionSidebar('Libraries', [
+  { text: 'Overview', link: '/libraries/' },
+  { text: 'Web', link: '/web' },
+  { text: 'Cache', link: '/cache' },
+  { text: 'Storage', link: '/storage' },
+  { text: 'Queue', link: '/queue' },
+  { text: 'Events', link: '/events' },
+  { text: 'Mail', link: '/mail' },
+  { text: 'Scheduler', link: '/scheduler' },
+  { text: 'Metrics', link: '/metrics' },
+  { text: 'Wire', link: '/wire' },
+  { text: 'Atlas', link: '/atlas' },
+  { text: 'Env', link: '/env' },
+  { text: 'Crypt', link: '/crypt' },
+  { text: 'HTTPX', link: '/httpx' },
+  { text: 'ExecX', link: '/execx' },
+  { text: 'Console', link: '/console' },
+  { text: 'Collection', link: '/collection' },
+  { text: 'Strings', link: '/strings' },
+  { text: 'GoDump', link: '/godump' }
+])
+
+const referenceSidebar = sectionSidebar('Reference', [
+  { text: 'Overview', link: '/reference/' },
+  { text: 'CLI Reference', link: '/reference/cli' },
+  { text: 'Environment Reference', link: '/reference/env-vars' },
+  { text: 'Configuration Reference', link: '/reference/configuration' },
+  { text: 'Generated Files', link: '/reference/generated-files' },
+  { text: 'Generation Commands', link: '/reference/generation-commands' },
+  { text: 'Errors', link: '/reference/errors' }
+])
+
+const versionsSidebar = sectionSidebar('Versions', [
+  { text: 'Active development', link: '/versions/' },
+  { text: 'Latest tag v0.22.0', link: '/versions/changelog#v0220' },
+  { text: 'Changelog', link: '/versions/changelog' }
+])
+
+const aboutSidebar = sectionSidebar('About', [
+  { text: 'What is GoForj?', link: '/about' }
+])
+
+const blogSidebar = sectionSidebar('Blog', [
+  { text: 'All posts', link: '/blog/' },
+  { text: 'The Composable Stack', link: '/blog/the-composable-stack-for-building-with-go' }
+])
+
+const documentationSidebars = [
+  gettingStartedSidebar,
+  coreSidebar,
+  applicationsSidebar,
+  securitySidebar,
+  frontendSidebar,
+  dataSidebar,
+  asyncSidebar,
+  testingSidebar,
+  scenariosSidebar,
+  operationsSidebar,
+  developerToolsSidebar,
+  librariesSidebar,
+  referenceSidebar
+]
+
+// hybridSidebar keeps the documentation map visible while expanding only the
+// section the reader is currently using.
+const hybridSidebar = (activeSidebar: typeof gettingStartedSidebar) =>
+  documentationSidebars.map(([section]) => ({
+    ...section,
+    collapsed: section.text !== activeSidebar[0].text
+  }))
+
+const libraryRoutes = [
+  '/atlas',
+  '/cache',
+  '/collection',
+  '/console',
+  '/crypt',
+  '/env',
+  '/events',
+  '/execx',
+  '/godump',
+  '/httpx',
+  '/mail',
+  '/metrics',
+  '/queue',
+  '/scheduler',
+  '/storage',
+  '/strings',
+  '/web',
+  '/wire'
+]
+
+const pathScopedSidebar = {
+  '/getting-started/': hybridSidebar(gettingStartedSidebar),
+  '/cookbook': hybridSidebar(gettingStartedSidebar),
+  '/core/': hybridSidebar(coreSidebar),
+  '/applications/': hybridSidebar(applicationsSidebar),
+  '/security/': hybridSidebar(securitySidebar),
+  '/frontend/': hybridSidebar(frontendSidebar),
+  '/data/': hybridSidebar(dataSidebar),
+  '/async/': hybridSidebar(asyncSidebar),
+  '/testing/': hybridSidebar(testingSidebar),
+  '/scenarios/': hybridSidebar(scenariosSidebar),
+  '/operations/': hybridSidebar(operationsSidebar),
+  '/developer-tools/': hybridSidebar(developerToolsSidebar),
+  '/libraries/': hybridSidebar(librariesSidebar),
+  '/drivers': hybridSidebar(librariesSidebar),
+  '/reference/': hybridSidebar(referenceSidebar),
+  '/versions/': versionsSidebar,
+  '/about': aboutSidebar,
+  '/blog/': blogSidebar,
+  ...Object.fromEntries(libraryRoutes.map((route) => [route, hybridSidebar(librariesSidebar)]))
 }
 
 export default defineConfig({
@@ -1124,205 +1376,7 @@ export default defineConfig({
 
     outline: [1, 3],
 
-    sidebar: [
-      {
-        text: 'Getting Started',
-        items: [
-          { text: 'Overview', link: '/getting-started/' },
-          { text: 'Quickstart', link: '/getting-started/quickstart' },
-          { text: 'Cookbook', link: '/cookbook' },
-          { text: 'Project Structure', link: '/getting-started/project-structure' },
-          { text: 'Configuration', link: '/getting-started/configuration' },
-          { text: 'Starter Kits', link: '/getting-started/starter-kits' }
-        ]
-      },
-      {
-        text: 'Core Concepts',
-        items: [
-          { text: 'Overview', link: '/core/' },
-          { text: 'Apps', link: '/core/apps' },
-          { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
-          { text: 'Runtime Topology', link: '/core/runtime-topology' },
-          { text: 'Code Generation', link: '/core/code-generation' },
-          { text: 'Make Commands', link: '/core/make-commands' },
-          { text: 'Naming Conventions', link: '/core/naming-conventions' },
-          { text: 'Dependency Injection', link: '/core/dependency-injection' },
-          { text: 'Provider Patterns', link: '/core/provider-patterns' },
-          { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
-          { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
-          { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
-          { text: 'Named Resources', link: '/core/named-resources' },
-          { text: 'Local-First Development', link: '/core/local-first-development' }
-        ]
-      },
-      {
-        text: 'Applications',
-        items: [
-          { text: 'Overview', link: '/applications/' },
-          { text: 'HTTP Services', link: '/applications/http-services' },
-          { text: 'Routes', link: '/applications/routes' },
-          { text: 'Controllers', link: '/applications/controllers' },
-          { text: 'Middleware', link: '/applications/middleware' },
-          { text: 'Requests and Validation', link: '/applications/requests-validation' },
-          { text: 'Responses and Errors', link: '/applications/responses-errors' },
-          { text: 'Application Services', link: '/applications/services' },
-          { text: 'HTTP Clients', link: '/applications/http-clients' },
-          { text: 'Mail', link: '/applications/mail' },
-          { text: 'Commands', link: '/applications/commands' },
-          { text: 'API Index and OpenAPI', link: '/applications/api-index' }
-        ]
-      },
-      {
-        text: 'Security',
-        items: [
-          { text: 'Overview', link: '/security/' },
-          { text: 'Auth', link: '/security/auth' },
-          { text: 'Sessions and Cookies', link: '/security/sessions-cookies' },
-          { text: 'OAuth', link: '/security/oauth' },
-          { text: 'Production Hardening', link: '/security/production-hardening' }
-        ]
-      },
-      {
-        text: 'Frontend',
-        items: [
-          { text: 'Overview', link: '/frontend/' },
-          { text: 'Vue Starter Kit', link: '/frontend/vue-starter-kit' },
-          { text: 'React Starter Kit', link: '/frontend/react-starter-kit' },
-          { text: 'templ + htmx Starter Kit', link: '/frontend/templ-htmx-starter-kit' }
-        ]
-      },
-      {
-        text: 'Data and Persistence',
-        items: [
-          { text: 'Overview', link: '/data/' },
-          { text: 'Database Strategy', link: '/data/database-strategy' },
-          { text: 'Migrations', link: '/data/migrations' },
-          { text: 'Repositories', link: '/data/repositories' },
-          { text: 'Transactions', link: '/data/transactions' },
-          { text: 'Cache Patterns', link: '/data/cache-patterns' },
-          { text: 'Storage Patterns', link: '/data/storage-patterns' },
-          { text: 'Driver Selection', link: '/data/driver-selection' }
-        ]
-      },
-      {
-        text: 'Async and Workflows',
-        items: [
-          { text: 'Overview', link: '/async/' },
-          { text: 'Events versus Queues', link: '/async/events-vs-queues' },
-          { text: 'Queues', link: '/async/queues' },
-          { text: 'Jobs', link: '/async/jobs' },
-          { text: 'Workers', link: '/async/workers' },
-          { text: 'Events', link: '/async/events' },
-          { text: 'Event Subscribers', link: '/async/event-subscribers' },
-          { text: 'Scheduler', link: '/async/scheduler' },
-          { text: 'Retries and Idempotency', link: '/async/retries-idempotency' }
-        ]
-      },
-      {
-        text: 'Testing',
-        items: [
-          { text: 'Overview', link: '/testing/' },
-          { text: 'Unit Tests', link: '/testing/unit-tests' },
-          { text: 'HTTP Tests', link: '/testing/http-tests' },
-          { text: 'Command Tests', link: '/testing/command-tests' },
-          { text: 'Job and Queue Tests', link: '/testing/job-queue-tests' },
-          { text: 'Event Tests', link: '/testing/event-tests' },
-          { text: 'Cache and Storage Tests', link: '/testing/cache-storage-tests' },
-          { text: 'Integration Tests', link: '/testing/integration-tests' },
-          { text: 'Rendered App Smoke Tests', link: '/testing/rendered-app-smoke-tests' }
-        ]
-      },
-      {
-        text: 'Runnable Scenarios',
-        items: [
-          { text: 'Overview', link: '/scenarios/' },
-          { text: 'JSON API Route', link: '/scenarios/json-api-route' },
-          { text: 'Cached User Profile', link: '/scenarios/cached-user-profile' },
-          { text: 'File Upload To Storage', link: '/scenarios/file-upload-storage' },
-          { text: 'Users Created Event', link: '/scenarios/users-created-event' },
-          { text: 'Reports Generate Job', link: '/scenarios/reports-generate-job' },
-          { text: 'Reports Daily Schedule', link: '/scenarios/reports-daily-schedule' },
-          { text: 'Runtime Observability', link: '/scenarios/runtime-observability' }
-        ]
-      },
-      {
-        text: 'Operations',
-        items: [
-          { text: 'Overview', link: '/operations/' },
-          { text: 'Deployment Basics', link: '/operations/deployment-basics' },
-          { text: 'Runtime Processes', link: '/operations/runtime-processes' },
-          { text: 'HTTP Server', link: '/operations/http-server' },
-          { text: 'Queue Workers', link: '/operations/queue-workers' },
-          { text: 'Scheduler Processes', link: '/operations/scheduler-processes' },
-          { text: 'Health and Readiness', link: '/operations/health-readiness' },
-          { text: 'Logging', link: '/operations/logging' },
-          { text: 'Metrics', link: '/operations/metrics' },
-          { text: 'Inspects', link: '/operations/inspects' },
-          { text: 'Lighthouse', link: '/operations/lighthouse' },
-          { text: 'Backup and Restore', link: '/operations/backups' }
-        ]
-      },
-      {
-        text: 'Developer Tools',
-        items: [
-          { text: 'Overview', link: '/developer-tools/' },
-          { text: 'Atlas', link: '/developer-tools/atlas' },
-          { text: 'Atlas Debug Recipes', link: '/developer-tools/atlas-debug-recipes' },
-          { text: 'forj dev', link: '/developer-tools/forj-dev' },
-          { text: 'Opening Generated Files', link: '/developer-tools/editor-open' }
-        ]
-      },
-      {
-        text: 'Libraries',
-        items: [
-          { text: 'Overview', link: '/libraries/' },
-          { text: 'Web', link: '/web' },
-          { text: 'Cache', link: '/cache' },
-          { text: 'Storage', link: '/storage' },
-          { text: 'Queue', link: '/queue' },
-          { text: 'Events', link: '/events' },
-          { text: 'Mail', link: '/mail' },
-          { text: 'Scheduler', link: '/scheduler' },
-          { text: 'Metrics', link: '/metrics' },
-          { text: 'Wire', link: '/wire' },
-          { text: 'Atlas', link: '/atlas' },
-          { text: 'Env', link: '/env' },
-          { text: 'Crypt', link: '/crypt' },
-          { text: 'HTTPX', link: '/httpx' },
-          { text: 'ExecX', link: '/execx' },
-          { text: 'Console', link: '/console' },
-          { text: 'Collection', link: '/collection' },
-          { text: 'Strings', link: '/strings' },
-          { text: 'GoDump', link: '/godump' }
-        ]
-      },
-      {
-        text: 'Reference',
-        items: [
-          { text: 'Overview', link: '/reference/' },
-          { text: 'CLI Reference', link: '/reference/cli' },
-          { text: 'Environment Reference', link: '/reference/env-vars' },
-          { text: 'Configuration Reference', link: '/reference/configuration' },
-          { text: 'Generated Files', link: '/reference/generated-files' },
-          { text: 'Generation Commands', link: '/reference/generation-commands' },
-          { text: 'Errors', link: '/reference/errors' }
-        ]
-      },
-      {
-        text: 'Versions',
-        items: [
-          { text: 'Active development', link: '/versions/' },
-          { text: 'Latest tag v0.22.0', link: '/versions/changelog#v0220' },
-          { text: 'Changelog', link: '/versions/changelog' }
-        ]
-      },
-      {
-        text: 'About',
-        items: [
-          { text: 'What is GoForj?', link: '/about' }
-        ]
-      }
-    ],
+    sidebar: pathScopedSidebar,
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/goforj' }
