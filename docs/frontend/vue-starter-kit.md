@@ -9,38 +9,36 @@ The Vue starter kit is a generated frontend scaffold for apps that enable the We
 
 It gives the app a frontend project with Vue, Vite, TypeScript, routing, and styling. The development lifecycle or an explicit frontend build creates the initial `dist` artifact.
 
-## When It Appears
+## Select the Kit
 
-The starter kit selection appears during `forj new` when Web UI is enabled.
+Start with the interactive Project wizard:
 
-If Web UI is disabled, starter kit selection is skipped and the starter kit is cleared.
+```bash
+forj new
+```
 
-If the demo App is selected, the demo owns its own frontend and the starter kit is not applied.
+Enable Web UI and choose Vue when prompted. The new default app will include the Vue starter kit without requiring you to know component or starter-kit flags up front.
 
-## Generated Ownership
+The Vue kit requires Web UI. Starter kits remain optional; choose `none` when the App owns a different frontend.
 
-The Vue starter kit writes:
+If you select the demo App, the demo supplies its own frontend and the wizard skips the normal starter-kit selection.
+
+## What the Kit Creates
+
+The Vue starter kit creates:
 
 ```text
 cmd/app/frontend/
+  package.json
+  vite.config.ts
+  src/
+    App.vue
+    main.ts
+    router.ts
+    style.css
 ```
 
-For an additional app, it writes under that app's binary directory:
-
-```text
-cmd/marketplace/frontend/
-```
-
-Important files include:
-
-- `cmd/app/frontend/package.json`
-- `cmd/app/frontend/vite.config.ts`
-- `cmd/app/frontend/src/App.vue`
-- `cmd/app/frontend/src/main.ts`
-- `cmd/app/frontend/src/router.ts`
-- `cmd/app/frontend/src/style.css`
-
-The generated frontend is App-owned after it is created. Edit it like normal application code.
+These files are application source. Edit components, routes, and styles as you would in any Vue project.
 
 ## Rendering Behavior
 
@@ -50,13 +48,13 @@ Do not select the starter kit over an existing custom frontend unless replacing 
 
 ## Development
 
-Generated dev configuration can add a pre-task:
+The Vue starter kit adds a frontend dependency setup task:
 
 ```bash
 cd cmd/app/frontend && npm install
 ```
 
-and an App-owned SPA build under `dev.apps.<app>.spas` when Web UI is enabled. That lifecycle builds frontend assets before the owning App build and reruns after matching source changes.
+It also adds an App-owned SPA build under `dev.apps.<app>.spas`. That lifecycle builds frontend assets before the owning App build and reruns after matching source changes.
 
 Use:
 
@@ -66,16 +64,29 @@ forj dev
 
 for the default local App lifecycle.
 
-## Serving Assets
+## Build for Deployment
 
-When Web UI is enabled, generated `cmd/<app>/main.go` embeds that app's `frontend/dist` and registers the SPA with the HTTP runtime.
+The default deployment remains one App binary. Vue compiles into `frontend/dist`, then `forj build` embeds those assets alongside the Go application.
 
-Build frontend assets before relying on embedded production output:
+`forj dev` already performs this sequence while you work. In CI or a release build, run it explicitly:
 
 ```bash
-cd cmd/app/frontend
-npm run build
+npm --prefix cmd/app/frontend ci &&
+  npm --prefix cmd/app/frontend run build &&
+  forj build
 ```
+
+Expected result: `cmd/app/frontend/dist` contains the production frontend and `bin/app` contains the App that serves it. The default deployment does not need a separate frontend server or static-site release.
+
+## Additional Apps
+
+To create an additional app with the same frontend stack:
+
+```bash
+forj make:app marketplace --components web-api,web-ui --starter-kit vue
+```
+
+Its frontend lives in `cmd/marketplace/frontend/`.
 
 ## Next Steps
 

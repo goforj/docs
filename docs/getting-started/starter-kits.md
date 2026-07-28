@@ -34,11 +34,9 @@ The first-party starter kit choices are:
 
 Starter kits create app-scoped frontend source for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for an additional app.
 
-## Generated Ownership
+## After Creation
 
-Starter kit files are generated into the App and then become App-owned.
-
-Use the generated code as a starting point. Do not treat starter kit files as immutable framework internals.
+Starter-kit files are normal application source after creation. Use them as a starting point and change them to fit the product.
 
 ::: warning Existing frontend code
 Rendering a starter kit writes its conventional frontend files. If that location already contains customized application code, review the render before proceeding and preserve or move those changes first.
@@ -46,9 +44,7 @@ Rendering a starter kit writes its conventional frontend files. If that location
 
 ## Development Tasks
 
-Starter kits can add development setup tasks.
-
-For npm-backed starter kits, generated dev setup can include:
+`npm`-backed starter kits add frontend dependency installation to the generated development setup:
 
 ```bash
 cd cmd/app/frontend && npm install

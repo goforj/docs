@@ -110,6 +110,7 @@ The concrete schedule provider is added to the App Wire set:
 <CodeFile path="app/wire/inject_schedules_app.go">
 
 ```go
+// appScheduleSet contains application-owned schedule providers.
 var appScheduleSet = wire.NewSet(
 	ProvideAppSchedules,
 	app.NewScheduleRegistry,
@@ -127,11 +128,13 @@ var appScheduleSet = wire.NewSet(
 <CodeFile path="app/schedules.go">
 
 ```go
+// ScheduleRegistry registers scheduled work for this app.
 type ScheduleRegistry struct {
 	appSchedules  *schedules.AppSchedules
 	dailySchedule *reports.DailySchedule // [!code highlight]
 }
 
+// NewScheduleRegistry constructs the schedule registry with its injected schedules.
 func NewScheduleRegistry(
 	appSchedules *schedules.AppSchedules,
 	dailySchedule *reports.DailySchedule, // [!code highlight]
@@ -142,6 +145,7 @@ func NewScheduleRegistry(
 	}
 }
 
+// Register attaches app schedules to the scheduler.
 func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
 	if err := r.appSchedules.Register(s); err != nil {
 		return err

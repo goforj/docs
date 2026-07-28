@@ -6855,9 +6855,16 @@ body,
 .gf-make-command-tabs {
   margin: 16px 0 28px;
   overflow: hidden;
+  scroll-margin-top: calc(var(--vp-nav-height) + 24px);
   border: 1px solid var(--vp-c-divider);
   border-radius: 12px;
   background: var(--vp-c-bg-soft);
+}
+
+.gf-make-command-tabs__anchor {
+  display: block;
+  height: 0;
+  scroll-margin-top: calc(var(--vp-nav-height) + 24px);
 }
 
 .gf-make-command-tabs__list {

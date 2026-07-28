@@ -53,12 +53,15 @@ The generated type provides a stable topic and a place for the payload:
 <CodeFile path="internal/billing/invoice_paid_event.go">
 
 ```go
-const InvoicePaidEventTopic = "invoicepaid"
+// InvoicePaidEventTopic is the stable routing key for InvoicePaidEvent.
+const InvoicePaidEventTopic = "billing.invoice-paid"
 
+// InvoicePaidEvent carries the invoice-paid fact.
 type InvoicePaidEvent struct {
 	// Add event fields.
 }
 
+// Topic returns the event bus topic for InvoicePaidEvent.
 func (InvoicePaidEvent) Topic() string {
 	return InvoicePaidEventTopic
 }
@@ -74,13 +77,15 @@ Use `domain.past_tense` topics, such as `users.created` or `invoices.paid`. Revi
 
 ## Add the Payload
 
-Replace the generated placeholder with the fact subscribers need. The scaffold derives `invoicepaid` from the generated type; choose the stable domain topic before publishers or subscribers depend on it:
+Replace the generated placeholder with the fact subscribers need. The scaffold derives `billing.invoice-paid` from the grouped name; choose the stable domain topic before publishers or subscribers depend on it:
 
 ```go
+// UserRegisteredEvent carries the user registration fact.
 type UserRegisteredEvent struct {
 	UserID string `json:"user_id"`
 }
 
+// Topic returns the stable user registration topic.
 func (UserRegisteredEvent) Topic() string {
 	return "users.registered"
 }

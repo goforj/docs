@@ -13,7 +13,7 @@ Application code builds the recipient, subject, and body. Configuration selects 
 This guide explains the mail manager created with a GoForj project, its configuration, and delivery workflows. The [mail library page](/mail) covers standalone message construction and delivery, the complete API, and the driver capability matrix.
 :::
 
-## Generated Ownership
+## Application Integration
 
 Generated mail integration lives in:
 
