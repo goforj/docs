@@ -54,12 +54,12 @@ app/wire/inject_services_app.go
 package wire
 
 import (
-	"github.com/google/wire"
+	"github.com/goforj/wire"
 
 	"myapp/internal/billing"
 )
 
-var appServiceSet = wire.NewSet(
+var appSet = wire.NewSet(
 	// existing app providers...
 	billing.ProvideGateway,
 	billing.NewService,
@@ -103,7 +103,7 @@ import (
 	"myapp/internal/uploads"
 )
 
-var appServiceSet = wire.NewSet(
+var appSet = wire.NewSet(
 	// existing app providers...
 	provideUploadsDisk,
 	uploads.NewService,

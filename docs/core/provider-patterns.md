@@ -104,12 +104,12 @@ Then the app's `wire` package imports the application package and adds its provi
 package wire
 
 import (
-	"github.com/google/wire"
+	"github.com/goforj/wire"
 
 	"myapp/internal/billing"
 )
 
-var appServiceSet = wire.NewSet(
+var appSet = wire.NewSet(
 	// existing app providers...
 	billing.ProvideGateway,
 	billing.NewService,
@@ -259,14 +259,14 @@ func NewService(billing *billing.Gateway, search *search.Indexer) *Service {
 package wire
 
 import (
-	"github.com/google/wire"
+	"github.com/goforj/wire"
 
 	"myapp/internal/billing"
 	"myapp/internal/checkout"
 	"myapp/internal/search"
 )
 
-var appServiceSet = wire.NewSet(
+var appSet = wire.NewSet(
 	// existing App service providers...
 	billing.ProvideGateway,
 	search.ProvideIndexer,
