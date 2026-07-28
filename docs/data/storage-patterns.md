@@ -15,16 +15,13 @@ This page covers your App's generated disks and their configuration. The [storag
 
 ## When To Use Storage
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | The workflow produces or consumes files, blobs, exports, uploads, or remote objects. |
-| Avoid this when | The data needs relational querying, ownership rules, authorization state, or transactional updates by itself. |
-| Start with | Local or memory storage for local development and tests. |
-| Upgrade to | Object storage or a remote filesystem when more than one host or runtime needs the same files. |
+Use storage when a workflow produces or consumes files, blobs, exports, uploads, or remote objects. Start with local or memory storage for development and tests. Choose object storage or a remote filesystem when more than one host or process needs the same files.
 
-## Generated Disks
+Keep relational metadata, ownership, authorization state, and transactional updates in the database.
 
-GoForj Apps expose generated default and named disks:
+## Access Storage from Application Code
+
+Apps expose default and named disks:
 
 ```go
 app.Storage()
@@ -49,15 +46,7 @@ After adding or renaming named disks, use the normal build path:
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh storage code without a full build:
-
-```bash
-forj generate --storage
-```
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generation Commands](/reference/generation-commands) covers focused maintainer workflows.
 
 ## Good Uses
 
@@ -117,16 +106,6 @@ When a workflow creates both database rows and storage objects, decide:
 - what cleanup happens after failure
 - whether retries are safe
 - whether missing blobs are recoverable
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not store relational source-of-truth data in object paths alone.
-- Do not hardcode local filesystem paths in business services.
-- Do not import storage driver packages into normal application logic.
-- Do not assume every driver supports every capability, such as temporary URLs.
-- Do not skip path normalization for user-controlled filenames.
-:::
 
 ## Next Steps
 

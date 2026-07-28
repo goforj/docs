@@ -7,34 +7,7 @@ description: Generate framework-owned App code, choose safe extension points, an
 
 GoForj generates ordinary Go glue for commands, managers, runtime packages, drivers, accessors, and Wire providers. The result stays readable and testable without runtime reflection or hidden registration.
 
-## Choose the Project shape
-
-`forj new` writes the durable rendering contract to `.goforj.yml`:
-
-```yaml
-render:
-  starter_kit: none
-  components: [cli, web_api, database_mysql, scheduler, jobs]
-```
-
-Component selection determines which packages, commands, Wire sets, and environment entries GoForj emits. Resource components own their complete generated surface:
-
-| Component | Generated surface |
-| --- | --- |
-| Cache | Cache manager, accessors, providers, drivers, and environment entries |
-| Events | Event bus manager, accessors, providers, drivers, and environment entries |
-| File Storage | Storage manager, accessors, providers, drivers, and environment entries |
-| Background Jobs | Queue manager, job support, worker runtime, providers, drivers, and environment entries |
-
-Cache, Events, File Storage, and Background Jobs start selected in `forj new`, but each can be deselected. Database is a separate choice between MySQL, Postgres, and SQLite. Higher-level components can require another component; Auth, for example, includes Cache.
-
-Components disabled across every App do not leave placeholder resource packages behind. Shared support is derived from all App selections, while each App receives only its selected APIs and wiring.
-
-`.goforj.yml` also records the module path, starter kit choices, App development lifecycles, custom watches, Wire paths, and module replacements. Driver selection and named resource scopes remain environment configuration rather than part of this durable render contract.
-
-Depending on those inputs, GoForj also emits environment-backed configuration, driver factories, Wire injectors, route and API indexes, observability metadata, local component READMEs, and command, job, event, and scheduler surfaces.
-
-## Run generation
+## Build and Refresh Generated Code
 
 Use the normal build path when source and binary output should agree:
 
@@ -49,11 +22,9 @@ forj build
 3. API indexing
 4. `go build`
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically.
 
-Use focused generation only when you intentionally want to refresh one family without running the full build:
+Use a focused command when maintaining one component without running the full build:
 
 ```bash
 forj generate --cache
@@ -66,6 +37,35 @@ forj generate --observability
 ```
 
 Running `forj generate` without flags refreshes the available generators for the current App. An explicit focused command for a disabled component fails instead of recreating a resource outside the Project contract.
+
+Expected result: generated component files, the Wire graph, the API index, and the App binary agree with the current source and configuration. Use `forj build` when unsure which focused generator applies.
+
+## Choose the Project Shape
+
+`forj new` writes the durable rendering contract to `.goforj.yml`:
+
+```yaml
+render:
+  starter_kit: none
+  components: [cli, web_api, database_mysql, scheduler, jobs]
+```
+
+Component selection determines which packages, commands, Wire sets, and environment entries GoForj creates:
+
+| Component | Creates |
+| --- | --- |
+| Cache | Cache manager, accessors, providers, drivers, and environment entries |
+| Events | Event bus manager, accessors, providers, drivers, and environment entries |
+| File Storage | Storage manager, accessors, providers, drivers, and environment entries |
+| Background Jobs | Queue manager, job support, worker runtime, providers, drivers, and environment entries |
+
+Cache, Events, File Storage, and Background Jobs start selected in `forj new`, but each can be deselected. Database is a separate choice between MySQL, Postgres, and SQLite. Higher-level components can require another component; Auth, for example, includes Cache.
+
+Components disabled across every App do not leave placeholder resource packages behind. Shared support is derived from all App selections, while each App receives only its selected APIs and wiring.
+
+`.goforj.yml` also records the module path, starter kit choices, App development lifecycles, custom watches, Wire paths, and module replacements. Driver selection and named resource scopes remain environment configuration rather than part of this durable render contract.
+
+Depending on those inputs, GoForj also creates environment-backed configuration, driver factories, Wire injectors, route and API indexes, observability metadata, local component READMEs, commands, jobs, events, and schedules.
 
 ## Use generated resources
 
@@ -82,9 +82,9 @@ app.Queues()
 app.DB()
 ```
 
-Managers are App surfaces, not dependency injection concepts. Wire can construct them, but backend connections should happen at the appropriate lifecycle or first-use boundary rather than making manager construction expensive.
+Managers are app APIs, not dependency injection concepts. Wire can construct them, but backend connections should happen at the appropriate lifecycle or first-use boundary rather than making manager construction expensive.
 
-Several primitives derive named resources from environment scopes:
+Several components derive named resources from environment configuration:
 
 ```text
 CACHE_DRIVER=memory
@@ -129,7 +129,7 @@ The same distinction applies to the other resource families. Do not select a run
 
 ## Choose a safe extension point
 
-Generated App files have three ownership models:
+Files created by GoForj have three ownership models:
 
 | Type | How to treat it |
 | --- | --- |
@@ -141,7 +141,7 @@ Check file headers, generated comments, and local component READMEs when ownersh
 
 Common render-once extension points include:
 
-| Concern | App-owned surface |
+| Concern | App-owned file |
 | --- | --- |
 | Startup and shutdown hooks | `app/lifecycle.go` |
 | Route composition | `app/routes.go` |
@@ -165,7 +165,7 @@ func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
 s.Every(30).Seconds().Name("monitor:poll").Do(s.monitorCheckJob.RunScheduledPoll)
 ```
 
-Controllers belong in feature packages while `app/routes.go` composes their routes. Job handlers and event subscribers use their generated registration surfaces and should be visible before worker or event runtimes start.
+Controllers belong in feature packages while `app/routes.go` combines their routes. Job handlers and event subscribers use their registration files and should be visible before worker or event runtimes start.
 
 Operator-facing translation can remain in runtime-specific Lighthouse files when the concern is route discovery, schedule control payloads, cache or storage operator commands, CLI exposure, or UI metadata. It does not need to move into low-level runtime files merely to reduce file count.
 
@@ -180,7 +180,7 @@ Change GoForj templates or generators when:
 
 Change only your Project when the behavior is application-specific.
 
-## Regenerate after input changes
+## Inputs That Require a Rebuild
 
 Refresh generated code after changing:
 
@@ -189,8 +189,6 @@ Refresh generated code after changing:
 - named cache, storage, queue, event, mail, or database scopes
 - provider sets or generated Wire inputs
 - observability App and runtime configuration
-
-Use `forj build` when unsure.
 
 ## Common Mistakes
 

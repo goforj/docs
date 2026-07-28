@@ -106,16 +106,6 @@ If metrics or Lighthouse are disabled, use the startup line plus a safe due run 
 - Logs, metrics, Inspects, and Lighthouse access follow the deployment's retention and security policy.
 - Startup, one safe due run, and graceful `SIGTERM` shutdown are verified after release.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not put large business workflows in the scheduler registry.
-- Do not run duplicate scheduler processes accidentally.
-- Do not rely on schedule names alone to prevent overlapping runs.
-- Do not use anonymous callbacks for important production schedules.
-- Do not treat schedules as queues.
-:::
-
 ## Next Steps
 
 - [Scheduler](/async/scheduler)

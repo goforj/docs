@@ -9,14 +9,33 @@ GoForj uses two main configuration layers: project configuration and runtime env
 
 `.goforj.yml` describes the Project shape and local development lifecycles. `.env` files describe how each App behaves when it starts.
 
+## Change One Runtime Setting
+
+For the smallest useful configuration change, update the HTTP port in `.env`:
+
+```dotenv
+API_HTTP_PORT=3001
+```
+
+Start the API:
+
+```bash
+forj api
+```
+
+In another terminal, request its health endpoint:
+
+```bash
+curl http://localhost:3001/-/health
+```
+
+Expected result: the API listens on port `3001` and the health request succeeds. This edit needs no render or regeneration because `API_HTTP_PORT` is runtime configuration. Restart a running App process after changing its environment.
+
 ## When To Change Configuration
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | You need to change generated shape, runtime behavior, drivers, resource names, ports, secrets, or deployment defaults. |
-| Avoid this when | You are trying to express business behavior that belongs in services, routes, jobs, schedules, or lifecycle hooks. |
-| Start with | `.env` for local runtime behavior and `.goforj.yml` for App shape. |
-| Upgrade to | Environment-specific files, process environment, secret management, and build-time defaults or overrides for packaged deployments. |
+Use `.env` for local runtime behavior and `.goforj.yml` for Project and App shape. Configuration is the right place for drivers, resource names, ports, secrets, and deployment defaults; business behavior belongs in services, routes, jobs, schedules, or lifecycle hooks.
+
+Packaged deployments can layer environment-specific files, process environment, secret management, and build-time defaults or overrides onto those same configuration boundaries.
 
 ## Configuration Layers
 
@@ -161,22 +180,7 @@ forj build
 
 `forj build` runs generation, Wire, API indexing, and `go build`.
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you, so saving relevant configuration or source changes flows through the complete build.
-:::
-
-Use focused generation only when you intentionally want to refresh one generated surface without running the full build:
-
-```bash
-forj generate --cache
-forj generate --storage
-forj generate --mail
-forj generate --queue
-forj generate --events
-forj generate --db
-```
-
-Only enabled components participate. An explicit focused command for a disabled component fails with a message that points back to `.goforj.yml`.
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. The [Generation Commands](/reference/generation-commands) reference covers focused maintainer commands and disabled-component behavior.
 
 ## Generated Fallbacks
 
@@ -233,16 +237,6 @@ forj build --env-overrides APP_ENV=production
 Defaults apply only when a key is unset. Overrides force the value.
 
 These options are useful for packaging, but most local development should use `.env` files and process environment variables.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not add a runtime driver without also including it in `*_SUPPORTED_DRIVERS` when generated code needs that driver compiled in.
-- Do not edit generated managers by hand to add resources. Change environment configuration and regenerate.
-- Do not put business behavior in `.goforj.yml`; it is a project and development configuration file.
-- Do not persist queue selection under `render`; change `QUEUE_DRIVER` and `QUEUE_SUPPORTED_DRIVERS` in the environment.
-- Do not use cache as durable business storage.
-:::
 
 ## Next Steps
 

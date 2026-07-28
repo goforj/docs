@@ -15,12 +15,9 @@ This guide follows events through a GoForj App's publishers, subscribers, and co
 
 ## When To Use Events
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | Something happened and one or more subscribers may react to that fact. |
-| Avoid this when | The work needs durability, retries, queue selection, delays, timeout policy, or worker scaling. |
-| Start with | `inproc` events for local same-process fan-out. |
-| Upgrade to | Transport-backed events when subscribers must run in other processes or hosts. |
+Use an event when something happened and one or more subscribers may react to that fact. Start with `inproc` for same-process fan-out. Choose a transport-backed driver when subscribers must run in other processes or hosts.
+
+Use a queue instead when the work needs durability, retries, delays, timeout policy, queue selection, or independently scaled workers.
 
 ## Generate an Event
 
@@ -128,25 +125,7 @@ After changing supported drivers or named event buses, use the normal build path
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh events without a full build:
-
-```bash
-forj generate --events
-```
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not use events as durable job transport.
-- Do not assume in-process events are visible across processes.
-- Do not publish events for every private method call.
-- Do not use unstable topic names.
-- Do not make subscribers silently swallow important failures.
-:::
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generation Commands](/reference/generation-commands) covers focused maintainer workflows.
 
 ## Next Steps
 

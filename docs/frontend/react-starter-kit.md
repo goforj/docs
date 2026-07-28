@@ -92,14 +92,8 @@ Use normal React component and route tests for App-owned behavior. Verify backen
 
 Run a production frontend build before shipping changes that affect routing, assets, or environment resolution.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not treat starter files as framework-owned after generation.
-- Do not put server secrets in `FRONTEND_*` variables.
-- Do not hard-code the default App port when named Apps can resolve different ports.
-- Do not store generated auth tokens in browser local storage.
-- Do not rerender a starter kit over a custom frontend unless replacement is intentional.
+::: warning Rendering again
+Rendering the React starter kit writes its conventional frontend files. Review and preserve customized files before rerendering the kit into an existing app.
 :::
 
 ## Next Steps

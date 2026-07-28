@@ -5,9 +5,9 @@ description: How HTTP, workers, scheduler, and combined runtime processes start 
 
 # Runtime Processes
 
-Runtime processes are the long-running execution surfaces of an App.
+Runtime processes are the long-running commands supervised in production.
 
-Each runtime starts through a command and participates in App startup and shutdown.
+This page owns the deployable command shapes, process separation, and shutdown behavior. For the conceptual difference between an app and its runtime roles, read [Runtime Topology](/core/runtime-topology).
 
 ## Common Processes
 
@@ -37,7 +37,7 @@ forj marketplace migrate
 forj marketplace make:job sync-catalog
 ```
 
-## Standalone versus Distributed
+## Choose the Processes to Supervise
 
 Topology is selected by the commands the process manager starts; it does not require a build flag or a change to App code.
 
@@ -50,7 +50,7 @@ Use the combined command in the process table for one standalone service. Distri
 
 Driver selection is separate from process topology. If API and worker processes share cache, queue, events, or files, configure backends that cross process boundaries. Splitting commands does not make process-local drivers shared or make jobs correct without idempotency and backend planning.
 
-## Combined Runtime
+## Supervise the Combined Runtime
 
 `run` starts enabled runtimes together. A runtime-capable generated binary selects `run` when launched without arguments, so the bare and explicit forms are equivalent.
 
@@ -58,7 +58,7 @@ The runtime host cancels sibling runtimes when one fails and returns the first r
 
 Explicit commands still win: `./bin/app api` starts only HTTP rather than selecting `run`. CLI-only App binaries retain root help behavior because they do not have a standalone runtime.
 
-## Split Runtime
+## Supervise Split Runtimes
 
 Split runtime commands are useful when production needs:
 
@@ -80,19 +80,10 @@ QUEUE_SHUTDOWN_TIMEOUT=10s
 SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
 ```
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not start long-running work from constructors.
-- Do not make business behavior depend on process topology.
-- Do not assume worker shutdown is instant when jobs are in flight.
-- Do not scale scheduler processes like stateless HTTP processes without locks or singleton control.
-- Do not dismiss standalone topology when one supervised deployment unit is the right operational boundary.
-- Do not expect distributed topology alone to provide cross-process state or job correctness.
-:::
+Constructors should build dependencies, not start long-running work. Keep business behavior independent of process topology, allow workers time to finish in-flight jobs, and use locking or singleton control before running multiple schedulers. Splitting processes does not provide shared state or job correctness by itself.
 
 ## Next Steps
 
-- [Runtime Topology](/core/runtime-topology)
+- [Deployment Basics](/operations/deployment-basics)
 - [Queue Workers](/operations/queue-workers)
 - [Scheduler Processes](/operations/scheduler-processes)

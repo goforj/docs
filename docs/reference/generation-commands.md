@@ -5,7 +5,7 @@ description: Lookup reference for GoForj code generation commands.
 
 # Generation Commands
 
-Generation refreshes framework-owned App code and derived files.
+This page is a command and flag lookup for refreshing framework-owned code and derived files.
 
 Use `forj build` when unsure.
 
@@ -26,11 +26,9 @@ Runs:
 
 The normal regeneration path is `forj build`.
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically.
 
-Use focused generation when you intentionally want to refresh one generated surface without a full build:
+Use focused generation when you need to refresh one component without a full build:
 
 ```bash
 forj build:api-index
@@ -53,68 +51,13 @@ Availability comes from the selected components in `.goforj.yml`. Cache, Storage
 forj marketplace build:api-index --strict
 ```
 
-## App Generation
+## Creation and Removal Workflows
 
-Create a named app when the Project needs another runnable boundary:
+This reference does not duplicate each make command's files, injected code, and removal behavior:
 
-The [Add a Named App](/core/apps#add-a-named-app) workflow shows usage, generated files, and representative composition code in the standard tabbed format.
-
-```bash
-forj make:app marketplace
-forj make:app billing --components web-api,jobs --dev-run run
-forj make:app backstage --components web-api,scheduler --starter-kit vue
-forj make:app customer-portal --without web-ui --skip-wire
-```
-
-These are alternative creation shapes. Each App name can be created only once.
-
-`make:app` creates the app entrypoint and composition files:
-
-```text
-cmd/marketplace/main.go
-app/marketplace/
-app/marketplace/wire/
-```
-
-It also records App component choices under `apps` in `.goforj.yml`, writes App-scoped local env defaults, and refreshes generated runtime App metadata.
-
-The interactive wizard asks whether `forj dev` should run the App. Runtime-capable wizard Apps default to `run`; CLI-only or disabled Apps remain absent from `dev.apps`. For noninteractive creation, pass `--dev-run run` explicitly when the App should participate in the dev lifecycle.
-
-Remove conventional generated app files with:
-
-```bash
-forj make:app marketplace --remove
-```
-
-Removal is conservative. It removes conventional app files and metadata, but it does not delete app migrations or unknown files inside the command package.
-
-## Make Command Removal
-
-Use `--remove` when you need to undo a resource created by a make command:
-
-The [Make Command Reference](/core/make-commands#command-reference) shows creation and removal beside each resource's generated files and wiring changes.
-
-```bash
-forj make:controller reports --remove
-forj make:command reports:sync --remove
-forj make:job reports:generate --remove
-forj make:schedule reports:daily --remove
-forj make:event reports:report-generated --remove
-forj make:subscriber reports:report-generated --remove
-forj make:model reports --package reports --remove
-forj make:migration create_reports --remove
-forj make:queue reports --remove
-```
-
-Pass the same placement or resource options you used during creation, such as `-d`, `--package`, `--connection`, or `--bus`.
-
-Use `--dry-run` to preview removal without writing files:
-
-```bash
-forj make:job reports:generate --remove --dry-run
-```
-
-After removal, run `forj build` to catch any remaining App references to deleted types or resources.
+- [Add a Named App](/core/apps#add-a-named-app) covers `make:app`.
+- [Make Commands](/core/make-commands) covers controllers, commands, jobs,
+  schedules, events, subscribers, models, migrations, and queues.
 
 ## Render
 
@@ -122,7 +65,7 @@ After removal, run `forj build` to catch any remaining App references to deleted
 
 Use it intentionally. Many App changes only need `forj build`.
 
-## When to regenerate
+## When to Regenerate
 
 Generated code should be refreshed after changing:
 

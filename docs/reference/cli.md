@@ -38,7 +38,7 @@ Run `forj <command> --help` for the exact command metadata installed with your C
 | `forj build` | `--timings`, `--api-index-strict`, `--env-defaults`, `--env-overrides`, `--profile`, `--top`, and `--root`; remaining arguments pass through to `go build`. |
 | `forj build:api-index` | `--strict` rejects warnings and errors; `--tags` selects comma-separated Go build tags. |
 | `forj run` | `--timings`, `--api-index-strict`, and `--root`; remaining arguments pass to the compiled App. |
-| `forj generate` | `--storage`, `--cache`, `--mail`, `--queue`, `--events`, `--db`, and `--observability` select focused generated surfaces. With no flags, all available generators run. |
+| `forj generate` | `--storage`, `--cache`, `--mail`, `--queue`, `--events`, `--db`, and `--observability` select individual components. With no flags, all available generators run. |
 | `forj make:app` | `--components`, `--without`, `--starter-kit`, `--help-format`, `--dev-run`, `--skip-wire`, and `--remove`. |
 | `forj project:describe` | `--json` is required and prints the versioned machine contract. |
 

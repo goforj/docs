@@ -77,15 +77,6 @@ QUEUE_DRIVER=sync QUEUE_SUPPORTED_DRIVERS=sync,workerpool go test ./internal/job
 
 Expected result: the package reports `ok` without a broker. Add a worker-runtime test only when handler registration, delivery, retries, lifecycle, or shutdown is the behavior under test.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not test all job behavior only through a running worker.
-- Do not swallow handler errors in tests.
-- Do not assume in-process drivers have the same durability as broker-backed drivers.
-- Do not make test payloads untyped when production payloads are typed.
-:::
-
 ## Next Steps
 
 - [Jobs](/async/jobs) explains handler shape.

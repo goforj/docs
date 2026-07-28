@@ -1,20 +1,20 @@
 ---
 title: Runtime Topology
-description: Understand app and runtime process shapes in a GoForj Project.
+description: Understand when an app runs HTTP, workers, and schedules together or in separate processes.
 ---
 
 # Runtime Topology
 
-Runtime topology describes how an App's runtimes are hosted: together in one process or split across explicit commands.
+Runtime topology describes whether an app hosts its long-running work in one process or divides that work across independently supervised processes.
 
 Apps and runtimes are different:
 
 - an App is the runnable boundary, such as `app` or `marketplace`
 - a Runtime is a process role inside an App, such as HTTP, jobs, or scheduler
 
-## Local Default
+## Start with One Process
 
-The default local path is:
+The default local path keeps HTTP, workers, and the scheduler together:
 
 ```bash
 forj app
@@ -28,45 +28,20 @@ For a named app:
 forj marketplace app
 ```
 
-## Split Runtimes
+This is one app with several runtime roles. It is usually the simplest topology for local development and deployments that do not need independent scaling.
 
-Run a specific runtime when you want separate process boundaries:
+## Split Only the Process Boundary
 
-```bash
-forj api
-forj worker
-forj scheduler
-```
+Splitting the app gives HTTP, workers, and the scheduler separate process boundaries. The services, jobs, routes, and schedules do not change. Only the commands started by the process supervisor change.
 
-For a named app:
+Use split processes when:
 
-```bash
-forj marketplace api
-forj marketplace worker
-forj marketplace scheduler
-```
+- HTTP and workers scale independently
+- the scheduler must run as a singleton
+- workers need separate resource limits
+- restart or supervision policy differs by runtime
 
-The application behavior should not change when you split runtimes. Only process topology changes.
-
-## Built Binaries
-
-Deployment docs use built binaries:
-
-```bash
-./bin/app
-./bin/app api
-./bin/app worker
-./bin/app scheduler
-```
-
-For runtime-capable Apps, the bare binary defaults to `run` without a build flag and is equivalent to `./bin/app run`. Explicit commands still take precedence, and CLI-only binaries retain root help behavior when launched without a command.
-
-Named app binaries follow the App name:
-
-```bash
-./bin/marketplace api
-./bin/marketplace worker
-```
+[Runtime Processes](/operations/runtime-processes) shows the production commands, shutdown budgets, and supervision concerns for each process.
 
 ## Runtime Defaults
 
@@ -96,29 +71,11 @@ Operational data should preserve:
 
 Metrics scrape labels currently include `app`, `process`, `service`, and `environment`.
 
-## Choosing a topology
+## Choose Shared Infrastructure Deliberately
 
-Use the combined runtime first for:
+Process topology does not change a process-local driver into shared infrastructure. When API and worker processes must share queues, cache values, events, or files, select a backend that crosses the process boundary.
 
-- local development
-- onboarding
-- simple deployments
-
-Use split runtimes when:
-
-- HTTP and workers scale independently
-- scheduler should run as a singleton
-- queue workers need separate resource limits
-- process supervision differs by runtime
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not create a named app just to split HTTP from workers.
-- Do not make business logic depend on whether runtimes run together or separately.
-- Do not expect process-local drivers to become shared infrastructure in distributed topology.
-- Do not run multiple scheduler replicas unless the scheduler and deployment are configured for it.
-:::
+A named app is a separate runnable application boundary, not a mechanism for splitting one app's HTTP and worker processes. Keep business behavior independent of topology, and run multiple scheduler replicas only when locking or singleton control makes that safe.
 
 ## Next Steps
 

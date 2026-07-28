@@ -17,16 +17,15 @@ Structure:
 1. `# Feature Title`
 2. short definition
 3. when to use it
-4. where it lives in a generated App
+4. which file or package owns it
 5. golden-path example
 6. configuration
 7. testing
 8. operations and lifecycle
 9. advanced usage
-10. common mistakes
-11. next steps
+10. next steps
 
-Feature pages should teach the App-level workflow before package reference or driver details.
+Feature pages should teach the app workflow before package reference or driver details. Place consequential warnings beside the step, command, or configuration they affect.
 
 ### Concept Page
 
@@ -40,10 +39,9 @@ Structure:
 4. how it fits into a GoForj app
 5. golden path
 6. operational notes
-7. common mistakes
-8. next steps
+7. next steps
 
-Concept pages should be short enough to read in one sitting.
+Concept pages should be short enough to read in one sitting. Place consequential warnings beside the relevant decision.
 
 ### Task Page
 
@@ -106,7 +104,7 @@ Structure:
 
 1. `# Operations Topic`
 2. what process or runtime boundary is involved
-3. command or deployment shape
+3. command or deployment layout
 4. startup behavior
 5. shutdown behavior
 6. health, readiness, logs, metrics, and inspects
@@ -118,7 +116,7 @@ Operations pages should be explicit and practical. They should not read like inf
 
 ### Decision Page
 
-Use a decision page when users must choose between drivers, primitives, or patterns.
+Use a decision page when users must choose between drivers, capabilities, or patterns.
 
 Structure:
 
@@ -173,10 +171,10 @@ Examples must:
 - compile when presented as complete files
 - use idiomatic Go
 - include `context.Context` where execution may block or cross process boundaries
-- handle errors in production-shaped examples
+- handle errors in realistic examples
 - avoid hidden globals
-- match generated app structure when teaching GoForj apps
-- avoid low-level `net/http` unless the page is about adapters, primitives, or standard library interop
+- match current project structure when teaching GoForj apps
+- avoid low-level `net/http` unless the page is about adapters, libraries, or standard library interop
 - use stable, realistic names
 
 Examples may omit error handling only in tiny API reference fragments where the omission is obvious and not the behavior being taught.
@@ -209,7 +207,7 @@ Prefer:
 forj route:list
 ```
 
-For rendered App binaries, prefer production-shaped commands:
+For app binaries, prefer deployment-ready commands:
 
 ```bash
 ./bin/app
@@ -218,7 +216,7 @@ For rendered App binaries, prefer production-shaped commands:
 ./bin/app scheduler
 ```
 
-Use `forj app`, `forj api`, `forj worker`, and `forj scheduler` when documenting development commands inside a generated App. Use `forj run <command>` only when the page is specifically explaining the explicit App-command path or collision escape hatch.
+Use `forj app`, `forj api`, `forj worker`, and `forj scheduler` when documenting development commands inside an app. Use `forj run <command>` only when the page is specifically explaining the explicit app-command path or collision escape hatch.
 
 When an operations page lists common runtime processes, show both forms side by side:
 
@@ -229,7 +227,7 @@ When an operations page lists common runtime processes, show both forms side by 
 | Queue workers | `./bin/app worker` | `forj worker` |
 | Scheduler | `./bin/app scheduler` | `forj scheduler` |
 
-When documenting bare binaries, state that runtime-capable Apps default to `run` without requiring a build flag. Explicit commands still take precedence, and CLI-only binaries retain root help behavior when no command is supplied.
+When documenting bare binaries, state that runtime-capable apps default to `run` without requiring a build flag. Explicit commands still take precedence, and CLI-only binaries retain root help behavior when no command is supplied.
 
 When showing Go commands in internal maintainer docs, use the GoForj cache environment:
 
@@ -253,25 +251,25 @@ Use VitePress native custom containers for callouts:
 
 ```md
 ::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
+When this app is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
 :::
 ```
 
 The current docs theme styles `info` blocks as the standard calm callout. Prefer this for workflow context such as automatic build behavior. Keep the title short and useful.
 
-For repeated `Common Mistakes` sections, keep the `## Common Mistakes` heading for outline/search stability. If extra contrast is needed, wrap the list in a native callout under the heading and test the pattern on one page before applying globally.
+Place consequential warnings beside the command, configuration, or decision they affect. Do not add a templated `Common Mistakes` section to every page. Use a dedicated mistakes or troubleshooting section only when the items form a coherent reference that readers will intentionally seek.
 
 ## Conceptual Layering
 
 Every major page should follow this order:
 
 1. application-level model
-2. generated app extension point
-3. primitive contract
+2. file or package developers edit
+3. application-facing contract
 4. driver or adapter implementation
 5. low-level implementation detail
 
-Do not start with driver constructors when the reader needs to understand how the App uses the primitive.
+Do not start with driver constructors when the reader first needs to understand how the app uses the capability.
 
 Library pages are the exception: when the page is explicitly about standalone package use, direct constructors and driver imports are appropriate.
 
@@ -281,7 +279,7 @@ Major feature pages should generally flow in this order:
 
 1. What it is.
 2. When to use it.
-3. Where it lives in a generated App.
+3. Which file or package owns it.
 4. The simplest correct local-first example.
 5. How configuration selects behavior.
 6. How dependency injection wires it.
@@ -296,7 +294,7 @@ This order is the default because it matches how developers build confidence: co
 
 Beginner pages should show:
 
-- the generated file to edit
+- the file to edit and whether regeneration can overwrite it
 - the default command to run
 - the normal local driver
 - the normal test path
@@ -370,7 +368,7 @@ Avoid:
 - nested lists unless no alternative is clear
 - screenshots as the only source of truth
 
-Prefer maintainable illustrations built from Markdown, tables, ASCII diagrams, or CSS/Vue components before static screenshots. Screenshots are acceptable when they show a real visual surface that cannot be explained otherwise, but they should not be the only documentation of a workflow.
+Prefer maintainable illustrations built from Markdown, tables, ASCII diagrams, or CSS/Vue components before static screenshots. Screenshots are acceptable when they show a real UI that cannot be explained otherwise, but they should not be the only documentation of a workflow.
 
 For marketing/showcase pages, use Markdown frontmatter to opt out of normal docs chrome when appropriate:
 
@@ -415,7 +413,7 @@ Each group should include:
 A normal workflow doc should feel like:
 
 1. "Here is the concept."
-2. "Here is where it lives in a GoForj app."
+2. "Here is the file or package you work in."
 3. "Here is the default code."
 4. "Here is how to run it."
 5. "Here is how to test or inspect it."
@@ -425,7 +423,7 @@ If a page cannot be summarized this way, it is probably too broad.
 
 ## Cross-Linking
 
-Cross-link from framework workflow docs to Libraries for standalone primitive detail.
+Cross-link from framework workflow docs to Libraries for standalone package detail.
 
 Do not force users to infer app guidance from README-style library pages.
 
@@ -443,7 +441,7 @@ Before publishing a page, verify:
 - The page teaches one main thing.
 - The first example is the golden path.
 - Terminology matches `terminology.md`.
-- Examples match generated app structure.
+- Examples match current project structure.
 - Low-level APIs are not shown too early.
 - Driver tradeoffs are honest.
 - There is a clear verification step.

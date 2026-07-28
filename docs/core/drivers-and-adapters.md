@@ -5,7 +5,7 @@ description: The difference between interchangeable infrastructure drivers and i
 
 # Drivers and Adapters
 
-Drivers and adapters let GoForj Apps use different infrastructure without rewriting application logic.
+Drivers and adapters let an app use different infrastructure without rewriting application logic.
 
 They are related, but they are not the same concept.
 
@@ -24,8 +24,8 @@ The application-facing contract stays stable. The backend can change through con
 
 ```mermaid
 flowchart LR
-  service["application service"] --> contract["GoForj primitive contract"]
-  contract --> manager["generated manager/accessor"]
+  service["application service"] --> contract["cache, queue, storage, or event API"]
+  contract --> manager["app manager or named accessor"]
   manager --> driver["selected driver"]
   driver --> backend["backend infrastructure"]
 ```
@@ -42,45 +42,15 @@ Examples:
 
 Adapters translate boundaries. Drivers select backends.
 
-## Compile-Time Support
+## Where Selection Happens
 
-GoForj Apps compile only the drivers they support.
+An app compiles support for a bounded set of drivers, then configuration chooses which supported driver each environment uses. This keeps backend dependencies out of binaries that do not need them and makes unsupported selections fail fast.
 
-Examples:
-
-```text
-CACHE_SUPPORTED_DRIVERS=memory,redis
-STORAGE_SUPPORTED_DRIVERS=local,s3
-QUEUE_SUPPORTED_DRIVERS=workerpool,redis
-EVENTS_SUPPORTED_DRIVERS=inproc,nats
-DB_SUPPORTED_DRIVERS=sqlite,postgres
-```
-
-This keeps binaries lean and avoids importing unused backend dependencies.
-
-## Runtime Selection
-
-Runtime driver selection happens through default and named resource variables:
-
-```text
-CACHE_DRIVER=memory
-CACHE_SESSIONS_DRIVER=redis
-
-STORAGE_DRIVER=local
-STORAGE_UPLOADS_DRIVER=s3
-
-QUEUE_DRIVER=workerpool
-QUEUE_CRITICAL_DRIVER=redis
-
-EVENTS_DRIVER=inproc
-EVENTS_AUDIT_DRIVER=nats
-```
-
-The selected runtime driver must be included in the supported driver list. If generation and runtime configuration disagree, the App should fail fast.
+[Driver Selection](/data/driver-selection) owns the environment variables, local defaults, production choices, and migration workflow. The [Drivers catalog](/drivers) owns the complete availability matrix.
 
 ## Application Boundary
 
-Business code should depend on App-facing contracts and generated accessors.
+Business code should depend on app-facing APIs and named accessors.
 
 Prefer:
 
@@ -93,38 +63,11 @@ app.Events().Audit()
 
 Avoid importing backend driver packages directly in business services unless the page is explicitly about custom wiring or advanced infrastructure work.
 
-## Choosing Drivers
-
-Start local:
-
-- memory or file cache
-- local or memory storage
-- sync or workerpool queue
-- in-process events
-- SQLite when the App uses SQL locally
-
-Move to distributed drivers when the runtime requirement exists:
-
-- shared state across processes
-- durable background work
-- external object storage
-- independent scaling
-- managed cloud infrastructure
-
-Do not introduce distributed infrastructure just to make a first example look production-sized.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not call every integration an adapter.
-- Do not call every backend a provider.
-- Do not change business code when only the backend changes.
-- Do not document driver matrices in framework workflow pages when the library page already owns them.
-- Do not compile every possible driver into every App by default.
-:::
+Start with the local driver that satisfies the current runtime boundary. Choose shared or durable infrastructure when processes must coordinate, work must survive restarts, or the deployment requires managed services. Changing that backend should not require changing the consuming service.
 
 ## Next Steps
 
 - [Named Resources](/core/named-resources) explains default and named accessors.
-- [Generated Components](/core/code-generation) explains supported driver generation.
+- [Driver Selection](/data/driver-selection) explains how to choose and migrate drivers.
+- [Drivers](/drivers) lists the available backends.
 - [Libraries](/libraries/) contains package-level driver details.

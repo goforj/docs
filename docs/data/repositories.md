@@ -71,16 +71,6 @@ Repository tests can use local database drivers such as SQLite when behavior is 
 
 Use driver-specific integration tests when SQL behavior depends on MySQL or Postgres.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not query the database from controllers.
-- Do not make repositories depend on HTTP or CLI types.
-- Do not import database driver packages into normal repository code.
-- Do not hide retries, job dispatch, or event publication in repositories unless the repository explicitly owns that persistence side effect.
-- Do not use cache as a repository substitute.
-:::
-
 ## Next Steps
 
 - [Transactions](/data/transactions) explains consistency boundaries.

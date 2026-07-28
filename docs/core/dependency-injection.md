@@ -139,5 +139,5 @@ Wire constructs services, controllers, managers, and registries. It does not sta
 ## Next Steps
 
 - [Provider Patterns](/core/provider-patterns) compares practical construction shapes.
-- [Wiring Recipes](/core/wiring-recipes) maps other App surfaces to their provider files.
+- [Wiring Recipes](/core/wiring-recipes) maps routes, commands, jobs, and other app dependencies to their provider files.
 - [Reading Wire Errors](/core/reading-wire-errors) covers common diagnostics.

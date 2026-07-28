@@ -13,16 +13,79 @@ Controllers should translate requests into application service calls and transla
 
 The complete Users example lives in [JSON API Route](/scenarios/json-api-route). It starts with `forj make:controller users`, then shows the generated location, service provider, service test, build, route listing, and `curl` result. Reuse that flow rather than copying it into each HTTP page.
 
-## Generate, Wire, and Verify
+## Generate and Implement
+
+Create the controller in its owning package:
+
+```bash
+forj make:controller users
+```
+
+Replace the starter response with a thin HTTP adapter around an application service:
+
+```go
+package users
+
+import (
+	"net/http"
+
+	"github.com/goforj/web"
+)
+
+type Controller struct {
+	service *Service
+}
+
+func NewController(service *Service) *Controller {
+	return &Controller{service: service}
+}
+
+func (c *Controller) Routes() []web.Route {
+	return []web.Route{
+		web.NewRoute(http.MethodGet, "/users/:id", c.Show),
+	}
+}
+
+func (c *Controller) Show(ctx web.Context) error {
+	user, err := c.service.Find(ctx.Context(), ctx.Param("id"))
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, user)
+}
+```
+
+For a redirect response, use the same controller boundary and return `ctx.Redirect(http.StatusFound, target)`. Response status and location belong to the HTTP adapter; deciding where the workflow should send a user can remain service-owned.
+
+Make sure the service constructor is wired from `app/wire/inject_services_app.go`:
+
+```go
+var appSet = wire.NewSet(
+	// existing framework and app providers...
+	users.NewService,
+)
+```
+
+The make command wires the controller; the service provider still belongs in the App services set.
+
+## Verify the Result
+
+Run the full verification after the implementation and service provider are in place:
+
+```bash
+forj build
+go test ./...
+forj route:list
+```
+
+Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes the controller path. Start `forj api` and use the scenario's `curl` command to prove the public response.
+
+For a named App, run `forj marketplace route:list` after the build to verify its routes.
+
+## Generated Internals and Advanced Placement
 
 <MakeCommandTabs name="controller">
 <template #usage>
-
-Create a controller for the default App:
-
-```bash
-forj make:controller Users
-```
 
 Use grouped names to colocate controllers with their package:
 
@@ -110,63 +173,6 @@ func ProvideRoutes(
 
 In the normal flow, you do not hand-edit the controller provider set just to make the new controller constructible. Use `-d` only when you intentionally want to override the package directory.
 
-If the controller depends on a service, make sure the service constructor is wired from `app/wire/inject_services_app.go`. The make command wires the controller; the service provider still belongs in the app services set.
-
-```go
-var appSet = wire.NewSet(
-	// existing framework and app providers...
-	users.NewService,
-)
-```
-
-Run the full verification after the service provider is added:
-
-```bash
-forj build
-go test ./...
-forj route:list
-```
-
-Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes the controller path. Start `forj api` and use the scenario's `curl` command to prove the public response.
-
-For a named app, run `forj marketplace route:list` after the build to verify its routes.
-
-## Implement the Controller
-
-Replace the generated starter response with a thin HTTP adapter around an application service:
-
-```go
-package users
-
-import (
-	"net/http"
-
-	"github.com/goforj/web"
-)
-
-type Controller struct {
-	service *Service
-}
-
-func NewController(service *Service) *Controller {
-	return &Controller{service: service}
-}
-
-func (c *Controller) Routes() []web.Route {
-	return []web.Route{
-		web.NewRoute(http.MethodGet, "/users/:id", c.Show),
-	}
-}
-
-func (c *Controller) Show(ctx web.Context) error {
-	user, err := c.service.Find(ctx.Context(), ctx.Param("id"))
-	if err != nil {
-		return err
-	}
-	return ctx.JSON(http.StatusOK, user)
-}
-```
-
 ## Responsibilities
 
 Controllers should own:
@@ -194,16 +200,6 @@ report, err := c.service.Generate(ctx.Context(), input)
 ```
 
 Use `web.Context` for HTTP-specific behavior such as params, binding, response helpers, request metadata, and response writing.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not put business workflows directly in controllers.
-- Do not import backend driver packages into controllers.
-- Do not use controllers as service locators.
-- Do not hide validation failures behind generic internal errors.
-- Do not depend on the underlying HTTP engine in normal App controllers.
-:::
 
 ## Next Steps
 

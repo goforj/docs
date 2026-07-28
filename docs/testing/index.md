@@ -77,16 +77,6 @@ forj test:integration rendered --target database --variant sqlite
 
 These are maintainer workflows, not the default path for every application team. Depending on the selected suite, integration tests may require Docker or external backends.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not start the full runtime for behavior that can be tested directly.
-- Do not use distributed infrastructure when a local driver proves the behavior.
-- Do not make required dependencies look optional only to make tests easier.
-- Do not patch only a rendered smoke App when the bug belongs in templates or generators.
-- Do not make scheduler tests depend on wall-clock timing when the domain method can be tested directly.
-:::
-
 ## Related Sections
 
 - [Getting Started](/getting-started/) introduces the first local application path.

@@ -5,13 +5,15 @@ description: How GoForj Projects use the default app and optional named apps.
 
 # Apps
 
-An app is a runnable boundary inside a GoForj Project. It has a binary, command surface, composition files, Wire graph, and runtime defaults.
+An app is a runnable boundary inside a GoForj Project. It has its own binary, commands, route and lifecycle files, Wire graph, and runtime defaults.
 
 Start with one app. Add another only when the Project needs another runnable boundary.
 
-That rule keeps GoForj simple: one Project, shared application behavior under `internal/`, and clear app composition under `app/`.
+That rule keeps GoForj simple: one Project, shared application behavior under `internal/`, and app-specific routes, commands, schedules, lifecycle hooks, and wiring under `app/`.
 
-## The default shape
+Do not create a named app just to organize packages. Use packages under `internal/` for code organization; add an app when you need a separate binary, deployment, or scaling boundary.
+
+## The Default App
 
 Every Project has a default app named `app`:
 
@@ -32,7 +34,7 @@ internal/
   reports/
 ```
 
-`cmd/app/main.go` is the binary entrypoint and stays small. `app/` owns composition such as routes, commands, schedules, lifecycle hooks, and app-level exposure. `app/wire/` owns the Wire graph. Application behavior belongs under `internal/`.
+`cmd/app/main.go` is the binary entrypoint and stays small. `app/` owns routes, commands, schedules, lifecycle hooks, and the code that makes them available. `app/wire/` owns the Wire graph. Application behavior belongs under `internal/`.
 
 The default app is enough for most Projects.
 
@@ -47,16 +49,16 @@ Use `make:app` when you need another app:
 forj make:app marketplace
 ```
 
-You can choose the app surface explicitly:
+You can choose which capabilities the app includes:
 
 ```bash
 forj make:app billing --components web-api,jobs --dev-run run
 forj make:app backstage --components web-api,scheduler --starter-kit vue
 ```
 
-The interactive wizard includes a Dev Run choice. Runtime-capable wizard Apps default to the conventional `run` lifecycle, while CLI-only or explicitly disabled Apps remain absent from `dev.apps`.
+The interactive wizard includes a Dev Run choice. Apps with HTTP, jobs, or schedules default to the conventional `run` command, while CLI-only or explicitly disabled apps remain absent from `dev.apps`.
 
-When scripting `make:app` with flags, use `--dev-run run` to enroll the App in `forj dev`. Use another App command, such as `--dev-run queue:work`, only when that is the intended long-running process.
+When scripting `make:app` with flags, use `--dev-run run` to enroll the app in `forj dev`. Use another app command, such as `--dev-run queue:work`, only when that is the intended long-running process.
 
 Remove conventional generated app files with:
 
@@ -69,23 +71,23 @@ Removal is conservative. It should not delete unknown app-owned files or migrati
 </template>
 <template #files>
 
-`make:app marketplace` creates the binary entrypoint and App-owned composition surfaces:
+`make:app marketplace` creates the binary entrypoint and app-owned files:
 
 ```text
 cmd/marketplace/main.go             binary entrypoint
-app/marketplace/root_cmd.go         App command composition
+app/marketplace/root_cmd.go         app commands
 app/marketplace/routes.go           HTTP exposure when selected
 app/marketplace/lifecycle.go        runtime lifecycle when selected
-app/marketplace/wire/               App-specific Wire graph
-.goforj.yml                         App component and starter-kit metadata
+app/marketplace/wire/               app-specific Wire graph
+.goforj.yml                         app component and starter-kit metadata
 ```
 
-The exact composition files follow the selected components. Existing App migrations and unknown files are deliberately outside managed removal.
+The exact files follow the selected components. Existing app migrations and unknown files are deliberately outside managed removal.
 
 </template>
 <template #generated>
 
-The generator records the App's selected surface in project configuration:
+The generator records the app's selected components in project configuration:
 
 <CodeFile path=".goforj.yml">
 
@@ -97,7 +99,7 @@ apps:
 ```
 </CodeFile>
 
-The generated `app/marketplace/` directory owns composition; its `wire/` directory contains the corresponding App-specific dependency graph.
+The `app/marketplace/` directory owns the app's routes, commands, schedules, and lifecycle hooks; its `wire/` directory contains the corresponding dependency graph.
 
 </template>
 </MakeCommandTabs>
@@ -116,7 +118,7 @@ forj backstage scheduler
 forj backstage dev
 ```
 
-Built binaries follow the same shape:
+Built binaries use the same command names:
 
 ```bash
 ./bin/marketplace api
@@ -134,7 +136,7 @@ That means single-app Projects do not get a more complicated workflow. Multi-app
 
 ## Generate into one app
 
-The app prefix also chooses the registration point for `make:*` commands.
+The app prefix also chooses which route, command, job, or provider files receive new registrations.
 
 ```bash
 forj marketplace make:controller checkout
@@ -142,7 +144,7 @@ forj marketplace make:job sync-catalog
 forj marketplace make:model order
 ```
 
-These commands create behavior under `internal/`, then wire exposure through the selected app. For the controller above, that means:
+These commands create behavior under `internal/`, then register it with the selected app. For the controller above, that means:
 
 ```text
 internal/checkout/controller.go
@@ -173,11 +175,13 @@ An app can expose several runtimes:
 - scheduler
 - CLI commands
 
-For example, `forj marketplace api`, `forj marketplace worker`, and `forj marketplace scheduler` run different process roles inside the same `marketplace` app. The app is the composition boundary; the runtime is the role the process is currently running.
+For example, `forj marketplace api`, `forj marketplace worker`, and `forj marketplace scheduler` run different process roles inside the same `marketplace` app. The app owns the binary and dependency graph; the runtime is the role the process is currently running.
+
+Separate app processes do not share memory-backed cache, queue, or event drivers. Choose a shared backend when work or state must cross process boundaries.
 
 ## What Belongs Where
 
-`internal/` owns behavior. Apps own exposure.
+`internal/` owns behavior. Apps register that behavior with a runnable binary; do not put business workflows in `app/` or `cmd/<app>/`.
 
 For example, a checkout controller can live in:
 
@@ -199,13 +203,13 @@ Use these boundaries when deciding where code belongs:
 | Concern | Belongs in |
 | --- | --- |
 | Project configuration and selected components | `.goforj.yml` |
-| App composition | `app/` or `app/<name>/` |
+| Routes, commands, schedules, and lifecycle hooks | `app/` or `app/<name>/` |
 | App Wire graph | `app/wire/` or `app/<name>/wire/` |
 | Binary entrypoint | `cmd/app/` or `cmd/<name>/` |
 | Business behavior | `internal/...` |
 | Reusable runtime machinery | `internal/runtime`, `internal/http`, `internal/jobs`, `internal/schedules` |
 
-Do not bypass the composition files with package globals. If rerendering should preserve a behavior change for all future Projects, change the GoForj template or generator. Keep application-specific behavior in your Project.
+Do not bypass these app files with package globals. If rerendering should preserve a behavior change for all future Projects, change the GoForj template or generator. Keep application-specific behavior in your Project.
 
 ## App Metadata
 
@@ -218,11 +222,11 @@ app/<app>/
 
 `.goforj.yml` can store per-app component and starter-kit choices under `apps`, but layout decides which apps exist.
 
-The generated-code tab under [Add a named app](#add-a-named-app) shows the configuration shape. This top-level `apps` metadata is separate from `dev.apps`, which selects the App lifecycles managed by `forj dev`.
+The generated-code tab under [Add a named app](#add-a-named-app) shows the configuration. This top-level `apps` metadata is separate from `dev.apps`, which selects the app processes managed by `forj dev`.
 
 ## App-scoped output
 
-Outputs that used to assume one app are now app-aware where they need to be.
+API descriptions and frontend files are stored by app when a Project has more than one.
 
 API index and OpenAPI output stay simple for the default app:
 
@@ -248,7 +252,7 @@ cmd/backstage/frontend/
 
 ## Runtime Defaults
 
-Generated `internal/runtime/apps.go` compiles app metadata into each binary. Do not edit it by hand.
+The generator writes `internal/runtime/apps.go` from app metadata and compiles it into each binary. Do not edit that file by hand.
 
 Default ports are deterministic:
 
@@ -271,7 +275,7 @@ When `make:app` writes local env defaults, it uses the next available app HTTP p
 
 ## Queue and Migration Boundaries
 
-App code uses logical queue names such as `default` or `sync`. Named apps physicalize backend queue names with the app prefix, such as `marketplace_default`, so multiple apps can share a queue backend safely.
+App code uses logical queue names such as `default` or `sync`. Named apps prefix backend queue names with the app name, such as `marketplace_default`, so multiple apps can share a queue backend safely.
 
 Migrations are app-owned when a Project has multiple apps:
 
@@ -286,16 +290,11 @@ If two apps share one physical database, choose one app to own that database's m
 
 ## Common Mistakes
 
-::: warning Common mistakes
-- Do not create named apps just to organize packages.
-- Do not put business behavior in `app/` or `cmd/<app>/`.
-- Do not rely on `.goforj.yml` as the source of app discovery.
-- Do not expect named apps to share process-local drivers across processes.
-:::
+The costly mistakes are architectural: creating named apps only to organize packages, placing business workflows in app registration files, or expecting memory-backed drivers to share state across processes. The relevant sections above explain the package, ownership, and backend choices that avoid them.
 
 ## Next Steps
 
-- [Project Structure](/getting-started/project-structure) shows the generated tree.
-- [forj dev](/developer-tools/forj-dev) explains App lifecycle orchestration and custom watches.
-- [Runtime Topology](/core/runtime-topology) explains app and runtime process shapes.
+- [Project Structure](/getting-started/project-structure) shows the project tree.
+- [forj dev](/developer-tools/forj-dev) explains app process orchestration and custom watches.
+- [Runtime Topology](/core/runtime-topology) explains app and runtime processes.
 - [Migrations](/data/migrations) explains app-owned migration streams.

@@ -4,7 +4,11 @@
 
 This file defines canonical terminology for GoForj documentation.
 
-Use these terms consistently. Do not introduce synonyms unless the codebase already uses them and the distinction is explicit.
+Use these terms when the distinction matters. In ordinary prose, prefer familiar concrete nouns over framework taxonomy.
+
+Lead with what developers build or do: "send mail," "register a route," "run queue workers," or "configure Redis." Avoid using `surface`, `shape`, `primitive`, or `composition` as catch-all substitutes for the specific file, command, capability, process, or boundary involved.
+
+Prefer lowercase **app** in ordinary prose. Use **App** only when deliberately naming the runnable-boundary concept defined below or distinguishing it from a Project or Runtime.
 
 ## Canonical Terms
 
@@ -22,7 +26,7 @@ An App is a runnable application boundary inside a GoForj Project.
 
 The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. Named apps such as `marketplace` or `backstage` live in `cmd/<app>`, `app/<app>`, and `app/<app>/wire`.
 
-Use App when referring to a generated command surface, binary, app composition files, app-local Wire graph, route exposure, and runtime defaults.
+Use App when the runnable boundary itself is the subject, especially when distinguishing apps in a multi-app Project. Otherwise, name the app binary, commands, files, Wire graph, routes, or runtime defaults directly.
 
 Do not use App to mean a single package, service object, HTTP server, deployment environment, or the whole Project when multiple apps exist.
 
@@ -42,13 +46,13 @@ Named apps are for meaningful ownership or deployment fan-out within one Project
 
 The Framework is GoForj itself: the generator, templates, conventions, runtime policy, CLI tooling, and first-party integration layer.
 
-Use Framework when discussing GoForj-owned behavior rather than user application code or sibling primitive libraries.
+Use Framework when discussing GoForj-owned behavior rather than user application code or standalone first-party libraries.
 
 ### Stack
 
-The Stack is the cohesive set of GoForj framework behavior plus first-party primitives used by an App.
+The Stack is the cohesive set of GoForj framework behavior plus first-party libraries used by an app.
 
-Use Stack when describing how HTTP, queues, events, scheduler, storage, cache, metrics, inspects, Lighthouse, configuration, and DI work together.
+Use Stack sparingly when describing GoForj as a whole. In task documentation, name the relevant capabilities.
 
 ### Module
 
@@ -60,7 +64,7 @@ Do not use Module to mean a runtime plugin, provider, or arbitrary folder unless
 
 ### Runtime
 
-A Runtime is an execution surface inside an App.
+A Runtime is a process role inside an App.
 
 Examples:
 
@@ -74,7 +78,7 @@ Use Runtime when lifecycle, process ownership, startup, shutdown, or operational
 
 ### Runtime Boundary
 
-A Runtime Boundary is the line where a process or execution surface begins and ends.
+A Runtime Boundary is the line where a process or unit of execution begins and ends.
 
 Examples:
 
@@ -84,7 +88,7 @@ Examples:
 - a CLI command
 - a Lighthouse process
 
-Docs should name runtime boundaries when behavior differs between surfaces.
+Docs should name runtime boundaries when behavior differs between HTTP requests, workers, schedules, commands, or other execution paths.
 
 ### Execution Lifecycle
 
@@ -110,7 +114,7 @@ Do not describe providers as hidden runtime registrations.
 
 ### Driver
 
-A Driver is a backend implementation selected behind a stable primitive contract.
+A Driver is a backend implementation selected behind a stable application-facing contract.
 
 Examples:
 
@@ -132,17 +136,17 @@ Examples:
 
 - `web` Echo adapter
 - a framework adapter around an HTTP engine
-- a bridge from GoForj primitives to an external protocol
+- a bridge from a GoForj library to an external protocol
 
-Adapter is narrower than Driver. A Driver is usually backend selection for a primitive; an Adapter is usually contract translation.
+Adapter is narrower than Driver. A Driver usually selects a backend; an Adapter usually translates between contracts.
 
 ### Service
 
 A Service is application-owned behavior with business or application logic.
 
-Services should depend on contracts, repositories, clients, and primitives through explicit constructor injection.
+Services should depend on contracts, repositories, clients, and infrastructure dependencies through explicit constructor injection.
 
-Do not use Service to mean any object in the system. A cache store, queue driver, HTTP router, or storage disk is a primitive, driver, or dependency, not automatically a service.
+Do not use Service to mean any object in the system. A cache store, queue driver, HTTP router, or storage disk is a specific dependency, not automatically a service.
 
 ### Resource
 
@@ -158,7 +162,7 @@ Examples:
 - a metric series
 - an inspect record
 
-Use Resource when docs discuss naming, discovery, operational visibility, or Lighthouse surfaces.
+Use Resource when docs discuss naming, discovery, operational visibility, or Lighthouse views. When possible, use the concrete noun: disk, cache, queue, route, metric, or inspect.
 
 ### Context
 
@@ -172,30 +176,30 @@ Avoid using "context" casually to mean background information. Use "background",
 
 ### HTTP
 
-HTTP refers to GoForj's web application surface: routes, handlers, controllers, middleware, request lifecycle, responses, route lists, and web telemetry.
+HTTP refers to routes, handlers, controllers, middleware, request lifecycle, responses, route lists, and web telemetry.
 
 Prefer "HTTP" or "web" depending on scope:
 
 - HTTP for protocol and request lifecycle.
-- `web` for the GoForj primitive package and abstraction boundary.
+- `web` for the GoForj package and abstraction boundary.
 
 ### Route
 
 A Route maps an HTTP method and path to a handler through the `web` routing contract.
 
-Routes should be registered through the generated app route surfaces, not by scattering router setup across unrelated packages.
+Routes should be registered in `app/routes.go` or the corresponding named-app file, not by scattering router setup across unrelated packages.
 
 ### Controller
 
 A Controller is an HTTP-facing type that groups related route handlers and translates requests into application service calls.
 
-Controllers should be thin. They should validate request shape, call services, and return responses. Business workflows belong in services or domain-owned types.
+Controllers should be thin. They should validate requests, call services, and return responses. Business workflows belong in services or domain-owned types.
 
 ### Middleware
 
 Middleware is request or execution policy applied around a handler.
 
-For HTTP, middleware belongs near route or router composition. For queues, middleware belongs in queue construction or worker execution policy.
+For HTTP, middleware belongs near route or router setup. For queues, middleware belongs in queue construction or worker execution policy.
 
 Middleware should not become hidden business logic.
 
@@ -251,15 +255,15 @@ Metrics are one part of observability.
 
 An Inspect is a captured execution record for understanding a request, job, scheduler run, CLI execution, or related runtime activity.
 
-Use `inspect` and `inspects` for the product surface. Keep `trace_id` only as the correlation field where the code uses it.
+Use `inspect` and `inspects` for the feature. Keep `trace_id` only as the correlation field where the code uses it.
 
 ### Lighthouse
 
-Lighthouse is GoForj's local/operator-facing runtime visibility surface.
+Lighthouse is GoForj's local and operator-facing runtime UI.
 
 It aggregates and presents runtime information such as inspects, resources, schedules, storage, cache, logs, and other debugging or operational views.
 
-Do not use Lighthouse as a generic name for all observability. It is a UI/runtime feature that consumes framework surfaces.
+Do not use Lighthouse as a generic name for all observability. It presents logs, inspects, routes, schedules, cache, storage, and other runtime information.
 
 ### Configuration
 
@@ -297,17 +301,19 @@ Docs should prefer extension points over ad hoc edits.
 
 ## Terminology Rules
 
-- Use Driver for backend implementations behind a stable primitive contract.
+- Use Driver for backend implementations behind a stable application-facing contract.
 - Use Project for the repository-level GoForj workspace.
-- Use App for a runnable boundary inside a Project.
+- Prefer app in ordinary prose. Use App when deliberately naming the runnable-boundary concept inside a Project.
 - Use default app and named app when distinguishing `app` from additional apps.
 - Use Provider for explicit dependency construction and wiring.
 - Use Service for application-owned behavior.
 - Use Runtime when discussing process or lifecycle behavior.
 - Do not use App target, runtime target, or target as GoForj domain terms.
-- Use Resource for named operational objects.
+- Use Resource for named operational objects when the shared category matters; otherwise name the object.
 - Use Inspect, not trace, for the product feature.
 - Use `trace_id` only when referring to the correlation field.
-- Use Lighthouse only for the operator/runtime visibility surface.
-- Use Stack when discussing the combined GoForj experience.
+- Use Lighthouse only for the operator/runtime UI.
+- Use Stack sparingly when discussing the combined GoForj experience.
 - Use Framework when discussing GoForj-owned policy.
+- Avoid surface, shape, primitive, and composition when a concrete noun is available.
+- Use generated only when creation, ownership, regeneration, or safe editing matters.

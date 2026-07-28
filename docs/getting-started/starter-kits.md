@@ -5,11 +5,11 @@ description: How GoForj starter kits relate to generated components, frontend sc
 
 # Starter Kits
 
-Starter kits are optional generated scaffolds that help an App start with a working surface.
+Starter kits are optional scaffolds that give an app a working frontend.
 
 They are not separate frameworks. After generation, their files belong to the App.
 
-This page is the implementation guide. For screenshots and product surfaces, see the [Starter Kit Showcase](/starter-kits).
+This page is the implementation guide. For screenshots and complete interface examples, see the [Starter Kit Showcase](/starter-kits).
 
 ## When Starter Kits Apply
 
@@ -40,6 +40,10 @@ Starter kit files are generated into the App and then become App-owned.
 
 Use the generated code as a starting point. Do not treat starter kit files as immutable framework internals.
 
+::: warning Existing frontend code
+Rendering a starter kit writes its conventional frontend files. If that location already contains customized application code, review the render before proceeding and preserve or move those changes first.
+:::
+
 ## Development Tasks
 
 Starter kits can add development setup tasks.
@@ -57,15 +61,6 @@ and an App-owned SPA build under `dev.apps.<app>.spas` for `forj dev`.
 Starter kits compose with selected App components. They should not require unrelated infrastructure just to run the first local path.
 
 When a starter kit requires Web UI, the generator should make that dependency explicit through the wizard and render contract.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not select a starter kit over an existing custom frontend unless replacement is intended.
-- Do not treat starter kit code as framework-owned after generation.
-- Do not assume Web API and Web UI are the same component.
-- Do not add production-only infrastructure requirements to starter kit first-run docs.
-:::
 
 ## Next Steps
 

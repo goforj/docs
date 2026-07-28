@@ -63,16 +63,6 @@ CACHE_DRIVER=memory STORAGE_DRIVER=local STORAGE_ROOT=/tmp/app-storage-test go t
 
 Expected result: packages that exercise cache or storage report `ok` without requiring a remote backend. Use a test-owned temporary directory when writing a new test; `/tmp/app-storage-test` is only a local command example.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not use cache as the source of truth in tests.
-- Do not hardcode local filesystem paths that collide across tests.
-- Do not require cloud storage for normal unit tests.
-- Do not assume every storage driver supports every capability.
-- Do not skip regeneration after adding named caches or disks.
-:::
-
 ## Next Steps
 
 - [Cache Patterns](/data/cache-patterns) explains cache usage.

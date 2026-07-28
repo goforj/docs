@@ -79,7 +79,7 @@ EnvironmentFile=/etc/example/app.env
 ExecStart=/opt/example/current/bin/app
 Restart=on-failure
 RestartSec=5
-TimeoutStopSec=35
+TimeoutStopSec=65
 NoNewPrivileges=true
 PrivateTmp=true
 
@@ -87,7 +87,7 @@ PrivateTmp=true
 WantedBy=multi-user.target
 ```
 
-`TimeoutStopSec` is intentionally longer than `APP_SHUTDOWN_TIMEOUT`, so systemd does not kill the App before its graceful shutdown budget expires. The App handles `SIGINT` and `SIGTERM`; workers wait for active jobs within `QUEUE_SHUTDOWN_TIMEOUT`, and the scheduler and HTTP runtime shut down within their configured budgets.
+`TimeoutStopSec` must exceed the total graceful-stop path, not only one setting: use at least `APP_SHUTDOWN_TIMEOUT + QUEUE_SHUTDOWN_TIMEOUT + margin`. With both values set to `30s`, `65s` leaves a five-second margin. The App handles `SIGINT` and `SIGTERM`; workers wait for active jobs within `QUEUE_SHUTDOWN_TIMEOUT`, and the scheduler and HTTP runtime shut down within their configured budgets.
 
 Load and start the unit:
 
@@ -123,24 +123,69 @@ Run one scheduler unit unless schedules are explicitly designed with cross-proce
 
 ## Migrations and Backups
 
-Take and verify a recovery point before a schema-changing deployment. Then run migrations as a one-shot command using the same release and environment as the service:
+Take and verify a recovery point before a schema-changing deployment. Run migrations through a systemd one-shot unit so it inherits the same release directory, service account, and environment file as the runtime:
 
-```bash
-cd /opt/example/current
-./bin/app migrate
+```ini
+# /etc/systemd/system/example-migrate.service
+[Unit]
+Description=Example GoForj migrations
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=example
+Group=example
+WorkingDirectory=/opt/example/current
+EnvironmentFile=/etc/example/app.env
+ExecStart=/opt/example/current/bin/app migrate
 ```
 
-Expected result: the command exits successfully before the new runtime is started. Do not put migrations in every HTTP process startup: concurrent replicas can race, and a failed migration should stop the rollout before traffic changes.
+After creating or changing a unit, run `sudo systemctl daemon-reload`, then start it with `sudo systemctl start example-migrate.service`. Expected result: the unit exits successfully before the new runtime is started. Do not put migrations in every HTTP process startup: concurrent replicas can race, and a failed migration should stop the rollout before traffic changes.
 
 Use the framework backup workflow where it supports the selected resources:
 
-```bash
-forj backup:status
-forj backup:create
-forj backup:verify --from .goforj/backups/backup-<UTC-timestamp>
+```ini
+# /etc/systemd/system/example-backup-create.service
+[Unit]
+Description=Create an Example GoForj backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=example
+Group=example
+WorkingDirectory=/opt/example/current
+EnvironmentFile=/etc/example/app.env
+ExecStart=/usr/local/bin/forj backup:create
 ```
 
-Expected result: the selected backup verifies before it becomes the recovery point. See [Backup and Restore](/operations/backups) for supported resource strategies and restore safeguards.
+This example assumes the framework CLI is installed at `/usr/local/bin/forj`; use its actual absolute path. Run it with `sudo systemctl start example-backup-create.service`; use an equivalent dedicated oneshot unit for backup verification. Expected result: the selected backup verifies before it becomes the recovery point. See [Backup and Restore](/operations/backups) for supported resource strategies and restore safeguards.
+
+Use an instance unit to verify a specific backup set with the same environment:
+
+```ini
+# /etc/systemd/system/example-backup-verify@.service
+[Unit]
+Description=Verify Example GoForj backup %i
+
+[Service]
+Type=oneshot
+User=example
+Group=example
+WorkingDirectory=/opt/example/current
+EnvironmentFile=/etc/example/app.env
+ExecStart=/usr/local/bin/forj backup:verify --from /opt/example/current/.goforj/backups/%i
+```
+
+After creating a backup, pass its directory name as the instance:
+
+```bash
+sudo systemctl start example-backup-verify@backup-20260728T120000Z.service
+```
+
+Expected result: the verification unit exits successfully before that backup becomes the recovery point.
 
 ## Verify the Release
 
@@ -183,8 +228,8 @@ For multiple HTTP replicas, remove one instance from traffic, update and verify 
 | Unit restarts immediately | `systemctl status` and journal | Run the exact `ExecStart` as the service account; correct missing configuration or an invalid driver dependency. |
 | `/-/health` is 200 but `/-/ready` is 503 | readiness response and server log | Treat the process as alive but not eligible for traffic; inspect the authorized readiness report and repair the failed required resource. |
 | Service does not stop before systemd timeout | journal shows worker or scheduler shutdown | Increase the relevant App timeout only when the work has a bounded completion path; otherwise make jobs resumable and retry-safe. |
-| Worker jobs are not processed | worker logs, metrics, and inspects | Confirm a `worker` or combined runtime is supervised, the intended queue is selected, and the shared queue driver is reachable. |
-| Two scheduled runs overlap | scheduler logs, metrics, or inspects | Stop accidental duplicate scheduler units; use a shared locker when intentional multi-process scheduling needs non-overlap. |
+| Worker jobs are not processed | worker logs, metrics, and Inspects when those components are enabled | Confirm a `worker` or combined runtime is supervised, the intended queue is selected, and the shared queue driver is reachable. |
+| Two scheduled runs overlap | scheduler logs, metrics, or Inspects when enabled | Stop accidental duplicate scheduler units; use a shared locker when intentional multi-process scheduling needs non-overlap. |
 | Metrics endpoint cannot bind | service log | Assign distinct runtime metrics ports in split topology, or disable the conflicting endpoint according to the rendered App configuration. |
 
 ## Production Checklist
@@ -212,7 +257,7 @@ For multiple HTTP replicas, remove one instance from traffic, update and verify 
 ### Observability
 
 - Verify health, readiness, metrics scrape targets, and `APP_DIAG_TOKEN` handling.
-- Confirm logs, metrics, inspects, and Lighthouse preserve App identity without exposing secrets or adding high-cardinality labels.
+- Confirm logs and enabled metrics, Inspects, and Lighthouse preserve App identity without exposing secrets or adding high-cardinality labels.
 - Enable Lighthouse only in environments where its access and retention are appropriate.
 
 ### Async Work

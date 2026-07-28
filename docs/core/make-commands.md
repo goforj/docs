@@ -5,7 +5,7 @@ description: How GoForj make commands generate resources, place files in owning 
 
 # Make Commands
 
-Make commands create application resources and update the generated wiring surfaces that expose them.
+Make commands create controllers, commands, jobs, schedules, events, models, migrations, and named queues, then update the wiring and registration files that expose them.
 
 They are the normal starting point for controllers, commands, jobs, schedules, events, models, and migrations. Generate the resource, review the changed files, then add the product behavior that belongs to your App.
 
@@ -21,7 +21,7 @@ The app prefix chooses the registration point. `forj marketplace make:*` creates
 
 This keeps app composition in the owning app while shared domain code can still live under `internal/...`.
 
-## Choose a Command
+## Choose a Command or Workflow
 
 - [`make:controller`](#make-controller) creates an HTTP controller and registers its routes.
 - [`make:command`](#make-command) creates an App command and exposes it to Kong.
@@ -32,6 +32,14 @@ This keeps app composition in the owning app while shared domain code can still 
 - [`make:subscriber`](#make-subscriber) creates and registers an event subscriber.
 - [`make:model`](#make-model) derives a model and repository from a database table.
 - [`make:migration`](#make-migration) creates timestamped up and down SQL files.
+
+Shared workflows apply across those generators:
+
+- [Package placement](#how-package-placement-works) explains grouped names and feature ownership.
+- [Removing generated resources](#removing-generated-resources) previews and reverses managed changes.
+- [Opening generated files](#opening-generated-files) opens the primary generated source in your editor.
+- [Output overrides](#output-overrides) selects a non-default package directory.
+- [Ownership and verification](#ownership-and-verification) separates generated scaffolding from App behavior and proves the result.
 
 <span id="command-map"></span>
 
@@ -927,17 +935,14 @@ The build exposes application code that still refers to the removed type, route,
 
 ### Opening Generated Files
 
-Source-generating make commands can open their primary generated file after a
-successful run:
+Source-generating make commands can open their primary generated file after a successful run:
 
 ```bash
 forj make:controller billing:reports -o
 forj make:job billing:sync-reports --open
 ```
 
-This applies to controllers, commands, events, subscribers, jobs, schedules,
-models, and migrations. A migration opens its first generated up migration.
-`make:queue` only updates configuration, so it has no source file to open.
+This applies to controllers, commands, events, subscribers, jobs, schedules, models, and migrations. A migration opens its first generated up migration. `make:queue` only updates configuration, so it has no source file to open.
 
 Use `--no-open` to suppress opening for one run. Apps can set:
 
@@ -954,22 +959,16 @@ FORJ_EDITOR=
 | `always` | Try to open after every successful generator run. |
 | `never` | Open only when the command explicitly uses `--open` or `-o`. |
 
-Automatic opening stays quiet when it cannot resolve an editor. An explicit
-`--open`, or `FORJ_MAKE_OPEN=always`, prints a warning instead.
+Automatic opening stays quiet when it cannot resolve an editor. An explicit `--open`, or `FORJ_MAKE_OPEN=always`, prints a warning instead.
 
-Set `FORJ_EDITOR` to pin the command when automatic detection is not what you
-want:
+Set `FORJ_EDITOR` to pin the command when automatic detection is not what you want:
 
 ```dotenv
 FORJ_EDITOR="code --reuse-window --goto {location}"
 FORJ_EDITOR="goland --line {line} {file}"
 ```
 
-The command supports `{file}` for the absolute generated path, `{line}` for the
-line number, and `{location}` for both as `path:line`. Without `FORJ_EDITOR`,
-GoForj checks terminal editor hints, then running GUI editors, then commands on
-`PATH`. Its editor preference is GoLand, Cursor, VS Code, Zed, then IntelliJ
-IDEA, while preferring an already-running editor over launching a different one.
+The command supports `{file}` for the absolute generated path, `{line}` for the line number, and `{location}` for both as `path:line`. Without `FORJ_EDITOR`, GoForj checks terminal editor hints, then running GUI editors, then commands on `PATH`. Its editor preference is GoLand, Cursor, VS Code, Zed, then IntelliJ IDEA, while preferring an already-running editor over launching a different one.
 
 ### Output Overrides
 

@@ -15,16 +15,13 @@ This guide focuses on using cache inside a GoForj App. See the [cache library pa
 
 ## When To Use Cache
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | Data can be recomputed, reloaded, or safely treated as temporary. |
-| Avoid this when | The value is the only source of business truth or must survive driver loss. |
-| Start with | Memory cache for one-process local development and focused tests. |
-| Upgrade to | Shared cache when API, workers, scheduler, or multiple hosts need the same values, locks, or counters. |
+Use cache when data can be recomputed, reloaded, or safely treated as temporary. Memory cache is the simplest choice for one-process development and focused tests. Choose a shared cache when API, workers, scheduler processes, or multiple hosts need the same values, locks, or counters.
 
-## Generated Accessors
+Keep business truth in durable storage. A cache value may disappear at any time.
 
-GoForj Apps expose cache through generated default and named accessors:
+## Access Cache from Application Code
+
+Apps expose cache through default and named accessors:
 
 ```go
 app.Cache()
@@ -45,15 +42,7 @@ After adding or renaming named caches, use the normal build path:
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh cache code without a full build:
-
-```bash
-forj generate --cache
-```
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generation Commands](/reference/generation-commands) covers focused maintainer workflows.
 
 ## Cache Shell
 
@@ -131,16 +120,6 @@ Use memory or file cache locally.
 Use Redis, Memcached, NATS, DynamoDB, or SQL-backed cache when production requirements need shared, durable, or distributed behavior.
 
 Use [Cache](/cache) for the full package-level driver matrix.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not store source-of-truth business state only in cache.
-- Do not omit TTLs for data that should expire.
-- Do not put user input directly into metric labels or cache resource names.
-- Do not import cache driver packages into business services.
-- Do not assume local memory cache is shared across runtime processes.
-:::
 
 ## Next Steps
 

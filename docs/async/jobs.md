@@ -11,12 +11,9 @@ Jobs make background work explicit, observable, and operable. Retry policy is op
 
 ## When To Use Jobs
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | Background work needs a stable name, typed payload, handler, retry behavior, or worker lifecycle. |
-| Avoid this when | The behavior is just a local function call or a typed fact that subscribers may observe. |
-| Start with | A small payload containing IDs and references to source-of-truth data. |
-| Upgrade to | Dedicated queues, retry policy, idempotency keys, and worker process planning as operational risk grows. |
+Use a job when background work needs a stable name, typed payload, handler, retry behavior, or worker lifecycle. Start with a small payload containing IDs that let the handler load current source-of-truth data.
+
+A direct function call is simpler for synchronous behavior. Publish an event instead when the message is a fact that subscribers may observe. Add dedicated queues, retry policy, idempotency keys, and worker allocation when the operational requirements call for them.
 
 ## Generate a Job
 
@@ -220,17 +217,6 @@ The generated-code tab shows the registration path for new jobs. The App-owned `
 Projects created before this registration seam may already contain custom job constructors that were never registered. Rerender migrates known framework jobs but does not guess whether an arbitrary provider is a job. Add each older custom job as a typed `registerJobHandlers` parameter and register its type name with `queueManager.Register`; future `make:job` calls maintain both entries automatically.
 
 Do not register handlers after workers are already running.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not hide job names behind anonymous functions.
-- Do not put all business logic in `HandleTask`; delegate to services.
-- Do not use untyped `map[string]any` payloads when a typed payload is clearer.
-- Do not swallow handler errors that should be retried or observed.
-- Do not assume generated jobs retry without an explicit retry budget.
-- Do not dispatch jobs from repositories unless persistence code intentionally owns that side effect.
-:::
 
 ## Next Steps
 

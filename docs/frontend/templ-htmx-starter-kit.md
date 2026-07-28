@@ -103,16 +103,6 @@ forj build
 
 Add browser-level coverage only for behavior that depends on htmx swaps, focus management, or client-side interaction.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not edit generated `*_templ.go` files.
-- Do not put business workflows inside templ components.
-- Do not return partial markup to ordinary browser navigation accidentally.
-- Do not add a SPA state model beside server-owned page state without a concrete need.
-- Do not rerender over customized views unless replacement is intentional.
-:::
-
 ## Next Steps
 
 - [Starter Kits](/getting-started/starter-kits) compares all first-party kits.

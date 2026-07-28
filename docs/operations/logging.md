@@ -108,16 +108,6 @@ Never log authorization headers, cookies, credentials, raw queue payloads, or un
 | No request evidence during an incident | Access logs were disabled or not collected. | Use metrics and Inspects immediately; restore a safe access-log policy after the incident. |
 | Secret appears in output | A log field or payload capture is unsafe. | Restrict access, rotate the secret, and remove/redact the emitting field. |
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not print directly to raw `stderr` from generated managers.
-- Do not repeat the same optional-resource warning for every process.
-- Do not leak secrets or raw payloads into default logs.
-- Do not bury important degraded-state information at trace level.
-- Do not omit app identity from multi-app runtime logs.
-:::
-
 ## Production Checklist
 
 - Service output is collected and retained by the platform log system.

@@ -76,16 +76,6 @@ Authorized readiness can expose structured dependency checks when called with:
 Authorization: Bearer $APP_DIAG_TOKEN
 ```
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not expose raw infrastructure errors to public clients.
-- Do not return `200 OK` for failed operations.
-- Do not bury known application errors as generic internal errors.
-- Do not make response shape vary unnecessarily between handlers.
-- Do not use panics for normal validation or not-found behavior.
-:::
-
 ## Next Steps
 
 - [JSON API Route](/scenarios/json-api-route) is the runnable HTTP verification path.

@@ -121,7 +121,7 @@ When it is not already supported:
 
 Database switches also require compatible migrations and an explicit data-movement plan. Swapping drivers avoids a business-logic rewrite, but it does not remove operational migration work.
 
-## Regeneration
+## Apply a Driver Change
 
 Changing `*_SUPPORTED_DRIVERS` can change imports, factories, accessors, and generated config.
 
@@ -131,20 +131,7 @@ The normal path is:
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh one generated surface without a full build:
-
-```bash
-forj generate --cache
-forj generate --storage
-forj generate --queue
-forj generate --events
-forj generate --mail
-forj generate --db
-```
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. The [Generation Commands](/reference/generation-commands) reference covers focused commands for maintainers who need to refresh only one component.
 
 ## Where To Find Driver Details
 
@@ -157,16 +144,6 @@ Library pages own driver matrices, constructors, and low-level behavior:
 - [Queue](/queue)
 - [Events](/events)
 - [Mail](/mail)
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not show full driver matrices in every workflow page.
-- Do not use production-only drivers in first examples.
-- Do not compile every driver into every App by default.
-- Do not make services import backend driver packages directly.
-- Do not change business code when only the runtime backend changes.
-:::
 
 ## Next Steps
 

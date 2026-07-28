@@ -75,11 +75,7 @@ app.Mail()
 app.Mail().Transactional()
 ```
 
-Accessors are generated from configuration at generation time. After adding or renaming named resources, run `forj build` to refresh generated code.
-
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
+Accessors come from configuration. After adding or renaming named resources, run `forj build`; `forj dev` does this automatically for apps listed in `dev.apps`.
 
 ## Fail-Fast Invariants
 

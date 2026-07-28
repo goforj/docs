@@ -44,16 +44,6 @@ Workers can run inside the combined `run` Runtime or in explicit `worker` proces
 
 Use the [Queue Workers runbook](/operations/queue-workers) for deployment commands, driver and concurrency configuration, startup verification, shutdown, scaling, and failure response.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not run workers from HTTP handlers.
-- Do not make job behavior depend on whether workers are combined or split.
-- Do not assume a handler error will retry unless the job has a retry budget.
-- Do not use queue names as arbitrary payload values.
-- Do not hide worker startup in constructors or package globals.
-:::
-
 ## Next Steps
 
 - [Runtime Topology](/core/runtime-topology) explains process shapes.
