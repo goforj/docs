@@ -194,16 +194,6 @@ The HTTP runtime can record:
 
 Use `route:list` for the full route table instead of relying on startup logs for complete route visibility.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not put business workflows in `internal/http`.
-- Do not bypass `web` route registration with scattered low-level HTTP setup.
-- Do not edit framework route registration to add application endpoints.
-- Do not expose detailed readiness errors without `APP_DIAG_TOKEN`.
-- Do not assume `api` is the only runtime shape; `app` can host HTTP with workers and scheduler locally.
-:::
-
 ## Next Steps
 
 - [Routes](/applications/routes) covers route registration in depth.

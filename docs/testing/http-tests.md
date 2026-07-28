@@ -94,15 +94,6 @@ Common routes:
 
 Test readiness failures deliberately. Public readiness should be safe. Authorized readiness can expose structured details when called with `APP_DIAG_TOKEN`.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not start a real network listener unless listener behavior matters.
-- Do not bypass the `web` abstraction in normal controller tests.
-- Do not test business logic only through HTTP when the service can be tested directly.
-- Do not expose raw infrastructure errors in public readiness responses.
-:::
-
 ## Next Steps
 
 - [Controllers](/applications/controllers) explains controller boundaries.

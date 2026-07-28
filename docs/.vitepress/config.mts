@@ -502,7 +502,7 @@ async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string })
     '',
     `> ${siteDescription}`,
     '',
-    'GoForj renders complete Go applications from selected components: HTTP services, CLI commands, queues, events, a scheduler, database, cache, storage, mail, auth, and metrics. Generated code is ordinary Go owned by the application, wired with compile-time dependency injection. The stack is built from standalone libraries that are each useful without the framework.',
+    'GoForj gives Go applications one consistent way to serve HTTP, run commands and background work, schedule tasks, use database, cache, storage, mail, auth, and metrics, and operate in production. Dependencies remain explicit through compile-time wiring, and every first-party library also works independently. Code created by GoForj is ordinary Go with clear application or framework ownership.',
     ''
   ].join('\n')
 
@@ -556,7 +556,7 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
   'core/app': {
     to: '/core/apps',
     fragments: {
-      'default-app': 'the-default-shape',
+      'default-app': 'the-default-app',
       'named-apps': 'add-a-named-app',
       'app-versus-runtime': 'apps-and-runtimes',
       'app-versus-project': 'what-belongs-where',
@@ -570,13 +570,13 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
     fragments: {
       'why-they-exist': 'choose-the-project-shape',
       'project-rendering': 'choose-the-project-shape',
-      'build-time-generation': 'run-generation',
-      'focused-generation': 'run-generation',
+      'build-time-generation': 'build-and-refresh-generated-code',
+      'focused-generation': 'build-and-refresh-generated-code',
       'generated-managers': 'use-generated-resources',
       'named-resources': 'use-generated-resources',
       'driver-support': 'compile-driver-support',
       'render-once-files': 'choose-a-safe-extension-point',
-      'when-to-regenerate': 'regenerate-after-input-changes',
+      'when-to-regenerate': 'inputs-that-require-a-rebuild',
       'common-mistakes': 'common-mistakes',
       'next-steps': 'next-steps'
     }
@@ -610,7 +610,7 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
       'what-each-make-command-adds': 'command-map',
       'removing-generated-package-entries': 'removing-generated-resources',
       'a-good-package-shape': 'organize-by-package-ownership',
-      'common-mistakes': 'common-mistakes',
+      'common-mistakes': 'ownership-and-verification',
       'next-steps': 'next-steps'
     }
   },
@@ -631,12 +631,12 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
   'data/database-shell': {
     to: '/data/database-strategy',
     fragments: {
-      'open-a-connection': 'database-shell',
-      'named-connections': 'database-shell',
-      'launch-method': 'database-shell',
-      'non-interactive-sql': 'database-shell',
-      'client-arguments': 'database-shell',
-      notes: 'database-shell'
+      'open-a-connection': 'open-the-default-connection',
+      'named-connections': 'named-connections',
+      'launch-method': 'shell-options',
+      'non-interactive-sql': 'shell-options',
+      'client-arguments': 'shell-options',
+      notes: 'shell-options'
     }
   },
   'developer-tools/editor-open': {
@@ -663,10 +663,10 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
   'operations/standalone-vs-distributed': {
     to: '/operations/runtime-processes',
     fragments: {
-      standalone: 'standalone-versus-distributed',
-      distributed: 'standalone-versus-distributed',
-      'choosing-the-topology': 'standalone-versus-distributed',
-      'common-mistakes': 'common-mistakes',
+      standalone: 'choose-the-processes-to-supervise',
+      distributed: 'choose-the-processes-to-supervise',
+      'choosing-the-topology': 'choose-the-processes-to-supervise',
+      'common-mistakes': 'choose-the-processes-to-supervise',
       'next-steps': 'next-steps'
     }
   },
@@ -682,7 +682,7 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
       'test-scheduler-work': 'keep-domain-behavior-direct',
       'rendered-app-smoke-tests': 'maintainer-workflows',
       'integration-tests': 'maintainer-workflows',
-      'common-mistakes': 'common-mistakes',
+      'common-mistakes': 'choose-a-test-layer',
       'next-steps': 'related-sections'
     }
   }
@@ -982,6 +982,7 @@ const developerToolsSidebar = sectionSidebar('Developer Tools', [
 
 const librariesSidebar = sectionSidebar('Libraries', [
   { text: 'Overview', link: '/libraries/' },
+  { text: 'Driver Catalog', link: '/drivers' },
   { text: 'Web', link: '/web' },
   { text: 'Cache', link: '/cache' },
   { text: 'Storage', link: '/storage' },
@@ -1326,7 +1327,7 @@ export default defineConfig({
           { text: 'What is GoForj?', link: '/about' },
           { text: 'Overview', link: '/getting-started/' },
           { text: 'Quickstart', link: '/getting-started/quickstart' },
-          { text: 'Starter Kits', link: '/starter-kits' },
+          { text: 'Starter Kit Showcase', link: '/starter-kits' },
           { text: 'Cookbook', link: '/cookbook' }
         ]
       },

@@ -179,16 +179,7 @@ After changing supported drivers or named resources, use the normal build path:
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh these surfaces without a full build:
-
-```bash
-forj generate --events
-forj generate --queue
-```
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generation Commands](/reference/generation-commands) covers focused maintainer workflows.
 
 ## Operational Differences
 
@@ -214,16 +205,6 @@ Scheduler:
 - should use stable names
 - should avoid anonymous callbacks for important production work
 - should not become a business-logic bucket
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not use events as a substitute for durable background jobs.
-- Do not put long-running work directly in an HTTP controller.
-- Do not hide important job names behind anonymous functions.
-- Do not make event subscribers silently swallow important failures.
-- Do not assume in-process events are durable across processes.
-:::
 
 ## Next Steps
 

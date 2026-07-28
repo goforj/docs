@@ -1,16 +1,16 @@
 ---
 title: Mail
-description: Send application and auth email through generated default and named GoForj mailers.
+description: Send application and auth email through default and named GoForj mailers.
 ---
 
 # Mail
 
-The Mail component gives your App one portable message API with local and production delivery drivers.
+The Mail component lets your app send account email, invitations, receipts, and reports through one message API.
 
-Use it for account email, invitations, receipts, reports, and other outbound messages. Application code composes message intent; generated providers choose the transport.
+Application code builds the recipient, subject, and body. Configuration selects a compiled delivery driver such as the local log driver, SMTP, Resend, Postmark, or SES.
 
 ::: info Mail package reference
-This guide explains your App's generated mailers, configuration, and delivery workflows. The [mail library page](/mail) covers standalone composition and delivery, the complete API, and the driver capability matrix.
+This guide explains the mail manager created with a GoForj project, its configuration, and delivery workflows. The [mail library page](/mail) covers standalone message construction and delivery, the complete API, and the driver capability matrix.
 :::
 
 ## Generated Ownership
@@ -22,7 +22,7 @@ internal/mail/
 app/wire/inject_managers.go
 ```
 
-`internal/mail` owns the generated manager, driver construction, named accessors, auth delivery integration, and observability hooks. App services should use that manager instead of importing SMTP or provider SDKs.
+`internal/mail` owns the manager, driver construction, named accessors, auth delivery integration, and observability hooks. Application services should use that manager instead of importing SMTP or provider SDKs.
 
 The underlying portable message API comes from [`github.com/goforj/mail`](/mail).
 
@@ -40,7 +40,7 @@ MAIL_LOG_BODIES=false
 
 The log driver writes delivery metadata to application output. Message bodies stay hidden unless `MAIL_LOG_BODIES=true`.
 
-When local Docker support is selected, GoForj Apps can use SMTP with Mailpit:
+When local Docker support is selected, the app can use SMTP with Mailpit:
 
 ```dotenv
 MAIL_DRIVER=smtp
@@ -87,7 +87,7 @@ func (s *WelcomeService) Send(ctx context.Context, email, name string) error {
 }
 ```
 
-Add `notifications.NewWelcomeService` to the owning App's service provider set, then run:
+Add `notifications.NewWelcomeService` to the app's service provider set, then run:
 
 ```bash
 forj build
@@ -95,7 +95,7 @@ forj build
 
 ## Named Mailers
 
-Use a named mailer when one App needs distinct senders or providers:
+Use a named mailer when one app needs distinct senders or providers:
 
 ```dotenv
 MAIL_SUPPORTED_DRIVERS=log,resend
@@ -116,7 +116,7 @@ err := manager.Transactional().
 	Send(ctx)
 ```
 
-Refresh the generated mail manager and accessor after adding or changing the named scope:
+Regenerate the mail manager and typed accessor after adding or changing the named mailer:
 
 ```bash
 forj generate --mail
@@ -133,7 +133,9 @@ Keep auth message construction in the generated auth and mail integration. Chang
 
 ## Driver Selection
 
-`MAIL_SUPPORTED_DRIVERS` controls which transports are compiled into the App. `MAIL_DRIVER` and `MAIL_<NAME>_DRIVER` select among those compiled drivers at runtime.
+`MAIL_SUPPORTED_DRIVERS` controls which transports are compiled into the app. `MAIL_DRIVER` and `MAIL_<NAME>_DRIVER` select among those compiled drivers at runtime.
+
+Adding a driver to `MAIL_SUPPORTED_DRIVERS` requires `forj generate --mail` and a new build. Switching to a driver that is already compiled in requires only configuration and a restart.
 
 Supported framework drivers include:
 
@@ -149,7 +151,7 @@ Use the [Mail library page](/mail) for transport capabilities and [Environment R
 
 ## Testing
 
-For GoForj App integration, use the `log` driver and capture output or exercise the owning service with a local manager.
+For app integration tests, use the `log` driver and capture output or exercise the owning service with a local manager. Do not enable real provider delivery in local or automated tests.
 
 For isolated service tests, place a narrow mail boundary around the workflow and use the library's `mailfake` driver. Assert recipient, subject, body, and send count without contacting a provider.
 
@@ -157,7 +159,7 @@ Keep live provider credentials out of normal unit and integration suites.
 
 ## Operations
 
-Generated mail sends emit observer events used by logs, metrics, and inspects when those components are enabled.
+The mail manager emits observer events used by logs, metrics, and inspects when those components are enabled.
 
 In production:
 
@@ -168,15 +170,7 @@ In production:
 - monitor send failures by bounded mailer and driver names
 - use provider dashboards for delivery, bounce, and complaint state
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not import provider SDKs into application services.
-- Do not enable real delivery for local tests.
-- Do not log message bodies or provider credentials by default.
-- Do not add a named mailer without regenerating typed accessors.
-- Do not treat successful provider submission as proof of inbox delivery.
-:::
+Successful provider submission confirms that the provider accepted the message, not that it reached the recipient's inbox. Use provider delivery, bounce, and complaint reporting for that outcome.
 
 ## Next Steps
 

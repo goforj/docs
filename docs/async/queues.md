@@ -15,12 +15,38 @@ The guidance here is about queue integration and operation in a GoForj App. Visi
 
 ## When To Use Queues
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | Work should run outside the request path or be processed by workers. |
-| Avoid this when | The result must be available before returning the current response. |
-| Start with | `sync` or `workerpool` for one-process local development. |
-| Upgrade to | SQLite, Redis, SQL, NATS, SQS, RabbitMQ, or another shared backend when API and workers split or work needs durable state. |
+Use a queue when work should run outside the request path or be processed by workers. Keep work in the request path when its result must be available before returning the current response.
+
+Start one-process local development with `sync` or `workerpool`. Move to SQLite, Redis, SQL, NATS, SQS, RabbitMQ, or another shared backend when the API and workers split into separate processes or queued work needs durable state.
+
+## Dispatch on the Default Queue
+
+Start with one job on the default queue:
+
+```bash
+forj make:job reports:generate
+forj build
+```
+
+Expected result: the build registers the generated handler, and the generated job's `Queue` helper targets `default` because no `--queue` override was provided.
+
+Call that helper from a service, command, or controller:
+
+```go
+err := generateJob.Queue(ctx, reportID)
+```
+
+Run the combined app so the API and local worker share the same process:
+
+```bash
+forj app
+```
+
+Invoke the controller or command that calls the service. Expected result: the dispatch returns after enqueueing the job, and the worker in that same process runs its `HandleTask` method through the default `workerpool` driver.
+
+`workerpool` is process-local. If `forj api` and `forj worker` run as separate processes, configure a shared queue driver before expecting one process to receive work dispatched by the other.
+
+The default queue remains available through `app.Queue()` and the generated queue manager. Add named queues only when work needs separate concurrency, resources, or operational priority.
 
 ## Generate a Named Queue
 
@@ -176,9 +202,9 @@ Use named queues when the App has distinct classes of work. For example, `emails
 
 One generated queue resource represents one queue. The resource name is the app-facing queue name, and by default it is also the backend queue name. Use `QUEUE_<NAME>_NAME` only when the backend queue name must differ.
 
-In a multi-app Project, app code still uses the logical queue name, such as `reports`. Named apps physicalize backend names with an app prefix by default so two apps do not collide on the same backend queue.
+In a multi-app Project, app code still uses the logical queue name, such as `reports`. Named apps prefix backend queue names by default so two apps do not collide on the same backend.
 
-For example, the `marketplace` app can dispatch to logical queue `default` while the backend queue is physicalized as `marketplace_default`. Application code still says `default`; GoForj owns the app-aware backend naming.
+For example, the `marketplace` app dispatches to logical queue `default` while the backend receives `marketplace_default`. Application code still says `default`; GoForj owns the app-aware backend name.
 
 ## Driver Configuration
 
@@ -274,25 +300,7 @@ After changing supported drivers or named queues, use the normal build path:
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh queues without a full build:
-
-```bash
-forj generate --queue
-```
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not use events as a replacement for durable queued work.
-- Do not dispatch unnamed or anonymous work in docs.
-- Do not import backend queue driver packages in business services.
-- Do not assume in-process queues behave like distributed queues.
-- Do not forget to plan shutdown behavior for long-running workers.
-:::
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generation Commands](/reference/generation-commands) covers focused maintainer workflows.
 
 ## Next Steps
 

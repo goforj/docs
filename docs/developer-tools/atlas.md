@@ -9,6 +9,32 @@ Atlas gives AI coding agents enough local project context to work inside a GoFor
 
 It is optional, but first-class. During `forj new`, the `Atlas - Agent Support` step can install agent guidance for the tools you use. Atlas can also be added later from an existing project.
 
+## Install and Verify
+
+During project creation, run the wizard:
+
+```bash
+forj new
+```
+
+At `Atlas - Agent Support`, choose `Recommended` to install guidance for the detected agents and enable local docs context where supported.
+
+For an existing GoForj Project, install Atlas and verify the result:
+
+```bash
+forj atlas:install
+forj atlas:doctor
+```
+
+Expected result: Doctor reports `Atlas installed: true`, shows which agents are configured, and lists the installed guidance, skills, and MCP surfaces. Once installed, agents can read the local project guidance without another daily setup command.
+
+Preview an install or update without changing the Project:
+
+```bash
+forj atlas:install --dry-run
+forj atlas:update --dry-run
+```
+
 ## What Atlas adds
 
 Atlas installs lightweight project files that teach agents the GoForj way to build:
@@ -79,38 +105,7 @@ Atlas guidance also tells agents to notice durable repo knowledge. When you teac
 
 That suggestion should be rare and practical. It is for repeated project knowledge, not one-off preferences or temporary debugging steps.
 
-## Install during project creation
-
-Run the wizard:
-
-```bash
-forj new
-```
-
-When the wizard reaches `Atlas - Agent Support`, choose how much support to install:
-
-```text
-Atlas - Agent Support
-Detected agents: Codex, Claude Code, Gemini CLI
-Install: Recommended
-```
-
-Recommended is meant to be safe for most projects. It installs guidance for the detected agents and enables local docs context where supported.
-
-## Install later
-
-From a GoForj project:
-
-```bash
-forj atlas:install
-```
-
-Preview the files Atlas would manage without changing the project:
-
-```bash
-forj atlas:install --dry-run
-forj atlas:update --dry-run
-```
+## Customize the Installation
 
 Choose individual agents and surfaces when you want a smaller or more explicit install:
 

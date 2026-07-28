@@ -92,15 +92,6 @@ EVENTS_DRIVER=inproc EVENTS_SUPPORTED_DRIVERS=inproc go test ./internal/events/.
 
 Expected result: the package reports `ok` without a broker, and the test fails rather than hanging if delivery does not occur.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not assume in-process events cross process boundaries.
-- Do not rely on subscriber errors as durable retries unless the driver guarantees that behavior.
-- Do not hide critical workflows only in event subscribers.
-- Do not test event transport when the target is service behavior.
-:::
-
 ## Next Steps
 
 - [Events](/async/events) explains event design.

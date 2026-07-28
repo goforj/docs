@@ -10,7 +10,7 @@ This page takes you from nothing to a running GoForj App: one command to create 
 ## Prerequisites
 
 - Go 1.25 or newer. [Install Go](https://go.dev/doc/install) if you do not have it, and check with `go version`.
-- Docker only if you select components that use generated Docker services. [Docker Desktop](https://docs.docker.com/get-started/get-docker/), [OrbStack](https://orbstack.dev/), and [Podman](https://podman.io/) all work. The small HTTP path below needs neither.
+- Docker only if you select components that use generated Docker services. The development workflow invokes `docker compose`; [Docker Desktop](https://docs.docker.com/get-started/get-docker/) and [OrbStack](https://orbstack.dev/) provide it. Podman may run the rendered Compose files when its Compose compatibility is configured, but it is not the CLI that GoForj invokes. The small HTTP path below needs neither.
 
 ## Install the CLI
 
@@ -124,7 +124,7 @@ export PATH="$(go env GOPATH)/bin:$PATH"
 
 **Port 3000 is already in use.** The HTTP port is configuration. Set it in `.env`:
 
-```bash
+```dotenv
 API_HTTP_PORT=3001
 ```
 

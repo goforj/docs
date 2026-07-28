@@ -84,15 +84,6 @@ Do not start the full App when the behavior belongs to one service or function.
 
 Full runtime tests are useful, but they are slower and should be reserved for boundaries that need runtime wiring.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not use distributed infrastructure for pure service tests.
-- Do not make required dependencies look optional in test-only constructors.
-- Do not make services depend on HTTP-only types.
-- Do not test scheduler timing when the scheduled method can be tested directly.
-:::
-
 ## Next Steps
 
 - [HTTP Tests](/testing/http-tests) covers controller and route behavior.

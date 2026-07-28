@@ -14,13 +14,13 @@ Trust comes from accurate examples, explicit behavior, consistent terminology, h
 
 ## Immutable Principles
 
-### Teach The Application Model
+### Teach Developers What They Build
 
-The docs must show how GoForj applications are built, not only how packages work.
+The docs must show what developers can build with GoForj and how they do it, not only how packages work or how the framework is organized.
 
-Every important primitive should eventually answer:
+Every important capability should eventually answer:
 
-- where it lives in the generated app
+- which file or package owns it
 - how it is configured
 - how it is wired
 - how it is tested
@@ -33,7 +33,7 @@ For common tasks, teach one official path before alternatives.
 
 Alternatives are allowed only after the reader understands the default architecture.
 
-Golden path does not mean every deployment looks identical. It means the docs present one application model first, then explain topology, packaging, and driver choices as explicit variations on that model.
+Golden path does not mean every deployment looks identical. It means the docs present one way to complete the task first, then explain deployment, packaging, and driver choices as explicit variations.
 
 ### Go-Native Always
 
@@ -50,13 +50,13 @@ Docs must preserve Go's strengths:
 
 Do not teach patterns that only make sense in dynamic-language frameworks.
 
-### Generated Code Is Product Surface
+### Generated Code Has Clear Ownership
 
-Generated app code is part of GoForj's user experience.
+Generated code is ordinary Go that developers read and maintain.
 
-Docs should treat generated files as readable, maintainable, and intentional. If generated code would be embarrassing to document, the code should improve.
+Use "generated" when ownership, safe edits, rerendering, or regeneration affects the task. Otherwise, name the file, provider, manager, binary, or command directly. If generated code would be embarrassing to document, the code should improve.
 
-Generated local READMEs are also product surface. They may be more ownership-oriented than public docs, but they must still be simple, accurate, and pleasant to read.
+Local READMEs created with a project may be more ownership-oriented than public docs, but they must still be simple, accurate, and pleasant to read.
 
 ### Swap Drivers, Not Business Logic
 
@@ -84,7 +84,7 @@ Startup, shutdown, workers, schedules, background processes, and runtime boundar
 
 Hidden lifecycle behavior erodes trust.
 
-Runtime-capable generated binaries use a stable App-level default: launching the binary without arguments selects the standalone `run` runtime. Explicit commands remain explicit, and CLI-only binaries retain their normal root help behavior. Document this as part of the generated App definition, not as a build flag or hidden runtime discovery.
+Runtime-capable app binaries use a stable default: launching the binary without arguments selects the standalone `run` runtime. Explicit commands remain explicit, and CLI-only binaries retain their normal root help behavior. Document this as command behavior, not as a build flag or hidden runtime discovery.
 
 ### Observability Is Core
 
@@ -121,7 +121,7 @@ They do not feel:
 - copied from another ecosystem
 - overloaded with options
 - indifferent to operations
-- disconnected from generated code
+- disconnected from the files and commands developers use
 
 ## Onboarding Objective
 
@@ -130,7 +130,7 @@ The onboarding experience should take a developer from zero to a running applica
 By the end of onboarding, the developer should know:
 
 - what GoForj is
-- what the generated app structure means
+- what the project structure means and which files they own
 - where to add routes, commands, jobs, events, schedules, cache, and storage
 - how configuration flows
 - how dependencies are wired
@@ -168,7 +168,7 @@ Documentation should evolve with the framework in this order:
 4. update reference pages
 5. update advanced and edge-case docs
 
-When a new primitive or driver appears, do not only add reference docs. Add its place in the application model.
+When a new capability or driver appears, do not only add reference docs. Show the task it enables and where developers configure, call, test, and operate it.
 
 ## AI Generation Rules
 

@@ -105,15 +105,6 @@ When Inspect capture is enabled, finished requests become request Inspects. They
 | Metrics port conflicts in split topology | The metrics listener cannot bind. | Give each Runtime a distinct configured metrics port. |
 | Access logs hide important events | The process remains healthy but diagnostics become noisy. | Reduce access-log volume deliberately; do not remove lifecycle, metrics, or readiness checks. |
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not print the full route table on every boot.
-- Do not rely on low-level HTTP setup when the App uses `web`.
-- Do not expose detailed readiness errors publicly.
-- Do not let access logs drown out higher-signal runtime logs.
-:::
-
 ## Production Checklist
 
 - The HTTP Runtime is supervised with a stop timeout above `APP_SHUTDOWN_TIMEOUT`.

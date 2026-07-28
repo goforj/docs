@@ -7,7 +7,7 @@ description: Durable data, cache, storage, transactions, repositories, and drive
 
 Data and Persistence explains how GoForj applications work with durable data, derived data, and files.
 
-Use these guides to keep source-of-truth records, derived data, and files separate while accessing each through your App's generated resources.
+Use these guides to keep source-of-truth records, derived data, and files separate while working with database connections, cache accessors, and storage disks configured by your app.
 
 ## Choose a Data Task
 

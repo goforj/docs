@@ -5,11 +5,11 @@ description: Understand what GoForj provides, the problems it addresses, and whe
 
 # What is GoForj?
 
-GoForj is a composable application stack for Go.
+GoForj helps Go developers build CLIs, HTTP services, workers, and full web products.
 
-It provides a cohesive way to build applications with explicit runtime behavior, generated components, local-first drivers, first-party libraries, and production-oriented tooling.
+It gives routes, commands, queues, events, schedules, cache, storage, mail, configuration, dependency wiring, and operational tooling one consistent home while keeping runtime behavior explicit.
 
-The same first-party libraries can also be used independently. A team can adopt one package in an existing service, or build a full GoForj App that composes those primitives behind framework-level abstractions.
+The first-party libraries also work independently. A team can add one package to an existing service or use the framework to build and run a complete application.
 
 ## Why GoForj Exists
 
@@ -24,7 +24,7 @@ Go excels at building reliable systems, but many teams end up re-solving the sam
 
 GoForj exists to make those concerns feel like one application system while preserving Go's clarity.
 
-The goal is not to abstract Go away. It is to provide strong conventions, generated glue, and interchangeable infrastructure without hiding the lifecycle of the application.
+The goal is not to abstract Go away. It is to provide strong conventions, explicit wiring, and interchangeable infrastructure without hiding how the application starts, runs, and shuts down.
 
 ## Design Principles
 
@@ -57,11 +57,11 @@ These principles apply across the framework, libraries, examples, and documentat
 
 ## What GoForj Is Today
 
-Today, GoForj includes a framework, CLI/tooling, generated application components, and standalone libraries.
+Today, GoForj includes the `forj` CLI, project templates, runtime conventions, operational tools, and standalone libraries.
 
 The documentation has two paths:
 
-- [Getting Started](/getting-started/) for building a GoForj App.
+- [Getting Started](/getting-started/) for building an app with GoForj.
 - [Libraries](/libraries/) for standalone first-party Go packages.
 
 ## What GoForj Is Not
@@ -83,6 +83,6 @@ If you prefer readable Go over clever Go, GoForj is built for you.
 
 ## Start Exploring
 
-Start with [Getting Started](/getting-started/) if you want to build a GoForj App.
+Start with [Getting Started](/getting-started/) if you want to build an app with GoForj.
 
 Start with [Libraries](/libraries/) if you want to use a standalone package in an existing Go project.

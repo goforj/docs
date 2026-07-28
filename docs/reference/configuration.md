@@ -10,6 +10,8 @@ GoForj has two main configuration layers:
 - `.goforj.yml` for project rendering and development workflow.
 - environment variables for runtime behavior.
 
+This page defines accepted keys and values. Start with [Configuration](/getting-started/configuration) for the first working change, or [forj dev](/developer-tools/forj-dev) for the build, SPA, and runtime loop. The lifecycle examples below illustrate configuration shapes rather than a second development tutorial.
+
 ## `.goforj.yml`
 
 The project file records render-time choices and local development workflow.

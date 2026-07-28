@@ -71,8 +71,8 @@ Start the exact supervised command as the deployment service account. Successful
 Dispatch one safe test job through the normal application path. Expected result:
 
 - the selected worker receives the named job
-- logs or an Inspect identify the App, queue, job name, and outcome
-- queue metrics record the attempt
+- logs, and an Inspect when Inspects are enabled, identify the App, queue, job name, and outcome
+- queue metrics record the attempt when metrics are enabled
 - a durable backend no longer reports the job as pending after success
 
 Do not use process existence alone as proof that handlers are registered or that the backend is reachable.
@@ -117,18 +117,8 @@ Design operational workflows around the backend you deploy, and expose unsupport
 - Each worker process owns an explicit queue set and concurrency budget.
 - Retry, backoff, timeout, and idempotency behavior is tested for critical jobs.
 - The supervisor stop timeout exceeds graceful App and queue shutdown budgets.
-- Logs, metrics, Inspects, queue depth, and terminal failures are collected.
+- Logs, queue depth, and terminal failures are collected; collect metrics and Inspects when those components are enabled.
 - Operator retry and delete actions are limited to drivers that support them.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not run queue workers from HTTP handlers.
-- Do not assume shutdown means instant termination.
-- Do not ignore idempotency when retries are possible.
-- Do not treat workerpool as equivalent to durable distributed queues.
-- Do not assume every queue driver supports queue admin operations.
-:::
 
 ## Next Steps
 

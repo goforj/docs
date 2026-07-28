@@ -9,6 +9,30 @@ Database connections are the source-of-truth path for durable relational data in
 
 GoForj keeps database configuration explicit and generated. The generated database package opens and caches connections on first access through its connection registry.
 
+## Open the Default Connection
+
+Database-enabled Apps expose the configured default connection through:
+
+```bash
+forj db
+```
+
+Expected result: GoForj resolves the default `DB_*` configuration and opens the matching `mysql`, `psql`, or `sqlite3` shell. It tries the local client first and falls back to the matching generated Docker Compose service only when the local client is missing and that service exists.
+
+Use `--print` to verify the masked command without opening a shell:
+
+```bash
+forj db --print
+```
+
+Application code reaches the same default connection through the generated registry:
+
+```go
+db, err := conns.Default()
+```
+
+The connection opens on first access and is then cached by name.
+
 ## Generated Package
 
 Database connection behavior lives in:
@@ -59,15 +83,7 @@ After changing named connections or supported drivers, use the normal build path
 forj build
 ```
 
-::: info Dev Loop
-When this App is listed in `dev.apps`, its build lifecycle normally runs `forj build` for you.
-:::
-
-Use focused generation only when you intentionally want to refresh database accessors without a full build:
-
-```bash
-forj generate --db
-```
+During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generation Commands](/reference/generation-commands) covers focused maintainer workflows.
 
 ## Accessing Connections
 
@@ -82,15 +98,9 @@ Connections are opened on first accessor use and cached by name. This database-s
 
 Use health and readiness checks to make required database availability visible for the runtime process that needs it.
 
-## Database Shell
+## Shell Options
 
-Database-enabled Apps include a generated shell command for inspecting configured connections:
-
-```bash
-forj db
-```
-
-`forj db` opens a configured database connection with the matching local client: `mysql`, `psql`, or `sqlite3`. The command resolves connection details from `DB_*` variables, so application code and shell access use the same App configuration.
+Database-enabled Apps also expose the canonical command name:
 
 Use the canonical command when you want the full name:
 
@@ -176,16 +186,6 @@ This compiles SQLite and Postgres support, uses SQLite for the default connectio
 Use the database for durable business state.
 
 Do not use cache as the source of truth. Do not use object storage as a replacement for relational state unless the data is actually file/blob data.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not generalize database first-access behavior to cache, storage, queue, or event managers unless their generated code supports it.
-- Do not add a runtime driver without including it in `DB_SUPPORTED_DRIVERS`.
-- Do not hide database configuration in leaf services.
-- Do not treat cache or storage as durable relational state.
-- Do not edit generated DB accessors by hand.
-:::
 
 ## Next Steps
 

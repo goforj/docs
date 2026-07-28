@@ -7,7 +7,7 @@ description: How routes are registered, grouped, protected, listed, and operated
 
 Routes connect HTTP methods and paths to handlers through the `web` routing contract.
 
-GoForj Apps keep route registration explicit so HTTP behavior is discoverable through code, `route:list`, metrics, inspects, and Lighthouse.
+GoForj Apps keep route registration explicit so HTTP behavior is discoverable through code, `route:list`, and enabled metrics, Inspects, and Lighthouse.
 
 ## Where Routes Live
 
@@ -30,33 +30,15 @@ The app route file composes those controller routes into route groups. Named app
 app/marketplace/routes.go
 ```
 
-## End-to-End Users Route
+## Follow the Complete Users Route
 
-Use [JSON API Route](/scenarios/json-api-route) as the canonical, runnable Users workflow. From an HTTP-enabled App, it uses the real generator, edits the generated feature, rebuilds Wire, tests the App, and verifies the served endpoint:
+Use [JSON API Route](/scenarios/json-api-route) as the canonical, runnable Users workflow. It is maintained against the current templates; this page only describes the route-composition contract.
 
 ```bash
 forj make:controller users
-# add internal/users/service.go and replace internal/users/controller.go
-# add users.NewService to app/wire/inject_services_app.go
-forj build
-go test ./...
-forj route:list
-forj api
 ```
 
-In a second terminal, while `forj api` is running:
-
-```bash
-curl http://localhost:3000/api/v1/users/42
-```
-
-Expected response:
-
-```json
-{"id":"42","name":"Ada Lovelace","email":"ada@example.test"}
-```
-
-`route:list` must include `/api/v1/users/:id`. The generator updates `internal/users/controller.go`, `app/wire/inject_http_controllers_app.go`, and `app/routes.go`; adding the service constructor to `app/wire/inject_services_app.go` makes the controller constructible. The scenario contains the complete files and its service test, so these pages can explain their boundaries without maintaining a second copy.
+The generator creates the controller and adds its constructor to `app/wire/inject_http_controllers_app.go` and its routes to `app/routes.go`. After replacing the generated handler with application behavior, add any service constructors it needs to `app/wire/inject_services_app.go`, then run the scenario's build, test, and endpoint-verification steps. `forj route:list` is the check that the registered route is present.
 
 ## Controller Routes
 

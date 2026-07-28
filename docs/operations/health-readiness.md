@@ -110,15 +110,6 @@ Readiness can cover:
 
 Optional facilities should report degraded state instead of crashing unrelated runtimes when the App is designed to tolerate degradation.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not expose raw dependency errors publicly.
-- Do not use health checks for expensive dependency probes.
-- Do not mark the App ready before required dependencies are available.
-- Do not hide degraded optional resources as silent emptiness.
-:::
-
 ## Next Steps
 
 - [HTTP Server](/operations/http-server)

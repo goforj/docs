@@ -196,16 +196,6 @@ The CLI context is cancelled when the command lifecycle stops, including interru
 
 Use `context.Background()` only at a boundary that genuinely has no caller context. A generated command's `Run(ctx context.Context)` method already has one.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not implement durable application behavior only as a shell script.
-- Do not duplicate service workflows inside commands.
-- Do not bypass Wire with package globals.
-- Do not forget to regenerate wiring after adding command providers.
-- Do not hide long-running runtime behavior in a short-lived command accidentally.
-:::
-
 ## Next Steps
 
 - [`make:command` Reference](/core/make-commands#make-command) shows generation, placement, and wiring.

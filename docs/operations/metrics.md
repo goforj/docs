@@ -9,6 +9,8 @@ Metrics are numeric operational signals emitted by the App.
 
 GoForj Apps expose Prometheus-compatible metrics through `github.com/goforj/metrics`.
 
+Metrics endpoints and instrumentation are present only when the metrics component is selected for the App.
+
 ::: info Metrics package reference
 This operations guide covers the endpoints, configuration, and runtime signals of a GoForj App. The [metrics library page](/metrics) documents standalone registries, exposition, metric types, and the complete package API.
 :::
@@ -47,11 +49,21 @@ When the HTTP runtime exposes `/metrics`, local scraping may use each app's HTTP
  
 Override named app ports with app-prefixed env vars such as `MARKETPLACE_API_HTTP_PORT`, `MARKETPLACE_METRICS_PORT`, `MARKETPLACE_SCHEDULER_METRICS_PORT`, and `MARKETPLACE_WORKER_METRICS_PORT`.
 
-When HTTP metrics are enabled, the App may also expose:
+When the HTTP runtime and metrics component are enabled, the App also exposes:
 
 ```text
 GET /metrics
 ```
+
+Verify the listener selected for the running topology:
+
+```bash
+curl --fail http://127.0.0.1:10000/metrics
+# HELP http_requests_total Total HTTP requests.
+# TYPE http_requests_total counter
+```
+
+The exact metric families depend on enabled components and whether the App has served requests; Prometheus text and a successful response prove the scrape endpoint is available.
 
 ## Toggles
 
@@ -100,15 +112,6 @@ Avoid user IDs, emails, raw URLs, raw SQL, cache keys, filenames, request IDs, a
 GoForj metrics should prove themselves against standard Prometheus-compatible tooling before Lighthouse adapts them into UI views.
 
 This keeps metric names, labels, and dashboards honest.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not add high-cardinality labels.
-- Do not count internal scrape traffic as application traffic.
-- Do not create a second metrics registry for normal App metrics.
-- Do not use metrics as a replacement for logs or inspects.
-:::
 
 ## Next Steps
 

@@ -77,15 +77,6 @@ cd cmd/app/frontend
 npm run build
 ```
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not assume starter kit files remain framework-owned after generation.
-- Do not rerender over a custom frontend unless replacement is intended.
-- Do not depend on `node_modules` being part of the template output.
-- Do not confuse Web UI with Web API; they are separate component choices.
-:::
-
 ## Next Steps
 
 - [Starter Kits](/getting-started/starter-kits)

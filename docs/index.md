@@ -90,7 +90,7 @@ const CAPABILITIES = [
   { title: 'Queues and jobs', icon: 'rows-3', copy: 'Named, durable background work with typed payloads, retries, timeouts, and worker processes.', href: '/async/queues' },
   { title: 'Events', icon: 'radio', copy: 'Typed facts with local-first fan-out. In-process today, NATS or Kafka when you need it.', href: '/async/events' },
   { title: 'Scheduler', icon: 'clock', copy: 'Declarative recurring work with stable names, overlap control, and operator visibility.', href: '/async/scheduler' },
-  { title: 'Database', icon: 'database', copy: 'Generated connections, named resources, per-driver migrations, and a built-in db shell.', href: '/data/database-strategy' },
+  { title: 'Database', icon: 'database', copy: 'Named database connections, migrations for each selected driver, and a built-in database shell.', href: '/data/database-strategy' },
   { title: 'Cache', icon: 'database-zap', copy: 'Named accessors with explicit TTLs, locks, counters, and rate limits behind one contract.', href: '/data/cache-patterns' },
   { title: 'Storage', icon: 'hard-drive', copy: 'Named disks for files and blobs. Local in development, object storage in production.', href: '/data/storage-patterns' },
   { title: 'Mail', icon: 'mail', copy: 'Fluent message composition with pluggable delivery: SMTP, Resend, Postmark, SES, and more.', href: '/applications/mail' },
@@ -199,21 +199,21 @@ onBeforeUnmount(() => {
 <p class="gf-home-eyebrow">Start</p>
 <h2 class="gf-home-h2">A real application in <em>two commands</em></h2>
 <p class="gf-home-lead"><code>forj new</code> renders a complete Go project - the components you choose, nothing more. <code>forj dev</code> brings it alive. Built for Go developers shipping services, workers, CLIs, and full products.</p>
-<div class="gf-home-shapes" aria-label="What a GoForj App can be">
+<div class="gf-home-shapes" aria-label="What you can build with GoForj">
 <span>A focused CLI</span>
 <span>An API service</span>
 <span>Workers and schedules</span>
 <span>A full product with auth and Vue, React, or templ</span>
 </div>
 <ul class="gf-home-points">
-<li><strong>Components are choices.</strong> Database, Cache, Events, File Storage, Background Jobs, auth, frontend, observability - picked at <code>forj new</code>, changed later as the App grows.</li>
+<li><strong>Choose what you need.</strong> Add database access, cache, events, file storage, background jobs, auth, a frontend, and observability at <code>forj new</code> or later as the app grows.</li>
 <li><strong>The structure is already there.</strong> Routes, wiring, lifecycle, configuration, and tests have a place before you write a line.</li>
-<li><strong>It runs before you configure anything.</strong> Local drivers back every primitive, so day one needs no cloud account and no docker-compose archaeology.</li>
+<li><strong>It runs before you configure anything.</strong> Local drivers back the database, cache, queue, events, storage, and mail integrations, so day one needs no cloud account and no docker-compose archaeology.</li>
 </ul>
 <div class="gf-home-links">
 <a href="/getting-started/quickstart">Follow the Quickstart →</a>
 <a href="/developer-tools/atlas">Atlas for agents →</a>
-<span class="gf-home-links__note">a few minutes to a running App</span>
+<span class="gf-home-links__note">a few minutes to a running app</span>
 </div>
 <a class="gf-home-atlas" href="/developer-tools/atlas" data-reveal style="--reveal-delay: 0.08s" aria-label="Read the Atlas agent support guide">
 <span class="gf-home-atlas__mark" aria-hidden="true">ATLAS</span>
@@ -236,11 +236,11 @@ onBeforeUnmount(() => {
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Infrastructure</p>
 <h2 class="gf-home-h2">Swap drivers, <em>not business logic</em></h2>
-<p class="gf-home-lead">Services depend on stable contracts. Configuration selects among the drivers compiled into the App, so a supported backend change leaves business logic alone.</p>
+<p class="gf-home-lead">Services depend on stable contracts. Configuration selects among the drivers compiled into the app, so a supported backend change leaves business logic alone.</p>
 </div>
 <div class="gf-home-swap__grid">
 <div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
-<div class="gf-home-swap__tabs" role="tablist" aria-label="Pick a primitive">
+<div class="gf-home-swap__tabs" role="tablist" aria-label="Choose an integration">
 <button
   v-for="tab in SWAP_TABS"
   :key="tab.id"
@@ -424,7 +424,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </div>
 </div>
 </div>
-<p class="gf-home-swap__all" data-reveal><strong>Every primitive works this way.</strong> Cache, storage, queue, events, database, mail - each runs on in-process or local drivers in a standalone binary, then swaps to real infrastructure in production. No code changes.</p>
+<p class="gf-home-swap__all" data-reveal><strong>The same rule applies across the app.</strong> Cache, storage, queues, events, databases, and mail run on in-process or local drivers, then move to production infrastructure without changing service code.</p>
 </div>
 </section>
 
@@ -435,7 +435,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">The stack</p>
 <h2 class="gf-home-h2">Everything an application needs, in <em>one model</em></h2>
-<p class="gf-home-lead">The foundation teams rebuild in every service - already built, already coherent. One runtime, one configuration story, one operational surface.</p>
+<p class="gf-home-lead">The routes, workers, schedules, storage, cache, configuration, and operational tools teams rebuild in every service - already connected and ready to use.</p>
 </div>
 <div class="gf-home-grid">
 <a
@@ -502,8 +502,8 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <p class="gf-home-lead">One binary hosts everything locally, or splits into explicit processes when production needs to scale. Build one artifact, then run the entry point your environment needs.</p>
 </div>
 <div class="gf-home-ops__binary">
-<h3 class="gf-home-ops__binary-title" data-reveal>Your entire App is one file</h3>
-<div class="gf-home-swap__tabs gf-home-ops__binary-tabs" role="tablist" aria-label="Pick an App shape" data-reveal>
+<h3 class="gf-home-ops__binary-title" data-reveal>Your entire app is one file</h3>
+<div class="gf-home-swap__tabs gf-home-ops__binary-tabs" role="tablist" aria-label="Choose what the app runs" data-reveal>
 <button
   v-for="tab in BIN_TABS"
   :key="tab.id"
@@ -515,9 +515,9 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 >{{ tab.label }}</button>
 </div>
 <div class="gf-home-ops__binary-copy" data-reveal>
-<p>Whatever shape you choose, <code>forj build</code> compiles it into one static binary: under 60 MB with everything enabled, nothing extra to install beside it.</p>
+<p>Whatever you choose to include, <code>forj build</code> compiles it into one static binary: under 60 MB with everything enabled, nothing extra to install beside it.</p>
 <p class="gf-home-ops__binary-inside">Ships inside</p>
-<div class="gf-home-shapes gf-home-ops__binary-chips" :key="binTab" aria-label="What ships inside this binary shape">
+<div class="gf-home-shapes gf-home-ops__binary-chips" :key="binTab" aria-label="What ships inside this binary">
 <span v-for="chip in activeBinChips" :key="chip">{{ chip }}</span>
 </div>
 </div>
@@ -558,7 +558,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </div>
 </div>
 <div :class="{ 'is-open': binTab === 'full' }" :aria-hidden="binTab !== 'full'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Running a full GoForj App from one binary">
+<div class="gf-home-terminal" aria-label="Running a full GoForj app from one binary">
 <div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · everything</em></div>
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · all of them</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
@@ -590,11 +590,11 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-ops__surfaces">
 <div class="gf-home-ops__surface" data-reveal>
 <h3>Route lists</h3>
-<p><code>forj route:list</code> is the source of truth for the HTTP surface, not a scroll through startup logs.</p>
+<p><code>forj route:list</code> lists every registered HTTP route, so startup logs do not have to serve as route documentation.</p>
 </div>
 <div class="gf-home-ops__surface" data-reveal style="--reveal-delay: 0.07s">
 <h3>Health and readiness</h3>
-<p><code>/-/health</code> and <code>/-/ready</code> ship generated, with token-gated structured diagnostics.</p>
+<p><code>/-/health</code> and <code>/-/ready</code> are included, with token-gated structured diagnostics.</p>
 </div>
 <div class="gf-home-ops__surface" data-reveal style="--reveal-delay: 0.14s">
 <h3>Metrics</h3>
@@ -618,12 +618,12 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-section__inner gf-home-split">
 <div class="gf-home-split__copy" data-reveal>
 <p class="gf-home-eyebrow">Scale</p>
-<h2 class="gf-home-h2">Start with one App. <em>Grow into many</em></h2>
-<p class="gf-home-lead">Most products live their whole life as a single App - and that is the golden path. When a Project outgrows it, one command adds another runnable app in the same repo: shared code, separate wiring, separate binaries, separate scaling.</p>
+<h2 class="gf-home-h2">Start with one app. <em>Grow into many</em></h2>
+<p class="gf-home-lead">Most products stay in one app. When a Project needs another deployment or scaling boundary, one command adds another runnable app in the same repo: shared code, separate wiring, and separate binaries.</p>
 <ul class="gf-home-points">
-<li><strong>Apps are boundaries, not microservices.</strong> Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
+<li><strong>Apps are runnable boundaries, not automatic microservices.</strong> Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
 <li><strong>Each app deploys on its own terms.</strong> Its own binary, ports, wiring, and runtime identity in logs, metrics, and Lighthouse - scale <code>marketplace</code> without touching the rest.</li>
-<li><strong>Nothing changes until you need it.</strong> A single-App Project never pays for this. Multi-app is a fan-out path for larger systems, teams, and monorepos - not a new architecture to learn on day one.</li>
+<li><strong>Nothing changes until you need it.</strong> A single-app Project never pays for this. Add named apps only when larger systems, teams, or monorepos need separate runnable boundaries.</li>
 </ul>
 <div class="gf-home-links">
 <a href="/core/apps">Apps →</a>
@@ -636,7 +636,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app marketplace</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj marketplace make:controller checkout</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj marketplace route:list</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># manages Apps listed in dev.apps</span>
+<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># manages apps listed in dev.apps</span>
 <span></span>
 <span class="t-tree">photodrop/</span>
 <span class="t-tree">├──</span> cmd/app/         <span class="t-dim"># default app</span>
@@ -657,7 +657,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-section__inner">
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Tested foundation</p>
-<h2 class="gf-home-h2">Primitives that <em>prove themselves</em></h2>
+<h2 class="gf-home-h2">Drivers tested against <em>real backends</em></h2>
 <p class="gf-home-lead">A driver should not only compile - it should prove its behavior against the backend it claims to support.</p>
 </div>
 <div class="gf-home-proof__stats">
@@ -680,7 +680,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-section__header" data-reveal>
 <p class="gf-home-eyebrow">Verified scenarios</p>
 <h2 class="gf-home-h2">Learn it by <em>building it</em></h2>
-<p class="gf-home-lead">Seven scenarios grow one small App from a single route to a fully observable system. Each ships only after it executes against the current templates - the tutorial cannot drift from the framework.</p>
+<p class="gf-home-lead">Seven scenarios grow one small app from a single route to a fully observable system. Each ships only after it executes against the current templates, keeping the tutorial aligned with the framework.</p>
 </div>
 <ol class="gf-home-path">
 <li
@@ -728,7 +728,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </div>
 <div class="gf-home-fit__eject" data-reveal style="--reveal-delay: 0.18s">
 <h3>If you outgrow it, you keep everything</h3>
-<p>A rendered App is ordinary Go: explicit wiring, readable files, standard modules. Stop running <code>forj</code> tomorrow and your application still builds, tests, and deploys. The framework earns its place in your workflow, not in your lock-in.</p>
+<p>A GoForj app is ordinary Go: explicit wiring, readable files, standard modules. Stop running <code>forj</code> tomorrow and your application still builds, tests, and deploys. The framework earns its place in your workflow, not in your lock-in.</p>
 </div>
 </div>
 </section>
@@ -757,8 +757,8 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-close__paths">
 <a class="gf-home-close__path" href="/getting-started/quickstart" data-reveal>
 <p class="gf-home-eyebrow">For your next application</p>
-<h3>Build a GoForj App</h3>
-<p>Runtime orchestration, explicit wiring, local-first drivers - and an optional Vue starter kit with auth, settings, and dashboard screens already shaped.</p>
+<h3>Build an app with GoForj</h3>
+<p>Explicit process management and dependency wiring, local-first drivers, and an optional Vue starter kit with auth, settings, and dashboard screens ready to extend.</p>
 <span class="gf-home-close__cta">Quickstart →</span>
 </a>
 <a class="gf-home-close__path" href="/libraries/" data-reveal style="--reveal-delay: 0.1s">

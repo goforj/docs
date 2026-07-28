@@ -49,15 +49,6 @@ go test ./internal/cmd/...
 
 Expected result: every command package reports `ok`. If the command is registered through App wiring, also run `forj build`; expected result: Wire generation succeeds before the package tests run.
 
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not duplicate service workflow tests in command tests.
-- Do not shell out to the binary when a direct command test is enough.
-- Do not use package globals to bypass command injection.
-- Do not turn every command test into a full rendered App integration test.
-:::
-
 ## Next Steps
 
 - [Commands](/applications/commands) explains command structure.

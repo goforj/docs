@@ -36,7 +36,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/goforj/httpx/v2"
+	"github.com/goforj/httpx"
 )
 
 // Invoice is the billing response used by application services.
@@ -62,22 +62,23 @@ func NewClient(baseURL string) *Client {
 
 // FindInvoice returns one invoice while preserving caller cancellation.
 func (c *Client) FindInvoice(ctx context.Context, id string) (Invoice, error) {
-	return httpx.GetCtx[Invoice](
+	result := httpx.GetCtx[Invoice](
 		c.http,
 		ctx,
 		"/api/v1/invoices/"+url.PathEscape(id),
 	)
+	return result.Body, result.Err
 }
 ```
 
-The module path and `httpx` version should match the App's `go.mod`.
+Generated GoForj Apps currently pin `github.com/goforj/httpx` v1. Use that module path unless the App's `go.mod` has intentionally been upgraded.
 
 ## Configure and Provide the Client
 
 Keep environment lookup at the App composition boundary. Add a focused provider to `app/wire/inject_services_app.go`:
 
 ```go
-// provideBillingClient resolves required endpoint configuration before the App starts.
+// provideBillingClient resolves required endpoint configuration when a reachable service needs it.
 func provideBillingClient() (*billing.Client, error) {
 	baseURL := strings.TrimSpace(os.Getenv("BILLING_API_URL"))
 	if baseURL == "" {
@@ -93,7 +94,7 @@ var appSet = wire.NewSet(
 )
 ```
 
-This is a composition fragment: add the `errors`, `os`, `strings`, and application package imports to the existing file. Configure the endpoint through the runtime environment:
+This is a composition fragment: add the `errors`, `os`, `strings`, and application package imports to the existing file. To make the provider reachable, inject `*billing.Service` into a controller constructor registered in `app/wire/inject_http_controllers_app.go`, or into a command registered in its matching Wire set. Wire evaluates providers only when something in the built graph depends on their result. Configure the endpoint through the runtime environment:
 
 ```dotenv
 BILLING_API_URL=https://billing.internal
@@ -116,6 +117,43 @@ func (s *Service) FindInvoice(ctx context.Context, id string) (Invoice, error) {
 	return s.billing.FindInvoice(ctx, id)
 }
 ```
+
+## Make the Service Reachable
+
+An entry point must consume the service before Wire includes its providers. For an HTTP app, inject it into a controller:
+
+```go
+// internal/invoices/controller.go
+type Controller struct {
+	billing *billing.Service
+}
+
+// NewController constructs the invoice HTTP controller.
+func NewController(billing *billing.Service) *Controller {
+	return &Controller{billing: billing}
+}
+```
+
+Register that constructor in the HTTP controller set:
+
+<CodeFile path="app/wire/inject_http_controllers_app.go">
+
+```go
+var appHttpControllerSet = wire.NewSet(
+	// existing controller providers...
+	invoices.NewController,
+)
+```
+
+</CodeFile>
+
+Now the dependency path is complete:
+
+```text
+HTTP routes -> invoices.Controller -> billing.Service -> billing.Client
+```
+
+Wire retains every provider in that path. With `BILLING_API_URL` missing, constructing the HTTP runtime returns the provider error before the server starts.
 
 ## Test the Boundary
 
@@ -162,7 +200,7 @@ go test ./internal/billing
 forj build
 ```
 
-Expected result: the client test passes, and `forj build` confirms Wire includes `provideBillingClient` in the App graph.
+Expected result: the client test passes and `forj build` succeeds. When a registered controller or command depends on `*billing.Service`, a missing `BILLING_API_URL` makes Wire construction fail before that runtime starts; it is not validated merely because the provider appears in `appSet`.
 
 ## Environment-Enabled Dumps
 
@@ -187,20 +225,18 @@ forj sync:billing
 Use request-scoped options when only one call needs detail:
 
 ```go
-response, err := httpx.Get[map[string]any](
+result := httpx.Get[map[string]any](
 	httpx.New(),
 	"https://httpbin.org/uuid",
 	httpx.Trace(),
-	httpx.EnableDump(),
+	httpx.Dump(),
 )
-if err != nil {
-	return err
+if result.Err != nil {
+	return result.Err
 }
 
-httpx.Dump(response)
-// #map[string]interface {} {
-//   uuid => "00000000-0000-0000-0000-000000000000" #string
-// }
+fmt.Println(result.Body["uuid"])
+// 00000000-0000-0000-0000-000000000000
 ```
 
 Use client-level options when every request from one client needs diagnostic output:
@@ -223,9 +259,9 @@ var buf bytes.Buffer
 
 client := httpx.New(httpx.DumpEachRequestTo(&buf))
 
-_, err := httpx.Get[map[string]any](client, "https://httpbin.org/uuid")
-if err != nil {
-	return err
+result := httpx.Get[map[string]any](client, "https://httpbin.org/uuid")
+if result.Err != nil {
+	return result.Err
 }
 
 log.Print(buf.String())
@@ -262,16 +298,6 @@ HTTP dumps can expose sensitive data:
 - query strings
 
 Do not enable broad dump output in production unless output is controlled, retained safely, and reviewed for secrets. Prefer request-scoped diagnostics when possible.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not use `HTTP_TRACE` as a permanent production setting.
-- Do not log dumps from requests that carry secrets unless redaction is handled.
-- Do not create outbound clients in leaf methods on every request.
-- Do not hide clients in package globals when providers can inject them explicitly.
-- Do not put business retry decisions in HTTP diagnostics code.
-:::
 
 ## Next Steps
 

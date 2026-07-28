@@ -15,12 +15,9 @@ This guide covers how a GoForj App registers and runs schedules. For standalone 
 
 ## When To Use Scheduler
 
-| Question | Guidance |
-| --- | --- |
-| Use this when | Work should begin on a recurring interval, cron expression, or calendar schedule. |
-| Avoid this when | The work is event-driven, request-driven, or needs queue durability by itself. |
-| Start with | A stable schedule name that calls a domain service or dispatches a named job. |
-| Upgrade to | Singleton process policy, distributed locking, and queue-backed work when production overlap or retries matter. |
+Use the scheduler when work should begin on an interval, cron expression, or calendar schedule. Give it a stable name and call a domain service or dispatch a named job.
+
+Use events or request handlers for work triggered by those boundaries. When a scheduled workflow needs durability or retries, let the schedule dispatch a job. Add singleton process policy or distributed locking when overlapping scheduler processes are possible.
 
 ## Default Recommendation
 

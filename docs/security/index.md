@@ -1,11 +1,11 @@
 ---
 title: Security
-description: Authentication, sessions, cookies, refresh behavior, and security-sensitive GoForj App surfaces.
+description: Authentication, sessions, cookies, refresh behavior, and security-sensitive GoForj application behavior.
 ---
 
 # Security
 
-Security covers framework-owned and GoForj App surfaces that affect identity, sessions, authorization, secrets, and security-sensitive runtime behavior.
+Security covers framework and application behavior that affects identity, sessions, authorization, secrets, and runtime safety.
 
 Start with [Auth](/security/auth) when the App includes generated account and session support. Then use the session, OAuth, and production guides for the security boundaries that surround it.
 

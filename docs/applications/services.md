@@ -66,7 +66,7 @@ This keeps service APIs independent from HTTP request structs, CLI flag structs,
 
 ## Runtime Boundaries
 
-Multiple runtime surfaces may call the same service:
+Multiple entry points may call the same service:
 
 - HTTP controller
 - CLI command
@@ -74,7 +74,7 @@ Multiple runtime surfaces may call the same service:
 - event subscriber
 - scheduler entry
 
-The service should not need to know which surface called it unless that is part of the business behavior.
+The service should not need to know whether HTTP, a command, a job, or a schedule called it unless that distinction is part of the business behavior.
 
 ## Infrastructure Access
 
@@ -96,16 +96,6 @@ Avoid importing backend driver packages into services.
 Keep consistency decisions close to the service method that owns the workflow.
 
 If a workflow writes to the database, dispatches a job, updates cache, and publishes an event, document the ordering and failure behavior in the service or feature docs. Do not hide consistency policy in controllers or middleware.
-
-## Common Mistakes
-
-::: warning Common mistakes
-- Do not put business workflows in controllers, middleware, runtime bootstrap, or provider functions.
-- Do not read environment variables repeatedly inside services when configuration can be injected.
-- Do not make services depend on HTTP-only types.
-- Do not use package globals as an infrastructure shortcut.
-- Do not swallow dependency errors that should fail fast.
-:::
 
 ## Next Steps
 

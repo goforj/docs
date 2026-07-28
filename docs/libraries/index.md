@@ -9,6 +9,8 @@ GoForj Libraries are first-party Go packages that can be used on their own or co
 
 Each library page remains useful for standalone package users. Framework guides should link here for primitive APIs, driver details, constructors, and direct package usage.
 
+Use the [Driver Catalog](/drivers) to compare every available backend before opening a library page for its constructors and package-level behavior.
+
 ## Application Infrastructure
 
 - [Web](/web) provides server-side HTTP abstractions, middleware, route indexing, and testing helpers.
@@ -38,8 +40,8 @@ Each library page remains useful for standalone package users. Framework guides 
 
 ## How Libraries Relate To Apps
 
-Framework pages show generated App integration first. Library pages show standalone package APIs.
+Framework pages show how an app uses each library. Library pages show standalone package APIs.
 
 Use the framework guides when you are building a full GoForj App. Use the library pages when you need direct package details, a driver matrix, standalone usage, or lower-level behavior.
 
-`web` and `httpx` are separate libraries. Use `web` for server-side routing, controllers, middleware, and generated App HTTP integration. Use `httpx` for lower-level HTTP client and utility behavior.
+`web` and `httpx` are separate libraries. Use `web` for server-side routing, controllers, middleware, and app HTTP integration. Use `httpx` for outbound HTTP clients and lower-level HTTP utilities.
