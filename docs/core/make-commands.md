@@ -351,25 +351,79 @@ func (m *Manager) Reports() *queue.Queue {
 ```
 </CodeFile>
 
-`make:queue` does not invent an application service. In App-owned code, inject the generated queue manager into the service that owns the workflow:
+Keep the payload beside the generated job and its handler:
+
+<CodeFile path="internal/reports/generate_job.go">
+
+```go
+const GenerateJobTypeName = "generate"
+
+type GenerateJobPayload struct {
+	ReportID string `json:"report_id"`
+}
+
+type GenerateJob struct {
+	service *Service
+}
+
+func NewGenerateJob(service *Service) *GenerateJob {
+	return &GenerateJob{service: service}
+}
+
+func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
+	var payload GenerateJobPayload
+	if err := msg.Bind(&payload); err != nil {
+		return fmt.Errorf("bind generate report payload: %w", err)
+	}
+	return j.service.Generate(ctx, payload.ReportID)
+}
+```
+</CodeFile>
+
+This example carries an ID because the worker should load the report's current state. That is a good default for mutable records, not a rule for every workload. For high-throughput work, use a bounded batch of IDs or a compact immutable snapshot DTO when avoiding another read matters. Avoid placing persistence models directly on the queue: they tend to create large payloads, stale state, and a queue contract coupled to the database model.
+
+`make:queue` does not create an application service. Inject the queue manager into the service that dispatches the job:
 
 <CodeFile path="internal/reports/service.go">
 
 ```go
 type Service struct {
-	queues *queues.Manager
+	queues   *queues.Manager
+	reports  *Repository
+	renderer *Renderer
 }
 
-func NewService(queues *queues.Manager) *Service {
-	return &Service{queues: queues}
+func NewService(
+	queues *queues.Manager,
+	reports *Repository,
+	renderer *Renderer,
+) *Service {
+	return &Service{
+		queues:   queues,
+		reports:  reports,
+		renderer: renderer,
+	}
 }
 
-func (s *Service) Generate(ctx context.Context) error {
+func (s *Service) QueueGeneration(ctx context.Context, reportID string) error {
+	payload, err := json.Marshal(GenerateJobPayload{ReportID: reportID})
+	if err != nil {
+		return err
+	}
+
 	reports := s.queues.Reports()
-	_, err := reports.WithContext(ctx).Dispatch(
-		queue.NewJob("reports:generate"),
+	_, err = reports.WithContext(ctx).Dispatch(
+		queue.NewJob(GenerateJobTypeName).Payload(payload),
 	)
 	return err
+}
+
+func (s *Service) Generate(ctx context.Context, reportID string) error {
+	report, err := s.reports.Find(ctx, reportID)
+	if err != nil {
+		return err
+	}
+	return s.renderer.Render(ctx, report)
 }
 ```
 </CodeFile>
@@ -379,7 +433,8 @@ Register that constructor with the application service set:
 <CodeFile path="app/wire/inject_services_app.go">
 
 ```go
-var appServiceSet = wire.NewSet(
+var appSet = wire.NewSet(
+	reports.NewRenderer,
 	reports.NewService,
 )
 ```
@@ -399,7 +454,7 @@ func NewController(service *Service) *Controller {
 }
 
 func (c *Controller) Generate(r web.Context) error {
-	if err := c.service.Generate(r.Context()); err != nil {
+	if err := c.service.QueueGeneration(r.Context(), r.Param("reportID")); err != nil {
 		return err
 	}
 	return r.NoContent(http.StatusAccepted)

@@ -72,6 +72,99 @@ func (m *Manager) Reports() *queue.Queue {
 ```
 </CodeFile>
 
+Keep the payload beside the generated job and its handler:
+
+<CodeFile path="internal/reports/generate_job.go">
+
+```go
+const GenerateJobTypeName = "generate"
+
+type GenerateJobPayload struct {
+	ReportID string `json:"report_id"`
+}
+
+type GenerateJob struct {
+	service *Service
+}
+
+func NewGenerateJob(service *Service) *GenerateJob {
+	return &GenerateJob{service: service}
+}
+
+func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
+	var payload GenerateJobPayload
+	if err := msg.Bind(&payload); err != nil {
+		return fmt.Errorf("bind generate report payload: %w", err)
+	}
+	return j.service.Generate(ctx, payload.ReportID)
+}
+```
+</CodeFile>
+
+This example carries an ID because the worker should load the report's current state. That is a good default for mutable records, not a rule for every workload. For high-throughput work, use a bounded batch of IDs or a compact immutable snapshot DTO when avoiding another read matters. Avoid placing persistence models directly on the queue: they tend to create large payloads, stale state, and a queue contract coupled to the database model.
+
+`make:queue` creates the resource, not an application service. Inject the queue manager into the service that dispatches the job:
+
+<CodeFile path="internal/reports/service.go">
+
+```go
+type Service struct {
+	queues   *queues.Manager
+	reports  *Repository
+	renderer *Renderer
+}
+
+func NewService(
+	queues *queues.Manager,
+	reports *Repository,
+	renderer *Renderer,
+) *Service {
+	return &Service{
+		queues:   queues,
+		reports:  reports,
+		renderer: renderer,
+	}
+}
+
+func (s *Service) QueueGeneration(ctx context.Context, reportID string) error {
+	payload, err := json.Marshal(GenerateJobPayload{ReportID: reportID})
+	if err != nil {
+		return err
+	}
+
+	reports := s.queues.Reports()
+	_, err = reports.WithContext(ctx).Dispatch(
+		queue.NewJob(GenerateJobTypeName).Payload(payload),
+	)
+	return err
+}
+
+func (s *Service) Generate(ctx context.Context, reportID string) error {
+	report, err := s.reports.Find(ctx, reportID)
+	if err != nil {
+		return err
+	}
+	return s.renderer.Render(ctx, report)
+}
+```
+</CodeFile>
+
+Add that constructor to the App service set:
+
+<CodeFile path="app/wire/inject_services_app.go">
+
+```go
+var appSet = wire.NewSet(
+	app.NewLifecycleRegistry,
+	runtime.NewTimeouts,
+	reports.NewRenderer,
+	reports.NewService,
+)
+```
+</CodeFile>
+
+Wire already knows how to provide `*queues.Manager`. With the repository provider and renderer constructor available, Wire can build `reports.Service`, then inject that service into the generated job. The service can use `s.queues.Reports()` without reading environment configuration or constructing a queue itself.
+
 </template>
 </MakeCommandTabs>
 

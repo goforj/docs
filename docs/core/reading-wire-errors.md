@@ -42,7 +42,7 @@ func NewController(service *users.Service) *Controller {
 Fix:
 
 ```go
-var appServiceSet = wire.NewSet(
+var appSet = wire.NewSet(
 	// existing app providers...
 	users.NewService,
 )
