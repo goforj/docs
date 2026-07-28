@@ -11,31 +11,23 @@ This page owns the deployable command shapes, process separation, and shutdown b
 
 ## Common Processes
 
-| Process | Built binary | Development alias |
-| --- | --- | --- |
-| Combined runtime | `./bin/app` or `./bin/app run` | `forj app` |
-| HTTP | `./bin/app api` | `forj api` |
-| Queue workers | `./bin/app worker` | `forj worker` |
-| Scheduler | `./bin/app scheduler` | `forj scheduler` |
+| Process | Supervised command |
+| --- | --- |
+| Combined runtime | `./bin/app` |
+| HTTP | `./bin/app api` |
+| Queue workers | `./bin/app worker` |
+| Scheduler | `./bin/app scheduler` |
 
-Both forms start the same App command. Use the built binary form for deployment and process supervision. Use the `forj <command>` development surface when you want GoForj to refresh generated code before running the App command. Use `forj run <command>` when you need to force App command execution explicitly.
+The bare runtime-capable binary selects `run`; `./bin/app run` is the explicit equivalent. This operations page uses direct binaries because a supervisor should execute the artifact being deployed. For source-aware development commands, see [Local-First Development](/core/local-first-development).
 
-For an additional app, use that app's binary or prefix the command with the app name:
+For an additional app, use that app's binary:
 
-| Process | Built binary | Development alias |
-| --- | --- | --- |
-| Combined runtime | `./bin/marketplace` or `./bin/marketplace run` | `forj marketplace app` |
-| HTTP | `./bin/marketplace api` | `forj marketplace api` |
-| Queue workers | `./bin/marketplace worker` | `forj marketplace worker` |
-| Scheduler | `./bin/marketplace scheduler` | `forj marketplace scheduler` |
-
-The app prefix is also how you run app-scoped commands during development:
-
-```bash
-forj marketplace route:list
-forj marketplace migrate
-forj marketplace make:job sync-catalog
-```
+| Process | Supervised command |
+| --- | --- |
+| Combined runtime | `./bin/marketplace` |
+| HTTP | `./bin/marketplace api` |
+| Queue workers | `./bin/marketplace worker` |
+| Scheduler | `./bin/marketplace scheduler` |
 
 ## Choose the Processes to Supervise
 

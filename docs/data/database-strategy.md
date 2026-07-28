@@ -108,11 +108,16 @@ Use the canonical command when you want the full name:
 forj db:shell
 ```
 
-The generated command is also available on the built App binary. Additional apps use the app-name development prefix or their own binary:
+Additional apps use the app-name prefix during source-aware development:
+
+```bash
+forj marketplace db
+```
+
+When validating a built artifact directly, use its binary:
 
 ```bash
 ./bin/app db
-forj marketplace db
 ./bin/marketplace db
 ```
 
@@ -152,7 +157,6 @@ Use `--exec` for a single SQL string:
 ```bash
 forj db --exec "select count(*) from users"
 forj db analytics --exec "select count(*) from events"
-./bin/app db --exec "select 1"
 ```
 
 Use `--` to pass client-native arguments directly after GoForj adds the configured connection arguments:

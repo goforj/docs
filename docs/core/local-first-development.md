@@ -14,7 +14,7 @@ Local-first does not mean local-only. It means the first working path is small, 
 Start with:
 
 ```bash
-forj app # or ./bin/app
+forj app
 ```
 
 The generated `app` command hosts enabled runtimes together in one process. Topology comes from the command you launch, not an environment mode switch.
@@ -22,23 +22,23 @@ The generated `app` command hosts enabled runtimes together in one process. Topo
 For an additional app, add the app name:
 
 ```bash
-forj marketplace app # or ./bin/marketplace
+forj marketplace app
 ```
 
 Use direct runtime commands when you need explicit process boundaries:
 
 ```bash
-forj api       # or ./bin/app api
-forj worker    # or ./bin/app worker
-forj scheduler # or ./bin/app scheduler
+forj api
+forj worker
+forj scheduler
 ```
 
 Select an additional app by name:
 
 ```bash
-forj marketplace api       # or ./bin/marketplace api
-forj marketplace worker    # or ./bin/marketplace worker
-forj marketplace scheduler # or ./bin/marketplace scheduler
+forj marketplace api
+forj marketplace worker
+forj marketplace scheduler
 ```
 
 Apps get deterministic per-app local defaults, so the default app can listen on `3000`, the first additional app on `3001`, and the next additional app on `3002` without manual port edits.

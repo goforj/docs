@@ -6,6 +6,8 @@ This file defines how GoForj should document runtime and production behavior.
 
 Operations docs should make GoForj feel explicit, inspectable, and trustworthy.
 
+Operations pages lead with `./bin/<app> ...` because a supervisor runs the built artifact, not the source-aware developer CLI. Development pages lead with `forj [<app>] ...`. Link across that boundary when useful, but do not put both forms beside each other as aliases; explicit mappings belong in reference material.
+
 ## Operations Principle
 
 Every runtime surface should answer:
@@ -25,11 +27,8 @@ Every runtime surface should answer:
 
 Document:
 
-- command: `forj api`
-- app-name-prefixed command: `forj <app> api`
 - built binary command: `./bin/app api`
 - app-specific binary command: `./bin/<app> api`
-- combined runtime command: `forj app`
 - built standalone command: `./bin/app` or `./bin/app run`
 - route registration
 - middleware stack
@@ -38,8 +37,8 @@ Document:
 - HTTP metrics
 - request inspects
 - graceful shutdown
-- route visibility through `forj route:list`
-- selected app route visibility through `forj <app> route:list`
+- route visibility through `./bin/app route:list`
+- selected app route visibility through `./bin/<app> route:list`
 
 Avoid:
 
@@ -50,8 +49,6 @@ Avoid:
 
 Document:
 
-- command: `forj worker`
-- app-name-prefixed command: `forj <app> worker`
 - built binary command: `./bin/app worker`
 - app-specific binary command: `./bin/<app> worker`
 - default queue behavior: no `--queue` starts every configured generated queue
@@ -75,8 +72,6 @@ Keep backend-specific priority knobs secondary. The framework docs should lead w
 
 Document:
 
-- command: `forj scheduler`
-- app-name-prefixed command: `forj <app> scheduler`
 - built binary command: `./bin/app scheduler`
 - app-specific binary command: `./bin/<app> scheduler`
 - generated schedule command: `forj make:schedule <name> --every <duration>`
@@ -97,13 +92,10 @@ Document:
 Document:
 
 - generated command surfaces
-- `forj ...` as the normal default app development surface inside a generated Project
-- `forj <app> ...` as the app-name-prefixed development surface
-- native `forj` commands taking precedence over delegated App commands
-- `forj run ...` as the explicit App-command path or collision escape hatch
 - `./bin/app ...` as the built App command surface
 - `./bin/<app> ...` as an app-specific built command surface
 - bare runtime launch behavior for runtime-capable App binaries when relevant
+- a link to source-aware command guidance when the operator also needs a development workflow
 - command lifecycle
 - context cancellation
 - logging

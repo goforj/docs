@@ -251,7 +251,7 @@ In this example, both named queues use Redis. `emails` gets more worker capacity
 Use `about` to verify what the App will run:
 
 ```bash
-forj about # or ./bin/app about
+forj about
 ```
 
 The queue section shows the app queue name, driver, backend queue name, and worker count. For example, `reports` may show `Queue Name: reports`, `Driver: redis`, and `Workers: 2`.
@@ -277,31 +277,31 @@ Named accessors also expose the direct runtime handle for worker lifecycle, read
 Start workers with:
 
 ```bash
-forj worker # or ./bin/app worker
+forj worker
 ```
 
 For an additional app, prefix the command with the app name:
 
 ```bash
-forj marketplace worker # or ./bin/marketplace worker
+forj marketplace worker
 ```
 
 Without `--queue`, the worker process starts workers for every configured generated queue. To run only one queue:
 
 ```bash
-forj worker --queue reports # or ./bin/app worker --queue reports
+forj worker --queue reports
 ```
 
 Repeat `--queue` to run a subset:
 
 ```bash
-forj worker --queue emails --queue reports # or ./bin/app worker --queue emails --queue reports
+forj worker --queue emails --queue reports
 ```
 
 In standalone local mode, workers can also be hosted with other enabled runtimes:
 
 ```bash
-forj app # or ./bin/app
+forj app
 ```
 
 ## Regeneration

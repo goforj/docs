@@ -686,7 +686,7 @@ Then run:
 forj build
 ```
 
-Business code does not change. `GenerateJob` still dispatches `reports:generate`, and workers still run with `forj worker` or `./bin/app worker`.
+Business code does not change. `GenerateJob` still dispatches `reports:generate`, and source-aware development still runs workers with `forj worker`.
 
 ## Common Mistakes
 

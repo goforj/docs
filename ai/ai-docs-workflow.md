@@ -71,10 +71,12 @@ When choosing command wording:
 
 - Use `forj dev` for the development loop.
 - Use `forj build` as the normal regeneration/build path.
-- Use `forj ...` for generated App commands during development.
+- Use `forj <command>` for the default App and `forj <app> <command>` for an additional App during source-aware development.
 - Use `forj run ...` only when documenting the explicit App-command path or collision escape hatch.
-- Use `./bin/app ...` for built binary, deployment, and process-supervision docs.
+- Use `./bin/app <command>` for the default built artifact and `./bin/<app> <command>` for an additional built artifact in deployment and process-supervision docs.
 - Mention bare `./bin/app` launch behavior only where standalone runtime ownership matters.
+- Never present the development and built-artifact forms as inline `or` alternatives. Choose one from the page's intent; reserve side-by-side mappings for reference material.
+- Use concrete app names in runnable examples and placeholders only in prose or reference tables.
 
 For primitives, verify in sibling repos:
 

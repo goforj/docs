@@ -135,8 +135,8 @@ READMEs and library pages are siloed per primitive. The framework's pitch is coh
 2026-06-11 session:
 
 - [x] Quickstart rewritten: two-command path, wizard transcript, troubleshooting, scenario handoff, time framing.
-- [x] Landing: audience line, time-to-success note, forj-primary command surfaces with `# → ./bin/app …` comments, metrics port corrected.
-- [x] Command convention swept: forj-first with binary shown beside it in dev contexts (`async/queues.md`, `async/workers.md`); production pages keep binary-first.
+- [x] Landing: audience line, time-to-success note, source-aware commands in development examples, direct binaries in operations examples, metrics port corrected.
+- [x] Command convention swept: development contexts use the source-aware `forj` surface, production pages use direct binaries, and reference material owns explicit mappings between them.
 - [x] Metrics port drift fixed: stale `9100` block replaced with real `10000/10001/10002` defaults in `operations/metrics.md`, `operations/http-server.md`, `applications/http-services.md`, `scenarios/runtime-observability.md`, and the landing terminal. Source of truth: `project_renderer.go` (`RuntimeBase: 10000 + i*10`) and `templates/.env.tmpl`.
 - [x] Heading convention: use Title Case with lowercase connector words. Codified in `tone.md`, `docs-style-guide.md`, and `review-checklists.md`.
 - [ ] Re-verify `scenarios/runtime-observability.md` end to end since its metrics ports changed (scenarios ship only after execution).
