@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-16",
+  "generatedAt": "2026-07-28",
   "totals": {
-    "unitTests": 975,
-    "integrationTests": 877,
-    "testFunctions": 2558,
-    "benchmarks": 66,
-    "drivers": 49,
+    "unitTests": 1461,
+    "integrationTests": 952,
+    "testFunctions": 3394,
+    "benchmarks": 85,
+    "drivers": 48,
     "libraries": 18
   },
   "drivers": {
@@ -29,8 +29,7 @@
       "redis",
       "kafka",
       "sns",
-      "gcppubsub",
-      "sqs"
+      "gcppubsub"
     ],
     "cache": [
       "null",
@@ -81,9 +80,9 @@
     },
     {
       "repo": "cache",
-      "unit": 354,
+      "unit": 391,
       "integration": 118,
-      "testFns": 212,
+      "testFns": 240,
       "benchmarks": 5
     },
     {
@@ -97,7 +96,7 @@
       "repo": "console",
       "unit": null,
       "integration": null,
-      "testFns": 211,
+      "testFns": 212,
       "benchmarks": 0
     },
     {
@@ -111,21 +110,21 @@
       "repo": "env",
       "unit": null,
       "integration": null,
-      "testFns": 78,
+      "testFns": 98,
       "benchmarks": 0
     },
     {
       "repo": "events",
       "unit": 25,
       "integration": 86,
-      "testFns": 106,
+      "testFns": 119,
       "benchmarks": 7
     },
     {
       "repo": "execx",
       "unit": null,
       "integration": null,
-      "testFns": 119,
+      "testFns": 122,
       "benchmarks": 2
     },
     {
@@ -144,23 +143,23 @@
     },
     {
       "repo": "mail",
-      "unit": 80,
+      "unit": 118,
       "integration": null,
-      "testFns": 65,
-      "benchmarks": 0
+      "testFns": 88,
+      "benchmarks": 3
     },
     {
       "repo": "metrics",
       "unit": null,
       "integration": null,
-      "testFns": 33,
-      "benchmarks": 4
+      "testFns": 61,
+      "benchmarks": 10
     },
     {
       "repo": "queue",
-      "unit": 274,
-      "integration": 552,
-      "testFns": 281,
+      "unit": 895,
+      "integration": 618,
+      "testFns": 673,
       "benchmarks": 6
     },
     {
@@ -172,24 +171,24 @@
     },
     {
       "repo": "storage",
-      "unit": 29,
-      "integration": 121,
-      "testFns": 169,
+      "unit": 32,
+      "integration": 130,
+      "testFns": 276,
       "benchmarks": 1
     },
     {
       "repo": "str",
       "unit": null,
       "integration": null,
-      "testFns": 89,
-      "benchmarks": 4
+      "testFns": 96,
+      "benchmarks": 10
     },
     {
       "repo": "web",
-      "unit": 213,
+      "unit": null,
       "integration": null,
-      "testFns": 246,
-      "benchmarks": 32
+      "testFns": 460,
+      "benchmarks": 36
     },
     {
       "repo": "wire",

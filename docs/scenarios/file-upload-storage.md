@@ -28,7 +28,7 @@ The example uses a small JSON payload so the page can focus on the GoForj storag
 
 Start from the App used in the previous scenarios.
 
-The generated App should have HTTP and storage support enabled.
+Your App should have HTTP and storage support enabled.
 
 ## Golden Path State
 
@@ -78,7 +78,7 @@ Do not edit generated storage files by hand.
 
 ## Step 1: Add a Named Storage Disk
 
-Add a named `uploads` disk to `.env`, then run the build pipeline so the generated App exposes `app.Storage().Uploads()`.
+Add a named `uploads` disk to `.env`, then run the build pipeline so your App exposes `app.Storage().Uploads()`.
 
 Append to `.env`:
 

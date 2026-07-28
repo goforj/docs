@@ -67,7 +67,7 @@ Generated auth cookies use:
 - `SameSite: Lax`
 - `Secure` from `AUTH_COOKIE_SECURE`
 
-Use `AUTH_COOKIE_SECURE=true` behind production HTTPS. `auto` is useful when the same generated App must support plain-HTTP local development and HTTPS deployment.
+Use `AUTH_COOKIE_SECURE=true` behind production HTTPS. `auto` is useful when the same App must support plain-HTTP local development and HTTPS deployment.
 
 Generated auth cookies remain host-scoped. This keeps sibling hosts outside the authentication boundary.
 

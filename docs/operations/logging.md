@@ -1,6 +1,6 @@
 ---
 title: Logging
-description: Operational logging guidance for generated GoForj Apps.
+description: Operational logging guidance for GoForj Apps.
 ---
 
 # Logging
@@ -22,15 +22,19 @@ Good default-visible logs include:
 - clear degraded-runtime warnings
 - dev ready markers
 
-These are the first lines an operator should use to establish process identity and lifecycle. Send the process's standard output and standard error to the platform log collector; do not add a second shell wrapper just to redirect generated App logs.
+These are the first lines an operator should use to establish process identity and lifecycle. Send the process's standard output and standard error to the platform log collector; do not add a second shell wrapper just to redirect App logs.
 
 ## Startup and Shutdown Investigation
 
-For a supervised binary, inspect the service manager's captured output first:
+Start with the App process's captured standard output and standard error. The command depends on how the App is deployed:
 
-```bash
-sudo journalctl -u example.service -n 100 --no-pager
-```
+| Environment | Recent process output |
+| --- | --- |
+| Kubernetes | `kubectl logs deployment/example --tail=100` |
+| Docker | `docker logs --tail 100 example` |
+| systemd | `journalctl -u example.service -n 100 --no-pager` |
+
+Use the equivalent log view in your process supervisor or hosting platform. When running the binary directly, inspect its terminal output.
 
 Expected result: startup identifies the HTTP bind address and route count, while workers and schedulers identify their lifecycle transitions. A normal shutdown includes a shutdown marker; workers can also report active jobs while they wait within their configured budget.
 

@@ -16,7 +16,7 @@ Add a variable only when the App needs a value different from its runtime fallba
 
 ## Resolution and Naming
 
-Generated Apps load .env files before their Wire graph is initialized. See [Configuration](/getting-started/configuration) for file precedence, build-time defaults, and build-time overrides.
+GoForj Apps load .env files before their Wire graph is initialized. See [Configuration](/getting-started/configuration) for file precedence, build-time defaults, and build-time overrides.
 
 GoForj uses two reusable naming patterns:
 
@@ -58,7 +58,7 @@ Variables for components that are not selected are not rendered and have no gene
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `APP_LOG_FORMAT` | `console` | Output format: `console` or `json`. |
-| `APP_LOG_TIME` | Disabled; rendered `.env` enables it | Include timestamps in generated App logs. Values `0`, `false`, `off`, and `no` disable it. |
+| `APP_LOG_TIME` | Disabled; rendered `.env` enables it | Include timestamps in App logs. Values `0`, `false`, `off`, and `no` disable it. |
 | `APP_LOG_CALLER` | Disabled | Include caller metadata. Values `0`, `false`, `off`, and `no` disable it. |
 | `APP_LOG_DEDUPE_ENABLED` | `true` | Coalesce repeated similar log messages. |
 | `APP_LOG_DEDUPE_WINDOW_MS` | `1200` | Dedupe window in milliseconds. |
@@ -72,7 +72,7 @@ See [Logging](/operations/logging) for event shape, output modes, and sensitive-
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `API_HTTP_HOST` | `0.0.0.0` | HTTP bind host. |
-| `API_HTTP_PORT` | Generated App port, starting at `3000` | HTTP bind port. |
+| `API_HTTP_PORT` | App port, starting at `3000` | HTTP bind port. |
 | `PORT` | Empty | Compatibility override for the default or selected App HTTP port. When set, it takes precedence over `API_HTTP_PORT`; prefer leaving it unset and configuring `API_HTTP_PORT`. |
 | `HTTP_ACCESS_LOG_ENABLED` | `true` | Enable generated HTTP access log events. |
 | `HTTP_CORS_ALLOW_ENDPOINTS` | `http://localhost:8080` in `local`; otherwise empty | Comma-separated credentialed CORS origins. Configure production origins explicitly. |
@@ -155,7 +155,7 @@ Only values with an explicit frontend prefix are exposed to generated browser co
 | `FRONTEND_<KEY>` | Exposes `VITE_<KEY>` to every generated frontend. |
 | `<APP>_FRONTEND_<KEY>` | Overrides one App frontend, such as `MARKETPLACE_FRONTEND_BACKEND_URL`. |
 | `VITE_BACKEND_URL` | Compatibility fallback for `FRONTEND_BACKEND_URL`. Prefer the GoForj frontend prefix in shared environment files. |
-| `FRONTEND_BACKEND_URL` | Backend proxy target. Resolution falls back to `<APP>_APP_URL`, `APP_URL`, then the generated App HTTP port. |
+| `FRONTEND_BACKEND_URL` | Backend proxy target. Resolution falls back to `<APP>_APP_URL`, `APP_URL`, then the App HTTP port. |
 | `FRONTEND_AUTH_PASSWORD_MIN_LENGTH` | Vue password guidance matching `AUTH_PASSWORD_MIN_LENGTH`. |
 | `FRONTEND_AUTH_PASSWORD_REQUIRE_UPPER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_UPPER`. |
 | `FRONTEND_AUTH_PASSWORD_REQUIRE_LOWER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_LOWER`. |
@@ -324,7 +324,7 @@ Available drivers: `local`, `memory`, `redis`, `ftp`, `sftp`, `s3`, `gcs`, `drop
 
 Use `STORAGE_<SUFFIX>` for the default disk and `STORAGE_<NAME>_<SUFFIX>` for named disks such as `STORAGE_PUBLIC_ROOT`.
 
-Generated projects render `STORAGE_PUBLIC_DRIVER` and `STORAGE_PUBLIC_ROOT`. The demo App also renders `STORAGE_FAVICONS_DRIVER` and `STORAGE_FAVICONS_ROOT`. These are ordinary named disks and accept the same named suffixes below.
+New Projects render `STORAGE_PUBLIC_DRIVER` and `STORAGE_PUBLIC_ROOT`. The demo App also renders `STORAGE_FAVICONS_DRIVER` and `STORAGE_FAVICONS_ROOT`. These are ordinary named disks and accept the same named suffixes below.
 
 Common settings:
 
@@ -511,7 +511,7 @@ These values configure generated local VictoriaMetrics and Grafana infrastructur
 | `DB_MYSQL_PORT` | `DB_PORT`, then `3306` | Published local MySQL port without changing the App connection port. |
 | `DB_POSTGRES_PORT` | `DB_PORT`, then `5432` | Published local Postgres port without changing the App connection port. |
 | `INNODB_BUFFER_POOL_SIZE` | `512MB` | Build setting for the generated local MariaDB image. |
-| `TZ` | `US/Central` | Time zone passed to generated local database services. |
+| `TZ` | `UTC` | Time zone passed to generated local database services. |
 
 ## Backups
 
@@ -548,7 +548,7 @@ S3-backed `STORAGE_<NAME>_*` resources can be inventoried as backup inputs, but 
 
 `FORJ_COMMAND_*`, `FORJ_SUBPROCESS`, `FORJ_NATIVE_COMMAND_NAMES`, `FORJ_MULTI_APP_HELP`, and `FORJ_BUILD_PROGRESS` are reserved process-handoff variables. Do not set them in App configuration.
 
-See [Opening Generated Files](/developer-tools/editor-open) and [forj dev](/developer-tools/forj-dev).
+See [Make Command Shared Options](/core/make-commands#shared-options) and [forj dev](/developer-tools/forj-dev).
 
 ## Generated Demo App
 

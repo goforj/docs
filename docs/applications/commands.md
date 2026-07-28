@@ -7,7 +7,7 @@ description: How application commands run, receive dependencies, and delegate to
 
 Commands are app entry points for developer, operator, and application workflows.
 
-They run through the generated app lifecycle, use injected dependencies, and are exposed through `forj` and the app binary.
+They run through the App lifecycle, use injected dependencies, and are exposed through `forj` and the App binary.
 
 ## Running Commands
 
@@ -29,9 +29,9 @@ forj marketplace worker
 forj marketplace scheduler
 ```
 
-Inside a generated Project, native GoForj commands take precedence. If no native command matches, GoForj delegates to the active app. Use `forj run <command>` when you want to force default app command execution explicitly, and use `./bin/<app> <command>` when running a built binary.
+Inside a GoForj Project, native GoForj commands take precedence. If no native command matches, GoForj delegates to the active App. Use `forj run <command>` when you want to force default App command execution explicitly, and use `./bin/<app> <command>` when running a built binary.
 
-The command runs inside the generated app, not as an ad hoc shell script around it.
+The command runs inside the App, not as an ad hoc shell script around it.
 
 ## Create a Command
 
@@ -121,6 +121,22 @@ func NewCommands(
 
 </template>
 </MakeCommandTabs>
+
+Build and run the generated command before replacing its starter behavior:
+
+```bash
+forj build
+go test ./...
+forj reports:reconcile
+```
+
+Expected output includes:
+
+```text
+ReconcileCmd executed!
+```
+
+For a named App, use `forj marketplace build` and `forj marketplace reports:reconcile`.
 
 Replace the starter body with the application workflow and add its service to the constructor. Wire will satisfy the new dependency after its provider is in the App service set.
 

@@ -1,6 +1,6 @@
 ---
 title: HTTP Services
-description: Build HTTP services in a generated GoForj App using controllers, route groups, and the web abstraction.
+description: Build HTTP services in a GoForj App using controllers, route groups, and the web abstraction.
 ---
 
 # HTTP Services
@@ -10,7 +10,7 @@ HTTP services in GoForj are built from generated HTTP runtime code, application 
 The framework owns server composition and runtime behavior. Application code owns routes, controllers, services, validation, and response decisions.
 
 ::: info Web package reference
-This guide stays at the generated App integration layer. See the [web library page](/web) for standalone router setup and the complete API for contexts, routing, middleware, testing, metrics, and indexing.
+This guide stays at the GoForj App integration layer. See the [web library page](/web) for standalone router setup and the complete API for contexts, routing, middleware, testing, metrics, and indexing.
 :::
 
 ## When To Use It
@@ -123,11 +123,11 @@ func (c *Controller) Show(ctx web.Context) error {
 }
 ```
 
-The exact response helpers available come from the `web` package. Use the generated App pattern first, then go to [Web](/web) for server-side primitive details or [HTTPX](/httpx) for lower-level HTTP utility behavior.
+The exact response helpers available come from the `web` package. Use the GoForj App pattern first, then go to [Web](/web) for server-side primitive details or [HTTPX](/httpx) for lower-level HTTP utility behavior.
 
 ## Route Registration
 
-Generated apps collect routes through `app/routes.go`. Named apps use `app/<name>/routes.go`.
+GoForj Apps collect routes through `app/routes.go`. Named Apps use `app/<name>/routes.go`.
 
 The route file builds public and protected route groups and mounts them under `/api/v1` by default.
 

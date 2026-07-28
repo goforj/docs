@@ -80,7 +80,7 @@ The service should not need to know which surface called it unless that is part 
 
 Services should receive infrastructure through constructor injection.
 
-Prefer generated App accessors and interfaces at the consumer boundary:
+Prefer generated accessors and interfaces at the consumer boundary:
 
 - cache accessors for derived data
 - storage disks for files and blobs

@@ -169,7 +169,7 @@ source="jobs"
 source="scheduler"
 ```
 
-Scheduler metrics use the bounded `job_name` label for the registered schedule name. Metric names can evolve with the metrics package and generated App version, but the label discipline must remain stable: bounded operational names, not user-controlled data.
+Scheduler metrics use the bounded `job_name` label for the registered schedule name. Metric names can evolve with the metrics package and App version, but the label discipline must remain stable: bounded operational names, not user-controlled data.
 
 ## Check Inspects
 

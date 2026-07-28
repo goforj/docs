@@ -1,16 +1,16 @@
 ---
 title: Metrics
-description: Operational metrics emitted by generated GoForj Apps.
+description: Operational metrics emitted by GoForj Apps.
 ---
 
 # Metrics
 
 Metrics are numeric operational signals emitted by the App.
 
-Generated Apps expose Prometheus-compatible metrics through `github.com/goforj/metrics`.
+GoForj Apps expose Prometheus-compatible metrics through `github.com/goforj/metrics`.
 
 ::: info Metrics package reference
-This operations guide covers the endpoints, configuration, and runtime signals of a generated App. The [metrics library page](/metrics) documents standalone registries, exposition, metric types, and the complete package API.
+This operations guide covers the endpoints, configuration, and runtime signals of a GoForj App. The [metrics library page](/metrics) documents standalone registries, exposition, metric types, and the complete package API.
 :::
 
 ## Endpoints
@@ -71,7 +71,7 @@ METRICS_SCHEDULER_ENABLED=true
 
 Disabled instrumentation should be absent or inert enough to make overhead decisions honest.
 
-The generated demo App also uses `METRICS_MONITORING_ENABLED` for its monitoring surface. See [Environment Reference](/reference/env-vars#metrics-and-runtime-ports) for port precedence and the complete toggle list.
+The demo App also uses `METRICS_MONITORING_ENABLED` for its monitoring surface. See [Environment Reference](/reference/env-vars#metrics-and-runtime-ports) for port precedence and the complete toggle list.
 
 ## Labels
 

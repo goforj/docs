@@ -11,7 +11,7 @@ Most service, validation, formatting, and workflow logic should be testable with
 
 ## Command
 
-From the generated App root:
+From your App root:
 
 ```bash
 go test ./...

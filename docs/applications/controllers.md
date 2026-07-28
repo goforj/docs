@@ -123,6 +123,7 @@ Run the full verification after the service provider is added:
 
 ```bash
 forj build
+go test ./...
 forj route:list
 ```
 

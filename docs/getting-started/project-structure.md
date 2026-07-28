@@ -1,11 +1,11 @@
 ---
 title: Project Structure
-description: Understand the generated GoForj Project layout and extension points.
+description: Understand the GoForj Project layout and extension points.
 ---
 
 # Project Structure
 
-A GoForj Project is a Go module with generated app composition, shared application code, configuration, and runtime support.
+A GoForj Project is a Go module with explicit App composition, shared application code, configuration, and runtime support.
 
 Most Projects start with one app: the default app named `app`.
 

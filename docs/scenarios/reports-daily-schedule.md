@@ -35,7 +35,7 @@ flowchart LR
 
 Complete [Reports Generate Job](/scenarios/reports-generate-job) first.
 
-The generated App should have scheduler and jobs enabled. Verify these generated packages exist:
+Your App should have scheduler and jobs enabled. Verify these generated packages exist:
 
 ```text
 internal/schedules

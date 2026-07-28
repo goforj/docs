@@ -7,7 +7,7 @@ description: Understand GoForj render-time configuration, runtime environment, a
 
 GoForj uses two main configuration layers: project configuration and runtime environment configuration.
 
-`.goforj.yml` describes the generated Project shape and local development lifecycles. `.env` files describe how each App behaves when it starts.
+`.goforj.yml` describes the Project shape and local development lifecycles. `.env` files describe how each App behaves when it starts.
 
 ## When To Change Configuration
 
@@ -15,7 +15,7 @@ GoForj uses two main configuration layers: project configuration and runtime env
 | --- | --- |
 | Use this when | You need to change generated shape, runtime behavior, drivers, resource names, ports, secrets, or deployment defaults. |
 | Avoid this when | You are trying to express business behavior that belongs in services, routes, jobs, schedules, or lifecycle hooks. |
-| Start with | `.env` for local runtime behavior and `.goforj.yml` for generated App shape. |
+| Start with | `.env` for local runtime behavior and `.goforj.yml` for App shape. |
 | Upgrade to | Environment-specific files, process environment, secret management, and build-time defaults or overrides for packaged deployments. |
 
 ## Configuration Layers
@@ -72,19 +72,19 @@ Components gate generated code. If Cache, Events, File Storage, or Background Jo
 
 You can add a component later by adding its name and running `forj render`. Removing a name is deliberately not an uninstall command: GoForj removes only output it can prove is framework-owned, refuses before writing when source or configuration still depends on the component, and never deletes cache state, stored files, queued work, or event history. Driver changes remain separate environment choices and usually do not require changing components.
 
-Use `.goforj.yml` when you need to change the generated Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
+Use `.goforj.yml` when you need to change the Project shape, enabled App components, local development orchestration, or module replacement behavior. See [forj dev](/developer-tools/forj-dev) for App lifecycle and custom watcher examples.
 
 ## Environment Files
 
 Runtime behavior is configured through environment variables.
 
-The generated project includes:
+Your new Project includes:
 
 - `.env` for the main local runtime configuration.
 - `.env.local` for local overrides.
 - `.env.host` for host-specific local infrastructure settings.
 
-The generated App entrypoint loads the environment before the App Wire graph is initialized.
+Your App entrypoint loads the environment before the App Wire graph is initialized.
 
 Common variables include:
 
@@ -170,6 +170,7 @@ Use focused generation only when you intentionally want to refresh one generated
 ```bash
 forj generate --cache
 forj generate --storage
+forj generate --mail
 forj generate --queue
 forj generate --events
 forj generate --db
@@ -211,7 +212,7 @@ STORAGE_UPLOADS_BUCKET=my-app-uploads
 STORAGE_UPLOADS_REGION=us-east-1
 ```
 
-The generated App can expose named accessors such as:
+Your App can expose named accessors such as:
 
 ```go
 app.Storage().Public()

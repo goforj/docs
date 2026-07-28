@@ -1,6 +1,6 @@
 ---
 title: Deployment Basics
-description: Deploy a generated GoForj App as a supervised, observable production process.
+description: Deploy a GoForj App as a supervised, observable production process.
 ---
 
 # Deployment Basics

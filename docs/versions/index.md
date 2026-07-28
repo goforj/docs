@@ -7,11 +7,11 @@ description: Version policy and historical milestone model for GoForj.
 
 These docs follow GoForj's active development line.
 
-GoForj is still pre-`v1.0`, but the project has a real development history. The version line is used to mark meaningful framework milestones: generated App structure, CLI behavior, runtime lifecycle, starter kits, observability, local development, and first-party library integration.
+GoForj is still pre-`v1.0`, but the project has a real development history. The version line is used to mark meaningful framework milestones: App structure, CLI behavior, runtime lifecycle, starter kits, observability, local development, and first-party library integration.
 
 ## Current Version
 
-`v0.22.0` is the latest tagged framework release. The root documentation follows `main`, which is one visual-style commit ahead of that tag and has no additional user-facing framework behavior to document yet.
+`v0.22.0` is the latest tagged framework release. The root documentation follows `main` and may describe work that has not reached a tagged release yet.
 
 Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [v0.22.0](/versions/changelog#v0220) for the released behavior.
 
@@ -30,7 +30,7 @@ That matters because GoForj has evolved through several real layers:
 - queues, events, cache, storage, lifecycle hooks, API index, and OpenAPI
 - generated auth, mail, web, and frontend starter kits
 - metrics, inspects, runtime attribution, and performance hardening
-- make command expansion and generated app ergonomics
+- make command expansion and App ergonomics
 - multi-app project architecture
 
 The library ecosystem is part of the version story. GoForj is not only a renderer around one repository. It is backed by first-party packages for HTTP, queues, events, cache, storage, mail, scheduler, metrics, environment loading, cryptography, command execution, console presentation, strings, collections, debugging output, dependency wiring, and local agent tooling. Many of those packages have their own tagged release lines, driver module tags, examples, integration suites, and documentation generation workflows.
@@ -46,7 +46,7 @@ Framework versions are cut when user-facing framework behavior changes.
 This includes:
 
 - CLI commands
-- generated App structure
+- App structure
 - app composition and multi-app behavior
 - runtime lifecycle
 - provider and dependency injection behavior
@@ -55,7 +55,7 @@ This includes:
 - starter kit rendering and frontend ownership
 - deployment and operations guidance
 
-Library docs remain first-class documentation for standalone first-party Go packages. They can be referenced from framework guides, but they should not be duplicated into framework pages unless the behavior is specific to a generated GoForj App.
+Library docs remain first-class documentation for standalone first-party Go packages. They can be referenced from framework guides, but they should not be duplicated into framework pages unless the behavior is specific to a GoForj App.
 
 ## Future Snapshots
 
@@ -66,7 +66,7 @@ A frozen snapshot should preserve:
 - framework guide pages
 - reference pages
 - operational guidance
-- examples that depend on generated App behavior
+- examples that depend on GoForj App behavior
 
 The active root docs can then move to the next version.
 

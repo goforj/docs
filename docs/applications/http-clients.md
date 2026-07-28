@@ -10,7 +10,7 @@ Outbound HTTP clients call services outside your App.
 Use `httpx` when application code needs typed request helpers, retries, request options, or diagnostic dumps around outbound HTTP calls.
 
 ::: info HTTPX package reference
-This page shows how to construct and inject outbound clients in a generated GoForj App. The [HTTPX library page](/httpx) provides standalone usage and the complete client API reference.
+This page shows how to construct and inject outbound clients in a GoForj App. The [HTTPX library page](/httpx) provides standalone usage and the complete client API reference.
 :::
 
 ## Where Clients Live
@@ -27,17 +27,30 @@ Construct clients through providers and inject them into services. Do not hide o
 
 ## Client Shape
 
-Create a small client type around `httpx.Client`:
+Create `internal/billing/client.go` as a small typed boundary around `httpx.Client`:
 
 ```go
 package billing
 
-import "github.com/goforj/httpx/v2"
+import (
+	"context"
+	"net/url"
 
+	"github.com/goforj/httpx/v2"
+)
+
+// Invoice is the billing response used by application services.
+type Invoice struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
+}
+
+// Client owns outbound calls to the billing service.
 type Client struct {
 	http *httpx.Client
 }
 
+// NewClient constructs a billing client for one configured endpoint.
 func NewClient(baseURL string) *Client {
 	return &Client{
 		http: httpx.New(
@@ -46,21 +59,110 @@ func NewClient(baseURL string) *Client {
 		),
 	}
 }
+
+// FindInvoice returns one invoice while preserving caller cancellation.
+func (c *Client) FindInvoice(ctx context.Context, id string) (Invoice, error) {
+	return httpx.GetCtx[Invoice](
+		c.http,
+		ctx,
+		"/api/v1/invoices/"+url.PathEscape(id),
+	)
+}
 ```
 
-Then inject that client into the service that owns the workflow:
+The module path and `httpx` version should match the App's `go.mod`.
+
+## Configure and Provide the Client
+
+Keep environment lookup at the App composition boundary. Add a focused provider to `app/wire/inject_services_app.go`:
+
+```go
+// provideBillingClient resolves required endpoint configuration before the App starts.
+func provideBillingClient() (*billing.Client, error) {
+	baseURL := strings.TrimSpace(os.Getenv("BILLING_API_URL"))
+	if baseURL == "" {
+		return nil, errors.New("BILLING_API_URL is required")
+	}
+	return billing.NewClient(baseURL), nil
+}
+
+var appSet = wire.NewSet(
+	// existing App providers...
+	provideBillingClient,
+	billing.NewService,
+)
+```
+
+This is a composition fragment: add the `errors`, `os`, `strings`, and application package imports to the existing file. Configure the endpoint through the runtime environment:
+
+```dotenv
+BILLING_API_URL=https://billing.internal
+```
+
+The application service receives the typed client rather than constructing HTTP dependencies inside a request or job:
 
 ```go
 type Service struct {
 	billing *Client
 }
 
+// NewService constructs the billing application service.
 func NewService(billing *Client) *Service {
 	return &Service{billing: billing}
 }
+
+// FindInvoice delegates one outbound lookup through the typed billing boundary.
+func (s *Service) FindInvoice(ctx context.Context, id string) (Invoice, error) {
+	return s.billing.FindInvoice(ctx, id)
+}
 ```
 
-The module path and `httpx` version should match the App's `go.mod`.
+## Test the Boundary
+
+Use `httptest.Server` so the client contract is executable without an external service. Create `internal/billing/client_test.go`:
+
+```go
+package billing
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+// TestClientFindInvoice verifies the outbound method, path, and typed response.
+func TestClientFindInvoice(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/api/v1/invoices/inv-42" {
+			t.Errorf("request = %s %s", r.Method, r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if _, err := fmt.Fprint(w, `{"id":"inv-42","status":"paid"}`); err != nil {
+			t.Errorf("write response: %v", err)
+		}
+	}))
+	defer server.Close()
+
+	invoice, err := NewClient(server.URL).FindInvoice(context.Background(), "inv-42")
+	if err != nil {
+		t.Fatalf("FindInvoice returned error: %v", err)
+	}
+	if invoice.ID != "inv-42" || invoice.Status != "paid" {
+		t.Fatalf("invoice = %#v", invoice)
+	}
+}
+```
+
+Run:
+
+```bash
+go test ./internal/billing
+forj build
+```
+
+Expected result: the client test passes, and `forj build` confirms Wire includes `provideBillingClient` in the App graph.
 
 ## Environment-Enabled Dumps
 

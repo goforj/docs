@@ -1,6 +1,6 @@
 ---
 title: Dependency Injection
-description: Follow a dependency from its provider through Wire to generated App construction.
+description: Follow a dependency from its provider through Wire to App construction.
 ---
 
 # Dependency Injection
@@ -8,7 +8,7 @@ description: Follow a dependency from its provider through Wire to generated App
 GoForj Apps use ordinary Go constructors and Wire-generated construction. A dependency is visible in a constructor, registered in an App-local Wire set, and then passed by generated Go code. There is no runtime service locator.
 
 ::: info Wire reference
-This guide traces dependency injection inside a generated GoForj App. For standalone Wire installation and generation, provider-set semantics, compatibility details, and the complete API documentation, see the [Wire library page](/wire).
+This guide traces dependency injection inside a GoForj App. For standalone Wire installation and generation, provider-set semantics, compatibility details, and the complete API documentation, see the [Wire library page](/wire).
 :::
 
 ## One Dependency, End to End
@@ -111,7 +111,7 @@ func ProvideGateway(cfg GatewayConfig) (*Gateway, error) {
 }
 ```
 
-Wire propagates that error through generated App construction. Resolve configuration near the root and pass typed values down so malformed configuration fails during construction rather than during a later request or job.
+Wire propagates that error through App construction. Resolve configuration near the root and pass typed values down so malformed configuration fails during construction rather than during a later request or job.
 
 ### Provider boundaries
 

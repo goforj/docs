@@ -6,6 +6,7 @@ description: Every interchangeable driver across GoForj's six swap primitives, i
 <script setup>
 import proofStats from './.vitepress/data/proof-stats.json'
 const driverCount = proofStats.totals.drivers
+const eventDriverCount = proofStats.drivers.events.length
 </script>
 
 # Drivers
@@ -33,7 +34,7 @@ Details: [queue library](/queue) · [queues in the framework](/async/queues)
 
 ## Events
 
-Nine drivers behind one typed event bus.
+{{ eventDriverCount }} available drivers behind one typed event bus. The standalone library calls its local driver `sync`; GoForj Apps expose the same local role as `inproc`. Apps also use `natsjetstream` where the library matrix uses the shorter `jetstream`.
 
 | Driver | What it is for |
 | --- | --- |
@@ -45,7 +46,6 @@ Nine drivers behind one typed event bus.
 | `kafka` | Topic-based fan-out |
 | `sns` | SNS fan-out with SQS delivery |
 | `gcppubsub` | Topic and subscription fan-out |
-| `sqs` | Queue-backed event delivery |
 
 Details: [events library](/events) · [events in the framework](/async/events)
 
@@ -109,9 +109,9 @@ Three drivers behind generated connections and the ORM. Dialect differences live
 
 | Driver | What it is for |
 | --- | --- |
-| `sqlite` | Local-first embedded SQL, the day-one default |
+| `sqlite` | Local-first embedded SQL for Apps that select it |
 | `postgres` | Production relational database |
-| `mysql` | Production relational database |
+| `mysql` | Production relational database and the current `forj new` default |
 
 Details: [database strategy](/data/database-strategy) · [migrations](/data/migrations)
 

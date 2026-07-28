@@ -49,7 +49,7 @@ Generated event code lives in:
 internal/events
 ```
 
-Create an event type from the generated App:
+Create an event type from your App:
 
 ```bash
 forj make:event UserRegistered

@@ -149,11 +149,26 @@ function isZoomableDocImage(img) {
   if (!(img instanceof HTMLImageElement)) return false
   if (!img.closest('.vp-doc')) return false
   if (img.closest('.gf-lightbox-overlay')) return false
-  if (img.closest('a[href^="#"]')) return false
+  if (img.parentElement?.closest('a[href], button, [role="button"]')) return false
   if (img.dataset.noLightbox === 'true') return false
   if (isBadgeImage(img)) return false
   if (img.width > 0 && img.height > 0 && img.width < 120 && img.height < 120) return false
   return true
+}
+
+function removeManagedLightboxAttributes(img) {
+  if (img.dataset.lightboxTabindexAdded === 'true') {
+    img.removeAttribute('tabindex')
+    delete img.dataset.lightboxTabindexAdded
+  }
+  if (img.dataset.lightboxRoleAdded === 'true') {
+    img.removeAttribute('role')
+    delete img.dataset.lightboxRoleAdded
+  }
+  if (img.dataset.lightboxLabelAdded === 'true') {
+    img.removeAttribute('aria-label')
+    delete img.dataset.lightboxLabelAdded
+  }
 }
 
 function refreshZoomableImages() {
@@ -164,8 +179,22 @@ function refreshZoomableImages() {
     img.classList.toggle('gf-lightboxable', zoomable)
     if (zoomable) {
       img.setAttribute('data-lightbox-ready', 'true')
+      if (!img.hasAttribute('tabindex')) {
+        img.tabIndex = 0
+        img.dataset.lightboxTabindexAdded = 'true'
+      }
+      if (!img.hasAttribute('role')) {
+        img.setAttribute('role', 'button')
+        img.dataset.lightboxRoleAdded = 'true'
+      }
+      if (!img.hasAttribute('aria-label')) {
+        const description = (img.alt || '').trim()
+        img.setAttribute('aria-label', description ? `Open full-size image: ${description}` : 'Open full-size image')
+        img.dataset.lightboxLabelAdded = 'true'
+      }
     } else {
       img.removeAttribute('data-lightbox-ready')
+      removeManagedLightboxAttributes(img)
     }
   })
 }
@@ -200,12 +229,17 @@ function openLightbox(img) {
   state.image.src = src
   state.image.alt = img.alt || ''
   if (state.caption) {
-    state.caption.textContent = img.alt || ''
+    state.caption.textContent = (img.alt || '').trim() || 'Expanded documentation image'
   }
   state.overlay.classList.add('is-open')
   state.overlay.setAttribute('aria-hidden', 'false')
   document.documentElement.classList.add('gf-lightbox-open')
-  state.overlay.focus({ preventScroll: true })
+  const closeButton = state.overlay.querySelector('.gf-lightbox-close')
+  if (closeButton instanceof HTMLButtonElement) {
+    closeButton.focus({ preventScroll: true })
+  } else {
+    state.overlay.focus({ preventScroll: true })
+  }
 }
 
 function initLightbox() {
@@ -218,12 +252,13 @@ function initLightbox() {
   overlay.setAttribute('role', 'dialog')
   overlay.setAttribute('aria-modal', 'true')
   overlay.setAttribute('aria-hidden', 'true')
+  overlay.setAttribute('aria-labelledby', 'gf-lightbox-caption')
   overlay.tabIndex = -1
   overlay.innerHTML = `
     <button type="button" class="gf-lightbox-close" aria-label="Close image">×</button>
     <figure class="gf-lightbox-figure">
       <img class="gf-lightbox-image" alt="" />
-      <figcaption class="gf-lightbox-caption"></figcaption>
+      <figcaption id="gf-lightbox-caption" class="gf-lightbox-caption"></figcaption>
     </figure>
   `
 
@@ -236,8 +271,44 @@ function initLightbox() {
   }
 
   const onKeyDown = (event) => {
+    const target = event.target
+    const isOpen = overlay.classList.contains('is-open')
+
+    if (!isOpen) {
+      if (
+        target instanceof HTMLImageElement &&
+        isZoomableDocImage(target) &&
+        (event.key === 'Enter' || event.key === ' ')
+      ) {
+        event.preventDefault()
+        openLightbox(target)
+      }
+      return
+    }
+
     if (event.key === 'Escape') {
+      event.preventDefault()
       closeLightbox()
+      return
+    }
+
+    if (event.key === 'Tab') {
+      const focusable = Array.from(overlay.querySelectorAll('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'))
+        .filter((element) => element instanceof HTMLElement && element.getClientRects().length > 0)
+      if (focusable.length === 0) {
+        event.preventDefault()
+        overlay.focus({ preventScroll: true })
+        return
+      }
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
   }
 

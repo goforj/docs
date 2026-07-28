@@ -9,7 +9,7 @@ Starter kits are optional generated scaffolds that help an App start with a work
 
 They are not separate frameworks. After generation, their files belong to the App.
 
-For the visual overview, see the [Starter Kits showcase](/starter-kits).
+This page is the implementation guide. For screenshots and product surfaces, see the [Starter Kit Showcase](/starter-kits).
 
 ## When Starter Kits Apply
 

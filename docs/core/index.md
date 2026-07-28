@@ -5,7 +5,7 @@ description: The framework model behind GoForj Apps, runtimes, providers, driver
 
 # Core Concepts
 
-Core Concepts explains the model shared by every generated GoForj App. Start with the question you need to answer rather than reading the section in order.
+Core Concepts explains the model shared by every GoForj App. Start with the question you need to answer rather than reading the section in order.
 
 ## Choose a Concept
 

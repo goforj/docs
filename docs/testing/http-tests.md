@@ -46,7 +46,7 @@ func TestControllerShow(t *testing.T) {
 
 This matches the controller from [JSON API Route](/scenarios/json-api-route). Use [Web](/web) for package-level testing helpers.
 
-The snippet is a focused test fragment. For the runnable generated-App HTTP path, complete the scenario and run:
+The snippet is a focused test fragment. For the runnable GoForj App HTTP path, complete the scenario and run:
 
 ```bash
 forj build
@@ -80,7 +80,7 @@ Use route or server-level tests when you need to verify:
 
 ## Generated Health Tests
 
-Generated Apps include HTTP tests for framework routes when HTTP is enabled.
+GoForj Apps include generated HTTP tests for framework routes when HTTP is enabled.
 
 Common routes:
 

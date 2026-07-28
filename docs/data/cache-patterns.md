@@ -10,7 +10,7 @@ Cache is for temporary, derived, or performance-oriented data.
 It is not durable business storage.
 
 ::: info Cache library reference
-This guide focuses on using cache inside a generated GoForj App. See the [cache library page](/cache) for standalone construction, the complete package API, and the full driver and capability matrix.
+This guide focuses on using cache inside a GoForj App. See the [cache library page](/cache) for standalone construction, the complete package API, and the full driver and capability matrix.
 :::
 
 ## When To Use Cache
@@ -24,7 +24,7 @@ This guide focuses on using cache inside a generated GoForj App. See the [cache 
 
 ## Generated Accessors
 
-Generated Apps expose cache through default and named accessors:
+GoForj Apps expose cache through generated default and named accessors:
 
 ```go
 app.Cache()

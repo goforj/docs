@@ -7,7 +7,7 @@ description: Generate framework-owned App code, choose safe extension points, an
 
 GoForj generates ordinary Go glue for commands, managers, runtime packages, drivers, accessors, and Wire providers. The result stays readable and testable without runtime reflection or hidden registration.
 
-## Choose the generated Project shape
+## Choose the Project shape
 
 `forj new` writes the durable rendering contract to `.goforj.yml`:
 
@@ -58,6 +58,7 @@ Use focused generation only when you intentionally want to refresh one family wi
 ```bash
 forj generate --cache
 forj generate --storage
+forj generate --mail
 forj generate --queue
 forj generate --events
 forj generate --db
@@ -177,7 +178,7 @@ Change GoForj templates or generators when:
 - a generated file has the wrong ownership boundary
 - generated discovery, accessors, or provider wiring are incorrect
 
-Change only the generated Project when the behavior is application-specific.
+Change only your Project when the behavior is application-specific.
 
 ## Regenerate after input changes
 

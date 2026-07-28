@@ -1,6 +1,6 @@
 ---
 title: Events
-description: How generated GoForj Apps publish typed facts through local or distributed event buses.
+description: How GoForj Apps publish typed facts through local or distributed event buses.
 ---
 
 # Events
@@ -10,7 +10,7 @@ An Event is a typed fact that something happened.
 Use events for fan-out and decoupled reactions. Use queues and jobs for durable background work, retries, delays, timeouts, and worker lifecycle.
 
 ::: info Events library reference
-This guide follows events through a generated App's publishers, subscribers, and configuration. The [events library page](/events) contains the standalone usage, complete package reference, and distributed-driver matrix.
+This guide follows events through a GoForj App's publishers, subscribers, and configuration. The [events library page](/events) contains the standalone usage, complete package reference, and distributed-driver matrix.
 :::
 
 ## When To Use Events
@@ -93,7 +93,7 @@ Topics should be stable when other code or infrastructure depends on them.
 
 ## Publishing
 
-Publish through the generated App event bus:
+Publish through the App's generated event bus:
 
 ```go
 err := app.Bus().WithContext(ctx).Publish(UserRegisteredEvent{

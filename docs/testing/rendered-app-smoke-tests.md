@@ -7,7 +7,7 @@ description: How GoForj contributors validate templates and generated Apps throu
 
 Rendered App smoke tests validate that GoForj templates and generators produce a working App.
 
-This is primarily a framework maintainer workflow. Application teams usually start with `go test ./...` in their generated App.
+This is primarily a framework maintainer workflow. Application teams usually start with `go test ./...` in their App.
 
 ## Maintainer Command
 
@@ -19,7 +19,7 @@ GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go run ./cmd/forj/main.go test:r
 
 This renders a temporary App, builds it, and runs its tests.
 
-Expected result: the command exits successfully after rendering, building, and testing the disposable App. Run it from the `goforj` repository, not from a generated App.
+Expected result: the command exits successfully after rendering, building, and testing the disposable App. Run it from the `goforj` repository, not from an application repository.
 
 ## What It Catches
 

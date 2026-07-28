@@ -1,6 +1,6 @@
 ---
-title: Starter Kits
-description: Production-shaped starter kits for generated GoForj Apps.
+title: Starter Kit Showcase
+description: A visual showcase of production-shaped starter kits for GoForj Apps.
 sidebar: false
 aside: false
 noAutoTitle: true
@@ -9,7 +9,7 @@ noAutoTitle: true
 <section class="gf-starter-page">
   <section class="gf-starter-hero">
     <div class="gf-starter-hero__copy">
-      <p class="gf-starter-eyebrow">Starter Kits</p>
+      <p class="gf-starter-eyebrow">Starter Kit Showcase</p>
       <h1>Start from a <em>real application</em></h1>
       <p>
         GoForj starter kits render real source into your App: auth surfaces, settings screens,
@@ -80,7 +80,7 @@ noAutoTitle: true
       <h2>Reference pages that show patterns in product context</h2>
       <p>
         Component examples are grouped by workflow instead of presented as a flat catalog. Forms,
-        navigation, overlays, and data surfaces are shown inside the generated App so teams can
+        navigation, overlays, and data surfaces are shown inside your App so teams can
         lift patterns into real screens.
       </p>
     </div>

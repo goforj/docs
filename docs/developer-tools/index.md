@@ -1,6 +1,6 @@
 ---
 title: Developer Tools
-description: GoForj CLI tooling, local App lifecycle orchestration, rendering, and generated App development workflows.
+description: GoForj CLI tooling, local App lifecycle orchestration, rendering, and App development workflows.
 ---
 
 # Developer Tools
@@ -14,7 +14,7 @@ Start with [forj dev](/developer-tools/forj-dev) for local App lifecycle orchest
 - [Atlas](/developer-tools/atlas)
 - [Atlas Debug Recipes](/developer-tools/atlas-debug-recipes)
 - [forj dev](/developer-tools/forj-dev)
-- [Opening Generated Files](/developer-tools/editor-open)
+- [Make Commands](/core/make-commands#shared-options)
 
 ## Related Sections
 

@@ -15,7 +15,7 @@ Atlas installs lightweight project files that teach agents the GoForj way to bui
 
 - prefer `forj make:*` commands over hand-created framework files
 - keep business code package-scoped under `internal/`
-- register routes, commands, jobs, schedules, subscribers, and providers through the generated app composition points
+- register routes, commands, jobs, schedules, subscribers, and providers through the App composition points GoForj creates
 - use the selected app when a project has named apps
 - read local docs and project metadata before changing code
 

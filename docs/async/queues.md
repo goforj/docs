@@ -1,6 +1,6 @@
 ---
 title: Queues
-description: How generated GoForj Apps configure default and named queues for background work.
+description: How GoForj Apps configure default and named queues for background work.
 ---
 
 # Queues
@@ -10,7 +10,7 @@ A Queue is an asynchronous work transport and execution system.
 Use queues when work needs to run outside the request path, use workers, retry, delay, timeout, or move across process boundaries.
 
 ::: info Queue package reference
-The guidance here is about queue integration and operation in a generated GoForj App. Visit the [queue library page](/queue) for standalone setup, the full API reference, and the complete backend capability matrix.
+The guidance here is about queue integration and operation in a GoForj App. Visit the [queue library page](/queue) for standalone setup, the full API reference, and the complete backend capability matrix.
 :::
 
 ## When To Use Queues

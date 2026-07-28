@@ -5,7 +5,7 @@ description: Framework-level lookup for common GoForj CLI commands.
 
 # CLI Reference
 
-This page lists common GoForj CLI commands and generated App command patterns.
+This page lists common GoForj CLI commands and App command patterns.
 
 Use workflow pages for full context.
 
@@ -18,15 +18,33 @@ Use workflow pages for full context.
 | `forj build:api-index` | Build the active App's API index, diagnostics, and OpenAPI artifacts. |
 | `forj run [<app-command>]` | Build an exact temporary App binary, start it with the optional command, then publish prepared API artifacts after the process-start boundary. |
 | `forj dev` | Run App development lifecycles and custom watches from `.goforj.yml`. |
+| `forj down` | Run the configured `dev.down` teardown tasks without starting a development session. |
 | `forj generate` | Refresh generated component code and derived files. |
 | `forj make:app <name>` | Create a named app in the current Project. |
 | `forj make:controller <name>` | Generate an HTTP controller and wire it into HTTP. |
 | `forj make:command <name>` | Generate an application command and wire it into the App command tree. |
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
+| `forj project:describe --json` | Print the versioned static Project topology for tools and automation. |
 
 See the [Make Command Reference](/core/make-commands#command-reference) for every generator, the files it touches, and representative generated code.
 
-Inside a generated Project, `forj <command>` is the normal default-app development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the default app through the same source-aware path as `forj run <command>`.
+## Framework Command Options
+
+Run `forj <command> --help` for the exact command metadata installed with your CLI version. The main framework options are:
+
+| Command | Options |
+| --- | --- |
+| `forj new` | `--allow-non-empty` permits creation in a non-empty destination. |
+| `forj build` | `--timings`, `--api-index-strict`, `--env-defaults`, `--env-overrides`, `--profile`, `--top`, and `--root`; remaining arguments pass through to `go build`. |
+| `forj build:api-index` | `--strict` rejects warnings and errors; `--tags` selects comma-separated Go build tags. |
+| `forj run` | `--timings`, `--api-index-strict`, and `--root`; remaining arguments pass to the compiled App. |
+| `forj generate` | `--storage`, `--cache`, `--mail`, `--queue`, `--events`, `--db`, and `--observability` select focused generated surfaces. With no flags, all available generators run. |
+| `forj make:app` | `--components`, `--without`, `--starter-kit`, `--help-format`, `--dev-run`, `--skip-wire`, and `--remove`. |
+| `forj project:describe` | `--json` is required and prints the versioned machine contract. |
+
+`forj dev` and `forj down` take their behavior from `.goforj.yml` and do not accept command-specific flags.
+
+Inside a GoForj Project, `forj <command>` is the normal default-app development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the default app through the same source-aware path as `forj run <command>`.
 
 Named apps use an app prefix:
 
@@ -36,7 +54,7 @@ forj marketplace build
 forj marketplace worker
 ```
 
-The prefix is part of the ergonomics. It selects the active app for generated App commands and app-aware native commands without forcing you to change directories or pass an `--app` flag.
+The prefix is part of the ergonomics. It selects the active app for App commands and app-aware native commands without forcing you to change directories or pass an `--app` flag.
 
 Use `forj run <command>` when you want to force App command execution explicitly, especially for scripts or command names that collide with native GoForj commands. Use `./bin/app <command>` for the built binary and deployment/runtime process supervision.
 
@@ -91,7 +109,7 @@ forj marketplace route:list
 
 For runtime-capable Apps, bare `./bin/app` selects `run`; CLI-only binaries print root help when no command is supplied. Passing `--help` or an explicit command retains normal CLI behavior.
 
-These reach the generated App command surface. Short command names use Kong aliases.
+These reach the App command surface. Short command names use Kong aliases.
 
 Available commands depend on selected components.
 
@@ -120,6 +138,20 @@ forj marketplace backup:create
 Use `--resource` to select one database or storage resource. `backup:create --portable` and `backup:restore --portable` provide database-neutral SQL transfer when a same-driver native restore is not appropriate.
 
 See [Backup and Restore](/operations/backups) before automating or performing a restore.
+
+## Atlas Commands
+
+Atlas commands manage optional project-local agent guidance:
+
+| Command | Purpose |
+| --- | --- |
+| `forj atlas:install` | Install selected agent guidance, skills, and MCP configuration. |
+| `forj atlas:update` | Refresh Atlas-managed files and project-owned skills. |
+| `forj atlas:doctor` | Report installation health and stale managed surfaces. |
+| `forj atlas:list-skills` | List built-in and project-owned Atlas skills. |
+| `forj atlas:make-skill <name>` | Create a project-owned skill using a lowercase kebab-case name. |
+
+`atlas:install` and `atlas:update` accept repeatable `--agent` selections, `--all-agents`, `--guidelines`, `--skills`, `--mcp`, `--no-interaction`, and `--dry-run`. See [Atlas](/developer-tools/atlas) for installation and workflow guidance.
 
 Database shell examples:
 
@@ -178,7 +210,7 @@ These are mainly for framework contributors:
 
 - [Quickstart](/getting-started/quickstart)
 - [Make Commands](/core/make-commands)
-- [Opening Generated Files](/developer-tools/editor-open)
+- [Make Command Shared Options](/core/make-commands#shared-options)
 - [Database Shell](/data/database-strategy#database-shell)
 - [Backup and Restore](/operations/backups)
 - [forj dev](/developer-tools/forj-dev)
