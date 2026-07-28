@@ -55,7 +55,7 @@ The exact confirmation phrase is required for every destructive restore. Native 
 
 ## Select an App or Resource
 
-Unprefixed commands use the default App. Use the normal App prefix for a named App:
+Unprefixed commands use the default App. Use the normal app-name prefix for an additional app:
 
 ```bash
 forj marketplace backup:plan

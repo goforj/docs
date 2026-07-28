@@ -17,7 +17,7 @@ Use the built binary under a supervisor in deployment. Use the `forj` form for d
 | --- | --- | --- |
 | Every configured queue | `./bin/app worker` | `forj worker` |
 | One queue | `./bin/app worker --queue reports` | `forj worker --queue reports` |
-| Named App | `./bin/marketplace worker` | `forj marketplace worker` |
+| Additional app | `./bin/marketplace worker` | `forj marketplace worker` |
 | Combined Runtime | `./bin/app` | `forj app` |
 
 Repeat `--queue` when one process should work a subset. Names remain logical from the selected App's point of view:
@@ -56,7 +56,7 @@ Verify queue inventory before deploying a worker topology:
 ./bin/app about
 ```
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 ./bin/marketplace about

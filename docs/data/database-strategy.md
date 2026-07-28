@@ -108,7 +108,7 @@ Use the canonical command when you want the full name:
 forj db:shell
 ```
 
-The generated command is also available on the built App binary. Named Apps use the development prefix or their own binary:
+The generated command is also available on the built App binary. Additional apps use the app-name development prefix or their own binary:
 
 ```bash
 ./bin/app db

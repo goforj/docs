@@ -19,7 +19,7 @@ forj app # or ./bin/app
 
 The generated `app` command hosts enabled runtimes together in one process. Topology comes from the command you launch, not an environment mode switch.
 
-For a named app, add the app name:
+For an additional app, add the app name:
 
 ```bash
 forj marketplace app # or ./bin/marketplace
@@ -33,7 +33,7 @@ forj worker    # or ./bin/app worker
 forj scheduler # or ./bin/app scheduler
 ```
 
-For a named app:
+Select an additional app by name:
 
 ```bash
 forj marketplace api       # or ./bin/marketplace api
@@ -41,7 +41,7 @@ forj marketplace worker    # or ./bin/marketplace worker
 forj marketplace scheduler # or ./bin/marketplace scheduler
 ```
 
-Named apps get deterministic local defaults, so the default app can listen on `3000`, the first named app on `3001`, and the next named app on `3002` without manual port edits.
+Apps get deterministic per-app local defaults, so the default app can listen on `3000`, the first additional app on `3001`, and the next additional app on `3002` without manual port edits.
 
 ## Local Drivers
 
@@ -96,7 +96,7 @@ Production runs the built binary form of the same split process shape:
 ./bin/app scheduler
 ```
 
-Named apps use their own binaries:
+Additional apps use their own binaries:
 
 ```bash
 ./bin/marketplace api

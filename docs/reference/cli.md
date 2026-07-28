@@ -20,7 +20,7 @@ Use workflow pages for full context.
 | `forj dev` | Run App development lifecycles and custom watches from `.goforj.yml`. |
 | `forj down` | Run the configured `dev.down` teardown tasks without starting a development session. |
 | `forj generate` | Refresh generated component code and derived files. |
-| `forj make:app <name>` | Create a named app in the current Project. |
+| `forj make:app <name>` | Create an additional runnable app in the current Project. |
 | `forj make:controller <name>` | Generate an HTTP controller and wire it into HTTP. |
 | `forj make:command <name>` | Generate an application command and wire it into the App command tree. |
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
@@ -46,7 +46,7 @@ Run `forj <command> --help` for the exact command metadata installed with your C
 
 Inside a GoForj Project, `forj <command>` is the normal default-app development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the default app through the same source-aware path as `forj run <command>`.
 
-Named apps use an app prefix:
+Select an additional app by prefixing the command with its app name:
 
 ```bash
 forj marketplace route:list
@@ -62,7 +62,7 @@ Use `forj run <command>` when you want to force App command execution explicitly
 
 ## Common App Commands
 
-Run these as `forj <command>` during development or directly through `./bin/app <command>` after build. For named apps, use `forj <app> <command>` or `./bin/<app> <command>`.
+Run these as `forj <command>` during development or directly through `./bin/app <command>` after build. For an additional app, use `forj <app> <command>` or `./bin/<app> <command>`.
 
 Prefer the short aliases in day-to-day commands. The canonical command names remain available.
 
@@ -128,7 +128,7 @@ Backup commands are framework-owned operator commands. They use the selected App
 | `forj backup:prune` | Remove completed sets outside the retention policy. |
 | `forj backup:status` | Report the newest local backup and its age. |
 
-Prefix the command to operate on a named App:
+Prefix the command with the app name to operate on an additional app:
 
 ```bash
 forj marketplace backup:plan
@@ -186,7 +186,7 @@ forj make:command reports:reconcile
 forj make:migration create_users
 ```
 
-Prefix a resource command when a named App owns its registration:
+Prefix a resource command when an additional app owns its registration:
 
 ```bash
 forj marketplace make:controller checkout
@@ -194,7 +194,7 @@ forj marketplace make:job sync-catalog --queue sync
 forj marketplace make:model order
 ```
 
-See [Apps](/core/apps#add-a-named-app) for App creation and prefix behavior. See the [Make Command Reference](/core/make-commands#command-reference) for generated files, wiring changes, output overrides, opening files, and removal.
+See [Apps](/core/apps#add-another-app) for App creation and prefix behavior. See the [Make Command Reference](/core/make-commands#command-reference) for generated files, wiring changes, output overrides, opening files, and removal.
 
 ## Maintainer Commands
 

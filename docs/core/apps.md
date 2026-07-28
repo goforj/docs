@@ -1,17 +1,31 @@
 ---
 title: Apps
-description: How GoForj Projects use the default app and optional named apps.
+description: How one GoForj Project can contain a default app and additional runnable applications.
 ---
 
 # Apps
 
-An app is a runnable boundary inside a GoForj Project. It has its own binary, commands, route and lifecycle files, Wire graph, and runtime defaults.
+An app is a runnable program inside a GoForj Project. It has its own binary, commands, routes, lifecycle files, Wire graph, and runtime defaults.
 
-Start with one app. Add another only when the Project needs another runnable boundary.
+Every Project starts with the default app, whose binary is `bin/app`. Most Projects need only that app.
 
-That rule keeps GoForj simple: one Project, shared application behavior under `internal/`, and app-specific routes, commands, schedules, lifecycle hooks, and wiring under `app/`.
+When the same Project needs another independently runnable program, `forj make:app backstage` creates an additional app named `backstage`, with its own `bin/backstage` binary, routes, commands, runtime choices, and dependency graph. Its app name prefixes files and commands:
 
-Do not create a named app just to organize packages. Use packages under `internal/` for code organization; add an app when you need a separate binary, deployment, or scaling boundary.
+```bash
+forj backstage api
+./bin/backstage worker
+```
+
+For example, one commerce Project might contain:
+
+| App | What it runs | Binary |
+| --- | --- | --- |
+| Default app | Public API and checkout workers | `bin/app` |
+| Additional app named `backstage` | Internal administration API and scheduler | `bin/backstage` |
+
+Both apps can use shared application behavior under `internal/orders`, while their routes, commands, schedules, lifecycle hooks, and wiring remain separate.
+
+An additional app is not a package namespace, a worker process, or automatically a separate service or repository. Use packages under `internal/` to organize code, and use runtime commands such as `forj api` and `forj worker` to split processes inside one app. Add another app only when you need another binary, deployment boundary, or independently selected set of capabilities.
 
 ## The Default App
 
@@ -38,12 +52,14 @@ internal/
 
 The default app is enough for most Projects.
 
-## Add a named app
+<span id="add-a-named-app"></span>
+
+## Add Another App
 
 <MakeCommandTabs name="app">
 <template #usage>
 
-Use `make:app` when you need another app:
+Use `make:app` when the Project needs another runnable program:
 
 ```bash
 forj make:app marketplace
@@ -222,7 +238,7 @@ app/<app>/
 
 `.goforj.yml` can store per-app component and starter-kit choices under `apps`, but layout decides which apps exist.
 
-The generated-code tab under [Add a named app](#add-a-named-app) shows the configuration. This top-level `apps` metadata is separate from `dev.apps`, which selects the app processes managed by `forj dev`.
+The generated-code tab under [Add Another App](#add-another-app) shows the configuration. This top-level `apps` metadata is separate from `dev.apps`, which selects the app processes managed by `forj dev`.
 
 ## App-scoped output
 
@@ -235,7 +251,7 @@ build/api_index.json
 build/openapi.json
 ```
 
-Named apps write under their app name:
+Additional apps write under their app name:
 
 ```text
 build/marketplace/api_index.json
@@ -259,23 +275,23 @@ Default ports are deterministic:
 | App | HTTP | Metrics | Scheduler metrics | Worker metrics |
 | --- | ---: | ---: | ---: | ---: |
 | `app` | `3000` | `10000` | `10001` | `10002` |
-| first named app | `3001` | `10010` | `10011` | `10012` |
-| second named app | `3002` | `10020` | `10021` | `10022` |
+| first additional app | `3001` | `10010` | `10011` | `10012` |
+| second additional app | `3002` | `10020` | `10021` | `10022` |
 
-Named app overrides use an uppercase app prefix:
+Overrides for an additional app use its uppercase app name as a prefix:
 
 ```text
 MARKETPLACE_PORT=3100
 MARKETPLACE_WORKER_METRICS_PORT=10112
 ```
 
-Default-app globals such as `PORT` and `METRICS_PORT` do not apply to named apps.
+Default-app globals such as `PORT` and `METRICS_PORT` do not apply to additional apps.
 
-When `make:app` writes local env defaults, it uses the next available app HTTP port so sequential app creation does not make two named apps bind the same listener.
+When `make:app` writes local env defaults, it uses the next available app HTTP port so sequential app creation does not make two apps bind the same listener.
 
 ## Queue and Migration Boundaries
 
-App code uses logical queue names such as `default` or `sync`. Named apps prefix backend queue names with the app name, such as `marketplace_default`, so multiple apps can share a queue backend safely.
+App code uses logical queue names such as `default` or `sync`. In a multi-app Project, additional apps prefix backend queue names with the app name, such as `marketplace_default`, so multiple apps can share a queue backend safely.
 
 Migrations are app-owned when a Project has multiple apps:
 
@@ -290,7 +306,7 @@ If two apps share one physical database, choose one app to own that database's m
 
 ## Common Mistakes
 
-The costly mistakes are architectural: creating named apps only to organize packages, placing business workflows in app registration files, or expecting memory-backed drivers to share state across processes. The relevant sections above explain the package, ownership, and backend choices that avoid them.
+The costly mistakes are architectural: creating additional apps only to organize packages, placing business workflows in app registration files, or expecting memory-backed drivers to share state across processes. The relevant sections above explain the package, ownership, and backend choices that avoid them.
 
 ## Next Steps
 

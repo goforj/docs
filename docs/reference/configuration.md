@@ -26,7 +26,7 @@ The project file records render-time choices and local development workflow.
 | `render.help_format` | Default app CLI help presentation. |
 | `render.goforj_version` | GoForj version recorded for the rendered App. |
 | `render.module_replaces` | Local module replacements for sibling repos. |
-| `apps` | Optional render metadata for named apps. |
+| `apps` | Optional per-app render metadata for additional apps. |
 | `dev.pre` | Development pre-tasks. |
 | `dev.down` | Development teardown tasks. |
 | `dev.apps` | App-aware build, run, and SPA lifecycle configuration. |
@@ -246,14 +246,14 @@ Top-level `apps` and `dev.apps` have different responsibilities:
 | `apps` | Per-App render components, starter kit, and help-format metadata. |
 | `dev.apps` | Participation and lifecycle behavior under `forj dev`. |
 
-Named apps are discovered from layout:
+Additional apps are discovered from layout:
 
 ```text
 cmd/marketplace/main.go
 app/marketplace/
 ```
 
-When a named app has App-specific render choices, `.goforj.yml` records them under `apps`:
+When an additional app has app-specific render choices, `.goforj.yml` records them under `apps`:
 
 ```yaml
 apps:
@@ -263,9 +263,9 @@ apps:
     help_format: guided
 ```
 
-`render.components` describes the default App and Project-owned tooling. Named App selections stay under `apps`; when shared generated packages need the combined capability set, the renderer derives that union in memory without rewriting the default App selection.
+`render.components` describes the default App and Project-owned tooling. Additional app selections stay under `apps`; when shared generated packages need the combined capability set, the renderer derives that union in memory without rewriting the default App selection.
 
-Component lists contain explicitly enabled component names. Each name must match a supported component key and may appear only once. Short lists use compact sequence syntax; long lists are written as multiline YAML. At Project render scope, an empty list enables no components. At named App scope, it records no raw selections, but effective App normalization still adds mandatory `cli`. Dependencies are resolved for the effective render without expanding the persisted raw selection.
+Component lists contain explicitly enabled component names. Each name must match a supported component key and may appear only once. Short lists use compact sequence syntax; long lists are written as multiline YAML. At Project render scope, an empty list enables no components. At additional app scope, it records no raw selections, but effective App normalization still adds mandatory `cli`. Dependencies are resolved for the effective render without expanding the persisted raw selection.
 
 Modern configuration does not need or write `component_contract`. GoForj still reads the retired marker and legacy boolean component maps long enough to migrate them, then writes only the component sequence. Migrating a versionless boolean map enables Cache, Events, and File Storage to preserve resources that were implicit before those components became optional.
 

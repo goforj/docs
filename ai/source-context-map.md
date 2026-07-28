@@ -228,7 +228,7 @@ Read:
 
 Use for:
 
-- `forj <app> <command>` named app dispatch
+- `forj <app> <command>` app-name dispatch
 - `forj <app-command>` default app delegation behavior
 - `forj run <app-command>` behavior
 - help and parse-error output

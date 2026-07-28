@@ -24,7 +24,7 @@ Do not use App for the whole repository when multi-app behavior matters.
 
 An App is a runnable application boundary inside a GoForj Project.
 
-The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. Named apps such as `marketplace` or `backstage` live in `cmd/<app>`, `app/<app>`, and `app/<app>/wire`.
+The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. Additional apps such as `marketplace` or `backstage` live in `cmd/<app>`, `app/<app>`, and `app/<app>/wire`.
 
 Use App when the runnable boundary itself is the subject, especially when distinguishing apps in a multi-app Project. Otherwise, name the app binary, commands, files, Wire graph, routes, or runtime defaults directly.
 
@@ -36,11 +36,11 @@ The default app is the conventional app named `app`.
 
 It is the normal single-app path and should appear first in docs. The default app lives directly under `app/` rather than `app/app/`.
 
-### Named App
+### Additional App
 
-A Named App is an additional app in the same Project, such as `marketplace` or `backstage`.
+An additional app is another runnable app in the same Project, such as `marketplace` or `backstage`.
 
-Named apps are for meaningful ownership or deployment fan-out within one Project. They are not separate Go modules, separate repositories, or automatic microservices.
+Additional apps are for meaningful ownership or deployment fan-out within one Project. They are not separate Go modules, separate repositories, or automatic microservices.
 
 ### Framework
 
@@ -187,7 +187,7 @@ Prefer "HTTP" or "web" depending on scope:
 
 A Route maps an HTTP method and path to a handler through the `web` routing contract.
 
-Routes should be registered in `app/routes.go` or the corresponding named-app file, not by scattering router setup across unrelated packages.
+Routes should be registered in `app/routes.go` or the corresponding owning app file, not by scattering router setup across unrelated packages.
 
 ### Controller
 
@@ -294,7 +294,7 @@ Examples:
 - `app/commands.go`
 - `app/schedules.go`
 - `app/wire/...`
-- `app/<name>/...` for a named app
+- `app/<name>/...` for an additional app
 - provider functions and Wire sets
 
 Docs should prefer extension points over ad hoc edits.
@@ -304,7 +304,7 @@ Docs should prefer extension points over ad hoc edits.
 - Use Driver for backend implementations behind a stable application-facing contract.
 - Use Project for the repository-level GoForj workspace.
 - Prefer app in ordinary prose. Use App when deliberately naming the runnable-boundary concept inside a Project.
-- Use default app and named app when distinguishing `app` from additional apps.
+- Use default app and additional app when distinguishing `app` from other apps in the Project.
 - Use Provider for explicit dependency construction and wiring.
 - Use Service for application-owned behavior.
 - Use Runtime when discussing process or lifecycle behavior.

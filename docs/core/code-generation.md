@@ -149,7 +149,7 @@ Common render-once extension points include:
 | Schedule composition | `app/schedules.go` |
 | App-local providers | `app/wire/inject_*_app.go` |
 
-Named Apps use the same files under `app/<name>/`.
+Additional apps use the same files under `app/<name>/`.
 
 Keep registries declarative and put behavior in the owning feature package. For example:
 

@@ -52,7 +52,7 @@ app/wire/inject_schedules_app.go        provider added
 app/schedules.go                        recurring task registered
 ```
 
-Named Apps use the same registration shape under `app/<name>/`.
+Additional apps use the same registration shape under the owning app's `app/<name>/`.
 
 </template>
 <template #generated>
@@ -171,7 +171,7 @@ Run the scheduler directly:
 forj scheduler # or ./bin/app scheduler
 ```
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 forj marketplace scheduler # or ./bin/marketplace scheduler
@@ -183,7 +183,7 @@ Run it with other enabled local runtimes:
 forj app # or ./bin/app
 ```
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 forj marketplace app # or ./bin/marketplace

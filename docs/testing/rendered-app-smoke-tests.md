@@ -32,8 +32,8 @@ Rendered smoke tests catch:
 - generated App compile failures
 - generated test failures
 - dependency replacement issues
-- multi-app wiring or binary-entrypoint regressions when the smoke target includes named apps
-- default and named App API artifact isolation
+- multi-app wiring or binary-entrypoint regressions when the smoke target includes additional apps
+- per-app API artifact isolation
 - stale API artifact cleanup for CLI-only Apps
 
 If package-level tests pass but rendered smoke fails, inspect the rendered output.

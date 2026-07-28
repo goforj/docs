@@ -19,9 +19,9 @@ app/<app>/schedules.go
 | Scope | Built binary | Development alias |
 | --- | --- | --- |
 | Default App scheduler only | `./bin/app scheduler` | `forj scheduler` |
-| Named App scheduler only | `./bin/marketplace scheduler` | `forj marketplace scheduler` |
+| Additional app scheduler only | `./bin/marketplace scheduler` | `forj marketplace scheduler` |
 | Default App combined Runtime | `./bin/app` | `forj app` |
-| Named App combined Runtime | `./bin/marketplace` | `forj marketplace app` |
+| Additional app combined Runtime | `./bin/marketplace` | `forj marketplace app` |
 
 Use the explicit scheduler command in split deployments so process ownership and singleton policy stay visible. Use the built binary under a supervisor; the `forj` aliases are development commands.
 

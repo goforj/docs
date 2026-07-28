@@ -80,7 +80,7 @@ forj route:list
 
 Expected result: `forj build` regenerates the graph, `go test ./...` passes, and `route:list` includes the controller path. Start `forj api` and use the scenario's `curl` command to prove the public response.
 
-For a named App, run `forj marketplace route:list` after the build to verify its routes.
+For an additional app, run `forj marketplace route:list` after the build to verify its routes.
 
 ## Generated Internals and Advanced Placement
 
@@ -93,7 +93,7 @@ Use grouped names to colocate controllers with their package:
 forj make:controller billing:reports
 ```
 
-For a named App, prefix the generator:
+For an additional app, prefix the generator with the app name:
 
 ```bash
 forj marketplace make:controller checkout
@@ -108,7 +108,7 @@ app/wire/inject_http_controllers_app.go      provider added
 app/routes.go                                routes registered
 ```
 
-For a named App, the controller remains under `internal/...`; the registration files live under `app/<name>/...`.
+For an additional app, the controller remains under `internal/...`; the registration files live under the owning app's `app/<name>/...`.
 
 </template>
 <template #generated>

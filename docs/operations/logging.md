@@ -63,7 +63,7 @@ Use:
 
 for complete route visibility.
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 ./bin/marketplace route:list

@@ -78,7 +78,7 @@ See [Logging](/operations/logging) for event shape, output modes, and sensitive-
 | `HTTP_CORS_ALLOW_ENDPOINTS` | `http://localhost:8080` in `local`; otherwise empty | Comma-separated credentialed CORS origins. Configure production origins explicitly. |
 | `API_SWAGGER_ENABLED` | `true` | Enable generated API reference routes. |
 | `SWAGGER_ENABLED` | `true` | Compatibility fallback for `API_SWAGGER_ENABLED`. Prefer `API_SWAGGER_ENABLED`. |
-| `OPENAPI_SPEC_PATH` | `build/openapi.json`; named Apps use `build/<app>/openapi.json` | Path to the OpenAPI artifact served by the generated API reference routes. |
+| `OPENAPI_SPEC_PATH` | `build/openapi.json`; additional apps use `build/<app>/openapi.json` | Path to the OpenAPI artifact served by the generated API reference routes. |
 
 ## Auth
 
@@ -168,7 +168,7 @@ Generated frontends expose the selected App's `<APP>_APP_ENV`, or the global `AP
 
 ## Metrics and Runtime Ports
 
-Generated runtime metadata assigns the default App ports `3000`, `10000`, `10001`, and `10002`. Each named App receives the next non-conflicting block.
+Generated runtime metadata assigns the default App ports `3000`, `10000`, `10001`, and `10002`. Each additional app receives the next non-conflicting block.
 
 | Variable | Default App Default | Purpose |
 | --- | ---: | --- |
@@ -181,7 +181,7 @@ Generated runtime metadata assigns the default App ports `3000`, `10000`, `10001
 | `JOBS_METRICS_PORT` | `10002` | Accepted jobs metrics alias. |
 | `METRICS_JOBS_PORT` | `10002` | Canonical generated jobs metrics port. |
 
-Every port key accepts the `<APP>_` overlay. For example, the first named App can use `MARKETPLACE_METRICS_PORT=10010`, `MARKETPLACE_METRICS_SCHEDULER_PORT=10011`, and `MARKETPLACE_METRICS_JOBS_PORT=10012`.
+Every port key accepts the `<APP>_` overlay. For example, the first additional app can use `MARKETPLACE_METRICS_PORT=10010`, `MARKETPLACE_METRICS_SCHEDULER_PORT=10011`, and `MARKETPLACE_METRICS_JOBS_PORT=10012`.
 
 Framework-owned instrumentation toggles all default to `true` when their component exists:
 

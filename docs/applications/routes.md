@@ -24,7 +24,7 @@ internal/users/controller.go
 internal/reports/controller.go
 ```
 
-The app route file composes those controller routes into route groups. Named apps use the same pattern under their app directory:
+The app route file composes those controller routes into route groups. Additional apps use the same pattern under the owning app's directory:
 
 ```text
 app/marketplace/routes.go
@@ -98,7 +98,7 @@ Use:
 forj route:list
 ```
 
-For a named app, prefix the app name:
+For an additional app, prefix the command with the app name:
 
 ```bash
 forj marketplace route:list

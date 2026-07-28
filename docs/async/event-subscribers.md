@@ -36,7 +36,7 @@ internal/billing/invoice_paid_subscriber.go    created
 app/wire/inject_subscribers_app.go             provider and subscription added
 ```
 
-For a named App, the subscriber remains under `internal/...`; its injector is `app/<name>/wire/inject_subscribers_app.go`.
+For an additional app, the subscriber remains under `internal/...`; its injector is in the owning app at `app/<name>/wire/inject_subscribers_app.go`.
 
 </template>
 <template #generated>

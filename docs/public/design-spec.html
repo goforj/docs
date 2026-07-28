@@ -1259,11 +1259,11 @@ fourth rule to justify itself. Whichever you pick drives the docs mock below.</p
     <span class="k">return</span> Photo{Path: path}, <span class="k">nil</span>
 }</pre>
       </div>
-      <div class="m-note"><b>Note</b><span>Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</span></div>
+      <div class="m-note"><b>Note</b><span>Apps in a multi-app Project share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</span></div>
     </main>
     <aside class="m-aside">
       <p class="t">On this page</p>
-      <a href="#" class="on">The default shape</a><a href="#">Add a named app</a>
+      <a href="#" class="on">The default shape</a><a href="#">Add another app</a>
       <a href="#">App metadata</a><a href="#">Runtime defaults</a><a href="#">Common mistakes</a>
     </aside>
   </div>
@@ -1383,7 +1383,7 @@ fourth rule to justify itself. Whichever you pick drives the docs mock below.</p
 
 <h2 class="sec">Content</h2>
 <h3 class="sub">Callouts — including one with actions</h3>
-<div class="call note"><b>Note</b><p>Named apps share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</p></div>
+<div class="call note"><b>Note</b><p>Apps in a multi-app Project share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</p></div>
 <div class="call tip"><b>Tip</b><p>Run <code>forj route:list</code> instead of scrolling startup logs — it is the source of truth for the HTTP surface.</p></div>
 <div class="call warn"><b>Warning</b><p>Changing <code>DB_DRIVER</code> after migrations have run requires a fresh migration path.</p></div>
 <div class="call danger"><b>Danger</b><p><code>forj make:controller --remove</code> deletes the file and unwires it. There is no undo.</p>
@@ -1457,7 +1457,7 @@ fourth rule to justify itself. Whichever you pick drives the docs mock below.</p
   <div><p class="note" style="margin:0">Active is gold text, gold rule, gold wash — all navigation, no fill. Hover lifts to a neutral surface rather than introducing colour, so scanning a long sidebar does not flicker. Visited drops to <code>--ink-3</code>.</p></div>
   <div class="toc">
     <p class="grp">On this page</p>
-    <a href="#" class="on">The default shape</a><a href="#">Add a named app</a><a href="#">App metadata</a>
+    <a href="#" class="on">The default shape</a><a href="#">Add another app</a><a href="#">App metadata</a>
   </div>
 </div>
 <div class="grid2">

@@ -202,7 +202,7 @@ Use named queues when the App has distinct classes of work. For example, `emails
 
 One generated queue resource represents one queue. The resource name is the app-facing queue name, and by default it is also the backend queue name. Use `QUEUE_<NAME>_NAME` only when the backend queue name must differ.
 
-In a multi-app Project, app code still uses the logical queue name, such as `reports`. Named apps prefix backend queue names by default so two apps do not collide on the same backend.
+In a multi-app Project, app code still uses the logical queue name, such as `reports`. Additional apps prefix backend queue names by default so two apps do not collide on the same backend.
 
 For example, the `marketplace` app dispatches to logical queue `default` while the backend receives `marketplace_default`. Application code still says `default`; GoForj owns the app-aware backend name.
 
@@ -256,7 +256,7 @@ When generating a job, pass `--queue` to stamp the generated dispatch helper:
 forj make:job reports:generate --queue reports
 ```
 
-Generated jobs dispatch through the Queue manager. For manual dispatch, pass the logical name such as `reports` to `Manager.Dispatch`; the manager selects that generated runtime and applies its configured physical backend name, including the App prefix for a named App.
+Generated jobs dispatch through the Queue manager. For manual dispatch, pass the logical name such as `reports` to `Manager.Dispatch`; the manager selects that generated runtime and applies its configured physical backend name, including the app prefix for an additional app.
 
 Named accessors also expose the direct runtime handle for worker lifecycle, readiness, and driver inspection. Supplying a logical queue name to that low-level handle bypasses App namespace translation, so prefer generated jobs or the manager for ordinary dispatch.
 
@@ -268,7 +268,7 @@ Start workers with:
 forj worker # or ./bin/app worker
 ```
 
-For a named app:
+For an additional app, prefix the command with the app name:
 
 ```bash
 forj marketplace worker # or ./bin/marketplace worker

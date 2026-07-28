@@ -32,7 +32,7 @@ The first-party starter kit choices are:
 | [templ + htmx](/frontend/templ-htmx-starter-kit) | templ, htmx, Tailwind | You want a Go-first server-rendered UI. |
 | None | Web UI placeholder | You want to bring your own frontend. |
 
-Starter kits create app-scoped frontend source for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for a named app.
+Starter kits create app-scoped frontend source for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/marketplace/frontend/` for an additional app.
 
 ## Generated Ownership
 

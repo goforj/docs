@@ -16,7 +16,7 @@ Check file headers and local package READMEs before editing.
 | `.goforj.yml` | Project render and development contract. |
 | `.env` | Local runtime environment defaults. |
 | `cmd/app/main.go` | Default app binary entrypoint. |
-| `cmd/<app>/main.go` | Named app binary entrypoint. |
+| `cmd/<app>/main.go` | Additional app binary entrypoint. |
 | `cmd/<app>/frontend/` | Frontend source and embedded build output for an app with Web UI. |
 | `app/commands.go` | Default app command exposure. |
 | `app/lifecycle.go` | Default app lifecycle hooks. |
@@ -24,8 +24,8 @@ Check file headers and local package READMEs before editing.
 | `app/schedules.go` | Default app schedule exposure. |
 | `app/wire/wire.go` | Default app Wire injector definitions. |
 | `app/wire/wire_gen.go` | Generated Wire output. Do not edit by hand. |
-| `app/<app>/...` | Named app composition files. |
-| `app/<app>/wire/...` | Named app Wire graph. |
+| `app/<app>/...` | Additional app composition files. |
+| `app/<app>/wire/...` | Additional app Wire graph. |
 | `internal/runtime/apps.go` | Generated app metadata and deterministic runtime defaults. Do not edit by hand. |
 | `internal/caches/*_gen.go` | Generated cache accessors and config when Cache is enabled. |
 | `internal/storages/*_gen.go` | Generated storage accessors and config when File Storage is enabled. |
@@ -36,10 +36,10 @@ Check file headers and local package READMEs before editing.
 | `build/api_index.diagnostics.json` | Default app API index diagnostics. |
 | `build/openapi.json` | Default app OpenAPI output. |
 | `build/.webindex-artifacts.lock` | Publication lock coordinating the default app artifact set. |
-| `build/<app>/api_index.json` | Named app API index output. |
-| `build/<app>/api_index.diagnostics.json` | Named app API index diagnostics. |
-| `build/<app>/openapi.json` | Named app OpenAPI output. |
-| `build/<app>/.webindex-artifacts.lock` | Publication lock coordinating one named app artifact set. |
+| `build/<app>/api_index.json` | Per-app API index output. |
+| `build/<app>/api_index.diagnostics.json` | Per-app API index diagnostics. |
+| `build/<app>/openapi.json` | Per-app OpenAPI output. |
+| `build/<app>/.webindex-artifacts.lock` | Publication lock coordinating one per-app artifact set. |
 | `.goforj/backups/<set>/manifest.json` | Local backup set inventory. |
 | `.goforj/backups/<set>/checksums.txt` | Checksums for backup artifacts. |
 

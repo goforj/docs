@@ -25,7 +25,7 @@ Use the focused command when you only need the contract artifacts:
 forj build:api-index
 ```
 
-For a named App, prefix either command:
+For an additional app, prefix either command with the app name:
 
 ```bash
 forj marketplace build
@@ -42,7 +42,7 @@ build/api_index.diagnostics.json
 build/openapi.json
 ```
 
-A named App writes:
+An additional app writes per-app artifacts:
 
 ```text
 build/marketplace/api_index.json
@@ -159,9 +159,9 @@ GET /swagger/doc.json
 `/swagger` and `/swagger/` serve the Scalar UI. `/swagger/doc.json` serves the active App's OpenAPI JSON:
 
 - default App: `build/openapi.json`
-- named App: `build/<app>/openapi.json`
+- additional app: `build/<app>/openapi.json`
 
-A named App never falls back to the default App document. If its artifact is missing, `/swagger/doc.json` returns a JSON `404` with the exact `forj <app> build:api-index` command needed to create it.
+The selected app never falls back to the default App document. If its artifact is missing, `/swagger/doc.json` returns a JSON `404` with the exact `forj <app> build:api-index` command needed to create it.
 
 Enable these routes with:
 
@@ -175,7 +175,7 @@ API_SWAGGER_ENABLED=true
 OPENAPI_SPEC_PATH=build/contracts/public.json
 ```
 
-Do not use that override merely to select a named App; the runtime already selects the document from the active App identity.
+Do not use that override merely to select another app; the runtime already selects the document from the active App identity.
 
 ## Current Limits
 
@@ -193,7 +193,7 @@ WebSocket routes are visible to route tooling but are not projected as OpenAPI H
 - Do not assume generated security metadata proves runtime authorization behavior.
 - Do not ignore diagnostics when generated operations are missing or unconstrained.
 - Do not index with different build tags than the binary.
-- Do not set `OPENAPI_SPEC_PATH` just to serve a named App's normal artifact.
+- Do not set `OPENAPI_SPEC_PATH` just to serve the selected app's normal artifact.
 - Do not expose the API reference where deployment policy disables it.
 :::
 

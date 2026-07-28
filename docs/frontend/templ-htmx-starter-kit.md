@@ -11,7 +11,7 @@ It keeps routing, controllers, view models, and page rendering in Go while using
 
 ## Select the Kit
 
-Choose templ + htmx during `forj new`, or create a named App explicitly:
+Choose templ + htmx during `forj new`, or create an additional app explicitly:
 
 ```bash
 forj make:app backstage --components web-api,web-ui --starter-kit templ_htmx
@@ -46,7 +46,7 @@ cmd/app/frontend/
   dist/
 ```
 
-Named Apps use `cmd/<app>/frontend/` for assets while the shared `internal/starterui` package owns the rendered views and controller behavior.
+Additional apps use `cmd/<app>/frontend/` for assets while the shared `internal/starterui` package owns the rendered views and controller behavior.
 
 The `.templ` files, controllers, view models, and frontend assets become App-owned source. The templ compiler derives `*_templ.go` files from that source; regenerate those files instead of editing them.
 

@@ -22,7 +22,7 @@ Choose the topology before creating units:
 
 A runtime-capable App selects `run` when the bare binary is launched. It starts its enabled runtimes together and cancels sibling runtimes if one fails. Split commands start only their named runtime. Changing commands does not make in-memory drivers shared between processes; use cross-process drivers for infrastructure that HTTP and workers must share.
 
-For a named App, replace `app` with the App name, for example `./bin/marketplace api`.
+For an additional app, replace `app` with the app name, for example `./bin/marketplace api`.
 
 ## Build an Artifact
 
@@ -236,14 +236,14 @@ For multiple HTTP replicas, remove one instance from traffic, update and verify 
 
 ### Build and Configuration
 
-- Run `forj build`, verify the expected default and named App binaries, and confirm the build refreshed generated named resources.
-- Confirm `.goforj.yml`, each named App under `apps`, and every `*_SUPPORTED_DRIVERS` value describe the intended production components and drivers.
+- Run `forj build`, verify every expected app binary, and confirm the build refreshed generated app-specific resources.
+- Confirm `.goforj.yml`, each additional app under `apps`, and every `*_SUPPORTED_DRIVERS` value describe the intended production components and drivers.
 - Deploy a versioned binary under a non-root account.
 - Keep secrets outside the artifact, and set `APP_ENV` and `APP_DEBUG` to production-safe values.
 
 ### Runtime Ownership
 
-- Choose combined or split ownership deliberately, supervise each required runtime with an explicit command, and use the App-specific binary for named Apps.
+- Choose combined or split ownership deliberately, supervise each required runtime with an explicit command, and use the app-specific binary for each additional app.
 - Keep the scheduler singleton unless schedules use deliberate cross-process locking.
 - Set App, queue, and scheduler shutdown budgets below the supervisor timeout, then prove each process starts and stops cleanly.
 

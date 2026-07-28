@@ -22,7 +22,7 @@ forj app
 
 This starts enabled runtimes together for the default app.
 
-For a named app:
+Select an additional app by name:
 
 ```bash
 forj marketplace app
@@ -50,10 +50,10 @@ Generated `internal/runtime/apps.go` gives each app deterministic local defaults
 | App | HTTP | Metrics | Scheduler metrics | Worker metrics |
 | --- | ---: | ---: | ---: | ---: |
 | `app` | `3000` | `10000` | `10001` | `10002` |
-| first named app | `3001` | `10010` | `10011` | `10012` |
-| second named app | `3002` | `10020` | `10021` | `10022` |
+| first additional app | `3001` | `10010` | `10011` | `10012` |
+| second additional app | `3002` | `10020` | `10021` | `10022` |
 
-Named apps do not consume default-app globals such as `PORT=3000`. Override one app with its uppercase app prefix:
+Additional apps do not consume default-app globals such as `PORT=3000`. Override one app with its uppercase app prefix:
 
 ```text
 MARKETPLACE_PORT=3100
@@ -75,10 +75,10 @@ Metrics scrape labels currently include `app`, `process`, `service`, and `enviro
 
 Process topology does not change a process-local driver into shared infrastructure. When API and worker processes must share queues, cache values, events, or files, select a backend that crosses the process boundary.
 
-A named app is a separate runnable application boundary, not a mechanism for splitting one app's HTTP and worker processes. Keep business behavior independent of topology, and run multiple scheduler replicas only when locking or singleton control makes that safe.
+An additional app is a separate runnable application boundary, not a mechanism for splitting one app's HTTP and worker processes. Keep business behavior independent of topology, and run multiple scheduler replicas only when locking or singleton control makes that safe.
 
 ## Next Steps
 
-- [Apps](/core/apps) explains the default app and named apps.
+- [Apps](/core/apps) explains the default app and additional apps.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown ordering.
 - [Runtime Processes](/operations/runtime-processes) explains production process deployment.

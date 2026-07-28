@@ -62,7 +62,7 @@ List registered routes:
 forj route:list
 ```
 
-For a named app, prefix the app name:
+For an additional app, prefix the command with the app name:
 
 ```bash
 forj marketplace api
@@ -127,7 +127,7 @@ The exact response helpers available come from the `web` package. Use the GoForj
 
 ## Route Registration
 
-GoForj Apps collect routes through `app/routes.go`. Named Apps use `app/<name>/routes.go`.
+GoForj Apps collect routes through `app/routes.go`. Additional apps use the owning app's `app/<name>/routes.go`.
 
 The route file builds public and protected route groups and mounts them under `/api/v1` by default.
 

@@ -26,16 +26,16 @@ The default path is:
 
 ## Application Structure
 
-Use the generated Project as the canonical structure. Teach the default app first; introduce named apps only when the Project needs another runnable boundary.
+Use the generated Project as the canonical structure. Teach the default app first; introduce additional apps only when the Project needs another runnable boundary.
 
 Typical ownership:
 
 - `cmd/app`: default app binary entrypoint
 - `app`: default app composition, route exposure, command exposure, lifecycle registration, schedule registration
 - `app/wire`: default app Wire graph and app-owned provider sets
-- `cmd/<app>`: named app binary entrypoint
-- `app/<app>`: named app composition
-- `app/<app>/wire`: named app Wire graph
+- `cmd/<app>`: additional app binary entrypoint
+- `app/<app>`: additional app composition
+- `app/<app>/wire`: additional app Wire graph
 - `internal/runtime`: reusable runtime policy, lifecycle machinery, app metadata, timeouts
 - `internal/http`: HTTP server composition, route registration, readiness, route list, web runtime glue
 - `internal/cmd`: CLI commands and command registration
@@ -56,7 +56,7 @@ Golden path for local development:
 - `forj dev` for the normal development loop
 - `forj build` for generation, Wire, API indexing, and binary build
 - `forj ...` for generated App commands when working inside a generated App
-- `forj <app> ...` for a named app command, such as `forj marketplace route:list`
+- `forj <app> ...` to select an app by name, such as `forj marketplace route:list`
 - `forj run ...` only when the docs need the explicit App-command path or collision escape hatch
 - `forj app` when intentionally running the combined generated App runtime
 - `dev.apps` for App-aware build, SPA, and runtime lifecycle ownership
@@ -69,7 +69,7 @@ Golden path for built binaries:
 - `./bin/app worker` for queue workers
 - `./bin/app scheduler` for scheduler runtime
 - `./bin/app migrate` for migrations
-- `./bin/<app> ...` for named app binaries, such as `./bin/marketplace worker`
+- `./bin/<app> ...` for app-specific binaries, such as `./bin/marketplace worker`
 
 For runtime-capable Apps, `./bin/app` and `./bin/app run` are equivalent. Explicit commands still take precedence, while CLI-only binaries keep their root help behavior when no command is supplied.
 
@@ -157,7 +157,7 @@ Golden path:
 - Use local `sync` or `workerpool` drivers for development and tests.
 - Use durable or broker-backed drivers when production requirements require them.
 - Use named queues for distinct operational classes such as `emails`, `reports`, or `critical`.
-- Keep queue names logical in app code. Named apps physicalize backend queue names with the app prefix, for example `billing_default`, while the app still dispatches to `default`.
+- Keep queue names logical in app code. In a multi-app Project, additional apps physicalize backend queue names with the app prefix, for example `billing_default`, while the app still dispatches to `default`.
 - Prioritize queues by worker allocation and process sizing, for example `QUEUE_EMAILS_WORKERS=6` versus `QUEUE_REPORTS_WORKERS=2`.
 - Use `worker --queue <name>` when a process should work only one named queue.
 - Treat retries as part of job design.
@@ -197,8 +197,8 @@ Golden path:
 
 - Use `forj make:schedule <name> --every <duration>` to create App-owned scheduled work.
 - Let grouped schedule names colocate with their domain package, for example `forj make:schedule reports:daily --every 24h` creates `internal/reports/daily_schedule.go`.
-- Wire App-owned schedule providers through `app/wire/inject_schedules_app.go`, or `app/<app>/wire/inject_schedules_app.go` for a named app.
-- Register schedules in `app/schedules.go`, or `app/<app>/schedules.go` for a named app.
+- Wire App-owned schedule providers through `app/wire/inject_schedules_app.go`, or through the owning app's `app/<app>/wire/inject_schedules_app.go`.
+- Register schedules in `app/schedules.go`, or in the owning app's `app/<app>/schedules.go`.
 - Keep the registry declarative.
 - Give every schedule a stable explicit name.
 - Call domain-owned methods directly from schedule entries.
