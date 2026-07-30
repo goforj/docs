@@ -33,7 +33,9 @@ Expected result: the API listens on port `3001` and the health request succeeds.
 
 ## When To Change Configuration
 
-Use `.env` for local runtime behavior and `.goforj.yml` for Project and App shape. Configuration is the right place for drivers, resource names, ports, secrets, and deployment defaults; business behavior belongs in services, routes, jobs, schedules, or lifecycle hooks.
+Use `.env` for local runtime behavior and `.goforj.yml` for Project and App shape. Configuration is the right place for drivers, resource names, ports, secret references, and deployment defaults; business behavior belongs in services, routes, jobs, schedules, or lifecycle hooks.
+
+Generated `.env` files are ignored by Git. Commit only `.env.example`, with secrets blank or replaced by safe examples. Supply deployment secrets through the process environment or a secret manager.
 
 Packaged deployments can layer environment-specific files, process environment, secret management, and build-time defaults or overrides onto those same configuration boundaries.
 
@@ -100,10 +102,22 @@ Runtime behavior is configured through environment variables.
 Your new Project includes:
 
 - `.env` for the main local runtime configuration.
-- `.env.local` for local overrides.
+- `.env.local` for overrides selected by `APP_ENV=local`.
 - `.env.host` for host-specific local infrastructure settings.
+- `.env.example` for a safe, committed inventory of expected variables.
 
 Your App entrypoint loads the environment before the App Wire graph is initialized.
+
+### Precedence
+
+Environment files load in this order, with each later file overriding earlier file values:
+
+1. `.env`
+2. The file selected by `APP_ENV`: `.env.local`, `.env.staging`, or `.env.production`
+3. `.env.host` when running on a host or in Docker-in-Docker
+4. `.env.testing` when the effective environment or process identifies a test
+
+Variables already present in the process environment take precedence over every file. When no process or file value selects `APP_ENV`, it defaults to `local`.
 
 Common variables include:
 
@@ -133,9 +147,11 @@ QUEUE_DRIVER=workerpool
 QUEUE_SUPPORTED_DRIVERS=workerpool,redis
 ```
 
-`forj new` derives these values from the selected components. There is no separate driver-selection screen. It selects the chosen database engine, starts Cache in memory, Background Jobs on workerpool, Events in-process, and File Storage locally. Mail starts with SMTP when Docker is enabled and log output otherwise. An existing `.env` remains authoritative when rendering into an existing directory.
+`forj new` derives these values from the selected components. There is no separate driver-selection screen. It selects the chosen database engine, starts Cache in memory, Background Jobs on workerpool, Events in-process, and File Storage locally. Mail starts with SMTP when Docker is enabled and log output otherwise.
 
-Apps that use only built-in local fallbacks can start without a checked-in `.env` file. When a selected resource differs from its fallback, such as a MySQL database, provide its active driver and connection values through an environment file or process environment.
+When rendering into an existing directory, GoForj preserves valid owner-supplied values while filling missing defaults and reconciling framework-owned entries. For example, rendering can widen `DB_SUPPORTED_DRIVERS` when another App adds database support.
+
+Apps that use only built-in local fallbacks can start without a local `.env` file. When a selected resource differs from its fallback, such as a MySQL database, provide its active driver and connection values through an environment file or process environment.
 
 ## Driver Configuration
 
@@ -170,7 +186,7 @@ New Projects compile both the local driver and Redis for Cache, Queue, and Event
 
 ## Regenerate After Driver Changes
 
-Changing supported drivers can change imports, managers, and generated accessors.
+Changing supported drivers changes generated imports and the compiled-driver manifest in each resource manager. Named resource declarations are a separate generation input that determines generated accessors.
 
 The normal path is:
 
@@ -195,7 +211,7 @@ Generated managers retain local fallbacks when no environment value selects a dr
 | Events | `inproc` |
 | Mail | `log` |
 
-The fallback must be included in the generated driver's supported set. New Projects write explicit active selections so a MySQL-only or Postgres-only App does not rely on the SQLite fallback.
+The effective active driver must be included in the compiled supported set. When `*_DRIVER` is unset, the fallback becomes active and therefore must be compiled. An explicit non-fallback driver can omit the native fallback. New Projects write explicit active selections so a MySQL-only or Postgres-only App does not rely on SQLite.
 
 SQLite databases use `_data/sqlite/app.db` for the default connection and `_data/sqlite/<name>.db` for named connections when no database path is configured.
 
@@ -223,6 +239,8 @@ app.Storage().Public()
 app.Storage().Uploads()
 ```
 
+Adding or removing a named resource changes generated code. Run `forj build` after changing its scoped variables so generation can add or remove the corresponding accessor.
+
 Named generated accessors represent generated configuration invariants. If the current environment and generated code are out of sync, those accessors fail fast instead of silently returning a missing dependency.
 
 ## Build-Time Environment Defaults
@@ -234,7 +252,7 @@ forj build --env-defaults APP_ENV=local
 forj build --env-overrides APP_ENV=production
 ```
 
-Defaults apply only when a key is unset. Overrides force the value.
+Defaults fill keys that remain unset after file-backed configuration. `APP_ENV` is special: when the process does not set it, a compiled default selects the environment-specific file before loading continues. Overrides force their values and take precedence over process and file-backed configuration.
 
 These options are useful for packaging, but most local development should use `.env` files and process environment variables.
 

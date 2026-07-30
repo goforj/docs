@@ -70,6 +70,16 @@
     margin: 0 auto;
 }
 
+/* Full-width custom home content should widen its VitePress container rather
+   than escaping it with 100vw. On platforms with persistent scrollbars,
+   100vw includes the scrollbar gutter and creates horizontal page overflow. */
+.VPHome:has(.gf-home) .vp-doc.container {
+    width: 100%;
+    max-width: none;
+    padding-right: 0;
+    padding-left: 0;
+}
+
 .VPDoc {
     position: relative;
     overflow: hidden;
@@ -841,9 +851,10 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-page {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
     color: var(--vp-c-text-1);
     /* One continuous ambient field for the whole page. Kept in the cool indigo/violet
        brand family so it reads as a cohesive wash rather than a warm/cool tug-of-war:
@@ -2438,9 +2449,10 @@ html.gf-lightbox-open body {
    ============================================================ */
 
 .gf-home {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    margin-left: 0;
     color: var(--vp-c-text-1);
     /* A continuous atmospheric field sits behind restrained section
        seams, preserving flow while keeping each chapter legible. */
