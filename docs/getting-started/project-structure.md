@@ -230,4 +230,4 @@ This refreshes generated accessors, runs Wire, updates the API index, and compil
 - [Configuration](/getting-started/configuration) explains Project and runtime settings.
 - [Apps](/core/apps) covers additional runnable apps.
 - [Generated Files](/reference/generated-files) identifies generated ownership and regeneration commands.
-- [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown.
+- [App Lifecycle](/core/app-lifecycle) explains startup and shutdown.

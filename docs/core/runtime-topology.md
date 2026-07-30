@@ -80,5 +80,5 @@ An additional app is a separate runnable application boundary, not a mechanism f
 ## Next Steps
 
 - [Apps](/core/apps) explains the default app and additional apps.
-- [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown ordering.
+- [App Lifecycle](/core/app-lifecycle) explains startup and shutdown ordering.
 - [Runtime Processes](/operations/runtime-processes) explains production process deployment.

@@ -12,7 +12,7 @@ Core Concepts explains the model shared by every GoForj App. Start with the ques
 | Question | Read |
 | --- | --- |
 | Where does an App begin and how do additional apps differ? | [Apps](/core/apps) |
-| What starts, runs, and shuts down? | [Runtime Lifecycle](/core/runtime-lifecycle) and [Runtime Topology](/core/runtime-topology) |
+| What starts, runs, and shuts down? | [App Lifecycle](/core/app-lifecycle) and [Runtime Topology](/core/runtime-topology) |
 | How does a constructor become part of the App? | [Dependency Injection](/core/dependency-injection), then [Provider Patterns](/core/provider-patterns) for conditional or shared construction |
 | Why did Wire fail? | [Reading Wire Errors](/core/reading-wire-errors) |
 | How do I add or remove an application resource? | [Make Commands](/core/make-commands) |

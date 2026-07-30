@@ -1,11 +1,11 @@
 ---
-title: Runtime Lifecycle
-description: How a GoForj App constructs, starts, executes work, and shuts down.
+title: App Lifecycle
+description: How a GoForj App is constructed, starts, executes work, and shuts down.
 ---
 
-# Runtime Lifecycle
+# App Lifecycle
 
-The Execution Lifecycle is the ordered path from App construction through runtime work to graceful shutdown. GoForj keeps it visible: Wire constructs the App, lifecycle hooks run at startup and shutdown, and a command owns its Runtime boundary.
+The App Lifecycle is the ordered path from App construction through runtime work to graceful shutdown. GoForj keeps it visible: Wire constructs the App, lifecycle hooks run at startup and shutdown, and a command owns its Runtime boundary.
 
 ## The Runtime Path
 
@@ -21,32 +21,43 @@ The generated `App.Run` starts the lifecycle before executing a parsed command a
 
 ## Add an App-Owned Hook
 
-`app/lifecycle.go` is render-once and is the supported extension point. Wire can inject required dependencies into its constructor:
+Most Apps do not need custom lifecycle hooks. GoForj-managed databases, queues, events, HTTP servers, workers, and schedulers already own their startup and shutdown behavior.
+
+Use `app/lifecycle.go` when the App has a process-wide resource that GoForj does not manage. For example, an App with a custom OpenTelemetry pipeline may use a batch span processor. The processor exports spans asynchronously, so its `TracerProvider` must shut down before the process exits:
 
 ```go
 package app
 
+import (
+	"context"
+
+	"go.opentelemetry.io/otel/sdk/trace"
+
+	"your/module/internal/runtime"
+)
+
+// LifecycleRegistry owns cleanup for process-wide resources outside GoForj.
 type LifecycleRegistry struct {
-	reports *reports.Service
+	traces *trace.TracerProvider
 }
 
-func NewLifecycleRegistry(reports *reports.Service) *LifecycleRegistry {
-	return &LifecycleRegistry{reports: reports}
+// NewLifecycleRegistry requires the provider so incomplete wiring fails at build time.
+func NewLifecycleRegistry(traces *trace.TracerProvider) *LifecycleRegistry {
+	return &LifecycleRegistry{traces: traces}
 }
 
+// Register flushes tracing after the command or Runtime has stopped producing spans.
 func (r *LifecycleRegistry) Register(lifecycle *runtime.Lifecycle) {
-	lifecycle.On(runtime.BeforeStartup, r.BeforeStartup)
 	lifecycle.On(runtime.Shutdown, r.Shutdown)
 }
 
-func (r *LifecycleRegistry) BeforeStartup(ctx context.Context) error {
-	return r.reports.CheckPrerequisites(ctx)
-}
-
+// Shutdown exports buffered spans and releases the tracing pipeline.
 func (r *LifecycleRegistry) Shutdown(ctx context.Context) error {
-	return r.reports.Flush(ctx)
+	return r.traces.Shutdown(ctx)
 }
 ```
+
+The hook uses the App shutdown context, so an unavailable telemetry backend cannot delay exit indefinitely. It also applies to bounded commands: spans buffered while a command runs get a chance to export before that process exits.
 
 This is an illustrative fragment: retain the generated phase methods you do not change. Use `BeforeStartup` for prerequisite checks that must fail fast, `Startup` for App-owned process-lifetime resources, and shutdown phases to stop accepting work, flush, and release App-owned resources. Do not put ordinary request, job, or schedule behavior in hooks.
 

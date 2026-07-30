@@ -211,6 +211,6 @@ Use `context.Background()` only at a boundary that genuinely has no caller conte
 - [Naming Conventions](/core/naming-conventions) defines stable command names.
 - [Application Services](/applications/services) explains where command behavior should delegate.
 - [Wiring Recipes](/core/wiring-recipes) shows the command wiring flow.
-- [Runtime Lifecycle](/core/runtime-lifecycle) explains command startup and shutdown.
+- [App Lifecycle](/core/app-lifecycle) explains command startup and shutdown.
 - [Testing](/testing/) explains how command tests fit the broader test strategy.
 - [Console](/console) provides standalone messages, ANSI-aware layout, tables, prompts, loaders, and progress for command output.
