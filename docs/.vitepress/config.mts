@@ -859,10 +859,10 @@ const sectionSidebar = (text: string, items: { text: string; link: string }[]) =
 const gettingStartedSidebar = sectionSidebar('Getting Started', [
   { text: 'Overview', link: '/getting-started/' },
   { text: 'Quickstart', link: '/getting-started/quickstart' },
-  { text: 'Cookbook', link: '/cookbook' },
   { text: 'Project Structure', link: '/getting-started/project-structure' },
   { text: 'Configuration', link: '/getting-started/configuration' },
-  { text: 'Starter Kit Guide', link: '/getting-started/starter-kits' }
+  { text: 'Starter Kit Guide', link: '/getting-started/starter-kits' },
+  { text: 'Cookbook', link: '/cookbook' }
 ])
 
 const coreSidebar = sectionSidebar('Core Concepts', [
@@ -960,7 +960,7 @@ const scenariosSidebar = sectionSidebar('Runnable Scenarios', [
 
 const operationsSidebar = sectionSidebar('Operations', [
   { text: 'Overview', link: '/operations/' },
-  { text: 'Deployment Basics', link: '/operations/deployment-basics' },
+  { text: 'Deploy an App', link: '/operations/deployment-basics' },
   { text: 'Runtime Processes', link: '/operations/runtime-processes' },
   { text: 'HTTP Server', link: '/operations/http-server' },
   { text: 'Queue Workers', link: '/operations/queue-workers' },

@@ -76,6 +76,6 @@ Constructors should build dependencies, not start long-running work. Keep busine
 
 ## Next Steps
 
-- [Deployment Basics](/operations/deployment-basics)
+- [Deploy an App](/operations/deployment-basics)
 - [Queue Workers](/operations/queue-workers)
 - [Scheduler Processes](/operations/scheduler-processes)

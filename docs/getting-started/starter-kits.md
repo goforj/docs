@@ -1,15 +1,15 @@
 ---
-title: Starter Kits
+title: Starter Kit Guide
 description: How GoForj starter kits relate to generated components, frontend scaffolds, and App ownership.
 ---
 
-# Starter Kits
+# Starter Kit Guide
 
 Starter kits are optional scaffolds that give an app a working frontend.
 
 They are not separate frameworks. After generation, their files belong to the App.
 
-This page is the implementation guide. For screenshots and complete interface examples, see the [Starter Kit Showcase](/starter-kits).
+For screenshots and complete interface examples, explore [Starter Kits](/starter-kits). This guide explains selection, generated files, development tasks, and ownership.
 
 ## When Starter Kits Apply
 

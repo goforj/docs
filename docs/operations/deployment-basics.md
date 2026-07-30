@@ -1,278 +1,267 @@
 ---
-title: Deployment Basics
-description: Deploy a GoForj App as a supervised, observable production process.
+title: Deploy an App
+description: Build, configure, release, verify, and roll back a GoForj App.
 ---
 
-# Deployment Basics
+# Deploy an App
 
-A GoForj App deploys as a compiled binary. Build it once, provide its configuration through the process environment, and let a service manager own its lifecycle. The binary is the production command surface; `forj` is the development and generation surface.
+A GoForj release is a compiled App binary plus its production configuration. The same binary can run on a virtual machine, in a container, or under an orchestrator. GoForj does not require a particular hosting provider or process supervisor.
 
-This guide uses one Linux host and systemd because it makes process ownership, signals, restarts, and logs explicit. The same binary and commands work in a container or another supervisor.
+The normal release path is:
 
-## Process Model
-
-Choose the topology before creating units:
-
-| Topology | Command | Use when |
-| --- | --- | --- |
-| Combined | `./bin/app` or `./bin/app run` | One small deployment unit owns HTTP, workers, and schedules. |
-| HTTP | `./bin/app api` | HTTP needs independent scaling or restart policy. |
-| Workers | `./bin/app worker` | Queued work needs independent capacity or resource limits. |
-| Scheduler | `./bin/app scheduler` | Recurring work needs singleton control. |
-
-A runtime-capable App selects `run` when the bare binary is launched. It starts its enabled runtimes together and cancels sibling runtimes if one fails. Split commands start only their named runtime. Changing commands does not make in-memory drivers shared between processes; use cross-process drivers for infrastructure that HTTP and workers must share.
-
-For a staff operations App named `admin`, replace `app` with its name, for example `./bin/admin api`.
-
-## Build an Artifact
-
-Build from the Project root in CI or on a trusted build host:
-
-```bash
-forj build
-test -x ./bin/app
+```mermaid
+flowchart LR
+    source["Project source"] --> build["Build release"]
+    build --> migrate["Run migrations once"]
+    migrate --> start["Start supervised processes"]
+    start --> ready["Pass readiness"]
+    ready --> traffic["Receive traffic"]
 ```
 
-Expected result: `./bin/app` exists and is executable. `forj build` refreshes generated components, runs Wire, indexes APIs, and builds the App binary.
+This page owns that path. The linked operations pages cover process topology, probes, metrics, backups, and security policy in more depth.
 
-Copy the resulting binary to a versioned release directory. Keep the previous release directory until the new release has passed readiness and a smoke check. For example, the active process can run `/opt/example/releases/2026-07-27/bin/app`; switching the service to a previous release is then a binary rollback rather than a rebuild during an incident.
+## Before You Start
 
-## Configuration and Secrets
+Decide which Apps belong in the release and where they will run. Provision the production database, queue, cache, storage, and other external services selected by those Apps. The deployment platform must also own DNS, TLS termination, network policy, process supervision, and secret delivery.
 
-Give the service account a non-secret, readable release directory and a root-owned environment file readable only by that account. Do not bake production values into the binary or commit them with the Project.
+Choose a build environment compatible with the deployment target. If the Project uses native dependencies, prove the resulting binary on the same operating system and architecture used in production.
 
-An environment file contains ordinary `KEY=value` entries, for example:
+## Build the Release
+
+For an App without frontend source:
+
+```bash
+forj build &&
+  test -x ./bin/app
+```
+
+Expected result: `bin/app` exists and is executable. The build refreshes generated Project files, runs Wire, prepares the API index, and compiles the default App.
+
+### Apps with Web UI
+
+`forj dev` coordinates frontend and Go builds while you work. A standalone `forj build` does not currently rebuild React, Vue, or templ + htmx assets, so build them explicitly for a release:
+
+```bash
+npm --prefix cmd/app/frontend ci &&
+  npm --prefix cmd/app/frontend run build &&
+  forj build
+```
+
+Expected result: `cmd/app/frontend/dist` contains current frontend output and `bin/app` embeds that output. The deployed release does not need a separate frontend server unless the application was deliberately designed around one.
+
+### Additional Apps
+
+Build each independently deployable App:
+
+```bash
+forj admin build &&
+  test -x ./bin/admin
+```
+
+Expected result: `bin/admin` contains the staff-facing App selected by the command prefix. Repeat the build for every App included in the release.
+
+Keep the artifact immutable after it has been tested. If a release is transferred to another host or registry, verify its checksum or image digest before activation.
+
+## Keep Configuration Outside the Artifact
+
+Supply production configuration through the process environment or the secret and configuration mechanism provided by the deployment platform.
+
+A small HTTP deployment might start with:
 
 ```text
 APP_ENV=production
+APP_DEBUG=false
 APP_URL=https://api.example.com
-API_HTTP_HOST=127.0.0.1
+API_HTTP_HOST=0.0.0.0
 API_HTTP_PORT=3000
 APP_SHUTDOWN_TIMEOUT=30s
 QUEUE_SHUTDOWN_TIMEOUT=30s
-HTTP_ACCESS_LOG_ENABLED=true
-APP_DIAG_TOKEN=<diagnostic-token-from-your-secret-store>
+APP_DIAG_TOKEN=<value-from-your-secret-store>
 ```
 
-`API_HTTP_HOST` and `API_HTTP_PORT` control the HTTP listener. Bind to `127.0.0.1` when a reverse proxy is on the same host; bind to `0.0.0.0` only when the network policy is intentional. `APP_DIAG_TOKEN` authorizes detailed readiness output, so keep it in the secret delivery mechanism and do not send it to public probes.
+The rendered App determines the rest. Configure its selected database, queue, cache, storage, event, mail, and observability drivers with production values. Do not allow a missing production dependency to silently fall back to a process-local driver.
 
-Add the driver configuration required by the rendered App (database, queue, cache, storage, events, and Lighthouse if enabled). Required infrastructure should make startup or readiness fail visibly; do not substitute empty credentials or silently switch production to a local driver.
+Bind to `127.0.0.1` when a reverse proxy on the same host owns public traffic. Bind to `0.0.0.0` only when a container network, firewall, or host network policy controls access.
 
-## Run as a Non-Root Service
+If the App intentionally uses SQLite, local storage, uploads, or another writable filesystem path, place that data outside the versioned release directory and configure an absolute path. Replacing an immutable release must not replace or orphan durable application data.
 
-Create a dedicated, unprivileged account such as `example`. The App does not need root to listen on port 3000, and a reverse proxy can expose ports 80/443.
+See [Environment Reference](/reference/env-vars) for the complete generated configuration surface and [Production Hardening](/security/production-hardening) for security-sensitive settings.
 
-For a combined deployment, create `/etc/systemd/system/example.service`:
+## Choose the Processes to Run
 
-```ini
-[Unit]
-Description=Example GoForj App
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=example
-Group=example
-WorkingDirectory=/opt/example/current
-EnvironmentFile=/etc/example/app.env
-ExecStart=/opt/example/current/bin/app
-Restart=on-failure
-RestartSec=5
-TimeoutStopSec=65
-NoNewPrivileges=true
-PrivateTmp=true
-
-[Install]
-WantedBy=multi-user.target
-```
-
-`TimeoutStopSec` must exceed the total graceful-stop path, not only one setting: use at least `APP_SHUTDOWN_TIMEOUT + QUEUE_SHUTDOWN_TIMEOUT + margin`. With both values set to `30s`, `65s` leaves a five-second margin. The App handles `SIGINT` and `SIGTERM`; workers wait for active jobs within `QUEUE_SHUTDOWN_TIMEOUT`, and the scheduler and HTTP runtime shut down within their configured budgets.
-
-Load and start the unit:
+Most initial deployments can supervise the combined runtime:
 
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now example.service
-sudo systemctl status example.service
+./bin/app
 ```
 
-Expected result: systemd reports `active (running)`. Read its logs with:
+A runtime-capable binary selects `run` when launched without a command. It starts the enabled HTTP, worker, and scheduler runtimes together.
+
+Split the runtimes only when they need different scaling, resource limits, restart behavior, or ownership:
+
+| Process | Command |
+| --- | --- |
+| Combined runtime | `./bin/app` |
+| HTTP | `./bin/app api` |
+| Queue workers | `./bin/app worker` |
+| Scheduler | `./bin/app scheduler` |
+
+Changing the command does not change application behavior or make in-memory drivers shared between processes. Split processes that exchange work or state need cross-process queue, cache, event, storage, or database drivers.
+
+Run one scheduler process unless the schedules use deliberate cross-process locking. See [Runtime Processes](/operations/runtime-processes) before introducing a split topology.
+
+## Give the Process to a Supervisor
+
+The deployment platform should:
+
+- run the binary as an unprivileged identity;
+- provide its environment without placing secrets in the artifact;
+- capture standard output and standard error;
+- restart the process according to an explicit failure policy;
+- deliver `SIGTERM` during shutdown;
+- allow the App enough time to finish its graceful-stop path;
+- keep liveness and readiness separate; and
+- remove an instance from traffic before terminating it.
+
+This contract applies equally to systemd, a container runtime, Kubernetes, Nomad, or another supervisor. The exact service unit or workload manifest belongs to that platform.
+
+Set the supervisor's stop grace period above the longest effective App shutdown path, with additional margin for the supervisor itself. In combined mode, runtime shutdown happens concurrently before the outer App lifecycle finishes. Test shutdown with real in-flight jobs instead of relying only on arithmetic.
+
+The long-running command must be the deployed binary:
+
+```text
+/srv/example/releases/2026-07-28/bin/app
+```
+
+Do not use `forj dev`, `go run`, or a source checkout as the production process.
+
+## Prepare Data Before Traffic Moves
+
+Database migrations are explicit. An App with database support does not migrate automatically when its runtime starts.
+
+Create and verify a recovery point, then run migrations from the staged release:
 
 ```bash
-sudo journalctl -u example.service -f
+/srv/example/releases/2026-07-28/bin/app migrate
 ```
 
-Expected startup logs include the HTTP server address, a route-count summary, and start markers for enabled worker or scheduler runtimes. They should not contain credentials or a full route dump.
+Expected result: the migration command exits successfully before processes from that release receive traffic.
 
-For split topology, make separate units with the same account and environment file, changing only `ExecStart`:
+Run the command once per migration-owning App, not once per HTTP replica. During a rolling deployment, prefer additive schema changes that work with both the old and new binaries.
 
-```ini
-ExecStart=/opt/example/current/bin/app api
+Use stable paths for backup output rather than writing backup sets inside a versioned release directory. [Backup and Restore](/operations/backups) covers discovery, verification, retention, and restore safeguards.
+
+## Activate the Release
+
+A useful filesystem layout separates immutable releases from mutable state:
+
+```text
+/srv/example/releases/2026-07-28/   immutable release
+/srv/example/current                active release reference
+/etc/example/app.env                configuration and secrets
+/var/lib/example/                   intentionally local durable data
+/var/backups/example/               backup sets
 ```
 
-```ini
-ExecStart=/opt/example/current/bin/app worker
-```
+Activation should be one platform-level operation: update the active release reference or deploy the new image, then ask the supervisor to replace the old process.
 
-```ini
-ExecStart=/opt/example/current/bin/app scheduler
-```
+For more than one HTTP replica:
 
-Run one scheduler unit unless schedules are explicitly designed with cross-process locking. HTTP and worker units can be independently replicated or resource-limited; application services and job handlers must not depend on whether they run combined or split.
+1. Remove one instance from traffic.
+2. Install and start the new release.
+3. Wait for readiness and run a smoke request.
+4. Return the instance to traffic.
+5. Continue with the next instance.
 
-## Migrations and Backups
+Workers may need to drain when a release changes an enqueued payload or handler contract. Keep scheduler ownership singular throughout the rollout.
 
-Take and verify a recovery point before a schema-changing deployment. Run migrations through a systemd one-shot unit so it inherits the same release directory, service account, and environment file as the runtime:
+## Verify Before Sending Traffic
 
-```ini
-# /etc/systemd/system/example-migrate.service
-[Unit]
-Description=Example GoForj migrations
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-User=example
-Group=example
-WorkingDirectory=/opt/example/current
-EnvironmentFile=/etc/example/app.env
-ExecStart=/opt/example/current/bin/app migrate
-```
-
-After creating or changing a unit, run `sudo systemctl daemon-reload`, then start it with `sudo systemctl start example-migrate.service`. Expected result: the unit exits successfully before the new runtime is started. Do not put migrations in every HTTP process startup: concurrent replicas can race, and a failed migration should stop the rollout before traffic changes.
-
-Use the framework backup workflow where it supports the selected resources:
-
-```ini
-# /etc/systemd/system/example-backup-create.service
-[Unit]
-Description=Create an Example GoForj backup
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-User=example
-Group=example
-WorkingDirectory=/opt/example/current
-EnvironmentFile=/etc/example/app.env
-ExecStart=/usr/local/bin/forj backup:create
-```
-
-This example assumes the framework CLI is installed at `/usr/local/bin/forj`; use its actual absolute path. Run it with `sudo systemctl start example-backup-create.service`; use an equivalent dedicated oneshot unit for backup verification. Expected result: the selected backup verifies before it becomes the recovery point. See [Backup and Restore](/operations/backups) for supported resource strategies and restore safeguards.
-
-Use an instance unit to verify a specific backup set with the same environment:
-
-```ini
-# /etc/systemd/system/example-backup-verify@.service
-[Unit]
-Description=Verify Example GoForj backup %i
-
-[Service]
-Type=oneshot
-User=example
-Group=example
-WorkingDirectory=/opt/example/current
-EnvironmentFile=/etc/example/app.env
-ExecStart=/usr/local/bin/forj backup:verify --from /opt/example/current/.goforj/backups/%i
-```
-
-After creating a backup, pass its directory name as the instance:
+First verify the artifact's command surface without starting a listener:
 
 ```bash
-sudo systemctl start example-backup-verify@backup-20260728T120000Z.service
-```
-
-Expected result: the verification unit exits successfully before that backup becomes the recovery point.
-
-## Verify the Release
-
-After systemd starts the new process, prove liveness, readiness, routes, and metrics from the appropriate network location:
-
-```bash
-curl --fail http://127.0.0.1:3000/-/health
-./bin/app health http://127.0.0.1:3000 --probe ready --fail
 ./bin/app route:list
-curl --fail http://127.0.0.1:10000/metrics
 ```
 
-Expected outcomes:
+Expected result: the release prints the routes expected for this App.
 
-- Health returns HTTP 200 and `{"status":"ok"}`.
-- Readiness exits zero only when required configured dependencies pass their checks; it exits non-zero with `--fail` otherwise.
-- `route:list` prints the complete route table without starting the HTTP listener.
-- The metrics request returns Prometheus text when the metrics component and endpoint are enabled for that runtime.
+Then check the running process:
 
-Use a probe that does not carry `APP_DIAG_TOKEN` for load-balancer readiness. Run the App `health` command from a restricted operator context when detailed resource failures are needed; it sends the token for readiness when configured.
+```bash
+curl --fail http://127.0.0.1:3000/-/health &&
+  curl --fail http://127.0.0.1:3000/-/ready &&
+  ./bin/app health http://127.0.0.1:3000 \
+    --probe ready \
+    --timeout-ms 10000 \
+    --fail
+```
 
-## Rollout and Rollback
+Expected result:
 
-For a single host, a safe release sequence is:
+- health returns HTTP 200 because the HTTP process is alive;
+- public readiness returns HTTP 200 only after required dependencies pass; and
+- the `health` command exits zero and includes authorized diagnostic detail when `APP_DIAG_TOKEN` is configured in the operator environment.
 
-1. Build and stage a new release without replacing the running binary.
-2. Check backup freshness and run the migration command if the release needs it.
-3. Point `/opt/example/current` at the staged release, then restart the relevant unit or units.
-4. Run the verification commands above and watch logs, error rates, queue depth, and readiness.
-5. If verification fails, point `current` back to the previous release and restart the affected units.
+Readiness checks have per-resource timeouts. Give the operator command and deployment probe enough total time for the number of configured resources, while keeping the load balancer's failure threshold bounded.
 
-A binary rollback does not reverse a database migration. Before an incompatible schema change, plan its rollback independently: prefer additive, backward-compatible migrations until the old binaries are no longer serving traffic, or restore only through a tested recovery procedure.
+If metrics are enabled on a combined App with HTTP, verify the route on the HTTP listener:
 
-For multiple HTTP replicas, remove one instance from traffic, update and verify it, then continue. Keep scheduler ownership singular during the rollout. Drain or stop workers deliberately when a job-handler change is incompatible with already-enqueued payloads.
+```bash
+curl --fail http://127.0.0.1:3000/metrics
+```
 
-## Troubleshooting
+Expected result: the response uses Prometheus text format. Split runtimes may expose dedicated metrics listeners; use [Metrics](/operations/metrics) to select the endpoint that matches the process topology.
 
-| Symptom | Where it appears | Operator action |
+Finally, request one application route that proves the release can perform its intended work. Framework probes do not prove that authentication, routing, and application behavior are correct together.
+
+## Roll Back Safely
+
+Keep the previous artifact until the new release has passed readiness and application smoke checks.
+
+If verification fails:
+
+1. Remove the failed release from traffic.
+2. Reactivate the previous artifact or image.
+3. Restart the affected processes.
+4. Repeat health, readiness, metrics, and application checks.
+5. Preserve the failed release's logs and diagnostics for investigation.
+
+A binary rollback does not reverse a database migration. Plan schema rollback separately, and avoid destructive or incompatible migrations while old binaries may still run.
+
+Queue payloads are another compatibility boundary. A previous worker binary must still understand queued work if it may be restored during rollback.
+
+## Failure Modes
+
+| Symptom | Likely cause | What to check |
 | --- | --- | --- |
-| Unit restarts immediately | `systemctl status` and journal | Run the exact `ExecStart` as the service account; correct missing configuration or an invalid driver dependency. |
-| `/-/health` is 200 but `/-/ready` is 503 | readiness response and server log | Treat the process as alive but not eligible for traffic; inspect the authorized readiness report and repair the failed required resource. |
-| Service does not stop before systemd timeout | journal shows worker or scheduler shutdown | Increase the relevant App timeout only when the work has a bounded completion path; otherwise make jobs resumable and retry-safe. |
-| Worker jobs are not processed | worker logs, metrics, and Inspects when those components are enabled | Confirm a `worker` or combined runtime is supervised, the intended queue is selected, and the shared queue driver is reachable. |
-| Two scheduled runs overlap | scheduler logs, metrics, or Inspects when enabled | Stop accidental duplicate scheduler units; use a shared locker when intentional multi-process scheduling needs non-overlap. |
-| Metrics endpoint cannot bind | service log | Assign distinct runtime metrics ports in split topology, or disable the conflicting endpoint according to the rendered App configuration. |
+| The new binary serves an older frontend | `frontend/dist` was not rebuilt before `forj build` | Rebuild the owning App's frontend and compile a new artifact. |
+| Health passes but readiness fails | The process is alive, but a required dependency is unavailable | Run the authorized `health` command and inspect the failed check without exposing its detail publicly. |
+| A migration is missing | The old or active release ran `migrate` instead of the staged release | Run the staged binary explicitly and confirm the migration-owning App. |
+| Local data disappears after activation | A relative SQLite or storage path resolved inside the replaced release | Move durable data to a stable directory and configure an absolute path. |
+| The supervisor kills the App during shutdown | Its stop grace period is shorter than the real graceful-stop path | Measure shutdown with in-flight work and increase the supervisor margin or make work resumable. |
+| Metrics return connection refused | The scrape target does not match combined or split topology | Use the HTTP `/metrics` route for a combined HTTP App and the configured runtime port for split processes. |
 
 ## Production Checklist
 
-### Build and Configuration
-
-- Run `forj build`, verify every expected app binary, and confirm the build refreshed generated app-specific resources.
-- Confirm `.goforj.yml`, each additional app under `apps`, and every `*_SUPPORTED_DRIVERS` value describe the intended production components and drivers.
-- Deploy a versioned binary under a non-root account.
-- Keep secrets outside the artifact, and set `APP_ENV` and `APP_DEBUG` to production-safe values.
-
-### Runtime Ownership
-
-- Choose combined or split ownership deliberately, supervise each required runtime with an explicit command, and use the app-specific binary for each additional app.
-- Keep the scheduler singleton unless schedules use deliberate cross-process locking.
-- Set App, queue, and scheduler shutdown budgets below the supervisor timeout, then prove each process starts and stops cleanly.
-
-### Data and Recovery
-
-- Run migrations intentionally and, in a multi-App Project, identify the App that owns each migration stream.
-- Verify database readiness, storage permissions, and the rule that cache is not source-of-truth storage.
-- Run `forj backup:plan`, confirm every discovered database and storage strategy, and verify a recent backup.
-- Test restore in an isolated environment, and automate backup creation, verification, retention, and freshness monitoring.
-
-### Observability
-
-- Verify health, readiness, metrics scrape targets, and `APP_DIAG_TOKEN` handling.
-- Confirm logs and enabled metrics, Inspects, and Lighthouse preserve App identity without exposing secrets or adding high-cardinality labels.
-- Enable Lighthouse only in environments where its access and retention are appropriate.
-
-### Async Work
-
-- Confirm job handlers are registered and workers use the intended queue driver.
-- Verify retry, idempotency, queue shutdown, and event-driver behavior for the selected process topology.
-
-### Release Smoke Check
-
-- Run the release smoke tests and inspect `route:list`.
-- Exercise one health probe and one readiness probe, inspect metrics output, and confirm the expected queue and scheduler behavior.
+- Build every App for the deployment target.
+- Build frontend assets before `forj build` when the App has Web UI.
+- Store production configuration and secrets outside the artifact.
+- Use production drivers for state shared across processes or hosts.
+- Keep writable data and backup sets outside immutable release directories.
+- Run the staged release's migrations once before it receives traffic.
+- Supervise each required process with the deployed binary.
+- Keep the scheduler singleton unless locking makes overlap safe.
+- Set and test graceful shutdown budgets.
+- Verify liveness, readiness, metrics, and one application workflow.
+- Keep the previous artifact available for binary rollback.
+- Treat database migrations and queued payloads as separate rollback contracts.
 
 ## Next Steps
 
-- [Runtime Processes](/operations/runtime-processes)
-- [Health and Readiness](/operations/health-readiness)
-- [Logging](/operations/logging)
-- [Backup and Restore](/operations/backups)
+- [Runtime Processes](/operations/runtime-processes) covers combined and split process ownership.
+- [Health and Readiness](/operations/health-readiness) explains public and authorized probes.
+- [Metrics](/operations/metrics) maps scrape endpoints to runtime topology.
+- [Queue Workers](/operations/queue-workers) covers draining and worker shutdown.
+- [Scheduler Processes](/operations/scheduler-processes) covers singleton ownership and locks.
+- [Backup and Restore](/operations/backups) covers recovery workflows.
+- [Production Hardening](/security/production-hardening) covers runtime security settings.

@@ -9,15 +9,15 @@ Frontend covers generated UI support, embedded frontend assets, and starter kits
 
 Frontend source is app-scoped. The default app uses `cmd/app/frontend/`; additional apps use `cmd/<app>/frontend/`.
 
-First-party starter kits currently include Vue, React, and templ + htmx. Use the [Starter Kits guide](/getting-started/starter-kits) to compare the available choices, or browse the [Starter Kit Showcase](/starter-kits) for screenshots.
+First-party starter kits currently include Vue, React, and templ + htmx. Use the [Starter Kit Guide](/getting-started/starter-kits) to compare the available choices, or explore [Starter Kits](/starter-kits) for screenshots.
 
 ## Pages
 
 - [Vue Starter Kit](/frontend/vue-starter-kit)
 - [React Starter Kit](/frontend/react-starter-kit)
 - [templ + htmx Starter Kit](/frontend/templ-htmx-starter-kit)
-- [Starter Kits guide](/getting-started/starter-kits)
-- [Starter Kit Showcase](/starter-kits)
+- [Starter Kit Guide](/getting-started/starter-kits)
+- [Starter Kits](/starter-kits)
 
 ## Related Sections
 

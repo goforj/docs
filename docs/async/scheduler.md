@@ -48,8 +48,7 @@ If `--every` is omitted, the generated starter interval is `1h`.
 
 ```text
 internal/reports/daily_schedule.go      created
-app/wire/inject_schedules_app.go        provider added
-app/schedules.go                        recurring task registered
+app/wire/inject_schedules_app.go        provider and AppSchedules entry added
 ```
 
 Additional apps use the same registration shape under the owning app's `app/<name>/`.
@@ -57,7 +56,7 @@ Additional apps use the same registration shape under the owning app's `app/<nam
 </template>
 <template #generated>
 
-The generated task owns its stable name and interval:
+The generated task keeps the schedule identity, interval, and work together:
 
 <CodeFile path="internal/reports/daily_schedule.go">
 
@@ -66,15 +65,8 @@ package reports
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
-
-// DailyScheduleName is the operational name registered with the scheduler.
-const DailyScheduleName = "reports:daily"
-
-// DailyScheduleInterval is the schedule frequency as a Go duration string.
-const DailyScheduleInterval = "24h"
 
 // DailySchedule is a scheduled task.
 type DailySchedule struct{}
@@ -86,16 +78,12 @@ func NewDailySchedule() *DailySchedule {
 
 // Name returns the operational schedule name.
 func (s *DailySchedule) Name() string {
-	return DailyScheduleName
+	return "reports:daily"
 }
 
 // Interval returns how often the schedule should run.
 func (s *DailySchedule) Interval() (time.Duration, error) {
-	interval, err := time.ParseDuration(DailyScheduleInterval)
-	if err != nil {
-		return 0, fmt.Errorf("parse schedule interval %s: %w", DailyScheduleName, err)
-	}
-	return interval, nil
+	return time.ParseDuration("24h")
 }
 
 // Handle runs the scheduled task.
@@ -105,7 +93,7 @@ func (s *DailySchedule) Handle(ctx context.Context) error {
 ```
 </CodeFile>
 
-The concrete schedule provider is added to the App Wire set:
+Wire constructs the schedule and adds it to the App's schedule collection. The highlighted lines are injected:
 
 <CodeFile path="app/wire/inject_schedules_app.go">
 
@@ -120,43 +108,33 @@ var appScheduleSet = wire.NewSet(
 	),
 	reports.NewDailySchedule, // [!code highlight]
 )
+
+func ProvideAppSchedules(
+	dailySchedule *reports.DailySchedule, // [!code highlight]
+) *schedules.AppSchedules {
+	return schedules.NewAppSchedules(
+		dailySchedule, // [!code highlight]
+	)
+}
 ```
 </CodeFile>
 
-`r.appSchedules.Register(s)` preserves schedules carried by the legacy `AppSchedules` container. New `make:schedule` resources use the direct `ScheduleRegistry` path:
+The App already contains the handoff that makes those entries automatic. `make:schedule` does not modify this file:
 
 <CodeFile path="app/schedules.go">
 
 ```go
-// ScheduleRegistry registers scheduled work for this app.
-type ScheduleRegistry struct {
-	appSchedules  *schedules.AppSchedules
-	dailySchedule *reports.DailySchedule // [!code highlight]
-}
-
-// NewScheduleRegistry constructs the schedule registry with its injected schedules.
-func NewScheduleRegistry(
-	appSchedules *schedules.AppSchedules,
-	dailySchedule *reports.DailySchedule, // [!code highlight]
-) *ScheduleRegistry {
-	return &ScheduleRegistry{
-		appSchedules:  appSchedules,
-		dailySchedule: dailySchedule, // [!code highlight]
-	}
-}
-
 // Register attaches app schedules to the scheduler.
 func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
 	if err := r.appSchedules.Register(s); err != nil {
 		return err
 	}
-	if err := schedules.RegisterRecurring(s, r.dailySchedule); err != nil { // [!code highlight]
-		return err // [!code highlight]
-	} // [!code highlight]
 	return nil
 }
 ```
 </CodeFile>
+
+`AppSchedules.Register` iterates the collection and registers each task using its `Name`, `Interval`, and `Handle` methods. Manually defined fluent schedules can still follow that call when they need cron expressions, calendar helpers, or other custom registration.
 
 </template>
 </MakeCommandTabs>

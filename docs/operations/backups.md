@@ -179,7 +179,7 @@ forj backup:list --path /var/backups/example
 
 ## Next Steps
 
-- [Deployment Basics](/operations/deployment-basics#production-checklist)
+- [Deploy an App](/operations/deployment-basics#production-checklist)
 - [Driver Selection](/data/driver-selection)
 - [Environment Reference](/reference/env-vars)
 - [CLI Reference](/reference/cli)

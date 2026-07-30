@@ -315,5 +315,5 @@ Do not use container-specific absolute paths; they only work in one local enviro
 ## Related Pages
 
 - [Configuration](/getting-started/configuration)
-- [Starter Kits](/getting-started/starter-kits)
+- [Starter Kit Guide](/getting-started/starter-kits)
 - [forj dev](/developer-tools/forj-dev)
