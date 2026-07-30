@@ -125,7 +125,7 @@ If `users.NewController` requires `*users.Service` but `appSet` does not provide
 
 ## Construction Is Not Execution
 
-Wire constructs services, controllers, managers, and registries. It does not start HTTP listeners, workers, or schedulers. Those begin at their own runtime boundary after App startup. See [Runtime Lifecycle](/core/runtime-lifecycle).
+Wire constructs services, controllers, managers, and registries. It does not start HTTP listeners, workers, or schedulers. Those begin at their own runtime boundary after App startup. See [App Lifecycle](/core/app-lifecycle).
 
 ## Common Mistakes
 

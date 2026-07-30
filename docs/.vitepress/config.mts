@@ -868,7 +868,7 @@ const gettingStartedSidebar = sectionSidebar('Getting Started', [
 const coreSidebar = sectionSidebar('Core Concepts', [
   { text: 'Overview', link: '/core/' },
   { text: 'Apps', link: '/core/apps' },
-  { text: 'Runtime Lifecycle', link: '/core/runtime-lifecycle' },
+  { text: 'App Lifecycle', link: '/core/app-lifecycle' },
   { text: 'Runtime Topology', link: '/core/runtime-topology' },
   { text: 'Code Generation', link: '/core/code-generation' },
   { text: 'Make Commands', link: '/core/make-commands' },
@@ -1309,7 +1309,7 @@ export default defineConfig({
       // What changed and why:
       //   Build + Runtime -> Guides. Neither was a destination anyone asks
       //     for; they were shelves. "Build" also reads as `forj build`, and
-      //     "Runtime" collided with the Runtime Lifecycle and Runtime
+      //     "Runtime" collided with the App Lifecycle and Runtime
       //     Topology pages inside Core Concepts. Merged into one dropdown,
       //     grouped, so the labels people actually search for — Security,
       //     Testing, Async — are visible at the top level instead of two

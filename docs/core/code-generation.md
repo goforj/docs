@@ -205,4 +205,4 @@ Refresh generated code after changing:
 
 - [Configuration](/getting-started/configuration) explains environment and driver selection.
 - [Dependency Injection](/core/dependency-injection) explains Wire generation and provider ownership.
-- [Runtime Lifecycle](/core/runtime-lifecycle) explains lifecycle hook timing.
+- [App Lifecycle](/core/app-lifecycle) explains lifecycle hook timing.
