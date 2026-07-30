@@ -1298,14 +1298,13 @@ export default defineConfig({
     logo: '/assets/goforj-v7.png',
 
     nav: [
-      // Four entries plus the version menu, arrived at by MERGING rather
-      // than deleting — nothing here became unreachable.
+      // Four documentation modes plus one product-discovery destination. The
+      // sidebar and search still expose the complete documentation tree.
       //
       // The navbar competes with the sidebar, which already shows the full
       // tree for whatever section you are in. So the navbar's job is not to
-      // expose structure, it is to switch MODE: I'm new / I'm building
-      // something specific / I need a package API / I need to look something
-      // up. Four modes, four entries.
+      // expose structure, it is to switch MODE: I'm new / I'm following a
+      // workflow / I need a package / I need to look something up.
       //
       // What changed and why:
       //   Build + Runtime -> Guides. Neither was a destination anyone asks
@@ -1315,23 +1314,25 @@ export default defineConfig({
       //     grouped, so the labels people actually search for — Security,
       //     Testing, Async — are visible at the top level instead of two
       //     clicks down behind an abstraction.
-      //   Starter Kits -> inside Getting Started. It is a first-visit
-      //     destination, and that is exactly the mode Getting Started owns.
+      //   Core Concepts -> Getting Started. It helps readers understand their
+      //     application model before following a task-specific guide.
+      //   Starter Kits -> top level until a broader Products showcase can
+      //     become the product-discovery destination.
       //   What is GoForj? -> promoted to first. It is what someone reads
       //     BEFORE the quickstart; it was sitting last.
-      //   Blog -> footer. Low frequency, and the version menu already
-      //     carries the "what changed" signal.
+      //   Version menu -> Reference. The release badge already communicates
+      //     status, while policy, changelog, and blog are lookup destinations.
       {
         text: 'Getting Started',
         items: [
           { text: 'What is GoForj?', link: '/about' },
           { text: 'Overview', link: '/getting-started/' },
           { text: 'Quickstart', link: '/getting-started/quickstart' },
-          { text: 'Starter Kit Showcase', link: '/starter-kits' },
+          { text: 'Core Concepts', link: '/core/' },
           { text: 'Cookbook', link: '/cookbook' }
         ]
       },
-      { text: 'Core Concepts', link: '/core/' },
+      { text: 'Starter Kits', link: '/starter-kits' },
       {
         text: 'Guides',
         items: [
@@ -1363,11 +1364,10 @@ export default defineConfig({
           { text: 'Drivers', link: '/drivers' }
         ]
       },
-      { text: 'Reference', link: '/reference/' },
       {
-        // Keep one version menu for release policy, the changelog, and the blog.
-        text: docsVersion,
+        text: 'Reference',
         items: [
+          { text: 'Reference home', link: '/reference/' },
           { text: 'Version policy', link: '/versions/' },
           { text: 'Changelog', link: '/versions/changelog' },
           { text: 'Blog', link: '/blog/' }
