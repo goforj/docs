@@ -16,7 +16,7 @@ Start here to create a project, run it locally, and learn where routes, services
 3. [Configuration](/getting-started/configuration) explains `.goforj.yml`, environment files, and driver selection.
 4. [JSON API Route](/scenarios/json-api-route) walks through a first route, controller, service, Wire provider, and test.
 5. [Runnable Scenarios](/scenarios/) continue through cache, storage, events, jobs, schedules, and observability.
-6. [Starter Kits](/getting-started/starter-kits) explains the optional frontend code created with a project.
+6. [Starter Kit Guide](/getting-started/starter-kits) explains the optional frontend code created with a project.
 
 ## Next Practical Steps
 

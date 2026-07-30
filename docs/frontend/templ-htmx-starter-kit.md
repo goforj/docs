@@ -7,7 +7,7 @@ description: Build a server-rendered Go application with templ components, htmx 
 
 The templ + htmx starter kit is the Go-first Web UI option. Routes, application behavior, view models, and HTML rendering stay in Go; htmx makes navigation and form interactions feel immediate without introducing a client-side application architecture.
 
-The generated starter includes a dashboard, settings pages, a component gallery, Tailwind CSS, and local Basecoat components. See [Starter Kits](/getting-started/starter-kits) when choosing between this approach and React or Vue.
+The generated starter includes a dashboard, settings pages, a component gallery, Tailwind CSS, and local Basecoat components. See the [Starter Kit Guide](/getting-started/starter-kits) when choosing between this approach and React or Vue.
 
 ## Create and Run
 

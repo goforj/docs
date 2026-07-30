@@ -17,7 +17,13 @@ This operations guide covers the endpoints, configuration, and runtime signals o
 
 ## Endpoints
 
-Standalone host mode prefers one shared metrics endpoint:
+When a combined App includes HTTP, scrape the HTTP route:
+
+```text
+http://localhost:3000/metrics
+```
+
+The combined runtime disables dedicated per-runtime listeners. When the combined App has no HTTP runtime, it uses the App metrics port instead:
 
 ```text
 http://localhost:10000/metrics
@@ -26,7 +32,7 @@ http://localhost:10000/metrics
 Direct runtime commands may expose source-specific listeners:
 
 ```text
-http://localhost:10000/metrics  # HTTP
+http://localhost:10000/metrics  # HTTP runtime
 http://localhost:10001/metrics  # scheduler
 http://localhost:10002/metrics  # workers
 ```
@@ -41,7 +47,7 @@ Apps get deterministic per-app local defaults so their runtimes do not fight for
 
 Here `admin` serves staff operations, while `statuspage` is a separately available public surface for service health and incidents.
 
-When the HTTP runtime exposes `/metrics`, local scraping may use each app's HTTP port instead:
+When the HTTP runtime exposes `/metrics`, scrape each App's HTTP port:
 
 | App | HTTP `/metrics` |
 | --- | ---: |
@@ -60,7 +66,7 @@ GET /metrics
 Verify the listener selected for the running topology:
 
 ```bash
-curl --fail http://127.0.0.1:10000/metrics
+curl --fail http://127.0.0.1:3000/metrics
 # HELP http_requests_total Total HTTP requests.
 # TYPE http_requests_total counter
 ```

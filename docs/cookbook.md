@@ -13,7 +13,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Understand the generated layout. [Project Structure](/getting-started/project-structure)
 - Add or remove components after the first render. [Configuration](/getting-started/configuration)
 - Change ports, drivers, or settings. [Configuration](/getting-started/configuration) and [Environment Reference](/reference/env-vars)
-- Start with a frontend included. [Starter Kits](/getting-started/starter-kits)
+- Start with a frontend included. [Starter Kit Guide](/getting-started/starter-kits)
 - Add another runnable app: `forj make:app admin`. [Apps](/core/apps)
 
 ## HTTP
@@ -80,7 +80,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Configure logging. [Logging](/operations/logging)
 - Back up and restore durable App data. [Backup and Restore](/operations/backups)
 - Keep workers healthy in production. [Queue Workers](/operations/queue-workers)
-- Ship a binary to a server. [Deployment Basics](/operations/deployment-basics)
+- Ship an App. [Deploy an App](/operations/deployment-basics)
 - Check readiness before launch. [Production Checklist](/operations/deployment-basics#production-checklist)
 
 ## Testing

@@ -1,6 +1,6 @@
 ---
-title: Starter Kit Showcase
-description: A visual showcase of production-shaped starter kits for GoForj Apps.
+title: Starter Kits
+description: Explore production-shaped starter kits for GoForj Apps.
 sidebar: false
 aside: false
 noAutoTitle: true
@@ -9,7 +9,7 @@ noAutoTitle: true
 <section class="gf-starter-page">
   <section class="gf-starter-hero">
     <div class="gf-starter-hero__copy">
-      <p class="gf-starter-eyebrow">Starter Kit Showcase</p>
+      <p class="gf-starter-eyebrow">Starter Kits</p>
       <h1>Start from a <em>real application</em></h1>
       <p>
         GoForj starter kits render real source into your App: auth surfaces, settings screens,
@@ -18,7 +18,7 @@ noAutoTitle: true
       </p>
       <div class="gf-starter-actions">
         <a href="/getting-started/quickstart">Create an App</a>
-        <a href="/getting-started/starter-kits">Read the docs</a>
+        <a href="/getting-started/starter-kits">Read the guide</a>
       </div>
     </div>
     <StarterKitHeroScreens />

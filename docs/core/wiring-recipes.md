@@ -19,7 +19,7 @@ GoForj apps use explicit provider sets. Your package owns constructors. The app'
 | HTTP controller | `app/wire/inject_http_controllers_app.go` | `users.NewController` |
 | App command | `app/wire/inject_cmd_app.go` and `app/commands.go` | `reports.NewReconcileCommand` |
 | Job handler | `app/wire/inject_jobs_app.go` when jobs are enabled | `reports.NewGenerateHandler` |
-| Schedule | `app/wire/inject_schedules_app.go` and `app/schedules.go` | `reports.NewDailySchedule` |
+| Schedule | `app/wire/inject_schedules_app.go` | `reports.NewDailySchedule` and its `AppSchedules` entry |
 | Event subscriber | `app/wire/inject_subscribers_app.go` | `billing.NewInvoicePaidSubscriber` |
 | Named resource adapter | Usually `app/wire/inject_services_app.go` | `provideUploadsDisk` |
 

@@ -1,149 +1,233 @@
 ---
 title: Project Structure
-description: Understand the GoForj Project layout and extension points.
+description: Learn where GoForj application behavior, app exposure, wiring, configuration, and generated output belong.
 ---
 
 # Project Structure
 
-A GoForj Project is a Go module with explicit App composition, shared application code, configuration, and runtime support.
+A GoForj Project separates the code that implements behavior from the app that exposes and runs it.
 
-Most Projects start with one app: the default app named `app`.
+Most work follows one path:
 
-## Common Layout
+```text
+internal/...          application behavior and component integration
+        ↓
+app/                   routes, commands, schedules, lifecycle, and dependency wiring
+        ↓
+cmd/app/main.go        starts the default app binary
+```
+
+The default app is named `app`. Most Projects need only this app.
+
+## Two Ownership Rules
+
+1. Application behavior lives under `internal/`, either in a domain package or a component's conventional package.
+2. `app/` exposes and wires that behavior into a runnable app.
+
+For example, generating a reports controller:
+
+```bash
+forj make:controller reports
+```
+
+creates the controller under `internal/reports`, adds its constructor to the app's Wire providers, and exposes its routes through `app/routes.go`:
+
+```text
+internal/reports/controller.go
+app/wire/inject_http_controllers_app.go
+app/routes.go
+```
+
+The controller implements HTTP behavior. The files under `app/` decide that the default app includes it. See [Controllers](/applications/controllers) and [Routes](/applications/routes) for the complete workflow.
+
+## Default App Layout
+
+The exact tree depends on the components selected when the Project is created. This annotated layout shows the paths you will encounter most often:
 
 ```text
 .
-|-- .goforj.yml
-|-- .env
-|-- go.mod
-|-- cmd/
-|   `-- app/
-|       `-- main.go
-|-- app/
-|   |-- commands.go
-|   |-- lifecycle.go
-|   |-- routes.go
-|   |-- schedules.go
-|   `-- wire/
-|-- internal/
-|-- migrations/
-`-- bin/
+├── .goforj.yml                         Project shape and local dev lifecycles
+├── .env, .env.host                     Runtime configuration
+├── .env.local                          Rendered local-dev overrides
+├── go.mod                              Go module and dependencies
+│
+├── cmd/
+│   └── app/
+│       ├── main.go                     Framework-managed binary entrypoint
+│       └── frontend/                   Starter-kit source and dist output [Web UI]
+│
+├── app/
+│   ├── commands.go                     App-owned command exposure
+│   ├── lifecycle.go                    App-owned startup and shutdown hooks
+│   ├── routes.go                       App-owned HTTP exposure [Web API or UI]
+│   ├── schedules.go                    App-owned schedule registry [Scheduler]
+│   ├── root_cmd.go                     Framework-managed command assembly
+│   └── wire/
+│       ├── inject_services_app.go      App-owned service providers
+│       ├── inject_*_app.go             Other app-owned providers
+│       ├── inject_*.go                 Framework-managed provider assembly
+│       ├── wire.go                     Framework-managed Wire declaration
+│       └── wire_gen.go                 Generated dependency graph
+│
+├── internal/
+│   ├── reports/                        Application-owned domain package
+│   ├── users/                          Application-owned domain package
+│   ├── runtime/                        Framework runtime and lifecycle support
+│   ├── http/                           HTTP runtime support [Web API or UI]
+│   ├── cmd/                            Ungrouped app commands
+│   ├── jobs/                           Worker runtime and ungrouped jobs [Background Jobs]
+│   ├── schedules/                      Scheduler support and ungrouped schedules
+│   └── caches, queues, storages, ...   Generated resource support [by component]
+│
+├── migrations/                         Database migrations [Database]
+├── build/                              API index and OpenAPI output [generated]
+└── bin/                                Compiled app binaries [generated]
 ```
 
-Some files appear only when their component is enabled.
+Paths marked with a component appear only when that component is enabled. Generated output appears after the relevant render, generation, frontend, or build step.
 
-## The Rule
+## Where Common Changes Go
 
-`internal/` owns behavior. `app/` owns exposure.
+Use the owning package for implementation and the app layer for exposure or dependency construction.
 
-Put services, repositories, controllers, jobs, subscribers, and domain behavior under `internal/`. Use app composition files to decide which behavior is exposed by a runnable app.
+| Change | Behavior belongs in | Exposure or wiring |
+| --- | --- | --- |
+| HTTP controller | `internal/<domain>/controller.go` | `app/routes.go`, `app/wire/inject_http_controllers_app.go` |
+| Application service | `internal/<domain>/service.go` | `app/wire/inject_services_app.go` |
+| Repository or model | `internal/models/`, or `internal/<group>/` when grouped | `app/wire/inject_repositories_app.go` |
+| App command | `internal/cmd/`, or `internal/<group>/` when grouped | `app/commands.go`, `app/wire/inject_cmd_app.go` |
+| Queue job | `internal/jobs/`, or `internal/<group>/` when grouped | `app/wire/inject_jobs_app.go` |
+| Generated schedule | `internal/schedules/`, or `internal/<group>/` when grouped | `app/wire/inject_schedules_app.go` |
+| Custom schedule | The domain method that performs the work | `app/schedules.go` |
+| Startup or shutdown hook | The owning service when behavior is reusable | `app/lifecycle.go` |
+| Starter-kit frontend | `cmd/app/frontend/` | Embedded by `cmd/app/main.go`; review the ownership note below before rerendering |
+| Migration | `migrations/` | Run through the app's migration commands |
 
-## `.goforj.yml`
+The `forj make:*` commands create the common files and update their registration points together. Start with [Make Commands](/core/make-commands), then use the linked application, data, or async guide when implementing the behavior itself.
 
-`.goforj.yml` is the Project contract for rendering and local development.
+## Which Files Can I Edit?
 
-It records:
+GoForj uses several ownership classes. The distinction matters because some files are preserved for application changes while others are rebuilt from Project configuration.
 
-- project name
-- Go module path
-- selected project components
-- optional starter kit
-- App dev lifecycles and independent custom watches
-- optional local module replacements
-- per-app component metadata under `apps` when the Project contains additional apps
+### Application-Owned Files
 
-App discovery is layout-based. An additional app exists when its conventional files appear under `cmd/<app>` and `app/<app>`. It is another runnable binary in the same Project, not merely another package.
+Edit these as normal application code:
 
-## `cmd/app`
-
-`cmd/app/main.go` is the default app binary entrypoint.
-
-It should stay small. It starts the generated command surface for the app; it should not own routes, jobs, services, provider sets, or business workflows.
-
-Additional apps use the same pattern:
-
-```text
-cmd/admin/main.go
-```
-
-## `app`
-
-`app/` is the default app composition layer.
-
-Common files include:
-
+- domain packages you create under `internal/<domain>/`
+- command, job, schedule, and model implementations created with `forj make:*`
 - `app/commands.go`
 - `app/lifecycle.go`
 - `app/routes.go`
 - `app/schedules.go`
-- `app/wire/...`
+- provider files ending in `_app.go` under `app/wire/`
+- application migrations you create under `migrations/`
 
-Additional apps compose through the owning app's `app/<name>/` directory:
+GoForj creates the app composition extension files once and preserves them during normal rendering. Make commands may update their imports, fields, or provider sets when registering new behavior.
+
+### Framework-Managed Files
+
+GoForj may refresh these files when the Project is rendered:
+
+- `cmd/app/main.go`
+- `app/root_cmd.go`
+- base files under `app/wire/` that do not end in `_app.go`
+- runtime support packages such as `internal/runtime` and `internal/http`
+
+Change the relevant component or Project configuration instead of treating these files as the primary extension point.
+
+### Starter-Kit and Demo Scaffold
+
+Starter-kit and demo source has a different lifecycle from ordinary application code. A full render with a selected starter kit refreshes `cmd/app/frontend/` from that kit. The templ + htmx kit also refreshes `internal/starterui/`, and demo rendering refreshes its own example packages and migrations.
+
+Review the [Starter Kit Guide](/getting-started/starter-kits) before customizing these paths or running `forj render`. Move durable application behavior into your own packages instead of relying on demo scaffold ownership.
+
+### Generated and Build Output
+
+Do not edit derived output by hand:
+
+- `app/wire/wire_gen.go`
+- generated accessors and managers ending in `_gen.go`
+- `build/`
+- `bin/`
+- frontend `dist/`
+
+Change the source, provider, or configuration and rebuild. [Generated Files](/reference/generated-files) lists the important generated paths and the command that owns each one.
+
+## Configuration at the Project Root
+
+The root configuration files control different stages:
+
+| File | What it controls | When changes take effect |
+| --- | --- | --- |
+| `.goforj.yml` | Components, app metadata, rendering, local development lifecycles, and renderer-managed module replacements | Run `forj render` for Project-shape changes |
+| `.env`, `.env.host` | Runtime defaults and host-specific overrides | Restart the app; `forj dev` handles watched local changes |
+| `.env.local` | Local-dev overrides generated from the current Project shape | A full `forj render` refreshes this file |
+| `go.mod` | Go dependencies and the replacements emitted from `.goforj.yml` | Run the normal Go module commands, then rebuild |
+
+[Configuration](/getting-started/configuration) explains how Project configuration, runtime environment, and driver selection fit together.
+
+::: warning Keep durable local settings out of `.env.local`
+A full render replaces `.env.local`. Treat it as generated local-dev configuration, not as the only copy of a setting you need to preserve.
+:::
+
+## Component-Owned Packages
+
+Selected components add focused packages under `internal/`:
+
+| Component | Common paths | Learn the workflow |
+| --- | --- | --- |
+| Web API or Web UI | `internal/http`, `app/routes.go` | [HTTP Services](/applications/http-services) |
+| Web UI starter kit | `cmd/app/frontend/` | [Starter Kit Guide](/getting-started/starter-kits) |
+| Database | `internal/database`, `migrations/` | [Database Strategy](/data/database-strategy) |
+| Cache | `internal/caches` | [Cache Patterns](/data/cache-patterns) |
+| File Storage | `internal/storages` | [Storage Patterns](/data/storage-patterns) |
+| Background Jobs | `internal/queues`, `internal/jobs` | [Queues](/async/queues) and [Jobs](/async/jobs) |
+| Events | `internal/events` | [Events](/async/events) |
+| Scheduler | `internal/schedules`, `app/schedules.go` | [Scheduler](/async/scheduler) |
+| Mail | `internal/mail` | [Mail](/applications/mail) |
+
+These paths can contain runtime integration, generated accessors, and editable implementations created by ungrouped make commands. Use a grouped name when a command, job, schedule, or model belongs with a domain; for example, `reports:sync` places the generated implementation under `internal/reports/`.
+
+## Additional Apps
+
+Add another app only when the Project needs another runnable binary or deployment boundary. Use `forj make:app` so the entrypoint, composition files, configuration, and Wire graph stay aligned:
+
+```bash
+forj make:app admin
+```
+
+The additional app follows the same ownership model:
 
 ```text
-app/admin/routes.go
+cmd/admin/main.go
+app/admin/
 app/admin/wire/
 ```
 
-## `internal`
+Both apps can use the same domain packages under `internal/`, while each app chooses its own routes, commands, schedules, lifecycle hooks, and providers. [Apps](/core/apps) explains when another app is appropriate and how app-prefixed commands work.
 
-`internal/` contains shared application behavior and generated runtime support.
+## Build and Verify Changes
 
-Runtime support packages include:
+During normal development:
 
-- `internal/runtime` for lifecycle machinery, timeouts, discovery, and generated app metadata
-- `internal/http` for HTTP runtime behavior
-- `internal/jobs` for worker runtime behavior
-- `internal/schedules` for scheduler runtime behavior
-- `internal/metrics` and `internal/observability` for runtime visibility
-
-Resource packages appear only when their components are enabled:
-
-- `internal/database` for a selected database engine
-- `internal/caches` for Cache
-- `internal/events` for Events
-- `internal/storages` for File Storage
-- `internal/queues` and `internal/jobs` for Background Jobs
-- `internal/mail` for Mail
-
-Application-owned packages can be organized by domain:
-
-```text
-internal/users
-internal/checkout
-internal/reports
+```bash
+forj dev
 ```
 
-## `internal/runtime/apps.go`
+The dev loop rebuilds the owning app after watched changes and replaces the running process only after a successful build.
 
-`internal/runtime/apps.go` is generated by GoForj. Do not edit it by hand.
+For an explicit build:
 
-It compiles the app list and deterministic runtime defaults into binaries so production runs do not depend on `.goforj.yml` or source directory scanning.
-
-## Frontend Files
-
-When Web UI is enabled, frontend source and embedded build output live next to the app binary:
-
-```text
-cmd/app/frontend/
-cmd/admin/frontend/
+```bash
+forj build
 ```
 
-This keeps each app's embedded assets local to the binary that serves them.
-
-## Extension Points
-
-Prefer these files before editing generated runtime glue:
-
-- lifecycle hooks in `app/lifecycle.go`
-- routes in `app/routes.go`
-- commands in `app/commands.go`
-- schedules in `app/schedules.go`
-- providers in `app/wire/...`
-- additional app equivalents under `app/<name>/`
+This refreshes generated accessors, runs Wire, updates the API index, and compiles `bin/app`. Use `forj route:list` to verify HTTP exposure and the relevant app command or test to verify the behavior you added.
 
 ## Next Steps
 
-- [Apps](/core/apps) explains when one Project needs more than one runnable app.
-- [Configuration](/getting-started/configuration) explains project and runtime configuration.
+- [JSON API Route](/scenarios/json-api-route) applies this structure to a controller, service, provider, route, and test.
+- [Configuration](/getting-started/configuration) explains Project and runtime settings.
+- [Apps](/core/apps) covers additional runnable apps.
+- [Generated Files](/reference/generated-files) identifies generated ownership and regeneration commands.
 - [Runtime Lifecycle](/core/runtime-lifecycle) explains startup and shutdown.

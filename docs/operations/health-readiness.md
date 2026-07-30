@@ -43,10 +43,10 @@ curl http://localhost:3001/-/ready
 
 GoForj Apps return:
 
-- `200` with `{"status":"ready"}` when all readiness checks pass
-- `503` with `{"status":"not_ready"}` when any readiness check fails
+- `200` with `{"status":"ready","app":"app"}` when all readiness checks pass
+- `503` with `{"status":"not_ready","app":"app"}` when any readiness check fails
 
-Readiness checks run against the enabled infrastructure components and use a short per-check timeout. Failed readiness checks are logged server-side.
+Readiness checks run sequentially against enabled infrastructure components and use a two-second timeout per check. Set the deployment probe's total timeout high enough for the number of configured checks. Failed readiness checks are logged server-side.
 
 ## Authorized Readiness
 
@@ -80,10 +80,10 @@ Example authorized failure shape:
 GoForj Apps include a generated `health` command that queries a live App without booting local runtime dependencies.
 
 ```bash
-./bin/app health --probe ready --fail
+./bin/app health --probe ready --timeout-ms 10000 --fail
 ```
 
-The command defaults to `http://127.0.0.1:3000`, uses `ready` by default, and automatically sends `Authorization: Bearer $APP_DIAG_TOKEN` for readiness when the token is configured.
+The command defaults to `http://127.0.0.1:3000`, uses `ready` by default, and automatically sends `Authorization: Bearer $APP_DIAG_TOKEN` for readiness when the token is configured. Its default request timeout is two seconds; increase `--timeout-ms` when the App has several readiness checks.
 
 For the staff operations App, use the `admin` binary:
 
@@ -113,4 +113,4 @@ Optional facilities should report degraded state instead of crashing unrelated r
 ## Next Steps
 
 - [HTTP Server](/operations/http-server)
-- [Deployment Basics](/operations/deployment-basics#production-checklist)
+- [Deploy an App](/operations/deployment-basics#production-checklist)

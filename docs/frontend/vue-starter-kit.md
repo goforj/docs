@@ -90,6 +90,6 @@ Its frontend lives in `cmd/admin/frontend/`.
 
 ## Next Steps
 
-- [Starter Kits](/getting-started/starter-kits)
+- [Starter Kit Guide](/getting-started/starter-kits)
 - [forj dev](/developer-tools/forj-dev)
 - [HTTP Server](/operations/http-server)
