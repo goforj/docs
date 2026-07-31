@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="dark light">
+  <title>GoForj Twitter profile banner</title>
+  <link rel="icon" href="/favicon-seam-dark.svg" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon-seam-light.svg" media="(prefers-color-scheme: light)">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+  <style>
+    :root {
+      --ground: #0c0a0e;
+      --ground-alt: #131017;
+      --ink: #fff;
+      --ink-2: #a9a1b3;
+      --line: #2a2333;
+      --accent: #ff5e3a;
+      --mark: url('/favicon-seam-dark.svg');
+    }
+
+    html[data-theme="light"] {
+      --ground: #fff;
+      --ground-alt: #f7f5f9;
+      --ink: #0c0a0e;
+      --ink-2: #5f5868;
+      --line: #e6e2ec;
+      --accent: #d6351a;
+      --mark: url('/favicon-seam-light.svg');
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      min-width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--ground);
+      font-family: 'Space Grotesk', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .banner {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 78% 48%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 29%),
+        linear-gradient(108deg, var(--ground) 0 54%, color-mix(in srgb, var(--ground-alt) 92%, var(--accent) 8%) 100%);
+      color: var(--ink);
+      isolation: isolate;
+    }
+
+    .banner::before {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      inset: -45%;
+      opacity: 0.42;
+      background-image:
+        linear-gradient(30deg, transparent 49.72%, color-mix(in srgb, var(--ink-2) 15%, transparent) 49.86%, color-mix(in srgb, var(--ink-2) 15%, transparent) 50.14%, transparent 50.28%),
+        linear-gradient(150deg, transparent 49.72%, color-mix(in srgb, var(--ink-2) 15%, transparent) 49.86%, color-mix(in srgb, var(--ink-2) 15%, transparent) 50.14%, transparent 50.28%);
+      background-size: 88px 50px;
+      mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.88), transparent 82%);
+    }
+
+    .banner::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      right: 6.5%;
+      top: 50%;
+      width: 28%;
+      aspect-ratio: 1;
+      translate: 0 -50%;
+      background-image: var(--mark);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      filter: drop-shadow(0 34px 72px color-mix(in srgb, var(--accent) 22%, transparent));
+    }
+
+    .brand {
+      position: absolute;
+      top: 15%;
+      left: 11%;
+      display: flex;
+      align-items: center;
+      gap: 0.78em;
+      font-size: clamp(24px, 2.35vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+    }
+
+    .brand img {
+      width: 1.22em;
+      height: 1.22em;
+    }
+
+    .brand__light { display: none; }
+    html[data-theme="light"] .brand__dark { display: none; }
+    html[data-theme="light"] .brand__light { display: block; }
+
+    .message {
+      position: absolute;
+      left: 11%;
+      top: 47%;
+      width: 54%;
+      translate: 0 -50%;
+    }
+
+    h1 {
+      max-width: 13ch;
+      margin: 0;
+      font-size: clamp(36px, 4.25vw, 68px);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      text-wrap: balance;
+    }
+
+    h1 em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .url {
+      position: absolute;
+      left: 11%;
+      bottom: 13%;
+      margin: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(10px, 0.95vw, 14px);
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+    }
+  </style>
+  <script>
+    const requestedTheme = new URLSearchParams(location.search).get('theme')
+    if (requestedTheme === 'light' || requestedTheme === 'dark') {
+      document.documentElement.dataset.theme = requestedTheme
+    }
+  </script>
+</head>
+<body>
+  <main class="banner" aria-label="GoForj Twitter profile banner">
+    <div class="brand">
+      <img class="brand__dark" src="/favicon-seam-dark.svg" alt="">
+      <img class="brand__light" src="/favicon-seam-light.svg" alt="">
+      <span>GoForj</span>
+    </div>
+
+    <div class="message">
+      <h1>The composable stack for <em>building with Go</em></h1>
+    </div>
+
+    <p class="url">goforj.dev</p>
+  </main>
+</body>
+</html>
