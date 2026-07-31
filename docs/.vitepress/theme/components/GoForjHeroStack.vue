@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import { useRouter } from 'vitepress'
+import { useRouter, useData } from 'vitepress'
 import { lucideIconBodies, simpleIconBodies } from 'virtual:goforj-icons'
 
 const router = useRouter()
+const { isDark } = useData()
 const isMounted = ref(false)
 const motionReduced = ref(false)
 const hoveredBlock = ref(null)
@@ -424,7 +425,7 @@ const GROUP_CONFIG = [
     id: 'frontend',
     label: 'FRONTEND',
     icon: 'app-window',
-    color: '#FFC24D',
+    color: '#5B5562',
     summary: 'UI surfaces and client delivery',
     title: 'Frontend choices',
     href: '/frontend/',
@@ -553,7 +554,7 @@ const GROUP_CONFIG = [
     id: 'ai-agents',
     label: 'ATLAS',
     icon: 'brain-circuit',
-    color: '#FFC24D',
+    color: '#665F6D',
     summary: 'Local guidance, skills, and MCP context for coding agents',
     title: 'Atlas coding-agent support',
     href: '/developer-tools/atlas',
@@ -776,17 +777,11 @@ const scene = computed(() => {
       id: 'runtime',
       type: 'block',
       tier: 'runtime',
-      label: 'RUNTIME',
-      icon: 'go',
-      labelFace: 'left',
       /* The plinth was #1C1524, about one step off the #0C0A0E ground,
          so the base of the composition was effectively invisible and
          the whole tower read as hovering. It needs enough separation
          to be an object the rest of the scene stands on. */
       color: '#332A40',
-      textColor: '#FF5E3A',
-      labelSize: 18,
-      iconScale: 1.32,
       ...runtime
     },
     {
@@ -794,7 +789,7 @@ const scene = computed(() => {
       type: 'block',
       tier: 'core',
       label: 'CORE',
-      stampLabel: 'goforj',
+      stampMark: true,
       labelFace: 'left',
       color: '#8f2317',
       textColor: '#ffffff',
@@ -1244,6 +1239,126 @@ const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
 const MATRIX_DOWN_LEFT = `matrix(0.866, -0.5, 0, 1, 0, 0)`
 const MATRIX_TOP = `matrix(0.866, 0.5, -0.866, 0.5, 0, 0)`
 
+/* ============================================================
+   STRUCTURAL NEUTRALS IN LIGHT MODE
+   ------------------------------------------------------------
+   The tower is two kinds of colour. The TILES carry vendor
+   identity — saturated, and correct on any ground. The
+   STRUCTURE (plinth, shelves, supports) is the "neither" role:
+   low-chroma violet-grey, chosen to read as an object standing
+   on a near-black canvas.
+
+   On white that structure is what fails. The plinth's front-left
+   face is the base colour minus 45 per channel, so #332A40 lands
+   near black and the composition gets a hard black band under it
+   — the illustration reads as a hole punched in the page rather
+   than an object sitting on it.
+
+   The fix lifts structure by a fixed +10 L* in light mode and
+   leaves the tiles untouched. Two constraints set that number:
+
+     · it has to survive the -45 face shading and still be a
+       violet-grey rather than black, and
+     · the shelf labels are white, so no structural surface may
+       go above about L* 52 or the labels drop under 4.5:1.
+
+   Chroma is the discriminator — max minus min channel. Every
+   structural value sits under 24 (#332A40 is 22, #68616E is 13);
+   every tile is far above it (#42b883 is 118). So the rule needs
+   no list to maintain, and a new tile cannot accidentally opt in.
+   ============================================================ */
+const STRUCTURAL_CHROMA_MAX = 24
+
+/* Light-mode structure is a COMPRESSION, not an offset: L* -> 55 + (L* / 2).
+   A flat lift kept the plinth at L* 28, still a dark band on white; the
+   compression maps the whole structural range (L* 18-48) into 64-79, so the
+   tower becomes a pale violet-grey model with the shading still carrying the
+   form. Ordering is preserved exactly, which is what keeps the isometric
+   read intact — the top face is still lightest, front-left still darkest.
+
+   The consequence is that white labels no longer work on structure, so
+   structural ink flips with it. Tiles are untouched and keep theirs. */
+const structuralLstar = (l) => 55 + (l * 0.5)
+const STRUCTURAL_INK_LIGHT = '#221C2B'
+const RUNTIME_BASE_LIGHT = '#C9BBB2'
+const CORE_LIBRARIES_BASE_LIGHT = '#8FD8D4'
+const CORE_LIBRARIES_INK_LIGHT = '#123F43'
+const ASSEMBLY_RESULT_BASE_LIGHT = '#FFE0A6'
+const ASSEMBLY_RESULT_BASE_DARK = '#FFD18A'
+
+function isStructural(hex) {
+  const h = hex.replace('#', '')
+  if (h.length !== 6) return false
+  const r = parseInt(h.substring(0, 2), 16)
+  const g = parseInt(h.substring(2, 4), 16)
+  const b = parseInt(h.substring(4, 6), 16)
+  return (Math.max(r, g, b) - Math.min(r, g, b)) <= STRUCTURAL_CHROMA_MAX
+}
+
+const srgbToLin = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4))
+const lstarOf = (rgb) => {
+  const y = 0.2126 * srgbToLin(rgb[0] / 255) + 0.7152 * srgbToLin(rgb[1] / 255) + 0.0722 * srgbToLin(rgb[2] / 255)
+  const d = 6 / 29
+  return 116 * (y > d * d * d ? Math.cbrt(y) : y / (3 * d * d) + 4 / 29) - 16
+}
+
+/* Lift to a target L* by ADDING a constant to every channel.
+
+   The obvious move is to scale the channels multiplicatively, which is what
+   preserves hue on a saturated colour. On a near-black neutral it is exactly
+   wrong: #332A40 is (51, 42, 64), a 22-point spread, and reaching L* 64 needs
+   a 3.3x multiplier — which multiplies the spread too and lands on (168, 139,
+   211). A lavender. The tower went purple.
+
+   Adding a constant leaves max-minus-min untouched, so a 22-point violet cast
+   stays a 22-point violet cast at any lightness. The neutral stays neutral,
+   which is the whole requirement for the "neither" role. */
+function atLstar(hex, target) {
+  const h = hex.replace('#', '')
+  const c = [0, 2, 4].map((i) => parseInt(h.substring(i, i + 2), 16))
+  let lo = 0, hi = 255
+  for (let i = 0; i < 16; i++) {
+    const m = (lo + hi) / 2
+    if (lstarOf(c.map((v) => Math.min(255, v + m))) < target) lo = m
+    else hi = m
+  }
+  const k = (lo + hi) / 2
+  return '#' + c.map((v) => Math.round(Math.min(255, v + k)).toString(16).padStart(2, '0')).join('')
+}
+
+function faceBase(color, itemID = '') {
+  if (!color) return color
+  if (itemID === 'assembly-result') {
+    return isDark.value ? ASSEMBLY_RESULT_BASE_DARK : ASSEMBLY_RESULT_BASE_LIGHT
+  }
+  if (isDark.value) return color
+  /* Core Libraries is intentionally teal rather than structural grey, so its
+     chroma excludes it from the neutral conversion. It still owns a large
+     shelf face and needs an explicit light counterpart of the same hue. */
+  if (itemID === 'backend-core-libraries') return CORE_LIBRARIES_BASE_LIGHT
+  /* The output is the hottest object on the forge. In light mode its orange
+     base cannot outshine white, so the material shifts toward heated ivory
+     while its shaded faces preserve the cube's volume. */
+  if (!isStructural(color)) return color
+  if (itemID === 'runtime') return RUNTIME_BASE_LIGHT
+  const c = color.replace('#', '')
+  const rgb = [0, 2, 4].map((i) => parseInt(c.substring(i, i + 2), 16))
+  return atLstar(color, structuralLstar(lstarOf(rgb)))
+}
+
+/* Ink follows the surface it sits on. Only structural surfaces move, so only
+   their labels flip; a tile's white glyph is still white. */
+function faceInk(item) {
+  if (!isDark.value && item?.id === 'backend-core-libraries') return CORE_LIBRARIES_INK_LIGHT
+  if (isDark.value || !item || !isStructural(item.color)) return item?.textColor
+  return STRUCTURAL_INK_LIGHT
+}
+function glyphInk(item) {
+  if (!isDark.value && item?.id === 'backend-core-libraries') return CORE_LIBRARIES_INK_LIGHT
+  if (isDark.value || !item || !isStructural(item.color)) return item?.iconColor || item?.textColor
+  return STRUCTURAL_INK_LIGHT
+}
+
 function adjustColor(color, amount) {
   const clamp = (val) => Math.min(255, Math.max(0, val))
   const hex = color.replace('#', '')
@@ -1322,24 +1437,38 @@ function adjustColor(color, amount) {
           <title id="gf-forge-title">The GoForj application forge</title>
           <desc id="gf-forge-description">One GoForj App composes frontend choices, libraries, infrastructure drivers, Atlas coding-agent support, and explicit Runtimes into Go source you own.</desc>
           <defs>
+            <!-- This is the same mark geometry used by favicon.svg. Keeping it
+                 inline lets the forge stamp inherit the face projection and
+                 embossed layers instead of introducing a flat raster image. -->
+            <symbol id="hero-goforj-mark" viewBox="0 0 84.01 100">
+              <path
+                d="M40.59 0 0 25.06V74.9L42.26 100 84.01 75.99 83.8 29.98 74.4 24.17 80.24 21.88 65.47 12.52 56.15 18.37 56.35 9.94ZM40.43 17.78 40.01 22.31 43.43 24.33 23.04 36.46 22.84 60.81 39.59 71.96 39.39 45.17 60.37 32.81 67.34 37.11 45.67 50.2V62.45L47.88 63.68 68.09 51.93 67.88 65.78 41.93 81.28 16.13 65.18V32.2Z"
+                fill-rule="evenodd"
+              />
+            </symbol>
             <template v-for="item in scene.tower" :key="`grads-${item.id}`">
               <linearGradient :id="`grad-top-${item.id}`" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" :stop-color="adjustColor(item.color, 35)" />
-                <stop offset="100%" :stop-color="item.color" />
+                <stop offset="0%" :stop-color="adjustColor(faceBase(item.color, item.id), 35)" />
+                <stop offset="100%" :stop-color="faceBase(item.color, item.id)" />
               </linearGradient>
               <linearGradient :id="`grad-fr-${item.id}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" :stop-color="adjustColor(item.color, -5)" />
-                <stop offset="100%" :stop-color="item.color" />
+                <stop offset="0%" :stop-color="adjustColor(faceBase(item.color, item.id), -5)" />
+                <stop offset="100%" :stop-color="faceBase(item.color, item.id)" />
               </linearGradient>
               <linearGradient :id="`grad-fl-${item.id}`" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" :stop-color="adjustColor(item.color, -25)" />
-                <stop offset="100%" :stop-color="adjustColor(item.color, -45)" />
+                <stop offset="0%" :stop-color="adjustColor(faceBase(item.color, item.id), -25)" />
+                <stop offset="100%" :stop-color="adjustColor(faceBase(item.color, item.id), -45)" />
               </linearGradient>
             </template>
+<!-- Ambient bloom. Dark mode wants heat spilling off the forge onto a
+                 near-black canvas at high alpha. On white the same alphas
+                 read as a pink haze rather than as light, because there is
+                 nothing darker for the glow to be brighter THAN — so light
+                 mode keeps the hue and roughly halves it. -->
             <radialGradient id="hero-ambient" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#FF5E3A" stop-opacity="0.46" />
-              <stop offset="52%" stop-color="#FF5E3A" stop-opacity="0.24" />
-              <stop offset="100%" stop-color="#1C1524" stop-opacity="0" />
+              <stop offset="0%" stop-color="#FF5E3A" :stop-opacity="isDark ? 0.46 : 0.22" />
+              <stop offset="52%" stop-color="#FF5E3A" :stop-opacity="isDark ? 0.24 : 0.11" />
+              <stop offset="100%" :stop-color="isDark ? '#1C1524' : '#FFFFFF'" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
@@ -1399,18 +1528,19 @@ function adjustColor(color, amount) {
                  vignette rather than a hot plate, and sent the far end of
                  the slab to near-black for no reason an object would. -->
             <linearGradient id="forge-core-top" x1="10%" y1="10%" x2="90%" y2="90%">
-              <stop offset="0%" stop-color="#ff8a3d" />
-              <stop offset="100%" stop-color="#c04a20" />
+              <stop offset="0%" :stop-color="isDark ? '#ffe8b8' : '#fff4d8'" />
+              <stop offset="58%" :stop-color="isDark ? '#ffb764' : '#ffd08a'" />
+              <stop offset="100%" :stop-color="isDark ? '#f06a32' : '#ff9b4a'" />
             </linearGradient>
             <linearGradient id="forge-core-right" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#b92b19" />
-              <stop offset="55%" stop-color="#781710" />
-              <stop offset="100%" stop-color="#43100f" />
+              <stop offset="0%" :stop-color="isDark ? '#b92b19' : '#d96844'" />
+              <stop offset="55%" :stop-color="isDark ? '#781710' : '#bf452e'" />
+              <stop offset="100%" :stop-color="isDark ? '#43100f' : '#a13225'" />
             </linearGradient>
             <linearGradient id="forge-core-left" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#781710" />
-              <stop offset="55%" stop-color="#4e1411" />
-              <stop offset="100%" stop-color="#2a0d0d" />
+              <stop offset="0%" :stop-color="isDark ? '#781710' : '#c65a3a'" />
+              <stop offset="55%" :stop-color="isDark ? '#4e1411' : '#aa3c2a'" />
+              <stop offset="100%" :stop-color="isDark ? '#2a0d0d' : '#8c2b22'" />
             </linearGradient>
             <radialGradient id="forge-underglow" cx="50%" cy="56%" r="55%">
               <stop offset="0%" stop-color="#ff934f" stop-opacity="0.34" />
@@ -1457,19 +1587,28 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6D6574" stop-opacity="0.72" />
-              <stop offset="40%" stop-color="#48434E" stop-opacity="0.82" />
-              <stop offset="100%" stop-color="#2B272F" stop-opacity="0.9" />
+              <stop offset="0%" :stop-color="isDark ? '#6D6574' : '#E4E0E8'" :stop-opacity="isDark ? 0.72 : 0.96" />
+              <stop offset="40%" :stop-color="isDark ? '#48434E' : '#CBC5D2'" :stop-opacity="isDark ? 0.82 : 0.98" />
+              <stop offset="100%" :stop-color="isDark ? '#2B272F' : '#ACA4B5'" :stop-opacity="isDark ? 0.9 : 1" />
             </linearGradient>
             <linearGradient id="steel-shelf-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#3A353F" />
-              <stop offset="100%" stop-color="#1D1921" />
+              <stop offset="0%" :stop-color="isDark ? '#3A353F' : '#B8B0C1'" />
+              <stop offset="100%" :stop-color="isDark ? '#1D1921' : '#91889D'" />
             </linearGradient>
             <linearGradient id="steel-shelf-brush" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#D6D0DC" stop-opacity="0.02" />
-              <stop offset="35%" stop-color="#E8E6EA" stop-opacity="0.1" />
-              <stop offset="55%" stop-color="#A6A0AB" stop-opacity="0.04" />
-              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.01" />
+              <stop offset="0%" :stop-color="isDark ? '#D6D0DC' : '#FFFFFF'" :stop-opacity="isDark ? 0.02 : 0.08" />
+              <stop offset="35%" :stop-color="isDark ? '#E8E6EA' : '#FFFFFF'" :stop-opacity="isDark ? 0.1 : 0.2" />
+              <stop offset="55%" :stop-color="isDark ? '#A6A0AB' : '#766E80'" :stop-opacity="isDark ? 0.04 : 0.05" />
+              <stop offset="100%" :stop-color="isDark ? '#FFFFFF' : '#FFFFFF'" :stop-opacity="isDark ? 0.01 : 0.04" />
+            </linearGradient>
+            <linearGradient id="forge-support-top" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" :stop-color="isDark ? '#6D6574' : '#F1EBE7'" :stop-opacity="isDark ? 0.72 : 0.98" />
+              <stop offset="40%" :stop-color="isDark ? '#48434E' : '#E1D7D1'" :stop-opacity="isDark ? 0.82 : 1" />
+              <stop offset="100%" :stop-color="isDark ? '#2B272F' : '#CFC2BA'" :stop-opacity="isDark ? 0.9 : 1" />
+            </linearGradient>
+            <linearGradient id="forge-support-side" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" :stop-color="isDark ? '#3A353F' : '#D7CAC3'" />
+              <stop offset="100%" :stop-color="isDark ? '#1D1921' : '#BDAEA6'" />
             </linearGradient>
           </defs>
 
@@ -1535,9 +1674,9 @@ function adjustColor(color, amount) {
                     </template>
                   </template>
                   <template v-else>
-                    <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="item.id === 'core' ? 'url(#forge-core-left)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fl-${item.id})`" />
-                    <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
-                    <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-shelf' || item.id === 'rear-support' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
+                    <path :d="getFacePath(getBlockGeom(item).frontLeft)" :fill="item.id === 'core' ? 'url(#forge-core-left)' : item.id === 'rear-support' ? 'url(#forge-support-side)' : item.id === 'rear-shelf' ? 'url(#steel-shelf-side)' : `url(#grad-fl-${item.id})`" />
+                    <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-support' ? 'url(#forge-support-side)' : item.id === 'rear-shelf' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
+                    <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-support' ? 'url(#forge-support-top)' : item.id === 'rear-shelf' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
                     <template v-if="item.id === 'core'">
                       <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forgeSideHeatLeft)" />
                       <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forgeSideHeatRight)" />
@@ -1602,10 +1741,10 @@ function adjustColor(color, amount) {
                            />
                         </template>
                         <template v-else-if="item.icon && !item.label">
-                          <g :transform="`translate(-18, -18) scale(${item.iconScale || 1.5})`" :style="{ color: item.textColor }">
+                          <g :transform="`translate(-18, -18) scale(${item.iconScale || 1.5})`" :style="{ color: faceInk(item) }">
                             <g v-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" />
                             <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
-                            <path v-else :d="ICONS[item.icon]" :fill="item.textColor" fill-opacity="0.7" />
+                            <path v-else :d="ICONS[item.icon]" :fill="faceInk(item)" fill-opacity="0.7" />
                           </g>
                         </template>
                       </g>
@@ -1615,7 +1754,7 @@ function adjustColor(color, amount) {
                       <g :transform="MATRIX_DOWN_RIGHT">
                         <g
                           :transform="`translate(${getFrontIconPlacement(item).x}, ${getFrontIconPlacement(item).y}) scale(${getFrontIconPlacement(item).scale})`"
-                          :style="{ color: item.iconColor || item.textColor }"
+                          :style="{ color: glyphInk(item) }"
                         >
                           <text
                             v-if="item.icon === 'templ'"
@@ -1628,7 +1767,7 @@ function adjustColor(color, amount) {
                           </text>
                           <g v-else-if="getGenericIconBody(item.icon)" v-html="getGenericIconBody(item.icon)" />
                           <g v-else-if="getBrandIconBody(item.icon)" v-html="getBrandIconBody(item.icon)" />
-                          <path v-else :d="ICONS[item.icon]" :fill="item.iconColor || item.textColor" fill-opacity="0.98" />
+                          <path v-else :d="ICONS[item.icon]" :fill="glyphInk(item)" fill-opacity="0.98" />
                         </g>
                       </g>
                     </g>
@@ -1636,58 +1775,55 @@ function adjustColor(color, amount) {
                     <!-- DYNAMIC LABEL ORIENTATION OR IMAGE LABEL -->
                     <g :transform="`translate(${getBlockGeom(item).frontLeftCenter.x}, ${getBlockGeom(item).frontLeftCenter.y})`">
                       <g :transform="MATRIX_DOWN_RIGHT">
-                        <template v-if="item.stampLabel">
-                           <!-- The GOFORJ CORE kicker was removed: it sat
-                                directly above the embossed GOFORJ stamp on the
-                                same centre axis, one repeating the other, so
-                                neither read as the mark. -->
-                           <!-- The stamp sat at y +18.5 to balance a GOFORJ CORE kicker
-                                that used to sit above it at y -24. With the kicker
-                                gone it needs to centre on the face itself; these
-                                offsets are now the emboss deltas only. -->
+                        <template v-if="item.stampMark">
+                           <!-- The brand mark is stamped into the face rather than
+                                placed on top of it. These small positional deltas
+                                create the cut, depth, and reflected edge. -->
                            <g class="iso-stamp">
-                             <text
-                               x="-0.62"
-                               y="-0.85"
-                               text-anchor="middle"
+                             <use
+                               href="#hero-goforj-mark"
+                               x="-22.62"
+                               y="-27.05"
+                               width="44"
+                               height="52.4"
                                class="iso-stamp__highlight"
-                             >
-                               {{ item.stampLabel }}
-                             </text>
-                             <text
-                               x="1.18"
-                               y="1.15"
-                               text-anchor="middle"
+                             />
+                             <use
+                               href="#hero-goforj-mark"
+                               x="-20.82"
+                               y="-25.05"
+                               width="44"
+                               height="52.4"
                                class="iso-stamp__depth"
-                             >
-                               {{ item.stampLabel }}
-                             </text>
-                             <text
-                               x="0.74"
-                               y="0.6"
-                               text-anchor="middle"
+                             />
+                             <use
+                               href="#hero-goforj-mark"
+                               x="-21.26"
+                               y="-25.6"
+                               width="44"
+                               height="52.4"
                                class="iso-stamp__shadow"
-                             >
-                               {{ item.stampLabel }}
-                             </text>
-                             <text
-                               y="0.0"
-                               text-anchor="middle"
+                             />
+                             <use
+                               href="#hero-goforj-mark"
+                               x="-22"
+                               y="-26.2"
+                               width="44"
+                               height="52.4"
                                class="iso-stamp__cut"
-                             >
-                               {{ item.stampLabel }}
-                             </text>
-                             <text
-                               y="0.0"
-                               text-anchor="middle"
+                             />
+                             <use
+                               href="#hero-goforj-mark"
+                               x="-22"
+                               y="-26.2"
+                               width="44"
+                               height="52.4"
                                class="iso-stamp__face"
-                             >
-                               {{ item.stampLabel }}
-                             </text>
+                             />
                            </g>
                         </template>
                         <template v-else-if="item.imageLabel">
-                           <text y="-22" text-anchor="middle" :fill="item.textColor" class="iso-label iso-label--core-kicker">GOFORJ CORE</text>
+                           <text y="-22" text-anchor="middle" :fill="faceInk(item)" class="iso-label iso-label--core-kicker">GOFORJ CORE</text>
                            <image
                              :xlink:href="item.imageLabel"
                              :x="item.imageLabelX || -60"
@@ -1697,9 +1833,9 @@ function adjustColor(color, amount) {
                            />
                         </template>
                         <template v-else-if="item.label && !item.frontIcon">
-                          <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="item.textColor" :font-size="item.topLabelSize || 10" class="iso-label iso-label--category">{{ item.topLabel }}</text>
-                          <text text-anchor="middle" :fill="item.textColor" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
-                          <text v-if="item.highlight" y="28" text-anchor="middle" :fill="item.textColor" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
+                          <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="faceInk(item)" :font-size="item.topLabelSize || 10" class="iso-label iso-label--category">{{ item.topLabel }}</text>
+                          <text text-anchor="middle" :fill="faceInk(item)" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
+                          <text v-if="item.highlight" y="28" text-anchor="middle" :fill="faceInk(item)" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
                         </template>
                       </g>
                     </g>
@@ -2323,11 +2459,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 .iso-stamp__depth,
 .iso-stamp__shadow,
 .iso-stamp__highlight {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
-  font-family: "Copperplate", "Copperplate Gothic Light", "Copperplate Gothic Bold", "Gill Sans", "Trebuchet MS", sans-serif;
+  fill-rule: evenodd;
 }
 .iso-stamp__cut {
   fill: none;
