@@ -733,23 +733,25 @@ html.gf-lightbox-open body {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    display: grid;
+    display: none;
     place-items: center;
     padding: 24px;
-    background: rgba(11, 8, 15, 0.82);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 120ms ease, visibility 0s linear 120ms;
 }
 
 .gf-lightbox-overlay.is-open {
+    display: grid;
+    background: rgba(11, 8, 15, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-    transition: opacity 120ms ease;
 }
 
 .gf-lightbox-close {
@@ -4950,8 +4952,7 @@ body:has(.gf-home) {
 /* The brand mark and hero headline share the display voice. */
 .VPNavBarTitle .title,
 .gf-hero-title,
-.gf-home-eyebrow,
-.gf-hero-eyebrow {
+.gf-home-eyebrow {
     font-family: var(--gf-font-display);
 }
 .VPNavBarTitle .title {
@@ -6011,7 +6012,6 @@ body:has(.gf-home) .VPContent {
    Mock is mono/11px/.17em in the ACCENT, preceded by a 22x1px
    accent rule. It was gold and bare, which read as a link
    colour on a line of text that is not a link. */
-.gf-hero-eyebrow,
 .gf-home-eyebrow {
     display: flex;
     align-items: center;
@@ -6023,7 +6023,6 @@ body:has(.gf-home) .VPContent {
     color: var(--gf-accent-hi);
     margin: 0 0 18px;
 }
-.gf-hero-eyebrow::before,
 .gf-home-eyebrow::before {
     content: '';
     width: 22px;
@@ -6234,7 +6233,6 @@ body:has(.gf-home) .VPContent {
    while the headline and body under it were centred.
    inline-flex keeps the rule-plus-label as one unit and lets
    it follow whatever text-align its section sets. */
-.gf-hero-eyebrow,
 .gf-home-eyebrow,
 .gf-home-section .gf-home-eyebrow {
     display: inline-flex;

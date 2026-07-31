@@ -3,10 +3,17 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter, useData } from 'vitepress'
 import { lucideIconBodies, simpleIconBodies } from 'virtual:goforj-icons'
 
+const props = defineProps({
+  staticPreview: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const router = useRouter()
 const { isDark } = useData()
 const isMounted = ref(false)
-const motionReduced = ref(false)
+const motionReduced = ref(props.staticPreview)
 const hoveredBlock = ref(null)
 const installCopied = ref(false)
 const installCopyStatus = ref('')
@@ -153,6 +160,10 @@ function isMotionReduced() {
 }
 
 function syncMotionPreference() {
+  if (props.staticPreview) {
+    motionReduced.value = true
+    return
+  }
   motionReduced.value = isMotionReduced()
   if (!motionReduced.value) return
   parallaxTarget = { x: 0, y: 0 }
@@ -1192,7 +1203,7 @@ function getGenericIconBody(icon) {
    clips the spill at <=640px, so losing the plane's left edge costs
    nothing. */
 const heroViewBox = computed(() =>
-  isNarrow.value ? '120 140 944 971' : '0 0 800 900'
+  props.staticPreview || isNarrow.value ? '120 140 944 971' : '0 0 800 900'
 )
 
 function catchesForgeGlow(item) {
@@ -1373,7 +1384,6 @@ function adjustColor(color, amount) {
   <div class="gf-home-hero">
     <div class="gf-hero-container">
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
-        <p class="gf-hero-eyebrow">Generated Go applications you own</p>
         <h1 class="gf-hero-title">
           <!-- Two-tone headline. The mock is .m-h1 with an <em> on the
                closing phrase: `.m-h1 em { font-style:normal; color:accent }`.
@@ -2536,12 +2546,6 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   }
   .gf-hero-container {
     gap: 1.65rem;
-  }
-  /* One step under the Temper block's 11px, not a rem value that
-     no longer relates to it. */
-  .gf-hero-eyebrow {
-    margin-bottom: 0.65rem;
-    font-size: 10px;
   }
   .gf-hero-title {
     margin-bottom: 0.9rem;

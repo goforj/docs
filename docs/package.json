@@ -9,7 +9,8 @@
     "dev": "vitepress dev . --port=5190",
     "prebuild": "npm run sync:design && npm run audit:content",
     "build": "vitepress build .",
-    "postbuild": "node .vitepress/scripts/audit-built-links.mjs && node .vitepress/scripts/audit-search-quality.mjs",
+    "postbuild": "node .vitepress/scripts/audit-built-links.mjs && node .vitepress/scripts/audit-search-quality.mjs && node --test .vitepress/scripts/library-social-metadata.test.mjs",
+    "test:library-metadata": "node --test .vitepress/scripts/library-social-metadata.test.mjs",
     "preview": "vitepress preview ."
   },
   "devDependencies": {

@@ -197,7 +197,7 @@ const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.'
 const docsVersion = 'Unreleased'
 const faviconVersion = '20260731-2'
-const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260527.jpg`
+const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260731.png`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
 const analyticsHead = (isProd && gaMeasurementId)
@@ -282,7 +282,7 @@ const imageAltRegex = /alt=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const imageSrcRegex = /src=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
 const imageWidthRegex = /width=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
 const imageHeightRegex = /height=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i
-const ignoredImagePattern = /(?:favicon|apple-touch-icon|web-app-manifest|goforj-v7|goforj-full|goforj-letters|goforj-hammer|logo(?:\.[a-z]+)?$)/i
+const ignoredImagePattern = /(?:favicon|apple-touch-icon|web-app-manifest|goforj-v7|goforj-full|goforj-letters|goforj-hammer)/i
 const badgeImagePattern = /(?:shields\.io|pkg\.go\.dev\/badge|codecov\.io\/[^\s)"']*badge|github\.com\/[^\s)"']*\/actions\/workflows\/[^\s)"']*badge)/i
 
 const imageDimensions = (html: string) => {
@@ -312,7 +312,7 @@ const deriveImage = (content: string, page: string) => {
     }
   }
 
-  return { url: socialImage, alt: 'GoForj documentation preview', width: 1200, height: 630 }
+  return { url: socialImage, alt: 'GoForj — the composable stack for building with Go', width: 1200, height: 630 }
 }
 
 const resolvePageSocialMetadata = (context: { page: string; description: string; content: string; pageData: { frontmatter?: Record<string, unknown> } }) => {
