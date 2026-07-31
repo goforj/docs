@@ -1,11 +1,15 @@
 {
+  "type": "module",
   "scripts": {
+    "proof:refresh": "node ../bin/collect-proof-stats.mjs",
+    "proof:check": "node ../bin/collect-proof-stats.mjs --check",
     "sync:design": "node .vitepress/scripts/sync-design-css.mjs",
     "audit:content": "node .vitepress/scripts/audit-content-value.mjs",
     "predev": "npm run sync:design",
-    "dev": "vitepress dev .",
+    "dev": "vitepress dev . --port=5190",
     "prebuild": "npm run sync:design && npm run audit:content",
     "build": "vitepress build .",
+    "postbuild": "node .vitepress/scripts/audit-built-links.mjs && node .vitepress/scripts/audit-search-quality.mjs",
     "preview": "vitepress preview ."
   },
   "devDependencies": {
