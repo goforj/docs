@@ -28,6 +28,7 @@ forj admin make:controller reports
 
 Replace the starter response with a thin HTTP adapter around an application service:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 
@@ -68,6 +69,7 @@ For a redirect response, use the same controller boundary and return `ctx.Redire
 
 The make command wires the controller constructor. Add the application service to `app/wire/inject_services_app.go`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appSet provides application-level services and dependencies.
 var appSet = wire.NewSet(
@@ -94,6 +96,7 @@ The generated controller owns its starter handlers and route list:
 
 <CodeFile path="internal/reports/controller.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Controller handles HTTP requests.
 type Controller struct {
@@ -124,6 +127,7 @@ The generator adds its constructor to the HTTP controller provider set:
 
 <CodeFile path="app/wire/inject_http_controllers_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appHttpControllerSet provides all HTTP route controllers.
 var appHttpControllerSet = wire.NewSet(
@@ -136,6 +140,7 @@ It also injects the controller into the App route registry:
 
 <CodeFile path="app/routes.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // ProvideRoutes provides route groups for the HTTP server.
 func ProvideRoutes(
@@ -192,6 +197,7 @@ Controllers are constructed through providers and Wire. The implementation above
 
 Use `ctx.Context()` when passing cancellation and deadlines into services:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 report, err := c.service.Generate(ctx.Context(), input)
 ```
@@ -201,8 +207,8 @@ Use `web.Context` for HTTP-specific behavior such as params, binding, response h
 ## Next Steps
 
 - [JSON API Route](/scenarios/json-api-route) follows a complete controller, service, test, build, route-list, and request workflow.
-- [Make Commands](/core/make-commands) explains grouped package placement and generated wiring updates.
-- [Wiring Recipes](/core/wiring-recipes) shows the controller wiring flow.
+- [Make Command Reference](/reference/make-commands) explains grouped package placement and generated wiring updates.
+- [Wiring Recipes](/developer-tools/wiring-recipes) shows the controller wiring flow.
 - [Requests and Validation](/applications/requests-validation) explains request input boundaries.
 - [Responses and Errors](/applications/responses-errors) explains response shape.
 - [Application Services](/applications/services) explains where business behavior belongs.

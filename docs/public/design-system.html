@@ -20,12 +20,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<!-- Dark only, on purpose. The site's light mode is still an open decision
-     (see ai/design/handoff.md), and a design system that renders half-built
-     in a mode it documents would be worse than one that declines to. -->
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
+<script>
+  /* Restore the mode before first paint so the page never flashes the
+     wrong ground. Dark is the default; light is opt-in. */
+  (function () {
+    try {
+      var m = localStorage.getItem('gfDesignMode');
+      document.documentElement.classList.toggle('dark', m !== 'light');
+    } catch (e) { document.documentElement.classList.add('dark'); }
+  })();
+</script>
 <title>GoForj Design System</title>
-<link rel="icon" href="/favicon.svg?v=20260727" type="image/svg+xml">
+<link rel="icon" href="/favicon-seam-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon-seam-light.svg" media="(prefers-color-scheme: light)">
+<link rel="apple-touch-icon" href="/icon-tile.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -34,6 +43,56 @@
 <style>
 /* Page chrome only. Every colour here is a theme token — this file
    introduces no values of its own, by design. */
+/* Ember syntax, as variables so the sample blocks swap with the mode.
+   Light is not a tint of dark — it needs different hues to clear AA on a
+   near-white ground, so the cool anchor moves to deep teal and the warm
+   tokens darken into brick and bronze. */
+:root, html.dark {
+  --em-plain: #E4DDE8; --em-comment: #8A8196; --em-keyword: #FF8A6B;
+  --em-builtin: #FFAB8F; --em-type: #9BD7C4; --em-func: #FFC24D;
+  --em-string: #D9CE7A; --em-number: #FFAB8F; --em-const: #FFAB8F;
+  --em-tagkey: #B8D96B; --em-verb: #B8D96B; --em-punct: #9089A0;
+  /* Row washes for the line-state demo. A wash has to survive its ground:
+     8.5% of a colour reads on a near-black well and disappears on a
+     near-white one, so light carries roughly double the alpha. */
+  --wash-hl: rgba(255, 194, 77, 0.085);
+  --wash-add: rgba(95, 207, 168, 0.09);
+  --wash-del: rgba(255, 107, 133, 0.09);
+  /* Third-party brand marks. Their published colours are tuned for a dark
+     ground; on white they fall to 1.6:1, so light mode carries each brand's
+     own darkened variant. A logo you cannot see is not a logo. */
+  --brand-react: #61DAFB;
+  --brand-vue: #42B883;
+}
+html:not(.dark) {
+  --em-plain: #24202B; --em-comment: #6E6579; --em-keyword: #B3350F;
+  --em-builtin: #A8452B; --em-type: #0F6E62; --em-func: #8A5A00;
+  --em-string: #5C5A14; --em-number: #A8452B; --em-const: #A8452B;
+  --em-tagkey: #3F6B14; --em-verb: #3F6B14; --em-punct: #6E6579;
+  --wash-hl: rgba(143, 93, 0, 0.13);
+  --wash-add: rgba(15, 110, 82, 0.13);
+  --wash-del: rgba(179, 33, 60, 0.11);
+  --brand-react: #06718F;
+  --brand-vue: #1F7A50;
+}
+
+/* ---- what flips ------------------------------------------------------
+   Everything. The mocks, the plane stage, the do/don't panels, the gallery
+   specimens and the code wells all follow the mode, because they are the
+   components rather than pictures of them — a light mode you cannot see the
+   components in is not documentation of a light mode.
+
+   The one exception is the product ladder in #product: --gf-app-* has no
+   light variant, because an application's surfaces start from the deep
+   ground by design. That section states so in its own copy. */
+html:not(.dark) .gal .why,
+html:not(.dark) .pair .why,
+html:not(.dark) .gal figcaption {
+  --gf-ink-2: #5F5868;
+  --gf-ink-3: #867E90;
+  color: var(--gf-ink-2);
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -55,14 +114,62 @@ body {
   letter-spacing: -0.03em; font-size: 17px; color: var(--gf-ink);
 }
 .ds-head .state {
-  font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-3);
+  /* ink-3 measured 4.2:1 here in BOTH modes — the tertiary tone is for
+     hairlines and disabled ink, not for a label you are meant to read. */
+  font-family: var(--gf-font-mono); font-size: 11px; color: var(--gf-ink-2);
   letter-spacing: 0.04em;
 }
-.ds-head nav { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+.ds-head nav {
+  margin-left: auto; align-self: center;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
 .ds-head nav a {
   font-size: 13px; color: var(--gf-ink-2); text-decoration: none;
 }
 .ds-head nav a:hover { color: var(--gf-nav); }
+/* Colour mode switch. role="switch" + aria-checked rather than a checkbox,
+   because it toggles a presentation state rather than submitting a value.
+   The track is neutral and only the thumb carries the accent — a control is
+   an action, and actions are filled. */
+.mode {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--gf-font-mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; cursor: pointer; line-height: 1;
+  /* A control is not a link. The hairline separates it from the section
+     list; the negative top margin cancels the switch's extra height so its
+     centre lands on the nav links' optical centre. */
+  padding: 0 0 0 18px; margin: -3px 0;
+  background: none; border: 0; border-left: 1px solid var(--gf-line);
+  color: var(--gf-ink-2);
+}
+.mode:hover { color: var(--gf-ink); }
+.mode__track {
+  position: relative; display: inline-flex; align-items: center;
+  width: 40px; height: 22px; flex: none;
+  border-radius: 999px; background: var(--gf-surface);
+  border: 1px solid var(--gf-line-strong);
+}
+/* The icon rides IN the thumb, knocked out of the fill, rather than sitting
+   in the track where the thumb covers it. It also keeps the mark on the one
+   filled element: an action is filled, and this is the action. */
+.mode__thumb {
+  position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+  display: grid; place-items: center;
+  border-radius: 50%; background: var(--gf-accent);
+  transition: transform 0.18s ease;
+}
+html:not(.dark) .mode__thumb { transform: translateX(18px); }
+.mode__ico {
+  grid-area: 1 / 1; width: 10px; height: 10px; pointer-events: none;
+  fill: none; stroke: var(--gf-on-accent); stroke-width: 2.2;
+  transition: opacity 0.14s ease;
+}
+.mode__ico--moon { fill: var(--gf-on-accent); stroke: none; }
+html.dark      .mode__ico--sun  { opacity: 0; }
+html:not(.dark) .mode__ico--moon { opacity: 0; }
+/* The icon under the thumb dims; the visible one is the mode you can switch TO. */
+.mode:focus-visible { outline: 2px solid var(--gf-accent); outline-offset: 3px; border-radius: 999px; }
+@media (prefers-reduced-motion: reduce) { .mode__thumb { transition: none; } }
 
 .ds-wrap { max-width: 980px; margin: 0 auto; padding: 0 32px 140px; }
 
@@ -70,7 +177,9 @@ body {
 .ds-kicker {
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--gf-font-mono); font-size: 11px; letter-spacing: 0.17em;
-  text-transform: uppercase; color: var(--gf-accent); margin: 0 0 16px;
+  /* accent-hi, not accent: the plain accent is a FILL value and only cleared
+     AA as text while the canvas was pure white. The rule reads on the line. */
+  text-transform: uppercase; color: var(--gf-accent-hi); margin: 0 0 16px;
 }
 .ds-kicker::before { content: ''; width: 22px; height: 1px; background: var(--gf-accent); }
 .ds-sec > h2 {
@@ -146,7 +255,8 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .well { background: var(--gf-code-well); border: 1px solid var(--gf-line);
   border-radius: var(--gf-radius); padding: 15px 18px; font-family: var(--gf-font-mono);
   font-size: 13px; line-height: 1.75; overflow-x: auto; margin: 14px 0;
-  box-shadow: inset 0 2px 5px -3px rgba(0,0,0,.7), inset 0 1px 0 rgba(0,0,0,.45); }
+  /* was a hardcoded black inset; the token carries the light recess too */
+  box-shadow: var(--gf-code-shadow); }
 .kbd { font-family: var(--gf-font-mono); font-size: 11.5px; background: var(--gf-surface-2);
   border: 1px solid var(--gf-line-strong); border-bottom-width: 2px; border-radius: var(--gf-radius-sm);
   padding: 2px 7px; color: var(--gf-ink-2); }
@@ -202,7 +312,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .spec .row { padding: 16px 0; border-bottom: 1px solid var(--gf-line); }
 .spec .row:last-child { border-bottom: 0; }
 .spec .meta { font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--gf-ink-3); margin-bottom: 8px; }
+  text-transform: uppercase; color: var(--gf-ink-2); margin-bottom: 8px; }
 .spec .sample { color: var(--gf-ink); }
 
 /* Component gallery */
@@ -214,7 +324,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 }
 .gal figcaption {
   font-family: var(--gf-font-mono); font-size: 10.5px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--gf-ink-3);
+  text-transform: uppercase; color: var(--gf-ink-2);
   padding: 8px 14px; border-bottom: 1px solid var(--gf-line); background: var(--gf-ground-alt);
 }
 .gal .box { padding: 18px 16px; flex: 1; display: flex; flex-direction: column;
@@ -347,9 +457,9 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .ln .g { color: var(--gf-ink-2); text-align: right; padding-right: 14px;
   border-right: 1px solid var(--gf-line); user-select: none; }
 .ln .c { padding-left: 14px; }
-.ln .hl { background: rgba(255,194,77,.085); box-shadow: inset 2px 0 0 var(--gf-nav); }
-.ln .add { background: rgba(95,207,168,.09); box-shadow: inset 2px 0 0 var(--vp-c-tip-1); }
-.ln .del { background: rgba(255,107,133,.09); box-shadow: inset 2px 0 0 var(--vp-c-danger-1); opacity: .75; }
+.ln .hl { background: var(--wash-hl); box-shadow: inset 2px 0 0 var(--gf-nav); }
+.ln .add { background: var(--wash-add); box-shadow: inset 2px 0 0 var(--vp-c-tip-1); }
+.ln .del { background: var(--wash-del); box-shadow: inset 2px 0 0 var(--vp-c-danger-1); opacity: .75; }
 
 /* ---- interactive proofs ---------------------------------------------
    The system rests on two claims that are counterintuitive enough that
@@ -418,7 +528,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 }
 .pstage .wellbox {
   border-radius: var(--gf-radius-sm); padding: 12px 14px;
-  font-family: var(--gf-font-mono); font-size: 12px; color: #E4DDE8;
+  font-family: var(--gf-font-mono); font-size: 12px; color: var(--em-plain);
   border: 1px solid var(--gf-line);
 }
 
@@ -455,7 +565,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .mock .bar .ver {
   font-family: var(--gf-font-mono); font-size: 9px; letter-spacing: 0.1em;
   text-transform: uppercase; padding: 3px 7px; border-radius: 999px;
-  border: 1px solid var(--gf-accent-line); color: var(--gf-accent);
+  border: 1px solid var(--gf-accent-line); color: var(--gf-accent-hi);
   background: var(--gf-accent-soft);
 }
 .mock .bar .links { margin-left: auto; display: flex; gap: 17px; font-size: 12.5px; color: var(--gf-ink-2); }
@@ -467,7 +577,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .mock .eyebrow {
   display: inline-flex; align-items: center; gap: 9px; font-family: var(--gf-font-mono);
   font-size: 9.5px; letter-spacing: 0.17em; text-transform: uppercase;
-  color: var(--gf-accent); margin-bottom: 15px;
+  color: var(--gf-accent-hi); margin-bottom: 15px;
 }
 .mock .eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--gf-accent); }
 .mock h3.hl {
@@ -535,7 +645,8 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 .mock .planetag {
   position: absolute; right: 8px; top: 6px; font-family: var(--gf-font-mono);
   font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--gf-ink-3); background: var(--gf-surface-2); border: 1px solid var(--gf-line);
+  /* An annotation is still text: ink-3 on surface-2 measured 2.86:1. */
+  color: var(--gf-ink-2); background: var(--gf-surface-2); border: 1px solid var(--gf-line);
   padding: 2px 6px; border-radius: 4px; pointer-events: none;
 }
 .mock.annotated .side, .mock.annotated .main, .mock.annotated .aside,
@@ -569,7 +680,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 
 <header class="ds-head">
   <h1>GoForj Design System</h1>
-  <span class="state">Temper · dark · Ember · lifted</span>
+  <span class="state" id="state">Temper · dark · Ember · lifted</span>
   <nav>
     <a href="#rules">Rules</a>
     <a href="#colour">Colour</a>
@@ -582,6 +693,22 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     <a href="#motion">Motion</a>
     <a href="#stress">Stress</a>
     <a href="#product">Product</a>
+    <a href="#light">Light</a>
+    <button type="button" id="mode" class="mode" role="switch" aria-checked="true"
+            aria-label="Colour mode">
+      <span class="mode__track">
+        <span class="mode__thumb">
+          <svg class="mode__ico mode__ico--moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.6 8.6 0 1 0 10.8 10.8z"/>
+          </svg>
+          <svg class="mode__ico mode__ico--sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.6"/>
+            <g stroke-linecap="round"><path d="M12 1.4v3M12 19.6v3M1.4 12h3M19.6 12h3M4.5 4.5l2.1 2.1M17.4 17.4l2.1 2.1M19.5 4.5l-2.1 2.1M6.6 17.4l-2.1 2.1"/></g>
+          </svg>
+        </span>
+      </span>
+      <span class="mode__label">Dark</span>
+    </button>
   </nav>
 </header>
 
@@ -654,9 +781,9 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
         <div style="color:var(--gf-ink);font-weight:600;font-size:14px;margin-bottom:4px">Source first</div>
         <div style="font-size:13px;color:var(--gf-ink-2);margin-bottom:14px">You own the code.</div>
         <div class="well" style="margin:0;font-size:12.5px">
-          <span style="color:var(--gf-accent)">$</span>
-          <span style="color:#FFC24D">forj</span>
-          <span style="color:#E4DDE8">new my-app --starter-kit</span>
+          <span style="color:var(--gf-accent-hi)">$</span>
+          <span style="color: var(--em-func)">forj</span>
+          <span style="color: var(--em-plain)">new my-app --starter-kit</span>
         </div>
       </div>
       <p class="why">Emphasis is weight and ink. The command is code, in the code palette.</p>
@@ -672,11 +799,11 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <div class="lbl">✕ Cards tinted by framework</div>
       <div class="body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div style="border:1px solid rgba(255,194,77,.5);background:rgba(255,194,77,.10);border-radius:8px;padding:11px">
-          <div style="color:#FFC24D;font-size:12.5px;font-weight:600">React</div>
+          <div style="color: var(--em-func);font-size:12.5px;font-weight:600">React</div>
           <div style="font-size:11.5px;color:var(--gf-ink-2)">= navigation gold</div>
         </div>
-        <div style="border:1px solid rgba(66,184,131,.5);background:rgba(66,184,131,.10);border-radius:8px;padding:11px">
-          <div style="color:#42B883;font-size:12.5px;font-weight:600">Vue</div>
+        <div style="border:1px solid color-mix(in srgb, var(--brand-vue) 50%, transparent);background:color-mix(in srgb, var(--brand-vue) 12%, transparent);border-radius:8px;padding:11px">
+          <div style="color: var(--brand-vue);font-size:12.5px;font-weight:600">Vue</div>
           <div style="font-size:11.5px;color:var(--gf-ink-2)">≈ tip green</div>
         </div>
       </div>
@@ -1308,8 +1435,8 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <div class="box" style="padding:0">
         <div class="well ln" style="margin:0;border:0;border-radius:0">
           <div class="g">1<br>2<br>3<br>4</div>
-          <div class="c"><span style="color:#8A8196">// wire the cache</span><br><span
-            class="hl" style="display:block;margin:0 -14px;padding:0 14px"><span style="color:#FF8A6B">return</span> <span style="color:#9BD7C4">Service</span>{}</span><br><span style="color:#9089A0">}</span></div>
+          <div class="c"><span style="color: var(--em-comment)">// wire the cache</span><br><span
+            class="hl" style="display:block;margin:0 -14px;padding:0 14px"><span style="color: var(--em-keyword)">return</span> <span style="color: var(--em-type)">Service</span>{}</span><br><span style="color: var(--em-punct)">}</span></div>
         </div>
       </div>
       <p class="why">A highlight is <b style="color:var(--gf-nav);font-weight:600">navigation</b> — “look here” — so it is a gold rule and a wash, not a fill.</p>
@@ -1320,7 +1447,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <div class="box" style="padding:0">
         <div class="well ln" style="margin:0;border:0;border-radius:0">
           <div class="g">1<br>2<br>3</div>
-          <div class="c"><span style="color:#E4DDE8">func NewService() {</span><br><span
+          <div class="c"><span style="color: var(--em-plain)">func NewService() {</span><br><span
             class="del" style="display:block;margin:0 -14px;padding:0 14px">- cache.New()</span><span
             class="add" style="display:block;margin:0 -14px;padding:0 14px">+ cache.NewWithTTL(5)</span></div>
         </div>
@@ -1333,7 +1460,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <div class="box" style="padding:0">
         <div class="tabs"><span class="on">service.go</span><span>.env</span><span>shell</span></div>
         <div class="well" style="margin:0;border:0;border-radius:0;box-shadow:none">
-          <span style="color:#FF8A6B">func</span> <span style="color:#FFC24D">NewService</span><span style="color:#9089A0">()</span> <span style="color:#9BD7C4">*Service</span>
+          <span style="color: var(--em-keyword)">func</span> <span style="color: var(--em-func)">NewService</span><span style="color: var(--em-punct)">()</span> <span style="color: var(--em-type)">*Service</span>
         </div>
       </div>
       <p class="why">Chrome sits <em>below</em> the code it labels. The active tab is marked by an action bar.</p>
@@ -1489,7 +1616,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <figcaption>Card with a logo mark</figcaption>
       <div class="box" style="justify-content:flex-start">
         <div class="card" style="display:flex;gap:12px;align-items:flex-start">
-          <span class="mark" style="color:#61DAFB">⚛</span>
+          <span class="mark" style="color: var(--brand-react)">⚛</span>
           <span style="min-width:0">
             <b>React Starter Kit</b>
             <span class="sub">Rich client applications</span>
@@ -1588,13 +1715,13 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
         <p>Every Project has a default app named <code>app</code>:</p>
         <div class="well codewell" style="font-size:11.5px;line-height:1.7">
           <span class="planetag">well · −5.16 L*</span>
-          <span style="color:#8A8196">// Services depend on contracts, not drivers.</span><br>
-          <span style="color:#FF8A6B">type</span> <span style="color:#9BD7C4">Service</span> <span style="color:#FF8A6B">struct</span> <span style="color:#9089A0">{</span><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;disk storage<span style="color:#9089A0">.</span><span style="color:#9BD7C4">Storage</span><br>
-          <span style="color:#9089A0">}</span><br><br>
-          <span style="color:#FF8A6B">func</span> <span style="color:#FFC24D">NewService</span><span style="color:#9089A0">()</span> <span style="color:#9089A0">(</span><span style="color:#9BD7C4">Service</span><span style="color:#9089A0">,</span> <span style="color:#FFAB8F">error</span><span style="color:#9089A0">)</span> <span style="color:#9089A0">{</span><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#FF8A6B">return</span> <span style="color:#9BD7C4">Service</span><span style="color:#9089A0">{},</span> <span style="color:#FFAB8F">nil</span><br>
-          <span style="color:#9089A0">}</span>
+          <span style="color: var(--em-comment)">// Services depend on contracts, not drivers.</span><br>
+          <span style="color: var(--em-keyword)">type</span> <span style="color: var(--em-type)">Service</span> <span style="color: var(--em-keyword)">struct</span> <span style="color: var(--em-punct)">{</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;disk storage<span style="color: var(--em-punct)">.</span><span style="color: var(--em-type)">Storage</span><br>
+          <span style="color: var(--em-punct)">}</span><br><br>
+          <span style="color: var(--em-keyword)">func</span> <span style="color: var(--em-func)">NewService</span><span style="color: var(--em-punct)">()</span> <span style="color: var(--em-punct)">(</span><span style="color: var(--em-type)">Service</span><span style="color: var(--em-punct)">,</span> <span style="color: var(--em-builtin)">error</span><span style="color: var(--em-punct)">)</span> <span style="color: var(--em-punct)">{</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--em-keyword)">return</span> <span style="color: var(--em-type)">Service</span><span style="color: var(--em-punct)">{},</span> <span style="color: var(--em-builtin)">nil</span><br>
+          <span style="color: var(--em-punct)">}</span>
         </div>
         <div class="call info" style="margin-top:14px;font-size:12.5px">
           <b>Note</b>Apps in a multi-app Project share one repo, one Go module, and everything
@@ -1882,6 +2009,109 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   </div>
 </section>
 
+<section class="ds-sec" id="light">
+  <p class="ds-kicker">Light mode</p>
+  <h2>Not an inversion — a <em>different set</em></h2>
+  <p>
+    Use the toggle in the header. Every readout on this page recomputes from
+    the live stylesheet, so the swatches, contrast ratios, plane tables and the
+    elevation diagram all re-derive rather than being redrawn. That is the
+    payoff for never having written a value down.
+  </p>
+
+  <div class="ds-note warn">
+    <b>Gold cannot survive on white</b>
+    <p>
+      Navigation gold measures
+      <span data-contrast="--gf-nav|#FFFFFF"></span> against a white ground in
+      light mode's own value, because it <strong>darkens to bronze</strong>
+      (<span data-var="--gf-nav"></span>). Keeping the dark-mode gold would have
+      put links at roughly 1.7:1 — invisible. This is the single biggest reason
+      light mode is not an inversion: the navigation role changes hue family,
+      and that changes how the whole palette feels.
+    </p>
+  </div>
+
+  <h3>The role colours, in this mode</h3>
+  <div class="swatches" data-swatches='[
+    ["Accent · action","--gf-accent","filled"],
+    ["Nav · navigation","--gf-nav","text or line"],
+    ["Ink","--gf-ink","primary text"],
+    ["Ink muted","--gf-ink-2","body"],
+    ["Hairline","--gf-line","borders"]]'></div>
+
+  <h3>Planes invert, the relationships do not</h3>
+  <p>
+    In dark mode the reading column steps <em>up</em> from the canvas and code
+    cuts back <em>down</em>. In light mode the page is already at the ceiling,
+    so the column stays at white and everything else steps down instead. The
+    directions flip; the ΔL* gaps stay comparable.
+  </p>
+  <div data-planes='["--gf-ground",[
+    ["Canvas / chrome","--gf-ground-alt"],
+    ["Reading column","--gf-ground"],
+    ["Card / raised","--gf-surface-2"],
+    ["Code well","--gf-code-well"],
+    ["Hairline","--gf-line"]]]'></div>
+
+  <h3>Syntax is re-hued, not lightened</h3>
+  <p>
+    Ember's light palette is not the dark one darkened. Light needs different
+    hues to clear AA on a near-white ground, so the cool anchor moves from mint
+    to a deep teal and the warm tokens darken into brick and bronze. Toggle the
+    mode and watch the sample block change hue, not just value.
+  </p>
+  <div class="well" data-ember style="font-size:12.5px">
+<span data-t="comment">// Services depend on contracts, not drivers.</span>
+<span data-t="keyword">func</span> <span data-t="func">NewService</span><span data-t="punct">(</span>disk storage<span data-t="punct">.</span><span data-t="type">Storage</span><span data-t="punct">)</span> <span data-t="punct">(</span><span data-t="type">Service</span><span data-t="punct">,</span> <span data-t="builtin">error</span><span data-t="punct">)</span> <span data-t="punct">{</span>
+    <span data-t="keyword">return</span> <span data-t="type">Service</span><span data-t="punct">{</span>disk<span data-t="punct">:</span> disk<span data-t="punct">},</span> <span data-t="builtin">nil</span>
+<span data-t="punct">}</span>
+  </div>
+
+  <h3>A depiction does not flip</h3>
+  <p>
+    Every mock, plane stage, do/don't panel and gallery box on this page is a
+    <em>picture of the dark product</em>. It no more inverts when you flip this
+    page than a screenshot would, so those surfaces stay pinned to the dark
+    tokens in both modes. The page chrome around them flips; the specimens do
+    not. The one exception is the Ember block above, which exists to show the
+    syntax palette and therefore has to change with it.
+  </p>
+  <div class="ds-note warn">
+    <b>Pin the whole palette or none of it</b>
+    <p>
+      The first version of this pinned only the grounds. The surfaces went
+      dark while the ink, the nav gold and the semantic status colours stayed
+      at their light-mode values — bronze navigation on a near-black well at
+      <strong>3.5:1</strong>, a “beta” badge at 3.33:1,
+      <strong>37 AA failures</strong> in total, none of them visible in dark
+      mode. A depiction is a complete environment. Half a palette is not a
+      palette.
+    </p>
+    <p style="margin-top:9px">
+      The same bug had a second form: the plane proof read its colours once at
+      load and the Ember sample carried a hardcoded copy of the palette, so
+      both froze at whichever mode happened to be active first. Anything that
+      resolves a token in script now resolves it <em>against the element</em>
+      and <em>on every repaint</em>, which is also what makes a sample nested
+      inside a pinned depiction inherit that depiction's palette for free.
+    </p>
+  </div>
+
+  <h3>What is still unresolved</h3>
+  <div class="ds-note">
+    <b>The site's chrome is dark-only</b>
+    <p>
+      These tokens are correct and the content column renders properly, but on
+      goforj.dev the nav bar, sidebar and TOC still carry hardcoded dark
+      backgrounds. Light mode there is <em>content-complete and chrome-broken</em>.
+      Either the chrome gets built or the toggle comes out — the in-between
+      state is the one thing that is not defensible, and it is still the open
+      decision it was at the start.
+    </p>
+  </div>
+</section>
+
 <section class="ds-sec" id="product">
   <p class="ds-kicker">Product surfaces</p>
   <h2>Apps start from the <em>deep ground</em></h2>
@@ -1919,6 +2149,20 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   </p>
 
   <h3>The ladder</h3>
+  <div class="ds-note">
+    <b>Above the panel, light mode carries elevation in shadow</b>
+    <p>
+      Below the chrome the two modes mirror cleanly — inputs recess, and the
+      data well still cuts furthest down, because a well is a well in either
+      mode. Above the panel they cannot mirror. Dark mode has 97 L* of headroom
+      over its chrome and spends nine of it on four steps; light mode's panel is
+      already at white, leaving <strong>1.2 L*</strong> for popover
+      <em>and</em> dialog. So light mode stops using lightness there and uses
+      shadow instead — two planes share a value and are told apart by their
+      shadow. Flip the mode and watch the last two rows of the table below
+      collapse onto the same number. That is the honest result, not a bug.
+    </p>
+  </div>
   <div data-planes='["--gf-app-chrome",[
     ["Data well · logs, terminal, code","--gf-app-well"],
     ["Input / field","--gf-app-input"],
@@ -1939,12 +2183,12 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     <div class="no">
       <div class="lbl">✕ Docs ladder, applied to product</div>
       <div class="body" style="padding:0">
-        <div style="background:#1A1620;padding:12px">
-          <div style="background:#2C2734;border:1px solid #3D3349;border-radius:8px;padding:10px;margin-bottom:8px">
+        <div style="background:var(--gf-ground);padding:12px">
+          <div style="background:var(--gf-surface);border:1px solid var(--gf-line-strong);border-radius:8px;padding:10px;margin-bottom:8px">
             <div style="font-size:11.5px;color:var(--gf-ink);margin-bottom:6px">Panel</div>
-            <div style="background:#332B3C;border-radius:6px;padding:8px;font-family:var(--gf-font-mono);font-size:10.5px;color:var(--gf-ink-2)">log output — lighter than the panel</div>
+            <div style="background:color-mix(in srgb, var(--gf-surface) 84%, #FFFFFF);border-radius:6px;padding:8px;font-family:var(--gf-font-mono);font-size:10.5px;color:var(--gf-ink)">log output — lighter than the panel</div>
           </div>
-          <div style="background:#2C2734;border:1px solid #3D3349;border-radius:8px;padding:8px;font-size:11px;color:var(--gf-ink-2)">Another panel</div>
+          <div style="background:var(--gf-surface);border:1px solid var(--gf-line-strong);border-radius:8px;padding:8px;font-size:11px;color:var(--gf-ink-2)">Another panel</div>
         </div>
       </div>
       <p class="why">Everything lifted, the ladder exhausted by the third step, and the log — the densest content — is the brightest thing in view.</p>
@@ -1955,7 +2199,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
         <div style="background:var(--gf-app-chrome);padding:12px">
           <div style="background:var(--gf-app-panel);border:1px solid var(--gf-line);border-radius:8px;padding:10px;margin-bottom:8px">
             <div style="font-size:11.5px;color:var(--gf-ink);margin-bottom:6px">Panel</div>
-            <div style="background:var(--gf-app-well);border:1px solid var(--gf-line);border-radius:6px;padding:8px;font-family:var(--gf-font-mono);font-size:10.5px;color:#E4DDE8;box-shadow:inset 0 2px 5px -3px rgba(0,0,0,.8)">log output — a well</div>
+            <div style="background:var(--gf-app-well);border:1px solid var(--gf-line);border-radius:6px;padding:8px;font-family:var(--gf-font-mono);font-size:10.5px;color: var(--em-plain);box-shadow:var(--gf-code-shadow)">log output — a well</div>
           </div>
           <div style="background:var(--gf-app-panel);border:1px solid var(--gf-line);border-radius:8px;padding:8px;font-size:11px;color:var(--gf-ink-2)">Another panel</div>
         </div>
@@ -2032,7 +2276,7 @@ const wcag = (a, b) => { const A = lum(a), B = lum(b);
   return ((Math.max(A, B) + 0.05) / (Math.min(A, B) + 0.05)); };
 
 // Swatch grids
-document.querySelectorAll('[data-swatches]').forEach(el => {
+function renderSwatches(el) {
   const rows = JSON.parse(el.dataset.swatches);
   el.innerHTML = rows.map(([name, token, role]) => `
     <div class="sw">
@@ -2042,31 +2286,35 @@ document.querySelectorAll('[data-swatches]').forEach(el => {
       <span class="rl">${role || ''}</span>
       <span class="ct"></span>
     </div>`).join('');
-});
+}
+document.querySelectorAll('[data-swatches]').forEach(renderSwatches);
 
 // Inline contrast readouts: data-contrast="--a|--b"
-document.querySelectorAll('[data-contrast]').forEach(el => {
+function renderContrast(el) {
   const [a, b] = el.dataset.contrast.split('|');
   const r = wcag(a, b);
   el.textContent = r.toFixed(2) + ':1';
   el.style.fontFamily = 'var(--gf-font-mono)';
   el.style.color = r >= 4.5 ? 'var(--vp-c-tip-1)' : 'var(--vp-c-danger-1)';
-});
+}
+document.querySelectorAll('[data-contrast]').forEach(renderContrast);
 
 // Inline token value readouts: <span data-var="--token">
-document.querySelectorAll('[data-var]').forEach(el => {
+function renderVar(el) {
   el.textContent = toHex(el.dataset.var);
   el.style.fontFamily = 'var(--gf-font-mono)';
   el.style.color = 'var(--gf-ink)';
-});
+}
+document.querySelectorAll('[data-var]').forEach(renderVar);
 
 // Font readouts
-document.querySelectorAll('[data-font]').forEach(el => {
+function renderFont(el) {
   el.textContent = readVar(el.dataset.font).split(',')[0].replace(/["']/g, '');
-});
+}
+document.querySelectorAll('[data-font]').forEach(renderFont);
 
 // Plane tables
-document.querySelectorAll('[data-planes]').forEach(el => {
+function renderPlanes(el) {
   const [ground, planes] = JSON.parse(el.dataset.planes);
   const gl = lstar(ground);
   el.innerHTML = `
@@ -2091,7 +2339,45 @@ document.querySelectorAll('[data-planes]').forEach(el => {
       within a fraction of the same ratio regardless of how different the planes
       look. Judge with ΔL*.
     </p>`;
-});
+}
+document.querySelectorAll('[data-planes]').forEach(renderPlanes);
+
+/* ---- mode toggle ----------------------------------------------------
+   Every readout on this page computes from the live stylesheet, so
+   flipping the mode re-derives all of them — swatches, contrast ratios,
+   plane tables, the elevation diagram. Nothing needs re-rendering by
+   hand, which is the payoff for never having written a value down. */
+(function modeToggle() {
+  const btn = document.getElementById('mode');
+  if (!btn) return;
+  const root = document.documentElement;
+  const label = btn.querySelector('.mode__label');
+
+  const state = document.getElementById('state');
+  function paint() {
+    const dark = root.classList.contains('dark');
+    label.textContent = dark ? 'Dark' : 'Light';
+    // The bar states what you are looking at; it should not lie about the mode.
+    if (state) state.textContent = 'Temper · ' + (dark ? 'dark' : 'light') + ' · Ember · lifted';
+    btn.setAttribute('aria-checked', String(dark));
+    // re-run every live readout against the new tokens
+    document.querySelectorAll('[data-swatches]').forEach(renderSwatches);
+    document.querySelectorAll('[data-planes]').forEach(renderPlanes);
+    document.querySelectorAll('[data-elev]').forEach(renderElev);
+    document.querySelectorAll('[data-contrast]').forEach(renderContrast);
+    document.querySelectorAll('[data-var]').forEach(renderVar);
+    document.querySelectorAll('[data-font]').forEach(renderFont);
+    if (window.__proofsRepaint) window.__proofsRepaint();
+  }
+  btn.addEventListener('click', () => {
+    const nowDark = !root.classList.contains('dark');
+    root.classList.toggle('dark', nowDark);
+    try { localStorage.setItem('gfDesignMode', nowDark ? 'dark' : 'light'); } catch (e) {}
+    paint();
+  });
+  window.__paintMode = paint;
+  paint();
+})();
 
 /* ---- interactive proofs -------------------------------------------- */
 
@@ -2120,12 +2406,47 @@ function atLstar(base, target) {
   const canvasEl = stage.querySelector('.canvas');
   const colEl = stage.querySelector('.column');
   const wellEl = stage.querySelector('.wellbox');
-  const base = readVar('--gf-ground');                 // hue source
-  const canvasC = readVar('--gf-ground-deep');
-  const wellC = readVar('--gf-code-well');
-  const canvasL = lstar(canvasC), wellL = lstar(wellC);
+  /* Read the planes off the STAGE, not the root, and read them on every
+     render. Hoisting them out of render() froze the proof at whichever mode
+     happened to be active at load — a light well painted inside a stage that
+     is pinned dark, at 1.17:1. The stage is a depiction: it keeps the dark
+     palette in both modes, so its own computed values are the truth. */
+  const planes = () => {
+    const dark = document.documentElement.classList.contains('dark');
+    return {
+      base:    stageVar('--gf-ground'),                // hue source
+      // The canvas is whatever the chrome sits on in that mode: the deep
+      // ground in dark, the tinted chrome in light. Reading --gf-ground-deep
+      // in light mode returns pure white, which is the reading column — the
+      // stage then shows a plane against itself.
+      canvasC: stageVar(dark ? '--gf-ground-deep' : '--gf-ground-alt'),
+      wellC:   stageVar('--gf-code-well')
+    };
+  };
+  const stageVar = (n) => getComputedStyle(stage).getPropertyValue(n).trim();
+
+  /* The slider's range is the mode's own range. Dark planes live in the
+     bottom 14 L* of the scale; light planes live in the top 12. A range of
+     0–14 in light mode renders a near-black column on a white page, which is
+     not a lift — it is a different page. */
+  function retune() {
+    const { canvasC, wellC } = planes();
+    const dark = document.documentElement.classList.contains('dark');
+    const lo = Math.min(lstar(canvasC), lstar(wellC));
+    slider.min = (dark ? 0 : Math.max(0, lo - 5)).toFixed(1);
+    slider.max = (dark ? 14 : 100).toFixed(1);
+    // Always re-seat to the mode's shipped value. Setting min/max makes the
+    // browser clamp the old value silently, which parks the handle on the rail
+    // and reads as a deliberate setting rather than a stale one. retune only
+    // runs on load, mode change and reset — never mid-drag.
+    slider.value = lstar(stageVar('--gf-ground')).toFixed(2);
+  }
 
   function render() {
+    const { base: rawBase, canvasC, wellC } = planes();
+    // Pure white has no hue to preserve, so the tint comes from the chrome.
+    const base = lstar(rawBase) > 99 ? stageVar('--gf-ground-alt') : rawBase;
+    const canvasL = lstar(canvasC), wellL = lstar(wellC);
     const target = parseFloat(slider.value);
     const col = atLstar(base, target);
     canvasEl.style.background = canvasC;
@@ -2164,17 +2485,28 @@ function atLstar(base, target) {
     }
   }
   slider.addEventListener('input', render);
+  window.__proofsRepaint = (window.__proofsRepaint || (() => {}));
+  const prevA = window.__proofsRepaint;
+  window.__proofsRepaint = () => { prevA(); retune(); render(); };
   document.querySelector('[data-reset="lift"]').addEventListener('click', () => {
-    slider.value = lstar(readVar('--gf-ground')).toFixed(2); render();
+    retune(); render();
   });
+  // Tune the range BEFORE the first paint — the page can load in either mode.
+  retune();
   render();
 
   // Sweep the full range once and report how far each metric travelled. This
   // is the whole argument as a single number, and it is computed rather than
   // claimed — so it stays true if the tokens move.
-  (function sweep() {
+  /* The sweep walks the slider's OWN range. It used to walk a hardcoded
+     0–16, which in light mode is a range the slider cannot reach — the loop
+     never executed and the paragraph reported ±Infinity. */
+  function sweep() {
+    const { base, canvasC, wellC } = planes();
+    const canvasL = lstar(canvasC), wellL = lstar(wellC);
+    const from = parseFloat(slider.min), to = parseFloat(slider.max);
     let dMin = Infinity, dMax = -Infinity, wMin = Infinity, wMax = -Infinity;
-    for (let t = canvasL; t <= 16; t += 0.25) {
+    for (let t = from; t <= to; t += 0.25) {
       const col = atLstar(base, t);
       const d = t - wellL, w = wcag(col, wellC);
       dMin = Math.min(dMin, d); dMax = Math.max(dMax, d);
@@ -2186,7 +2518,10 @@ function atLstar(base, target) {
       '</b> while <b>the WCAG ratio travels ' + wRange.toFixed(2) + '</b> — a factor of about ' +
       Math.round(dRange / wRange) + '. One of these metrics is measuring the thing you can see. ' +
       'The other is measuring text legibility, correctly, on surfaces where no text is being read.';
-  })();
+  }
+  const prevSweep = window.__proofsRepaint || (() => {});
+  window.__proofsRepaint = () => { prevSweep(); sweep(); };
+  sweep();
 })();
 
 (function hueProof() {
@@ -2199,16 +2534,33 @@ function atLstar(base, target) {
   const NAV_HUE = 41;
 
   const hsl = (h, s, l) => `hsl(${h} ${s}% ${l}%)`;
+  /* Readable ink for a filled swatch. The proof sweeps the hue across a range
+     where no single fixed ink clears AA at both ends — orange takes dark ink,
+     the same lightness in olive takes light — so the ink follows the fill.
+     The four-role rule is about FORM (filled vs text); which ink sits on the
+     fill is a legibility question underneath it. */
+  const inkOn = (c) => {
+    const p = toRgb(c).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    const y = 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2];
+    // Take whichever ink measures higher, not whichever side of a threshold
+    // the fill falls on. A threshold picks the wrong ink either side of the
+    // crossover and bottoms out near 2.7:1; the max of the two can never do
+    // worse than ~4.5:1, because that is where the two curves cross.
+    return ((y + 0.05) / 0.05) >= (1.05 / (y + 0.05)) ? '#08070A' : '#FFFFFF';
+  };
   function render() {
     const h = parseFloat(slider.value);
-    const action = hsl(h, 100, 61);            // the accent's own S/L
-    const nav = hsl(NAV_HUE, 100, 65);
+    const dark = document.documentElement.classList.contains('dark');
+    // Dark mode carries the accent's own S/L; on white both roles have to
+    // come down in lightness or they vanish, exactly as the real tokens do.
+    const action = dark ? hsl(h, 100, 61) : hsl(h, 82, 42);
+    const nav = dark ? hsl(NAV_HUE, 100, 65) : hsl(NAV_HUE, 100, 28);
     const sep = Math.abs(NAV_HUE - h);
 
     btn.style.background = action;
     btn.style.borderColor = action;
-    btn.style.color = 'var(--gf-on-accent)';
-    link.style.color = flat.checked ? 'var(--gf-on-accent)' : nav;
+    btn.style.color = inkOn(action);
+    link.style.color = flat.checked ? inkOn(nav) : nav;
     link.style.background = flat.checked ? nav : 'transparent';
     link.style.textDecorationColor = nav;
     stage.classList.toggle('is-flat', flat.checked);
@@ -2233,6 +2585,8 @@ function atLstar(base, target) {
   }
   slider.addEventListener('input', render);
   flat.addEventListener('change', render);
+  const prevB = window.__proofsRepaint || (() => {});
+  window.__proofsRepaint = () => { prevB(); render(); };
   document.querySelector('[data-reset="hue"]').addEventListener('click', () => {
     slider.value = 13; flat.checked = false; render();
   });
@@ -2254,7 +2608,7 @@ document.querySelectorAll('[data-space]').forEach(el => {
 
 // Elevation cross-section. Indent and bar width come from the measured L*,
 // so the drawing cannot disagree with the tokens.
-document.querySelectorAll('[data-elev]').forEach(el => {
+function renderElev(el) {
   const layers = JSON.parse(el.dataset.elev);
   const ls = layers.map(([, t]) => lstar(t));
   const max = Math.max(...ls), min = Math.min(...ls), span = (max - min) || 1;
@@ -2270,21 +2624,33 @@ document.querySelectorAll('[data-elev]').forEach(el => {
       <span class="depth">L* ${l.toFixed(2)}</span>
     </div>`;
   }).join('');
-});
+}
+document.querySelectorAll('[data-elev]').forEach(renderElev);
 
 // Ember colouring for the sample block
-// The full Ember palette. number/const and tagkey were missing, so a sample
-// using them fell back to plain and the page under-reported its own system.
-const EMBER = { plain:'#E4DDE8', comment:'#8A8196', keyword:'#FF8A6B', builtin:'#FFAB8F',
-  type:'#9BD7C4', func:'#FFC24D', string:'#D9CE7A', number:'#FFAB8F', const:'#FFAB8F',
-  tagkey:'#B8D96B', verb:'#B8D96B', punct:'#9089A0' };
-document.querySelectorAll('[data-ember]').forEach(block => {
-  block.style.color = EMBER.plain;
-  block.querySelectorAll('[data-t]').forEach(s => {
-    s.style.color = EMBER[s.dataset.t] || EMBER.plain;
-    if (s.dataset.t === 'comment') s.style.fontStyle = 'italic';
+/* Ember sample blocks. These read the --em-* variables rather than a hard
+   copy of the palette: the hard copy meant a light-mode block kept dark ink
+   on a light well — 106 spans at 1.4:1. Reading the cascade also means a
+   sample nested inside a pinned depiction picks up the depiction's palette
+   for free, which is exactly the behaviour we want. */
+const EM_ROLES = ['plain','comment','keyword','builtin','type','func','string',
+                  'number','const','tagkey','verb','punct'];
+function paintEmber() {
+  document.querySelectorAll('[data-ember]').forEach(block => {
+    // Resolve against the BLOCK, not the root, so scoped overrides apply.
+    const cs = getComputedStyle(block);
+    const px = {};
+    EM_ROLES.forEach(r => { px[r] = cs.getPropertyValue('--em-' + r).trim(); });
+    block.style.color = px.plain;
+    block.querySelectorAll('[data-t]').forEach(s => {
+      s.style.color = px[s.dataset.t] || px.plain;
+      if (s.dataset.t === 'comment') s.style.fontStyle = 'italic';
+    });
   });
-});
+}
+paintEmber();
+const prevEmber = window.__proofsRepaint || (() => {});
+window.__proofsRepaint = () => { prevEmber(); paintEmber(); };
 </script>
 </body>
 </html>

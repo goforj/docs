@@ -16,7 +16,7 @@ Add a variable only when the App needs a value different from its runtime fallba
 
 ## Resolution and Naming
 
-GoForj Apps load .env files before their Wire graph is initialized. See [Configuration](/getting-started/configuration) for file precedence, build-time defaults, and build-time overrides.
+GoForj Apps load .env files before their Wire graph is initialized. See [Configuration Reference](/reference/configuration#environment-file-resolution) for file precedence, app overlays, compiled defaults, and compiled overrides.
 
 GoForj uses two reusable naming patterns:
 
@@ -249,7 +249,7 @@ The default connection uses `DB_<SUFFIX>`. Named connections use `DB_<NAME>_<SUF
 | `MYSQL_MAX_OPEN_CONNECTIONS` | Driver default | Compatibility fallback for `DB_MAX_OPEN_CONNECTIONS`. Prefer the `DB_` key. |
 | `DB_CONNECTIONS`, `DB_SUPPORTED_CONNECTIONS` | Empty | Legacy comma-separated connection-name discovery used by backup commands. New Apps discover `DB_<NAME>_*` directly. |
 
-The renderer supplies usable local MySQL or Postgres connection values when those services are selected. Active driver values also accept the compatibility aliases `sqlite3`, `mariadb`, and `postgresql`; supported-driver lists and new configuration should use the canonical names above. See [Database Strategy](/data/database-strategy) and [Database Shell](/data/database-strategy#database-shell).
+The renderer supplies usable local MySQL or Postgres connection values when those services are selected. Active driver values also accept the compatibility aliases `sqlite3`, `mariadb`, and `postgresql`; supported-driver lists and new configuration should use the canonical names above. See [Database Strategy](/data/database-strategy) and [Database Shell](/data/database-strategy#shell-options).
 
 ## Shared Redis and NATS
 
@@ -548,7 +548,7 @@ S3-backed `STORAGE_<NAME>_*` resources can be inventoried as backup inputs, but 
 
 `FORJ_COMMAND_*`, `FORJ_SUBPROCESS`, `FORJ_NATIVE_COMMAND_NAMES`, `FORJ_MULTI_APP_HELP`, and `FORJ_BUILD_PROGRESS` are reserved process-handoff variables. Do not set them in App configuration.
 
-See [Make Command Shared Options](/core/make-commands#shared-options) and [forj dev](/developer-tools/forj-dev).
+See [Make Command Shared Options](/reference/make-commands#shared-options) and [forj dev](/developer-tools/forj-dev).
 
 ## Generated Demo App
 

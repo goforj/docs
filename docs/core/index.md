@@ -14,11 +14,11 @@ Core Concepts explains the model shared by every GoForj App. Start with the ques
 | Where does an App begin and how do additional apps differ? | [Apps](/core/apps) |
 | What starts, runs, and shuts down? | [App Lifecycle](/core/app-lifecycle) and [Runtime Topology](/core/runtime-topology) |
 | How does a constructor become part of the App? | [Dependency Injection](/core/dependency-injection), then [Provider Patterns](/core/provider-patterns) for conditional or shared construction |
-| Why did Wire fail? | [Reading Wire Errors](/core/reading-wire-errors) |
-| How do I add or remove an application resource? | [Make Commands](/core/make-commands) |
+| Why did Wire fail? | [Reading Wire Errors](/developer-tools/reading-wire-errors) |
+| How do I add or remove an application resource? | [Make Command Reference](/reference/make-commands) |
 | Which files are regenerated, render-once, or App-owned? | [Code Generation](/core/code-generation) |
-| Where does a specific service, controller, job, or command get wired? | [Wiring Recipes](/core/wiring-recipes) |
-| How do names map to packages and generated resources? | [Naming Conventions](/core/naming-conventions) and [Named Resources](/core/named-resources) |
+| Where does a specific service, controller, job, or command get wired? | [Wiring Recipes](/developer-tools/wiring-recipes) |
+| How do names map to packages and generated resources? | [Naming Conventions](/reference/naming-conventions) and [Named Resources](/core/named-resources) |
 | How does runtime configuration select compiled integrations? | [Drivers and Adapters](/core/drivers-and-adapters) |
 | How can the same App begin locally and move to shared infrastructure? | [Local-First Development](/core/local-first-development) |
 

@@ -56,6 +56,7 @@ Mailpit provides a local inbox at `http://localhost:8025` without delivering mes
 
 Inject the generated manager into the service that owns the workflow:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package notifications
 
@@ -107,6 +108,7 @@ MAIL_TRANSACTIONAL_RESEND_API_KEY=secret
 
 After generation, use the typed accessor:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 err := manager.Transactional().
 	Message().

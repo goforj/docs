@@ -29,6 +29,7 @@ Construct clients through providers and inject them into services. Do not hide o
 
 Create `internal/billing/client.go` as a small typed boundary around `httpx.Client`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package billing
 
@@ -77,6 +78,7 @@ Generated GoForj Apps currently pin `github.com/goforj/httpx` v1. Use that modul
 
 Keep environment lookup at the App composition boundary. Add a focused provider to `app/wire/inject_services_app.go`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // provideBillingClient resolves required endpoint configuration when a reachable service needs it.
 func provideBillingClient() (*billing.Client, error) {
@@ -102,6 +104,7 @@ BILLING_API_URL=https://billing.internal
 
 The application service receives the typed client rather than constructing HTTP dependencies inside a request or job:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 type Service struct {
 	billing *Client
@@ -122,6 +125,7 @@ func (s *Service) FindInvoice(ctx context.Context, id string) (Invoice, error) {
 
 An entry point must consume the service before Wire includes its providers. For an HTTP app, inject it into a controller:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/invoices/controller.go
 type Controller struct {
@@ -138,6 +142,7 @@ Register that constructor in the HTTP controller set:
 
 <CodeFile path="app/wire/inject_http_controllers_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 var appHttpControllerSet = wire.NewSet(
 	// existing controller providers...
@@ -159,6 +164,7 @@ Wire retains every provider in that path. With `BILLING_API_URL` missing, constr
 
 Use `httptest.Server` so the client contract is executable without an external service. Create `internal/billing/client_test.go`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package billing
 
@@ -224,6 +230,7 @@ forj sync:billing
 
 Use request-scoped options when only one call needs detail:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 result := httpx.Get[map[string]any](
 	httpx.New(),
@@ -241,6 +248,7 @@ fmt.Println(result.Body["uuid"])
 
 Use client-level options when every request from one client needs diagnostic output:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 client := httpx.New(
 	httpx.DumpAll(),
@@ -254,6 +262,7 @@ Prefer the narrowest diagnostic scope that proves the issue.
 
 For tests or command output, capture dumps into a buffer:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 var buf bytes.Buffer
 

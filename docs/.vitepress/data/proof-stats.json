@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-28",
+  "generatedAt": "2026-07-30",
   "totals": {
     "unitTests": 1461,
     "integrationTests": 952,
-    "testFunctions": 3394,
+    "testFunctions": 3401,
     "benchmarks": 85,
     "drivers": 48,
     "libraries": 18
@@ -65,9 +65,9 @@
       "fake"
     ],
     "database": [
-      "sqlite",
+      "mysql",
       "postgres",
-      "mysql"
+      "sqlite"
     ]
   },
   "repos": [
@@ -76,126 +76,144 @@
       "unit": null,
       "integration": null,
       "testFns": 78,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "18b2c7c6af06cb8b09f85a144501c55fc9037b6f"
     },
     {
       "repo": "cache",
       "unit": 391,
       "integration": 118,
       "testFns": 240,
-      "benchmarks": 5
+      "benchmarks": 5,
+      "sourceRevision": "1993e4abec15a90720f0aaaf1aa065142d2e5c34"
     },
     {
       "repo": "collection",
       "unit": null,
       "integration": null,
       "testFns": 380,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "7414fbe68999413154dbfb90d895666cb485b045"
     },
     {
       "repo": "console",
       "unit": null,
       "integration": null,
       "testFns": 212,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "36ba7580fb90194217df6717c89d200192265f40"
     },
     {
       "repo": "crypt",
       "unit": null,
       "integration": null,
       "testFns": 50,
-      "benchmarks": 3
+      "benchmarks": 3,
+      "sourceRevision": "5897c5aad5d97ce42bff6aa0a53b9ffbcc1439d2"
     },
     {
       "repo": "env",
       "unit": null,
       "integration": null,
       "testFns": 98,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "f598369829d0257762efef939b4f544cd4e15ebb"
     },
     {
       "repo": "events",
       "unit": 25,
       "integration": 86,
       "testFns": 119,
-      "benchmarks": 7
+      "benchmarks": 7,
+      "sourceRevision": "c6cb61599372fa3a639cd2cf3d71761c9240a0c2"
     },
     {
       "repo": "execx",
       "unit": null,
       "integration": null,
-      "testFns": 122,
-      "benchmarks": 2
+      "testFns": 129,
+      "benchmarks": 2,
+      "sourceRevision": "b9caba0c079fd45bd35b9b95b5e0531426f0a523"
     },
     {
       "repo": "godump",
       "unit": null,
       "integration": null,
       "testFns": 105,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "4daf36328083428bba7156bb520cf463bccc2770"
     },
     {
       "repo": "httpx",
       "unit": null,
       "integration": null,
       "testFns": 124,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "1fe57c0e5f155e43d22236fb646b97eed810aea1"
     },
     {
       "repo": "mail",
       "unit": 118,
       "integration": null,
       "testFns": 88,
-      "benchmarks": 3
+      "benchmarks": 3,
+      "sourceRevision": "8ef81d573ee0074a0796a89c5facdcb42a8c5578"
     },
     {
       "repo": "metrics",
       "unit": null,
       "integration": null,
       "testFns": 61,
-      "benchmarks": 10
+      "benchmarks": 10,
+      "sourceRevision": "376541b26098eaafdae8af0e50e665773673c4b8"
     },
     {
       "repo": "queue",
       "unit": 895,
       "integration": 618,
       "testFns": 673,
-      "benchmarks": 6
+      "benchmarks": 6,
+      "sourceRevision": "57fb94a5d6d4e359d61d06137662f51ceb51ffab"
     },
     {
       "repo": "scheduler",
       "unit": null,
       "integration": null,
       "testFns": 80,
-      "benchmarks": 0
+      "benchmarks": 0,
+      "sourceRevision": "5cc40a8815763070e93b030fc25c3032ecc90981"
     },
     {
       "repo": "storage",
       "unit": 32,
       "integration": 130,
       "testFns": 276,
-      "benchmarks": 1
+      "benchmarks": 1,
+      "sourceRevision": "bdb0444469921ff01dac7a8662ba5235da11d4d9"
     },
     {
       "repo": "str",
       "unit": null,
       "integration": null,
       "testFns": 96,
-      "benchmarks": 10
+      "benchmarks": 10,
+      "sourceRevision": "d39af05ee1b550f08c493ca8d095922eb21ba8a8"
     },
     {
       "repo": "web",
       "unit": null,
       "integration": null,
       "testFns": 460,
-      "benchmarks": 36
+      "benchmarks": 36,
+      "sourceRevision": "6f264ddcdf2f200db73e78d592fa78b1f97ea208"
     },
     {
       "repo": "wire",
       "unit": null,
       "integration": null,
       "testFns": 132,
-      "benchmarks": 2
+      "benchmarks": 2,
+      "sourceRevision": "ef32273832b0c7798996a7f13770aa1cd628b96b"
     }
   ]
 }

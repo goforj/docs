@@ -1073,8 +1073,8 @@ fmt.Println(fake.SentCount())
 - `go run ./docs/readme/testcounts/main.go`
 - `./docs/watcher.sh`
 
-## Using With GoForj {#using-with-goforj}
+## Using with GoForj {#using-with-goforj}
 
-Generated Apps expose named mailers through generated accessors. Send through those accessors and keep transport selection and credentials in configuration.
+GoForj Apps expose named mailers through generated accessors. Send through those accessors and keep transport selection and credentials in configuration.
 
-For generated App integration, see [Mail](/applications/mail).
+For the GoForj integration, see [Mail](/applications/mail).

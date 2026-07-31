@@ -68,6 +68,7 @@ The generated command starts with its CLI signature and the shared App logger:
 
 <CodeFile path="internal/reports/reconcile_cmd.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // ReconcileCmd handles the reports:reconcile app command.
 type ReconcileCmd struct {
@@ -97,6 +98,7 @@ The generator adds the constructor to the App command provider set:
 
 <CodeFile path="app/wire/inject_cmd_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appCommandSet provides app-owned command providers.
 var appCommandSet = wire.NewSet(
@@ -109,6 +111,7 @@ It also exposes the command through the collection Kong parses:
 
 <CodeFile path="app/commands.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Commands wires application-specific commands into the CLI.
 type Commands struct {
@@ -147,7 +150,7 @@ For an additional app, use `forj admin build` and `forj admin reports:reconcile`
 
 Replace the starter body with the application workflow and add its service to the constructor. Wire will satisfy the new dependency after its provider is in the App service set.
 
-The [`make:command` reference](/core/make-commands#make-command) covers output overrides, removal, and the exact registration changes. Keep command code focused on flags, input translation, output, and calling application services.
+The [`make:command` reference](/reference/make-commands#make-command) covers output overrides, removal, and the exact registration changes. Keep command code focused on flags, input translation, output, and calling application services.
 
 ## Command Responsibilities
 
@@ -168,6 +171,7 @@ Generated commands can receive the CLI lifecycle context directly. Pass it to th
 
 <CodeFile path="internal/reports/reconcile_cmd.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Run delegates reconciliation to the service while preserving CLI cancellation.
 func (c *ReconcileCmd) Run(ctx context.Context) error {
@@ -180,6 +184,7 @@ Long-running services should check cancellation between units of work and pass t
 
 <CodeFile path="internal/reports/service.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Reconcile processes pending reports until the work completes or the caller cancels.
 func (s *Service) Reconcile(ctx context.Context) error {
@@ -207,10 +212,10 @@ Use `context.Background()` only at a boundary that genuinely has no caller conte
 
 ## Next Steps
 
-- [`make:command` Reference](/core/make-commands#make-command) shows generation, placement, and wiring.
-- [Naming Conventions](/core/naming-conventions) defines stable command names.
+- [`make:command` Reference](/reference/make-commands#make-command) shows generation, placement, and wiring.
+- [Naming Conventions](/reference/naming-conventions) defines stable command names.
 - [Application Services](/applications/services) explains where command behavior should delegate.
-- [Wiring Recipes](/core/wiring-recipes) shows the command wiring flow.
+- [Wiring Recipes](/developer-tools/wiring-recipes) shows the command wiring flow.
 - [App Lifecycle](/core/app-lifecycle) explains command startup and shutdown.
 - [Testing](/testing/) explains how command tests fit the broader test strategy.
 - [Console](/console) provides standalone messages, ANSI-aware layout, tables, prompts, loaders, and progress for command output.

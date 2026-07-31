@@ -51,18 +51,18 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Add locks, counters, or rate limits. [Cache Patterns](/data/cache-patterns)
 - Accept file uploads. [File Upload Storage](/scenarios/file-upload-storage)
 - Add a named storage disk. [Storage Patterns](/data/storage-patterns)
-- Query the database from a shell: `forj db`. [Database Shell](/data/database-strategy#database-shell)
+- Query the database from a shell: `forj db`. [Database Shell](/data/database-strategy#shell-options)
 
 ## CLI and Wiring
 
 - Add a CLI command. [Commands](/applications/commands)
 - Keep business logic out of controllers. [Services](/applications/services)
 - Provide a new dependency. [Dependency Injection](/core/dependency-injection) and [Providers](/core/dependency-injection#providers)
-- Copy a known-good wiring shape. [Wiring Recipes](/core/wiring-recipes)
-- Decode a Wire build failure. [Reading Wire Errors](/core/reading-wire-errors)
-- See every generator, or undo one with `--remove`. [Make Commands](/core/make-commands)
-- Keep a feature's files together. [Organizing Generated Code](/core/make-commands#organize-by-package-ownership)
-- Name things the way the framework expects. [Naming Conventions](/core/naming-conventions)
+- Copy a known-good wiring shape. [Wiring Recipes](/developer-tools/wiring-recipes)
+- Decode a Wire build failure. [Reading Wire Errors](/developer-tools/reading-wire-errors)
+- See every generator, or undo one with `--remove`. [Make Command Reference](/reference/make-commands)
+- Keep a feature's files together. [Organizing Generated Code](/reference/make-commands#organize-by-package-ownership)
+- Name things the way the framework expects. [Naming Conventions](/reference/naming-conventions)
 
 ## Email and Security
 
@@ -72,7 +72,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 
 ## Operations
 
-- Run everything as one process. [Standalone versus Distributed](/operations/runtime-processes#standalone-versus-distributed)
+- Run everything as one process. [Supervise the Combined Runtime](/operations/runtime-processes#supervise-the-combined-runtime)
 - Split into separate processes for scale. [Runtime Processes](/operations/runtime-processes)
 - Expose Prometheus metrics. [Metrics](/operations/metrics)
 - See what a request, job, or schedule run actually did. [Inspects](/operations/inspects)

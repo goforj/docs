@@ -13,6 +13,23 @@ GoForj is pre-`v1.0`, and several early versions were assigned retrospectively t
 
 The current documentation follows `main`. Changes remain in this section until they are included in a tagged framework release.
 
+## v0.23.1
+
+Released July 28, 2026.
+
+### PTY Handling
+
+- Updated the pinned `execx` dependency to `v1.1.4` for its PTY handling fix.
+
+## v0.23.0
+
+Released July 28, 2026.
+
+### Generated Schedules
+
+- Simplified generated recurring-schedule registration by collecting application-owned schedules directly through Wire.
+- Kept legacy schedule wiring migration support while making new generated schedule collections explicit.
+
 ## v0.22.0
 
 Released July 26, 2026.

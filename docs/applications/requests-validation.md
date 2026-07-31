@@ -17,6 +17,7 @@ The [JSON API Route](/scenarios/json-api-route) demonstrates the complete HTTP p
 
 Use `web.Context` to bind request payloads:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 type CreateUserRequest struct {
 	DisplayName string `json:"display_name"`
@@ -54,6 +55,7 @@ func (c *Controller) Store(ctx web.Context) error {
 
 Normalize request input before validation:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func (r CreateUserRequest) Input() (CreateUserInput, error) {
 	email := strings.TrimSpace(strings.ToLower(r.Email))
@@ -89,6 +91,7 @@ Leave business rules to services when those rules require persistence, permissio
 
 Pass `ctx.Context()` into services:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 user, err := c.service.Create(ctx.Context(), input)
 ```

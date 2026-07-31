@@ -54,6 +54,7 @@ Business code should depend on app-facing APIs and named accessors.
 
 Prefer:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 app.Storage().Uploads()
 app.Caches().Sessions()

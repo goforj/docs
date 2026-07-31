@@ -45,6 +45,7 @@ The generated subscriber starts with a typed handler:
 
 <CodeFile path="internal/billing/invoice_paid_subscriber.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // InvoicePaidSubscriber handles InvoicePaidEvent messages from the configured event bus.
 type InvoicePaidSubscriber struct{}
@@ -70,6 +71,7 @@ The App Wire file constructs the subscriber and subscribes it to the selected bu
 
 <CodeFile path="app/wire/inject_subscribers_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appSubscriberSet contains application-owned event subscriber providers.
 var appSubscriberSet = wire.NewSet(
@@ -103,6 +105,7 @@ func ProvideEventSubscribers(
 
 A subscriber can hand retryable work to a generated job:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 _, err := bus.WithContext(ctx).Subscribe(func(ctx context.Context, event UserRegisteredEvent) error {
 	return welcomeEmails.Queue(ctx, event.UserID)
@@ -131,6 +134,14 @@ Handle important subscriber failures deliberately:
 - log or record metrics where appropriate
 - dispatch jobs for retryable work
 - make critical reactions explicit instead of best-effort
+
+## Test the Reaction
+
+Test the subscriber as an ordinary Go type: construct it with fakes for its required services, call `Handle` with a typed event, and assert the one intended reaction. Include a dependency-error case and assert the returned error instead of relying on logs.
+
+Then add one App-level test that publishes through the configured in-process bus and proves the generated registration invokes the subscriber. That second test catches a missing provider or `Subscribe` call that a direct handler test cannot see.
+
+For a distributed bus, the release smoke test must cross processes. Publish a non-production event through one deployed process and confirm the intended subscriber process records the stable topic and outcome. A successful publisher call alone does not prove subscription, delivery, or remote credentials.
 
 ## Good Uses
 

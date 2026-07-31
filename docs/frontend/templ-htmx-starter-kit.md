@@ -7,7 +7,7 @@ description: Build a server-rendered Go application with templ components, htmx 
 
 The templ + htmx starter kit is the Go-first Web UI option. Routes, application behavior, view models, and HTML rendering stay in Go; htmx makes navigation and form interactions feel immediate without introducing a client-side application architecture.
 
-The generated starter includes a dashboard, settings pages, a component gallery, Tailwind CSS, and local Basecoat components. See the [Starter Kit Guide](/getting-started/starter-kits) when choosing between this approach and React or Vue.
+The generated starter includes a dashboard, settings pages, a component gallery, Tailwind CSS, and local Basecoat components. See [Choose a Starter Kit](/getting-started/starter-kits) when choosing between this approach and React or Vue.
 
 ## Create and Run
 
@@ -53,10 +53,11 @@ The starter uses the same route and controller model as the rest of a GoForj app
 GET / → Controller.Dashboard → PageData → DashboardPage → HTML response
 ```
 
-The generated dashboard route is intentionally small. The controller chooses the page and supplies its view model:
+The generated dashboard route is intentionally small. This excerpt omits the other generated routes so the controller-to-page handoff stays visible:
 
 <CodeFile path="internal/starterui/controller.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
@@ -164,6 +165,7 @@ Register the partial endpoint beside the full page. The existing `render` helper
 
 <CodeFile path="internal/starterui/controller.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
@@ -192,6 +194,7 @@ With Auth and a database enabled, login and logout are working server-side flows
 
 <CodeFile path="internal/starterui/controller.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 if errors.Is(err, auth.ErrUnauthorized) {
 	if isHTMX(r) {
@@ -259,6 +262,7 @@ Generated tests use `httptest` and `webtest`, so handlers can be exercised witho
 
 <CodeFile path="internal/starterui/controller_test.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func TestStarterUIUnauthenticatedHTMXPageRedirectsToLogin(t *testing.T) {
 	fixture := newStarterUITestAuthFixture(t)

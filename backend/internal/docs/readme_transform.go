@@ -14,6 +14,7 @@ var htmlAnchorLinkRegex = regexp.MustCompile(`(?i)(<a\b[^>]*\bhref\s*=\s*["'])([
 var headingAnchorRegex = regexp.MustCompile(`^(#{1,6}) <a id="([^"]+)"></a>\s*(.+)$`)
 var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
 var headingWithIDRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s+\{#([^}]+)\}\s*$`)
+var frameworkGuideHeadingRegex = regexp.MustCompile(`(?m)^## Using [Ww]ith GoForj(?:\s|$)`)
 
 var markdownHeadingRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s*$`)
 
@@ -27,13 +28,13 @@ func transformReadme(readme string, repo RepoConfig, rawBase string) string {
 
 // appendFrameworkGuide keeps framework-specific guidance out of standalone source READMEs while preserving navigation in the docs projection.
 func appendFrameworkGuide(content string, guide FrameworkGuide) string {
-	if guide.Title == "" || guide.Path == "" || guide.Summary == "" || strings.Contains("\n"+content, "\n## Using With GoForj") {
+	if guide.Title == "" || guide.Path == "" || guide.Summary == "" || frameworkGuideHeadingRegex.MatchString(content) {
 		return content
 	}
 
 	content = strings.TrimRight(content, "\n")
 	return fmt.Sprintf(
-		"%s\n\n## Using With GoForj\n\n%s\n\nFor generated App integration, see [%s](%s).\n",
+		"%s\n\n## Using with GoForj\n\n%s\n\nFor generated App integration, see [%s](%s).\n",
 		content,
 		guide.Summary,
 		guide.Title,

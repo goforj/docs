@@ -10,6 +10,7 @@ RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   cd backend && go mod download
 COPY backend/ ./backend/
 COPY docs/ ./docs/
+COPY ai/ ./ai/
 RUN --mount=type=cache,id=goforj-docs-temp,target=/tmp/goforj-docs \
   --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
@@ -18,12 +19,20 @@ RUN --mount=type=cache,id=goforj-docs-temp,target=/tmp/goforj-docs \
 FROM node:20-bookworm-slim AS docs-build
 ARG GA_MEASUREMENT_ID
 ENV GA_MEASUREMENT_ID=${GA_MEASUREMENT_ID}
+ENV GOTOOLCHAIN=auto
+ENV PATH="/usr/local/go/bin:${PATH}"
 WORKDIR /app/docs
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+COPY --from=docs-generate /usr/local/go/ /usr/local/go/
 COPY docs/package.json docs/package-lock.json ./
 RUN --mount=type=cache,id=goforj-npm-cache,target=/root/.npm \
   npm ci --include=dev
 COPY --from=docs-generate /app/docs/ ./
-RUN NODE_ENV=production npm run build
+COPY --from=docs-generate /app/ai/ /app/ai/
+RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
+  --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
+  NODE_ENV=production npm run build
 
 FROM golang:1.23-bookworm AS backend-build
 WORKDIR /app

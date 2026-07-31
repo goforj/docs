@@ -143,7 +143,7 @@ When the application is ready for production, the same code should move to stron
 
 An app can run HTTP, workers, and schedules together for a simple deployment, or run them as separate processes when a team needs independent scaling. The same binary supports both choices.
 
-## What GoForj Optimizes For
+## What GoForj Optimizes for
 
 GoForj optimizes for developer experience without giving up production clarity.
 

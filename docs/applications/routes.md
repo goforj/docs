@@ -1,5 +1,6 @@
 ---
 title: Routes
+searchTitle: Add and Register Routes
 description: How routes are registered, grouped, protected, listed, and operated in GoForj Apps.
 ---
 
@@ -44,6 +45,7 @@ The generator creates the controller and adds its constructor to `app/wire/injec
 
 Controllers return `[]web.Route`:
 
+<!-- go-example: source-backed-excerpt -->
 ```go
 func (c *Controller) Routes() []web.Route {
 	return []web.Route{
@@ -59,6 +61,7 @@ Handlers receive `web.Context`, not the underlying HTTP engine context.
 
 The generated router groups public and protected routes under `/api/v1` by default:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func ProvideRoutes(r *AppRoutes, authService *auth.Service) []web.RouteGroup {
 	var groups []web.RouteGroup
@@ -88,7 +91,7 @@ GET  /api/v1/users/:id
 POST /api/v1/reports
 ```
 
-Avoid RPC-style paths such as `/api/v1/get-user` for normal resource operations. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+Avoid RPC-style paths such as `/api/v1/get-user` for normal resource operations. See [Naming Conventions](/reference/naming-conventions) for the full naming map.
 
 ## Listing Routes
 
@@ -134,5 +137,5 @@ Do not add application behavior by editing framework route registration.
 - [JSON API Route](/scenarios/json-api-route) is the complete runnable workflow.
 - [Controllers](/applications/controllers) explains handler structure.
 - [Middleware](/applications/middleware) explains route and group policy.
-- [Naming Conventions](/core/naming-conventions) defines route naming.
+- [Naming Conventions](/reference/naming-conventions) defines route naming.
 - [Web](/web) covers standalone route primitives.

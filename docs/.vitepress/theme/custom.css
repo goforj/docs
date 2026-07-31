@@ -141,7 +141,7 @@
     border-radius: 999px;
     background:
         linear-gradient(180deg, rgba(255, 94, 58, 0.13), rgba(255, 94, 58, 0.055));
-    color: rgba(238, 230, 245, 0.82);
+    color: var(--gf-ink-2);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -402,7 +402,7 @@
 }
 
 .vp-doc div[class*='language-'] .line-numbers-wrapper .line-number {
-    color: rgba(225, 217, 233, 0.35) !important;
+    color: var(--gf-ink-2) !important;
 }
 
 .vp-doc div[class*='language-'], .vp-block {
@@ -471,7 +471,7 @@
 
 .vp-doc .custom-block.info code {
     background: rgba(255, 94, 58, 0.095);
-    color: rgba(230, 219, 242, 0.96);
+    color: var(--gf-ink);
 }
 
 .vp-doc .custom-block.warning {
@@ -543,7 +543,7 @@
 
 .vp-doc .custom-block.warning code {
     background: rgba(235, 177, 98, 0.10);
-    color: rgba(255, 230, 196, 0.96);
+    color: var(--gf-ink);
 }
 
 @media (max-width: 640px) {
@@ -590,7 +590,7 @@
 }
 
 .gf-library-repo-cta-text {
-    color: rgba(203, 191, 215, 0.68);
+    color: var(--gf-ink-2);
     font-size: 0.78rem;
     white-space: nowrap;
 }
@@ -606,7 +606,7 @@
     border: 1px solid rgba(255, 194, 77, 0.16);
     border-radius: 999px;
     background: rgba(38, 32, 44, 0.38);
-    color: rgba(242, 237, 248, 0.84);
+    color: var(--gf-ink-2);
     text-decoration: none;
     font-size: 0.75rem;
     line-height: 1;
@@ -647,7 +647,7 @@
     border: 1px solid rgba(255, 194, 77, 0.16);
     border-radius: 999px;
     background: rgba(26, 22, 30, 0.72);
-    color: rgba(242, 238, 247, 0.88);
+    color: var(--gf-ink);
     text-decoration: none;
     font-size: 11px;
     line-height: 1;
@@ -673,7 +673,7 @@
     border-radius: 999px;
     background: rgba(255, 94, 58, 0.10);
     border: 1px solid rgba(255, 194, 77, 0.14);
-    color: rgba(235, 225, 244, 0.88);
+    color: var(--gf-ink);
     font-size: 10px;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -691,7 +691,7 @@
     border-radius: 6px;
     border: 1px solid rgba(255, 194, 77, 0.12);
     background: rgba(255,255,255,0.02);
-    color: rgba(217, 207, 227, 0.70);
+    color: var(--gf-ink-2);
     font-size: 10px;
     line-height: 1;
     letter-spacing: 0.02em;
@@ -761,7 +761,7 @@ html.gf-lightbox-open body {
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 999px;
     background: rgba(27, 23, 31, 0.8);
-    color: #FAF7FC;
+    color: var(--gf-ink);
     font-size: 1.8rem;
     line-height: 1;
     cursor: pointer;
@@ -789,7 +789,7 @@ html.gf-lightbox-open body {
 .gf-lightbox-caption {
     min-height: 1em;
     font-size: 0.9rem;
-    color: rgba(245, 240, 249, 0.85);
+    color: var(--gf-ink-2);
     text-align: center;
 }
 
@@ -870,7 +870,7 @@ html.gf-lightbox-open body {
         radial-gradient(1200px 1000px at 14% 58%, rgba(255, 94, 58, 0.075), transparent 74%),
         radial-gradient(1300px 1040px at 86% 76%, rgba(255, 94, 58, 0.085), transparent 74%),
         radial-gradient(1500px 1100px at 50% 98%, rgba(232, 140, 92, 0.045), transparent 72%),
-        #0E0D0F;
+        var(--gf-ground-deep);
 }
 
 .gf-starter-hero {
@@ -912,7 +912,7 @@ html.gf-lightbox-open body {
 
 .gf-starter-eyebrow {
     margin: 0 0 16px;
-    color: rgba(255, 154, 96, 0.92);
+    color: var(--gf-accent-hi);
     font-size: 0.78rem;
     font-weight: 850;
     letter-spacing: 0.12em;
@@ -923,7 +923,7 @@ html.gf-lightbox-open body {
 .gf-starter-section h2,
 .gf-starter-closing h2 {
     margin: 0;
-    color: rgba(244, 244, 238, 0.98);
+    color: var(--gf-ink);
     letter-spacing: -0.055em;
 }
 
@@ -936,7 +936,7 @@ html.gf-lightbox-open body {
 .gf-starter-hero p,
 .gf-starter-section p,
 .gf-starter-closing p {
-    color: rgba(233, 229, 237, 0.68);
+    color: var(--gf-ink-2);
     line-height: 1.72;
 }
 
@@ -963,7 +963,7 @@ html.gf-lightbox-open body {
     border: 1px solid rgba(255, 194, 77, 0.22);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.055);
-    color: rgba(250, 247, 252, 0.92);
+    color: var(--gf-ink);
     font-weight: 800;
     text-decoration: none !important;
     transition:
@@ -1155,7 +1155,7 @@ html.gf-lightbox-open body {
 .gf-starter-support-hero h2 {
     max-width: 720px;
     margin: 0;
-    color: rgba(244, 244, 238, 0.98);
+    color: var(--gf-ink);
     letter-spacing: -0.055em;
     font-size: clamp(2.45rem, 4.2vw, 5rem);
     line-height: 0.98;
@@ -1164,7 +1164,7 @@ html.gf-lightbox-open body {
 .gf-starter-support-hero > div > p:not(.gf-starter-eyebrow) {
     max-width: 680px;
     margin: 22px 0 0;
-    color: rgba(233, 229, 237, 0.70);
+    color: var(--gf-ink-2);
     font-size: 1.06rem;
     line-height: 1.68;
 }
@@ -1193,7 +1193,7 @@ html.gf-lightbox-open body {
     width: 20px;
     height: 20px;
     margin-top: 2px;
-    color: rgba(255, 194, 77, 0.94);
+    color: var(--gf-nav);
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
@@ -1202,13 +1202,13 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-pillars strong {
-    color: rgba(255, 194, 77, 0.98);
+    color: var(--gf-nav);
     font-size: 0.88rem;
     font-weight: 850;
 }
 
 .gf-starter-pillars em {
-    color: rgba(214, 208, 220, 0.60);
+    color: var(--gf-ink-2);
     font-size: 0.76rem;
     font-style: normal;
 }
@@ -1233,12 +1233,12 @@ html.gf-lightbox-open body {
 .gf-starter-command-card p,
 .gf-starter-command-card span {
     margin: 0;
-    color: rgba(233, 229, 237, 0.74);
+    color: var(--gf-ink-2);
     font-size: 0.94rem;
 }
 
 .gf-starter-command-card p {
-    color: rgba(244, 244, 238, 0.94);
+    color: var(--gf-ink);
     font-size: 1.04rem;
     font-weight: 820;
 }
@@ -1255,7 +1255,7 @@ html.gf-lightbox-open body {
     align-items: center;
     min-width: 0;
     padding: 12px 14px 12px 16px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid var(--gf-plate-line);
     border-radius: 12px;
     background: rgba(11, 10, 13, 0.62);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
@@ -1266,7 +1266,7 @@ html.gf-lightbox-open body {
    is code. Plain Ember ink, normal weight — the $ and the
    binary get their own colours below. */
 .gf-starter-command-card__command span {
-    color: #E4DDE8;
+    color: var(--gf-ink);
     font-family: var(--gf-font-mono);
     font-size: 0.88rem;
     font-weight: 400;
@@ -1278,7 +1278,7 @@ html.gf-lightbox-open body {
     overflow: visible;
     border: 0 !important;
     background: transparent !important;
-    color: rgba(243, 239, 247, 0.92);
+    color: var(--gf-ink);
     font-family: var(--vp-font-family-mono);
     font-size: 0.86rem;
     white-space: nowrap;
@@ -1293,7 +1293,7 @@ html.gf-lightbox-open body {
     border: 1px solid rgba(255, 194, 77, 0.38);
     border-radius: 6px;
     background: rgba(255, 94, 58, 0.10);
-    color: rgba(238, 230, 245, 0.96);
+    color: var(--gf-ink);
     font-size: 0.76rem;
     font-weight: 850;
     cursor: pointer;
@@ -1308,7 +1308,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-command-card a {
-    color: rgba(255, 194, 77, 0.98);
+    color: var(--gf-nav);
     font-size: 0.92rem;
     font-weight: 780;
     text-decoration: none !important;
@@ -1362,7 +1362,7 @@ html.gf-lightbox-open body {
     border: 1px solid color-mix(in srgb, var(--gf-starter-kit-accent) 68%, transparent);
     border-radius: 8px;
     background: color-mix(in srgb, var(--gf-starter-kit-accent) 18%, transparent);
-    color: color-mix(in srgb, var(--gf-starter-kit-accent) 82%, white);
+    color: color-mix(in srgb, var(--gf-starter-kit-accent) 82%, var(--gf-ink));
     font-size: 1.35rem;
     font-weight: 950;
     box-shadow: 0 14px 30px color-mix(in srgb, var(--gf-starter-kit-accent) 11%, transparent);
@@ -1393,7 +1393,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-kit-card__mark--combo span {
-    color: color-mix(in srgb, var(--gf-starter-kit-accent) 80%, white);
+    color: color-mix(in srgb, var(--gf-starter-kit-accent) 80%, var(--gf-ink));
     font-size: 0.9rem;
     font-weight: 950;
     letter-spacing: -0.045em;
@@ -1406,7 +1406,7 @@ html.gf-lightbox-open body {
 
 .gf-starter-kit-card h3 {
     margin: 0;
-    color: rgba(244, 244, 238, 0.96);
+    color: var(--gf-ink);
     font-size: clamp(1.34rem, 1.55vw, 1.75rem);
     line-height: 1.14;
 }
@@ -1414,7 +1414,7 @@ html.gf-lightbox-open body {
 .gf-starter-kit-card strong {
     display: block;
     margin-top: 10px;
-    color: color-mix(in srgb, var(--gf-starter-kit-accent) 78%, white);
+    color: color-mix(in srgb, var(--gf-starter-kit-accent) 78%, var(--gf-ink));
     font-size: 0.92rem;
     font-weight: 780;
 }
@@ -1429,10 +1429,10 @@ html.gf-lightbox-open body {
 .gf-starter-kit-card code {
     align-self: start;
     padding: 5px 9px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid var(--gf-plate-line);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.055);
-    color: color-mix(in srgb, var(--gf-starter-kit-accent) 70%, white);
+    color: color-mix(in srgb, var(--gf-starter-kit-accent) 70%, var(--gf-ink));
     font-family: var(--vp-font-family-mono);
     font-size: 0.75rem;
 }
@@ -1452,27 +1452,27 @@ html.gf-lightbox-open body {
     border: 1px solid rgba(166, 156, 176, 0.26);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.05);
-    color: rgba(233, 229, 237, 0.74);
+    color: var(--gf-ink-2);
     font-size: 0.76rem;
     font-weight: 760;
 }
 
 .gf-starter-kit-card__credit {
     margin: 10px 0 0 !important;
-    color: rgba(214, 208, 220, 0.52);
+    color: var(--gf-ink-2);
     font-size: 0.78rem !important;
     line-height: 1.35 !important;
 }
 
 .gf-starter-kit-card__credit a,
 .gf-starter-kit-card__credit span {
-    color: rgba(201, 191, 211, 0.92);
+    color: var(--gf-ink);
     font-weight: 760;
     text-decoration: none !important;
 }
 
 .gf-starter-kit-card__credit a:hover {
-    color: rgba(225, 218, 232, 0.98);
+    color: var(--gf-ink);
 }
 
 .gf-starter-kit-card__includes {
@@ -1484,7 +1484,7 @@ html.gf-lightbox-open body {
 
 .gf-starter-kit-card__includes p {
     margin: 0 0 10px !important;
-    color: rgba(244, 244, 238, 0.88);
+    color: var(--gf-ink);
     font-size: 0.82rem;
     font-weight: 850;
 }
@@ -1503,7 +1503,7 @@ html.gf-lightbox-open body {
     position: relative;
     margin: 0 !important;
     padding-left: 20px;
-    color: rgba(233, 229, 237, 0.72);
+    color: var(--gf-ink-2);
     font-size: 0.78rem;
     line-height: 1.35;
 }
@@ -1553,7 +1553,7 @@ html.gf-lightbox-open body {
 .gf-starter-compare h3,
 .gf-starter-support-cta h3 {
     margin: 0;
-    color: rgba(244, 244, 238, 0.96);
+    color: var(--gf-ink);
     font-size: clamp(1.25rem, 1.7vw, 1.7rem);
     letter-spacing: -0.025em;
 }
@@ -1561,7 +1561,7 @@ html.gf-lightbox-open body {
 .gf-starter-compare p,
 .gf-starter-support-cta p {
     margin: 6px 0 0;
-    color: rgba(233, 229, 237, 0.64);
+    color: var(--gf-ink-2);
     font-size: 0.92rem;
 }
 
@@ -1584,7 +1584,7 @@ html.gf-lightbox-open body {
     border-radius: 0;
     border-top: 1px solid rgba(166, 156, 176, 0.14);
     border-left: 1px solid rgba(166, 156, 176, 0.12);
-    color: rgba(233, 229, 237, 0.72);
+    color: var(--gf-ink-2);
     font-size: 0.85rem;
     line-height: 1.45;
     text-align: left;
@@ -1599,7 +1599,7 @@ html.gf-lightbox-open body {
 .gf-starter-compare thead th {
     border-top: 0;
     background: rgba(255, 255, 255, 0.035);
-    color: rgba(244, 244, 238, 0.92);
+    color: var(--gf-ink);
     font-weight: 850;
 }
 
@@ -1608,7 +1608,7 @@ html.gf-lightbox-open body {
     align-items: center;
     gap: 10px;
     min-width: 0;
-    color: rgba(244, 244, 238, 0.92);
+    color: var(--gf-ink);
 }
 
 .gf-starter-compare-kit__icon {
@@ -1621,7 +1621,7 @@ html.gf-lightbox-open body {
     border: 1px solid color-mix(in srgb, var(--gf-starter-compare-accent) 48%, transparent);
     border-radius: 6px;
     background: color-mix(in srgb, var(--gf-starter-compare-accent) 13%, transparent);
-    color: color-mix(in srgb, var(--gf-starter-compare-accent) 82%, white);
+    color: color-mix(in srgb, var(--gf-starter-compare-accent) 82%, var(--gf-ink));
     box-shadow: 0 12px 26px color-mix(in srgb, var(--gf-starter-compare-accent) 14%, transparent);
 }
 
@@ -1659,25 +1659,25 @@ html.gf-lightbox-open body {
 }
 
 .gf-starter-compare-kit--react .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgb(97, 218, 251);
+    --gf-starter-compare-accent: var(--gf-brand-react);
 }
 
 .gf-starter-compare-kit--vue .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgb(66, 184, 131);
+    --gf-starter-compare-accent: var(--gf-brand-vue);
 }
 
 .gf-starter-compare-kit--templ .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgb(255, 150, 92);
+    --gf-starter-compare-accent: var(--gf-brand-templ);
 }
 
 .gf-starter-compare-kit--plain .gf-starter-compare-kit__icon {
-    --gf-starter-compare-accent: rgba(188, 179, 198);
+    --gf-starter-compare-accent: var(--gf-brand-plain);
 }
 
 .gf-starter-compare tbody th {
     background: rgba(255, 255, 255, 0.028);
     border-radius: 0 !important;
-    color: rgba(233, 229, 237, 0.84);
+    color: var(--gf-plate-ink-2);
     font-weight: 780;
 }
 
@@ -1693,7 +1693,7 @@ html.gf-lightbox-open body {
     flex: 0 0 auto;
     width: 18px;
     height: 18px;
-    color: rgba(255, 194, 77, 0.72);
+    color: var(--gf-nav);
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
@@ -1731,25 +1731,25 @@ html.gf-lightbox-open body {
     padding: 0 20px;
     border: 1px solid rgba(255, 194, 77, 0.48);
     border-radius: 999px;
-    color: rgba(235, 225, 244, 0.96);
+    color: var(--gf-ink);
     font-weight: 820;
     text-decoration: none !important;
 }
 
 .gf-starter-kit-card--react {
-    --gf-starter-kit-accent: rgb(97, 218, 251);
+    --gf-starter-kit-accent: var(--gf-brand-react);
 }
 
 .gf-starter-kit-card--vue {
-    --gf-starter-kit-accent: rgb(66, 184, 131);
+    --gf-starter-kit-accent: var(--gf-brand-vue);
 }
 
 .gf-starter-kit-card--templ {
-    --gf-starter-kit-accent: rgb(255, 154, 96);
+    --gf-starter-kit-accent: var(--gf-brand-templ);
 }
 
 .gf-starter-kit-card--plain {
-    --gf-starter-kit-accent: rgba(186, 175, 196);
+    --gf-starter-kit-accent: var(--gf-brand-plain);
 }
 
 .gf-starter-frame,
@@ -1759,7 +1759,7 @@ html.gf-lightbox-open body {
 
 .gf-starter-frame {
     overflow: hidden;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid var(--gf-plate-line);
     border-radius: 12px;
     background:
         radial-gradient(420px 200px at 50% 0%, rgba(255, 94, 58, 0.12), transparent 72%),
@@ -1971,7 +1971,7 @@ html.gf-lightbox-open body {
     .gf-starter-compare tbody tr th {
         border: 0;
         background: rgba(255, 255, 255, 0.04);
-        color: rgba(244, 244, 238, 0.92);
+        color: var(--gf-ink);
         font-weight: 850;
     }
 
@@ -1982,14 +1982,14 @@ html.gf-lightbox-open body {
         align-items: baseline;
         border: 0;
         border-top: 1px solid rgba(166, 156, 176, 0.12);
-        color: rgba(233, 229, 237, 0.84);
+        color: var(--gf-plate-ink-2);
         text-align: right;
     }
 
     .gf-starter-compare tbody tr td::before {
         content: attr(data-kit);
         flex: 0 0 auto;
-        color: rgba(233, 229, 237, 0.55);
+        color: var(--gf-ink-2);
         font-size: 0.78rem;
         font-weight: 760;
         text-align: left;
@@ -2004,7 +2004,7 @@ html.gf-lightbox-open body {
     margin: 0;
     padding: 12px 0 16px;
     border-bottom: 1px solid rgba(166, 156, 176, 0.14);
-    color: rgba(233, 229, 237, 0.64);
+    color: var(--gf-ink-2);
     font-size: 1.2rem;
     font-weight: 800;
 }
@@ -2020,7 +2020,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-topbar a {
-    color: rgba(233, 229, 237, 0.68);
+    color: var(--gf-ink-2);
     text-decoration: none !important;
 }
 
@@ -2029,7 +2029,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-rss {
-    color: rgba(233, 229, 237, 0.46);
+    color: var(--gf-ink-2);
     font-size: 0.82rem;
     font-weight: 800;
     letter-spacing: 0.09em;
@@ -2047,7 +2047,7 @@ html.gf-lightbox-open body {
 .gf-blog-kicker,
 .gf-blog-section-label {
     margin: 0 0 14px;
-    color: rgba(255, 194, 77, 0.86);
+    color: var(--gf-nav);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -2066,7 +2066,7 @@ html.gf-lightbox-open body {
 .gf-blog-hero p:last-child {
     max-width: 660px;
     margin: 24px 0 0;
-    color: rgba(233, 229, 237, 0.72);
+    color: var(--gf-ink-2);
     font-size: 1.08rem;
     line-height: 1.75;
 }
@@ -2119,7 +2119,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-blog-feature-card:hover .gf-blog-card-title {
-    color: rgba(236, 228, 245, 0.98);
+    color: var(--gf-ink);
 }
 
 .gf-blog-feature-card .gf-blog-card-body {
@@ -2144,13 +2144,13 @@ html.gf-lightbox-open body {
     align-items: baseline;
     justify-content: space-between;
     gap: 18px;
-    color: rgba(211, 199, 223, 0.58);
+    color: var(--gf-ink-2);
     font-size: 0.9rem;
     font-weight: 800;
 }
 
 .gf-blog-card-category {
-    color: rgba(255, 142, 97, 0.94);
+    color: var(--gf-accent-hi);
     font-size: 0.78rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -2169,20 +2169,20 @@ html.gf-lightbox-open body {
 .gf-blog-card-copy {
     max-width: 690px;
     margin-top: 24px;
-    color: rgba(233, 229, 237, 0.72);
+    color: var(--gf-ink-2);
     font-size: 1.05rem;
     line-height: 1.7;
 }
 
 .gf-blog-card-author {
     margin-top: 32px;
-    color: rgba(233, 229, 237, 0.58);
+    color: var(--gf-ink-2);
     font-weight: 800;
 }
 
 .gf-blog-card-link {
     margin-top: 24px;
-    color: rgba(255, 194, 77, 0.95);
+    color: var(--gf-nav);
     font-weight: 800;
 }
 
@@ -2213,7 +2213,7 @@ html.gf-lightbox-open body {
 
 .gf-blog-topic-card p {
     margin: 22px 0 0;
-    color: rgba(233, 229, 237, 0.65);
+    color: var(--gf-ink-2);
     font-size: 0.97rem;
     line-height: 1.65;
 }
@@ -2223,10 +2223,12 @@ html.gf-lightbox-open body {
     display: block;
     overflow: hidden;
     min-height: 460px;
-    background:
-        radial-gradient(520px 280px at 70% 20%, rgba(255, 94, 58, 0.34), transparent 62%),
-        radial-gradient(420px 240px at 18% 84%, rgba(232, 111, 63, 0.30), transparent 64%),
-        linear-gradient(135deg, #15101B 0%, #1E1923 44%, #29130d 100%);
+    /* Cover art, not a plane. A blog visual is an illustration in the same
+       sense the hero render is: it is composed against a dark field, and
+       inverting it would not produce a light version of the same picture —
+       it would produce a different, worse one. Fixed in both modes on
+       purpose, and named so the next reader knows it was a decision. */
+    background: var(--gf-poster);
 }
 
 .gf-blog-visual--post {
@@ -2351,7 +2353,7 @@ html.gf-lightbox-open body {
     display: grid;
     gap: 20px;
     padding-top: 6px;
-    color: rgba(233, 229, 237, 0.66);
+    color: var(--gf-ink-2);
     font-size: 0.98rem;
     font-weight: 700;
 }
@@ -2377,7 +2379,7 @@ html.gf-lightbox-open body {
 
 .gf-blog-post-grid > p:first-of-type {
     margin-top: 0;
-    color: rgba(250, 247, 252, 0.92);
+    color: var(--gf-ink);
     font-size: 1.18rem;
     line-height: 1.8;
 }
@@ -2518,7 +2520,7 @@ html.gf-lightbox-open body {
 
 .gf-home-eyebrow {
     margin: 0 0 14px;
-    color: rgba(255, 154, 96, 0.92);
+    color: var(--gf-accent-hi);
     font-size: 0.76rem;
     font-weight: 850;
     letter-spacing: 0.13em;
@@ -2526,7 +2528,7 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-h2 {
-    color: rgba(248, 246, 250, 0.98);
+    color: var(--gf-ink);
     font-size: clamp(2.05rem, 3.4vw, 3.05rem);
     font-weight: 760;
     line-height: 1.06;
@@ -2535,7 +2537,7 @@ html.gf-lightbox-open body {
 
 .gf-home-lead {
     margin-top: 18px !important;
-    color: rgba(224, 219, 230, 0.72);
+    color: var(--gf-ink-2);
     font-size: 1.05rem;
     line-height: 1.7;
 }
@@ -2544,10 +2546,10 @@ html.gf-lightbox-open body {
 .gf-home-points code,
 .gf-home-ops__surface code {
     padding: 0.12em 0.4em;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid var(--gf-plate-line);
     border-radius: 6px;
-    background: rgba(18, 15, 22, 0.7);
-    color: rgba(216, 207, 226, 0.92);
+    background: var(--gf-plate-strong);
+    color: var(--gf-plate-ink);
     font-size: 0.86em;
 }
 
@@ -2588,13 +2590,13 @@ html.gf-lightbox-open body {
     margin: 0 !important;
     padding: 0 0 0 18px;
     border-left: 2px solid rgba(255, 154, 96, 0.35);
-    color: rgba(214, 208, 220, 0.72);
+    color: var(--gf-ink-2);
     font-size: 0.92rem;
     line-height: 1.6;
 }
 
 .gf-home-points li strong {
-    color: rgba(246, 243, 249, 0.94);
+    color: var(--gf-ink);
     font-weight: 750;
 }
 
@@ -2611,18 +2613,18 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-links a {
-    color: rgba(255, 194, 77, 0.95);
+    color: var(--gf-nav);
     font-size: 0.94rem;
     font-weight: 750;
     transition: color 150ms ease;
 }
 
 .gf-home-links a:hover {
-    color: rgba(227, 214, 240, 1);
+    color: var(--gf-ink);
 }
 
 .gf-home-links__note {
-    color: rgba(214, 208, 220, 0.58);
+    color: var(--gf-ink-2);
     font-size: 0.86rem;
     align-self: center;
 }
@@ -2639,7 +2641,7 @@ html.gf-lightbox-open body {
     border-radius: 8px;
     background:
         linear-gradient(135deg, rgba(255, 94, 58, 0.13), rgba(255, 154, 96, 0.055)),
-        rgba(18, 15, 22, 0.54);
+        var(--gf-plate);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.055),
         0 18px 42px rgba(0, 0, 0, 0.22);
@@ -2663,7 +2665,7 @@ html.gf-lightbox-open body {
     border: 1px solid rgba(255, 154, 96, 0.24);
     border-radius: 8px;
     background: rgba(255, 154, 96, 0.08);
-    color: rgba(255, 196, 130, 0.95);
+    color: var(--gf-nav);
     font-family: var(--vp-font-family-mono);
     font-size: 0.73rem;
     font-weight: 820;
@@ -2676,13 +2678,13 @@ html.gf-lightbox-open body {
 }
 
 .gf-home-atlas__body strong {
-    color: rgba(248, 246, 250, 0.96);
+    color: var(--gf-ink);
     font-size: 0.94rem;
     font-weight: 780;
 }
 
 .gf-home-atlas__body span {
-    color: rgba(214, 208, 220, 0.68);
+    color: var(--gf-ink-2);
     font-size: 0.86rem;
     line-height: 1.55;
 }
@@ -2692,7 +2694,7 @@ html.gf-lightbox-open body {
     border: 1px solid rgba(166, 156, 176, 0.14);
     border-radius: 6px;
     background: rgba(11, 10, 13, 0.58);
-    color: rgba(216, 207, 226, 0.92);
+    color: var(--gf-plate-ink);
     font-size: 0.86em;
 }
 
@@ -2702,7 +2704,7 @@ html.gf-lightbox-open body {
     overflow: hidden;
     border: 1px solid rgba(158, 147, 168, 0.2);
     border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.97), rgba(10, 9, 12, 0.99));
+    background: var(--gf-code-bg);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         0 24px 60px rgba(0, 0, 0, 0.34);
@@ -2730,7 +2732,7 @@ html.gf-lightbox-open body {
 
 .gf-home-terminal__bar em {
     margin-left: 8px;
-    color: rgba(214, 208, 220, 0.46);
+    color: var(--gf-ink-2);
     font-size: 0.72rem;
     font-style: normal;
     font-weight: 650;
@@ -2744,7 +2746,7 @@ html.gf-lightbox-open body {
     font-family: var(--vp-font-family-mono);
     font-size: 0.83rem;
     line-height: 1.72;
-    color: rgba(227, 221, 233, 0.88);
+    color: var(--gf-ink);
 }
 
 .gf-home-terminal__body code {
@@ -2756,15 +2758,16 @@ html.gf-lightbox-open body {
     color: inherit;
 }
 
-.gf-home .t-prompt { color: rgba(255, 154, 96, 0.92); font-weight: 700; }
-.gf-home .t-cmd { color: rgba(246, 243, 249, 0.96); font-weight: 650; }
-.gf-home .t-ok { color: rgba(95, 207, 168, 0.9); }
-.gf-home .t-dim { color: rgba(166, 156, 176, 0.52); }
-.gf-home .t-step { color: rgba(255, 94, 58, 0.9); font-weight: 700; }
-.gf-home .t-hl { color: rgba(255, 196, 130, 0.95); }
-.gf-home .t-ready { color: rgba(95, 207, 168, 0.95); font-weight: 750; }
-.gf-home .t-json { color: rgba(157, 235, 192, 0.9); }
-.gf-home .t-tree { color: rgba(166, 156, 176, 0.62); }
+.gf-home .t-prompt { color: var(--gf-accent-hi); font-weight: 700; }
+.gf-home .t-cmd { color: var(--gf-ink); font-weight: 650; }
+.gf-home .t-ok { color: var(--gf-ink); }
+.gf-home .t-dim { color: var(--gf-ink-2); }
+/* accent-hi: accent is the FILL value; as text this measured 3.04:1. */
+.gf-home .t-step { color: var(--gf-accent-hi); font-weight: 700; }
+.gf-home .t-hl { color: var(--gf-nav); }
+.gf-home .t-ready { color: var(--gf-ink); font-weight: 750; }
+.gf-home .t-json { color: var(--gf-ink); }
+.gf-home .t-tree { color: var(--gf-ink-2); }
 
 .gf-home .t-cursor {
     display: inline-block;
@@ -2815,7 +2818,7 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
 
 .gf-home-swap__label {
     margin: 0 0 12px !important;
-    color: rgba(214, 208, 220, 0.6);
+    color: var(--gf-ink-2);
     font-size: 0.8rem;
     font-weight: 750;
     letter-spacing: 0.05em;
@@ -2840,15 +2843,15 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
     min-width: 108px;
     padding: 7px 18px;
     border-radius: 999px;
-    color: rgba(214, 208, 220, 0.62);
+    color: var(--gf-ink-2);
     font-size: 0.85rem;
     font-weight: 750;
     transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .gf-home-swap__toggle button.is-active {
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
-    color: #fff;
+    background: var(--gf-accent);
+    color: var(--gf-on-accent);
     box-shadow: 0 10px 26px rgba(214, 53, 26, 0.26);
 }
 
@@ -2856,7 +2859,7 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
     padding: 18px 20px;
     border: 1px solid rgba(158, 147, 168, 0.2);
     border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.97), rgba(10, 9, 12, 0.99));
+    background: var(--gf-code-bg);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         0 18px 44px rgba(0, 0, 0, 0.28);
@@ -2865,17 +2868,17 @@ html[data-gf-motion='reduced'] .gf-home .t-cursor { animation: none; }
     line-height: 1.9;
 }
 
-.gf-home-env__key { color: rgba(255, 94, 58, 0.88); }
-.gf-home-env__eq { color: rgba(166, 156, 176, 0.5); }
+.gf-home-env__key { color: var(--gf-accent-hi); }
+.gf-home-env__eq { color: var(--gf-ink-2); }
 
 .gf-home-env__value {
-    color: rgba(255, 196, 130, 0.96);
+    color: var(--gf-nav);
     font-weight: 650;
     animation: gfEnvFlash 600ms ease;
 }
 
 .gf-home-env[data-mode='production'] .gf-home-env__value {
-    color: rgba(157, 235, 192, 0.95);
+    color: var(--gf-ink);
 }
 
 @keyframes gfEnvFlash {
@@ -2897,11 +2900,11 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 .gf-home-swap__after-cmd {
     font-family: var(--vp-font-family-mono);
     font-size: 0.84rem;
-    color: rgba(246, 243, 249, 0.92);
+    color: var(--gf-ink);
 }
 
 .gf-home-swap__after-note {
-    color: rgba(214, 208, 220, 0.58);
+    color: var(--gf-ink-2);
     font-size: 0.86rem;
     line-height: 1.55;
 }
@@ -2925,7 +2928,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     border-radius: 8px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.014)),
-        rgba(18, 15, 22, 0.42);
+        var(--gf-plate-weak);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
     transition: border-color 160ms ease, transform 160ms ease, background-color 160ms ease;
 }
@@ -2936,7 +2939,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 }
 
 .gf-home-card h3 {
-    color: rgba(247, 245, 249, 0.95);
+    color: var(--gf-ink);
     font-size: 0.99rem;
     font-weight: 780;
     letter-spacing: -0.015em;
@@ -2945,7 +2948,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 .gf-home-card p {
     grid-column: 1 / -1;
     margin-top: 10px !important;
-    color: rgba(214, 208, 220, 0.64);
+    color: var(--gf-ink-2);
     font-size: 0.84rem;
     line-height: 1.55;
 }
@@ -2954,7 +2957,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     position: absolute;
     top: 18px;
     right: 18px;
-    color: rgba(227, 214, 240, 0.95);
+    color: var(--gf-ink);
     font-weight: 700;
     opacity: 0;
     transform: translateX(-4px);
@@ -2982,7 +2985,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     overflow: hidden;
     border: 1px solid rgba(158, 147, 168, 0.18);
     border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.95), rgba(10, 9, 12, 0.98));
+    background: var(--gf-code-bg);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
@@ -2991,7 +2994,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     padding: 10px 18px;
     border-bottom: 1px solid rgba(158, 147, 168, 0.14);
     background: rgba(255, 255, 255, 0.025);
-    color: rgba(233, 229, 237, 0.78);
+    color: var(--gf-ink-2);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -3005,7 +3008,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     font-family: var(--vp-font-family-mono);
     font-size: 0.84rem;
     line-height: 1.8;
-    color: rgba(227, 221, 233, 0.88);
+    color: var(--gf-ink);
 }
 
 .gf-home-ops__shape-body code {
@@ -3030,18 +3033,18 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
     border-radius: 8px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.4);
+        var(--gf-plate-weak);
 }
 
 .gf-home-ops__surface h3 {
-    color: rgba(246, 243, 249, 0.93);
+    color: var(--gf-ink);
     font-size: 0.92rem;
     font-weight: 780;
 }
 
 .gf-home-ops__surface p {
     margin-top: 8px !important;
-    color: rgba(214, 208, 220, 0.62);
+    color: var(--gf-ink-2);
     font-size: 0.83rem;
     line-height: 1.55;
 }
@@ -3078,7 +3081,7 @@ html[data-gf-motion='reduced'] .gf-home-env__value { animation: none; }
 
 .gf-home-ops__binary-inside {
     margin-top: 14px !important;
-    color: rgba(214, 208, 220, 0.45);
+    color: var(--gf-ink-2);
     font-size: 0.78rem;
     font-weight: 750;
     letter-spacing: 0.05em;
@@ -3125,7 +3128,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-ops__binary-title {
-    color: rgba(246, 243, 249, 0.95);
+    color: var(--gf-ink);
     font-size: 1.3rem;
     font-weight: 780;
     margin-bottom: 2px;
@@ -3133,7 +3136,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-ops__binary-copy p {
     margin-top: 0 !important;
-    color: rgba(214, 208, 220, 0.66);
+    color: var(--gf-ink-2);
     font-size: 0.95rem;
     line-height: 1.65;
 }
@@ -3172,7 +3175,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-swap__tabs button {
     padding: 7px 18px;
     border-radius: 999px;
-    color: rgba(214, 208, 220, 0.62);
+    color: var(--gf-ink-2);
     font-size: 0.85rem;
     font-weight: 750;
     cursor: pointer;
@@ -3180,12 +3183,12 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-swap__tabs button:hover {
-    color: rgba(233, 229, 237, 0.85);
+    color: var(--gf-ink-2);
 }
 
 .gf-home-swap__tabs button.is-active {
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
-    color: #fff;
+    background: var(--gf-accent);
+    color: var(--gf-on-accent);
     box-shadow: 0 10px 26px rgba(214, 53, 26, 0.26);
 }
 
@@ -3214,7 +3217,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-env__line.is-spotlit .gf-home-env__key {
-    color: rgba(227, 214, 240, 1);
+    color: var(--gf-ink);
 }
 
 /* --- fit section --- */
@@ -3232,11 +3235,11 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     border-radius: 8px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.4);
+        var(--gf-plate-weak);
 }
 
 .gf-home-fit__card h3 {
-    color: rgba(246, 243, 249, 0.93);
+    color: var(--gf-ink);
     font-size: 0.95rem;
     font-weight: 780;
 }
@@ -3250,7 +3253,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-fit__card li {
-    color: rgba(214, 208, 220, 0.66);
+    color: var(--gf-ink-2);
     font-size: 0.88rem;
     line-height: 1.6;
     padding-left: 18px;
@@ -3273,7 +3276,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-fit__card a {
-    color: rgba(255, 194, 77, 0.95);
+    color: var(--gf-nav);
 }
 
 .gf-home-fit__eject {
@@ -3283,18 +3286,18 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     border-radius: 8px;
     background:
         linear-gradient(180deg, rgba(255, 94, 58, 0.05), rgba(255, 94, 58, 0.015)),
-        rgba(18, 15, 22, 0.4);
+        var(--gf-plate-weak);
 }
 
 .gf-home-fit__eject h3 {
-    color: rgba(246, 243, 249, 0.95);
+    color: var(--gf-ink);
     font-size: 0.95rem;
     font-weight: 780;
 }
 
 .gf-home-fit__eject p {
     margin-top: 8px !important;
-    color: rgba(214, 208, 220, 0.66);
+    color: var(--gf-ink-2);
     font-size: 0.9rem;
     line-height: 1.65;
     max-width: 720px;
@@ -3320,13 +3323,13 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     border-radius: 12px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.45);
+        var(--gf-plate);
     text-align: center;
 }
 
 .gf-home-proof__stat strong {
     display: block;
-    color: rgba(255, 196, 130, 0.98);
+    color: var(--gf-nav);
     font-size: clamp(2rem, 3vw, 2.6rem);
     font-weight: 820;
     letter-spacing: -0.04em;
@@ -3336,7 +3339,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-proof__stat span {
     display: block;
     margin-top: 10px;
-    color: rgba(214, 208, 220, 0.66);
+    color: var(--gf-ink-2);
     font-size: 0.85rem;
     line-height: 1.5;
 }
@@ -3344,7 +3347,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-proof__note {
     max-width: 680px;
     margin: 26px auto 0 !important;
-    color: rgba(166, 156, 176, 0.62);
+    color: var(--gf-ink-2);
     font-size: 0.85rem;
     line-height: 1.6;
     text-align: center;
@@ -3375,12 +3378,12 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     align-items: center;
     gap: 9px;
     padding: 9px 16px 9px 9px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid var(--gf-plate-line);
     border-radius: 999px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.014)),
-        rgba(18, 15, 22, 0.5);
-    color: rgba(233, 229, 237, 0.84);
+        var(--gf-plate);
+    color: var(--gf-plate-ink-2);
     font-size: 0.86rem;
     font-weight: 700;
     transition: border-color 150ms ease, transform 150ms ease;
@@ -3399,7 +3402,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     height: 24px;
     border-radius: 50%;
     background: rgba(255, 94, 58, 0.2);
-    color: rgba(255, 194, 77, 0.95);
+    color: var(--gf-nav);
     font-size: 0.74rem;
     font-weight: 800;
 }
@@ -3425,7 +3428,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     border-radius: 12px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
-        rgba(18, 15, 22, 0.46);
+        var(--gf-plate);
     transition: border-color 160ms ease, transform 160ms ease;
 }
 
@@ -3440,14 +3443,14 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-home-close__path h3 {
-    color: rgba(247, 245, 249, 0.96);
+    color: var(--gf-ink);
     font-size: 1.32rem;
     font-weight: 790;
 }
 
 .gf-home-close__path p:not(.gf-home-eyebrow) {
     margin-top: 10px !important;
-    color: rgba(214, 208, 220, 0.66);
+    color: var(--gf-ink-2);
     font-size: 0.92rem;
     line-height: 1.6;
 }
@@ -3455,7 +3458,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 .gf-home-close__cta {
     display: inline-block;
     margin-top: 16px;
-    color: rgba(255, 194, 77, 0.95);
+    color: var(--gf-nav);
     font-size: 0.92rem;
     font-weight: 760;
 }
@@ -3472,7 +3475,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     max-width: 520px;
     border: 1px solid rgba(158, 147, 168, 0.2);
     border-radius: 8px;
-    background: linear-gradient(180deg, rgba(16, 14, 18, 0.97), rgba(10, 9, 12, 0.99));
+    background: var(--gf-code-bg);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         0 18px 44px rgba(0, 0, 0, 0.28);
@@ -3481,7 +3484,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     font-family: var(--vp-font-family-mono);
     font-size: 0.86rem;
     line-height: 1.9;
-    color: rgba(227, 221, 233, 0.9);
+    color: var(--gf-ink);
 }
 
 .gf-home-close__cmd code {
@@ -3495,18 +3498,18 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 
 .gf-home-close__version {
     margin-top: 13px !important;
-    color: rgba(166, 156, 176, 0.6);
+    color: var(--gf-ink-2);
     font-size: 0.78rem;
     line-height: 1.5;
 }
 
 .gf-home-close__version a {
-    color: rgba(255, 194, 77, 0.9);
+    color: var(--gf-nav);
     font-weight: 700;
 }
 
 .gf-home-close__version code {
-    color: rgba(214, 208, 220, 0.78);
+    color: var(--gf-ink-2);
     font-size: 0.95em;
 }
 
@@ -3526,8 +3529,8 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     padding: 0 22px;
     border: 1px solid rgba(255, 194, 77, 0.22);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.055);
-    color: rgba(250, 247, 252, 0.92) !important;
+    background: var(--gf-plate-lift);
+    color: var(--gf-ink) !important;
     font-weight: 800;
     transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
 }
@@ -3631,7 +3634,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
     border: 1px solid rgba(255, 194, 77, 0.18);
     border-radius: 999px;
     background: rgba(26, 22, 30, 0.76);
-    color: rgba(245, 240, 249, 0.84);
+    color: var(--gf-ink-2);
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.06),
         0 8px 24px rgba(0,0,0,0.24);
@@ -3665,7 +3668,7 @@ html[data-gf-motion='reduced'] .gf-home-swap__panels > [role="tabpanel"] {
 }
 
 .gf-motion-picker__label {
-    color: rgba(217, 206, 228, 0.72);
+    color: var(--gf-ink-2);
 }
 
 .gf-motion-picker__value {
@@ -3722,7 +3725,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     border: 1px solid rgba(255, 194, 77, 0.18);
     border-radius: 6px;
     background: linear-gradient(180deg, rgba(255, 94, 58, 0.16), rgba(255, 94, 58, 0.05));
-    color: rgba(255, 194, 77, 0.92);
+    color: var(--gf-nav);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     transition: color 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
@@ -3733,7 +3736,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 }
 
 .gf-home-card:hover .gf-home-card__icon {
-    color: #ffffff;
+    color: var(--gf-ink);
     border-color: rgba(255, 194, 77, 0.45);
     transform: translateY(-1px);
 }
@@ -3785,7 +3788,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 }
 
 .gf-home-swap__zero span {
-    color: rgba(214, 208, 220, 0.72);
+    color: var(--gf-ink-2);
     font-size: 0.96rem;
     font-weight: 650;
 }
@@ -3817,12 +3820,12 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-shapes span {
     padding: 7px 14px;
-    border: 1px solid rgba(166, 156, 176, 0.16);
+    border: 1px solid var(--gf-plate-line);
     border-radius: 999px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-        rgba(18, 15, 22, 0.5);
-    color: rgba(227, 221, 233, 0.8);
+        var(--gf-plate);
+    color: var(--gf-ink-2);
     font-size: 0.83rem;
     font-weight: 680;
 }
@@ -3845,7 +3848,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-manifesto__quote p {
     margin: 0;
-    color: rgba(243, 239, 247, 0.93);
+    color: var(--gf-ink);
     font-size: clamp(1.42rem, 2.6vw, 2.05rem);
     font-weight: 640;
     line-height: 1.44;
@@ -3867,7 +3870,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 
 .gf-home-manifesto__quote footer strong {
     display: block;
-    color: rgba(246, 243, 249, 0.92);
+    color: var(--gf-ink);
     font-size: 0.98rem;
     font-weight: 780;
 }
@@ -3875,7 +3878,7 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
 .gf-home-manifesto__quote footer span {
     display: block;
     margin-top: 4px;
-    color: rgba(255, 154, 96, 0.78);
+    color: var(--gf-accent-hi);
     font-size: 0.76rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -3930,13 +3933,13 @@ html[data-gf-motion='reduced'] .gf-home.gf-reveal-ready [data-reveal] {
     max-width: 720px;
     margin: clamp(36px, 4vw, 52px) auto 0 !important;
     text-align: center;
-    color: rgba(214, 208, 220, 0.66);
+    color: var(--gf-ink-2);
     font-size: 1.02rem;
     line-height: 1.65;
 }
 
 .gf-home-swap__all strong {
-    color: rgba(248, 246, 250, 0.95);
+    color: var(--gf-ink);
     font-weight: 780;
 }
 
@@ -4026,7 +4029,7 @@ html.gf-doc-enter[data-gf-motion='on'] .VPDoc .vp-doc {
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(190, 179, 202, 0.62);
+    color: var(--gf-ink-2);
 }
 
 .VPDocAsideOutline .outline-marker {
@@ -4088,7 +4091,7 @@ html[data-gf-motion='reduced'] .VPSidebarItem .link:hover > .text {
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(190, 179, 202, 0.55);
+    color: var(--gf-ink-2);
 }
 
 .VPDocFooter .pager-link .title {
@@ -4150,8 +4153,8 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 /* Branded text selection. */
 ::selection {
-    background: rgba(255, 94, 58, 0.34);
-    color: #fff;
+    background: var(--gf-accent-soft);
+    color: var(--gf-ink);
 }
 
 /* Slim scrollbars in sidebar, outline, and code blocks. */
@@ -4254,7 +4257,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(208, 198, 218, 0.72);
+    color: var(--gf-ink-2);
 }
 
 .VPDoc .vp-doc th:first-child {
@@ -4349,17 +4352,17 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
 
 .VPLocalSearchBox .titles {
     font-size: 0.78rem;
-    color: rgba(190, 179, 202, 0.62);
+    color: var(--gf-ink-2);
 }
 
 .VPLocalSearchBox .title-icon {
-    color: rgba(255, 154, 96, 0.55);
+    color: var(--gf-accent-hi);
 }
 
 .VPLocalSearchBox .search-keyboard-shortcuts kbd {
     border: 1px solid rgba(255, 194, 77, 0.20);
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--gf-plate-lift);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.45);
 }
 
@@ -4380,7 +4383,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(255, 154, 96, 0.85);
+    color: var(--gf-accent-hi);
 }
 
 .gf-notfound__code {
@@ -4410,7 +4413,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     max-width: 420px;
     font-size: 1.02rem;
     line-height: 1.65;
-    color: rgba(208, 198, 218, 0.78);
+    color: var(--gf-ink-2);
 }
 
 .gf-notfound__actions {
@@ -4429,25 +4432,25 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     border-radius: 999px;
     font-size: 0.92rem;
     font-weight: 600;
-    color: rgba(238, 232, 244, 0.92);
+    color: var(--gf-ink);
     text-decoration: none;
     transition: border-color 0.18s ease, background 0.18s ease;
 }
 
 .gf-notfound__link:hover {
     border-color: rgba(255, 194, 77, 0.45);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--gf-plate-lift);
 }
 
 .gf-notfound__link.is-primary {
     border-color: rgba(255, 194, 77, 0.62);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.95), rgba(214, 53, 26, 0.95));
-    color: #fff;
+    background: var(--gf-accent);
+    color: var(--gf-on-accent);
 }
 
 .gf-notfound__link.is-primary:hover {
     border-color: rgba(255, 194, 77, 0.85);
-    background: linear-gradient(180deg, rgba(255, 94, 58, 0.98), rgba(214, 53, 26, 0.98));
+    background: var(--gf-accent-hi);
 }
 
 /* Code groups: quiet tab strip that joins its block. */
@@ -4455,7 +4458,7 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     border: 1px solid rgba(255, 194, 77, 0.10);
     border-bottom: none;
     border-radius: 6px 6px 0 0;
-    background: rgba(255, 255, 255, 0.015);
+    background: var(--gf-plate-lift-3);
 }
 
 .vp-code-group .tabs label {
@@ -4672,6 +4675,52 @@ html.dark {
     --vp-sidebar-bg-color: var(--gf-ground-alt);
     --vp-nav-bg-color: var(--gf-ground-alt);
     --vp-local-nav-bg-color: var(--gf-ground-alt);
+}
+
+/* ============================================================
+   LANDING PLATE TOKENS
+   The landing components were built with literals: a near-black
+   plate at varying alpha, a violet-grey hairline, a white inset
+   lift and a soft plate ink. All four assume a near-black ground
+   underneath, so with the appearance toggle live they leaked
+   straight into light mode — dark cards on a white poster.
+
+   Naming them is not cosmetic. The alpha semantics differ between
+   modes and cannot be swapped channel-for-channel: 50% of near-
+   black over near-black is a subtle plate, while 50% of near-black
+   over white is a slab. Light therefore uses its own alphas, an
+   order of magnitude lower, and the inset "lift" highlight goes
+   to transparent because there is no headroom above white to lift
+   into. Same structure, different physics.
+   ============================================================ */
+:root {
+    --gf-plate-weak:   var(--gf-plate-weak);
+    --gf-plate:        rgba(18, 15, 22, 0.52);
+    --gf-plate-strong: rgba(18, 15, 22, 0.70);
+    --gf-plate-line:   var(--gf-plate-line);
+    --gf-plate-ink:    var(--gf-plate-ink);
+    --gf-plate-ink-2:  var(--gf-plate-ink-2);
+    --gf-plate-lift:   rgba(255, 255, 255, 0.055);
+    --gf-plate-lift-2: rgba(255, 255, 255, 0.04);
+    --gf-plate-lift-3: rgba(255, 255, 255, 0.014);
+}
+html:not(.dark) {
+    --gf-brand-react: #06718F;
+    --gf-brand-vue:   #1F7A50;
+    --gf-brand-templ: #A8471B;
+    --gf-brand-plain: #5F5868;
+
+    --gf-plate-weak:   rgba(20, 10, 30, 0.026);
+    --gf-plate:        rgba(20, 10, 30, 0.040);
+    --gf-plate-strong: rgba(20, 10, 30, 0.065);
+    --gf-plate-line:   rgba(20, 10, 30, 0.11);
+    --gf-plate-ink:    rgba(28, 23, 36, 0.92);
+    --gf-plate-ink-2:  rgba(38, 32, 48, 0.90);
+    /* No headroom above white — an inset white highlight is invisible,
+       so the lift simply stops rather than being faked. */
+    --gf-plate-lift:   transparent;
+    --gf-plate-lift-2: transparent;
+    --gf-plate-lift-3: transparent;
 }
 
 /* --- Landing keeps the deep ground -----------------------
@@ -5028,7 +5077,7 @@ div[class*='language-'] .lang {
     box-shadow: inset 2px 0 0 #FF6B85;
     opacity: 0.75;
 }
-.vp-doc div[class*='language-'] .diff.add::before { color: #5FCFA8; }
+.vp-doc div[class*='language-'] .diff.add::before { color: var(--gf-ink); }
 .vp-doc div[class*='language-'] .diff.remove::before { color: #FF6B85; }
 .vp-doc div[class*='language-'] .error {
     background-color: rgba(255, 107, 133, 0.10);
@@ -5110,9 +5159,9 @@ div[class*='language-'] .lang {
 .vp-doc .custom-block.info { border-left-color: var(--gf-nav); }
 .vp-doc .custom-block.info .custom-block-title { color: var(--gf-nav); }
 .vp-doc .custom-block.tip { border-left-color: #5FCFA8; background-color: rgba(95, 207, 168, 0.055); }
-.vp-doc .custom-block.tip .custom-block-title { color: #5FCFA8; }
+.vp-doc .custom-block.tip .custom-block-title { color: var(--gf-ink); }
 .vp-doc .custom-block.warning { border-left-color: #FFB454; background-color: rgba(255, 180, 84, 0.055); }
-.vp-doc .custom-block.warning .custom-block-title { color: #FFB454; }
+.vp-doc .custom-block.warning .custom-block-title { color: var(--gf-nav); }
 .vp-doc .custom-block.danger { border-left-color: #FF6B85; background-color: rgba(255, 107, 133, 0.055); }
 .vp-doc .custom-block.danger .custom-block-title { color: #FF6B85; }
 .vp-doc .custom-block a { color: inherit; text-decoration-color: currentColor; }
@@ -5149,8 +5198,8 @@ div[class*='language-'] .lang {
 /* --- Badges ----------------------------------------------- */
 .VPBadge { font-family: var(--gf-font-mono); font-size: 11px; font-weight: 500; }
 .VPBadge.info    { background-color: var(--gf-surface-2); color: var(--gf-ink-2); border-color: var(--gf-line-strong); }
-.VPBadge.tip     { background-color: rgba(95, 207, 168, 0.12); color: #5FCFA8; border-color: rgba(95, 207, 168, 0.30); }
-.VPBadge.warning { background-color: rgba(255, 180, 84, 0.12); color: #FFB454; border-color: rgba(255, 180, 84, 0.30); }
+.VPBadge.tip     { background-color: rgba(95, 207, 168, 0.12); color: var(--gf-ink); border-color: rgba(95, 207, 168, 0.30); }
+.VPBadge.warning { background-color: rgba(255, 180, 84, 0.12); color: var(--gf-nav); border-color: rgba(255, 180, 84, 0.30); }
 .VPBadge.danger  { background-color: rgba(255, 107, 133, 0.12); color: #FF6B85; border-color: rgba(255, 107, 133, 0.30); }
 
 /* --- Anchor headings: the anchor is navigation ------------ */
@@ -5173,7 +5222,8 @@ div[class*='language-'] .lang {
     border-color: var(--gf-line-strong);
     background-color: var(--gf-surface);
 }
-.pager-link .desc { color: var(--gf-ink-3); }
+/* ink-3 measured 2:1 here in light mode — a label is text. */
+.pager-link .desc { color: var(--gf-ink-2); }
 .pager-link .title { color: var(--gf-nav); }
 .pager-link:hover .title { color: var(--gf-nav-hi); }
 
@@ -5213,11 +5263,29 @@ html:not(.dark) {
     --gf-nav-soft: rgba(143, 93, 0, 0.08);
     --gf-nav-line: rgba(143, 93, 0, 0.26);
 
-    --gf-ground-deep: #FFFFFF;
+    /* The plane stack, mirrored. ground-deep, ground and surface were all
+       #FFFFFF — three planes collapsed onto one value, which left light mode
+       with no plane stack at all and made the whole ΔL* argument vanish the
+       moment you flipped the toggle.
+
+       Direction inverts, relationships hold: the reading column is the
+       ceiling and everything else steps DOWN from it, where in dark mode the
+       column steps UP from a near-black canvas.
+
+         ground        #FFFFFF  L* 100.0   reading column   — the ceiling
+         surface       #FAF8FC  L*  98.2   cards            −1.8, hairline does the rest
+         ground-alt    #F7F5F9  L*  96.8   sidebar, nav, callouts
+         surface-2     #F5F2F8  L*  96.0   second surface
+         ground-deep   #F2EFF5  L*  94.8   landing canvas   −5.2
+         code-well     #F2EFF5  L*  94.8   code             −5.2, same plane as the canvas
+
+       ΔL* column→well is 5.2 against dark mode's 5.16, and code still lands
+       back on exactly the canvas plane — the property the dark stack has. */
+    --gf-ground-deep: #F2EFF5;
     --gf-ground: #FFFFFF;
     --gf-ground-alt: #F7F5F9;
-    --gf-surface: #FFFFFF;
-    --gf-surface-2: #F2EFF5;
+    --gf-surface: #FAF8FC;
+    --gf-surface-2: #F5F2F8;
     --gf-line: #E6E2EC;
     --gf-line-strong: #CEC7D8;
 
@@ -5278,6 +5346,15 @@ html:not(.dark) .gf-home,
 html:not(.dark) body:has(.gf-home) {
     --vp-c-bg: #FFFFFF;
     --vp-c-bg-alt: #F7F5F9;
+    /* The dark rule above also overrides the plane tokens, and this rule
+       used to leave them alone — so ground-alt, surface and surface-2 stayed
+       at their near-black landing values and the poster rendered dark cards
+       on a white page. Hand them all back to the light stack. */
+    --gf-ground-deep: #FFFFFF;
+    --gf-ground: #FFFFFF;
+    --gf-ground-alt: #F7F5F9;
+    --gf-surface: #FAF8FC;
+    --gf-surface-2: #F5F2F8;
     background-color: #FFFFFF;
 }
 
@@ -5906,7 +5983,7 @@ body:has(.gf-home) .VPContent {
     font-size: 11px;
     letter-spacing: 0.17em;
     text-transform: uppercase;
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
     margin: 0 0 18px;
 }
 .gf-hero-eyebrow::before,
@@ -5921,7 +5998,7 @@ body:has(.gf-home) .VPContent {
 /* --- Headline ------------------------------------------- */
 .gf-hero-headline em {
     font-style: normal;
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
 }
 
 /* --- Buttons: flat. No bloom. ----------------------------
@@ -5940,7 +6017,10 @@ body:has(.gf-home) .VPContent {
 .gf-home-btn--primary {
     background: var(--gf-accent);
     border: 1px solid var(--gf-accent);
-    color: var(--gf-on-accent);
+    /* !important only because .gf-home-btn carries one. Ink on a filled
+       action is decided by what it is filled with, so this rule has to be
+       the one that wins. */
+    color: var(--gf-on-accent) !important;
     box-shadow: none;
 }
 .gf-hero-btn--primary:hover,
@@ -5995,7 +6075,11 @@ body:has(.gf-home) .VPContent {
     border-bottom: 2px solid transparent;
     border-radius: 0;
     background: transparent;
-    color: var(--gf-ink-3);
+    /* ink-3 is for hairlines and disabled ink. An unselected tab is still a
+       control you are meant to read — it measured 3.6:1 in both modes. The
+       selected state is carried by the accent rule and the ink step, not by
+       making the others illegible. */
+    color: var(--gf-ink-2);
     box-shadow: none;
     font-size: 12.5px;
     font-weight: 600;
@@ -6048,7 +6132,7 @@ body:has(.gf-home) .VPContent {
     color: var(--gf-ink-2);
     box-shadow: none;
 }
-.gf-hero-install__prompt { color: var(--gf-accent); }
+.gf-hero-install__prompt { color: var(--gf-accent-hi); }
 .gf-hero-install__state {
     margin-left: 8px;
     padding-left: 11px;
@@ -6101,7 +6185,9 @@ body:has(.gf-home) .VPContent {
     padding: 3.5px 8px;
     border-radius: 999px;
     border: 1px solid var(--gf-accent-line);
-    color: var(--gf-accent);
+    /* accent-hi, not accent: the plain accent is the FILL value. As text on a
+       near-white canvas it measures 4.21:1. */
+    color: var(--gf-accent-hi);
     background: var(--gf-accent-soft);
 }
 
@@ -6262,7 +6348,7 @@ body,
     font-size: 11px;
     letter-spacing: 0.17em;
     text-transform: uppercase;
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
 }
 .gf-starter-eyebrow::before,
 .gf-starter-hero__eyebrow::before,
@@ -6468,17 +6554,28 @@ body,
    exact light wash gives the command, choices, comparison, and closing prompt
    one consistent level of emphasis while their contents provide hierarchy. */
 .gf-starter-page .gf-starter-command-card,
+/* Temper. Three faults in the previous value, all of which made the
+   relationship between the cards and the page unstable:
+
+     1. rgba(...,0.90) — translucent, over a page-level ember radial.
+        A card near that hotspot picked up orange, one further down did
+        not, so the same class was a different colour depending on where
+        it sat. A surface you cannot predict cannot be reasoned about,
+        and the whole plane system depends on being able to.
+     2. A 12% accent radial ON the card as well — warmth applied twice.
+     3. linear-gradient(rgba(255,255,255,.06) ...) — white at low alpha
+        over a violet ramp does not lighten it, it DESATURATES it.
+        Measured chroma fell from 4 on the body to 2 on the section.
+
+   Opaque --gf-ground, which is the token for content on the deep
+   ground and lands at exactly the +5.16 step the system specifies. */
 .gf-starter-page .gf-starter-kit-card,
 .gf-starter-page .gf-starter-compare,
-.gf-starter-page .gf-starter-support-cta {
-    background:
-        radial-gradient(560px 260px at 0% 0%, rgba(255, 94, 58, 0.12), transparent 74%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.022)),
-        rgba(29, 25, 33, 0.90);
-    border-color: rgba(166, 156, 176, 0.24);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.06),
-        0 24px 68px rgba(0, 0, 0, 0.14);
+.gf-starter-page .gf-starter-support-cta,
+.gf-starter-page .gf-starter-command-card {
+    background: var(--gf-ground);
+    border-color: var(--gf-line);
+    box-shadow: 0 24px 68px rgba(0, 0, 0, 0.22);
 }
 .gf-starter-page .gf-starter-kit-card__mark {
     background:
@@ -6537,7 +6634,7 @@ body,
    as the ACTION accent, which is what a mark is, not gold. */
 .gf-starter-pillars svg,
 .gf-starter-pillars [class*='icon'] {
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
 }
 
 /* --- The command block is a code well -------------------
@@ -6556,19 +6653,19 @@ body,
 .gf-starter-command-card__token {
     font-family: var(--gf-font-mono);
     font-weight: 400;
-    color: #E4DDE8;                    /* Ember plain */
+    color: var(--gf-ink);                    /* Ember plain */
 }
 /* $ prompt is the one accent mark in the block. */
 .gf-starter-command-card__command > span:first-child,
 .gf-starter-command-card__prompt {
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
     font-weight: 500;
 }
 /* The binary reads as the function; flags and placeholders sit
    back — same relationships the Ember palette uses in fenced
    code, so a command looks the same wherever it appears. */
-.gf-starter-command-card__token:nth-of-type(1) { color: #FFC24D; }
-.gf-starter-command-card__token { color: #E4DDE8; }
+.gf-starter-command-card__token:nth-of-type(1) { color: var(--gf-nav); }
+.gf-starter-command-card__token { color: var(--gf-ink); }
 .gf-starter-command-card__token[class*='flag'],
 .gf-starter-command-card__token[class*='arg'] { color: #9089A0; }
 
@@ -6592,11 +6689,11 @@ body,
 /* Command tokens, at the depth of the original rule. */
 .gf-starter-command-card__command span.gf-starter-command-card__prompt,
 .gf-starter-command-card__command > span:first-child {
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
     font-weight: 500;
 }
 .gf-starter-command-card__command span.gf-starter-command-card__token:first-of-type {
-    color: #FFC24D;                 /* the binary, as Ember paints a function */
+    color: var(--gf-nav);                 /* the binary, as Ember paints a function */
 }
 
 /* --- Pillars: facts, not cards ---------------------------
@@ -6633,7 +6730,7 @@ body,
 }
 .gf-starter-pillars svg,
 .gf-starter-pillars [class*='icon'] {
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
     flex: none;
     width: 15px;
     height: 15px;
@@ -6665,7 +6762,7 @@ body,
 .gf-hero-title em,
 .gf-blog-card-title em {
     font-style: normal;
-    color: var(--gf-accent);
+    color: var(--gf-accent-hi);
 }
 
 /* --- Pillars: 2x2 rather than 3+1 ------------------------
@@ -6997,6 +7094,37 @@ body,
     --gf-app-hover:    #1B1620;   /* L*  8.2  row hover                    */
     --gf-app-raised:   #1F1A24;   /* L* 10.2  popover, menu, dropdown      */
     --gf-app-overlay:  #241E29;   /* L* 12.4  dialog, sheet                */
+    /* Elevation above the panel is carried by lightness in dark mode, so
+       the shadows only need to ground the surface, not lift it. */
+    --gf-app-shadow-raised:  0 10px 28px rgba(0, 0, 0, 0.45);
+    --gf-app-shadow-overlay: 0 26px 68px rgba(0, 0, 0, 0.60);
+}
+
+/* Light mode's app ladder is NOT the dark one inverted.
+
+   Below the chrome it mirrors cleanly: inputs recess, and data wells —
+   logs, terminal, diffs — still cut furthest down, because a well is a
+   well in either mode.
+
+   Above the panel it cannot mirror, and this is the interesting part.
+   Dark mode has 97 L* of headroom above its chrome and spends 9 of it on
+   four steps. Light mode's panel is already at white, leaving 1.2 L* for
+   popover AND dialog. So above the panel, light mode stops carrying
+   elevation in lightness and carries it in shadow instead. Two planes
+   share a value and are told apart by their shadow — which is what every
+   light interface has always quietly done. */
+html:not(.dark) {
+    --gf-app-well:     #E4E0EA;   /* L* 89.7  logs, terminal, code, diffs  */
+    --gf-app-input:    #EDEAF2;   /* L* 93.1  fields — recessed            */
+    --gf-app-chrome:   #F2EFF6;   /* L* 94.9  window, sidebar, title bar   */
+    --gf-app-hover:    #F6F4FA;   /* L* 96.5  row hover — a wash DOWN      */
+    --gf-app-panel:    #FCFBFE;   /* L* 98.8  panels, cards, rows          */
+    --gf-app-raised:   #FFFFFF;   /* L*100.0  popover — shadow, not value  */
+    --gf-app-overlay:  #FFFFFF;   /* L*100.0  dialog  — shadow, not value  */
+    --gf-app-shadow-raised:  0 8px 24px rgba(20, 10, 30, 0.14),
+                             0 1px 2px rgba(20, 10, 30, 0.10);
+    --gf-app-shadow-overlay: 0 24px 60px rgba(20, 10, 30, 0.20),
+                             0 2px 6px rgba(20, 10, 30, 0.12);
 }
 /* Make-command references keep usage, file mutations, and generated output together without making the page visually dense. */
 .gf-make-command-tabs {
@@ -7092,4 +7220,167 @@ body,
   border: 0;
   border-radius: 0 !important;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.012) !important;
+}
+
+/* ============================================================
+   TEMPER — starter kit surface correction
+   ------------------------------------------------------------
+   Three compounding problems, found by compositing the surfaces
+   rather than reading the declarations.
+
+   1. THE CARDS ARE TRANSLUCENT — rgba(29,25,33,0.9) — and the
+      page carries a 1300x1000 ember radial at 82% 6%
+      (rgba(255,94,58,0.11)). So a card near that hotspot picks
+      up orange and a card further down does not. The same class
+      is a different colour depending on where it sits, which is
+      why the relationship between background and cards reads as
+      unstable rather than wrong in any single place.
+
+   2. COOL WHITE WASHES ON A WARM RAMP. Sections add
+      linear-gradient(rgba(255,255,255,.02), rgba(255,255,255,.004))
+      and table rows add rgba(255,255,255,.01). White at low alpha
+      over violet does not lighten it, it DESATURATES it — measured
+      chroma falls from 4 on the body to 2 on the section. The page
+      greys out as it layers.
+
+   3. OFF-TOKEN VALUES. #1D1921 is not in the palette; composited
+      it lands at #1C181F (L* 8.87) where --gf-ground is 8.11.
+      Borders use ink-2 at 0.2 alpha rather than --gf-line, and the
+      hero cards are framed in NAVIGATION GOLD at 0.2 — a card is
+      not a link.
+
+   Opaque tokens throughout. A surface that changes colour with
+   what is behind it cannot be reasoned about, and the whole plane
+   system depends on being able to reason about it.
+   ============================================================ */
+.gf-starter-kit-card,
+.gf-starter-command-card,
+.gf-starter-compare {
+    background: var(--gf-ground);
+    border: 1px solid var(--gf-line);
+}
+.gf-starter-hero__primary,
+.gf-starter-hero__card {
+    background: var(--gf-ground);
+    border: 1px solid var(--gf-line);
+}
+
+/* Cool white washes removed. Where a lift is genuinely wanted the
+   surface steps up a token instead of being fogged with white. */
+.gf-starter-section {
+    background-image: none;
+    border-color: var(--gf-line);
+}
+.gf-starter-page .gf-starter-compare td,
+.gf-starter-compare td {
+    background: transparent;
+}
+.gf-starter-compare tr:nth-child(2n) td {
+    background: rgba(169, 161, 179, 0.035);   /* violet-neutral, not white */
+}
+
+/* Framework brand tints on the comparison icons — the same fault
+   already corrected on the kit cards. Vue's green sits beside the
+   tip colour and React's cyan is off-palette entirely. The glyph
+   may keep its colour; the tile may not. */
+.gf-starter-compare-kit__icon {
+    background: var(--gf-surface) !important;
+    border: 1px solid var(--gf-line-strong);
+}
+
+/* ============================================================
+   COLOUR MODE SWITCH
+   VitePress ships the right geometry already (40x22 track,
+   18px thumb), so this is a retheme rather than a rebuild —
+   same control as the design system page.
+
+   The track is neutral and only the thumb carries the accent,
+   because a control is an action and actions are filled. The
+   icon rides IN the thumb, knocked out of the fill, rather
+   than sitting in the track where the thumb would cover it.
+   ============================================================ */
+.VPSwitchAppearance {
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--gf-surface);
+    border: 1px solid var(--gf-line-strong);
+    transition: border-color 0.2s var(--gf-ease, ease);
+}
+.VPSwitchAppearance:hover { border-color: var(--gf-ink-3); }
+
+.VPSwitchAppearance .check {
+    width: 16px;
+    height: 16px;
+    top: 2px;
+    left: 2px;
+    border-radius: 50%;
+    background: var(--gf-accent);
+    box-shadow: none;
+    transition: transform 0.18s var(--gf-ease, ease);
+}
+.dark .VPSwitchAppearance .check { transform: translateX(18px); }
+
+.VPSwitchAppearance .icon { width: 16px; height: 16px; }
+.VPSwitchAppearance .icon > span {
+    width: 10px;
+    height: 10px;
+    top: 3px;
+    left: 3px;
+    /* vpi-* icons are mask-image, so the fill is background-color */
+    background-color: var(--gf-on-accent);
+    transition: opacity 0.14s var(--gf-ease, ease);
+}
+/* The visible icon is the mode you are IN, matching the label the
+   design system page shows next to its own switch. */
+.VPSwitchAppearance .sun { opacity: 1; }
+.VPSwitchAppearance .moon { opacity: 0; }
+.dark .VPSwitchAppearance .sun { opacity: 0; }
+.dark .VPSwitchAppearance .moon { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    .VPSwitchAppearance .check { transition: none; }
+}
+
+/* ============================================================
+   ACCENT AS TEXT
+   --gf-accent is the FILL value. Every one of these sites used
+   it as ink, and every one of them measured 4.2:1 or worse
+   against a light ground — they only ever passed because light
+   mode was unreachable. --gf-accent-hi is the text variant and
+   exists for exactly this: it darkens in light mode (#B32B13)
+   and brightens in dark (#FF8257).
+
+   Headlines are the one exception worth naming: at 24px+ the
+   large-text floor is 3:1, so an accent headline clears either
+   way. They still take accent-hi here for consistency, because
+   "which accent do I use" should not depend on font size.
+   ============================================================ */
+
+/* ============================================================
+   BLOG COVER ART
+   The blog visual is a picture, not a component. It is composed
+   against a dark field — heat from below, a violet stack, light
+   slabs catching the glow — and every one of those relationships
+   is stated in plane tokens so the illustration stays in the
+   system rather than being a pile of literals.
+
+   That is right for dark mode and wrong at the toggle: flipping
+   the tokens does not produce a light version of the picture, it
+   produces white slabs on a dark field with the light gone out
+   of it. So the artwork keeps the dark plane values in both
+   modes, exactly as the hero render does by virtue of being a
+   raster. This is the ONE subtree on the site that does not
+   flip, and it is art.
+   ============================================================ */
+html:not(.dark) .gf-blog-visual {
+    --gf-ground-deep: #0C0A0E;
+    --gf-ground:      #1A1620;
+    --gf-ground-alt:  #1D1923;
+    --gf-surface:     #2C2734;
+    --gf-surface-2:   #2D2835;
+    --gf-line:        #2A2333;
+    --gf-accent-hi:   #FF8257;
+    --gf-ink:         #FFFFFF;
+    --gf-ink-2:       #A9A1B3;
 }

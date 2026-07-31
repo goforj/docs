@@ -48,6 +48,7 @@ Application services, job handlers, event handlers, and scheduled work should re
 
 For scheduler work, keep the registry declarative:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 s.DailyAt("04:11").Name("cleanup:stale-sessions").Do(s.authService.Cleanup)
 ```

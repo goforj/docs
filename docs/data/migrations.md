@@ -130,6 +130,22 @@ Use dry run before applying migrations when you need visibility:
 forj migrate --dry-run
 ```
 
+Expected result: each pending migration is printed with its app, connection, and database connection, followed by `dry-run complete (<count>)`. The command creates the migration table when needed but does not apply pending migration SQL.
+
+## Release Handoff
+
+Use the built artifact and the release environment for deployment:
+
+```bash
+./bin/app migrate --dry-run
+./bin/app migrate
+./bin/app migrate --dry-run
+```
+
+The first command is the reviewable plan. The second applies it. The final command should report `dry-run complete (0)`. Run the same sequence with `--connection <name>` when a release owns only one named stream.
+
+Do not use rollback as the first production recovery test. Exercise each new down migration against disposable data before release, and restore from backup when a destructive forward migration cannot be reversed safely.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

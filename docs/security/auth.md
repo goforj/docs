@@ -45,6 +45,81 @@ migrations/
 
 Use generated services and middleware as extension boundaries. Do not copy credential checks into controllers or replace session state with a JWT-only shortcut.
 
+## Enable and Verify Auth
+
+For a new Project, select **Auth** and one database during `forj new`. SQLite is the smallest local choice. Auth resolves its Web API, Mail, and Cache dependencies.
+
+For an existing Project without a database, add `auth` and a concrete database to `render.components` in `.goforj.yml`:
+
+```yaml
+render:
+  components:
+    - cli
+    - web_api
+    - auth
+    - database_sqlite
+```
+
+Keep any other components the Project already uses. If it already selects MySQL or Postgres, keep that database instead of adding SQLite. Then render the updated Project configuration:
+
+```bash
+forj render
+```
+
+The render adds Auth migrations, `internal/auth`, Auth delivery, App wiring, and route registration. Review the generated local values in `.env`:
+
+```dotenv
+API_JWT_SECRET_KEY=<generated-local-secret>
+AUTH_BOOTSTRAP_USERNAME=admin
+AUTH_BOOTSTRAP_EMAIL=admin@example.com
+AUTH_BOOTSTRAP_PASSWORD=admin
+```
+
+The bootstrap account is for local development. Replace these values outside local development, remove bootstrap credentials, and supply a deployment-specific JWT secret.
+
+Run migrations, then start the app:
+
+```bash
+forj migrate
+forj dev
+```
+
+When Auth is enabled, `app/routes.go` places the generated hello controller in a route group protected by `authService.RequireAuth`. Use that `GET /api/v1/hello` route to verify the boundary before adding application routes.
+
+First confirm that an anonymous request is rejected:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' http://localhost:3000/api/v1/hello
+# 401
+```
+
+Then log in with the local bootstrap account, save the `HttpOnly` cookies to a temporary jar, and repeat the request:
+
+```bash
+auth_cookie_jar="$(mktemp)"
+trap 'rm -f "$auth_cookie_jar"' EXIT
+
+curl -sS -o /dev/null -w '%{http_code}\n' \
+  -c "$auth_cookie_jar" \
+  -H 'Content-Type: application/json' \
+  -d '{"login":"admin","password":"admin"}' \
+  http://localhost:3000/api/v1/auth/login
+# 200
+
+curl -sS -b "$auth_cookie_jar" http://localhost:3000/api/v1/hello
+# Hello, World!
+```
+
+To protect another controller, include its routes in `protectedRoutes` in `app/routes.go`. The route group applies `authService.RequireAuth` before the controller handler runs.
+
+Run the generated tests after changing Auth configuration or protected routes:
+
+```bash
+go test ./...
+```
+
+For production, continue with [Sessions and Cookies](/security/sessions-cookies) and [Production Hardening](/security/production-hardening).
+
 ## HTTP Surface
 
 Generated Auth routes include:

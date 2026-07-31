@@ -257,6 +257,7 @@ onBeforeUnmount(() => {
 
 <div :class="{ 'is-open': swapTab === 'storage' }" :aria-hidden="swapTab !== 'storage'" role="tabpanel">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/photos/service.go
 type Service struct {
@@ -280,6 +281,7 @@ func (s *Service) Store(ctx context.Context, in UploadInput) (Photo, error) {
 
 <div :class="{ 'is-open': swapTab === 'database' }" :aria-hidden="swapTab !== 'database'" role="tabpanel">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/photos/repository.go
 type Repository struct {
@@ -306,6 +308,7 @@ func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 
 <div :class="{ 'is-open': swapTab === 'cache' }" :aria-hidden="swapTab !== 'cache'" role="tabpanel">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/photos/feed.go
 type Feed struct {
@@ -331,6 +334,7 @@ func (f *Feed) Trending(ctx context.Context) ([]Photo, error) {
 
 <div :class="{ 'is-open': swapTab === 'queue' }" :aria-hidden="swapTab !== 'queue'" role="tabpanel">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/photos/thumbnails.go
 type Thumbnails struct {
@@ -357,6 +361,7 @@ func (t *Thumbnails) Enqueue(ctx context.Context, photo Photo) error {
 
 <div :class="{ 'is-open': swapTab === 'events' }" :aria-hidden="swapTab !== 'events'" role="tabpanel">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/photos/publisher.go
 type Publisher struct {
@@ -379,6 +384,7 @@ func (p *Publisher) PhotoUploaded(ctx context.Context, photo Photo) error {
 
 <div :class="{ 'is-open': swapTab === 'mail' }" :aria-hidden="swapTab !== 'mail'" role="tabpanel">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/photos/welcome.go
 type Welcome struct {
@@ -469,8 +475,8 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <li><strong>Readable output.</strong> Generated wiring is ordinary Go you can read, debug, and step through. If it would be embarrassing to look at, it does not ship.</li>
 </ul>
 <div class="gf-home-links">
-<a href="/core/make-commands">Make commands →</a>
-<a href="/core/make-commands#organize-by-package-ownership">Organizing generated code →</a>
+<a href="/reference/make-commands">Make commands →</a>
+<a href="/reference/make-commands#organize-by-package-ownership">Organizing generated code →</a>
 </div>
 </div>
 <div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
@@ -515,7 +521,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 >{{ tab.label }}</button>
 </div>
 <div class="gf-home-ops__binary-copy" data-reveal>
-<p>Whatever you choose to include, <code>forj build</code> compiles it into one static binary: under 60 MB with everything enabled, nothing extra to install beside it.</p>
+<p>Whatever you choose to include, <code>forj build</code> compiles it into one static binary, with nothing extra to install beside it.</p>
 <p class="gf-home-ops__binary-inside">Ships inside</p>
 <div class="gf-home-shapes gf-home-ops__binary-chips" :key="binTab" aria-label="What ships inside this binary">
 <span v-for="chip in activeBinChips" :key="chip">{{ chip }}</span>
@@ -563,7 +569,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · all of them</span>
 <span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
 <span class="t-prompt">$</span> <span class="t-cmd">ls -lh bin/app</span>
--rwxr-xr-x  1 you  staff  <span class="t-hl">57M</span>  bin/app
+-rwxr-xr-x  1 you  staff  <span class="t-hl">…</span>  bin/app
 <span></span>
 <span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
 <span class="t-dim">23:51:32.256</span> <span class="t-step">Scheduler</span>  Scheduler started

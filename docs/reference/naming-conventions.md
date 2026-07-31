@@ -1,6 +1,6 @@
 ---
 title: Naming Conventions
-description: Stable naming conventions for commands, jobs, schedules, events, routes, and named resources in GoForj Apps.
+description: Lookup reference for commands, jobs, schedules, events, routes, and named resources in GoForj Apps.
 ---
 
 # Naming Conventions
@@ -56,6 +56,7 @@ This creates `internal/reports/generate_job.go` with `GenerateJobTypeName = "rep
 
 Prefer:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 const GenerateReportJobTypeName = "reports:generate"
 const SendEmailJobTypeName = "emails:send"
@@ -63,6 +64,7 @@ const SendEmailJobTypeName = "emails:send"
 
 Avoid names that hide the action:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 const GenerateReportJobTypeName = "reports"
 ```
@@ -81,6 +83,7 @@ Schedules should name the recurring behavior.
 
 Use `category:cadence` when cadence is the important operator-facing fact:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 s.DailyAt("04:00").
 	Name("reports:daily")
@@ -88,6 +91,7 @@ s.DailyAt("04:00").
 
 Use `category:action` when the schedule runs a named maintenance action:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 s.EveryHour().
 	Name("sessions:cleanup")
@@ -109,6 +113,7 @@ This creates `internal/users/created_event.go` with `CreatedEventTopic = "users.
 
 Use dotted topics with a domain noun and past-tense verb:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 const UserCreatedEventTopic = "users.created"
 const InvoicePaidEventTopic = "invoices.paid"
@@ -120,6 +125,7 @@ Generated event files remain App-owned starting points. Review the topic constan
 
 Avoid imperative event names:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 const UserCreatedEventTopic = "users.create"
 const InvoicePaidEventTopic = "billing:pay-invoice"
@@ -166,6 +172,7 @@ Avoid names derived from users, tenants, emails, request IDs, file names, or pay
 
 Named resources often become generated accessors:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 app.Caches().Profiles()
 app.Storage().Uploads()
@@ -185,6 +192,6 @@ app.Events().Audit()
 
 ## Next Steps
 
-- [Make Commands](/core/make-commands) explains generated resource placement.
+- [Make Command Reference](/reference/make-commands) explains generated resource placement.
 - [Named Resources](/core/named-resources) explains generated accessors.
 - [Events versus Queues](/async/events-vs-queues) explains event and job boundaries.

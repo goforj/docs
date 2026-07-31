@@ -24,6 +24,7 @@ app/wire/inject_services_app.go
 
 The application package owns the type the rest of the App should use:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/billing/gateway.go
 package billing
@@ -41,6 +42,7 @@ func NewGateway(client *httpx.Client) *Gateway {
 
 The same package can also own the service that depends on that gateway:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/billing/service.go
 package billing
@@ -56,6 +58,7 @@ func NewService(gateway *Gateway) *Service {
 
 The provider constructs the gateway from runtime configuration:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/billing/provider.go
 package billing
@@ -99,6 +102,7 @@ func ProvideGateway() (*Gateway, error) {
 
 Then the app's `wire` package imports the application package and adds its providers to the app graph:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // app/wire/inject_services_app.go
 package wire
@@ -124,6 +128,7 @@ The module path and `httpx` version should match the App's `go.mod`.
 
 If a dependency is optional, model the disabled branch explicitly. Keep behavior in domain constructors and methods; the provider only chooses what to construct.
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func ProvideGateway() (Gateway, error) {
 	cfg := loadFeatureConfig()
@@ -152,6 +157,7 @@ Returning an error from a provider makes bad runtime configuration visible durin
 
 Only provide configuration as its own Wire value when more than one provider consumes it.
 
+<!-- go-example: illustrative-fragment -->
 ```go
 type Config struct {
 	BaseURL       string
@@ -182,6 +188,7 @@ This is useful when a package has a small configuration surface shared by severa
 
 When an App talks to multiple services, give each integration its own domain adapter. Avoid injecting several raw values of the same type, such as multiple `*httpx.Client` values, into the graph.
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/billing/gateway.go
 package billing
@@ -204,6 +211,7 @@ func ProvideGateway() (*Gateway, error) {
 }
 ```
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/search/indexer.go
 package search
@@ -228,6 +236,7 @@ func ProvideIndexer() (*Indexer, error) {
 
 The package and type names make the graph readable:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // internal/checkout/service.go
 package checkout
@@ -254,6 +263,7 @@ func NewService(billing *billing.Gateway, search *search.Indexer) *Service {
 
 `checkout` imports the packages that own the adapters. Register the two providers and the consumer constructor in the App-local Wire set:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // app/wire/inject_services_app.go
 package wire
@@ -304,7 +314,7 @@ This structure also gives each adapter a natural place for service-specific meth
 
 - [Providers](/core/dependency-injection#providers) explains the underlying constructor model.
 - [Dependency Injection](/core/dependency-injection) explains Wire generation and provider sets.
-- [Wiring Recipes](/core/wiring-recipes) shows where providers are registered.
-- [Reading Wire Errors](/core/reading-wire-errors) explains how to debug missing and duplicate providers.
+- [Wiring Recipes](/developer-tools/wiring-recipes) shows where providers are registered.
+- [Reading Wire Errors](/developer-tools/reading-wire-errors) explains how to debug missing and duplicate providers.
 - [HTTP Clients](/applications/http-clients) shows outbound HTTP client diagnostics and dump behavior.
 - [Application Services](/applications/services) shows where application-owned services fit.

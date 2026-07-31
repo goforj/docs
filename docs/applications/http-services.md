@@ -1,50 +1,47 @@
 ---
 title: HTTP Services
-description: Build HTTP services in a GoForj App using controllers, route groups, and the web abstraction.
+description: Orient an HTTP service around its runtime, route composition, controllers, configuration, and operations.
 ---
 
 # HTTP Services
 
-HTTP services in GoForj are built from generated HTTP runtime code, application controllers, route groups, middleware, and the `web` abstraction.
+An HTTP service in GoForj combines an app-owned route registry and controllers with the generated HTTP runtime. Application code owns endpoint behavior; the framework owns server composition, startup, shutdown, health, readiness, and supported observability.
 
-The framework owns server composition and runtime behavior. Application code owns routes, controllers, services, validation, and response decisions.
+This page is the map through that system. Follow [JSON API Route](/scenarios/json-api-route) for the canonical runnable implementation.
 
-::: info Web package reference
-This guide stays at the GoForj App integration layer. See the [web library page](/web) for standalone router setup and the complete API for contexts, routing, middleware, testing, metrics, and indexing.
-:::
+## Ownership
 
-## When To Use It
+The generated HTTP capability normally divides responsibility this way:
 
-Use HTTP services when your App exposes APIs, web endpoints, health checks, readiness probes, frontend assets, Lighthouse, Swagger, or metrics.
+| Concern | Owner |
+| --- | --- |
+| Route grouping and exposure | `app/routes.go` or `app/<name>/routes.go` |
+| Request translation and responses | Controllers under `internal/...` |
+| Business workflows | Application services under `internal/...` |
+| HTTP server and runtime policy | Generated `internal/http` code |
+| Controller construction | The owning app's Wire graph |
 
-Use a controller when a route needs request translation, validation, or a call into application services. Keep business workflows in services rather than in HTTP runtime setup.
+The exact app and provider files depend on selected components. Use the generated files and local READMEs as the ownership map for the Project in front of you.
 
-## Where It Lives
+Keep controllers thin: bind and validate request input, call application services, and shape the HTTP response. Do not move business workflows into route registration, middleware, or server bootstrap.
 
-HTTP-related generated code usually lives in:
+## Build One Endpoint
 
-```text
-internal/http
-app/routes.go
-```
+Use [JSON API Route](/scenarios/json-api-route) for the complete controller, service, test, build, route-list, startup, and request workflow.
 
-Application controllers live in application-owned packages, for example:
+The supporting guides each own one contract:
 
-```text
-internal/users
-internal/reports
-internal/uploads
-```
+- [Controllers](/applications/controllers) owns handler structure, constructor injection, request context, and controller generation.
+- [Routes](/applications/routes) owns route composition, groups, protection, naming, and route discovery.
+- [Requests and Validation](/applications/requests-validation) owns request input boundaries.
+- [Responses and Errors](/applications/responses-errors) owns response and error behavior.
+- [Middleware](/applications/middleware) owns request policy around handlers and route groups.
 
-The generated sample controller is:
+These pages link back to the runnable scenario instead of maintaining another end-to-end copy.
 
-```text
-internal/hello/controller.go
-```
+## Run the HTTP Runtime
 
-## Runtime Commands
-
-Run the HTTP server directly:
+During development from current source, run only HTTP:
 
 ```bash
 forj api
@@ -56,147 +53,93 @@ Run all enabled local runtimes together:
 forj app
 ```
 
-List registered routes:
-
-```bash
-forj route:list
-```
-
-For an additional app, prefix the command with the app name:
+For an additional app:
 
 ```bash
 forj admin api
-forj admin route:list
 ```
 
-## Server Configuration
+Deployment and process supervision run the built artifact:
 
-The HTTP runtime reads:
+```bash
+./bin/app api
+```
 
-```text
+The HTTP runtime starts the generated server, registers framework and application routes, and participates in the app's graceful-shutdown lifecycle. See [HTTP Server](/operations/http-server) for production startup, shutdown, timeouts, and failure modes.
+
+## Configure the Server
+
+The common local settings are:
+
+```dotenv
 API_HTTP_HOST=0.0.0.0
 API_HTTP_PORT=3000
 HTTP_ACCESS_LOG_ENABLED=true
 ```
 
-When metrics are enabled, the dedicated API metrics endpoint can use:
+Additional apps can override base settings with their uppercase app prefix, such as `ADMIN_API_HTTP_PORT`.
 
-```text
-METRICS_PORT=10000
+The [Environment Reference](/reference/env-vars#http-and-openapi) owns the complete HTTP and OpenAPI variable contract. [Configuration](/getting-started/configuration) explains when an environment change needs only a restart and when generated code requires a rebuild.
+
+## Compose and Inspect Routes
+
+Controllers return `web.Route` values. The owning app combines them into route groups, normally under `/api/v1`, and applies shared middleware at the group boundary.
+
+List the complete registered table:
+
+```bash
+forj route:list
 ```
 
-## Controller Shape
+For an additional app:
 
-Controllers group related route handlers and translate HTTP requests into service calls.
-
-Example shape:
-
-```go
-package users
-
-import (
-	"net/http"
-
-	"github.com/goforj/web"
-)
-
-type Controller struct {
-	service *Service
-}
-
-func NewController(service *Service) *Controller {
-	return &Controller{service: service}
-}
-
-func (c *Controller) Routes() []web.Route {
-	return []web.Route{
-		web.NewRoute(http.MethodGet, "/users/:id", c.Show),
-	}
-}
-
-func (c *Controller) Show(ctx web.Context) error {
-	user, err := c.service.Find(ctx.Context(), ctx.Param("id"))
-	if err != nil {
-		return err
-	}
-	return ctx.JSON(http.StatusOK, user)
-}
+```bash
+forj admin route:list
 ```
 
-The exact response helpers available come from the `web` package. Use the GoForj App pattern first, then go to [Web](/web) for server-side primitive details or [HTTPX](/httpx) for lower-level HTTP utility behavior.
+Use this output as the source of truth for route registration. Startup logs may summarize HTTP behavior, but they are not the complete route reference.
 
-## Route Registration
+The generated server also owns operational endpoints such as health, readiness, API reference, metrics, and Lighthouse routes when their components are enabled. Application route registration should not replace or repurpose them.
 
-GoForj Apps collect routes through `app/routes.go`. Additional apps use the owning app's `app/<name>/routes.go`.
+## Verify Runtime Health
 
-The route file builds public and protected route groups and mounts them under `/api/v1` by default.
-
-The generated shape is:
-
-```go
-func ProvideAppRoutes(
-	helloController *hello.Controller,
-) *AppRoutes {
-	return &AppRoutes{
-		public: helloController.Routes(),
-	}
-}
-```
-
-When auth is enabled, protected route groups are wrapped with auth middleware.
-
-## Framework Routes
-
-The HTTP server also registers framework-owned routes.
-
-Common framework routes include:
-
-- `GET /-/health`
-- `GET /-/ready`
-- `GET /swagger`
-- `GET /swagger/doc.json`
-- `GET /metrics` when metrics are enabled
-- Lighthouse routes when Lighthouse is enabled
-
-Application route docs should not treat these as user-owned routes.
-
-## Health and Readiness
-
-Use liveness for process health:
+Check process liveness:
 
 ```bash
 curl http://localhost:3000/-/health
 ```
 
-Use readiness for dependency readiness:
+Check dependency readiness:
 
 ```bash
 curl http://localhost:3000/-/ready
 ```
 
-Authorized readiness can expose structured dependency checks when called with:
+Unauthenticated readiness avoids exposing raw infrastructure errors. A request authorized with the configured diagnostic token can receive structured dependency checks:
 
 ```text
 Authorization: Bearer $APP_DIAG_TOKEN
 ```
 
-Unauthenticated readiness intentionally avoids leaking raw infrastructure errors.
+## Observe HTTP Behavior
 
-## Observability
-
-The HTTP runtime can record:
+When the corresponding components and settings are enabled, the HTTP runtime can emit:
 
 - access logs
-- route registration summary
 - request metrics
-- inspect records
-- local HTTP error response bodies in local environments
+- Inspect records
+- route and API index data
+- health and readiness status
 
-Use `route:list` for the full route table instead of relying on startup logs for complete route visibility.
+Use stable route names and bounded labels. Never put secrets or unbounded user values in logs, metrics, or Inspects.
 
-## Next Steps
+See [Logging](/operations/logging), [Metrics](/operations/metrics), [Inspects](/operations/inspects), and [Lighthouse](/operations/lighthouse) for their runtime contracts.
 
-- [Routes](/applications/routes) covers route registration in depth.
-- [Controllers](/applications/controllers) covers controller patterns.
-- [Runtime Topology](/core/runtime-topology) explains combined and split runtime processes.
-- [Web](/web) covers the standalone server-side HTTP package.
+## Related Pages
+
+- [JSON API Route](/scenarios/json-api-route) is the canonical runnable HTTP workflow.
+- [Routes](/applications/routes) explains route composition.
+- [Controllers](/applications/controllers) explains HTTP adapters around services.
+- [HTTP Tests](/testing/http-tests) verifies endpoint behavior.
+- [HTTP Server](/operations/http-server) covers production operation.
+- [Web](/web) is the standalone `web` package reference.

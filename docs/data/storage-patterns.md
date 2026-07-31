@@ -13,7 +13,7 @@ Use storage disks for uploads, generated files, public assets, private files, an
 This page covers your App's generated disks and their configuration. The [storage library reference](/storage) documents standalone use, the complete package API, and the available driver and capability matrices.
 :::
 
-## When To Use Storage
+## When to Use Storage
 
 Use storage when a workflow produces or consumes files, blobs, exports, uploads, or remote objects. Start with local or memory storage for development and tests. Choose object storage or a remote filesystem when more than one host or process needs the same files.
 
@@ -23,6 +23,7 @@ Keep relational metadata, ownership, authorization state, and transactional upda
 
 Apps expose default and named disks:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 app.Storage()
 app.Storage().Public()
@@ -96,7 +97,7 @@ Use S3, GCS, FTP, SFTP, Dropbox, rclone, Redis, or other supported drivers when 
 
 Use [Storage](/storage) for the full package-level driver matrix.
 
-## Consistency With Database
+## Consistency with Database
 
 Database transactions do not automatically include storage writes.
 
@@ -106,6 +107,20 @@ When a workflow creates both database rows and storage objects, decide:
 - what cleanup happens after failure
 - whether retries are safe
 - whether missing blobs are recoverable
+
+## Testing and Operations
+
+Use a memory disk in focused service tests. Assert the exact stable path, written bytes, and cleanup behavior after a simulated database or storage failure. For a database-plus-blob workflow, include both partial-failure directions: the row succeeds while the blob fails, and the blob succeeds while the row fails.
+
+Before releasing a remote Driver, run one non-production object through the same App workflow used by customers:
+
+1. write the object through the API, command, or worker that owns the workflow
+2. read it through a different deployed process when storage is meant to be shared
+3. verify its content and authorization behavior
+4. delete it through the normal cleanup path
+5. confirm the object is gone while its audit or business metadata remains correct
+
+Readiness proves that the configured disk can be constructed and reached. It does not prove bucket policy, temporary URL behavior, cross-host visibility, or cleanup permissions.
 
 ## Next Steps
 

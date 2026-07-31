@@ -28,6 +28,8 @@ The default app is named `app` and lives in `cmd/app`, `app`, and `app/wire`. An
 
 Use App when the runnable boundary itself is the subject, especially when distinguishing apps in a multi-app Project. Otherwise, name the app binary, commands, files, Wire graph, routes, or runtime defaults directly.
 
+Do not call it a "generated App" in ordinary user-facing prose. Generation describes how some files were created, not what the developer is building. Use "App," "your App," or name the specific generated file, accessor, provider, or output. Reserve "generated App" for contributor documentation where rendering and validation of generated output is the actual subject.
+
 Do not use App to mean a single package, service object, HTTP server, deployment environment, or the whole Project when multiple apps exist.
 
 ### Default App

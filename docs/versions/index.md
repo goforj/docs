@@ -11,9 +11,9 @@ GoForj is still pre-`v1.0`, but the project has a real development history. The 
 
 ## Current Version
 
-`v0.22.0` is the latest tagged framework release. The root documentation follows `main` and may describe work that has not reached a tagged release yet.
+`%%LATEST_RELEASE%%` is the latest tagged framework release. The root documentation follows `main` and may describe work that has not reached a tagged release yet.
 
-Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [v0.22.0](/versions/changelog#v0220) for the released behavior.
+Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [%%LATEST_RELEASE%%](/versions/changelog#%%LATEST_RELEASE_ANCHOR%%) for the released behavior.
 
 ## Historical Milestones
 

@@ -78,6 +78,24 @@ npm --prefix cmd/app/frontend ci &&
 
 Expected result: `cmd/app/frontend/dist` contains the production frontend and `bin/app` contains the App that serves it. The default deployment does not need a separate frontend server or static-site release.
 
+Verify both halves of that handoff before release:
+
+```bash
+npm --prefix cmd/app/frontend run build
+npm --prefix cmd/app/frontend run preview
+```
+
+The first command must finish without Vue, TypeScript, or Vite errors. The second serves `dist` for a browser smoke test of direct navigation and client-side route refreshes. Stop the preview server after that frontend-only check; it is not the deployment process.
+
+Then build and run the actual artifact:
+
+```bash
+forj build
+./bin/app api
+```
+
+Open the App URL and request one nested client route directly. Expected result: the built Go binary serves the Vue entry point and the router renders that route without a Vite development server. Also verify one API request from the production bundle so an incorrect API origin or cookie policy is caught before rollout.
+
 ## Additional Apps
 
 To create an additional app with the same frontend stack:
@@ -90,6 +108,6 @@ Its frontend lives in `cmd/admin/frontend/`.
 
 ## Next Steps
 
-- [Starter Kit Guide](/getting-started/starter-kits)
+- [Choose a Starter Kit](/getting-started/starter-kits)
 - [forj dev](/developer-tools/forj-dev)
 - [HTTP Server](/operations/http-server)

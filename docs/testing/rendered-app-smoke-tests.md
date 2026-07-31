@@ -38,7 +38,7 @@ Rendered smoke tests catch:
 
 If package-level tests pass but rendered smoke fails, inspect the rendered output.
 
-## Source Of Truth
+## Source of Truth
 
 The rendered App is not the source of truth.
 

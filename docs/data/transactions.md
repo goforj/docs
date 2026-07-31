@@ -13,6 +13,7 @@ In GoForj Apps, transaction policy should live near the service method that owns
 
 The generated database accessor returns `*gorm.DB`. A repository can preserve its normal methods while rebinding them to GORM's transaction handle:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package accounts
 
@@ -77,6 +78,7 @@ Replace `myapp` with the generated module path. `WithTransaction` creates a repo
 
 The service owns the workflow and decides which repository calls are atomic:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Service owns account workflows.
 type Service struct {
@@ -104,6 +106,8 @@ func (s *Service) Transfer(ctx context.Context, fromID, toID string, amountCents
 
 Test the failure branch by making the credit fail and then reading both balances through a fresh connection. Expected result: neither balance changes, proving the debit used the same transaction and rolled back.
 
+Keep that test at the service boundary and use the production database engine in integration coverage when isolation, locking, or SQL dialect affects the workflow. Also test the success path and a canceled `context.Context`; a passing rollback test alone does not prove that commit and cancellation behave correctly.
+
 ## Side Effects
 
 Be deliberate when a transaction also relates to:
@@ -125,6 +129,8 @@ When the database change and asynchronous follow-up must succeed as one durable 
 5. make the dispatcher idempotent because it can stop after dispatch and before marking delivery
 
 An outbox closes the commit-versus-dispatch gap; an ordinary after-commit call does not.
+
+For an outbox deployment, the operational handoff is not complete until one row is observed through its full lifecycle: committed with the business change, dispatched by the worker, and marked delivered. Alert on the age and count of undelivered rows; HTTP readiness alone cannot reveal a stalled dispatcher.
 
 ## Cache and Transactions
 

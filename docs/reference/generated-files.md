@@ -26,7 +26,7 @@ Check file headers and local package READMEs before editing.
 | `app/wire/wire_gen.go` | Generated Wire output. Do not edit by hand. |
 | `app/<app>/...` | Additional app composition files. |
 | `app/<app>/wire/...` | Additional app Wire graph. |
-| `internal/runtime/apps.go` | Generated app metadata and deterministic runtime defaults. Do not edit by hand. |
+| `internal/runtime/apps.go` | App metadata derived from Project configuration and deterministic runtime defaults. Do not edit by hand. |
 | `internal/caches/*_gen.go` | Generated cache accessors and config when Cache is enabled. |
 | `internal/storages/*_gen.go` | Generated storage accessors and config when File Storage is enabled. |
 | `internal/queues/*_gen.go` | Generated queue accessors and config when Background Jobs is enabled. |

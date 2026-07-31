@@ -9,7 +9,7 @@ A Job is a named unit of queued work with a payload and a registered handler.
 
 Jobs make background work explicit, observable, and operable. Retry policy is opt-in: a generated job does not gain application retries until dispatch sets a retry budget.
 
-## When To Use Jobs
+## When to Use Jobs
 
 Use a job when background work needs a stable name, typed payload, handler, retry behavior, or worker lifecycle. Start with a small payload containing IDs that let the handler load current source-of-truth data.
 
@@ -30,7 +30,7 @@ For an additional app, prefix the generator with the app name:
 forj admin make:job reports:generate --queue reports
 ```
 
-Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+Use `category:action` for job names, such as `emails:send` or `reports:generate`. See [Naming Conventions](/reference/naming-conventions) for the full naming map.
 
 </template>
 <template #files>
@@ -49,6 +49,7 @@ The generated dispatch helper targets the selected queue:
 
 <CodeFile path="internal/reports/generate_job.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 
@@ -111,6 +112,7 @@ The App Wire file constructs the job and registers its handler before workers st
 
 <CodeFile path="app/wire/inject_jobs_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appJobSet contains application-level jobs.
 var appJobSet = wire.NewSet(
@@ -141,6 +143,7 @@ The scaffold supplies dispatch and handler seams. Replace its placeholder payloa
 
 ### Payload and Dependencies
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // SendWelcomeEmailTypeName identifies the job during dispatch and handler registration.
 const SendWelcomeEmailTypeName = "emails:welcome"
@@ -168,6 +171,7 @@ Job names should be stable operational identifiers.
 
 Jobs own their dispatch shape. Add `time` to the file's imports when applying this policy:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Queue dispatches the welcome-email job with its retry and timeout policy.
 func (j *SendWelcomeEmail) Queue(ctx context.Context, userID string) error {
@@ -196,6 +200,7 @@ Services can call `job.Queue(ctx, id)` without constructing raw queue messages.
 
 Handlers bind payloads and delegate business behavior:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // HandleTask loads the queued user reference and delegates delivery to the user service.
 func (j *SendWelcomeEmail) HandleTask(ctx context.Context, msg queue.Message) error {
@@ -210,6 +215,7 @@ func (j *SendWelcomeEmail) HandleTask(ctx context.Context, msg queue.Message) er
 
 Return errors for retryable failures so the queue can apply the policy attached at dispatch. With `errors` imported, return `queue.Permanent(err)` for a terminal failure that should not spend the remaining application retry budget:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 if errors.Is(err, users.ErrInvalidEmail) {
 	return queue.Permanent(err)
@@ -218,6 +224,28 @@ return err
 ```
 
 Broker redelivery after an infrastructure failure is distinct from the application retry budget. Review acknowledgement and durability behavior for the selected driver, and keep handlers idempotent even when `Retry(0)` is intentional.
+
+## Test Dispatch and Handling
+
+Keep dispatch and handling as separate assertions.
+
+For dispatch, inject a recording queue manager, call `Queue`, and assert the job type, logical queue, payload IDs, retry budget, backoff, and timeout. For handling, construct a message with the encoded payload and call the handler directly:
+
+<!-- go-example: illustrative-fragment -->
+```go
+payload, err := json.Marshal(SendWelcomeEmailPayload{UserID: "user-123"})
+if err != nil {
+	t.Fatal(err)
+}
+err = job.HandleTask(
+	context.Background(),
+	queue.NewMessage(SendWelcomeEmailTypeName, payload),
+)
+```
+
+Expected result: the fake user service receives `user-123`. Add cases for malformed payloads, retryable dependency errors, terminal errors, and repeated delivery. A direct handler test does not prove App registration, so keep one smoke test that dispatches through the generated manager and runs a worker.
+
+In deployment, supervise `./bin/app worker` or a queue-specific form such as `./bin/app worker --queue emails`. After release, dispatch one safe job and confirm its App, queue, stable job name, and outcome in logs, metrics, and an Inspect when enabled.
 
 ## Existing Job Registration
 
@@ -232,4 +260,4 @@ Do not register handlers after workers are already running.
 - [Queues](/async/queues) explains queue configuration.
 - [Workers](/async/workers) explains execution lifecycle.
 - [Retries and Idempotency](/async/retries-idempotency) explains safe retry behavior.
-- [Naming Conventions](/core/naming-conventions) defines stable job names.
+- [Naming Conventions](/reference/naming-conventions) defines stable job names.

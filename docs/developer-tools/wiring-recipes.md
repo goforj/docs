@@ -31,7 +31,7 @@ Use the most specific generated set that owns the surface. If a generated file i
 
 When a resource has a make command, use it before editing provider sets by hand. The command creates the resource and updates the active App's generated wiring boundaries.
 
-The [Make Command Reference](/core/make-commands#command-reference) shows each generator in the same Usage / Files touched / Generated code format. This page begins where those flows stop: wiring the application services and adapters that generated entry points depend on.
+The [Make Command Reference](/reference/make-commands#command-reference) shows each generator in the same Usage / Files touched / Generated code format. This page begins where those flows stop: wiring the application services and adapters that generated entry points depend on.
 
 ## Service and Adapter
 
@@ -50,6 +50,7 @@ Then wire those constructors from:
 app/wire/inject_services_app.go
 ```
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package wire
 
@@ -70,7 +71,7 @@ Wire can construct `*billing.Service` because `billing.ProvideGateway` provides 
 
 ## HTTP Controller
 
-The [controller generation workflow](/applications/controllers#generate-wire-and-verify) shows the command, files, and injected route registration together.
+The [controller verification workflow](/applications/controllers#verify-the-result) shows the command, files, and injected route registration together.
 
 The controller can depend on an application service already provided by the app service set. If Wire cannot provide that service, add the service constructor to `app/wire/inject_services_app.go`.
 
@@ -93,6 +94,7 @@ Commands also need to be exposed through the generated command collection. See [
 
 Named resources often need a small provider function that selects one generated resource from a manager:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package wire
 
@@ -138,7 +140,7 @@ forj build
 
 ## Next Steps
 
-- [Make Commands](/core/make-commands) explains the generated resource flow.
+- [Make Command Reference](/reference/make-commands) explains the generated resource flow.
 - [Provider Patterns](/core/provider-patterns) shows how to shape providers in application packages.
-- [Reading Wire Errors](/core/reading-wire-errors) explains how to debug missing and duplicate providers.
+- [Reading Wire Errors](/developer-tools/reading-wire-errors) explains how to debug missing and duplicate providers.
 - [Dependency Injection](/core/dependency-injection) explains the generated graph model.

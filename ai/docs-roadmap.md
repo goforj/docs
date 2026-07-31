@@ -1,5 +1,7 @@
 # GoForj Documentation Execution Plan
 
+> **Status: Historical record.** This execution plan records the original documentation build-out. Use `governance.json` to find current authoring guidance.
+
 ## Purpose
 
 This is the actionable source of truth for building the GoForj public documentation system.

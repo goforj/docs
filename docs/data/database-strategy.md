@@ -27,6 +27,7 @@ forj db --print
 
 Application code reaches the same default connection through the generated registry:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 db, err := conns.Default()
 ```
@@ -89,6 +90,7 @@ During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generati
 
 Generated accessors expose default and named connections:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 db, err := conns.Default()
 analytics, err := conns.Analytics()
@@ -185,7 +187,26 @@ DB_ANALYTICS_DRIVER=postgres
 
 This compiles SQLite and Postgres support, uses SQLite for the default connection, and uses Postgres for `analytics`.
 
-## Source Of Truth
+## Verify a Release
+
+Test repository behavior against the same database engine used in production when SQL dialect, locking, or transaction semantics matter. Before routing traffic to a built artifact, verify the selected connection without exposing its password:
+
+```bash
+./bin/app db --print
+./bin/app db --exec "select 1"
+```
+
+Expected result: the printed command names the intended client, host, port, and database with secrets masked, and the query exits successfully with one row. Repeat with `--connection <name>` for every connection the release uses.
+
+After the HTTP Runtime starts, readiness is the operational handoff for required database connections:
+
+```bash
+./bin/app health --probe ready --fail
+```
+
+A non-zero exit means the instance should remain out of traffic while the failed connection, migration, credentials, or network path is repaired.
+
+## Source of Truth
 
 Use the database for durable business state.
 

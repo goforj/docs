@@ -13,6 +13,7 @@ Test command input, output, and service delegation at the command boundary. Test
 
 Commands are constructed through providers and expose a `Run` method.
 
+<!-- go-example: illustrative-fragment -->
 ```go
 cmd := NewReconcileReportsCmd(service)
 if err := cmd.Run(); err != nil {
@@ -20,7 +21,7 @@ if err := cmd.Run(); err != nil {
 }
 ```
 
-## What To Test
+## What to Test
 
 Command tests are a good fit for:
 

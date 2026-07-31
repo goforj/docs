@@ -97,7 +97,7 @@ If you override `admin`'s HTTP port, pass the matching base URL or full probe UR
 ./bin/admin health http://127.0.0.1:3100 --probe ready --fail
 ```
 
-## What To Check
+## What to Check
 
 Readiness can cover:
 

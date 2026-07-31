@@ -1,5 +1,6 @@
 ---
 title: Driver Selection
+searchTitle: Choose Cache and Storage Drivers
 description: How to choose local and production drivers for database, cache, storage, queue, event, and mail infrastructure.
 ---
 
@@ -133,7 +134,21 @@ forj build
 
 During `forj dev`, an app listed in `dev.apps` rebuilds automatically. The [Generation Commands](/reference/generation-commands) reference covers focused commands for maintainers who need to refresh only one component.
 
-## Where To Find Driver Details
+## Verify the Boundary
+
+Verification should cross the boundary that motivated the change:
+
+- for a shared cache, write through one Runtime and read through another
+- for a queue, dispatch through the API and consume through a separate worker
+- for events, publish in one process and observe the intended subscriber process
+- for storage, write through one host and read through another
+- for a database, run migrations and repository tests against the destination engine
+
+Before deployment, use `forj about` to confirm the App-facing resource, active Driver, backend name, and worker count where applicable. After building, run `./bin/app about` from the release artifact so the handoff does not accidentally validate stale source configuration.
+
+Driver readiness proves construction and backend reachability. It does not prove cross-process delivery, locking, TTL precision, object permissions, or transaction semantics, so keep one workflow smoke test for the capability that required the new Driver.
+
+## Where to Find Driver Details
 
 Framework pages explain how driver selection fits into the App.
 
