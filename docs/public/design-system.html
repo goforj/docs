@@ -574,12 +574,6 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 /* landing */
 .mock .hero { padding: 40px 34px 34px; background-image:
   radial-gradient(600px 240px at 20% -10%, rgba(255,94,58,.07), transparent 70%); }
-.mock .eyebrow {
-  display: inline-flex; align-items: center; gap: 9px; font-family: var(--gf-font-mono);
-  font-size: 9.5px; letter-spacing: 0.17em; text-transform: uppercase;
-  color: var(--gf-accent-hi); margin-bottom: 15px;
-}
-.mock .eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--gf-accent); }
 .mock h3.hl {
   font-family: var(--gf-font-display); font-weight: 700; letter-spacing: -0.045em;
   font-size: 34px; line-height: 1.05; color: var(--gf-ink); margin: 0 0 14px; max-width: 15ch;
@@ -1642,8 +1636,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   <h3>Landing page</h3>
   <p>
     Deep ground throughout. One filled action, one ghost, gold reserved for the
-    nav. The accent appears exactly three times: the eyebrow rule, the headline
-    emphasis, and the primary button.
+    nav. The accent appears in the headline emphasis and the primary button.
   </p>
   <div class="mock">
     <div class="bar">
@@ -1652,7 +1645,6 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
       <span class="links"><span>Getting Started</span><span class="on">Core Concepts</span><span>Guides</span><span>Reference</span></span>
     </div>
     <div class="hero">
-      <div class="eyebrow">Generated Go applications you own</div>
       <h3 class="hl">The composable stack for <em>building with Go</em></h3>
       <p class="lead">
         One cohesive application model. Explicit dependency wiring. Local-first

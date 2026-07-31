@@ -5,6 +5,7 @@
       ["index.md", "landing"],
       ["**/index.md", "landing"],
       ["starter-kits.md", "landing"],
+      ["site-preview.md", "landing"],
       ["libraries/**/*.md", "generated-library"],
       ["scenarios/**/*.md", "generated-scenario"],
       ["operations/**/*.md", "operations"],

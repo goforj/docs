@@ -482,9 +482,6 @@ body{margin:0;background:#0A0A0B;color:#E7E7EA;font-family:'Inter',system-ui,san
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
   mix-blend-mode:overlay}
 .m-hero > *{position:relative;z-index:1}
-.m-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;
-  color:var(--accent);margin:0 0 18px;display:flex;align-items:center;gap:10px}
-.m-eyebrow::before{content:'';width:22px;height:1px;background:var(--accent)}
 .m-h1{font-family:var(--font-display);font-weight:var(--dw);letter-spacing:var(--dt);
   font-size:clamp(33px,5vw,58px);line-height:1.03;margin:0 0 20px;max-width:15ch;color:var(--ink)}
 [data-dir="edge"] .m-h1{font-size:clamp(36px,5.6vw,66px);line-height:.98}
@@ -1193,7 +1190,6 @@ blockquote.q footer{margin-top:9px;font-size:13px;color:var(--ink-3);font-style:
     <div class="m-navlinks"><span>Getting Started</span><span>Core</span><span>Libraries</span><span>Reference</span></div>
   </div>
   <div class="m-hero">
-    <p class="m-eyebrow">Generated Go applications you own</p>
     <h2 class="m-h1">The composable stack for <em>building with Go</em></h2>
     <p class="m-lead">One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives across the application stack.</p>
     <div class="m-cta">
