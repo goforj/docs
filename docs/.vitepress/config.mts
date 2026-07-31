@@ -1121,6 +1121,7 @@ const pathScopedSidebar = {
 
 export default defineConfig({
   title: "GoForj",
+  titleTemplate: "GoForj - The composable stack for building with Go",
   description: siteDescription,
   cleanUrls: true,
   // 'dark' — dark is the default and what a first visit gets, but the reader

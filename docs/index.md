@@ -1,5 +1,7 @@
 ---
 layout: home
+title: GoForj - The composable stack for building with Go
+titleTemplate: false
 description: The composable stack for building with Go. One cohesive application model, explicit wiring, local-first drivers, and production-oriented tooling.
 ---
 

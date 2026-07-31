@@ -1194,8 +1194,24 @@ function scopeTokens(match) {
   return out;
 }
 
-const DARK_RAW  = scopeTokens(s => /(^|,)\s*(:root|html\.dark)\s*(,|$)/.test(s));
-const LIGHT_RAW = Object.assign({}, DARK_RAW, scopeTokens(s => /html:not\(\.dark\)/.test(s)));
+/* Both predicates must match the token scope EXACTLY — a bare
+   `html:not(.dark)`, not merely a selector containing it.
+
+   The loose form, /html:not\(\.dark\)/, matched any DESCENDANT scope
+   too. When the theme gained `html:not(.dark) .gf-blog-visual { … }` —
+   the block that deliberately pins blog cover art to its DARK values so
+   the illustration does not invert — the lab harvested those dark values
+   as if they were the light palette. Every light-row product tile drew
+   its glyph in #0C0A0E instead of #FFFFFF.
+
+   The lab reads real values out of the real stylesheet, which is the
+   point of it. That only holds if it reads the right rule. */
+const isRootScope = (selectorText, scope) => selectorText
+  .split(',')
+  .some(part => part.trim() === scope);
+
+const DARK_RAW  = scopeTokens(s => isRootScope(s, ':root') || isRootScope(s, 'html.dark'));
+const LIGHT_RAW = Object.assign({}, DARK_RAW, scopeTokens(s => isRootScope(s, 'html:not(.dark)')));
 
 /* Hardcoded fallback, used only if the stylesheet did not load. Values
    transcribed from the handoff, not recomputed. */
@@ -1489,6 +1505,49 @@ function rShipTile(size, P, o = {}) {
       `<path d="M43 27V54H23Z"/>` +
       `<path d="M57 24V54H79Z"/>` +
       `<path d="M17 59H83L76 76C73 84 66 88 57 88H43C34 88 27 84 24 76Z"/>` +
+    `</g></svg>`;
+}
+
+/* Lighthouse is the observability surface, so the symbol has to mean
+   "what you can see from here" rather than "what runs".
+
+   The first attempt shared Harbor's lamp circle as a family tie and drew
+   two horizontal rays at the same height. It read as a PERSON: circle
+   head, outstretched arms, trapezoid skirt. Two lessons, both worth
+   keeping in the file.
+
+   One — a free-floating circle above a tapered body is a figure before
+   it is anything else, and the eye resolves that reading first no matter
+   what the caption says. The lamp is now enclosed by the lantern room
+   and joined to the tower, so there is no detached head.
+
+   Two — the family tie was the wrong thing to share. Borrowing another
+   product's SYMBOL is what this whole section argues against; the tie is
+   the plate, the corner geometry, the 6-unit stroke and the optical
+   frame. Silhouette is where they must differ, and now they do: Harbor
+   is a stem closing into a U, Lighthouse is a trapezoid opening onto a
+   base. Opposite gestures at any size.
+
+   Beams are diagonal and go up-and-out. Horizontal ones sat at lamp
+   height and became arms; angled ones read as light leaving a source.
+   Two, not four — at 32px a ray is under two device pixels, and four
+   turn the plate into noise. */
+function rLighthouseTile(size, P, o = {}) {
+  const plate = o.plate || P.accent;
+  const glyph = o.fill || P.deep;
+  return svgOpen(size, '0 0 100 100', o.label) +
+    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
+    // The lamp is the one SOLID element: it is the thing that emits, and a
+    // filled block is the only detail in this mark that still holds shape at
+    // 32px, where a stroked lantern closes up into a smudge.
+    // Bottom edge lands ON the gallery line, not above it. Floating it left
+    // a 6-unit gap that read as a separate object balanced on a table.
+    `<rect x="41" y="23" width="18" height="21" rx="2.5" fill="${glyph}"/>` +
+    `<g fill="none" stroke="${glyph}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">` +
+      // rays, tight to the lamp so they read as light leaving it
+      `<path d="M18 26L29 30M82 26L71 30"/>` +
+      // gallery, tapered tower, footing
+      `<path d="M33 44H67M42 44L36 80M58 44L64 80M27 80H73"/>` +
     `</g></svg>`;
 }
 
@@ -2818,6 +2877,12 @@ const PASSERS = VARIANTS.filter(v =>
       why: 'The existing anchor metaphor, simplified to one monoline symbol and placed on the same optical frame as the parent.',
       dark: px => rHarborTile(px, P_DARK),
       light: px => rHarborTile(px, P_LIGHT)
+    },
+    {
+      name: 'Lighthouse', status: 'Alignment study',
+      why: 'Observability, drawn as what you can see from here. It shares the plate, corner geometry and stroke weight \u2014 and nothing else. Against Harbor\u2019s stem closing into a U it is a trapezoid opening onto a base: opposite gestures, so the two never resolve to the same shape at 32px.',
+      dark: px => rLighthouseTile(px, P_DARK),
+      light: px => rLighthouseTile(px, P_LIGHT)
     },
     {
       name: 'Ship', status: 'Concept only',
