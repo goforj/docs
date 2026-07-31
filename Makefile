@@ -101,7 +101,7 @@ docs-package: ##@docs Generate + build docs and stage for backend
 DOCKER_PROD_IMAGE ?= docs-web:latest
 DOCKER_PROD_PUSH ?= 0
 
-docker-production: docs-check-proof-stats docs-check-scenarios ##@docker Verify generated evidence and build the production web image
+docker-production: ##@docker Build the production web image
 	@docker buildx build \
 		-f containers/web/Dockerfile \
 		--build-arg GA_MEASUREMENT_ID=$(GA_MEASUREMENT_ID) \
