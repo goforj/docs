@@ -5325,6 +5325,43 @@ html:not(.dark) {
     --vp-c-danger-soft: rgba(179, 33, 60, 0.07);
 }
 
+/* Fixed utility pills sit outside the page surfaces, so they cannot inherit
+   a light plane from their surrounding layout. Give their translucent shells
+   the same light-mode plane stack explicitly while preserving the dark
+   treatment above. */
+html:not(.dark) .gf-motion-picker,
+html:not(.dark) .gf-api-index-jump__link {
+    border-color: var(--gf-line-strong);
+    background: rgba(250, 248, 252, 0.92);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 8px 20px rgba(20, 10, 30, 0.10);
+}
+
+html:not(.dark) .gf-library-repo-star-link {
+    border-color: var(--gf-line-strong);
+    background: var(--gf-surface);
+    color: var(--gf-ink);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+html:not(.dark) .gf-motion-picker:hover,
+html:not(.dark) .gf-api-index-jump__link:hover,
+html:not(.dark) .gf-library-repo-star-link:hover {
+    border-color: var(--gf-ink-3);
+    background: rgba(255, 255, 255, 0.96);
+}
+
+html:not(.dark) .gf-api-index-jump__label {
+    border-color: var(--gf-accent-line);
+    background: var(--gf-accent-soft);
+}
+
+html:not(.dark) .gf-api-index-jump__kbd {
+    border-color: var(--gf-line);
+    background: var(--gf-surface-2);
+}
+
 /* Status callouts, light. */
 html:not(.dark) .vp-doc .custom-block.tip     { border-left-color: #0F6E52; background-color: rgba(15, 110, 82, 0.05); }
 html:not(.dark) .vp-doc .custom-block.tip .custom-block-title { color: #0F6E52; }
