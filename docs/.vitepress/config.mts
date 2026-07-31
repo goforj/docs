@@ -212,7 +212,6 @@ gtag('config', '${gaMeasurementId}');`]
 
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
 const searchHydrationHead: [string, Record<string, string>, string] = ['style', {}, `html:not(.gf-search-ready) .VPNavBarSearch{opacity:0}html.gf-search-ready .VPNavBarSearch{opacity:1;transition:opacity .12s ease}`]
-const motionPreferenceHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{var v=localStorage.getItem('goforjMotion');if(v==='on'||v==='reduced'){document.documentElement.dataset.gfMotion=v;}}catch(e){}})();`]
 
 const pageUrl = (page: string) => {
   const cleanPath = page
@@ -1213,7 +1212,6 @@ export default defineConfig({
       href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap'
     }],
     searchHydrationHead,
-    motionPreferenceHead,
     deferredHashHead,
     ['link', {
       rel: 'icon',

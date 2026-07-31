@@ -8,7 +8,6 @@ import StarterKitOptions from './components/StarterKitOptions.vue'
 import SitePreview from './components/SitePreview.vue'
 import CodeFile from './components/CodeFile.vue'
 import MakeCommandTabs from './components/MakeCommandTabs.vue'
-import MotionPicker from './components/MotionPicker.vue'
 import './custom.css'
 
 /* The hero is imported STATICALLY on purpose. As an async component it
@@ -702,7 +701,7 @@ export default {
       'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
       'home-hero-before': () => h(GoForjHeroStack),
       'doc-before': () => h(LibraryRepoHeader),
-      'layout-bottom': () => [h(ApiIndexJump), h(MotionPicker)]
+      'layout-bottom': () => h(ApiIndexJump)
     })
   },
   setup() {
