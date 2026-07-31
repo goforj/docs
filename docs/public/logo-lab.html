@@ -539,7 +539,7 @@ figure:hover > svg { transform: translateY(-1px); }
   <h2>The geometry is <em>settled</em></h2>
   <p class="dlhint">
     <b>↓</b> Click any illustration on this page to download it as SVG.
-    Alt-click for PNG at the size shown.
+    Alt-click for a high-resolution PNG at 4× the size shown.
   </p>
   <p>
     The traced silhouette is frozen. <code>MARK_OUTER</code> and
@@ -971,7 +971,7 @@ figure:hover > svg { transform: translateY(-1px); }
     croppers. Everything below is the same frozen silhouette — what changes
     between them is the job, not the drawing. The 256px and 128px variants
     expose display-scale detail; click one for SVG or Alt-click for a PNG at
-    the displayed size. The tile controls scale the inner mark without changing
+    4× the displayed size. The tile controls scale the inner mark without changing
     the outer plate, and every export follows the preview. The avatar tile also
     has direct 1024px PNG downloads.
   </p>
@@ -1019,7 +1019,7 @@ figure:hover > svg { transform: translateY(-1px); }
     A product family should share construction rules, not one repeated symbol.
     These studies hold the plate, palette, corner geometry, optical size, and
     dark/light behavior constant while giving each product its own silhouette.
-    Click a study for SVG or Alt-click for a PNG at the displayed size.
+    Click a study for SVG or Alt-click for a PNG at 4× the displayed size.
   </p>
   <div class="product-grid" id="productFamily"></div>
   <div class="note">
@@ -3251,14 +3251,33 @@ function describe(node) {
 /* Rasterise an SVG source through the browser so generated PNGs use
    the exact same geometry and palette as their vector counterparts. */
 function rasteriseSource(src, name, w, h) {
-  const blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+  /* A dimensionless standalone SVG gets the browser's small default
+     intrinsic size. Drawing that image onto a larger canvas can therefore
+     enlarge an already-rasterised surface instead of resolving the vector at
+     the requested export size. Give the source an explicit supersampled
+     viewport, then reduce it once with the canvas' highest-quality filter. */
+  const maxSide = Math.max(w, h);
+  const sample = Math.max(1, Math.min(4, Math.floor(4096 / maxSide)));
+  const sampleW = w * sample;
+  const sampleH = h * sample;
+  const sized = src.replace(/<svg\b([^>]*)>/, (_, attrs) => {
+    const clean = attrs.replace(/\s(?:width|height)="[^"]*"/g, '');
+    return `<svg${clean} width="${sampleW}" height="${sampleH}">`;
+  });
+  const blob = new Blob([sized], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const img = new Image();
   img.onload = () => {
+    const source = document.createElement('canvas');
+    source.width = sampleW; source.height = sampleH;
+    source.getContext('2d').drawImage(img, 0, 0, sampleW, sampleH);
+
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
     const x = c.getContext('2d');
-    x.drawImage(img, 0, 0, w, h);
+    x.imageSmoothingEnabled = true;
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(source, 0, 0, sampleW, sampleH, 0, 0, w, h);
     URL.revokeObjectURL(url);
     c.toBlob(b => {
       const a = document.createElement('a');
@@ -3272,14 +3291,16 @@ function rasteriseSource(src, name, w, h) {
   img.src = url;
 }
 
-/* Rasterise the live node at what it actually measures on screen,
-   multiplied by DPR — which is the point of PNG here, since the
-   favicon and app-icon rows are the reason anyone wants raster. */
+/* A preview-sized raster bakes visible stair steps into long diagonal edges,
+   particularly when the glyph-cover slider is near its maximum. Export live
+   illustrations at no less than 4x their CSS size; callers can reduce that
+   master for a destination without inventing detail that was already lost. */
 function rasterise(node, name) {
   const rect = node.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
-  const w = Math.max(1, Math.round(rect.width * dpr));
-  const h = Math.max(1, Math.round(rect.height * dpr));
+  const exportScale = Math.max(4, dpr);
+  const w = Math.max(1, Math.round(rect.width * exportScale));
+  const h = Math.max(1, Math.round(rect.height * exportScale));
   const src = serialiseSVG(node, name).replace(/^<!--[\s\S]*?-->\n/, '');
   rasteriseSource(src, name, w, h);
 }
