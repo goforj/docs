@@ -11,6 +11,7 @@ Controllers, commands, jobs, events, and schedules should call services rather t
 
 ## Service Shape
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 
@@ -48,8 +49,9 @@ Expected result: generated wiring succeeds and service tests pass without starti
 
 ## Inputs and Outputs
 
-Use typed inputs for service operations:
+Use typed inputs for service operations. This illustrative excerpt omits the workflow inside `Create`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 type CreateReportInput struct {
 	Name      string

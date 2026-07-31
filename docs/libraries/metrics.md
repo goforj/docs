@@ -205,8 +205,8 @@ GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go test -race ./...
 
 The quality-pass contract is stricter than v0.1.0. See [MIGRATING.md](https://github.com/goforj/metrics/blob/main/MIGRATING.md) for the validation, nil-handling, duration, and histogram-sum changes.
 
-## Using With GoForj {#using-with-goforj}
+## Using with GoForj {#using-with-goforj}
 
-Generated Apps expose metrics through the observability and HTTP runtime. Keep registration close to the behavior being measured and configure scrape exposure through the App runtime.
+GoForj Apps expose metrics through the observability and HTTP runtime. Keep registration close to the behavior being measured and configure scrape exposure through the App runtime.
 
-For generated App integration, see [Metrics](/operations/metrics).
+For the GoForj integration, see [Metrics](/operations/metrics).

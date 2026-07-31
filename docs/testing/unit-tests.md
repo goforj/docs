@@ -33,6 +33,7 @@ ok   your/module/internal/users
 
 Test services directly:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package users
 
@@ -66,7 +67,7 @@ func TestServiceRejectsEmptyID(t *testing.T) {
 
 This matches the service from [JSON API Route](/scenarios/json-api-route). Use fakes, in-memory repositories, or local drivers when they make behavior clear. The scenario contains the complete file; this excerpt focuses on the assertion pattern.
 
-## What To Unit Test
+## What to Unit Test
 
 Unit tests are a good fit for:
 

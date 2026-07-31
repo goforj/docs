@@ -26,7 +26,7 @@ Use workflow pages for full context.
 | `forj make:migration <name>` | Generate migration files for supported database drivers. |
 | `forj project:describe --json` | Print the versioned static Project topology for tools and automation. |
 
-See the [Make Command Reference](/core/make-commands#command-reference) for every generator, the files it touches, and representative generated code.
+See the [Make Command Reference](/reference/make-commands#command-reference) for every generator, the files it touches, and representative generated code.
 
 ## Framework Command Options
 
@@ -210,7 +210,7 @@ forj admin make:job reports:export --queue reports
 forj admin make:model audit-log
 ```
 
-See [Apps](/core/apps#add-another-app) for App creation and prefix behavior. See the [Make Command Reference](/core/make-commands#command-reference) for generated files, wiring changes, output overrides, opening files, and removal.
+See [Apps](/core/apps#when-to-add-another-app) for the multi-app model. See the [Make Command Reference](/reference/make-commands#command-reference) for generated files, wiring changes, output overrides, opening files, and removal.
 
 ## Maintainer Commands
 
@@ -225,9 +225,9 @@ These are mainly for framework contributors:
 ## Related Pages
 
 - [Quickstart](/getting-started/quickstart)
-- [Make Commands](/core/make-commands)
-- [Make Command Shared Options](/core/make-commands#shared-options)
-- [Database Shell](/data/database-strategy#database-shell)
+- [Make Command Reference](/reference/make-commands)
+- [Make Command Shared Options](/reference/make-commands#shared-options)
+- [Database Shell](/data/database-strategy#shell-options)
 - [Backup and Restore](/operations/backups)
 - [forj dev](/developer-tools/forj-dev)
 - [Generation Commands](/reference/generation-commands)

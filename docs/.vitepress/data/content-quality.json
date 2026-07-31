@@ -1,0 +1,91 @@
+{
+  "pageTypes": {
+    "allowed": ["landing", "concept", "task", "feature", "operations", "reference", "generated-library", "generated-scenario"],
+    "rules": [
+      ["index.md", "landing"],
+      ["**/index.md", "landing"],
+      ["starter-kits.md", "landing"],
+      ["libraries/**/*.md", "generated-library"],
+      ["scenarios/**/*.md", "generated-scenario"],
+      ["operations/**/*.md", "operations"],
+      ["reference/**/*.md", "reference"],
+      ["versions/**/*.md", "reference"],
+      ["blog/**/*.md", "reference"],
+      ["core/**/*.md", "concept"],
+      ["getting-started/**/*.md", "task"],
+      ["developer-tools/**/*.md", "task"],
+      ["testing/**/*.md", "task"],
+      ["applications/{api-index,http-services,mail}.md", "feature"],
+      ["applications/**/*.md", "task"],
+      ["async/events-vs-queues.md", "concept"],
+      ["async/{events,queues,jobs,scheduler,workers}.md", "feature"],
+      ["async/**/*.md", "task"],
+      ["data/**/*.md", "task"],
+      ["security/oauth.md", "concept"],
+      ["security/**/*.md", "feature"],
+      ["frontend/**/*.md", "feature"],
+      ["*.md", "reference"]
+    ],
+    "contracts": {
+      "landing": ["concrete-description"],
+      "task": ["concrete-description", "outcome", "structured-content", "actionable-evidence", "verification-handoff"],
+      "feature": ["concrete-description", "outcome", "structured-content", "actionable-evidence", "verification-handoff"],
+      "operations": ["concrete-description", "outcome", "structured-content", "actionable-evidence"],
+      "concept": ["concrete-description", "outcome", "structured-content"],
+      "reference": ["concrete-description", "structured-content"],
+      "generated-library": [],
+      "generated-scenario": ["concrete-description"]
+    }
+  },
+  "examples": {
+    "allowed": ["compilable-file", "complete-program", "generated-output", "illustrative-fragment", "runnable-scenario", "source-backed-excerpt"],
+    "rules": [
+      ["libraries/**/*.md", "generated-output"],
+      ["scenarios/**/*.md", "runnable-scenario"]
+    ],
+    "compilableFiles": [
+      {
+        "page": "testing/job-queue-tests.md",
+        "example": 1,
+        "file": "send_welcome_email_test.go",
+        "module": "example.com/docs-example",
+        "goVersion": "1.24.4",
+        "requires": [
+          {
+            "module": "github.com/goforj/queue",
+            "version": "v0.2.1"
+          }
+        ]
+      }
+    ],
+    "sourceBackedExcerpts": [
+      {
+        "page": "applications/routes.md",
+        "example": 1,
+        "source": "scenarios/users-created-event.md"
+      },
+      {
+        "page": "core/dependency-injection.md",
+        "example": 3,
+        "source": "scenarios/file-upload-storage.md"
+      }
+    ]
+  },
+  "canonicalPaths": {
+    "core/make-commands": "reference/make-commands",
+    "core/naming-conventions": "reference/naming-conventions",
+    "core/reading-wire-errors": "developer-tools/reading-wire-errors",
+    "core/runtime-lifecycle": "core/app-lifecycle",
+    "core/wiring-recipes": "developer-tools/wiring-recipes"
+  },
+  "headingStyle": {
+    "lowercaseConnectors": ["a", "an", "and", "as", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "per", "the", "to", "versus", "via", "with", "yet"],
+    "generatedPageTypes": ["generated-library", "generated-scenario"]
+  },
+  "reviewTerms": {
+    "surface": 59,
+    "shape": 60,
+    "primitive": 29,
+    "composition": 49
+  }
+}

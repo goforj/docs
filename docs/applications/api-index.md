@@ -1,5 +1,6 @@
 ---
 title: API Index and OpenAPI
+searchTitle: Generate an OpenAPI Contract
 description: Discover, publish, and serve an App-scoped HTTP contract and its OpenAPI projection.
 ---
 
@@ -119,8 +120,9 @@ API indexing follows the App's route composition and conventional GoForj handler
 
 The generated contract contains only behavior justified by source. Unresolved expressions become diagnostics or unconstrained output instead of guessed API claims.
 
-Handler comments can refine human-facing OpenAPI metadata:
+Handler comments can refine human-facing OpenAPI metadata. This excerpt omits the handler body because only the declaration comments affect the index:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Create provisions an account.
 //
@@ -185,6 +187,19 @@ Dynamic route registration, computed status codes, indirect response constructio
 
 WebSocket routes are visible to route tooling but are not projected as OpenAPI HTTP operations.
 
+## Verify the Published Contract
+
+Build the index from the same source and build tags used for the App:
+
+```bash
+forj build:api-index
+test -s build/openapi.json
+test -s build/api_index.json
+test -f build/api_index.diagnostics.json
+```
+
+The first two artifacts must be non-empty. Review the diagnostics file before publication; an empty diagnostics array is a stronger release signal than merely confirming that the file exists. Then use [HTTP Tests](/testing/http-tests) to verify runtime routing, validation, and authorization behavior that static indexing cannot prove.
+
 ## Common Mistakes
 
 ::: warning Common mistakes
@@ -202,4 +217,5 @@ WebSocket routes are visible to route tooling but are not projected as OpenAPI H
 - [Routes](/applications/routes)
 - [HTTP Services](/applications/http-services)
 - [Generated Files](/reference/generated-files)
+- [HTTP Tests](/testing/http-tests)
 - [Web](/web)

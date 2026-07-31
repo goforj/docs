@@ -72,7 +72,16 @@ help: ##@other Show this help.
 docs-generate: ##@docs Generate docs pages and example manifest
 	@cd backend && go run . docs:generate
 
-docs-build: ##@docs Build VitePress docs
+docs-proof-stats: ##@docs Refresh checked-in proof statistics from sibling repositories
+	@cd docs && npm run proof:refresh
+
+docs-check-proof-stats: ##@docs Verify checked-in proof statistics match sibling repositories
+	@cd docs && npm run proof:check
+
+docs-check-scenarios: ##@docs Verify generated scenario pages match framework specs
+	@cd ../goforj && go run ./cmd/forj scenario:generate --all --check
+
+docs-build: docs-check-proof-stats docs-check-scenarios ##@docs Verify generated evidence and build VitePress docs
 	@cd docs && npm run build
 
 docs-embed: ##@docs Copy built docs into backend embed folder
@@ -92,7 +101,7 @@ docs-package: ##@docs Generate + build docs and stage for backend
 DOCKER_PROD_IMAGE ?= docs-web:latest
 DOCKER_PROD_PUSH ?= 0
 
-docker-production: ##@docker Build production web image (set DOCKER_PROD_IMAGE / DOCKER_PROD_PUSH=1)
+docker-production: docs-check-proof-stats docs-check-scenarios ##@docker Verify generated evidence and build the production web image
 	@docker buildx build \
 		-f containers/web/Dockerfile \
 		--build-arg GA_MEASUREMENT_ID=$(GA_MEASUREMENT_ID) \

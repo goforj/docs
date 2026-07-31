@@ -94,6 +94,22 @@ Browser clients should:
 - avoid storing access or refresh values in local storage
 - use session-list and revoke routes for user-visible session controls
 
+## Verify Session Policy
+
+Generated Auth includes integration coverage for cookie flags, refresh rotation, replay rejection, expiry, logout, logout-all, session listing, and per-session revocation. Run the focused session and cookie tests after changing auth configuration or middleware:
+
+```bash
+go test -tags integration ./internal/auth -run \
+  'Test(LoginSetsSecureCookieDefaults|ControllerLogoutAllRevokesEverySession|ControllerRevokeSessionRevokesOnlyRequestedOwnedSession|RefreshRejectsReplayedRefreshToken)Integration$' \
+  -count=1
+```
+
+Expected result: all four tests pass against the App's test database.
+
+After deployment, use a non-privileged test account to verify login, one protected request, explicit refresh, session listing, and logout. Inspect the response cookies in browser developer tools: both auth cookies remain `HttpOnly`, production HTTPS cookies are `Secure`, and logout expires the current credentials. Confirm a request made with the revoked session receives `401`; a `200` from the public health endpoint does not prove session revocation works.
+
+Monitor authentication failures and session cleanup through bounded metrics, logs, and Inspects without recording JWTs, refresh secrets, cookie headers, or password material.
+
 ## Common Mistakes
 
 ::: warning Common mistakes

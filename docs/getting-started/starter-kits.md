@@ -1,67 +1,82 @@
 ---
-title: Starter Kit Guide
-description: How GoForj starter kits relate to generated components, frontend scaffolds, and App ownership.
+title: Choose a Starter Kit
+description: Choose a frontend starting point and understand what changing it replaces.
 ---
 
-# Starter Kit Guide
+# Choose a Starter Kit
 
-Starter kits are optional scaffolds that give an app a working frontend.
+A starter kit supplies the first frontend for an app with Web UI enabled. Choose it during app creation based on where you want rendering and interaction logic to live.
 
-They are not separate frameworks. After generation, their files belong to the App.
+## Choose the Rendering Model
 
-For screenshots and complete interface examples, explore [Starter Kits](/starter-kits). This guide explains selection, generated files, development tasks, and ownership.
-
-## When Starter Kits Apply
-
-Starter kit selection appears during `forj new` when the selected components support it.
-
-Current important rule:
-
-- Web UI enabled: starter kit selection can appear.
-- Web UI disabled: starter kit selection is skipped.
-- Demo App selected: the demo owns its generated frontend, so normal starter kit selection is cleared.
-
-## Supported Starter Kits
-
-The first-party starter kit choices are:
-
-| Starter kit | Stack | Use it when |
+| Starter kit | Rendering model | Choose it when |
 | --- | --- | --- |
-| [Vue](/frontend/vue-starter-kit) | Vue 3, Vite, TypeScript, Tailwind, shadcn-vue | You want a client-side Vue application shell. |
-| [React](/frontend/react-starter-kit) | React 19, Vite, TypeScript, Tailwind, shadcn/ui | You want a client-side React application shell. |
-| [templ + htmx](/frontend/templ-htmx-starter-kit) | templ, htmx, Tailwind | You want a Go-first server-rendered UI. |
-| None | Web UI placeholder | You want to bring your own frontend. |
+| [Vue](/frontend/vue-starter-kit) | Vue 3 client application with Vite, TypeScript, Tailwind, and shadcn-vue | Your team wants Vue components and client-side routing. |
+| [React](/frontend/react-starter-kit) | React 19 client application with Vite, TypeScript, Tailwind, and shadcn/ui | Your team wants React components and client-side routing. |
+| [templ + htmx](/frontend/templ-htmx-starter-kit) | Server-rendered templ pages with htmx and Tailwind | Your team wants routes, view models, and HTML rendering to remain in Go. |
+| None | Plain Web UI placeholder | You already have a frontend or want to build one without starter scaffolding. |
 
-Starter kits create app-scoped frontend source for Apps with Web UI enabled, such as `cmd/app/frontend/` for the default app or `cmd/admin/frontend/` for an additional app.
+All three first-party kits produce app-owned source. The choice changes the frontend implementation, not GoForj's route, service, configuration, or dependency-injection model.
 
-## After Creation
+## Select a Kit
 
-Starter-kit files are normal application source after creation. Use them as a starting point and change them to fit the product.
-
-::: warning Existing frontend code
-Rendering a starter kit writes its conventional frontend files. If that location already contains customized application code, review the render before proceeding and preserve or move those changes first.
-:::
-
-## Development Tasks
-
-`npm`-backed starter kits add frontend dependency installation to the generated development setup:
+Run the Project wizard:
 
 ```bash
-cd cmd/app/frontend && npm install
+forj new
 ```
 
-and an App-owned SPA build under `dev.apps.<app>.spas` for `forj dev`.
+Enable **Web UI**, then select one starter kit. The starter-kit step is skipped when Web UI is disabled. Selecting the Demo App also skips this step because the demo provides its own frontend.
 
-## Compatibility
+The default app receives frontend source under:
 
-Starter kits compose with selected App components. They should not require unrelated infrastructure just to run the first local path.
+```text
+cmd/app/frontend/
+```
 
-When a starter kit requires Web UI, the generator should make that dependency explicit through the wizard and render contract.
+An additional app such as `admin` receives its source under `cmd/admin/frontend/`.
 
-## Next Steps
+## Run It
 
-- [Vue Starter Kit](/frontend/vue-starter-kit)
-- [React Starter Kit](/frontend/react-starter-kit)
-- [templ + htmx Starter Kit](/frontend/templ-htmx-starter-kit)
-- [forj dev](/developer-tools/forj-dev)
-- [Project Structure](/getting-started/project-structure)
+For the default app:
+
+```bash
+forj dev
+```
+
+The generated development configuration installs the kit's frontend dependencies and runs its App-owned SPA build. A successful build writes browser assets to `cmd/app/frontend/dist`, then the Go build embeds them in the app binary.
+
+Open `http://localhost:3000` after `forj dev` reports that the app is ready. The page you see depends on the selected kit and enabled components.
+
+## Change a Kit Deliberately
+
+The kit identity is stored as `render.starter_kit` in `.goforj.yml` for the default app. Changing from one first-party kit to another and running `forj render` replaces the conventional default-app frontend directory with the newly selected kit.
+
+::: warning Preserve application code
+Treat a starter-kit change as a frontend migration. Commit or copy customized files from `cmd/app/frontend/` first, change `render.starter_kit`, run `forj render`, then port your product-specific pages and components into the new frontend. Do not use a kit change as an in-place dependency upgrade.
+:::
+
+Valid values are:
+
+```yaml
+render:
+  starter_kit: vue # vue, react, templ_htmx, or none
+```
+
+Setting the value to `none` stops starter-kit scaffolding on later renders. It does not delete an existing frontend.
+
+`templ_htmx` also generates Go-owned UI files under `internal/starterui/`, so include that package in the migration review when switching to or from the server-rendered kit.
+
+After the render, verify the replacement before restoring application changes:
+
+```bash
+forj dev
+```
+
+Confirm that the app starts and that `/` serves the new frontend. Then run the frontend-specific build and test commands documented by the selected kit.
+
+## Understand Ownership
+
+Starter-kit source belongs to the app after it is created. Edit it like normal application code, keep credentials out of browser-visible environment variables, and test frontend changes in the selected framework.
+
+The [Frontend overview](/frontend/) explains how source becomes an embedded deployment artifact. The individual kit guides document their files, development commands, and backend integration.

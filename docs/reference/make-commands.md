@@ -1,13 +1,13 @@
 ---
-title: Make Commands
-description: How GoForj make commands generate resources, place files in owning packages, and update wiring.
+title: Make Command Reference
+description: Lookup reference for GoForj make commands, generated files, registration changes, and shared options.
 ---
 
-# Make Commands
+# Make Command Reference
 
-Make commands create controllers, commands, jobs, schedules, events, models, migrations, and named queues, then update the wiring and registration files that expose them.
+This page is the exhaustive lookup for commands that create controllers, commands, jobs, schedules, events, models, migrations, and named queues. Each entry records the files and registration points the command changes.
 
-They are the normal starting point for controllers, commands, jobs, schedules, events, models, and migrations. Generate the resource, review the changed files, then add the product behavior that belongs to your App.
+Use the linked feature guide when you need to implement the generated resource. Use this reference when you need exact placement, wiring, removal, or shared-option behavior.
 
 In a multi-app Project, run make commands through the app that owns the resource:
 
@@ -24,6 +24,7 @@ This keeps app composition in the owning app while shared domain code can still 
 ## Choose a Command or Workflow
 
 - [`make:controller`](#make-controller) creates an HTTP controller and registers its routes.
+- [`make:app`](#make-app) creates an additional runnable app.
 - [`make:command`](#make-command) creates an App command and exposes it to Kong.
 - [`make:job`](#make-job) creates a queue job and registers its handler.
 - [`make:queue`](#make-queue) creates named queue configuration and a generated accessor.
@@ -51,6 +52,52 @@ For an additional app, prefix the command with the app name. The generated resou
 
 <span id="examples"></span>
 <span id="what-gets-wired"></span>
+
+### `make:app`
+
+Create an additional app:
+
+```bash
+forj make:app admin
+```
+
+Without selection flags in an interactive terminal, the command opens the app wizard. In non-interactive use, or when scripting an exact selection, pass flags:
+
+```bash
+forj make:app admin --components web-api,jobs
+forj make:app statuspage --components web-api,web-ui --starter-kit vue
+```
+
+Use `--without` to remove components from the project-derived default selection. Use `--help-format framework`, `--help-format external_cli`, or `--help-format guided` to choose the App command-help style. `--skip-wire` renders the App files without regenerating Wire; it is intended for generator debugging or a workflow that deliberately runs Wire separately.
+
+The command creates the conventional binary entrypoint under `cmd/admin/`, app-owned composition under `app/admin/`, and app-specific Wire graph under `app/admin/wire/`. Exact files depend on the selected components; a CLI-only app does not receive HTTP, scheduler, or worker files merely because another app has them.
+
+It also records the app's render metadata under top-level `apps` in `.goforj.yml`:
+
+```yaml
+apps:
+  admin:
+    components: [web_api, jobs]
+    starter_kit: none
+```
+
+The interactive wizard enrolls an app with HTTP, jobs, or schedules in `forj dev` and proposes the combined `run` command. A CLI-only app remains unenrolled. Review the Dev Run step when the app needs a narrower long-running command.
+
+Flag-driven and non-interactive creation do not enroll the app unless `--dev-run` is explicit:
+
+```bash
+forj make:app admin --components web-api,jobs --dev-run run
+```
+
+`--dev-run run` selects the development supervisor command; it does not add runtime capabilities. A runtime-capable binary already defaults to `run` when launched without arguments.
+
+Remove only the conventional App files and metadata created by `make:app` with:
+
+```bash
+forj make:app admin --remove
+```
+
+Removal is conservative and does not delete unknown app-owned files or migration history. See [Apps](/core/apps) for the ownership model and [forj dev](/developer-tools/forj-dev#choose-which-apps-participate) for normal lifecycle configuration.
 
 ### `make:controller`
 
@@ -95,6 +142,7 @@ The generated controller includes a constructor, starter route, and replaceable 
 
 <CodeFile path="internal/reports/controller.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Controller handles HTTP requests.
 type Controller struct {
@@ -125,6 +173,7 @@ The HTTP controller Wire set gains the constructor:
 
 <CodeFile path="app/wire/inject_http_controllers_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appHttpControllerSet provides all HTTP route controllers.
 var appHttpControllerSet = wire.NewSet(
@@ -137,6 +186,7 @@ The App route registry receives the controller and appends its routes:
 
 <CodeFile path="app/routes.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // ProvideRoutes provides route groups for the HTTP server.
 func ProvideRoutes(
@@ -192,6 +242,7 @@ The command keeps its CLI metadata with its implementation:
 
 <CodeFile path="internal/reports/sync_cmd.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // SyncCmd handles the reports:sync app command.
 type SyncCmd struct {
@@ -216,6 +267,7 @@ The App Wire set gains the provider:
 
 <CodeFile path="app/wire/inject_cmd_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appCommandSet provides app-owned command providers.
 var appCommandSet = wire.NewSet(
@@ -228,6 +280,7 @@ The App command collection exposes it to Kong:
 
 <CodeFile path="app/commands.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Commands wires application-specific commands into the CLI.
 type Commands struct {
@@ -269,6 +322,7 @@ The generated dispatch helper targets the selected queue:
 
 <CodeFile path="internal/billing/sync_reports_job.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // SyncReportsJobTypeName identifies the job during dispatch and handler registration.
 const SyncReportsJobTypeName = "billing:sync-reports"
@@ -320,6 +374,7 @@ The job Wire file gains both construction and runtime registration:
 
 <CodeFile path="app/wire/inject_jobs_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appJobSet provides app-owned jobs and their runtime registration.
 var appJobSet = wire.NewSet(
@@ -394,6 +449,7 @@ The next `forj build` or `forj generate --queue` derives a typed accessor from t
 
 <CodeFile path="internal/queues/accessors_gen.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Reports returns the "reports" queue instance.
 func (m *Manager) Reports() *queue.Queue {
@@ -408,6 +464,7 @@ Keep the payload beside the generated job and its handler:
 
 <CodeFile path="internal/reports/generate_job.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // GenerateJobTypeName identifies the job during dispatch and handler registration.
 const GenerateJobTypeName = "reports:generate"
@@ -444,6 +501,7 @@ This example carries an ID because the worker should load the report's current s
 
 <CodeFile path="internal/reports/service.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Service coordinates report persistence, rendering, and asynchronous dispatch.
 type Service struct {
@@ -494,6 +552,7 @@ Register that constructor with the application service set:
 
 <CodeFile path="app/wire/inject_services_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appSet provides application services to Wire.
 var appSet = wire.NewSet(
@@ -507,6 +566,7 @@ Wire can then inject the service into a controller, command, job, or other appli
 
 <CodeFile path="internal/reports/controller.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Controller exposes report operations over HTTP.
 type Controller struct {
@@ -567,6 +627,7 @@ The generated task keeps the schedule identity, interval, and work together:
 
 <CodeFile path="internal/reports/daily_schedule.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // DailySchedule is a scheduled task.
 type DailySchedule struct{}
@@ -597,6 +658,7 @@ Wire constructs the schedule and adds it to the App's schedule collection. The h
 
 <CodeFile path="app/wire/inject_schedules_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appScheduleSet contains application-owned schedule providers.
 var appScheduleSet = wire.NewSet(
@@ -623,6 +685,7 @@ The App already contains the handoff that makes those entries automatic. `make:s
 
 <CodeFile path="app/schedules.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Register attaches app schedules to the scheduler.
 func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
@@ -672,6 +735,7 @@ The generated event converts the grouped name to a dotted stable topic and provi
 
 <CodeFile path="internal/billing/invoice_paid_event.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // InvoicePaidEventTopic is the stable routing key for InvoicePaidEvent.
 const InvoicePaidEventTopic = "billing.invoice-paid"
@@ -725,6 +789,7 @@ The generated subscriber starts with a typed handler:
 
 <CodeFile path="internal/billing/invoice_paid_subscriber.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // InvoicePaidSubscriber handles InvoicePaidEvent messages from the configured event bus.
 type InvoicePaidSubscriber struct{}
@@ -750,6 +815,7 @@ The App Wire file constructs it and performs the subscription:
 
 <CodeFile path="app/wire/inject_subscribers_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appSubscriberSet contains application-owned event subscriber providers.
 var appSubscriberSet = wire.NewSet(
@@ -798,6 +864,8 @@ forj make:model invoices --package billing --remove
 
 If the model already exists, the command updates its schema-derived model definition while preserving the repository section.
 
+By default, an ungrouped model is written under `./internal/models`. Use `--encrypt column_name` or `--compress column_name` to add the corresponding generated field handling; repeat the option or pass comma-separated names for multiple fields.
+
 </template>
 <template #files>
 
@@ -815,6 +883,7 @@ Model fields reflect the columns discovered in the `invoices` table. The schema-
 
 <CodeFile path="internal/billing/invoice.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // InvoiceRepo provides persistence helpers for Invoice.
 type InvoiceRepo struct {
@@ -833,6 +902,7 @@ The repository Wire set gains:
 
 <CodeFile path="app/wire/inject_repositories_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // repositorySet is a wire set for generated repositories.
 var repositorySet = wire.NewSet(
@@ -913,7 +983,7 @@ forj make:command reports:sync
 
 This creates `internal/reports/sync_cmd.go`. Use two segments unless the extra segment is truly part of the operator-facing command. When the command belongs in a deeper package, keep the command name short and use `-d` to control file placement.
 
-See [Naming Conventions](/core/naming-conventions) for command, job, event, schedule, route, and named resource names.
+See [Naming Conventions](/reference/naming-conventions) for command, job, event, schedule, route, and named resource names.
 
 ### Bare commands
 
@@ -997,7 +1067,9 @@ Use `--dry-run` to preview file and wiring cleanup:
 forj make:controller reports --remove --dry-run
 ```
 
-`--remove` reverses only the files and registration entries managed by the matching make command. It does not inspect or delete business logic, tests, or manually added references.
+`--remove` resolves the conventional generated path and removes the file at that path; it does not distinguish an untouched generated file from one you later edited. It also removes the matching generated registration entries. Migration removal deletes matching timestamped up/down files by migration name.
+
+Commit or preserve application changes before removal, and inspect `--dry-run` output carefully. Removal does not search for tests, manually added references, or business code elsewhere, so the following build is what exposes remaining dependencies.
 
 After removing a wired resource, rebuild the graph:
 
@@ -1046,6 +1118,17 @@ The command supports `{file}` for the absolute generated path, `{line}` for the 
 
 ### Output Overrides
 
+Ungrouped resources use these source-owned defaults:
+
+| Command | Default output |
+| --- | --- |
+| `make:command` | `./internal/cmd` |
+| `make:job` | `./internal/jobs` |
+| `make:schedule` | `./internal/schedules` |
+| `make:event` | `./internal/events` |
+| `make:subscriber` | `./internal/events` |
+| `make:model` | `./internal/models` |
+
 Use `-d` when the default grouped package path is not the package you want:
 
 ```bash
@@ -1062,7 +1145,7 @@ The override controls the file location and package name. The grouped command na
 
 ## Ownership and Verification
 
-### What Belongs To You
+### What Belongs to You
 
 Generated files are starting points. Your App still owns:
 
@@ -1104,6 +1187,6 @@ Use `route:list` for controllers. For commands, run the generated command signat
 
 - [Controllers](/applications/controllers) shows the HTTP boundary around services.
 - [Commands](/applications/commands) shows App-owned CLI entry points.
-- [Naming Conventions](/core/naming-conventions) defines stable operational names.
-- [Wiring Recipes](/core/wiring-recipes) shows where generated and hand-written providers belong.
+- [Naming Conventions](/reference/naming-conventions) defines stable operational names.
+- [Wiring Recipes](/developer-tools/wiring-recipes) shows where generated and hand-written providers belong.
 - [CLI Reference](/reference/cli) lists project-level commands and App command patterns.

@@ -22,6 +22,7 @@ Use distributed event driver tests only when transport behavior matters.
 
 Add this test to `internal/events/bus_delivery_test.go`. Keeping the test in the generated package lets it exercise the App-facing bus without inventing another constructor:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package events
 

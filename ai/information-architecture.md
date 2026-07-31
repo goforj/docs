@@ -41,15 +41,13 @@ Goal: explain the framework model that every other page depends on.
 Pages:
 
 - App
-- Runtime Lifecycle
+- App Lifecycle
 - Runtime Topology
-- Dependency Injection
-- Providers
-- Drivers and Adapters
-- Generated Components
-- Generated Extension Points
-- Named Resources
 - Code Generation
+- Dependency Injection
+- Provider Patterns
+- Drivers and Adapters
+- Named Resources
 - Local-First Development
 
 ### Libraries
@@ -178,6 +176,17 @@ Pages:
 - Mail
 - API Index
 - OpenAPI
+
+### Developer Tools
+
+Goal: help maintainers diagnose and extend a generated Project without turning troubleshooting into a core concept.
+
+Pages:
+
+- Wiring Recipes
+- Reading Wire Errors
+- Atlas
+- Atlas Debug Recipes
 - forj dev
 
 ### Reference
@@ -191,6 +200,8 @@ Pages:
 - Configuration Reference
 - Generated Files
 - Generation Commands
+- Make Commands
+- Naming Conventions
 - Errors
 
 Driver matrices and package API reference usually belong in Libraries unless the material is specifically about generated App configuration.
@@ -215,7 +226,7 @@ When ordering nav or tutorials, prefer:
 1. What GoForj is
 2. Project structure
 3. Configuration
-4. Runtime lifecycle
+4. App lifecycle
 5. Dependency injection
 6. HTTP and commands
 7. Services and repositories

@@ -1,5 +1,7 @@
 # GoForj Experience Audit Plan
 
+> **Status: Historical record.** This audit captures the state reviewed on 2026-07-12. Use `governance.json` to find current authoring guidance.
+
 ## Purpose
 
 This is the working plan for improving the GoForj public experience across three surfaces: the landing page, the documentation site, and the ecosystem repo READMEs.

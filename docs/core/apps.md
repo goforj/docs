@@ -1,313 +1,161 @@
 ---
 title: Apps
-description: How one GoForj Project can contain a default app and additional runnable applications.
+description: Understand App identity, ownership, composition, and multi-app relationships in a GoForj Project.
 ---
 
 # Apps
 
-An app is a runnable program inside a GoForj Project. It has its own binary, commands, routes, lifecycle files, Wire graph, and runtime defaults.
+An App is a runnable application boundary inside a GoForj Project. It owns one binary, one command tree, one dependency graph, and the files that expose application behavior through routes, schedules, lifecycle hooks, and other enabled runtimes.
 
-Every Project starts with the default app, whose binary is `bin/app`. Most Projects need only that app.
+Every Project has a default app named `app`. Most Projects need only that app.
 
-When the same Project needs another independently runnable program, `forj make:app admin` creates an additional app named `admin`, with its own `bin/admin` binary, routes, commands, runtime choices, and dependency graph. Its app name prefixes files and commands:
+<span id="apps-and-runtimes"></span>
+
+## Why Apps Exist
+
+An app gives related runtimes one identity and one composition root. The default app can expose HTTP, worker, scheduler, and CLI runtimes without turning each process role into a separate app.
+
+For example:
 
 ```bash
-forj admin api
-forj admin worker
+forj api
+forj worker
+forj scheduler
 ```
 
-For example, one Project might contain:
+These commands select different runtimes inside the same default app. They share its application identity and Wire graph, even when deployed as separate processes.
 
-| App | What it runs | Binary |
-| --- | --- | --- |
-| Default app | Customer-facing HTTP and background work | `bin/app` |
-| Additional app named `admin` | Internal administration API and scheduler | `bin/admin` |
-
-Both apps can use shared application behavior under packages such as `internal/users` and `internal/reports`, while their routes, commands, schedules, lifecycle hooks, and wiring remain separate.
-
-An additional app is not a package namespace, a worker process, or automatically a separate service or repository. Use packages under `internal/` to organize code, and use runtime commands such as `forj api` and `forj worker` to split processes inside one app. Add another app only when you need another binary, deployment boundary, or independently selected set of capabilities.
+An additional app creates another binary and composition boundary. It is useful when part of the Project needs independent capabilities, wiring, release ownership, or deployment.
 
 ## The Default App
 
-Every Project has a default app named `app`:
+The default app follows the conventional layout:
 
 ```text
-cmd/
-  app/
-    main.go
-
+cmd/app/
 app/
-  commands.go
-  lifecycle.go
-  routes.go
-  schedules.go
-  wire/
-
+app/wire/
 internal/
-  users/
-  reports/
 ```
 
-`cmd/app/main.go` is the binary entrypoint and stays small. `app/` owns routes, commands, schedules, lifecycle hooks, and the code that makes them available. `app/wire/` owns the Wire graph. Application behavior belongs under `internal/`.
+- `cmd/app/` owns the small binary entrypoint.
+- `app/` owns composition and exposure, such as routes or lifecycle hooks selected for this app.
+- `app/wire/` owns the dependency graph.
+- `internal/` owns application and domain behavior that one or more apps can use.
 
-The default app is enough for most Projects.
+The exact composition files under `app/` depend on selected components. Do not assume every Project has routes, schedules, jobs, or their corresponding provider sets.
+
+Keep business workflows out of `cmd/app/` and app registration files. A reports service can live under `internal/reports`, while `app/routes.go`, `app/schedules.go`, or an app-local provider set exposes the parts the default app needs.
 
 <span id="add-a-named-app"></span>
+<span id="add-another-app"></span>
 
-## Add Another App
+## When to Add Another App
 
-<MakeCommandTabs name="app">
-<template #usage>
+Add another app when the Project needs a distinct runnable boundary, such as:
 
-Use `make:app` when the Project needs another runnable program:
+- a separately deployed administration API
+- a process with a deliberately smaller capability set
+- a separately owned command suite
+- an availability or security boundary that needs different wiring
 
-```bash
-forj make:app admin
-```
+Do not add an app merely to organize packages, run another worker process, or split HTTP from queue work. Packages organize code; runtime commands split process roles.
 
-You can choose which capabilities the app includes:
-
-```bash
-forj make:app admin --components web-api,jobs --dev-run run
-forj make:app admin --components web-api,web-ui,scheduler --starter-kit vue
-```
-
-The interactive wizard includes a Dev Run choice. Apps with HTTP, jobs, or schedules default to the conventional `run` command, while CLI-only or explicitly disabled apps remain absent from `dev.apps`.
-
-When scripting `make:app` with flags, use `--dev-run run` to enroll the app in `forj dev`. Use another app command, such as `--dev-run queue:work`, only when that is the intended long-running process.
-
-Remove conventional generated app files with:
-
-```bash
-forj make:app admin --remove
-```
-
-Removal is conservative. It should not delete unknown app-owned files or migration history.
-
-</template>
-<template #files>
-
-`make:app admin` creates the binary entrypoint and app-owned files:
+For example, an `admin` app can reuse `internal/users` and `internal/reports` while owning its own routes and dependency graph:
 
 ```text
-cmd/admin/main.go                  binary entrypoint
-app/admin/root_cmd.go              app commands
-app/admin/routes.go                HTTP exposure when selected
-app/admin/lifecycle.go             runtime lifecycle when selected
-app/admin/wire/                    app-specific Wire graph
-.goforj.yml                        app component and starter-kit metadata
+cmd/admin/
+app/admin/
+app/admin/wire/
+internal/users/
+internal/reports/
 ```
 
-The exact files follow the selected components. Existing app migrations and unknown files are deliberately outside managed removal.
+The default app remains directly under `app/`; additional apps use `app/<name>/`.
 
-</template>
-<template #generated>
+Use the [`make:app` reference](/reference/make-commands#make-app) for creation flags, generated locations, development enrollment, and removal behavior.
 
-The generator records the app's selected components in project configuration:
+## App Identity and Command Selection
 
-<CodeFile path=".goforj.yml">
-
-```yaml
-apps:
-  admin:
-    components: [web_api, jobs]
-    starter_kit: none
-```
-</CodeFile>
-
-The `app/admin/` directory owns the app's routes, commands, schedules, and lifecycle hooks; its `wire/` directory contains the corresponding dependency graph.
-
-</template>
-</MakeCommandTabs>
-
-## Use an app as a command prefix
-
-Prefix the command with the app name:
-
-```bash
-forj admin route:list
-forj admin api
-forj admin worker
-forj admin build
-```
-
-Built binaries use the same command names:
-
-```bash
-./bin/admin api
-./bin/admin worker
-```
-
-Unqualified commands use the default app:
+Unprefixed source-aware commands select the default app:
 
 ```bash
 forj route:list
 forj api
 ```
 
-That means single-app Projects do not get a more complicated workflow. Multi-app Projects add one predictable prefix when you need it.
+Prefix a command with an additional app's name to select it:
 
-## Generate into one app
+```bash
+forj admin route:list
+forj admin api
+```
 
-The app prefix also chooses which route, command, job, or provider files receive new registrations.
+The prefix selects the app for both app commands and app-aware framework commands. It does not change directories or create a package namespace.
+
+Built artifacts preserve the same boundary:
+
+```bash
+./bin/app
+./bin/admin
+```
+
+Runtime-capable binaries default to the combined `run` runtime when launched without arguments. Explicit commands still take precedence, and CLI-only binaries retain root help behavior.
+
+<span id="what-belongs-where"></span>
+
+## App-Owned Composition
+
+Business behavior can be shared inside the Project, but each app decides what it exposes and constructs.
+
+| Concern | Owner |
+| --- | --- |
+| Binary entrypoint | `cmd/app/` or `cmd/<name>/` |
+| Routes, commands, schedules, and lifecycle hooks | `app/` or `app/<name>/` |
+| Dependency graph and app-local providers | `app/wire/` or `app/<name>/wire/` |
+| Application and domain behavior | `internal/...` |
+| Reusable runtime machinery | Component packages such as `internal/runtime` and `internal/http` |
+| Render metadata and selected components | `.goforj.yml` |
+
+A generator invoked through an app prefix writes the resource under its owning `internal/...` package and updates that app's registration points:
 
 ```bash
 forj admin make:controller users
-forj admin make:job reports:export
-forj admin make:model audit-log
 ```
 
-These commands create staff-facing behavior under `internal/`, then register it with the selected app. For the controller above, that means:
+The controller remains application code under `internal/users`; the `admin` app receives its route and provider registration. See the [Make Command Reference](/reference/make-commands) for exact output.
 
-```text
-internal/users/controller.go
-app/admin/routes.go
-app/admin/wire/inject_http_controllers_app.go
-```
+## Discovery and Stable Ordering
 
-The job and model commands follow the same rule: generated behavior lives under `internal/...`, and the selected app receives the matching Wire registration in files such as `app/admin/wire/inject_jobs_app.go` or `app/admin/wire/inject_repositories_app.go`.
+GoForj always includes the conventional default app first.
 
-Unprefixed make commands keep writing to the default app:
+Additional apps are discovered from conventional ownership markers:
 
-```bash
-forj make:controller users
-```
+- `cmd/<name>/main.go`
+- recognized composition files or a Wire directory under `app/<name>/`
 
-```text
-internal/users/controller.go
-app/routes.go
-app/wire/inject_http_controllers_app.go
-```
+Top-level `apps` entries in `.goforj.yml` can also contribute app metadata while rendering. Additional app names are ordered alphabetically after the default app. That stable order determines each App's generated index and conventional runtime defaults.
 
-## Apps and runtimes
+Layout proves that an app exists; top-level `apps` metadata records its selected components, starter kit, and help format. The separate `dev.apps` map decides which apps participate in `forj dev`.
 
-An app can expose several runtimes:
+See [Configuration Reference](/reference/configuration#render-metadata-for-apps) for those schemas and [Environment Reference](/reference/env-vars#app-and-runtime) for app-scoped overrides and ports.
 
-- HTTP
-- jobs
-- scheduler
-- CLI commands
+<span id="common-mistakes"></span>
 
-For example, `forj admin api`, `forj admin worker`, and `forj admin scheduler` run different process roles inside the same `admin` app. The app owns the binary and dependency graph; the runtime is the role the process is currently running.
+## Runtime and Resource Boundaries
 
-Separate app processes do not share memory-backed cache, queue, or event drivers. Choose a shared backend when work or state must cross process boundaries.
+Separate app processes do not share in-memory cache, queue, or event state. Use a shared backend when state or work must cross process boundaries.
 
-## What Belongs Where
+App code continues to use logical resource names. At backend boundaries where isolation matters, GoForj can apply the additional app's prefix. For example, logical queue `default` in the `admin` app maps to the backend queue name `admin_default`.
 
-`internal/` owns behavior. Apps register that behavior with a runnable binary; do not put business workflows in `app/` or `cmd/<app>/`.
+Database migration ownership is also an app decision. If two apps share one physical database, choose one app to own that database's migration stream.
 
-For example, a user-management controller can live in:
+<span id="next-steps"></span>
 
-```text
-internal/users/controller.go
-```
+## Related Concepts
 
-The `admin` app exposes it through:
-
-```text
-app/admin/routes.go
-app/admin/wire/inject_http_controllers_app.go
-```
-
-This keeps the code reusable inside the Project without pretending each app is a separate repository.
-
-Use these boundaries when deciding where code belongs:
-
-| Concern | Belongs in |
-| --- | --- |
-| Project configuration and selected components | `.goforj.yml` |
-| Routes, commands, schedules, and lifecycle hooks | `app/` or `app/<name>/` |
-| App Wire graph | `app/wire/` or `app/<name>/wire/` |
-| Binary entrypoint | `cmd/app/` or `cmd/<name>/` |
-| Business behavior | `internal/...` |
-| Reusable runtime machinery | `internal/runtime`, `internal/http`, `internal/jobs`, `internal/schedules` |
-
-Do not bypass these app files with package globals. If rerendering should preserve a behavior change for all future Projects, change the GoForj template or generator. Keep application-specific behavior in your Project.
-
-## App Metadata
-
-GoForj discovers apps by convention:
-
-```text
-cmd/<app>/main.go
-app/<app>/
-```
-
-`.goforj.yml` can store per-app component and starter-kit choices under `apps`, but layout decides which apps exist.
-
-The generated-code tab under [Add Another App](#add-another-app) shows the configuration. This top-level `apps` metadata is separate from `dev.apps`, which selects the app processes managed by `forj dev`.
-
-## App-scoped output
-
-API descriptions and frontend files are stored by app when a Project has more than one.
-
-API index and OpenAPI output stay simple for the default app:
-
-```text
-build/api_index.json
-build/openapi.json
-```
-
-Additional apps write under their app name:
-
-```text
-build/admin/api_index.json
-build/admin/openapi.json
-```
-
-Frontend source and embedded assets follow the app entrypoint. For example, a Project can have separate public, staff administration, and public availability frontends:
-
-```text
-cmd/app/frontend/
-cmd/admin/frontend/
-cmd/statuspage/frontend/
-```
-
-## Runtime Defaults
-
-The generator writes `internal/runtime/apps.go` from app metadata and compiles it into each binary. Do not edit that file by hand.
-
-Default ports are deterministic:
-
-| App | HTTP | Metrics | Scheduler metrics | Worker metrics |
-| --- | ---: | ---: | ---: | ---: |
-| `app` | `3000` | `10000` | `10001` | `10002` |
-| first additional app | `3001` | `10010` | `10011` | `10012` |
-| second additional app | `3002` | `10020` | `10021` | `10022` |
-
-Overrides for an additional app use its uppercase app name as a prefix:
-
-```text
-ADMIN_PORT=3100
-ADMIN_WORKER_METRICS_PORT=10112
-```
-
-Default-app globals such as `PORT` and `METRICS_PORT` do not apply to additional apps.
-
-When `make:app` writes local env defaults, it uses the next available app HTTP port so sequential app creation does not make two apps bind the same listener.
-
-## Queue and Migration Boundaries
-
-App code uses logical queue names such as `default` or `sync`. In a multi-app Project, additional apps prefix backend queue names with the app name, such as `admin_default`, so multiple apps can share a queue backend safely.
-
-Migrations are app-owned when a Project has multiple apps:
-
-```text
-migrations/
-  app/default/
-  admin/default/
-  admin/archive/
-```
-
-If two apps share one physical database, choose one app to own that database's migration stream.
-
-## Common Mistakes
-
-The costly mistakes are architectural: creating additional apps only to organize packages, placing business workflows in app registration files, or expecting memory-backed drivers to share state across processes. The relevant sections above explain the package, ownership, and backend choices that avoid them.
-
-## Next Steps
-
-- [Project Structure](/getting-started/project-structure) shows the project tree.
-- [forj dev](/developer-tools/forj-dev) explains app process orchestration and custom watches.
-- [Runtime Topology](/core/runtime-topology) explains app and runtime processes.
+- [Runtime Topology](/core/runtime-topology) explains apps, runtimes, and processes.
+- [Code Generation](/core/code-generation) explains generated ownership and app extension points.
+- [forj dev](/developer-tools/forj-dev) explains development lifecycle participation.
+- [Make Command Reference](/reference/make-commands) lists app-aware generation behavior.
 - [Migrations](/data/migrations) explains app-owned migration streams.

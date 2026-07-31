@@ -1,145 +1,97 @@
 ---
 title: Quickstart
-description: Create and run a new GoForj Project in two commands.
+description: Create, run, request, and test a new GoForj Project.
 ---
 
 # Quickstart
 
-This page takes you from nothing to a running GoForj App: one command to create the Project, one to run it. A few minutes, most of it module downloads.
+Follow this page from top to bottom to generate a small HTTP app, start it, make a request, and run its tests.
 
 ## Prerequisites
 
-- Go 1.25 or newer. [Install Go](https://go.dev/doc/install) if you do not have it, and check with `go version`.
-- Docker only if you select components that use generated Docker services. The development workflow invokes `docker compose`; [Docker Desktop](https://docs.docker.com/get-started/get-docker/) and [OrbStack](https://orbstack.dev/) provide it. Podman may run the rendered Compose files when its Compose compatibility is configured, but it is not the CLI that GoForj invokes. The small HTTP path below needs neither.
+- Go 1.25 or newer. [Install Go](https://go.dev/doc/install) if needed.
+- A shell with `$(go env GOPATH)/bin` on its `PATH`.
 
-## Install the CLI
+This path uses only the CLI and Web API components, so it does not require Docker.
+
+## Install GoForj
 
 ```bash
 go install github.com/goforj/goforj/cmd/forj@latest
-```
-
-Verify it:
-
-```bash
 forj --help
 ```
 
-If your shell reports `forj: command not found`, see [troubleshooting](#troubleshooting) below.
-
-## Create a Project
-
-Run the wizard:
-
-```bash
-forj new
-```
-
-The wizard collects the Project name and module path, the App components you want, presentation choices, the destination path, and optional Atlas agent support.
-
-The Components screen starts with GoForj's common full-stack selection. For this first run, press `c` to clear it back to the required CLI, then enable Web API with the space bar:
-
-```text
-$ forj new
-✔ Project name · photodrop
-✔ Components · CLI, Web API
-✔ Atlas - Agent Support · Recommended
-```
-
-Cache, Events, File Storage, and Background Jobs start selected, but each remains a normal component choice. Background Jobs includes the Queue resource, job support, and worker runtime. Database stays explicit on this same screen: MySQL starts selected, and you can choose Postgres or SQLite instead.
-
-GoForj chooses sensible starting drivers for enabled resources, so the wizard does not ask you to design infrastructure. Disable components you do not need now; component and driver choices can both change later as the App grows.
-
-Atlas is optional. If you enable it, GoForj installs local guidance for supported AI coding agents so they understand GoForj project structure, make commands, app registration points, and docs context. See [Atlas](/developer-tools/atlas) for details.
-
-When the wizard completes:
-
-```bash
-cd photodrop
-```
-
-## Run It
-
-```bash
-forj dev
-```
-
-`forj dev` runs the initial build for every App listed under `dev.apps` whose build lifecycle is enabled: it refreshes generated code, runs Wire, indexes the API surface, and compiles the App. The new-Project wizard lists the runtime-capable default App with its conventional build and run lifecycles, so the normal quickstart starts it and watches for changes.
-
-```text
-$ forj dev
-· Building app
-  Built app in 2.7s
-...
-✔ Dev ready
-  → App: http://localhost:3000
-```
-
-Exact setup and service lines depend on selected components. Edit a watched file and save it. The owning App lifecycle rebuilds and replaces its runtime after a successful build.
-
-## Verify
-
-In a second terminal:
-
-```bash
-curl http://localhost:3000/-/health
-```
-
-Expected response:
-
-```json
-{"status":"ok"}
-```
-
-List the generated HTTP surface:
-
-```bash
-forj route:list
-```
-
-You have a running App. The structure for routes, wiring, lifecycle, configuration, and tests already exists; from here you add behavior, not plumbing.
-
-## Everyday Commands
-
-`forj dev` is the development loop. The other commands you will reach for:
-
-Inside a source Project, App commands use the source-aware run path: GoForj refreshes generated code, prepares the API artifacts, compiles an exact temporary App binary, starts it with the command, and publishes the artifacts after the OS accepts the process start. Production and process supervisors run the built binary directly.
-
-- `forj build` builds without watching: generate, Wire, API index, `go build`. The binary lands at `bin/app`.
-- `forj app` starts the enabled runtimes together in one process, without the watcher.
-- `forj api` starts only the HTTP runtime.
-- `forj route:list` lists HTTP routes.
-- `forj worker` starts queue workers, when jobs are enabled.
-- `forj scheduler` starts the scheduler, when schedules are enabled.
-- `forj migrate` runs database migrations, when database support is enabled.
-
-## Troubleshooting
-
-**`forj: command not found` after install.** `go install` places binaries in `$(go env GOPATH)/bin`, which must be on your `PATH`:
+The help output confirms that the CLI is installed. If your shell reports `forj: command not found`, add Go's binary directory to your current shell:
 
 ```bash
 export PATH="$(go env GOPATH)/bin:$PATH"
 ```
 
-**Go version errors.** GoForj requires Go 1.25 or newer. Check with `go version` and upgrade if needed.
+## Generate the Project
 
-**Port 3000 is already in use.** The HTTP port is configuration. Set it in `.env`:
+Start the Project wizard:
 
-```dotenv
-API_HTTP_PORT=3001
+```bash
+forj new
 ```
 
-**Wire errors during the first build.** A failed build usually points at a missing or duplicated provider. [Reading Wire errors](/core/reading-wire-errors) explains how to decode them.
+Use `photodrop` for the Project name and accept its suggested module path. On the Components screen, press `c` to clear the selection, then select **CLI** and **Web API**. Accept the remaining defaults and use `photodrop` as the destination.
 
-**Docker-backed components fail to start.** If you selected components that render Docker services, the Docker daemon must be running. The default `cli` + `web_api` shape does not use Docker.
+When rendering finishes, enter the Project and confirm that its configuration exists:
+
+```bash
+cd photodrop
+test -f .goforj.yml && echo "Project generated"
+# Project generated
+```
+
+## Start the App
+
+From the Project root, start the development loop:
+
+```bash
+forj dev
+```
+
+::: warning Port 3000
+This path expects port 3000 to be available. If another process owns it, stop that process before continuing so the verification commands match the generated configuration.
+:::
+
+The first build downloads Go modules before compiling the app. Continue when the output shows:
+
+```text
+✔ Dev ready
+  → App: http://localhost:3000
+```
+
+Leave `forj dev` running.
+
+## Make the First Request
+
+In a second terminal, from the same Project root:
+
+```bash
+curl http://localhost:3000/-/health
+# {"status":"ok"}
+```
+
+The response proves that the HTTP runtime is accepting requests.
+
+## Run the First Test
+
+Keep the app running and use the second terminal:
+
+```bash
+go test ./...
+```
+
+A successful run ends with `ok` lines or `[no test files]` for each generated package and no `FAIL` line.
+
+You now have a generated Project, a running app, a verified HTTP endpoint, and a passing test suite.
 
 ## Next Steps
 
-The fastest way to learn the framework is to build with it. Seven verified scenarios grow this App from a single route to a fully observable system, and each one is executed against the current templates before it ships:
+Choose one direction:
 
-- [Start the scenario path](/scenarios/) with a [JSON API route](/scenarios/json-api-route).
-
-When you want the map instead of the trail:
-
-- [Project structure](/getting-started/project-structure) explains the generated layout.
-- [Configuration](/getting-started/configuration) explains `.goforj.yml` and `.env`.
-- [Apps](/core/apps) explains when a Project needs an additional runnable app.
+- [Extend the app](/getting-started/project-structure) to learn where routes, services, configuration, and wiring belong.
+- [Run the JSON API scenario](/scenarios/json-api-route) to follow a verified route from generation through request testing.

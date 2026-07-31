@@ -75,7 +75,7 @@ func TestTransformReadmeAppendsFrameworkGuide(t *testing.T) {
 	got := transformReadme("# Queue\n\nStandalone package documentation.\n", repo, "https://raw.githubusercontent.com/goforj/queue/main/")
 	wants := []string{
 		`description: "Queued work with pluggable backend drivers."`,
-		"## Using With GoForj {#using-with-goforj}",
+		"## Using with GoForj {#using-with-goforj}",
 		"Generated Apps expose named queues through generated accessors.",
 		"For generated App integration, see [Queues](/async/queues).",
 	}
@@ -119,7 +119,7 @@ func TestAppendFrameworkGuideRequiresCompleteConfiguration(t *testing.T) {
 
 // TestAppendFrameworkGuidePreservesExistingSection verifies source-owned integration guidance is not duplicated.
 func TestAppendFrameworkGuidePreservesExistingSection(t *testing.T) {
-	input := "# Queue\n\n## Using With GoForj\n\nExisting guidance.\n"
+	input := "# Queue\n\n## Using with GoForj\n\nExisting guidance.\n"
 	guide := FrameworkGuide{Title: "Queues", Path: "/async/queues", Summary: "Queue integration."}
 
 	if got := appendFrameworkGuide(input, guide); got != input {

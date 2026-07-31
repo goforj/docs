@@ -1,76 +1,95 @@
 ---
 title: Code Generation
-description: Generate framework-owned App code, choose safe extension points, and keep runtime support in sync.
+description: Understand why GoForj generates code, who owns each result, and which changes require regeneration.
 ---
 
 # Code Generation
 
-GoForj generates ordinary Go glue for commands, managers, runtime packages, drivers, accessors, and Wire providers. The result stays readable and testable without runtime reflection or hidden registration.
+GoForj generates ordinary Go code for composition, configuration, driver factories, resource accessors, API metadata, and Wire graphs. Generation keeps dependencies explicit at compile time while avoiding runtime reflection or hidden registration.
 
-## Build and Refresh Generated Code
+The generated result is part of the application architecture. Read it, test it, and respect the ownership stated by its file header or local README.
 
-Use the normal build path when source and binary output should agree:
+## Why GoForj Generates Code
+
+Generation turns Project and environment inputs into visible Go contracts:
+
+- selected components determine which capabilities exist
+- supported-driver lists determine which implementations compile into the binary
+- named resource scopes determine which stable accessors exist
+- provider sets determine the Wire graph
+- routes and command types contribute API and command metadata
+
+This moves integration failures toward generation and build time. A missing driver, invalid named resource, or incomplete dependency graph should fail explicitly instead of becoming a hidden runtime lookup.
+
+<span id="build-and-refresh-generated-code"></span>
+
+## The Normal Path
+
+Use:
 
 ```bash
 forj build
 ```
 
-`forj build` runs:
+The normal build refreshes generated components, runs Wire, builds API index artifacts, and builds the app binary.
 
-1. generated component refresh
-2. Wire generation
-3. API indexing
-4. `go build`
+During `forj dev`, an app listed in `dev.apps` receives its configured build lifecycle automatically. Use the explicit build when working outside that loop or when you want to prove source, generated code, and the binary agree.
 
-During `forj dev`, an app listed in `dev.apps` rebuilds automatically.
+Focused generation exists for maintainers and narrow repair workflows. The [Generation Commands](/reference/generation-commands) page owns exact commands, flags, component availability, and output behavior.
 
-Use a focused command when maintaining one component without running the full build:
+<span id="choose-the-project-shape"></span>
 
-```bash
-forj generate --cache
-forj generate --storage
-forj generate --mail
-forj generate --queue
-forj generate --events
-forj generate --db
-forj generate --observability
-```
+## Inputs and Outputs
 
-Running `forj generate` without flags refreshes the available generators for the current App. An explicit focused command for a disabled component fails instead of recreating a resource outside the Project contract.
+Generation reads several kinds of input:
 
-Expected result: generated component files, the Wire graph, the API index, and the App binary agree with the current source and configuration. Use `forj build` when unsure which focused generator applies.
-
-## Choose the Project Shape
-
-`forj new` writes the durable rendering contract to `.goforj.yml`:
-
-```yaml
-render:
-  starter_kit: none
-  components: [cli, web_api, database_mysql, scheduler, jobs]
-```
-
-Component selection determines which packages, commands, Wire sets, and environment entries GoForj creates:
-
-| Component | Creates |
+| Input | What it controls |
 | --- | --- |
-| Cache | Cache manager, accessors, providers, drivers, and environment entries |
-| Events | Event bus manager, accessors, providers, drivers, and environment entries |
-| File Storage | Storage manager, accessors, providers, drivers, and environment entries |
-| Background Jobs | Queue manager, job support, worker runtime, providers, drivers, and environment entries |
+| Selected components in `.goforj.yml` | Which framework capabilities and app APIs exist |
+| Supported-driver environment values | Which backend factories compile into the app |
+| Named resource environment scopes | Which generated accessors and resource metadata exist |
+| Provider sets and injectors | The Wire dependency graph |
+| Application routes and commands | API index, OpenAPI, and command metadata |
 
-Cache, Events, File Storage, and Background Jobs start selected in `forj new`, but each can be deselected. Database is a separate choice between MySQL, Postgres, and SQLite. Higher-level components can require another component; Auth, for example, includes Cache.
+The output can include managers, accessors, configuration types, driver manifests, Wire output, API artifacts, and framework-owned package code. Not every app contains every output; component selection is authoritative.
 
-Components disabled across every App do not leave placeholder resource packages behind. Shared support is derived from all App selections, while each App receives only its selected APIs and wiring.
+See [Configuration Reference](/reference/configuration) for Project inputs and [Environment Reference](/reference/env-vars#resolution-and-naming) for driver and named-resource inputs.
 
-`.goforj.yml` also records the module path, starter kit choices, App development lifecycles, custom watches, Wire paths, and module replacements. Driver selection and named resource scopes remain environment configuration rather than part of this durable render contract.
+<span id="choose-a-safe-extension-point"></span>
 
-Depending on those inputs, GoForj also creates environment-backed configuration, driver factories, Wire injectors, route and API indexes, observability metadata, local component READMEs, commands, jobs, events, and schedules.
+## Ownership Models
 
-## Use generated resources
+Generated Projects contain three practical ownership models:
 
-Generated managers expose stable App access to infrastructure selected for the Project. Each method exists only when its owning component is enabled:
+| Ownership | How to work with it |
+| --- | --- |
+| Regenerated output, including files marked `DO NOT EDIT` | Change its input or framework template, then regenerate. |
+| Render-once extension point | Edit it as app-owned code after initial creation. |
+| Application-owned file | Maintain it like any other application code. |
 
+`wire_gen.go` is regenerated output. Change providers or injector inputs, then run `forj build`.
+
+App composition files are intended extension points when present:
+
+| Concern | Default app owner |
+| --- | --- |
+| Startup and shutdown hooks | `app/lifecycle.go` |
+| Route composition | `app/routes.go` |
+| App command exposure | `app/commands.go` |
+| Schedule composition | `app/schedules.go` |
+| App-local providers | `app/wire/inject_*_app.go` |
+
+Additional apps use the same conventions under `app/<name>/`. Exact files follow selected components; do not create a missing component surface by copying one from another app.
+
+Keep these composition files declarative. Put controllers, services, jobs, subscribers, and scheduled behavior in their owning `internal/...` packages, then expose them through the app.
+
+<span id="use-generated-resources"></span>
+
+## App APIs
+
+Selected components can generate stable app-facing managers:
+
+<!-- go-example: illustrative-fragment -->
 ```go
 app.Cache()
 app.Caches()
@@ -82,127 +101,72 @@ app.Queues()
 app.DB()
 ```
 
-Managers are app APIs, not dependency injection concepts. Wire can construct them, but backend connections should happen at the appropriate lifecycle or first-use boundary rather than making manager construction expensive.
+Each method exists only when its component is enabled. Wire can construct these managers, but manager construction is not permission to hide expensive connections or lifecycle work inside dependency lookup.
 
-Several components derive named resources from environment configuration:
+Named environment scopes can add typed accessors:
 
-```text
-CACHE_DRIVER=memory
-CACHE_SESSIONS_DRIVER=redis
-
-STORAGE_DRIVER=local
-STORAGE_PUBLIC_DRIVER=local
-STORAGE_UPLOADS_DRIVER=s3
-
-QUEUE_DRIVER=workerpool
-QUEUE_CRITICAL_DRIVER=redis
-
-EVENTS_DRIVER=inproc
-EVENTS_AUDIT_DRIVER=redis
-```
-
-Generation can then expose stable accessors:
-
+<!-- go-example: illustrative-fragment -->
 ```go
 app.Caches().Sessions()
-app.Storage().Public()
 app.Storage().Uploads()
 app.Queues().Critical()
 app.Events().Audit()
 ```
 
-These accessors are generated invariants. If environment scopes and generated code disagree, rebuild the App; it should fail fast rather than pretend a named resource exists.
+Those methods are generated configuration invariants. If the environment and generated accessors disagree, rebuild the app. Code should fail fast rather than silently pretend a required named dependency is optional.
 
-## Compile driver support
+<span id="compile-driver-support"></span>
 
-Generation separates compiled support from runtime selection:
+## Driver Support and Selection
 
-```text
+Driver-backed resources separate compile-time support from runtime selection:
+
+```dotenv
 STORAGE_SUPPORTED_DRIVERS=local,s3
 STORAGE_DRIVER=local
 STORAGE_UPLOADS_DRIVER=s3
 ```
 
-`STORAGE_SUPPORTED_DRIVERS` causes local and S3 factories to be compiled into the App. `STORAGE_DRIVER` selects the default disk at runtime, and `STORAGE_UPLOADS_DRIVER` selects S3 for the named `uploads` disk.
+Generation compiles local and S3 factories. Startup selects local for the default disk and S3 for `uploads`.
 
-The same distinction applies to the other resource families. Do not select a runtime driver that is absent from its `*_SUPPORTED_DRIVERS` list.
+Changing an active driver to another already-compiled driver needs a restart. Changing the supported set or adding a named generated accessor needs regeneration and a new binary. [Configuration](/getting-started/configuration#when-to-rebuild-or-restart) owns that beginner decision rule; [Environment Reference](/reference/env-vars) owns every variable.
 
-## Choose a safe extension point
+<span id="decide-whether-to-change-the-app-or-framework"></span>
 
-Files created by GoForj have three ownership models:
+## App Code versus Framework Code
 
-| Type | How to treat it |
-| --- | --- |
-| Regenerated files, including files marked `DO NOT EDIT` | Change inputs or templates, then regenerate |
-| Render-once files | Edit as App-owned extension points after the initial render |
-| App-owned files | Create and maintain as application code |
-
-Check file headers, generated comments, and local component READMEs when ownership is unclear. `wire_gen.go` is always generated output; change providers and rebuild instead of editing it.
-
-Common render-once extension points include:
-
-| Concern | App-owned file |
-| --- | --- |
-| Startup and shutdown hooks | `app/lifecycle.go` |
-| Route composition | `app/routes.go` |
-| App command exposure | `app/commands.go` |
-| Schedule composition | `app/schedules.go` |
-| App-local providers | `app/wire/inject_*_app.go` |
-
-Additional apps use the same files under `app/<name>/`.
-
-Keep registries declarative and put behavior in the owning feature package. For example:
-
-```go
-func (r *LifecycleRegistry) Register(lifecycle *Lifecycle) {
-	lifecycle.On(Startup, func(ctx context.Context) error {
-		return r.reports.WarmCache(ctx)
-	})
-}
-```
-
-```go
-s.Every(30).Seconds().Name("monitor:poll").Do(s.monitorCheckJob.RunScheduledPoll)
-```
-
-Controllers belong in feature packages while `app/routes.go` combines their routes. Job handlers and event subscribers use their registration files and should be visible before worker or event runtimes start.
-
-Operator-facing translation can remain in runtime-specific Lighthouse files when the concern is route discovery, schedule control payloads, cache or storage operator commands, CLI exposure, or UI metadata. It does not need to move into low-level runtime files merely to reduce file count.
-
-## Decide whether to change the App or framework
+Change the application when behavior is specific to one Project.
 
 Change GoForj templates or generators when:
 
-- an extension point is missing for every App
-- rerendering should preserve the behavior in future Projects
-- a generated file has the wrong ownership boundary
+- every new Project needs the change
+- an extension point is missing or has the wrong ownership
+- rerendering must reproduce the behavior
 - generated discovery, accessors, or provider wiring are incorrect
 
-Change only your Project when the behavior is application-specific.
+Do not hand-edit generated output to test a framework fix. Update the authoritative template or generator, regenerate every checked-in mirror, and verify another generation produces no diff.
 
-## Inputs That Require a Rebuild
+<span id="inputs-that-require-a-rebuild"></span>
+<span id="common-mistakes"></span>
 
-Refresh generated code after changing:
+## Rebuild Boundaries
 
-- selected components in `.goforj.yml`
-- supported driver lists
+Run `forj build` after changing:
+
+- selected components
+- supported-driver lists
 - named cache, storage, queue, event, mail, or database scopes
-- provider sets or generated Wire inputs
-- observability App and runtime configuration
+- provider sets or Wire injector inputs
+- generated observability inputs
 
-## Common Mistakes
+A normal application implementation change also needs a new binary, but it does not necessarily change generated files.
 
-::: warning Common mistakes
-- Do not edit generated accessors or managers to add named resources manually.
-- Do not edit `wire_gen.go`.
-- Do not assume every generated file is safe to overwrite.
-- Do not put business logic in generated framework glue or App registries.
-- Do not put App-specific behavior in framework templates.
-- Do not forget regeneration after changing named resource environment variables.
-:::
+<span id="next-steps"></span>
 
-## Next Steps
+## Related Concepts
 
-- [Configuration](/getting-started/configuration) explains environment and driver selection.
-- [Dependency Injection](/core/dependency-injection) explains Wire generation and provider ownership.
-- [App Lifecycle](/core/app-lifecycle) explains lifecycle hook timing.
+- [Apps](/core/apps) explains app composition and ownership.
+- [Dependency Injection](/core/dependency-injection) explains providers and Wire.
+- [Generated Files](/reference/generated-files) lists important generated locations.
+- [Generation Commands](/reference/generation-commands) is the command lookup.
+- [Make Command Reference](/reference/make-commands) lists resource scaffolding and registration changes.

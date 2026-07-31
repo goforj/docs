@@ -1403,8 +1403,8 @@ make integration
 make integration-driver gcs
 ```
 
-## Using With GoForj {#using-with-goforj}
+## Using with GoForj {#using-with-goforj}
 
-Generated Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.
+GoForj Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.
 
-For generated App integration, see [Storage Patterns](/data/storage-patterns).
+For the GoForj integration, see [Storage Patterns](/data/storage-patterns).

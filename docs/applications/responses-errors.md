@@ -13,6 +13,7 @@ Controllers choose HTTP status codes and response bodies. Services return applic
 
 Use `web.Context` response helpers:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 return ctx.JSON(http.StatusOK, body)
 return ctx.Text(http.StatusOK, "ok")
@@ -28,6 +29,7 @@ Use response shapes that are stable and easy to test.
 
 Example:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 return ctx.JSON(http.StatusOK, map[string]any{
 	"ok":   true,
@@ -41,6 +43,7 @@ For application-specific APIs, prefer typed response structs once response shape
 
 Map known application errors at the controller boundary:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 user, err := c.service.Find(ctx.Context(), ctx.Param("id"))
 if err != nil {

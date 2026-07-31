@@ -13,7 +13,7 @@ Use queues when work needs to run outside the request path, use workers, retry, 
 The guidance here is about queue integration and operation in a GoForj App. Visit the [queue library page](/queue) for standalone setup, the full API reference, and the complete backend capability matrix.
 :::
 
-## When To Use Queues
+## When to Use Queues
 
 Use a queue when work should run outside the request path or be processed by workers. Keep work in the request path when its result must be available before returning the current response.
 
@@ -32,6 +32,7 @@ Expected result: the build registers the generated handler, and the generated jo
 
 Call that helper from a service, command, or controller:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 err := generateJob.Queue(ctx, reportID)
 ```
@@ -90,6 +91,7 @@ Using `--name production-report-jobs` changes `QUEUE_REPORTS_NAME` while the sta
 
 <CodeFile path="internal/queues/accessors_gen.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Reports returns the "reports" queue instance.
 func (m *Manager) Reports() *queue.Queue {
@@ -104,6 +106,7 @@ Keep the payload beside the generated job and its handler:
 
 <CodeFile path="internal/reports/generate_job.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // GenerateJobTypeName identifies the job during dispatch and handler registration.
 const GenerateJobTypeName = "reports:generate"
@@ -140,6 +143,7 @@ This example carries an ID because the worker should load the report's current s
 
 <CodeFile path="internal/reports/service.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Service coordinates report lookup, rendering, and queue dispatch.
 type Service struct {
@@ -190,6 +194,7 @@ Add that constructor to the App service set:
 
 <CodeFile path="app/wire/inject_services_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appSet provides application-level services and dependencies.
 var appSet = wire.NewSet(
@@ -303,6 +308,16 @@ In standalone local mode, workers can also be hosted with other enabled runtimes
 ```bash
 forj app
 ```
+
+For deployment, supervise the built artifact instead:
+
+```bash
+./bin/app worker --queue reports
+```
+
+Before release, run `./bin/app about` and confirm the logical queue, Driver, backend queue name, and worker count. Then dispatch one safe job through the normal application path. Success means the selected worker runs the registered handler and records the stable job name and outcome; a running process by itself does not prove backend reachability or handler registration.
+
+On `SIGTERM`, workers drain or stop within `QUEUE_SHUTDOWN_TIMEOUT`. Keep the process supervisor's stop timeout longer than the queue and App shutdown budgets, and keep handlers idempotent because forced termination can cause redelivery.
 
 ## Regeneration
 

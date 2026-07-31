@@ -76,6 +76,8 @@ func main() {
 
 ## Drivers {#drivers}
 
+Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
+
 | Driver / Backend | Mode | Notes | Durable | Async | Delay | Unique | Backoff | Timeout | Native Stats | Queue Admin |
 | ---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | <img src="https://img.shields.io/badge/null-%23666?style=flat" alt="Null"> | Drop-only | Discards dispatched jobs; useful for disabled queue modes and smoke tests. | - | - | - | Instance | - | - | - | - |
@@ -2498,8 +2500,8 @@ INTEGRATION_BACKEND=all go test -tags=integration ./integration/... -count=1
 
 Matrix status and backend integration notes are tracked in `docs/integration-scenarios.md`.
 
-## Using With GoForj {#using-with-goforj}
+## Using with GoForj {#using-with-goforj}
 
-Generated Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.
+GoForj Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.
 
-For generated App integration, see [Queues](/async/queues).
+For the GoForj integration, see [Queues](/async/queues).

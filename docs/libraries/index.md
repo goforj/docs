@@ -38,7 +38,7 @@ Use the [Driver Catalog](/drivers) to compare every available backend before ope
 - [Strings](/strings) provides string utilities.
 - [GoDump](/godump) provides debugging and inspection helpers.
 
-## How Libraries Relate To Apps
+## How Libraries Relate to Apps
 
 Framework pages show how an app uses each library. Library pages show standalone package APIs.
 

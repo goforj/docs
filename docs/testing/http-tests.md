@@ -13,6 +13,7 @@ Use the smallest boundary that proves the behavior.
 
 Test a controller handler directly when route registration is not the focus:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package users
 

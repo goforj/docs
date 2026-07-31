@@ -25,6 +25,7 @@ Application route groups own application policy such as authentication.
 
 Protected routes can be grouped with middleware:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 groups = append(groups,
 	web.NewRouteGroup("/api/v1", protectedRoutes, authService.RequireAuth()).
@@ -38,6 +39,7 @@ Names make middleware visible in route reports and operational views.
 
 Individual routes may receive route-specific middleware:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 web.NewRoute(http.MethodPost, "/reports", c.Store, RequireToken(c.reportsToken))
 ```
@@ -48,6 +50,7 @@ Use route-specific middleware for route-specific policy. Use group middleware wh
 
 Keep transport policy small and explicit. For example, `internal/reports/middleware.go` can require a configured reports token:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 
@@ -95,6 +98,7 @@ Middleware is not a good place for business workflows.
 
 Use the `webtest` helpers from [Web](/web) to prove both the rejected and accepted paths. Create `internal/reports/middleware_test.go`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 

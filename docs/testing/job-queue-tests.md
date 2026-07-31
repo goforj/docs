@@ -11,6 +11,7 @@ Use queue runtime tests only when dispatch, driver behavior, retries, worker lif
 
 ## Payload Tests
 
+<!-- go-example: compilable-file -->
 ```go
 package jobs
 

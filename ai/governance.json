@@ -1,0 +1,47 @@
+{
+  "activeAsOf": "2026-07-30",
+  "active": [
+    "ai/ai-docs-workflow.md",
+    "ai/docs-constitution.md",
+    "ai/docs-style-guide.md",
+    "ai/docs-versioning.md",
+    "ai/example-registry.md",
+    "ai/governance.md",
+    "ai/golden-paths.md",
+    "ai/information-architecture.md",
+    "ai/page-templates.md",
+    "ai/review-checklists.md",
+    "ai/terminology.md",
+    "ai/tone.md",
+    "ai/vision.md"
+  ],
+  "historical": [
+    "ai/docs-roadmap.md",
+    "ai/experience-audit-plan.md",
+    "ai/multi-apps-docs-plan.md"
+  ],
+  "supporting": [
+    "ai/anti-patterns.md",
+    "ai/architecture.md",
+    "ai/driver-decision-model.md",
+    "ai/framework-docs-analysis.md",
+    "ai/generated-components-model.md",
+    "ai/library-docs-model.md",
+    "ai/marketing-site-strategy.md",
+    "ai/operations-docs-model.md",
+    "ai/philosophy.md",
+    "ai/product-surfaces-model.md",
+    "ai/runnable-scenarios.md",
+    "ai/runtime-topology-model.md",
+    "ai/site-theme-system.md",
+    "ai/source-context-map.md"
+  ],
+  "forbiddenActiveReferences": [
+    "v0.20.0",
+    "v0.22.0",
+    "core/runtime-lifecycle",
+    "docs/core/runtime-lifecycle.md",
+    "core/make-commands",
+    "docs/core/make-commands.md"
+  ]
+}

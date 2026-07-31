@@ -55,8 +55,8 @@ forj admin build:api-index --strict
 
 This reference does not duplicate each make command's files, injected code, and removal behavior:
 
-- [Add Another App](/core/apps#add-another-app) covers `make:app`.
-- [Make Commands](/core/make-commands) covers controllers, commands, jobs,
+- [`make:app`](/reference/make-commands#make-app) covers App creation and removal.
+- [Make Command Reference](/reference/make-commands) covers controllers, commands, jobs,
   schedules, events, subscribers, models, migrations, and queues.
 
 ## Render
@@ -82,5 +82,5 @@ Use `forj build` when unsure.
 
 - [Code Generation](/core/code-generation)
 - [Generated Components](/core/code-generation)
-- [Make Commands](/core/make-commands)
+- [Make Command Reference](/reference/make-commands)
 - [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests)

@@ -6,6 +6,7 @@
 
 # Except README.md
 !/README.md
+!/improvements.md
 
 # Allow all markdown files in docs
 !/docs/**/*.md

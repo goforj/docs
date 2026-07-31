@@ -91,6 +91,8 @@ go get github.com/goforj/events/driver/snsevents
 
 ## Drivers {#drivers}
 
+Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
+
 |                                                                                                Driver / Backend | Mode | Fan-out | Durable | Queue Semantics | Notes |
 |----------------------------------------------------------------------------------------------------------------:| :--- | :---: | :---: | :---: | :--- |
 |      <img src="https://img.shields.io/badge/sync-546E7A?logo=go&logoColor=white" alt="Sync"> | In-process | ✓ | x | x | Root-backed synchronous dispatch in the caller path. |
@@ -654,8 +656,8 @@ Run the watcher to auto-regenerate docs on file changes:
 sh docs/watcher.sh
 ```
 
-## Using With GoForj {#using-with-goforj}
+## Using with GoForj {#using-with-goforj}
 
-Generated Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.
+GoForj Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.
 
-For generated App integration, see [Events](/async/events).
+For the GoForj integration, see [Events](/async/events).

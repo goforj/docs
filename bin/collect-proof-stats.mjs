@@ -21,9 +21,14 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 
-const root = path.resolve(process.argv[2] || path.join(process.cwd(), '..'))
-const outFile = path.join(process.cwd(), 'docs', '.vitepress', 'data', 'proof-stats.json')
+const docsRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const check = process.argv.includes('--check')
+const rootArg = process.argv.slice(2).find((arg) => arg !== '--check')
+const root = path.resolve(rootArg || path.join(docsRoot, '..'))
+const outFile = path.join(docsRoot, 'docs', '.vitepress', 'data', 'proof-stats.json')
 
 const LIBS = [
   'atlas', 'cache', 'collection', 'console', 'crypt', 'env', 'events', 'execx', 'godump',
@@ -69,15 +74,58 @@ const discoverEventDrivers = (reposRoot) => {
   return ordered
 }
 
-// Published driver matrices per swap primitive. Event availability is
-// discovered because its README also shows planned capability rows.
+// markdownSection isolates one README section so API tables elsewhere cannot inflate a Driver matrix.
+const markdownSection = (source, heading) => {
+  const startMarker = `## ${heading}`
+  const start = source.indexOf(startMarker)
+  if (start === -1) throw new Error(`missing README section ${startMarker}`)
+  const bodyStart = start + startMarker.length
+  const end = source.indexOf('\n## ', bodyStart)
+  return source.slice(bodyStart, end === -1 ? undefined : end)
+}
+
+// discoverBadgeTableDrivers reads the published first-column badge labels used by Queue, Cache, and Storage.
+const discoverBadgeTableDrivers = (reposRoot, repo, heading) => {
+  const readme = fs.readFileSync(path.join(reposRoot, repo, 'README.md'), 'utf8')
+  const section = markdownSection(readme, heading)
+  const drivers = [...section.matchAll(/<img\b[^>]*\balt="([^"]+)"[^>]*>/gi)]
+    .map((match) => match[1].trim().toLowerCase())
+  if (drivers.length === 0 || new Set(drivers).size !== drivers.length) {
+    throw new Error(`${repo}: published ${heading} table must contain unique Driver badge labels`)
+  }
+  return drivers
+}
+
+// discoverMailDrivers reads the concrete delivery implementations from Mail's published capability matrix.
+const discoverMailDrivers = (reposRoot) => {
+  const readme = fs.readFileSync(path.join(reposRoot, 'mail', 'README.md'), 'utf8')
+  const section = markdownSection(readme, 'Driver Capabilities')
+  const drivers = [...section.matchAll(/^\|\s*mail([a-z0-9]+)\s*\|/gmi)].map((match) => match[1])
+  if (drivers.length === 0 || new Set(drivers).size !== drivers.length) {
+    throw new Error('mail: published Driver Capabilities must contain unique mail Driver rows')
+  }
+  return drivers
+}
+
+// discoverDatabaseDrivers uses the framework component catalog that defines selectable generated database support.
+const discoverDatabaseDrivers = (reposRoot) => {
+  const source = fs.readFileSync(path.join(reposRoot, 'goforj', 'project', 'components_catalog.go'), 'utf8')
+  const drivers = [...source.matchAll(/ComponentDatabase[A-Za-z0-9_]*\s+ComponentKey\s*=\s*"database_([^"]+)"/g)]
+    .map((match) => match[1])
+  if (drivers.length === 0 || new Set(drivers).size !== drivers.length) {
+    throw new Error('goforj: database component catalog must contain unique database Driver keys')
+  }
+  return drivers
+}
+
+// Published Driver matrices are discovered from their owning repositories so a new or removed backend changes proof data.
 const DRIVERS = {
-  queue: ['null', 'sync', 'workerpool', 'mysql', 'postgres', 'sqlite', 'redis', 'nats', 'sqs', 'rabbitmq'],
+  queue: discoverBadgeTableDrivers(root, 'queue', 'Drivers'),
   events: discoverEventDrivers(root),
-  cache: ['null', 'file', 'memory', 'memcached', 'redis', 'nats', 'dynamodb', 'sqlite', 'postgres', 'mysql'],
-  storage: ['local', 'memory', 'redis', 'ftp', 'sftp', 's3', 'gcs', 'dropbox', 'rclone'],
-  mail: ['smtp', 'resend', 'postmark', 'mailgun', 'sendgrid', 'ses', 'log', 'fake'],
-  database: ['sqlite', 'postgres', 'mysql']
+  cache: discoverBadgeTableDrivers(root, 'cache', 'Drivers'),
+  storage: discoverBadgeTableDrivers(root, 'storage', 'Driver Matrix'),
+  mail: discoverMailDrivers(root),
+  database: discoverDatabaseDrivers(root)
 }
 
 const walkGoTestFiles = (dir, files = []) => {
@@ -102,6 +150,11 @@ const badgeCount = (readme, kind) => {
   return match ? Number(match[1]) : null
 }
 
+// sourceRevision ties the checked-in totals to exact source trees so a normal
+// docs build can reject evidence that no longer describes its inputs.
+const sourceRevision = (dir) =>
+  execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
+
 const repos = []
 for (const lib of LIBS) {
   const dir = path.join(root, lib)
@@ -123,7 +176,8 @@ for (const lib of LIBS) {
     unit: badgeCount(readme, 'unit'),
     integration: badgeCount(readme, 'integration'),
     testFns,
-    benchmarks
+    benchmarks,
+    sourceRevision: sourceRevision(dir)
   })
 }
 
@@ -153,7 +207,22 @@ const stats = {
   repos
 }
 
-fs.mkdirSync(path.dirname(outFile), { recursive: true })
-fs.writeFileSync(outFile, JSON.stringify(stats, null, 2) + '\n')
-console.log(`wrote ${outFile}`)
-console.log(stats.totals)
+const output = JSON.stringify(stats, null, 2) + '\n'
+
+if (check) {
+  const current = JSON.parse(fs.readFileSync(outFile, 'utf8'))
+  const expected = JSON.parse(output)
+  // The collection date is informational; source revisions and every proof
+  // value determine whether the checked-in evidence is current.
+  delete current.generatedAt
+  delete expected.generatedAt
+  if (JSON.stringify(current) !== JSON.stringify(expected)) {
+    throw new Error(`proof statistics are stale; run: node bin/collect-proof-stats.mjs ${root}`)
+  }
+  console.log(`proof statistics are current: ${outFile}`)
+} else {
+  fs.mkdirSync(path.dirname(outFile), { recursive: true })
+  fs.writeFileSync(outFile, output)
+  console.log(`wrote ${outFile}`)
+  console.log(stats.totals)
+}

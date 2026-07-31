@@ -5,24 +5,15 @@ description: Learn where GoForj application behavior, app exposure, wiring, conf
 
 # Project Structure
 
-A GoForj Project separates the code that implements behavior from the app that exposes and runs it.
-
-Most work follows one path:
-
-```text
-internal/...          application behavior and component integration
-        ↓
-app/                   routes, commands, schedules, lifecycle, and dependency wiring
-        ↓
-cmd/app/main.go        starts the default app binary
-```
+A GoForj Project separates application behavior, App wiring and exposure, and process startup.
 
 The default app is named `app`. Most Projects need only this app.
 
-## Two Ownership Rules
+## Three Ownership Rules
 
-1. Application behavior lives under `internal/`, either in a domain package or a component's conventional package.
-2. `app/` exposes and wires that behavior into a runnable app.
+1. `internal/` owns behavior. It should not need to know which App or runtime exposes it.
+2. `app/` owns wiring and exposure. It connects dependencies and registers routes, commands, schedules, and lifecycle hooks without becoming a business-logic package.
+3. `cmd/app/main.go` owns process entry. It starts the default App and is not the normal extension point.
 
 For example, generating a reports controller:
 
@@ -42,9 +33,11 @@ The controller implements HTTP behavior. The files under `app/` decide that the 
 
 ## Default App Layout
 
-The exact tree depends on the components selected when the Project is created. This annotated layout shows the paths you will encounter most often:
+The exact tree depends on the components selected when the Project is created. Start with the single-App layout used by most Projects; switch tabs to see how another runnable boundary fits into the same repository.
 
-```text
+::: code-group
+
+```text [Single App (most Projects)]
 .
 ├── .goforj.yml                         Project shape and local dev lifecycles
 ├── .env, .env.host                     Runtime configuration
@@ -84,7 +77,66 @@ The exact tree depends on the components selected when the Project is created. T
 └── bin/                                Compiled app binaries [generated]
 ```
 
+```text [Multi-App]
+.
+├── .goforj.yml                         Project shape, apps, and local dev lifecycles
+├── .env, .env.host                     Shared and App-prefixed runtime configuration
+├── .env.local                          Rendered local-dev overrides
+├── go.mod                              One Go module shared by every App
+│
+├── cmd/
+│   ├── app/
+│   │   ├── main.go                     Default App binary entrypoint
+│   │   └── frontend/                   Default App starter kit [Web UI]
+│   └── admin/
+│       ├── main.go                     Admin App binary entrypoint
+│       └── frontend/                   Admin App starter kit [Web UI]
+│
+├── app/
+│   ├── commands.go                     Default App command exposure
+│   ├── lifecycle.go                    Default App lifecycle hooks
+│   ├── routes.go                       Default App HTTP exposure [Web API or UI]
+│   ├── schedules.go                    Default App schedule registry [Scheduler]
+│   ├── root_cmd.go                     Default App command assembly
+│   ├── wire/                           Default App dependency graph
+│   │   ├── inject_*_app.go             Default App-owned providers
+│   │   ├── inject_*.go                 Framework-managed provider assembly
+│   │   ├── wire.go                     Framework-managed Wire declaration
+│   │   └── wire_gen.go                 Generated dependency graph
+│   │
+│   └── admin/
+│       ├── commands.go                 Admin App command exposure
+│       ├── lifecycle.go                Admin App lifecycle hooks
+│       ├── routes.go                   Admin App HTTP exposure [Web API or UI]
+│       ├── schedules.go                Admin App schedule registry [Scheduler]
+│       ├── root_cmd.go                 Admin App command assembly
+│       └── wire/                       Admin App dependency graph
+│           ├── inject_*_app.go         Admin App-owned providers
+│           ├── inject_*.go             Framework-managed provider assembly
+│           ├── wire.go                 Framework-managed Wire declaration
+│           └── wire_gen.go             Generated dependency graph
+│
+├── internal/
+│   ├── reports/                        Domain behavior shared by either App
+│   ├── users/                          Domain behavior shared by either App
+│   ├── runtime/                        Framework runtime and lifecycle support
+│   ├── http/                           HTTP runtime support [Web API or UI]
+│   ├── jobs/                           Worker runtime and job implementations
+│   ├── schedules/                      Scheduler runtime and scheduled work
+│   └── caches, queues, storages, ...   Generated resource support [by component]
+│
+├── migrations/                         Shared database migrations [Database]
+├── build/                              Per-App API and OpenAPI output [generated]
+└── bin/
+    ├── app                             Compiled default App binary [generated]
+    └── admin                           Compiled admin App binary [generated]
+```
+
+:::
+
 Paths marked with a component appear only when that component is enabled. Generated output appears after the relevant render, generation, frontend, or build step.
+
+Both layouts keep behavior under `internal/`. Each App has its own entrypoint, registration files, lifecycle hooks, and Wire graph, so it can expose a different subset of that shared behavior.
 
 ## Where Common Changes Go
 
@@ -103,7 +155,7 @@ Use the owning package for implementation and the app layer for exposure or depe
 | Starter-kit frontend | `cmd/app/frontend/` | Embedded by `cmd/app/main.go`; review the ownership note below before rerendering |
 | Migration | `migrations/` | Run through the app's migration commands |
 
-The `forj make:*` commands create the common files and update their registration points together. Start with [Make Commands](/core/make-commands), then use the linked application, data, or async guide when implementing the behavior itself.
+The `forj make:*` commands create the common files and update their registration points together. Use the [Make Command Reference](/reference/make-commands) for exact output and registration changes, then use the linked application, data, or async guide to implement the behavior itself.
 
 ## Which Files Can I Edit?
 
@@ -196,15 +248,7 @@ Add another app only when the Project needs another runnable binary or deploymen
 forj make:app admin
 ```
 
-The additional app follows the same ownership model:
-
-```text
-cmd/admin/main.go
-app/admin/
-app/admin/wire/
-```
-
-Both apps can use the same domain packages under `internal/`, while each app chooses its own routes, commands, schedules, lifecycle hooks, and providers. [Apps](/core/apps) explains when another app is appropriate and how app-prefixed commands work.
+The Multi-App tab above shows the resulting layout. Both apps can use the same domain packages under `internal/`, while each app chooses its own routes, commands, schedules, lifecycle hooks, and providers. [Apps](/core/apps) explains when another app is appropriate and how app-prefixed commands work.
 
 ## Build and Verify Changes
 

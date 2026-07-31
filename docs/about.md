@@ -73,7 +73,7 @@ The documentation has two paths:
 - A collection of hidden magic abstractions
 - A system that requires one infrastructure vendor
 
-## Who GoForj Is For
+## Who GoForj Is for
 
 - Go developers building CLIs, services, workers, and internal tools
 - Teams that value explicit behavior and long-term maintainability

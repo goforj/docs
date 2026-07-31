@@ -1112,8 +1112,8 @@ scheduler.New().Name("cleanup").Cron("0 0 * * *").Do(func(context.Context) error
 ```
 <!-- api:embed:end -->
 
-## Using With GoForj {#using-with-goforj}
+## Using with GoForj {#using-with-goforj}
 
-Generated Apps register schedules in the scheduler runtime and inject the jobs they run. Keep recurring business work in jobs instead of the schedule registry.
+GoForj Apps register schedules in the scheduler runtime and inject the jobs they run. Keep recurring business work in jobs instead of the schedule registry.
 
-For generated App integration, see [Scheduler](/async/scheduler).
+For the GoForj integration, see [Scheduler](/async/scheduler).

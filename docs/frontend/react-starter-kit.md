@@ -109,7 +109,7 @@ Its frontend lives in `cmd/admin/frontend/`. App-specific frontend variables use
 
 ## Next Steps
 
-- [Starter Kit Guide](/getting-started/starter-kits) compares the available choices.
+- [Choose a Starter Kit](/getting-started/starter-kits) compares the available choices.
 - [HTTP Services](/applications/http-services) explains the backend API boundary.
 - [Auth](/security/auth) explains generated browser authentication.
 - [forj dev](/developer-tools/forj-dev) explains the coordinated development loop.

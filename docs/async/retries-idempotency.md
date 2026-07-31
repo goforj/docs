@@ -26,6 +26,7 @@ Design the workflow, not just the transport.
 
 Application retries are opt-in on each queued job:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 job := queue.NewJob("reports:generate").
 	Payload(payload).
@@ -39,6 +40,7 @@ job := queue.NewJob("reports:generate").
 
 Use `queue.Permanent(err)` when retrying a known terminal error would waste the remaining budget:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 if errors.Is(err, ErrInvalidReport) {
 	return queue.Permanent(err)
@@ -52,6 +54,7 @@ Retry, delay, acknowledgement, and restart durability vary by driver. Prove the 
 
 This focused test uses the synchronous local driver to prove the application retry budget without a broker:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 

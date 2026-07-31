@@ -57,6 +57,7 @@ Named resources are exposed through generated accessors.
 
 Examples:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 app.Cache()
 app.Caches().Sessions()
@@ -105,7 +106,7 @@ Examples:
 
 Avoid names derived from user input, request payloads, email addresses, IDs, or unbounded values.
 
-Use [Naming Conventions](/core/naming-conventions) when choosing names for commands, jobs, schedules, events, routes, and named resources.
+Use [Naming Conventions](/reference/naming-conventions) when choosing names for commands, jobs, schedules, events, routes, and named resources.
 
 ## Metrics and Labels
 
@@ -136,5 +137,5 @@ Avoid raw paths, raw SQL, user IDs, emails, or arbitrary payload values.
 
 - [Generated Components](/core/code-generation) explains regeneration.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains backend selection.
-- [Naming Conventions](/core/naming-conventions) defines stable resource names.
+- [Naming Conventions](/reference/naming-conventions) defines stable resource names.
 - [Libraries](/libraries/) contains package-level resource behavior.

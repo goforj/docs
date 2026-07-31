@@ -21,6 +21,7 @@ forj make:controller users
 
 The command creates `internal/users/controller.go`, adds `users.NewController` to `app/wire/inject_http_controllers_app.go`, and adds the controller's routes to `app/routes.go`. Create the service in `internal/users/service.go`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package users
 
@@ -33,6 +34,7 @@ func NewService() *Service {
 
 Then add the import and provider to the App-owned `app/wire/inject_services_app.go`:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 var appSet = wire.NewSet(
 	users.NewService,
@@ -43,6 +45,7 @@ var appSet = wire.NewSet(
 
 The controller constructor makes the required dependency explicit:
 
+<!-- go-example: source-backed-excerpt -->
 ```go
 func NewController(service *Service) *Controller {
 	return &Controller{service: service}
@@ -80,6 +83,7 @@ A provider is an ordinary Go constructor or function that Wire calls while const
 
 Prefer a constructor when the function signature already describes the dependency:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func NewService(repo UserRepository) *Service {
 	return &Service{repo: repo}
@@ -92,6 +96,7 @@ Put the constructor in the narrowest appropriate App-owned Wire set. In the User
 
 Write a dedicated provider when App configuration selects an implementation or when composition converts a concrete value to a consumer-facing contract:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func provideUserRepository(source *MemoryUserRepository) UserRepository {
 	return source
@@ -102,6 +107,7 @@ Keep driver selection, configuration validation, and concrete-to-interface bindi
 
 A provider can return an error when construction cannot proceed:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func ProvideGateway(cfg GatewayConfig) (*Gateway, error) {
 	if cfg.BaseURL == "" {
@@ -139,5 +145,5 @@ Wire constructs services, controllers, managers, and registries. It does not sta
 ## Next Steps
 
 - [Provider Patterns](/core/provider-patterns) compares practical construction shapes.
-- [Wiring Recipes](/core/wiring-recipes) maps routes, commands, jobs, and other app dependencies to their provider files.
-- [Reading Wire Errors](/core/reading-wire-errors) covers common diagnostics.
+- [Wiring Recipes](/developer-tools/wiring-recipes) maps routes, commands, jobs, and other app dependencies to their provider files.
+- [Reading Wire Errors](/developer-tools/reading-wire-errors) covers common diagnostics.

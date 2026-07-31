@@ -9,7 +9,7 @@ Wire errors are compile-time graph errors.
 
 When `forj build` fails during Wire generation, the app graph could not be constructed from the provider sets. The fix is usually to add, remove, or move a provider. Do not edit `app/wire/wire_gen.go`.
 
-## Read The Chain
+## Read the Chain
 
 Start with the type Wire could not provide, then follow who needed it.
 
@@ -33,6 +33,7 @@ The fix is not to edit `app/wire/wire_gen.go`. Add the missing service provider 
 
 Likely cause: a constructor needs a value that no provider returns.
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func NewController(service *users.Service) *Controller {
 	return &Controller{service: service}
@@ -41,6 +42,7 @@ func NewController(service *users.Service) *Controller {
 
 Fix:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 var appSet = wire.NewSet(
 	// existing app providers...
@@ -50,6 +52,7 @@ var appSet = wire.NewSet(
 
 Keep the controller in the HTTP controller set:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 var httpAppControllerSet = wire.NewSet(
 	// existing controllers...
@@ -57,7 +60,7 @@ var httpAppControllerSet = wire.NewSet(
 )
 ```
 
-Use [Wiring Recipes](/core/wiring-recipes) when you are unsure which set owns a constructor.
+Use [Wiring Recipes](/developer-tools/wiring-recipes) when you are unsure which set owns a constructor.
 
 ## Wrong Set
 
@@ -90,6 +93,7 @@ wire: multiple providers for *httpx.Client
 
 Prefer domain-specific adapter types:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 type BillingGateway struct {
 	http *httpx.Client
@@ -108,6 +112,7 @@ If the duplicate is accidental, remove one provider from the set.
 
 Likely cause: a constructor asks for an interface, but the provider returns a concrete type.
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func NewService(gateway Gateway) *Service {
 	return &Service{gateway: gateway}
@@ -116,6 +121,7 @@ func NewService(gateway Gateway) *Service {
 
 If the provider owns the implementation choice, return the interface:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func ProvideGateway(cfg GatewayConfig) (Gateway, error) {
 	if !cfg.Enabled {
@@ -134,6 +140,7 @@ Wire matches exact Go types.
 
 These are different types:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 *billing.Gateway
 billing.Gateway
@@ -174,5 +181,5 @@ When Wire fails:
 
 ## Next Steps
 
-- [Wiring Recipes](/core/wiring-recipes) maps values to generated provider sets.
+- [Wiring Recipes](/developer-tools/wiring-recipes) maps values to generated provider sets.
 - [Provider Patterns](/core/provider-patterns) shows provider shapes for adapters and optional features.

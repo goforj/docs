@@ -11,6 +11,7 @@ Services call repositories. Controllers, commands, jobs, events, and schedules s
 
 ## Repository Shape
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package users
 
@@ -47,6 +48,7 @@ Repositories should not own HTTP behavior, CLI output, queue dispatch policy, ev
 
 Services should call repositories through clear methods:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 func (s *Service) Find(ctx context.Context, id string) (User, error) {
 	return s.repo.Find(ctx, id)
@@ -59,6 +61,7 @@ Keep service inputs independent from database model structs unless that type is 
 
 Use named connections when a feature has a real persistence boundary:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 analytics, err := conns.Analytics()
 ```
@@ -71,8 +74,18 @@ Repository tests can use local database drivers such as SQLite when behavior is 
 
 Use driver-specific integration tests when SQL behavior depends on MySQL or Postgres.
 
+Run the focused package test before the full suite:
+
+```bash
+go test ./internal/users
+go test ./...
+```
+
+Success means the focused repository behavior and every package using its service contract pass. When SQL semantics depend on the production Driver, add the corresponding container-backed case described in [Integration Tests](/testing/integration-tests) rather than treating SQLite as equivalent.
+
 ## Next Steps
 
 - [Transactions](/data/transactions) explains consistency boundaries.
 - [Application Services](/applications/services) explains service orchestration.
 - [Database Strategy](/data/database-strategy) explains generated connections.
+- [Integration Tests](/testing/integration-tests) covers Driver-specific persistence behavior.

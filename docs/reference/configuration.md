@@ -40,6 +40,38 @@ Driver configuration is environment-backed rather than stored in `.goforj.yml`. 
 
 The legacy `render.queue_driver` key remains accepted as migration input and is removed when GoForj next rewrites the Project configuration.
 
+## Environment File Resolution
+
+The App loads environment files before constructing its Wire graph. It searches for and applies these layers in order:
+
+1. `.env`
+2. `.env.<APP_ENV>`, such as `.env.local` or `.env.production`
+3. `.env.host` when running on the host or in Docker-in-Docker
+4. `.env.testing` when `APP_ENV=testing` or the process has Go test markers
+
+Later files override earlier file values. Values already present in the process environment, including explicitly empty values, take precedence over every file. If neither the process nor a file selects `APP_ENV`, it defaults to `local`.
+
+Each filename is discovered independently by searching the current directory and its ancestors. This lets a nested command find the Project's `.env` while still using a nearer layer when one is intentionally present.
+
+The default app uses unprefixed keys. An additional app promotes its `<APP>_<KEY>` values over the corresponding base keys after file loading. For example, `ADMIN_API_HTTP_PORT` becomes the effective `API_HTTP_PORT` for the `admin` app. The [Environment Reference](/reference/env-vars#resolution-and-naming) defines this overlay and every public variable.
+
+Generated `.env`, `.env.local`, `.env.host`, and `.env.testing` files are ignored by Git. `.env.example` is the deliberate exception: commit it as the safe inventory and keep deployment secrets in the process environment or a secret manager.
+
+## Compiled Environment Values
+
+`forj build` can package unset-only defaults or forced overrides into an app binary:
+
+```bash
+forj build --env-defaults APP_ENV=local
+forj build --env-overrides APP_ENV=production
+```
+
+Compiled defaults fill values that remain unset after normal file-backed loading. A compiled `APP_ENV` default selects its matching `.env.<APP_ENV>` file when no process value already selected an environment.
+
+Compiled overrides take precedence over process and file-backed values. A compiled `APP_ENV` override selects its matching environment file and remains authoritative after loading.
+
+Use these options for controlled packaging workflows. Prefer environment files and process environment for normal local development. See [CLI Reference](/reference/cli#framework-command-options) for the complete `forj build` option list.
+
 ## Development Tasks
 
 Development tasks use this shape:

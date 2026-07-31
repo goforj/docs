@@ -1,5 +1,7 @@
 # Multi-App Documentation Plan
 
+> **Status: Historical record.** This plan records a completed multi-app documentation effort. Use `governance.json` to find current authoring guidance.
+
 ## Scope
 
 This plan covers documentation changes needed for the current `goforj` work on branch `cmilesio/feat-multi-app-p2`.

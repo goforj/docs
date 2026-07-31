@@ -13,7 +13,7 @@ Use it for work that should run on an interval, cron expression, or calendar sch
 This guide covers how a GoForj App registers and runs schedules. For standalone construction, the complete fluent API, adapters, and locking options, see the [scheduler library page](/scheduler).
 :::
 
-## When To Use Scheduler
+## When to Use Scheduler
 
 Use the scheduler when work should begin on an interval, cron expression, or calendar schedule. Give it a stable name and call a domain service or dispatch a named job.
 
@@ -60,6 +60,7 @@ The generated task keeps the schedule identity, interval, and work together:
 
 <CodeFile path="internal/reports/daily_schedule.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package reports
 
@@ -97,6 +98,7 @@ Wire constructs the schedule and adds it to the App's schedule collection. The h
 
 <CodeFile path="app/wire/inject_schedules_app.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // appScheduleSet contains application-owned schedule providers.
 var appScheduleSet = wire.NewSet(
@@ -123,6 +125,7 @@ The App already contains the handoff that makes those entries automatic. `make:s
 
 <CodeFile path="app/schedules.go">
 
+<!-- go-example: illustrative-fragment -->
 ```go
 // Register attaches app schedules to the scheduler.
 func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
@@ -143,7 +146,7 @@ func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
 
 Schedules should have stable names.
 
-Use `category:cadence` for cadence-oriented schedules such as `reports:daily`, or `category:action` for maintenance actions such as `sessions:cleanup`. See [Naming Conventions](/core/naming-conventions) for the full naming map.
+Use `category:cadence` for cadence-oriented schedules such as `reports:daily`, or `category:action` for maintenance actions such as `sessions:cleanup`. See [Naming Conventions](/reference/naming-conventions) for the full naming map.
 
 ## Start Scheduler
 
@@ -177,6 +180,7 @@ Schedules should call domain-owned services, jobs, or command work.
 
 Good shape:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 s.Every(30).Seconds().
 	Name("monitor:poll").
@@ -191,12 +195,15 @@ Generated scheduler code can record job outcomes into metrics and inspects when 
 
 Lighthouse can expose schedule metadata and operator controls through runtime-specific integration.
 
+In focused tests, call the schedule's `Interval` and `Handle` methods directly. Assert the parsed interval, the stable `Name`, the delegated service or job call, and the returned error. Keep one App-level registration test when manually maintained schedules are added beside generated entries.
+
 ## Production
 
 In production, scheduler runtime usually needs clear singleton behavior or distributed locking when more than one process could run the same schedule.
 
 Stable schedule names make scheduler behavior understandable, but they do not prevent overlap by themselves. Add overlap protection on the schedule when the work cannot run concurrently:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 s.EveryFiveMinutes().
 	WithoutOverlapping().
@@ -207,6 +214,14 @@ s.EveryFiveMinutes().
 Use `WithoutOverlapping()` for same-process overlap control. Use `WithoutOverlappingWithLocker(...)` with a shared locker when multiple scheduler processes could run the same schedule.
 
 Do not scale scheduler processes the same way as stateless HTTP or queue workers unless the schedules and locking strategy support it. Generated scheduler registration does not add distributed locking automatically.
+
+Supervise the built scheduler Runtime in deployment:
+
+```bash
+./bin/app scheduler
+```
+
+Expected startup includes `Scheduler started`. Let one safe schedule become due and confirm its stable name and outcome in logs, metrics, or an Inspect. Send `SIGTERM` through the supervisor and confirm `Shutting down scheduler` and `Scheduler shut down` appear before the supervisor timeout. The [Scheduler Processes](/operations/scheduler-processes) runbook covers metrics ports, singleton policy, and failure response.
 
 ## Common Mistakes
 
@@ -224,5 +239,5 @@ Do not scale scheduler processes the same way as stateless HTTP or queue workers
 - [Retries and Idempotency](/async/retries-idempotency) explains safe recurring work.
 - [Runtime Topology](/core/runtime-topology) explains process boundaries.
 - [Environment Reference](/reference/env-vars#scheduler-and-process-shutdown) lists scheduler timeouts.
-- [Naming Conventions](/core/naming-conventions) defines stable schedule names.
+- [Naming Conventions](/reference/naming-conventions) defines stable schedule names.
 - [Scheduler](/scheduler) covers standalone package details.

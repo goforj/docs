@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 import fs from 'node:fs'
 import path from 'node:path'
+import release from './data/release.json'
 
 const lucideIconKeys = [
   'activity',
@@ -114,6 +115,11 @@ const truncateDescription = (value: string, max = 180) => {
   return `${trimmed.slice(0, wordBoundary > 100 ? wordBoundary : max).trim()}...`
 }
 
+const releaseAnchor = release.latest.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const expandReleaseTokens = (value: string) => value
+  .replaceAll('%%LATEST_RELEASE%%', release.latest)
+  .replaceAll('%%LATEST_RELEASE_ANCHOR%%', releaseAnchor)
+
 const getPageTitle = (path: string, html: string) => {
   const h1Match = h1Regex.exec(html)
   let pageTitle = h1Match ? clearHtmlTags(h1Match[1]).trim() : ''
@@ -127,6 +133,8 @@ const getPageTitle = (path: string, html: string) => {
 
 const splitIntoSections = (path: string, html: string) => {
   const pageTitle = getPageTitle(path, html)
+  const normalizedPath = path.replace(/\\/g, '/')
+  const searchMode = normalizedPath.includes('/libraries/') ? 'Library' : 'Framework'
   const result = html.split(headingRegex)
   result.shift()
   let parentTitles: string[] = []
@@ -142,7 +150,7 @@ const splitIntoSections = (path: string, html: string) => {
     if (!title || !content) continue
 
     if (level === 0 && pageTitle && normalizeTitle(title) === normalizeTitle(pageTitle)) {
-      sections.push({ anchor: '', titles: [pageTitle], text: clearHtmlTags(content) })
+      sections.push({ anchor: '', titles: [searchMode, pageTitle], text: clearHtmlTags(content) })
       parentTitles = [title]
       hasPageTitleSection = true
       continue
@@ -154,6 +162,7 @@ const splitIntoSections = (path: string, html: string) => {
     if (pageTitle && normalizeTitle(titles[0] || '') !== normalizeTitle(pageTitle)) {
       titles = [pageTitle, ...titles]
     }
+    titles = [searchMode, ...titles]
     const seen = new Set<string>()
     titles = titles.filter((value) => {
       const key = normalizeTitle(value)
@@ -187,7 +196,7 @@ const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.'
 const docsVersion = 'Unreleased'
-const faviconVersion = '20260526'
+const faviconVersion = '20260731-2'
 const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260527.jpg`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
@@ -508,6 +517,13 @@ async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string })
 
   const indexLines: string[] = [preamble]
   const fullChunks: string[] = [preamble]
+  const frameworkChunks: string[] = [preamble]
+  const libraryChunks: string[] = [
+    '# GoForj Libraries',
+    '',
+    '> Standalone Go libraries maintained by GoForj. Each library can be used without the GoForj framework.',
+    ''
+  ]
   let currentSection = ''
 
   for (const rel of files) {
@@ -524,14 +540,22 @@ async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string })
     }
     indexLines.push(`- [${title}](${url})${description ? `: ${description}` : ''}`)
 
-    const body = llmsStripContent(raw)
+    const body = llmsStripContent(expandReleaseTokens(raw))
     if (body) {
-      fullChunks.push(`---\n\n# ${title}\n\nURL: ${url}\n\n${body}\n`)
+      const chunk = `---\n\n# ${title}\n\nURL: ${url}\n\n${body}\n`
+      fullChunks.push(chunk)
+      if (rel.startsWith('libraries/')) {
+        libraryChunks.push(chunk)
+      } else {
+        frameworkChunks.push(chunk)
+      }
     }
   }
 
   fs.writeFileSync(path.join(siteConfig.outDir, 'llms.txt'), indexLines.join('\n') + '\n')
   fs.writeFileSync(path.join(siteConfig.outDir, 'llms-full.txt'), fullChunks.join('\n') + '\n')
+  fs.writeFileSync(path.join(siteConfig.outDir, 'llms-framework-full.txt'), frameworkChunks.join('\n') + '\n')
+  fs.writeFileSync(path.join(siteConfig.outDir, 'llms-libraries-full.txt'), libraryChunks.join('\n') + '\n')
 }
 
 type ConsolidatedPageRedirect = {
@@ -597,7 +621,7 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
     }
   },
   'core/organizing-generated-code': {
-    to: '/core/make-commands',
+    to: '/reference/make-commands',
     fragments: {
       'what-package-scope-means-in-go': 'organize-by-package-ownership',
       'the-mental-model': 'organize-by-package-ownership',
@@ -640,7 +664,7 @@ const consolidatedPageRedirects: Record<string, ConsolidatedPageRedirect> = {
     }
   },
   'developer-tools/editor-open': {
-    to: '/core/make-commands',
+    to: '/reference/make-commands',
     fragments: {
       'supported-commands': 'opening-generated-files',
       'automatic-opening': 'opening-generated-files',
@@ -861,7 +885,7 @@ const gettingStartedSidebar = sectionSidebar('Getting Started', [
   { text: 'Quickstart', link: '/getting-started/quickstart' },
   { text: 'Project Structure', link: '/getting-started/project-structure' },
   { text: 'Configuration', link: '/getting-started/configuration' },
-  { text: 'Starter Kit Guide', link: '/getting-started/starter-kits' },
+  { text: 'Choose a Starter Kit', link: '/getting-started/starter-kits' },
   { text: 'Cookbook', link: '/cookbook' }
 ])
 
@@ -871,12 +895,8 @@ const coreSidebar = sectionSidebar('Core Concepts', [
   { text: 'App Lifecycle', link: '/core/app-lifecycle' },
   { text: 'Runtime Topology', link: '/core/runtime-topology' },
   { text: 'Code Generation', link: '/core/code-generation' },
-  { text: 'Make Commands', link: '/core/make-commands' },
-  { text: 'Naming Conventions', link: '/core/naming-conventions' },
   { text: 'Dependency Injection', link: '/core/dependency-injection' },
   { text: 'Provider Patterns', link: '/core/provider-patterns' },
-  { text: 'Wiring Recipes', link: '/core/wiring-recipes' },
-  { text: 'Reading Wire Errors', link: '/core/reading-wire-errors' },
   { text: 'Drivers and Adapters', link: '/core/drivers-and-adapters' },
   { text: 'Named Resources', link: '/core/named-resources' },
   { text: 'Local-First Development', link: '/core/local-first-development' }
@@ -975,6 +995,8 @@ const operationsSidebar = sectionSidebar('Operations', [
 
 const developerToolsSidebar = sectionSidebar('Developer Tools', [
   { text: 'Overview', link: '/developer-tools/' },
+  { text: 'Wiring Recipes', link: '/developer-tools/wiring-recipes' },
+  { text: 'Reading Wire Errors', link: '/developer-tools/reading-wire-errors' },
   { text: 'Atlas', link: '/developer-tools/atlas' },
   { text: 'Atlas Debug Recipes', link: '/developer-tools/atlas-debug-recipes' },
   { text: 'forj dev', link: '/developer-tools/forj-dev' }
@@ -1010,12 +1032,14 @@ const referenceSidebar = sectionSidebar('Reference', [
   { text: 'Configuration Reference', link: '/reference/configuration' },
   { text: 'Generated Files', link: '/reference/generated-files' },
   { text: 'Generation Commands', link: '/reference/generation-commands' },
+  { text: 'Make Commands', link: '/reference/make-commands' },
+  { text: 'Naming Conventions', link: '/reference/naming-conventions' },
   { text: 'Errors', link: '/reference/errors' }
 ])
 
 const versionsSidebar = sectionSidebar('Versions', [
   { text: 'Active development', link: '/versions/' },
-  { text: 'Latest tag v0.22.0', link: '/versions/changelog#v0220' },
+  { text: `Latest tag ${release.latest}`, link: `/versions/changelog#${releaseAnchor}` },
   { text: 'Changelog', link: '/versions/changelog' }
 ])
 
@@ -1099,7 +1123,10 @@ export default defineConfig({
   title: "GoForj",
   description: siteDescription,
   cleanUrls: true,
-  appearance: 'force-dark',
+  // 'dark' — dark is the default and what a first visit gets, but the reader
+  // can switch. 'force-dark' pinned .dark on <html> permanently, which meant
+  // the entire html:not(.dark) token layer was dead code.
+  appearance: 'dark',
   vite: {
     plugins: [iconSubsetPlugin],
     build: {
@@ -1116,6 +1143,10 @@ export default defineConfig({
     // on a near-white ground. Shiki emits both and CSS vars pick.
     theme: { light: emberLightTheme, dark: emberTheme },
     config(md) {
+      md.core.ruler.before('normalize', 'goforj-release-metadata', (state) => {
+        state.src = expandReleaseTokens(state.src)
+      })
+
       const defaultFence = md.renderer.rules.fence
       md.renderer.rules.fence = (tokens, idx, options, env, self) => {
         const token = tokens[idx]
@@ -1183,13 +1214,20 @@ export default defineConfig({
     searchHydrationHead,
     motionPreferenceHead,
     deferredHashHead,
-    ['link', { rel: 'icon', type: 'image/png', sizes: '180x180', href: socialIcon }],
-    ['link', { rel: 'icon', type: 'image/png', sizes: '96x96', href: socialIcon }],
-    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: socialIcon }],
-    ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: socialIcon }],
+    ['link', {
+      rel: 'icon',
+      type: 'image/svg+xml',
+      href: faviconHref('/favicon-seam-dark.svg'),
+      media: '(prefers-color-scheme: dark)'
+    }],
+    ['link', {
+      rel: 'icon',
+      type: 'image/svg+xml',
+      href: faviconHref('/favicon-seam-light.svg'),
+      media: '(prefers-color-scheme: light)'
+    }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: socialIcon }],
     ['link', { rel: 'manifest', href: faviconHref('/site.webmanifest') }],
-    ['link', { rel: 'shortcut icon', type: 'image/png', href: socialIcon }],
     ...analyticsHead
   ],
 
@@ -1248,6 +1286,7 @@ export default defineConfig({
         _render: (src, env, md) => {
           const frontmatterMatch = src.match(/^---\n[\s\S]*?\n---\n?/)
           let title = ''
+          let searchTitle = ''
           let description = ''
           let noAutoTitle = false
           if (frontmatterMatch) {
@@ -1255,6 +1294,10 @@ export default defineConfig({
             const titleMatch = frontmatterMatch[0].match(/^title:\s*(.+)$/m)
             if (titleMatch) {
               title = titleMatch[1].trim().replace(/^['"]+|['"]+$/g, '')
+            }
+            const searchTitleMatch = frontmatterMatch[0].match(/^searchTitle:\s*(.+)$/m)
+            if (searchTitleMatch) {
+              searchTitle = searchTitleMatch[1].trim().replace(/^['"]+|['"]+$/g, '')
             }
             const descriptionMatch = frontmatterMatch[0].match(/^description:\s*(.+)$/m)
             if (descriptionMatch) {
@@ -1270,12 +1313,15 @@ export default defineConfig({
           if (title && !noAutoTitle) {
             title = title.charAt(0).toUpperCase() + title.slice(1)
           }
+          if (searchTitle) {
+            title = searchTitle
+          }
 
           let html = md.render(src, env)
           const renderedH1 = h1Regex.exec(html)
           const renderedTitle = renderedH1 ? clearHtmlTags(renderedH1[1]).trim() : ''
-          if (title && !noAutoTitle && normalizeTitle(renderedTitle) !== normalizeTitle(title)) {
-            src = `# ${title}\n\n${src}`
+          if (title && (!renderedTitle || (!noAutoTitle && normalizeTitle(renderedTitle) !== normalizeTitle(title)))) {
+            src = `# ${title} {#search-page-title}\n\n${src}`
             html = md.render(src, env)
           }
           if (description) {
@@ -1291,11 +1337,20 @@ export default defineConfig({
           return html
         },
         miniSearch: {
+          searchOptions: {
+            boost: { title: 4, titles: 2, text: 1 },
+            prefix: true,
+            fuzzy: 0.2
+          },
           _splitIntoSections: splitIntoSections
         }
       }
     },
-    logo: '/assets/goforj-v7.png',
+    logo: {
+      dark: '/favicon-seam-dark.svg',
+      light: '/favicon-seam-light.svg',
+      alt: 'GoForj'
+    },
 
     nav: [
       // Four documentation modes plus one product-discovery destination. The
@@ -1342,6 +1397,7 @@ export default defineConfig({
               { text: 'Applications', link: '/applications/' },
               { text: 'Runnable Scenarios', link: '/scenarios/' },
               { text: 'Data and Persistence', link: '/data/' },
+              { text: 'Async and Workflows', link: '/async/' },
               { text: 'Security', link: '/security/' },
               { text: 'Frontend', link: '/frontend/' },
               { text: 'Testing', link: '/testing/' }
@@ -1350,7 +1406,6 @@ export default defineConfig({
           {
             text: 'Operate',
             items: [
-              { text: 'Async', link: '/async/' },
               { text: 'Operations', link: '/operations/' },
               { text: 'Developer Tools', link: '/developer-tools/' }
             ]

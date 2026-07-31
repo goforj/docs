@@ -25,6 +25,7 @@ Most Apps do not need custom lifecycle hooks. GoForj-managed databases, queues, 
 
 Use `app/lifecycle.go` when the App has a process-wide resource that GoForj does not manage. For example, an App with a custom OpenTelemetry pipeline may use a batch span processor. The processor exports spans asynchronously, so its `TracerProvider` must shut down before the process exits:
 
+<!-- go-example: illustrative-fragment -->
 ```go
 package app
 

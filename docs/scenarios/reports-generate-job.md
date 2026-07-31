@@ -686,7 +686,7 @@ Then run:
 forj build
 ```
 
-Business code does not change. `GenerateJob` still dispatches `reports:generate`, and source-aware development still runs workers with `forj worker`.
+Business code does not change. `GenerateJob` still dispatches `reports:generate`. During development, the source-aware worker runs with `forj worker`. In deployment, the process supervisor runs `./bin/app worker`.
 
 ## Common Mistakes
 
