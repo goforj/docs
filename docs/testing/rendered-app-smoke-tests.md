@@ -1,9 +1,9 @@
 ---
-title: Rendered App Smoke Tests
-description: How GoForj contributors validate templates and generated Apps through disposable rendered smoke tests.
+title: Rendered Project Smoke Tests
+description: How GoForj contributors validate templates and generators through disposable rendered Projects.
 ---
 
-# Rendered App Smoke Tests
+# Rendered Project Smoke Tests
 
 Rendered App smoke tests validate that GoForj templates and generators produce a working App.
 
@@ -29,7 +29,7 @@ Rendered smoke tests catch:
 - missing imports
 - invalid generated accessors
 - Wire generation failures
-- generated App compile failures
+- rendered output compile failures
 - generated test failures
 - dependency replacement issues
 - multi-app wiring or binary-entrypoint regressions when the smoke target includes additional apps
