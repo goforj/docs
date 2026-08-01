@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/mail
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png?v=1" width="300" alt="mail logo">
+  <img src="https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png" width="300" alt="mail logo">
 </p>
 
 <p align="center">
@@ -19,7 +19,6 @@ repoUrl: https://github.com/goforj/mail
   <a href="https://github.com/goforj/mail/actions/workflows/ci.yml"><img src="https://github.com/goforj/mail/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
   <img src="https://img.shields.io/github/v/tag/goforj/mail?label=version&sort=semver&filter=%21mailses%2A" alt="Latest tag">
-  <a href="https://goreportcard.com/report/github.com/goforj/mail"><img src="https://goreportcard.com/badge/github.com/goforj/mail" alt="Go Report Card"></a>
   <a href="https://codecov.io/gh/goforj/mail"><img src="https://codecov.io/gh/goforj/mail/graph/badge.svg?token=PJJVA66P5X" alt="Codecov"></a>
 <!-- test-count:embed:start -->
 <img src="https://img.shields.io/badge/unit_tests-118-brightgreen" alt="Unit tests (executed count)">
@@ -1069,7 +1068,7 @@ fmt.Println(fake.SentCount())
 
 ## Development {#development}
 
-Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. The `docs`, `examples`, and `mailses` directories are separate Go modules and can be tested from their own directories when changed. The docs watcher remains available as `sh docs/watcher.sh`.
+Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. Run `make docs-watch` to regenerate documentation as source files change. The `docs`, `examples`, and `mailses` directories are separate Go modules and can be tested from their own directories when changed.
 
 ## Using with GoForj {#using-with-goforj}
 

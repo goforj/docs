@@ -7,7 +7,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/console/main/docs/assets/logo.png?v=1" width="300" alt="console logo">
+  <img src="https://raw.githubusercontent.com/goforj/console/main/docs/assets/logo.png" width="300" alt="console logo">
 </p>
 
 <p align="center">
