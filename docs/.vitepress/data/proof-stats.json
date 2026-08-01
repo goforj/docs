@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30",
+  "generatedAt": "2026-08-01",
   "totals": {
     "unitTests": 1461,
     "integrationTests": 952,
@@ -77,7 +77,7 @@
       "integration": null,
       "testFns": 78,
       "benchmarks": 0,
-      "sourceRevision": "18b2c7c6af06cb8b09f85a144501c55fc9037b6f"
+      "sourceRevision": "f2029e5346cf9e28eb01802cbbb3f77efef61dc7"
     },
     {
       "repo": "cache",
@@ -85,7 +85,7 @@
       "integration": 118,
       "testFns": 240,
       "benchmarks": 5,
-      "sourceRevision": "1993e4abec15a90720f0aaaf1aa065142d2e5c34"
+      "sourceRevision": "5ab5e9cbabd399576026d337f50b9df62c00aa8e"
     },
     {
       "repo": "collection",
@@ -93,7 +93,7 @@
       "integration": null,
       "testFns": 380,
       "benchmarks": 0,
-      "sourceRevision": "7414fbe68999413154dbfb90d895666cb485b045"
+      "sourceRevision": "a9c56c7894e2acc2bf0ce105cdd938dedc55ca9e"
     },
     {
       "repo": "console",
@@ -101,7 +101,7 @@
       "integration": null,
       "testFns": 212,
       "benchmarks": 0,
-      "sourceRevision": "36ba7580fb90194217df6717c89d200192265f40"
+      "sourceRevision": "e1883f6dcd15fdb6b98c45d26ca482c365d0b7d7"
     },
     {
       "repo": "crypt",
@@ -109,7 +109,7 @@
       "integration": null,
       "testFns": 50,
       "benchmarks": 3,
-      "sourceRevision": "5897c5aad5d97ce42bff6aa0a53b9ffbcc1439d2"
+      "sourceRevision": "6011c59bec66fa3562878dbabaed50f21b707754"
     },
     {
       "repo": "env",
@@ -117,7 +117,7 @@
       "integration": null,
       "testFns": 98,
       "benchmarks": 0,
-      "sourceRevision": "f598369829d0257762efef939b4f544cd4e15ebb"
+      "sourceRevision": "a243636d13c720753db746164307ec1327618515"
     },
     {
       "repo": "events",
@@ -125,7 +125,7 @@
       "integration": 86,
       "testFns": 119,
       "benchmarks": 7,
-      "sourceRevision": "c6cb61599372fa3a639cd2cf3d71761c9240a0c2"
+      "sourceRevision": "93b83a2bf8aafdd525406e04104b0d77a4a83ca8"
     },
     {
       "repo": "execx",
@@ -133,7 +133,7 @@
       "integration": null,
       "testFns": 129,
       "benchmarks": 2,
-      "sourceRevision": "b9caba0c079fd45bd35b9b95b5e0531426f0a523"
+      "sourceRevision": "2de4f085fa92416d133c472ef6e0d53857e5a3ed"
     },
     {
       "repo": "godump",
@@ -141,7 +141,7 @@
       "integration": null,
       "testFns": 105,
       "benchmarks": 0,
-      "sourceRevision": "4daf36328083428bba7156bb520cf463bccc2770"
+      "sourceRevision": "ee749adbc2002d28df33d1f0ae5d5afce77fb9e9"
     },
     {
       "repo": "httpx",
@@ -149,7 +149,7 @@
       "integration": null,
       "testFns": 124,
       "benchmarks": 0,
-      "sourceRevision": "1fe57c0e5f155e43d22236fb646b97eed810aea1"
+      "sourceRevision": "e6e073db6d275b38830028ae9024164bb68ee92d"
     },
     {
       "repo": "mail",
@@ -157,7 +157,7 @@
       "integration": null,
       "testFns": 88,
       "benchmarks": 3,
-      "sourceRevision": "8ef81d573ee0074a0796a89c5facdcb42a8c5578"
+      "sourceRevision": "d18e4698017bb016cf747c40f94f568ac920ba63"
     },
     {
       "repo": "metrics",
@@ -165,7 +165,7 @@
       "integration": null,
       "testFns": 61,
       "benchmarks": 10,
-      "sourceRevision": "376541b26098eaafdae8af0e50e665773673c4b8"
+      "sourceRevision": "49e7417dc921b77a63852d341d128ea249b4c24c"
     },
     {
       "repo": "queue",
@@ -173,7 +173,7 @@
       "integration": 618,
       "testFns": 673,
       "benchmarks": 6,
-      "sourceRevision": "57fb94a5d6d4e359d61d06137662f51ceb51ffab"
+      "sourceRevision": "2e01ce48b1d61ae62042044656d7659f3c16cf24"
     },
     {
       "repo": "scheduler",
@@ -181,7 +181,7 @@
       "integration": null,
       "testFns": 80,
       "benchmarks": 0,
-      "sourceRevision": "5cc40a8815763070e93b030fc25c3032ecc90981"
+      "sourceRevision": "08e837e8ef074a9ba36a315f3e9e6a25757fa354"
     },
     {
       "repo": "storage",
@@ -189,7 +189,7 @@
       "integration": 130,
       "testFns": 276,
       "benchmarks": 1,
-      "sourceRevision": "bdb0444469921ff01dac7a8662ba5235da11d4d9"
+      "sourceRevision": "709a6540b007816282fa88a27344da60d73f0096"
     },
     {
       "repo": "str",
@@ -197,7 +197,7 @@
       "integration": null,
       "testFns": 96,
       "benchmarks": 10,
-      "sourceRevision": "d39af05ee1b550f08c493ca8d095922eb21ba8a8"
+      "sourceRevision": "e8402b9136fce20c4fa8d973fe3ae731e9cf2bcc"
     },
     {
       "repo": "web",
@@ -205,7 +205,7 @@
       "integration": null,
       "testFns": 460,
       "benchmarks": 36,
-      "sourceRevision": "6f264ddcdf2f200db73e78d592fa78b1f97ea208"
+      "sourceRevision": "8ae67c788fbf8c8ac3c0d0c6ca73d5df221b3b2e"
     },
     {
       "repo": "wire",
@@ -213,7 +213,7 @@
       "integration": null,
       "testFns": 132,
       "benchmarks": 2,
-      "sourceRevision": "ef32273832b0c7798996a7f13770aa1cd628b96b"
+      "sourceRevision": "8c74c4da7c0f4a47ad815ea61dc387d1e3c6ee80"
     }
   ]
 }
