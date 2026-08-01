@@ -42,27 +42,27 @@ help: ##@other Show this help.
 # docs
 #----------------------
 
-docs-generate: ##@docs Generate docs pages and example manifest
+docs-generate: ##@documentation Generate docs pages and example manifest
 	@cd backend && go run . docs:generate
 
-docs-proof-stats: ##@docs Refresh checked-in proof statistics from sibling repositories
+docs-proof-refresh: ##@documentation Refresh checked-in proof statistics from sibling repositories
 	@cd docs && npm run proof:refresh
 
-docs-check-proof-stats: ##@docs Verify checked-in proof statistics match sibling repositories
+docs-proof-check: ##@documentation Verify checked-in proof statistics match sibling repositories
 	@cd docs && npm run proof:check
 
-docs-check-scenarios: ##@docs Verify generated scenario pages match framework specs
+docs-scenarios-check: ##@documentation Verify generated scenario pages match framework specs
 	@cd ../goforj && go run ./cmd/forj scenario:generate --all --check
 
-docs-build: docs-check-proof-stats docs-check-scenarios ##@docs Verify generated evidence and build VitePress docs
+docs-build: docs-proof-check docs-scenarios-check ##@documentation Verify generated evidence and build VitePress docs
 	@cd docs && npm run build
 
-docs-embed: ##@docs Copy built docs into backend embed folder
+docs-embed: ##@documentation Copy built docs into backend embed folder
 	@rm -rf backend/frontend/dist
 	@mkdir -p backend/frontend/dist
 	@cp -R docs/.vitepress/dist/. backend/frontend/dist/
 
-docs-package: ##@docs Generate + build docs and stage for backend
+docs-package: ##@documentation Generate + build docs and stage for backend
 	@$(MAKE) docs-generate
 	@$(MAKE) docs-build
 	@$(MAKE) docs-embed
@@ -74,7 +74,7 @@ docs-package: ##@docs Generate + build docs and stage for backend
 DOCKER_PROD_IMAGE ?= docs-web:latest
 DOCKER_PROD_PUSH ?= 0
 
-docker-production: ##@docker Build the production web image
+docker-build-prod: ##@docker Build the production web image
 	@docker buildx build \
 		-f containers/web/Dockerfile \
 		--build-arg GA_MEASUREMENT_ID=$(GA_MEASUREMENT_ID) \
@@ -82,13 +82,13 @@ docker-production: ##@docker Build the production web image
 		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
 		.
 
-docker-build-prod: docker-generate-docs-prod docker-production ##@docker Generate docs and build production image
+docker-package-prod: docker-generate-prod docker-build-prod ##@docker Generate docs and build the production image
 
-docker-generate-docs-prod: ##@docker Generate docs from upstream repos in a one-off container (updates docs/libraries/*.md)
+docker-generate-prod: ##@docker Generate docs from upstream repositories in a one-off container
 	@$(COMPOSE_COMMAND) run --rm --build docs-generate
 
 docker-deploy-prod: ##@docker Generate docs, build prod image, and roll web container
-	@$(MAKE) docker-build-prod
+	@$(MAKE) docker-package-prod
 	@$(COMPOSE_COMMAND) up -d --force-recreate web
 
 #----------------------
