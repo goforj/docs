@@ -8,6 +8,7 @@ import StarterKitOptions from './components/StarterKitOptions.vue'
 import SitePreview from './components/SitePreview.vue'
 import CodeFile from './components/CodeFile.vue'
 import MakeCommandTabs from './components/MakeCommandTabs.vue'
+import LighthouseProductView from './components/LighthouseProductView.vue'
 import './custom.css'
 
 /* The hero is imported STATICALLY on purpose. As an async component it
@@ -683,6 +684,7 @@ export default {
     ctx.app.component('GoForjLiveTerminal', GoForjLiveTerminal)
     ctx.app.component('CodeFile', CodeFile)
     ctx.app.component('MakeCommandTabs', MakeCommandTabs)
+    ctx.app.component('LighthouseProductView', LighthouseProductView)
   },
   Layout: () => {
     const { theme } = useData()

@@ -113,7 +113,7 @@ Three drivers behind generated connections and the ORM. Dialect differences live
 | `postgres` | Production relational database |
 | `mysql` | Production relational database and the current `forj new` default |
 
-Details: [database strategy](/data/database-strategy) · [migrations](/data/migrations)
+Details: [database connections](/data/database-strategy) · [migrations](/data/migrations)
 
 ## How Selection Works
 

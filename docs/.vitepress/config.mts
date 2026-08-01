@@ -933,7 +933,7 @@ const frontendSidebar = sectionSidebar('Frontend', [
 
 const dataSidebar = sectionSidebar('Data and Persistence', [
   { text: 'Overview', link: '/data/' },
-  { text: 'Database Strategy', link: '/data/database-strategy' },
+  { text: 'Database Connections', link: '/data/database-strategy' },
   { text: 'Migrations', link: '/data/migrations' },
   { text: 'Repositories', link: '/data/repositories' },
   { text: 'Transactions', link: '/data/transactions' },
@@ -989,6 +989,7 @@ const operationsSidebar = sectionSidebar('Operations', [
   { text: 'Metrics', link: '/operations/metrics' },
   { text: 'Inspects', link: '/operations/inspects' },
   { text: 'Lighthouse', link: '/operations/lighthouse' },
+  { text: 'Performance Benchmarks', link: '/operations/performance-benchmarks' },
   { text: 'Backup and Restore', link: '/operations/backups' }
 ])
 
@@ -1029,7 +1030,7 @@ const referenceSidebar = sectionSidebar('Reference', [
   { text: 'CLI Reference', link: '/reference/cli' },
   { text: 'Environment Reference', link: '/reference/env-vars' },
   { text: 'Configuration Reference', link: '/reference/configuration' },
-  { text: 'Generated Files', link: '/reference/generated-files' },
+  { text: 'File Ownership', link: '/reference/generated-files' },
   { text: 'Generation Commands', link: '/reference/generation-commands' },
   { text: 'Make Commands', link: '/reference/make-commands' },
   { text: 'Naming Conventions', link: '/reference/naming-conventions' },

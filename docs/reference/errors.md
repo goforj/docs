@@ -21,7 +21,7 @@ Likely causes:
 
 Start with:
 
-- [Generated Components](/core/code-generation)
+- [Code Generation](/core/code-generation)
 - [Generation Commands](/reference/generation-commands)
 - [Configuration Reference](/reference/configuration)
 
@@ -40,7 +40,7 @@ Start with:
 - [Providers](/core/dependency-injection#providers)
 - [Wiring Recipes](/developer-tools/wiring-recipes)
 - [Reading Wire Errors](/developer-tools/reading-wire-errors)
-- [Generated Files](/reference/generated-files)
+- [File Ownership](/reference/generated-files)
 
 ## Runtime Readiness Errors
 

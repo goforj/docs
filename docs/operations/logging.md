@@ -81,6 +81,22 @@ Each request event retains named fields for URI, method, status, latency, and cl
 
 Console output uses a compact value-oriented line with status-aware color. JSON output and registered log sinks retain the structured field names, so machine processing does not depend on console formatting.
 
+An App logger can route one structured entry to several destinations. `AddSink` preserves the simple synchronous callback API. Use `AddSinkWithOptions` when a destination needs error isolation or a bounded asynchronous queue:
+
+<!-- go-example: illustrative-fragment -->
+```go
+if err := appLogger.AddSinkWithOptions(auditSink, logger.SinkOptions{
+	Name:          "audit",
+	Async:         true,
+	QueueCapacity: 256,
+	Overflow:      logger.SinkOverflowDropOldest,
+}); err != nil {
+	return err
+}
+```
+
+Registrations append; they do not replace process output or an earlier sink. Synchronous sinks run in the logging path, so keep them fast. Asynchronous sinks preserve accepted entries in FIFO order and make overload behavior explicit with `block`, `drop-newest`, or `drop-oldest`. Flush managed sinks from an App shutdown hook with `appLogger.FlushSinks(ctx)` so accepted entries get the remaining shutdown budget.
+
 Disable access logs for a runtime where request volume would hide higher-signal events, then rely on metrics and inspects for the intended visibility.
 
 Keep access logs enabled during a new deployment until the request path, status, and latency are understood. If you disable them for steady-state volume, retain an explicit route-level metric and a safe Inspect sampling policy; otherwise a 5xx increase has no request-level path back to an operator.
@@ -97,7 +113,16 @@ APP_LOG_TIME
 
 Use structured fields that answer an operational question: App identity, Runtime source, route pattern, queue or schedule name, status, and latency. The request context can carry the `trace_id` correlation field used by Inspects, but the product surface is still called an Inspect.
 
-Never log authorization headers, cookies, credentials, raw queue payloads, or unredacted request bodies by default. Local HTTP error-response capture is intentionally local-environment behavior; do not rely on it as a production payload-dump mechanism.
+Never log authorization headers, cookies, credentials, raw queue payloads, or unredacted request bodies by default. Before deduplication, process output, or sink delivery, the App logger redacts common secret-bearing field names and high-confidence message forms such as bearer tokens and `password=...` assignments.
+
+Extend that mandatory policy for application-specific data:
+
+```dotenv
+APP_LOG_REDACT_KEYS=session_id,customer_reference
+APP_LOG_REDACT_MESSAGE_PATTERNS=["client_secret=[^ ]+","session=[^ ]+"]
+```
+
+The first value is a comma-separated list of additional case-insensitive field names. The second is a JSON array of regular expressions; invalid JSON or expressions fail during logger construction instead of silently weakening the policy. These controls supplement the framework defaults rather than disabling them. Redaction is a safety net, not permission to log whole payloads. Local HTTP error-response capture remains intentionally local-environment behavior.
 
 ## Failure Modes
 

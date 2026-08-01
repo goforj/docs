@@ -5,7 +5,7 @@ description: How the React starter kit is generated, owned, built, and served in
 
 # React Starter Kit
 
-The React starter kit is a generated client-side application shell for Apps with Web UI enabled.
+The React starter kit gives Apps with Web UI enabled an App-owned client-side shell.
 
 It uses React 19, Vite, TypeScript, Tailwind CSS, shadcn/ui, and React Router. Its product surface matches the Vue kit so choosing a frontend framework does not create a different GoForj application model.
 
@@ -113,3 +113,4 @@ Its frontend lives in `cmd/admin/frontend/`. App-specific frontend variables use
 - [HTTP Services](/applications/http-services) explains the backend API boundary.
 - [Auth](/security/auth) explains generated browser authentication.
 - [forj dev](/developer-tools/forj-dev) explains the coordinated development loop.
+- [`make:app` Reference](/reference/make-commands#make-app) lists starter-kit and component options.

@@ -7,7 +7,13 @@ description: Agent support for GoForj projects, including local guidance, skills
 
 Atlas gives AI coding agents enough local project context to work inside a GoForj App without guessing at framework conventions.
 
+<p class="gf-atlas-banner"><img src="https://raw.githubusercontent.com/goforj/atlas/main/docs/assets/banner.png" alt="GoForj Atlas — a map for your coding agent" data-no-lightbox="true"></p>
+
 It is optional, but first-class. During `forj new`, the `Atlas - Agent Support` step can install agent guidance for the tools you use. Atlas can also be added later from an existing project.
+
+If you are building a GoForj Project, use this guide and the `forj atlas:*` commands. That CLI path installs the right project files and runs Atlas without requiring a separate Atlas binary. Use the [standalone Atlas library reference](/atlas) only when embedding Atlas in another Go program or contributing to its Go module.
+
+Atlas starts with read-only project inspection. GoForj make commands remain the write path for framework scaffolding, so agent context does not become an arbitrary shell or file-mutation API.
 
 ## Install and Verify
 
@@ -35,7 +41,7 @@ forj atlas:install --dry-run
 forj atlas:update --dry-run
 ```
 
-## What Atlas adds
+## What Atlas Adds
 
 Atlas installs lightweight project files that teach agents the GoForj way to build:
 
@@ -47,7 +53,14 @@ Atlas installs lightweight project files that teach agents the GoForj way to bui
 
 The goal is not to make agents louder. The goal is to make them less surprising.
 
-## Project-owned skills
+| Layer | What It Gives the Agent |
+| --- | --- |
+| Guidance | Project-wide GoForj conventions in the agent's native instruction file. |
+| Skills | Focused workflows selected for the Project's components, Apps, and starter kit. |
+| MCP context | Read-only project layout, ownership, docs, routes, resources, runtime evidence, and validation plans. |
+| Project skills | Team-specific rules under `.ai/skills` that Atlas synchronizes into each selected agent's native format. |
+
+## Project-Owned Skills
 
 Atlas ships with built-in GoForj skills, but your project can add its own.
 
@@ -113,7 +126,7 @@ Choose individual agents and surfaces when you want a smaller or more explicit i
 forj atlas:install --agent codex --agent copilot --agent gemini --guidelines --skills --mcp
 ```
 
-## Supported agents
+## Supported Agents
 
 Atlas is designed around local project files and editor-readable instructions, so the same project can support multiple agents:
 
@@ -133,7 +146,7 @@ Atlas writes each agent's native project files:
 | GitHub Copilot | `.github/copilot-instructions.md` | `.github/instructions/*.instructions.md` | `.vscode/mcp.json` |
 | Gemini CLI | `GEMINI.md` | `.gemini/skills/*/GEMINI.md` | `.gemini/settings.json` |
 
-## MCP context
+## MCP Context
 
 Atlas can expose GoForj context through an MCP server. The MCP server loads docs and project metadata locally, then serves focused slices of context to the agent.
 
@@ -163,7 +176,7 @@ Atlas reports the active docs version and revision through `application-info` an
 
 Use `version-alignment` when an agent needs to compare the project GoForj version, Atlas version, and active docs bundle before following docs from a branch or release.
 
-## Workflow skills
+## Workflow Skills
 
 Atlas installs workflow skills for high-leverage GoForj changes. They are short, task-focused guides that tell an agent which app owns the change, which `forj make:*` command to prefer, which generated files not to edit by hand, which docs sections to read, and which validation commands prove the work.
 
@@ -182,7 +195,9 @@ Built-in workflow skills cover:
 
 Atlas also includes starter-kit overlays for Vue, React, and templ/htmx projects. When a frontend task touches pages, screens, dashboards, login, auth, or UI behavior, the workflow plan can point the agent at the matching starter-kit skill so edits stay in the owning app's frontend tree.
 
-## Agent workflow examples
+Skills are entry points into verified workflows, not a second copy of the documentation. They direct the agent to bounded docs sections, current project evidence, file-ownership policy, and validation appropriate to the task.
+
+## Agent Workflow Examples
 
 Agents should use Atlas tools together instead of reading the whole docs site or guessing from filenames.
 
@@ -238,13 +253,15 @@ browser-logs app="app" limit=50
 
 That gives the agent app/runtime identity, local URLs, recent logs, metrics labels, browser errors, and known operator resources before code changes begin.
 
+The runtime evidence tools do not require the Lighthouse browser UI to be open. When Lighthouse-backed local evidence exists, Atlas can include its links or records; when logs, browser entries, routes, URLs, or metrics targets are absent, it reports the missing evidence instead of inventing it.
+
 For human-readable versions of common evidence loops, see [Atlas Debug Recipes](/developer-tools/atlas-debug-recipes).
 
 `runtime-snapshot` and `debug-plan` are evidence tools. They report missing logs, URLs, routes, browser entries, metrics targets, or resource links instead of inventing values.
 
 `generated-file-policy` reports classification, preferred action, and ownership for generated files, app-owned files, app-specific files, migrations, frontend files, config, docs, and unknown paths. Projects can override ownership rules in `.goforj/atlas.json`.
 
-## Daily use
+## Daily Use
 
 Most users do not need to run Atlas commands every day. Once installed, your agent reads the local guidance files and, when configured, asks the MCP server for focused docs context.
 

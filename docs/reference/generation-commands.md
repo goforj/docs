@@ -81,6 +81,6 @@ Use `forj build` when unsure.
 ## Related Pages
 
 - [Code Generation](/core/code-generation)
-- [Generated Components](/core/code-generation)
+- [Code Generation](/core/code-generation)
 - [Make Command Reference](/reference/make-commands)
 - [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests)

@@ -77,6 +77,36 @@ app/routes.go                                 App-owned route composition
 
 Additional apps use the same shape under `app/<name>/wire/` and `app/<name>/routes.go`.
 
+This is where application services belong. GoForj supplies the framework providers, but your App-owned `_app.go` files are the normal place to add constructors for services, repositories, gateways, clients, and adapters used by that App.
+
+## Share a Service Between Apps
+
+Sharing an `internal` package does not share a runtime singleton. Each App has its own entrypoint and Wire graph, so each binary constructs the service for itself:
+
+::: code-group
+
+<!-- go-example: illustrative-fragment -->
+```go [app/wire/inject_services_app.go]
+var appSet = wire.NewSet(
+	reports.NewService,
+	app.NewLifecycleRegistry,
+	runtime.NewTimeouts,
+)
+```
+
+<!-- go-example: illustrative-fragment -->
+```go [app/admin/wire/inject_services_app.go]
+var appSet = wire.NewSet(
+	reports.NewService,
+	admin.NewLifecycleRegistry,
+	runtime.NewTimeouts,
+)
+```
+
+:::
+
+Both Apps reuse `internal/reports.Service`, but the default App might expose it through a public controller while `admin` exposes staff-only routes and commands. Adding the constructor to one App does not silently add it to the other.
+
 ## Providers
 
 A provider is an ordinary Go constructor or function that Wire calls while constructing an App. Its parameters declare dependencies and its return type supplies a value to another constructor.
@@ -118,6 +148,41 @@ func ProvideGateway(cfg GatewayConfig) (*Gateway, error) {
 ```
 
 Wire propagates that error through App construction. Resolve configuration near the root and pass typed values down so malformed configuration fails during construction rather than during a later request or job.
+
+### Organize your own injector sets
+
+When one service area has several providers, keep them in another App-owned `_app.go` file and include the set from `appSet`:
+
+::: code-group
+
+<!-- go-example: illustrative-fragment -->
+```go [app/wire/inject_billing_app.go]
+package wire
+
+import (
+	"github.com/goforj/wire"
+	"example.com/acme/internal/billing"
+)
+
+var billingSet = wire.NewSet(
+	billing.NewGateway,
+	billing.NewRepository,
+	billing.NewService,
+)
+```
+
+<!-- go-example: illustrative-fragment -->
+```go [app/wire/inject_services_app.go]
+var appSet = wire.NewSet(
+	billingSet,
+	app.NewLifecycleRegistry,
+	runtime.NewTimeouts,
+)
+```
+
+:::
+
+The custom injector remains ordinary App-owned Go code. Nesting it in `appSet` connects it to the root graph without editing `wire_gen.go` or hiding dependencies behind a registry.
 
 ### Provider boundaries
 

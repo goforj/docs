@@ -25,7 +25,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 - Shape JSON responses and errors. [Responses and Errors](/applications/responses-errors)
 - Add middleware to a route or group. [Middleware](/applications/middleware)
 - See every route the App serves: `forj route:list`. [Routes](/applications/routes)
-- Serve Swagger and OpenAPI. [OpenAPI](/applications/api-index#serve-openapi)
+- Serve the OpenAPI document and browser reference. [OpenAPI](/applications/api-index#serve-openapi)
 - Call an external API with a typed client. [HTTP Clients](/applications/http-clients)
 - Add health and readiness checks. [Health and Readiness](/operations/health-readiness)
 
@@ -42,7 +42,7 @@ Every entry answers one "how do I" question and links to the page that owns the 
 
 ## Data
 
-- Choose a database and driver. [Database Strategy](/data/database-strategy)
+- Choose a database and driver. [Database Connections](/data/database-strategy)
 - Decide local versus production drivers for any primitive. [Driver Selection](/data/driver-selection)
 - Write and run migrations: `forj migrate`. [Migrations](/data/migrations)
 - Put reads and writes behind a boundary. [Repositories](/data/repositories)

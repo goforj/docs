@@ -91,8 +91,6 @@ go get github.com/goforj/events/driver/snsevents
 
 ## Drivers {#drivers}
 
-Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
-
 |                                                                                                Driver / Backend | Mode | Fan-out | Durable | Queue Semantics | Notes |
 |----------------------------------------------------------------------------------------------------------------:| :--- | :---: | :---: | :---: | :--- |
 |      <img src="https://img.shields.io/badge/sync-546E7A?logo=go&logoColor=white" alt="Sync"> | In-process | ✓ | x | x | Root-backed synchronous dispatch in the caller path. |
@@ -646,18 +644,14 @@ fmt.Printf("%T\n", record.Event)
 ```
 <!-- api:embed:end -->
 
-## Docs Tooling {#docs-tooling}
+## Development {#development}
 
-The repository includes lightweight docs tooling under `docs/`.
+Use `make test` for root-module tests, `make vet` for static checks, `make generate` to refresh generated documentation, and `make integration` for the separate integration module. Integration runs may require local services. Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory.
 
-Run the watcher to auto-regenerate docs on file changes:
-
-```bash
-sh docs/watcher.sh
-```
+The docs watcher remains available as `sh docs/watcher.sh`.
 
 ## Using with GoForj {#using-with-goforj}
 
 GoForj Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.
 
-For the GoForj integration, see [Events](/async/events).
+For the App workflow, see [Events](/async/events).

@@ -471,7 +471,9 @@ forj route:list
 
 Expected output includes:
 
-- `/api/v1/uploads`
+```text
+/api/v1/uploads
+```
 
 ## Try the Route
 

@@ -94,6 +94,20 @@ Middleware is a good fit for:
 
 Middleware is not a good place for business workflows.
 
+## Common Middleware Needs
+
+The Web library provides reusable middleware; App route setup decides where each policy applies:
+
+- [CORS](/web#webmiddleware-cors) for explicit browser origins
+- [body limits](/web#webmiddleware-bodylimit) before binding large request payloads
+- [timeouts](/web#webmiddleware-timeout) around bounded request work
+- [trusted proxy and real-IP handling](/web#webmiddleware-proxy) before using client IP for security policy
+- [secure response headers](/web#webmiddleware-secure) and [CSRF protection](/web#webmiddleware-csrf) for browser-facing routes
+- [compression](/web#compression-middleware) for suitable response bodies
+- [rate limiting](/web#rate-limiting-middleware) for request-level admission control
+
+The built-in rate-limiter memory store is process-local. It is appropriate for one process or deliberately per-instance limits, but replicas do not share its counters. A deployment that requires one limit across replicas needs a shared backend and an application-owned adapter, such as a generated cache store using its [rate-limit operation](/cache#rate-limiting). Configure trusted proxies before keying limits by `Context.RealIP`, and keep the limiter store alive for the lifetime of the App rather than constructing it per request.
+
 ## Testing Middleware
 
 Use the `webtest` helpers from [Web](/web) to prove both the rejected and accepted paths. Create `internal/reports/middleware_test.go`:

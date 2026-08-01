@@ -207,7 +207,7 @@ Use `web.Context` for HTTP-specific behavior such as params, binding, response h
 ## Next Steps
 
 - [JSON API Route](/scenarios/json-api-route) follows a complete controller, service, test, build, route-list, and request workflow.
-- [Make Command Reference](/reference/make-commands) explains grouped package placement and generated wiring updates.
+- [`make:controller` Reference](/reference/make-commands#make-controller) explains grouped package placement and generated wiring updates.
 - [Wiring Recipes](/developer-tools/wiring-recipes) shows the controller wiring flow.
 - [Requests and Validation](/applications/requests-validation) explains request input boundaries.
 - [Responses and Errors](/applications/responses-errors) explains response shape.

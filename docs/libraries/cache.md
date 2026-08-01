@@ -49,8 +49,6 @@ go get github.com/goforj/cache/driver/mysqlcache
  
 ## Drivers {#drivers}
 
-Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
-
 |                                                                                             Driver / Backend | Mode | Shared | Durable | TTL | Counters | Locks | RateLimit | Prefix | Batch | Shaping | Notes |
 |-------------------------------------------------------------------------------------------------------------:| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 |                  <img src="https://img.shields.io/badge/null-9e9e9e?logo=probot&logoColor=white" alt="Null"> | No-op | - | - | - | - | No-op | No-op | ✓ | ✓ | ✓ | Great for tests: cache calls are no-ops and never persist. |
@@ -1399,7 +1397,11 @@ fmt.Println(c.SetString("user:42:name", "Ada", time.Minute) == nil) // true
 
 Default integration runs cover the contract suite above. Fault/recovery restart tests run automatically when the selected integration suite includes container-backed fixtures.
 
-## Contributing (README updates) {#contributing-(readme-updates)}
+## Development {#development}
+
+Use `make test` for root-module tests, `make vet` for static checks, `make generate` to refresh generated documentation, and `make integration` for the separate integration module. Integration runs may require local services. Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory.
+
+### README updates {#readme-updates}
 
 README content is a mix of generated sections and manual sections.
 
@@ -1446,4 +1448,4 @@ Notes:
 
 GoForj Apps expose named caches through generated accessors. Use those accessors in application services and keep backend selection in cache configuration.
 
-For the GoForj integration, see [Cache Patterns](/data/cache-patterns).
+For the App workflow, see [Cache Patterns](/data/cache-patterns).

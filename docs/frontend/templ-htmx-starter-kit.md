@@ -307,9 +307,12 @@ forj make:app admin --components web-api,web-ui --starter-kit templ_htmx
 
 Expected result: the additional app receives its own assets under `cmd/admin/frontend/`. The server-rendered starter remains the shared `internal/starterui` package; the command does not create a second app-local copy of those views and controllers.
 
+That shared package is wired into each App that selects templ + htmx. The first scaffold creates it, and adding another App does not produce an independently configurable server-rendered starter or overwrite the existing views. This is suitable when the Apps intentionally share the same page/controller implementation while owning separate compiled frontend assets. If the Apps need different server-rendered UIs, move or copy the relevant controllers and views into explicitly App-owned packages and wire each App to its own package.
+
 ## Next Steps
 
 - [Controllers](/applications/controllers) explains route registration and dependency injection.
 - [Requests and Validation](/applications/requests-validation) covers form input.
 - [Auth](/security/auth) explains session and browser authentication.
 - [forj dev](/developer-tools/forj-dev) explains the coordinated development loop.
+- [`make:app` Reference](/reference/make-commands#make-app) lists starter-kit and component options.

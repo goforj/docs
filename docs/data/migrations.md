@@ -106,7 +106,18 @@ forj admin migrate --connection archive
 
 The first command runs every migration stream under `migrations/admin/*`. The second runs only `migrations/admin/archive`.
 
-If two apps share one physical database, pick one app to own that database's migration stream. Do not duplicate the same schema history under two app directories. The `analytics` connection directory maps to `DB_ANALYTICS_*`.
+Migration streams map to the generated flat connection registry:
+
+| Migration stream | Database configuration |
+| --- | --- |
+| `migrations/app/default/*` | Default `DB_*` connection |
+| `migrations/app/analytics/*` | `DB_ANALYTICS_*` |
+| `migrations/admin/default/*` | `DB_ADMIN_*` |
+| `migrations/admin/archive/*` | `DB_ADMIN_ARCHIVE_*` |
+
+Adding another App expands the original App's streams beneath `migrations/app/` so every migration has an explicit App and connection owner. The additional App's name becomes part of its database connection name even when the migration stream is named `default`.
+
+If two apps share one physical database, pick one app to own that database's migration stream. Do not duplicate the same schema history under two app directories. Migration records use a unique migration name within each physical database, so migration filenames across App streams that intentionally share one database must also remain unique.
 
 ## Migration Table
 
@@ -159,6 +170,7 @@ Do not use rollback as the first production recovery test. Exercise each new dow
 
 ## Next Steps
 
-- [Database Strategy](/data/database-strategy) explains connection configuration.
+- [Database Connections](/data/database-strategy) explains connection configuration.
 - [Repositories](/data/repositories) explains where query code should live.
 - [Testing Overview](/testing/#choose-a-test-layer) explains GoForj App testing direction.
+- [`make:migration` Reference](/reference/make-commands#make-migration) lists connection selection, removal, and shared options.

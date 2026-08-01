@@ -77,7 +77,7 @@ The exact tree depends on the components selected when the Project is created. S
 └── bin/                                Compiled app binaries [generated]
 ```
 
-```text [Multi-App]
+```diff [Multi-App — highlighted lines differ]
 .
 ├── .goforj.yml                         Project shape, apps, and local dev lifecycles
 ├── .env, .env.host                     Shared and App-prefixed runtime configuration
@@ -88,9 +88,9 @@ The exact tree depends on the components selected when the Project is created. S
 │   ├── app/
 │   │   ├── main.go                     Default App binary entrypoint
 │   │   └── frontend/                   Default App starter kit [Web UI]
-│   └── admin/
-│       ├── main.go                     Admin App binary entrypoint
-│       └── frontend/                   Admin App starter kit [Web UI]
++│   └── admin/
++│       ├── main.go                     Admin App binary entrypoint
++│       └── frontend/                   Admin App starter kit [Web UI]
 │
 ├── app/
 │   ├── commands.go                     Default App command exposure
@@ -104,17 +104,17 @@ The exact tree depends on the components selected when the Project is created. S
 │   │   ├── wire.go                     Framework-managed Wire declaration
 │   │   └── wire_gen.go                 Generated dependency graph
 │   │
-│   └── admin/
-│       ├── commands.go                 Admin App command exposure
-│       ├── lifecycle.go                Admin App lifecycle hooks
-│       ├── routes.go                   Admin App HTTP exposure [Web API or UI]
-│       ├── schedules.go                Admin App schedule registry [Scheduler]
-│       ├── root_cmd.go                 Admin App command assembly
-│       └── wire/                       Admin App dependency graph
-│           ├── inject_*_app.go         Admin App-owned providers
-│           ├── inject_*.go             Framework-managed provider assembly
-│           ├── wire.go                 Framework-managed Wire declaration
-│           └── wire_gen.go             Generated dependency graph
++│   └── admin/
++│       ├── commands.go                 Admin App command exposure
++│       ├── lifecycle.go                Admin App lifecycle hooks
++│       ├── routes.go                   Admin App HTTP exposure [Web API or UI]
++│       ├── schedules.go                Admin App schedule registry [Scheduler]
++│       ├── root_cmd.go                 Admin App command assembly
++│       └── wire/                       Admin App dependency graph
++│           ├── inject_*_app.go         Admin App-owned providers
++│           ├── inject_*.go             Framework-managed provider assembly
++│           ├── wire.go                 Framework-managed Wire declaration
++│           └── wire_gen.go             Generated dependency graph
 │
 ├── internal/
 │   ├── reports/                        Domain behavior shared by either App
@@ -125,18 +125,55 @@ The exact tree depends on the components selected when the Project is created. S
 │   ├── schedules/                      Scheduler runtime and scheduled work
 │   └── caches, queues, storages, ...   Generated resource support [by component]
 │
-├── migrations/                         Shared database migrations [Database]
+├── migrations/
++│   ├── app/default/                    Default App migration stream [Database]
++│   └── admin/default/                  Admin App migration stream [Database]
 ├── build/                              Per-App API and OpenAPI output [generated]
 └── bin/
     ├── app                             Compiled default App binary [generated]
-    └── admin                           Compiled admin App binary [generated]
++    └── admin                           Compiled admin App binary [generated]
 ```
 
 :::
 
 Paths marked with a component appear only when that component is enabled. Generated output appears after the relevant render, generation, frontend, or build step.
 
-Both layouts keep behavior under `internal/`. Each App has its own entrypoint, registration files, lifecycle hooks, and Wire graph, so it can expose a different subset of that shared behavior.
+The highlighted lines are the additional ownership boundaries introduced by `admin`. Both layouts keep behavior under `internal/`. Each App has its own entrypoint, registration files, lifecycle hooks, Wire graph, API artifacts, and migration streams, so it can expose a different subset of that shared behavior.
+
+## Multiple Apps and SPAs
+
+A common multi-App Project gives its public and administrative Apps separate frontends:
+
+```text
+shared internal packages
+├── default App → cmd/app/frontend/    public SPA
+└── admin App   → cmd/admin/frontend/  administrative SPA
+```
+
+Each SPA builds before its owning App is rebuilt, and each App embeds and deploys its own frontend output. A change under `cmd/admin/frontend/` does not need to rebuild the default App.
+
+One App can also coordinate more than one SPA during development:
+
+```yaml
+dev:
+  apps:
+    app:
+      spas:
+        storefront:
+          path: ./cmd/app/frontend
+          build: npm run build
+        documentation:
+          path: ./ui/documentation
+          build: npm run build
+```
+
+`forj dev` waits for successful SPA builds before replacing the owning App. Additional SPA entries are development build relationships; configure how their output is served or deployed as part of the App's own frontend architecture. See the [default App lifecycle](/developer-tools/forj-dev#default-app-lifecycle).
+
+## Growing the Project
+
+Keeping reusable workflows in `internal/<domain>` makes growth incremental. If both the default and `admin` Apps need reports, they can inject the same `reports.Service` constructor into separate Wire graphs without duplicating the workflow. Each binary receives its own service instance and chooses its own controllers, commands, or schedules.
+
+That boundary also makes a later service split less disruptive: move the domain package behind a new App first, make its inputs and outputs explicit, then extract it into another module or repository only when deployment ownership requires it. The `internal` rule prevents packages outside the Project's module tree from importing the code directly, so extraction is still an intentional move rather than an accidental distributed dependency.
 
 ## Where Common Changes Go
 
@@ -144,18 +181,18 @@ Use the owning package for implementation and the app layer for exposure or depe
 
 | Change | Behavior belongs in | Exposure or wiring |
 | --- | --- | --- |
-| HTTP controller | `internal/<domain>/controller.go` | `app/routes.go`, `app/wire/inject_http_controllers_app.go` |
-| Application service | `internal/<domain>/service.go` | `app/wire/inject_services_app.go` |
-| Repository or model | `internal/models/`, or `internal/<group>/` when grouped | `app/wire/inject_repositories_app.go` |
-| App command | `internal/cmd/`, or `internal/<group>/` when grouped | `app/commands.go`, `app/wire/inject_cmd_app.go` |
-| Queue job | `internal/jobs/`, or `internal/<group>/` when grouped | `app/wire/inject_jobs_app.go` |
-| Generated schedule | `internal/schedules/`, or `internal/<group>/` when grouped | `app/wire/inject_schedules_app.go` |
-| Custom schedule | The domain method that performs the work | `app/schedules.go` |
-| Startup or shutdown hook | The owning service when behavior is reusable | `app/lifecycle.go` |
-| Starter-kit frontend | `cmd/app/frontend/` | Embedded by `cmd/app/main.go`; review the ownership note below before rerendering |
-| Migration | `migrations/` | Run through the app's migration commands |
+| [HTTP controller](/applications/controllers) | `internal/<domain>/controller.go` | `app/routes.go`, `app/wire/inject_http_controllers_app.go` |
+| [Application service](/core/dependency-injection) | `internal/<domain>/service.go` | `app/wire/inject_services_app.go` |
+| [Repository or model](/data/repositories) | `internal/models/`, or `internal/<group>/` when grouped | `app/wire/inject_repositories_app.go` |
+| [App command](/applications/commands) | `internal/cmd/`, or `internal/<group>/` when grouped | `app/commands.go`, `app/wire/inject_cmd_app.go` |
+| [Queue job](/async/jobs) | `internal/jobs/`, or `internal/<group>/` when grouped | `app/wire/inject_jobs_app.go` |
+| [Generated schedule](/async/scheduler) | `internal/schedules/`, or `internal/<group>/` when grouped | `app/wire/inject_schedules_app.go` |
+| [Custom schedule](/async/scheduler) | The domain method that performs the work | `app/schedules.go` |
+| [Startup or shutdown hook](/core/app-lifecycle) | The owning service when behavior is reusable | `app/lifecycle.go` |
+| [Starter-kit frontend](/starter-kits) | `cmd/app/frontend/`; `cmd/<app>/frontend/` for an additional App | Embedded by that App's `cmd/<app>/main.go`; review the ownership note below before rerendering |
+| [Migration](/data/migrations) | `migrations/`; `migrations/<app>/<connection>/` after multi-App expansion | Run through the owning App's migration commands |
 
-The `forj make:*` commands create the common files and update their registration points together. Use the [Make Command Reference](/reference/make-commands) for exact output and registration changes, then use the linked application, data, or async guide to implement the behavior itself.
+The `forj make:*` commands create the common files and update their registration points together. Use the [Make Command Reference](/reference/make-commands) for exact output and registration changes, including how `--open` and `FORJ_EDITOR` open created source files. The paths above describe files in your Project, while each change type links to the guide that explains how to use it. Framework contributors can inspect the [authoritative GoForj templates](https://github.com/goforj/goforj/tree/main/templates) separately without confusing template source with application-owned files.
 
 ## Which Files Can I Edit?
 
@@ -193,7 +230,7 @@ Starter-kit and demo source has a different lifecycle from ordinary application 
 
 Review the [Starter Kit Guide](/getting-started/starter-kits) before customizing these paths or running `forj render`. Move durable application behavior into your own packages instead of relying on demo scaffold ownership.
 
-### Generated and Build Output
+### Tool-Owned and Build Output
 
 Do not edit derived output by hand:
 
@@ -203,7 +240,7 @@ Do not edit derived output by hand:
 - `bin/`
 - frontend `dist/`
 
-Change the source, provider, or configuration and rebuild. [Generated Files](/reference/generated-files) lists the important generated paths and the command that owns each one.
+Change the source, provider, or configuration and rebuild. [File Ownership](/reference/generated-files) lists the important generated paths and the command that owns each one.
 
 ## Configuration at the Project Root
 
@@ -230,7 +267,7 @@ Selected components add focused packages under `internal/`:
 | --- | --- | --- |
 | Web API or Web UI | `internal/http`, `app/routes.go` | [HTTP Services](/applications/http-services) |
 | Web UI starter kit | `cmd/app/frontend/` | [Starter Kit Guide](/getting-started/starter-kits) |
-| Database | `internal/database`, `migrations/` | [Database Strategy](/data/database-strategy) |
+| Database | `internal/database`, `migrations/` | [Database Connections](/data/database-strategy) |
 | Cache | `internal/caches` | [Cache Patterns](/data/cache-patterns) |
 | File Storage | `internal/storages` | [Storage Patterns](/data/storage-patterns) |
 | Background Jobs | `internal/queues`, `internal/jobs` | [Queues](/async/queues) and [Jobs](/async/jobs) |
@@ -273,5 +310,5 @@ This refreshes generated accessors, runs Wire, updates the API index, and compil
 - [JSON API Route](/scenarios/json-api-route) applies this structure to a controller, service, provider, route, and test.
 - [Configuration](/getting-started/configuration) explains Project and runtime settings.
 - [Apps](/core/apps) covers additional runnable apps.
-- [Generated Files](/reference/generated-files) identifies generated ownership and regeneration commands.
+- [File Ownership](/reference/generated-files) identifies ownership and regeneration commands.
 - [App Lifecycle](/core/app-lifecycle) explains startup and shutdown.

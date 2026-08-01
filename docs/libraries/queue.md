@@ -76,8 +76,6 @@ func main() {
 
 ## Drivers {#drivers}
 
-Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
-
 | Driver / Backend | Mode | Notes | Durable | Async | Delay | Unique | Backoff | Timeout | Native Stats | Queue Admin |
 | ---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | <img src="https://img.shields.io/badge/null-%23666?style=flat" alt="Null"> | Drop-only | Discards dispatched jobs; useful for disabled queue modes and smoke tests. | - | - | - | Instance | - | - | - | - |
@@ -2474,34 +2472,14 @@ fmt.Println(q != nil)
 ```
 <!-- api:embed:end -->
 
-## Contributing {#contributing}
+## Development {#development}
 
-### Testing {#testing}
+Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. `make integration` runs the separate integration module; it honors the comma-separated `INTEGRATION_BACKEND` selector (for example, `INTEGRATION_BACKEND=sqlite make integration`) and may need local services.
 
-Unit tests (root module):
-
-```bash
-go test ./...
-```
-
-Integration tests (separate `integration` module):
-
-```bash
-go test -tags=integration ./integration/...
-```
-
-Select specific backends with `INTEGRATION_BACKEND` (comma-separated), for example:
-
-```bash
-INTEGRATION_BACKEND=sqlite go test -tags=integration ./integration/...
-INTEGRATION_BACKEND=redis,rabbitmq go test -tags=integration ./integration/... -count=1
-INTEGRATION_BACKEND=all go test -tags=integration ./integration/... -count=1
-```
-
-Matrix status and backend integration notes are tracked in `docs/integration-scenarios.md`.
+Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory. Matrix status and backend notes are tracked in `docs/integration-scenarios.md`.
 
 ## Using with GoForj {#using-with-goforj}
 
 GoForj Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.
 
-For the GoForj integration, see [Queues](/async/queues).
+For the App workflow, see [Queues](/async/queues).

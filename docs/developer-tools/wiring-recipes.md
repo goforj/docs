@@ -27,6 +27,8 @@ For an additional app, replace `app/...` with the owning app's `app/<name>/...`.
 
 Use the most specific generated set that owns the surface. If a generated file is not present, the app probably does not have that component enabled.
 
+The `inject_*_app.go` files are App-owned extension points. GoForj creates them with the App and make commands can update them, but normal Project regeneration preserves your edits. In contrast, `app/wire/app.go` and `app/wire/wire_gen.go` are framework-generated output and should not be edited.
+
 ## Generated Resources
 
 When a resource has a make command, use it before editing provider sets by hand. The command creates the resource and updates the active App's generated wiring boundaries.
@@ -75,6 +77,23 @@ The [controller verification workflow](/applications/controllers#verify-the-resu
 
 The controller can depend on an application service already provided by the app service set. If Wire cannot provide that service, add the service constructor to `app/wire/inject_services_app.go`.
 
+The controller injector uses its own set rather than `appSet`:
+
+<!-- go-example: illustrative-fragment -->
+```go
+package wire
+
+import (
+	"github.com/goforj/wire"
+
+	"myapp/internal/users"
+)
+
+var appHttpControllerSet = wire.NewSet(
+	users.NewController,
+)
+```
+
 Verify the result:
 
 ```bash
@@ -88,7 +107,25 @@ The [command creation workflow](/applications/commands#create-a-command) shows t
 
 Command constructors should receive application services as parameters. They should not create repositories, managers, clients, or services themselves.
 
-Commands also need to be exposed through the generated command collection. See [Commands](/applications/commands) for the command-specific registration path.
+Commands need both an App-owned provider and an App-owned CLI field. `forj make:command` updates both locations. For a manually written command, edit both files:
+
+<!-- go-example: illustrative-fragment -->
+```go
+// app/wire/inject_cmd_app.go
+var appCommandSet = wire.NewSet(
+	reports.NewReconcileCmd,
+)
+```
+
+<!-- go-example: illustrative-fragment -->
+```go
+// app/commands.go
+type Commands struct {
+	ReconcileCmd reports.ReconcileCmd `cmd:""`
+}
+```
+
+The existing `NewCommands` constructor in `app/commands.go` must also accept the injected pointer and copy it into the collection. See [Commands](/applications/commands) for the complete registration path.
 
 ## Named Resource
 
@@ -132,6 +169,7 @@ forj build
 
 ::: warning Common mistakes
 - Do not add constructors to `app/wire/wire_gen.go`; it is generated output.
+- Do not edit `app/wire/app.go`; it is Framework-managed App assembly.
 - Do not register a controller in the service set when it belongs in the HTTP controller set.
 - Do not create dependencies inside commands or controllers when they should be constructor parameters.
 - Do not use package globals to avoid wiring a provider.

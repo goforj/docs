@@ -111,3 +111,4 @@ Its frontend lives in `cmd/admin/frontend/`.
 - [Choose a Starter Kit](/getting-started/starter-kits)
 - [forj dev](/developer-tools/forj-dev)
 - [HTTP Server](/operations/http-server)
+- [`make:app` Reference](/reference/make-commands#make-app) lists starter-kit and component options.

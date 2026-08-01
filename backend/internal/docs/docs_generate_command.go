@@ -69,7 +69,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "HTTP Services",
 				Path:    "/applications/http-services",
-				Summary: "Generated Apps register web routes and controllers through the HTTP runtime. Keep server wiring in framework providers and inject application services into controllers.",
+				Summary: "GoForj Apps register web routes and controllers through the HTTP runtime. Keep server wiring in framework providers and inject application services into controllers.",
 			},
 		},
 		{
@@ -114,7 +114,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Scheduler",
 				Path:    "/async/scheduler",
-				Summary: "Generated Apps register schedules in the scheduler runtime and inject the jobs they run. Keep recurring business work in jobs instead of the schedule registry.",
+				Summary: "GoForj Apps register schedules in the scheduler runtime and inject the jobs they run. Keep recurring business work in jobs instead of the schedule registry.",
 			},
 		},
 		{
@@ -127,7 +127,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Queues",
 				Path:    "/async/queues",
-				Summary: "Generated Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.",
+				Summary: "GoForj Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.",
 			},
 		},
 		{
@@ -140,7 +140,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Events",
 				Path:    "/async/events",
-				Summary: "Generated Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.",
+				Summary: "GoForj Apps expose named event buses through generated accessors. Publish through those accessors and keep driver selection in event configuration.",
 			},
 		},
 		{
@@ -153,7 +153,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Mail",
 				Path:    "/applications/mail",
-				Summary: "Generated Apps expose named mailers through generated accessors. Send through those accessors and keep transport selection and credentials in configuration.",
+				Summary: "GoForj Apps expose named mailers through generated accessors. Send through those accessors and keep transport selection and credentials in configuration.",
 			},
 		},
 		{
@@ -166,7 +166,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Cache Patterns",
 				Path:    "/data/cache-patterns",
-				Summary: "Generated Apps expose named caches through generated accessors. Use those accessors in application services and keep backend selection in cache configuration.",
+				Summary: "GoForj Apps expose named caches through generated accessors. Use those accessors in application services and keep backend selection in cache configuration.",
 			},
 		},
 		{
@@ -187,7 +187,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Storage Patterns",
 				Path:    "/data/storage-patterns",
-				Summary: "Generated Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.",
+				Summary: "GoForj Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.",
 			},
 		},
 		{
@@ -200,7 +200,7 @@ func (c *GenerateCommand) Run() error {
 			FrameworkGuide: FrameworkGuide{
 				Title:   "Metrics",
 				Path:    "/operations/metrics",
-				Summary: "Generated Apps expose metrics through the observability and HTTP runtime. Keep registration close to the behavior being measured and configure scrape exposure through the App runtime.",
+				Summary: "GoForj Apps expose metrics through the observability and HTTP runtime. Keep registration close to the behavior being measured and configure scrape exposure through the App runtime.",
 			},
 		},
 		{

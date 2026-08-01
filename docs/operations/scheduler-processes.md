@@ -64,10 +64,10 @@ Scheduler-owned command tasks have separate child-process controls:
 
 ```text
 SCHEDULER_COMMAND_TIMEOUT=10m
-SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
+SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=30s
 ```
 
-`SCHEDULER_COMMAND_TIMEOUT` bounds one command task. `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` gives an App command launched with scheduler-command origin its own graceful shutdown budget; it does not replace the parent scheduler Runtime's `APP_SHUTDOWN_TIMEOUT`.
+`SCHEDULER_COMMAND_TIMEOUT` bounds one command task. `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` gives an App command launched with scheduler-command origin its own graceful shutdown budget, but it cannot extend the remaining parent `APP_SHUTDOWN_TIMEOUT`. Leave it empty to inherit the App budget.
 
 ## Verify a Deployment
 

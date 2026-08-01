@@ -139,6 +139,12 @@ func (r *ScheduleRegistry) Register(s *schedules.Scheduler) error {
 
 `AppSchedules.Register` iterates the collection and registers each task using its `Name`, `Interval`, and `Handle` methods. Manually defined fluent schedules can still follow that call when they need cron expressions, calendar helpers, or other custom registration.
 
+::: info Why the generated schedule owns its interval
+`make:schedule` keeps a simple recurring task's name, cadence, and handler in one file while Wire only adds that object to the App collection. This lets the generator add and remove schedules without rewriting the App-owned `app/schedules.go` registry.
+
+Use the generated form when one task has one interval. If the same workflow must run at two times, keep the workflow in a service or job and register two named fluent schedules in `app/schedules.go`; do not reuse one generated schedule object as two operational schedules.
+:::
+
 </template>
 </MakeCommandTabs>
 
@@ -184,7 +190,7 @@ Good shape:
 ```go
 s.Every(30).Seconds().
 	Name("monitor:poll").
-	Do(s.inspectTask("monitor:poll", s.monitorCheckJob.RunScheduledPoll))
+	Do(s.InspectTask("monitor:poll", s.monitorCheckJob.RunScheduledPoll))
 ```
 
 Avoid growing scheduler runtime files into business-logic buckets.
@@ -208,7 +214,7 @@ Stable schedule names make scheduler behavior understandable, but they do not pr
 s.EveryFiveMinutes().
 	WithoutOverlapping().
 	Name("reports:daily").
-	Do(s.inspectTask("reports:daily", s.reports.GenerateDaily))
+	Do(s.InspectTask("reports:daily", s.reports.GenerateDaily))
 ```
 
 Use `WithoutOverlapping()` for same-process overlap control. Use `WithoutOverlappingWithLocker(...)` with a shared locker when multiple scheduler processes could run the same schedule.
@@ -240,4 +246,5 @@ Expected startup includes `Scheduler started`. Let one safe schedule become due 
 - [Runtime Topology](/core/runtime-topology) explains process boundaries.
 - [Environment Reference](/reference/env-vars#scheduler-and-process-shutdown) lists scheduler timeouts.
 - [Naming Conventions](/reference/naming-conventions) defines stable schedule names.
+- [`make:schedule` Reference](/reference/make-commands#make-schedule) lists cadence flags, removal, and generated registration.
 - [Scheduler](/scheduler) covers standalone package details.

@@ -1,11 +1,11 @@
 ---
 title: Libraries
-description: Standalone first-party GoForj libraries for Go services, CLIs, workers, and generated GoForj Apps.
+description: Standalone first-party GoForj libraries for Go services, CLIs, workers, and GoForj Apps.
 ---
 
 # Libraries
 
-GoForj Libraries are first-party Go packages that can be used on their own or composed inside a generated GoForj App.
+GoForj Libraries are first-party Go packages that can be used on their own or composed inside a GoForj App.
 
 Each library page remains useful for standalone package users. Framework guides should link here for primitive APIs, driver details, constructors, and direct package usage.
 

@@ -54,5 +54,5 @@ Avoid depending on a developer's local `.env` unless the test is intentionally v
 ## Next Steps
 
 - [Rendered App Smoke Tests](/testing/rendered-app-smoke-tests) covers template confidence.
-- [Database Strategy](/data/database-strategy) explains connection generation.
+- [Database Connections](/data/database-strategy) explains connection generation.
 - [Testing](/testing/) explains how to choose a test layer.

@@ -74,7 +74,9 @@ grep -Fx LIGHTHOUSE_INSPECT_ENABLED=true .env.local
 
 Expected output includes:
 
-- `LIGHTHOUSE_INSPECT_ENABLED=true`
+```text
+LIGHTHOUSE_INSPECT_ENABLED=true
+```
 
 ```bash
 forj route:list
@@ -82,8 +84,10 @@ forj route:list
 
 Expected output includes:
 
-- `/api/v1/users`
-- `/metrics`
+```text
+/api/v1/users
+/metrics
+```
 
 ## Trigger the Workflow
 

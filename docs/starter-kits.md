@@ -46,7 +46,7 @@ noAutoTitle: true
       <h2>Account flows with real states</h2>
       <p>
         Sign-in, registration, password reset, profile, password, and appearance screens are
-        generated as app-owned source. Teams start from complete flows instead of blank forms.
+        created as App-owned source. Teams start from complete flows instead of blank forms.
       </p>
     </div>
     <div class="gf-starter-gallery gf-starter-gallery--auth">
