@@ -1,13 +1,13 @@
 ---
-title: Database Strategy
+title: Database Connections
 description: How GoForj Apps model database connections, driver support, and durable data ownership.
 ---
 
-# Database Strategy
+# Database Connections
 
 Database connections are the source-of-truth path for durable relational data in a GoForj App.
 
-GoForj keeps database configuration explicit and generated. The generated database package opens and caches connections on first access through its connection registry.
+GoForj keeps database configuration explicit. The Framework-managed `internal/database` connection registry opens and caches connections on first access.
 
 ## Open the Default Connection
 
@@ -34,7 +34,7 @@ db, err := conns.Default()
 
 The connection opens on first access and is then cached by name.
 
-## Generated Package
+## Database Package
 
 Database connection behavior lives in:
 
@@ -42,12 +42,12 @@ Database connection behavior lives in:
 internal/database
 ```
 
-The generated package owns:
+The database package owns:
 
 - database connection configuration
 - first-access connection opening
 - default and named connection access
-- driver-specific generated support
+- driver-specific support produced during the build
 - local database README guidance
 
 ## Default Connection
@@ -101,8 +101,6 @@ Connections are opened on first accessor use and cached by name. This database-s
 Use health and readiness checks to make required database availability visible for the runtime process that needs it.
 
 ## Shell Options
-
-Database-enabled Apps also expose the canonical command name:
 
 Use the canonical command when you want the full name:
 

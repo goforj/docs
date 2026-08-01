@@ -13,7 +13,7 @@ Use these guides to keep source-of-truth records, derived data, and files separa
 
 | Task | Read |
 | --- | --- |
-| Select, configure, or inspect a database | [Database Strategy](/data/database-strategy) |
+| Select, configure, or inspect a database | [Database Connections](/data/database-strategy) |
 | Change schema safely | [Migrations](/data/migrations) |
 | Own and test database queries | [Repositories](/data/repositories) |
 | Coordinate durable writes | [Transactions](/data/transactions) |
