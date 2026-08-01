@@ -208,6 +208,9 @@ function auditForbiddenPatterns() {
     if (relativePath.startsWith('operations/') && /\|\s*Development alias\s*\|/i.test(source)) {
       editorialFailures.push(`${relativePath}: operations pages must lead with supervised binary commands; link to development guidance instead of adding an alias column`)
     }
+    if (/\bgenerated\s+(?:Apps?|applications?)\b/i.test(source)) {
+      editorialFailures.push(`${relativePath}: call the runnable boundary an App; attach generated to the specific file, accessor, provider, or output instead`)
+    }
   }
 }
 
