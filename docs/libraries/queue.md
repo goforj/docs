@@ -7,7 +7,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png?v=1" width="300" alt="queue logo">
+  <img src="https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png" width="300" alt="queue logo">
 </p>
 
 <p align="center">
@@ -75,6 +75,8 @@ func main() {
 ```
 
 ## Drivers {#drivers}
+
+Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
 
 | Driver / Backend | Mode | Notes | Durable | Async | Delay | Unique | Backoff | Timeout | Native Stats | Queue Admin |
 | ---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -2474,7 +2476,7 @@ fmt.Println(q != nil)
 
 ## Development {#development}
 
-Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. `make integration` runs the separate integration module; it honors the comma-separated `INTEGRATION_BACKEND` selector (for example, `INTEGRATION_BACKEND=sqlite make integration`) and may need local services.
+Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. `make test-integration` runs the separate integration module; pass a backend such as `make test-integration sqlite` to narrow the matrix. Integration tests may need local services.
 
 Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory. Matrix status and backend notes are tracked in `docs/integration-scenarios.md`.
 

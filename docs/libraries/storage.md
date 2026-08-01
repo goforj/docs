@@ -7,7 +7,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png?v=4" width="300" alt="storage logo">
+  <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png" width="300" alt="storage logo">
 </p>
 
 <p align="center">
@@ -1377,7 +1377,7 @@ Current fixture types in the centralized matrix:
 
 ## Development {#development}
 
-Use `make test` for root-module tests, `make examples-test` for the examples module, and `make coverage` for the Codecov report. `make integration` runs the centralized matrix; use `make integration-driver gcs` to select one backend. Integration may require Docker. `make bench` and `make bench-render` retain the benchmark workflow, while the `check-modules`, `tag-modules`, `release-plan`, and `release-modules` targets support publication.
+Use `make test` for root-module tests, `make test-examples` for the examples module, and `make test-coverage` for the Codecov report. `make test-integration` runs the centralized matrix; pass a driver such as `make test-integration gcs` to select one backend. Integration may require Docker. `make bench` and `make bench-render` retain the benchmark workflow, while the `modules-check`, `release-tag`, `release-plan`, and `release-publish` targets support publication.
 
 ## Using with GoForj {#using-with-goforj}
 

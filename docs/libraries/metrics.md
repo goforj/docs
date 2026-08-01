@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/metrics
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/metrics/main/docs/assets/logo.png?v=1" width="300" alt="metrics logo">
+  <img src="https://raw.githubusercontent.com/goforj/metrics/main/docs/assets/logo.png" width="300" alt="metrics logo">
 </p>
 
 <p align="center">

@@ -298,7 +298,7 @@ Fiber is omitted because its `fasthttp` engine is not directly comparable in thi
 Regenerate the measurement and image with:
 
 ```sh
-make benchmark-svg
+make bench-svg
 ```
 <!-- bench:embed:end -->
 

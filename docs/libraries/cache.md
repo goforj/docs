@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/cache
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/cache/main/docs/images/logo.png?v=1" width="300" alt="cache logo">
+  <img src="https://raw.githubusercontent.com/goforj/cache/main/docs/images/logo.png" width="300" alt="cache logo">
 </p>
 
 <p align="center">
@@ -48,6 +48,8 @@ go get github.com/goforj/cache/driver/mysqlcache
 ```
  
 ## Drivers {#drivers}
+
+Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
 
 |                                                                                             Driver / Backend | Mode | Shared | Durable | TTL | Counters | Locks | RateLimit | Prefix | Batch | Shaping | Notes |
 |-------------------------------------------------------------------------------------------------------------:| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -1399,7 +1401,7 @@ Default integration runs cover the contract suite above. Fault/recovery restart 
 
 ## Development {#development}
 
-Use `make test` for root-module tests, `make vet` for static checks, `make generate` to refresh generated documentation, and `make integration` for the separate integration module. Integration runs may require local services. Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory.
+Use `make test` for root-module tests, `make vet` for static checks, `make generate` to refresh generated documentation, and `make test-integration` for the separate integration module. Pass a driver such as `make test-integration sqlitecache` to narrow the matrix. Integration tests may require local services. Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory.
 
 ### README updates {#readme-updates}
 
@@ -1436,7 +1438,7 @@ are available.
 ### Watch mode {#watch-mode}
 
 ```bash
-./docs/watcher.sh
+make docs-watch
 ```
 
 Notes:
