@@ -1,60 +1,82 @@
 ---
-title: Generated Files
-description: Lookup reference for common generated files and ownership boundaries in GoForj Projects.
+title: File Ownership
+description: Identify which GoForj Project files belong to your application, the Framework, generators, or build tooling.
 ---
 
-# Generated Files
+# File Ownership
 
-Generated files are not all owned the same way.
+Files in a GoForj Project have different owners. Some are normal application code, some are extension points created once, and some are refreshed from configuration or build inputs.
 
-Check file headers and local package READMEs before editing.
+Use this page when deciding whether to edit a file or change the input that creates it. File headers remain authoritative when a specific file says `DO NOT EDIT`.
 
-## Common Files and Directories
+## Application and App Composition
 
-| Path | Purpose |
-| --- | --- |
-| `.goforj.yml` | Project render and development contract. |
-| `.env` | Local runtime environment defaults. |
-| `cmd/app/main.go` | Default app binary entrypoint. |
-| `cmd/<app>/main.go` | Additional app binary entrypoint. |
-| `cmd/<app>/frontend/` | Frontend source and embedded build output for an app with Web UI. |
-| `app/commands.go` | Default app command exposure. |
-| `app/lifecycle.go` | Default app lifecycle hooks. |
-| `app/routes.go` | Default app route exposure. |
-| `app/schedules.go` | Default app schedule exposure. |
-| `app/wire/wire.go` | Default app Wire injector definitions. |
-| `app/wire/wire_gen.go` | Generated Wire output. Do not edit by hand. |
-| `app/<app>/...` | Additional app composition files. |
-| `app/<app>/wire/...` | Additional app Wire graph. |
-| `internal/runtime/apps.go` | App metadata derived from Project configuration and deterministic runtime defaults. Do not edit by hand. |
-| `internal/caches/*_gen.go` | Generated cache accessors and config when Cache is enabled. |
-| `internal/storages/*_gen.go` | Generated storage accessors and config when File Storage is enabled. |
-| `internal/queues/*_gen.go` | Generated queue accessors and config when Background Jobs is enabled. |
-| `internal/events/*_gen.go` | Generated event bus accessors and config when Events is enabled. |
-| `internal/database/*_gen.go` | Generated DB accessors and config when a database component is enabled. |
-| `build/api_index.json` | Default app API index output. |
-| `build/api_index.diagnostics.json` | Default app API index diagnostics. |
-| `build/openapi.json` | Default app OpenAPI output. |
-| `build/.webindex-artifacts.lock` | Publication lock coordinating the default app artifact set. |
-| `build/<app>/api_index.json` | Per-app API index output. |
-| `build/<app>/api_index.diagnostics.json` | Per-app API index diagnostics. |
-| `build/<app>/openapi.json` | Per-app OpenAPI output. |
-| `build/<app>/.webindex-artifacts.lock` | Publication lock coordinating one per-app artifact set. |
-| `.goforj/backups/<set>/manifest.json` | Local backup set inventory. |
-| `.goforj/backups/<set>/checksums.txt` | Checksums for backup artifacts. |
+| Path | Owner | Created or refreshed by | Edit? |
+| --- | --- | --- | --- |
+| `internal/<domain>/...` | Application | You and `forj make:*` | Yes |
+| `app/commands.go` | App | Initial render and make commands | Yes |
+| `app/lifecycle.go` | App | Initial render | Yes |
+| `app/routes.go` | App | Initial render and controller commands | Yes |
+| `app/schedules.go` | App | Initial render | Yes |
+| `app/wire/inject_*_app.go` | App | Initial render and make commands | Yes |
+| `app/<app>/...` | Additional App | Same conventions as the default App | Follow the matching default-App file |
+| `migrations/` | Application | `forj make:migration` and application changes | Yes |
+
+## Framework-Managed Project Files
+
+These files implement the selected Project configuration. Change `.goforj.yml`, component selection, or the owning framework template instead of treating them as durable extension points.
+
+| Path | Created or refreshed by | Edit? |
+| --- | --- | --- |
+| `cmd/app/main.go` | `forj render` | No; use App registration files |
+| `cmd/<app>/main.go` | `forj render` | No; use that App's registration files |
+| `app/root_cmd.go` | `forj render` | No |
+| `app/wire/app.go`, `app/<app>/wire/app.go` | `forj render` | No; add providers through `_app.go` files |
+| `app/wire/wire.go` | `forj render` | Avoid; compose custom sets through `_app.go` files |
+| `app/wire/inject_*.go` without `_app` | `forj render` | No |
+| `internal/runtime/apps.go` | `forj render` | No |
+
+## Generated Go Output
+
+These filenames are the concrete outputs readers will encounter; they are not wildcard categories.
+
+| Capability | Paths | Refreshed by | Edit? |
+| --- | --- | --- | --- |
+| Wire | `app/wire/wire_gen.go`, `app/<app>/wire/wire_gen.go` | `forj build` or Wire generation | No |
+| Cache | `internal/caches/manager_gen.go`, `internal/caches/accessors_gen.go` | Cache generation during `forj build` | No |
+| Storage | `internal/storages/manager_gen.go`, `internal/storages/accessors_gen.go` | Storage generation during `forj build` | No |
+| Queues | `internal/queues/manager_gen.go`, `internal/queues/accessors_gen.go` | Queue generation during `forj build` | No |
+| Events | `internal/events/manager_gen.go`, `internal/events/accessors_gen.go` | Event generation during `forj build` | No |
+| Mail | `internal/mail/manager_gen.go`, `internal/mail/accessors_gen.go` | Mail generation during `forj build` | No |
+| Database | `internal/database/connections_gen.go` | Database generation during `forj build` | No |
+
+## Build and Operational Output
+
+| Path | Purpose | Owner |
+| --- | --- | --- |
+| `build/api_index.json` | Default App API index | Build tooling |
+| `build/api_index.diagnostics.json` | Default App indexing diagnostics | Build tooling |
+| `build/openapi.json` | Default App OpenAPI document | Build tooling |
+| `build/.webindex-artifacts.lock` | Coordinates publication of the default App artifact set | Build tooling |
+| `build/<app>/...` | Equivalent artifacts for an additional App | Build tooling |
+| `bin/app`, `bin/<app>` | Compiled App binaries | GoForj build pipeline |
+| `cmd/<app>/frontend/dist/` | Built frontend embedded by a Web UI App | SPA build tooling |
+| `.goforj/backups/<set>/manifest.json` | Backup set inventory | Backup tooling and operators |
+| `.goforj/backups/<set>/checksums.txt` | Backup artifact checksums | Backup tooling and operators |
+
+Project inputs such as `.goforj.yml`, `.env`, and `go.mod` are configuration rather than generated output. See [Configuration Reference](/reference/configuration) and [Environment Reference](/reference/env-vars) for their separate render, build, and restart boundaries.
 
 ## Ownership Rules
 
-- Files marked `DO NOT EDIT` should be regenerated.
-- Render-once files are App-owned extension points.
-- `internal/` owns behavior; `app/` owns exposure.
-- Framework-wide changes belong in GoForj templates or generators, not only in a rendered Project.
-- API artifacts and publication locks are tool-owned. Backup sets are operator-owned data and must not be committed.
+- Edit application behavior and App-owned `_app.go` extension points normally.
+- Change inputs and regenerate files marked `DO NOT EDIT`.
+- Keep Framework-wide fixes in GoForj templates or generators, not only in one rendered Project.
+- Do not commit build output, publication locks, or operator backup sets unless a repository explicitly owns a checked artifact.
 
 ## Related Pages
 
 - [Apps](/core/apps)
-- [Generated Components](/core/code-generation)
-- [Generated Extension Points](/core/code-generation#choose-a-safe-extension-point)
+- [Project Structure](/getting-started/project-structure)
+- [App Extension Points](/core/code-generation#choose-a-safe-extension-point)
 - [Code Generation](/core/code-generation)
 - [Backup and Restore](/operations/backups)

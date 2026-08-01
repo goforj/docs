@@ -342,19 +342,14 @@ func NewSyncReportsJob(queues *queues.Manager) *SyncReportsJob {
 	return &SyncReportsJob{queues: queues}
 }
 
-// Queue creates a task and dispatches it to the selected queue.
-// Add application inputs as arguments when defining the payload contract.
-func (t *SyncReportsJob) Queue(ctx context.Context, name string) error {
-	var p SyncReportsJobPayload
-	// add your payload fields here
-	// p.User = name
-
-	payload, err := json.Marshal(p)
+// Queue dispatches the typed payload to the selected queue.
+func (t *SyncReportsJob) Queue(ctx context.Context, payload SyncReportsJobPayload) error {
+	data, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 	_, err = t.queues.WithContext(ctx).Dispatch(
-		queue.NewJob(SyncReportsJobTypeName).Payload(payload).OnQueue("billing"),
+		queue.NewJob(SyncReportsJobTypeName).Payload(data).OnQueue("billing"),
 	)
 	return err
 }
@@ -856,7 +851,7 @@ Generate a model and repository helpers in an explicit package.
 forj make:model invoices --package billing
 ```
 
-The generator inspects the existing `invoices` table through the default database connection, so that connection must be available. Models use `--package` rather than `-d` because their placement follows database table ownership.
+The positional argument is the exact name of an existing table. The generator inspects `invoices` through the default database connection, so that connection must be available. It does not create or migrate the table, and `make:model` does not select a named connection. The generated Go type and filename are singularized from the inspected table name; when an exact table is missing, the command may suggest an existing singular or plural variant. Models use `--package` rather than `-d` because their placement follows database table ownership.
 
 ```bash
 forj make:model invoices --package billing --remove
