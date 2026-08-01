@@ -24,6 +24,10 @@ flowchart LR
 
 In a GoForj Project, this can bring up local dependencies, prepare the database, build the frontend, compile the App, start its Runtime, and watch the files that feed each step. You do not need to keep separate build, frontend, and server commands synchronized in different terminals.
 
+::: warning Development only
+`forj dev` is a local development supervisor. Do not run it as a production process manager or deploy its watcher lifecycle. Production supervisors should execute the built artifact, such as `./bin/app`, `./bin/app api`, `./bin/app worker`, or `./bin/app scheduler`.
+:::
+
 When a file changes, `forj dev` reruns only the affected work. It replaces the running App after a successful build. If the build fails, the last working Runtime stays up while the error remains visible in the transcript. Fix the error, save again, and the loop continues.
 
 ## Start the Development Loop
@@ -237,7 +241,16 @@ dev:
   down_on_exit: true
 ```
 
-Startup first runs configured App bootstrap builds so pre-tasks can call built App commands. It then runs `dev.pre`, performs configured database setup and auto-migration, and runs any generated tasks deliberately ordered after migration. Finally, it builds App-owned SPAs, rebuilds their Apps, and starts persistent watcher and runtime processes.
+For a modern `dev.apps` configuration whose setup tasks match GoForj's generated conventions, startup follows this order:
+
+1. Run conventional setup tasks that do not require an App binary, such as starting Docker Compose and waiting for its database.
+2. Build each App-owned SPA.
+3. Build the participating Apps once.
+4. Prepare configured development databases and run auto-migration.
+5. Run generated tasks that must follow migration, then rebuild when those tasks changed generated source.
+6. Start the persistent watchers and App runtime processes.
+
+This ordering gives the migration step a current App binary while ensuring that embedded frontend assets are already present in that binary. If custom or legacy `dev.pre` tasks do not match the generated setup phases, GoForj preserves their historical ordering and may perform an earlier bootstrap build plus a post-setup rebuild. Keep binary-dependent custom setup explicit instead of relying on a generated task name to change its phase.
 
 For npm-backed starter kits, new Projects generate this dependency setup task:
 
