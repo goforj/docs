@@ -77,6 +77,20 @@ For a staff operations App named `admin`, use its binary:
 
 Expected result: a complete, human-readable table of the staff-facing methods, paths, and handlers registered by `admin`. The command constructs the App route surface but does not start the HTTP listener.
 
+A small route table looks like this (terminal output uses color when supported):
+
+```text
++-------------------+---------+-----------------------+------------+
+| API Routes › (1)
++-------------------+---------+-----------------------+------------+
+| Path              | Methods | Handler               | Middleware |
++-------------------+---------+-----------------------+------------+
+| /api/v1/users/:id | GET     | users.Controller.Show |            |
++-------------------+---------+-----------------------+------------+
+```
+
+Long middleware names may be replaced by short codes with a `Middleware Legend` above the route title. The columns remain `Path`, `Methods`, `Handler`, and `Middleware`.
+
 ## Health, Readiness, and Verification
 
 Use liveness to answer whether the process is responding and readiness to decide whether it should receive traffic:
