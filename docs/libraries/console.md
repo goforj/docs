@@ -7,7 +7,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/console/main/docs/assets/logo.png?v=1" width="300" alt="console logo">
+  <img src="https://raw.githubusercontent.com/goforj/console/main/docs/assets/logo.png" width="300" alt="console logo">
 </p>
 
 <p align="center">
@@ -579,7 +579,7 @@ if err := loader.Start(); err != nil {
 }
 // · Uploading release
 loader.Fail("Registry refused upload")
-// ✖ Registry refused upload
+// ERROR Registry refused upload
 ```
 
 #### Loader.Start {#loader-start}
@@ -712,7 +712,7 @@ ErrorMark returns the default console's error indicator.
 
 ```go
 fmt.Println(console.ErrorMark())
-// ✖
+// ERROR
 ```
 
 #### InfoMark {#infomark}
@@ -791,7 +791,7 @@ Error prints an error message through the default console.
 
 ```go
 console.Error("deployment failed")
-// ✖ deployment failed
+// ERROR deployment failed
 ```
 
 #### Errorf {#errorf}
@@ -800,7 +800,7 @@ Errorf prints a formatted error message through the default console.
 
 ```go
 console.Errorf("deployment failed: %s", "timeout")
-// ✖ deployment failed: timeout
+// ERROR deployment failed: timeout
 ```
 
 #### Fatal {#fatal}
@@ -812,7 +812,7 @@ console.SetDefault(console.New(console.Config{
 	Exit: func(code int) { fmt.Println("exit", code) },
 }))
 console.Fatal("invalid configuration")
-// ✖ invalid configuration
+// ERROR invalid configuration
 // exit 1
 ```
 
@@ -825,7 +825,7 @@ console.SetDefault(console.New(console.Config{
 	Exit: func(code int) { fmt.Println("exit", code) },
 }))
 console.Fatalf("invalid port: %d", 0)
-// ✖ invalid port: 0
+// ERROR invalid port: 0
 // exit 1
 ```
 
@@ -1065,7 +1065,7 @@ if err := progress.Start(); err != nil {
 }
 // · Publishing release
 progress.Fail("Registry refused upload")
-// ✖ Registry refused upload
+// ERROR Registry refused upload
 ```
 
 #### Progress.Set {#progress-set}
@@ -1329,12 +1329,12 @@ fmt.Println(errors.Is(err, console.ErrNonInteractive))
 
 #### ASCIIMarks {#asciimarks}
 
-ASCIIMarks returns symbols suitable for constrained terminals and plain logs.
+ASCIIMarks returns marks suitable for constrained terminals and plain logs.
 
 ```go
 marks := console.ASCIIMarks()
 fmt.Println(marks.Success, marks.Warn, marks.Error)
-// + ! x
+// + ! ERROR
 ```
 
 #### Config {#config}
@@ -1373,12 +1373,12 @@ fmt.Println(console.Default() != nil)
 
 #### DefaultMarks {#defaultmarks}
 
-DefaultMarks returns the Unicode symbols used by a default console.
+DefaultMarks returns the semantic marks used by a default console.
 
 ```go
 marks := console.DefaultMarks()
 fmt.Println(marks.Success, marks.Warn, marks.Error)
-// ✔ ! ✖
+// ✔ ! ERROR
 ```
 
 #### Marks {#marks}
@@ -1962,7 +1962,7 @@ console.Success("API ready\nWorker ready")
 console.Warn("Configuration is incomplete")
 // ! Configuration is incomplete
 console.Error("Port already in use")
-// ✖ Port already in use
+// ERROR Port already in use
 ```
 
 ### Plain output and coordinated writers {#plain-output-and-coordinated-writers}
@@ -1980,7 +1980,7 @@ fmt.Fprintln(console.StderrWriter(), "diagnostic output")
 
 ```go
 fmt.Println(console.ActionMark(), console.SuccessMark(), console.ErrorMark())
-// · ✔ ✖
+// · ✔ ERROR
 fmt.Println(console.Style("release ready", console.StyleBold, console.ColorGreen))
 // release ready
 ```
@@ -2111,7 +2111,7 @@ if err := publish.Start(); err != nil {
 // · Publishing release
 defer publish.Stop()
 publish.Fail("Registry refused upload")
-// ✖ Registry refused upload
+// ERROR Registry refused upload
 ```
 
 ### Determinate progress {#determinate-progress}
@@ -2269,7 +2269,7 @@ console.List("DATABASE_URL is missing", "PORT must be between 1 and 65535")
 // • DATABASE_URL is missing
 // • PORT must be between 1 and 65535
 console.Error("Validation failed")
-// ✖ Validation failed
+// ERROR Validation failed
 ```
 
 ### Recipe: machine stdout and status stderr {#recipe:-machine-stdout-and-status-stderr}
@@ -2318,18 +2318,9 @@ fmt.Print(output.String())
 
 ## Development {#development}
 
-```sh
-go test ./...
-go test -race ./...
-go -C docs test ./...
-go -C examples test ./...
-go generate .
-go vet ./...
-go -C docs vet ./...
-go -C examples vet ./...
-```
+`docs` and `examples` are separate Go modules so release archives contain only the library.
 
-The docs and examples are separate Go modules so release archives contain only the library. The README API index uses a generator-owned grouping manifest, while each local API target and code sample is generated from the declaration's GoDoc `Example:` block. Focused workflow examples come from standard Go example tests that execute and verify their inline output. Generation validates its marker pair and every example target before writing, so malformed documentation fails without partially changing the README.
+Use `make test`, `make test-race`, `make vet`, and `make generate`. The test and vet targets cover all three modules; generation rebuilds the README from its verified GoDoc examples.
 
 ## Documentation {#documentation}
 
@@ -2341,8 +2332,8 @@ The docs and examples are separate Go modules so release archives contain only t
 
 Before tagging a release:
 
-- Run the root, docs, and examples tests and vet commands above, including the race suite.
-- Run `go generate .` and confirm the working tree has no generated or module-file diff.
+- Run `make test`, `make test-race`, and `make vet`.
+- Run `make generate` and confirm the working tree has no generated or module-file diff.
 - Choose the next semantic version and review the public API and README output one final time.
 - Create an annotated tag with `git tag -a vX.Y.Z -m "vX.Y.Z"`, then push it with `git push origin vX.Y.Z`.
 

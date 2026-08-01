@@ -34,7 +34,7 @@ func appendFrameworkGuide(content string, guide FrameworkGuide) string {
 
 	content = strings.TrimRight(content, "\n")
 	return fmt.Sprintf(
-		"%s\n\n## Using with GoForj\n\n%s\n\nFor generated App integration, see [%s](%s).\n",
+		"%s\n\n## Using with GoForj\n\n%s\n\nFor the App workflow, see [%s](%s).\n",
 		content,
 		guide.Summary,
 		guide.Title,

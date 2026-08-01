@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/metrics
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/metrics/main/docs/assets/logo.png?v=1" width="300" alt="metrics logo">
+  <img src="https://raw.githubusercontent.com/goforj/metrics/main/docs/assets/logo.png" width="300" alt="metrics logo">
 </p>
 
 <p align="center">
@@ -48,8 +48,10 @@ import (
 )
 
 func main() {
+	// Own the registry explicitly so tests and multiple applications do not share metric state.
 	registry := metrics.NewRegistry()
 
+	// Register metrics once during startup, then retain these handles for inexpensive updates.
 	requests := registry.MustCounter(metrics.Descriptor{
 		Name: "http.requests",
 		Help: "Total HTTP requests served.",
@@ -62,6 +64,7 @@ func main() {
 	http.Handle("/metrics", metrics.Handler(registry))
 	http.HandleFunc("/hello", func(response http.ResponseWriter, _ *http.Request) {
 		start := time.Now()
+		// A deferred observation records latency on every return path through the handler.
 		defer latency.ObserveSince(start)
 
 		requests.Inc()
@@ -73,6 +76,15 @@ func main() {
 ```
 
 This exports `http_requests_total` and the `http_request_duration_seconds` histogram family at `/metrics`.
+
+After starting the program, make one request and inspect the counter:
+
+```console
+$ curl --silent http://localhost:8080/hello > /dev/null
+
+$ curl --silent http://localhost:8080/metrics | grep '^http_requests_total'
+http_requests_total 1
+```
 
 ## Model {#model}
 
@@ -195,10 +207,14 @@ Registration, updates, snapshots, and exposition are safe to use concurrently. K
 - updates on the returned counter, gauge, or histogram child do not take the registry or vector lock;
 - snapshots are detached and may be retained or modified without changing live metrics.
 
-Run the race-enabled test suite with:
+## Development {#development}
 
-```sh
-GOCACHE=/tmp/gocache GOMODCACHE=/tmp/gomodcache go test -race ./...
+Run the normal validation targets with:
+
+```bash
+make test
+make test-race
+make vet
 ```
 
 ## Upgrading {#upgrading}
@@ -209,4 +225,4 @@ The quality-pass contract is stricter than v0.1.0. See [MIGRATING.md](https://gi
 
 GoForj Apps expose metrics through the observability and HTTP runtime. Keep registration close to the behavior being measured and configure scrape exposure through the App runtime.
 
-For the GoForj integration, see [Metrics](/operations/metrics).
+For the App workflow, see [Metrics](/operations/metrics).

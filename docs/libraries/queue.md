@@ -7,7 +7,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png?v=1" width="300" alt="queue logo">
+  <img src="https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png" width="300" alt="queue logo">
 </p>
 
 <p align="center">
@@ -2474,34 +2474,14 @@ fmt.Println(q != nil)
 ```
 <!-- api:embed:end -->
 
-## Contributing {#contributing}
+## Development {#development}
 
-### Testing {#testing}
+Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. `make test-integration` runs the separate integration module; pass a backend such as `make test-integration sqlite` to narrow the matrix. Integration tests may need local services.
 
-Unit tests (root module):
-
-```bash
-go test ./...
-```
-
-Integration tests (separate `integration` module):
-
-```bash
-go test -tags=integration ./integration/...
-```
-
-Select specific backends with `INTEGRATION_BACKEND` (comma-separated), for example:
-
-```bash
-INTEGRATION_BACKEND=sqlite go test -tags=integration ./integration/...
-INTEGRATION_BACKEND=redis,rabbitmq go test -tags=integration ./integration/... -count=1
-INTEGRATION_BACKEND=all go test -tags=integration ./integration/... -count=1
-```
-
-Matrix status and backend integration notes are tracked in `docs/integration-scenarios.md`.
+Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory. Matrix status and backend notes are tracked in `docs/integration-scenarios.md`.
 
 ## Using with GoForj {#using-with-goforj}
 
 GoForj Apps expose named queues through generated accessors. Dispatch jobs through those accessors and keep backend selection in queue configuration.
 
-For the GoForj integration, see [Queues](/async/queues).
+For the App workflow, see [Queues](/async/queues).

@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/cache
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/cache/main/docs/images/logo.png?v=1" width="300" alt="cache logo">
+  <img src="https://raw.githubusercontent.com/goforj/cache/main/docs/images/logo.png" width="300" alt="cache logo">
 </p>
 
 <p align="center">
@@ -1399,7 +1399,11 @@ fmt.Println(c.SetString("user:42:name", "Ada", time.Minute) == nil) // true
 
 Default integration runs cover the contract suite above. Fault/recovery restart tests run automatically when the selected integration suite includes container-backed fixtures.
 
-## Contributing (README updates) {#contributing-(readme-updates)}
+## Development {#development}
+
+Use `make test` for root-module tests, `make vet` for static checks, `make generate` to refresh generated documentation, and `make test-integration` for the separate integration module. Pass a driver such as `make test-integration sqlitecache` to narrow the matrix. Integration tests may require local services. Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory.
+
+### README updates {#readme-updates}
 
 README content is a mix of generated sections and manual sections.
 
@@ -1434,7 +1438,7 @@ are available.
 ### Watch mode {#watch-mode}
 
 ```bash
-./docs/watcher.sh
+make docs-watch
 ```
 
 Notes:
@@ -1446,4 +1450,4 @@ Notes:
 
 GoForj Apps expose named caches through generated accessors. Use those accessors in application services and keep backend selection in cache configuration.
 
-For the GoForj integration, see [Cache Patterns](/data/cache-patterns).
+For the App workflow, see [Cache Patterns](/data/cache-patterns).

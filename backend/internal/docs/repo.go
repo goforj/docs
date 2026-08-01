@@ -15,7 +15,7 @@ type RepoConfig struct {
 	FrameworkGuide FrameworkGuide
 }
 
-// FrameworkGuide links a standalone library page to its canonical generated App guide.
+// FrameworkGuide links a standalone library page to its canonical App guide.
 type FrameworkGuide struct {
 	Title   string
 	Path    string

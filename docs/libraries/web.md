@@ -90,7 +90,7 @@ The quick start owns the `http.Server` directly to keep the first example small.
 | Start with | Use it when |
 | --- | --- |
 | `echoweb.New()` and `router.GET(...)` | Routes are registered directly and your application owns the `http.Server`. |
-| `web.NewRouteGroup(...)` and `web.RegisterRoutes(...)` | Routes should be reusable declarations for reporting, indexing, or App composition. |
+| `web.NewRouteGroup(...)` and `web.RegisterRoutes(...)` | Routes should be reusable declarations for reporting, indexing, or framework-managed App composition. |
 | `echoweb.NewServer(...)` | The adapter should register route groups and own graceful HTTP shutdown. |
 | `echoweb.Wrap(engine)` | An existing Echo engine needs to expose the app-facing `web.Router` contract. |
 
@@ -298,7 +298,7 @@ Fiber is omitted because its `fasthttp` engine is not directly comparable in thi
 Regenerate the measurement and image with:
 
 ```sh
-make benchmark-svg
+make bench-svg
 ```
 <!-- bench:embed:end -->
 
@@ -1804,8 +1804,18 @@ fmt.Println(ctx.Param("id"), ctx.Query("expand"))
 ```
 <!-- api:embed:end -->
 
+## Development {#development}
+
+Use the repository targets to validate every module and refresh executable documentation:
+
+```bash
+make test
+make vet
+make generate
+```
+
 ## Using with GoForj {#using-with-goforj}
 
 GoForj Apps register web routes and controllers through the HTTP runtime. Keep server wiring in framework providers and inject application services into controllers.
 
-For the GoForj integration, see [HTTP Services](/applications/http-services).
+For the App workflow, see [HTTP Services](/applications/http-services).
