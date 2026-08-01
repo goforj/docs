@@ -50,7 +50,7 @@ Use configuration for deployment policy and infrastructure choices. Keep busines
 
 ## Edit Local Environment
 
-A generated Project can include:
+A Project can include:
 
 - `.env` for the main local configuration
 - `.env.local` for local environment overrides
