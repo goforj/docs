@@ -72,7 +72,7 @@ func (c *Client) FindInvoice(ctx context.Context, id string) (Invoice, error) {
 }
 ```
 
-Generated GoForj Apps currently pin `github.com/goforj/httpx` v1. Use that module path unless the App's `go.mod` has intentionally been upgraded.
+GoForj Apps currently pin `github.com/goforj/httpx` v1. Use that module path unless the App's `go.mod` has intentionally been upgraded.
 
 ## Configure and Provide the Client
 

@@ -138,4 +138,5 @@ Do not add application behavior by editing framework route registration.
 - [Controllers](/applications/controllers) explains handler structure.
 - [Middleware](/applications/middleware) explains route and group policy.
 - [Naming Conventions](/reference/naming-conventions) defines route naming.
+- [`make:controller` Reference](/reference/make-commands#make-controller) lists generation, removal, and shared options.
 - [Web](/web) covers standalone route primitives.
