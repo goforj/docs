@@ -87,7 +87,7 @@ function setBinTab(id) {
 }
 
 const CAPABILITIES = [
-  { title: 'HTTP services', icon: 'globe', copy: 'Thin controllers, route groups, and middleware over the web abstraction. Health, readiness, and Swagger included.', href: '/applications/http-services' },
+  { title: 'HTTP services', icon: 'globe', copy: 'Thin controllers, route groups, and middleware over the web abstraction. Health, readiness, and an OpenAPI reference included.', href: '/applications/http-services' },
   { title: 'Commands', icon: 'terminal', copy: 'First-class CLI entry points with injected dependencies, not shell scripts around your binary.', href: '/applications/commands' },
   { title: 'Queues and jobs', icon: 'rows-3', copy: 'Named, durable background work with typed payloads, retries, timeouts, and worker processes.', href: '/async/queues' },
   { title: 'Events', icon: 'radio', copy: 'Typed facts with local-first fan-out. In-process today, NATS or Kafka when you need it.', href: '/async/events' },

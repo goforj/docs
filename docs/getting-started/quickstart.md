@@ -87,7 +87,7 @@ go test ./...
 
 A successful run ends with `ok` lines or `[no test files]` for each generated package and no `FAIL` line.
 
-You now have a generated Project, a running app, a verified HTTP endpoint, and a passing test suite.
+You now have a GoForj Project, a running App, a verified HTTP endpoint, and a passing test suite.
 
 ## Next Steps
 

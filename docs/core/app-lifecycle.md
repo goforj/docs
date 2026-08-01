@@ -17,7 +17,7 @@ flowchart LR
   run --> stop["BeforeShutdown → Shutdown → AfterShutdown"]
 ```
 
-The generated `App.Run` starts the lifecycle before executing a parsed command and defers shutdown with the App shutdown timeout. Startup phases run in registration order. Shutdown phases run in reverse registration order, so dependent resources can stop before what they rely on.
+`App.Run` starts the lifecycle before executing a parsed command and defers shutdown with the App shutdown timeout. Startup phases run in registration order. Shutdown phases run in reverse registration order, so dependent resources can stop before what they rely on.
 
 ## Add an App-Owned Hook
 

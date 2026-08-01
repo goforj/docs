@@ -55,11 +55,36 @@ The output can include managers, accessors, configuration types, driver manifest
 
 See [Configuration Reference](/reference/configuration) for Project inputs and [Environment Reference](/reference/env-vars#resolution-and-naming) for driver and named-resource inputs.
 
+## One Resource from Input to App API
+
+For example, adding a named queue starts with configuration:
+
+```dotenv
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis
+QUEUE_CRITICAL_DRIVER=redis
+```
+
+The next `forj build` turns that input into concrete source and a compiled App contract:
+
+```text
+.env
+  └── QUEUE_CRITICAL_DRIVER=redis
+        ↓ forj build
+internal/queues/manager_gen.go       supported driver construction
+internal/queues/accessors_gen.go     Critical() accessor
+        ↓ Wire
+app.Queues().Critical()              stable App API
+```
+
+Application code depends on `Critical()`, not a Redis constructor. Runtime configuration may switch that queue to another already-supported driver; changing the supported set or adding another named queue regenerates the contract.
+
+This is the useful test for generation: an input that changes compile-time capability should produce readable code, a stable typed API, and an early build failure when the graph cannot be satisfied.
+
 <span id="choose-a-safe-extension-point"></span>
 
 ## Ownership Models
 
-Generated Projects contain three practical ownership models:
+GoForj Projects contain three practical ownership models:
 
 | Ownership | How to work with it |
 | --- | --- |
@@ -167,6 +192,6 @@ A normal application implementation change also needs a new binary, but it does 
 
 - [Apps](/core/apps) explains app composition and ownership.
 - [Dependency Injection](/core/dependency-injection) explains providers and Wire.
-- [Generated Files](/reference/generated-files) lists important generated locations.
+- [File Ownership](/reference/generated-files) lists important generated locations.
 - [Generation Commands](/reference/generation-commands) is the command lookup.
 - [Make Command Reference](/reference/make-commands) lists resource scaffolding and registration changes.

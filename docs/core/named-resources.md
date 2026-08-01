@@ -5,18 +5,34 @@ description: How GoForj Apps expose named caches, disks, queues, event buses, me
 
 # Named Resources
 
-A named resource is an operational object the App can use, discover, or expose by a stable name.
+A named resource gives application code a stable, typed handle such as `uploads`, `critical`, or `audit` while configuration chooses the backing driver.
 
-Names make runtime behavior visible. They also let application code switch infrastructure without changing business logic.
+That separation is one of GoForj's main configuration strengths: the same service can use an in-process queue locally and Redis in production without changing the queue name or dispatch code.
+
+```mermaid
+flowchart LR
+    service[Application service] --> accessor[Queues().Critical()]
+    dev[Local config<br/>workerpool] --> driver[Selected queue driver]
+    prod[Production config<br/>redis] --> driver
+    driver --> accessor
+    accessor --> queue[critical queue]
+```
+
+The accessor is compiled from the Project's named resource configuration. The active driver is selected at startup from the drivers already compiled into the App.
 
 ## Common Named Resources
 
-Examples include:
+Resource families with generated accessors include:
 
-- cache accessors
+- caches
 - storage disks
 - queues
 - event buses
+- mailers
+- database connections
+
+Other operational objects also have stable names, but they are registered rather than exposed as infrastructure accessors:
+
 - jobs
 - schedules
 - routes
@@ -78,6 +94,52 @@ app.Mail().Transactional()
 
 Accessors come from configuration. After adding or renaming named resources, run `forj build`; `forj dev` does this automatically for apps listed in `dev.apps`.
 
+## Use a Named Resource in a Service
+
+Inject the owning manager once, then choose the named resource where the workflow needs it:
+
+<!-- go-example: illustrative-fragment -->
+```go
+type AlertService struct {
+	queues *queues.Manager
+}
+
+func NewAlertService(queueManager *queues.Manager) *AlertService {
+	return &AlertService{queues: queueManager}
+}
+
+func (s *AlertService) Dispatch(ctx context.Context, payload []byte) error {
+	critical := s.queues.Critical()
+	_, err := critical.WithContext(ctx).Dispatch(
+		queue.NewJob(AlertJobTypeName).Payload(payload),
+	)
+	return err
+}
+```
+
+The service asks for `critical`; it does not know whether that queue is backed by workerpool, Redis, NATS, SQS, or another supported driver. Add `NewAlertService` to the App's service provider set and let Wire supply the manager.
+
+## Change a Driver Without Changing the Service
+
+Keep the named contract and change only runtime selection:
+
+::: code-group
+
+```dotenv [Local]
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis
+QUEUE_CRITICAL_DRIVER=workerpool
+```
+
+```dotenv [Production]
+QUEUE_SUPPORTED_DRIVERS=workerpool,redis
+QUEUE_CRITICAL_DRIVER=redis
+QUEUE_ADDR=redis:6379
+```
+
+:::
+
+Because both drivers are already in `QUEUE_SUPPORTED_DRIVERS`, this switch needs a restart, not regeneration. Adding a new supported driver or a new named accessor requires `forj build`.
+
 ## Fail-Fast Invariants
 
 Named accessors represent generated invariants.
@@ -135,7 +197,7 @@ Avoid raw paths, raw SQL, user IDs, emails, or arbitrary payload values.
 
 ## Next Steps
 
-- [Generated Components](/core/code-generation) explains regeneration.
+- [Code Generation](/core/code-generation) explains regeneration.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains backend selection.
 - [Naming Conventions](/reference/naming-conventions) defines stable resource names.
 - [Libraries](/libraries/) contains package-level resource behavior.

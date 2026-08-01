@@ -14,10 +14,22 @@ Local-first does not mean local-only. It means the first working path is small, 
 Start with:
 
 ```bash
+forj dev
+```
+
+The development loop prepares dependencies, builds each configured SPA and App, starts the selected runtimes, and watches their inputs. A failed build leaves the last healthy App running, so ordinary edits do not turn the local loop into a sequence of process crashes.
+
+New Projects describe that workflow under `dev.apps` in `.goforj.yml`. Each App can own its build, runtime, and one or more SPA builds while independent tooling remains under `dev.watches`. See [forj dev](/developer-tools/forj-dev) for the lifecycle graph and customization options.
+
+## Run One App Directly
+
+Use the App command when you want to inspect the combined runtime without the development watcher:
+
+```bash
 forj app
 ```
 
-The generated `app` command hosts enabled runtimes together in one process. Topology comes from the command you launch, not an environment mode switch.
+The `app` command hosts enabled runtimes together in one process. Topology comes from the command you launch, not an environment mode switch.
 
 For an additional app, add the app name:
 
@@ -76,8 +88,6 @@ This should be a configuration and provider-support change, not a business-logic
 
 ## Development Workflow
 
-Use `forj dev` for watcher-driven local development. Each entry under `dev.apps` controls that App's managed build and runtime participation; sibling `dev.watches` remain independent.
-
 Use `forj build` before relying on generated code or binaries:
 
 ```bash
@@ -120,4 +130,4 @@ Local-first docs should avoid:
 
 - [Runtime Topology](/core/runtime-topology) explains combined and split process shapes.
 - [Drivers and Adapters](/core/drivers-and-adapters) explains driver selection.
-- [Generated Components](/core/code-generation) explains how driver support is compiled into the App.
+- [Code Generation](/core/code-generation) explains how driver support is compiled into the App.
