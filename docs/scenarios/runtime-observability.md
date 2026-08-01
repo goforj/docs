@@ -74,9 +74,7 @@ grep -Fx LIGHTHOUSE_INSPECT_ENABLED=true .env.local
 
 Expected output includes:
 
-```text
-LIGHTHOUSE_INSPECT_ENABLED=true
-```
+- `LIGHTHOUSE_INSPECT_ENABLED=true`
 
 ```bash
 forj route:list
@@ -84,10 +82,8 @@ forj route:list
 
 Expected output includes:
 
-```text
-/api/v1/users
-/metrics
-```
+- `/api/v1/users`
+- `/metrics`
 
 ## Trigger the Workflow
 
@@ -173,7 +169,7 @@ source="jobs"
 source="scheduler"
 ```
 
-Scheduler metrics use the bounded `job_name` label for the registered schedule name. Metric names can evolve with the metrics package and App version, but the label discipline must remain stable: bounded operational names, not user-controlled data.
+Scheduler metrics use the bounded `job_name` label for the registered schedule name. Metric names can evolve with the metrics package and generated App version, but the label discipline must remain stable: bounded operational names, not user-controlled data.
 
 ## Check Inspects
 

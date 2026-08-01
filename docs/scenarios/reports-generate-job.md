@@ -28,7 +28,7 @@ The event still announces that a user was created. The subscriber now queues `re
 
 Complete [Users Created Event](/scenarios/users-created-event) first.
 
-Your App should have queues, jobs, events, and storage enabled.
+The generated App should have queues, jobs, events, and storage enabled.
 
 ## Golden Path State
 
@@ -107,7 +107,7 @@ QUEUE_SUPPORTED_DRIVERS=workerpool,redis,sync
 
 ## Step 3: Refresh Generated Resources
 
-Run the build pipeline so your App exposes `app.Queue()` and `app.Storage().Reports()`.
+Run the build pipeline so the generated App exposes `app.Queue()` and `app.Storage().Reports()`.
 
 ```bash
 forj build
@@ -209,7 +209,7 @@ func reportPathSegment(value string) string {
 
 ## Step 5: Generate the Job
 
-Use your App's make command to create the job file and add its constructor to job wiring.
+Use the generated App's make command to create the job file and add its constructor to job wiring.
 
 ```bash
 forj make:job reports:generate --output-dir ./internal/jobs
@@ -628,9 +628,7 @@ forj route:list
 
 Expected output includes:
 
-```text
-/api/v1/users
-```
+- `/api/v1/users`
 
 ## Try the Route
 

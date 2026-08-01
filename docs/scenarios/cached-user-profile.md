@@ -27,7 +27,7 @@ The source repository remains the source of truth. A cached repository wrapper o
 
 Complete [JSON API Route](/scenarios/json-api-route) first.
 
-Your App should have cache support enabled. Verify that the default cache manager exists:
+The generated App should have cache support enabled. Verify that the default cache manager exists:
 
 ```text
 internal/caches
@@ -75,7 +75,7 @@ Do not edit generated cache files by hand.
 
 ## Step 1: Add a Named Cache
 
-Add a named `profiles` cache to `.env`, then run the build pipeline so your App exposes `app.Caches().Profiles()`.
+Add a named `profiles` cache to `.env`, then run the build pipeline so the generated App exposes `app.Caches().Profiles()`.
 
 Append to `.env`:
 
@@ -383,9 +383,7 @@ forj route:list
 
 Expected output includes:
 
-```text
-/api/v1/users/:id
-```
+- `/api/v1/users/:id`
 
 ## Try the Route
 

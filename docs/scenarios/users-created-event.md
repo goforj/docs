@@ -28,7 +28,7 @@ The event announces that something happened. The subscriber reacts to it. Durabl
 
 Complete [File Upload to Storage](/scenarios/file-upload-storage) first.
 
-Your App should have event support enabled. Verify that the generated event package exists:
+The generated App should have event support enabled. Verify that the generated event package exists:
 
 ```text
 internal/events
@@ -95,7 +95,7 @@ Do not edit generated event or logger files by hand.
 
 ## Step 1: Refresh Event Resources
 
-The generated environment already selects the in-process event driver for local development. Run the build pipeline so your App exposes `app.Bus()` and `app.Events()`.
+The generated environment already selects the in-process event driver for local development. Run the build pipeline so the generated App exposes `app.Bus()` and `app.Events()`.
 
 ```bash
 forj build
@@ -281,7 +281,7 @@ import (
 	"your/module/internal/events"
 )
 
-// UserEvents keeps user workflows independent of App state and generated event drivers.
+// UserEvents keeps user workflows independent of generated App state and event drivers.
 type UserEvents interface {
 	// PublishCreated announces a persisted user only after the source-of-truth write succeeds.
 	PublishCreated(ctx context.Context, user User) error
@@ -875,9 +875,7 @@ forj route:list
 
 Expected output includes:
 
-```text
-/api/v1/users
-```
+- `/api/v1/users`
 
 ## Try the Route
 
