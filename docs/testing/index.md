@@ -40,7 +40,7 @@ go test ./...
 
 Expected result: each package reports `ok`; a failure identifies the package and test name to investigate.
 
-GoForj Apps include generated tests for enabled framework-owned surfaces such as lifecycle idempotency, runtime topology defaults, health and readiness, Swagger serving, metrics, events, database connections, and generated commands.
+GoForj Apps include generated tests for enabled framework-owned surfaces such as lifecycle idempotency, runtime topology defaults, health and readiness, OpenAPI serving, metrics, events, database connections, and generated commands.
 
 ## Keep Domain Behavior Direct
 
