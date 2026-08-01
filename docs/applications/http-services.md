@@ -5,7 +5,7 @@ description: Orient an HTTP service around its runtime, route composition, contr
 
 # HTTP Services
 
-An HTTP service in GoForj combines an app-owned route registry and controllers with the generated HTTP runtime. Application code owns endpoint behavior; the framework owns server composition, startup, shutdown, health, readiness, and supported observability.
+An HTTP service in GoForj combines an App-owned route registry and controllers with the framework-managed HTTP runtime. Application code owns endpoint behavior; the Framework owns server composition, startup, shutdown, health, readiness, and supported observability.
 
 This page is the map through that system. Follow [JSON API Route](/scenarios/json-api-route) for the canonical runnable implementation.
 

@@ -148,9 +148,9 @@ The three artifacts form one generation:
 
 This means a failed compile or process-start attempt cannot replace the last working API contract with candidate output from a broken App.
 
-## Serve OpenAPI
+## Serve the API reference {#serve-openapi}
 
-When HTTP and Swagger support are enabled, the generated runtime serves:
+When HTTP and API reference support are enabled, the generated runtime serves these compatibility routes:
 
 ```text
 GET /swagger
@@ -158,20 +158,20 @@ GET /swagger/
 GET /swagger/doc.json
 ```
 
-`/swagger` and `/swagger/` serve the Scalar UI. `/swagger/doc.json` serves the active App's OpenAPI JSON:
+`/swagger` and `/swagger/` are the established URLs for the Scalar API reference. `/swagger/doc.json` serves the active App's OpenAPI JSON:
 
 - default App: `build/openapi.json`
 - additional app: `build/<app>/openapi.json`
 
 The selected app never falls back to the default App document. If its artifact is missing, `/swagger/doc.json` returns a JSON `404` with the exact `forj <app> build:api-index` command needed to create it.
 
-Enable these routes with:
+Enable these routes with the established configuration key:
 
 ```text
 API_SWAGGER_ENABLED=true
 ```
 
-`SWAGGER_ENABLED` remains a legacy fallback. Use `OPENAPI_SPEC_PATH` only as an explicit serving override for an arbitrary document:
+The `/swagger` paths and `API_SWAGGER_ENABLED` name remain for compatibility; they do not mean the UI is Swagger UI. `SWAGGER_ENABLED` remains a legacy fallback. Use `OPENAPI_SPEC_PATH` only as an explicit serving override for an arbitrary document:
 
 ```text
 OPENAPI_SPEC_PATH=build/contracts/public.json
@@ -216,6 +216,6 @@ The first two artifacts must be non-empty. Review the diagnostics file before pu
 
 - [Routes](/applications/routes)
 - [HTTP Services](/applications/http-services)
-- [Generated Files](/reference/generated-files)
+- [File Ownership](/reference/generated-files)
 - [HTTP Tests](/testing/http-tests)
 - [Web](/web)
