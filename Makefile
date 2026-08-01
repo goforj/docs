@@ -30,24 +30,9 @@ ifeq ($(APP_ENV),production)
 	COMPOSE_COMMAND=docker-compose -f docker-compose.yml -f docker-compose.prod.yml
 endif
 
-#----------------------
-# Terminal
-#----------------------
-
-GREEN  := $(shell tput -Txterm setaf 2)
-WHITE  := $(shell tput -Txterm setaf 7)
-YELLOW := $(shell tput -Txterm setaf 3)
-RESET  := $(shell tput -Txterm sgr0)
-
-#------------------------------------------------------------------
-# - Add the following 'help' target to your Makefile
-# - Add help text after each target name starting with '\#\#'
-# - A category can be added with @category
-#------------------------------------------------------------------
-
 .PHONY: build test
 
-HELP_FUN = %help; while(<>) { if (/^([A-Za-z0-9_-]+)\s*:.*\#\#(?:@([A-Za-z0-9_-]+))?\s(.*)$$/) { push @{$$help{$$2 || "other"}}, [$$1, $$3]; $$width = length($$1) if length($$1) > $$width } } print "\n"; for $$category (sort keys %help) { print "${WHITE}$$category${RESET}\n"; for $$entry (@{$$help{$$category}}) { printf "  ${YELLOW}%-*s${RESET}  ${GREEN}%s${RESET}\n", $$width, $$entry->[0], $$entry->[1] } }
+HELP_FUN = %help; while (<>) { /^([A-Za-z0-9_-]+)\s*:.*\#\#(?:@([A-Za-z0-9_-]+))?\s(.*)$$/ or next; push @{$$help{$$2 || "other"}}, [$$1, $$3]; $$width = length($$1) if length($$1) > $$width } print "\n"; for $$category (sort keys %help) { print "\e[37m$$category\e[0m\n"; for $$entry (@{$$help{$$category}}) { printf "  \e[33m%-*s\e[0m  \e[32m%s\e[0m\n", $$width, $$entry->[0], $$entry->[1] } }
 
 help: ##@other Show this help.
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
