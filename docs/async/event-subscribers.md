@@ -160,3 +160,4 @@ Use queues for durable, retryable, worker-managed work.
 - [Events](/async/events) explains event publishing.
 - [Jobs](/async/jobs) explains durable background work.
 - [Retries and Idempotency](/async/retries-idempotency) explains safe retry design.
+- [`make:subscriber` Reference](/reference/make-commands#make-subscriber) lists bus selection, removal, and generated registration.

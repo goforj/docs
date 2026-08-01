@@ -149,4 +149,5 @@ During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generati
 - [Events versus Queues](/async/events-vs-queues) explains boundary decisions.
 - [Environment Reference](/reference/env-vars#events) lists driver settings.
 - [Naming Conventions](/reference/naming-conventions) defines stable event topics.
+- [`make:event` Reference](/reference/make-commands#make-event) lists generation, removal, and shared options.
 - [Events](/events) covers standalone package details.

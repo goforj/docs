@@ -628,7 +628,9 @@ forj route:list
 
 Expected output includes:
 
-- `/api/v1/users`
+```text
+/api/v1/users
+```
 
 ## Try the Route
 

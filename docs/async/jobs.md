@@ -80,19 +80,14 @@ func NewGenerateJob(queues *queues.Manager) *GenerateJob {
 	return &GenerateJob{queues: queues}
 }
 
-// Queue creates a task and dispatches it to the selected queue.
-// Add application inputs as arguments when defining the payload contract.
-func (t *GenerateJob) Queue(ctx context.Context, name string) error {
-	var p GenerateJobPayload
-	// add your payload fields here
-	// p.User = name
-
-	payload, err := json.Marshal(p)
+// Queue dispatches the typed payload to the selected queue.
+func (t *GenerateJob) Queue(ctx context.Context, payload GenerateJobPayload) error {
+	data, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 	_, err = t.queues.WithContext(ctx).Dispatch(
-		queue.NewJob(GenerateJobTypeName).Payload(payload).OnQueue("reports"),
+		queue.NewJob(GenerateJobTypeName).Payload(data).OnQueue("reports"),
 	)
 	return err
 }
@@ -140,6 +135,8 @@ func registerJobHandlers(
 ## Implement the Job
 
 The scaffold supplies dispatch and handler seams. Replace its placeholder payload with the smallest source-of-truth references the worker needs.
+
+`GenerateJobTypeName` remains an explicit constant because queue registration and transport use a stable string identifier. Go cannot derive a package-level constant from the payload struct type, and reflection would make that operational contract less visible rather than cleaner.
 
 ### Payload and Dependencies
 
@@ -261,3 +258,4 @@ Do not register handlers after workers are already running.
 - [Workers](/async/workers) explains execution lifecycle.
 - [Retries and Idempotency](/async/retries-idempotency) explains safe retry behavior.
 - [Naming Conventions](/reference/naming-conventions) defines stable job names.
+- [`make:job` Reference](/reference/make-commands#make-job) lists generation, queue selection, removal, and shared options.
