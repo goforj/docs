@@ -7,7 +7,7 @@ noAutoTitle: true
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png?v=4" width="300" alt="storage logo">
+  <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png" width="300" alt="storage logo">
 </p>
 
 <p align="center">
@@ -1375,36 +1375,12 @@ Current fixture types in the centralized matrix:
 - emulator: `gcs`
 - embedded/local fixtures: `local`, `ftp`, `rclone_local`
 
-Common contributor commands:
+## Development {#development}
 
-```bash
-go test ./...
-```
-
-```bash
-cd integration
-go test -tags=integration ./all -count=1
-```
-
-Run a single integration backend:
-
-```bash
-cd integration
-INTEGRATION_DRIVER=gcs go test -tags=integration ./all -count=1
-```
-
-Make targets:
-
-```bash
-make test
-make examples-test
-make coverage
-make integration
-make integration-driver gcs
-```
+Use `make test` for root-module tests, `make test-examples` for the examples module, and `make test-coverage` for the Codecov report. `make test-integration` runs the centralized matrix; pass a driver such as `make test-integration gcs` to select one backend. Integration may require Docker. `make bench` and `make bench-render` retain the benchmark workflow, while the `modules-check`, `release-tag`, `release-plan`, and `release-publish` targets support publication.
 
 ## Using with GoForj {#using-with-goforj}
 
 GoForj Apps expose named disks through generated accessors. Use those accessors in application services and keep backend selection in storage configuration.
 
-For the GoForj integration, see [Storage Patterns](/data/storage-patterns).
+For the App workflow, see [Storage Patterns](/data/storage-patterns).

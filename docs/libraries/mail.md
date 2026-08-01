@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/mail
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png?v=1" width="300" alt="mail logo">
+  <img src="https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png" width="300" alt="mail logo">
 </p>
 
 <p align="center">
@@ -1066,15 +1066,12 @@ fmt.Println(fake.SentCount())
 ```
 <!-- api:embed:end -->
 
-## Docs Tooling {#docs-tooling}
+## Development {#development}
 
-- `go run ./docs/examplegen/main.go`
-- `go run ./docs/readme/main.go`
-- `go run ./docs/readme/testcounts/main.go`
-- `./docs/watcher.sh`
+Use `make test` for root-module tests, `make vet` for static checks, and `make generate` to refresh generated documentation. Run `make docs-watch` to regenerate documentation as source files change. The `docs`, `examples`, and `mailses` directories are separate Go modules and can be tested from their own directories when changed.
 
 ## Using with GoForj {#using-with-goforj}
 
 GoForj Apps expose named mailers through generated accessors. Send through those accessors and keep transport selection and credentials in configuration.
 
-For the GoForj integration, see [Mail](/applications/mail).
+For the App workflow, see [Mail](/applications/mail).

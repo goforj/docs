@@ -68,7 +68,7 @@ func TestTransformReadmeAppendsFrameworkGuide(t *testing.T) {
 		FrameworkGuide: FrameworkGuide{
 			Title:   "Queues",
 			Path:    "/async/queues",
-			Summary: "Generated Apps expose named queues through generated accessors.",
+			Summary: "GoForj Apps expose named queues through generated accessors.",
 		},
 	}
 
@@ -76,8 +76,8 @@ func TestTransformReadmeAppendsFrameworkGuide(t *testing.T) {
 	wants := []string{
 		`description: "Queued work with pluggable backend drivers."`,
 		"## Using with GoForj {#using-with-goforj}",
-		"Generated Apps expose named queues through generated accessors.",
-		"For generated App integration, see [Queues](/async/queues).",
+		"GoForj Apps expose named queues through generated accessors.",
+		"For the App workflow, see [Queues](/async/queues).",
 	}
 	for _, want := range wants {
 		if !strings.Contains(got, want) {

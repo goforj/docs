@@ -6,7 +6,7 @@ repoUrl: https://github.com/goforj/crypt
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/crypt/main/docs/images/logo.png?v=3" width="300" alt="crypt logo">
+  <img src="https://raw.githubusercontent.com/goforj/crypt/main/docs/images/logo.png" width="300" alt="crypt logo">
 </p>
 
 <p align="center">
@@ -401,3 +401,7 @@ godump.Dump(err == nil, newKey != "")
 // #bool true
 ```
 <!-- api:embed:end -->
+
+## Development {#development}
+
+Use `make test` for the root module, `make vet` for static checks, and `make generate` to refresh generated documentation. Run `make docs-watch` to regenerate documentation as source files change. The `examples` directory is a separate Go module and can be tested from that directory when changed.
