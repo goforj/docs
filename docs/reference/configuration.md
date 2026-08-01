@@ -10,7 +10,7 @@ GoForj has two main configuration layers:
 - `.goforj.yml` for project rendering and development workflow.
 - environment variables for runtime behavior.
 
-This page defines accepted keys and values. Start with [Configuration](/getting-started/configuration) for the first working change, or [forj dev](/developer-tools/forj-dev) for the build, SPA, and runtime loop. The lifecycle examples below illustrate configuration shapes rather than a second development tutorial.
+This page is a lookup for accepted keys and values. It does not replace the task-oriented setup guides or define production runtime policy. Start with [Configuration](/getting-started/configuration) for the first working change, or [forj dev](/developer-tools/forj-dev) for the build, SPA, and runtime loop. The lifecycle examples below illustrate configuration shapes rather than a second development tutorial.
 
 ## `.goforj.yml`
 
@@ -70,7 +70,17 @@ Compiled defaults fill values that remain unset after normal file-backed loading
 
 Compiled overrides take precedence over process and file-backed values. A compiled `APP_ENV` override selects its matching environment file and remains authoritative after loading.
 
-Use these options for controlled packaging workflows. Prefer environment files and process environment for normal local development. See [CLI Reference](/reference/cli#framework-command-options) for the complete `forj build` option list.
+These values become part of the artifact contract:
+
+| Build input | Runtime can replace it? | Appropriate use |
+| --- | --- | --- |
+| `--env-defaults KEY=value` | Yes, with a process or file-backed value | A non-secret fallback that should travel with this artifact. |
+| `--env-overrides KEY=value` | No; rebuild the artifact to change it | A non-secret packaging constraint that must remain fixed for every process using this artifact. |
+| Process environment or deployment configuration | Yes, when the deployment changes it | Environment-specific endpoints, credentials, ports, scaling, retention, and operational policy. |
+
+Do not compile secrets into either channel. Compiled values can be recovered from or observed with the artifact, and an override prevents the deployment platform from correcting that key at startup. Treat a change to a compiled default or override like any other artifact change: rebuild, identify, test, and promote the new binary or image.
+
+Most production configuration remains deployment-owned. Use the deployment platform's environment, configuration, and secret delivery mechanisms for values that differ by environment or must rotate independently of a build. Prefer environment files and process environment for normal local development. See [CLI Reference](/reference/cli#framework-command-options) for the complete `forj build` option list and [Deploy an App](/operations/deployment-basics#keep-configuration-outside-the-artifact) for the production handoff.
 
 ## Development Tasks
 
@@ -334,6 +344,8 @@ Catalog dependencies are resolved in memory by the renderer. For example, metric
 
 ## Module Replaces
 
+`render.module_replaces` manages local Go module replacements during Project rendering. On render, GoForj applies each entry to `go.mod` with `go mod edit -replace` and records which module paths it owns in `.goforj.module_replaces.json`. When an owned entry is later removed from `.goforj.yml`, the next render drops that replacement without touching unrelated replacements that a maintainer added directly to `go.mod`.
+
 Use paths that are stable from the Project root. For local sibling repositories, prefer a relative path:
 
 ```yaml
@@ -342,7 +354,7 @@ render:
     github.com/goforj/web: ../web
 ```
 
-Do not use container-specific absolute paths; they only work in one local environment.
+This is a development and rendering aid, not runtime dependency configuration. Do not use container-specific or machine-specific absolute paths in shared Project configuration; they only work in one local environment. Before a release build, confirm that `go.mod` does not resolve production dependencies through unintended local replacements.
 
 ## Related Pages
 

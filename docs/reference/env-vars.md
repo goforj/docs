@@ -48,6 +48,7 @@ Variables for components that are not selected are not rendered and have no gene
 | `APP_DIAG_TOKEN` | Generated when Web API is rendered | Bearer token for protected diagnostic commands and endpoints. |
 | `APP_SHUTDOWN_TIMEOUT` | `30s` | Root graceful-shutdown budget. |
 | `APP_VERSION` | Empty | Deployment version reported to Lighthouse. |
+| `APP_REVISION` | Empty | Immutable deployment revision used by framework-managed metrics discovery. Keep it bounded and low-cardinality, such as a commit SHA. |
 | `APP_INSTANCE_ID` | Empty | Explicit process or replica identity reported to Lighthouse. When empty, Lighthouse identifies the instance by hostname, then its generated agent ID. |
 | `APP_INSTANCE_KIND` | Empty | Optional deployment-specific instance classification reported to Lighthouse. |
 | `APP_MODE` | Empty | Optional runtime mode used in generated log labels. Runtime commands normally set their own context. |
@@ -64,6 +65,8 @@ Variables for components that are not selected are not rendered and have no gene
 | `APP_LOG_DEDUPE_WINDOW_MS` | `1200` | Dedupe window in milliseconds. |
 | `APP_LOG_DEDUPE_BURST` | `2` | Matching messages emitted before suppression begins within a window. |
 | `APP_LOG_DEDUPE_SUMMARY_EVERY` | `1000` | Suppressed occurrences between summary messages. |
+| `APP_LOG_REDACT_KEYS` | Empty | Comma-separated application-specific field names to redact in addition to mandatory secret-bearing names. |
+| `APP_LOG_REDACT_MESSAGE_PATTERNS` | Empty | JSON array of regular expressions replaced with `[REDACTED]` before output and sink delivery. Invalid JSON or expressions fail during logger construction. |
 
 See [Logging](/operations/logging) for event shape, output modes, and sensitive-data guidance.
 
@@ -196,7 +199,7 @@ Framework-owned instrumentation toggles all default to `true` when their compone
 | `METRICS_DATABASE_ENABLED` | Database operations. |
 | `METRICS_AUTH_ENABLED` | Auth flows. |
 | `METRICS_SCHEDULER_ENABLED` | Scheduler operations. |
-| `METRICS_MONITORING_ENABLED` | Monitoring metrics in the generated demo App. |
+| `METRICS_MONITORING_ENABLED` | Monitoring metrics in the demo App. |
 
 See [Metrics](/operations/metrics) for endpoints, labels, and scrape topology.
 
@@ -249,7 +252,7 @@ The default connection uses `DB_<SUFFIX>`. Named connections use `DB_<NAME>_<SUF
 | `MYSQL_MAX_OPEN_CONNECTIONS` | Driver default | Compatibility fallback for `DB_MAX_OPEN_CONNECTIONS`. Prefer the `DB_` key. |
 | `DB_CONNECTIONS`, `DB_SUPPORTED_CONNECTIONS` | Empty | Legacy comma-separated connection-name discovery used by backup commands. New Apps discover `DB_<NAME>_*` directly. |
 
-The renderer supplies usable local MySQL or Postgres connection values when those services are selected. Active driver values also accept the compatibility aliases `sqlite3`, `mariadb`, and `postgresql`; supported-driver lists and new configuration should use the canonical names above. See [Database Strategy](/data/database-strategy) and [Database Shell](/data/database-strategy#shell-options).
+The renderer supplies usable local MySQL or Postgres connection values when those services are selected. Active driver values also accept the compatibility aliases `sqlite3`, `mariadb`, and `postgresql`; supported-driver lists and new configuration should use the canonical names above. See [Database Connections](/data/database-strategy) and [Database Shell](/data/database-strategy#shell-options).
 
 ## Shared Redis and NATS
 
@@ -481,8 +484,8 @@ See [Mail](/applications/mail) for local delivery, named mailers, and production
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `SCHEDULER_COMMAND_TIMEOUT` | `10m` | Maximum runtime for a command launched by a scheduled task. |
-| `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` | `APP_SHUTDOWN_TIMEOUT`; rendered as `90s` | Grace period for scheduler-owned subprocesses. |
-| `QUEUE_SHUTDOWN_TIMEOUT` | `10s` | Queue shutdown budget, also listed with Queue settings. |
+| `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` | `APP_SHUTDOWN_TIMEOUT` | Grace period for scheduler-owned subprocesses, capped by the remaining App shutdown budget. |
+| `QUEUE_SHUTDOWN_TIMEOUT` | `10s` | Queue shutdown budget, capped by the remaining App shutdown budget and also listed with Queue settings. |
 
 ## Local Observability
 
@@ -550,7 +553,7 @@ S3-backed `STORAGE_<NAME>_*` resources can be inventoried as backup inputs, but 
 
 See [Make Command Shared Options](/reference/make-commands#shared-options) and [forj dev](/developer-tools/forj-dev).
 
-## Generated Demo App
+## Demo App
 
 These controls exist only when the demo monitoring and Lighthouse benchmark surfaces are rendered.
 
@@ -572,6 +575,6 @@ These controls exist only when the demo monitoring and Lighthouse benchmark surf
 
 - [Configuration](/getting-started/configuration)
 - [Driver Selection](/data/driver-selection)
-- [Generated Components](/core/code-generation)
+- [Code Generation](/core/code-generation)
 - [Named Resources](/core/named-resources)
 - [Production Hardening](/security/production-hardening)

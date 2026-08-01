@@ -14,7 +14,7 @@ Use reference pages after you know the workflow and need exact command names, en
 - [CLI Reference](/reference/cli)
 - [Environment Reference](/reference/env-vars)
 - [Configuration Reference](/reference/configuration)
-- [Generated Files](/reference/generated-files)
+- [File Ownership](/reference/generated-files)
 - [Generation Commands](/reference/generation-commands)
 - [Errors](/reference/errors)
 
