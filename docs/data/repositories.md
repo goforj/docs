@@ -87,5 +87,5 @@ Success means the focused repository behavior and every package using its servic
 
 - [Transactions](/data/transactions) explains consistency boundaries.
 - [Application Services](/applications/services) explains service orchestration.
-- [Database Strategy](/data/database-strategy) explains generated connections.
+- [Database Connections](/data/database-strategy) explains generated connections.
 - [Integration Tests](/testing/integration-tests) covers Driver-specific persistence behavior.
