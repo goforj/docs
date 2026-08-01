@@ -113,6 +113,25 @@ environment=local
 
 This label set identifies a background staff-operations job from `admin`. Use `source` for logical runtime attribution and `process` for scrape topology.
 
+## Deployment Markers
+
+Set `APP_VERSION` and `APP_REVISION` in the Project's `.env` before building:
+
+```dotenv
+APP_VERSION=v1.8.0
+APP_REVISION=8d5c20f
+```
+
+Then build the artifact:
+
+```bash
+forj build
+```
+
+Expected result: when framework-managed metrics discovery is enabled, its target labels include `release="v1.8.0"` and `revision="8d5c20f"`. Blank values are omitted. Use one release version and one immutable revision per deployment.
+
+The build reads generation settings from `.env.example` and `.env`; exporting these variables only in the build shell does not change the generated target labels. An externally managed production scraper must add `release` and `revision` in its own service-discovery configuration.
+
 Avoid user IDs, emails, raw URLs, raw SQL, cache keys, filenames, request IDs, and arbitrary error strings.
 
 ## Proving Path

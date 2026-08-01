@@ -69,8 +69,12 @@ Common variables:
 ```text
 APP_SHUTDOWN_TIMEOUT=30s
 QUEUE_SHUTDOWN_TIMEOUT=10s
-SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
+SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=30s
 ```
+
+`APP_SHUTDOWN_TIMEOUT` controls HTTP and scheduler graceful shutdown and the outer App lifecycle. `QUEUE_SHUTDOWN_TIMEOUT` controls worker drain separately. `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` defaults to the App timeout when unset and controls the grace period for scheduler-owned subprocesses.
+
+Queue and scheduler subprocess settings are not automatically capped to the App timeout. Keep them consistent with the supervisor's stop grace period and test shutdown with in-flight work. The supervisor must allow enough time for the complete shutdown path, including cleanup after runtimes stop.
 
 Constructors should build dependencies, not start long-running work. Keep business behavior independent of process topology, allow workers time to finish in-flight jobs, and use locking or singleton control before running multiple schedulers. Splitting processes does not provide shared state or job correctness by itself.
 

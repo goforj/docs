@@ -488,8 +488,8 @@ See [Mail](/applications/mail) for local delivery, named mailers, and production
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `SCHEDULER_COMMAND_TIMEOUT` | `10m` | Maximum runtime for a command launched by a scheduled task. |
-| `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` | `APP_SHUTDOWN_TIMEOUT` | Grace period for scheduler-owned subprocesses, capped by the remaining App shutdown budget. |
-| `QUEUE_SHUTDOWN_TIMEOUT` | `10s` | Queue shutdown budget, capped by the remaining App shutdown budget and also listed with Queue settings. |
+| `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` | `APP_SHUTDOWN_TIMEOUT` | Grace period for scheduler-owned subprocesses. Defaults to the App timeout; explicit values are not capped to that timeout. |
+| `QUEUE_SHUTDOWN_TIMEOUT` | `10s` | Queue shutdown budget, resolved independently of the App timeout and also listed with Queue settings. |
 
 ## Local Observability
 

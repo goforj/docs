@@ -79,6 +79,8 @@ APP_DIAG_TOKEN=<value-from-your-secret-store>
 
 The rendered App determines the rest. Configure its selected database, queue, cache, storage, event, mail, and observability drivers with production values. Do not allow a missing production dependency to silently fall back to a process-local driver.
 
+`forj build --env-defaults` embeds fallback values that deployment configuration can replace. `--env-overrides` embeds values that take precedence over process and file-backed configuration. Keep both limited to non-secret artifact settings; changing an override requires a rebuild. See [Compiled Environment Values](/reference/configuration#compiled-environment-values) for precedence and examples.
+
 Bind to `127.0.0.1` when a reverse proxy on the same host owns public traffic. Bind to `0.0.0.0` only when a container network, firewall, or host network policy controls access.
 
 If the App intentionally uses SQLite, local storage, uploads, or another writable filesystem path, place that data outside the versioned release directory and configure an absolute path. Replacing an immutable release must not replace or orphan durable application data.
@@ -191,6 +193,14 @@ Create and verify a recovery point, then run migrations from the staged release:
 Expected result: the migration command exits successfully before processes from that release receive traffic.
 
 Run the command once per migration-owning App, not once per HTTP replica. During a rolling deployment, prefer additive schema changes that work with both the old and new binaries.
+
+For an additional migration-owning App, run its staged binary separately:
+
+```bash
+/srv/example/releases/2026-07-28/bin/admin migrate
+```
+
+Expected result: the `admin` App's configured migration streams run before that App receives traffic. Running the default App's migration command does not migrate additional Apps.
 
 Use stable paths for backup output rather than writing backup sets inside a versioned release directory. [Backup and Restore](/operations/backups) covers discovery, verification, retention, and restore safeguards.
 
