@@ -334,4 +334,5 @@ During `forj dev`, an app listed in `dev.apps` rebuilds automatically. [Generati
 - [Jobs](/async/jobs) explains job definitions.
 - [Workers](/async/workers) explains worker lifecycle.
 - [Environment Reference](/reference/env-vars#queue) lists queue and driver settings.
+- [`make:queue` Reference](/reference/make-commands#make-queue) lists resource generation, removal, and exact output.
 - [Queue](/queue) covers standalone package details.

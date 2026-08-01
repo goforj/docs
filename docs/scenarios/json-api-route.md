@@ -11,7 +11,7 @@ This page is generated from an executable spec. An automated suite renders a fre
 
 Scenario 1 of 7 in the [verified path](/scenarios/). Plan on about 15 minutes.
 
-This scenario adds a `GET /api/v1/users/:id` endpoint to a generated GoForj App.
+This scenario adds a `GET /api/v1/users/:id` endpoint to a GoForj App.
 
 The endpoint is intentionally small. It establishes the normal shape for application features: start from the make command, keep the controller thin, put behavior behind a service, register providers explicitly, and verify the route through the generated runtime.
 
@@ -25,7 +25,7 @@ The endpoint is intentionally small. It establishes the normal shape for applica
 
 ## Prerequisites
 
-Start from a generated GoForj App with HTTP enabled.
+Start from a GoForj App with HTTP enabled.
 
 ## Golden Path State
 
@@ -258,7 +258,9 @@ forj route:list
 
 Expected output includes:
 
-- `/api/v1/users/:id`
+```text
+/api/v1/users/:id
+```
 
 ## Try the Route
 
