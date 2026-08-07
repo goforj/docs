@@ -17,7 +17,7 @@ During project creation, run the wizard:
 forj new
 ```
 
-At `Atlas - Agent Support`, choose `Recommended` to install guidance for the detected agents and enable local docs context where supported.
+At `Atlas - Agent Support`, choose `Recommended` to install guidance for one preferred locally installed agent and enable local docs context. Choose `Custom` when the Project deliberately supports more than one agent.
 
 For an existing GoForj Project, install Atlas and verify the result:
 
@@ -46,6 +46,24 @@ Atlas installs lightweight project files that teach agents the GoForj way to bui
 - read local docs and project metadata before changing code
 
 The goal is not to make agents louder. The goal is to make them less surprising.
+
+### Native files and project state
+
+Atlas records the selected agents, enabled features, and generated-file ownership in `.goforj/atlas.json`. Commit that file with the Project. Agent files remain in their native discovery locations—such as `AGENTS.md`, `.agents/skills`, and `.codex/config.toml` for Codex—but Atlas writes them only for selected agents.
+
+A normal update follows the committed selection. It does not add every agent installed on the machine or infer new agents from directories Atlas generated previously:
+
+```bash
+forj atlas:update
+```
+
+Re-run local agent discovery only when you intend to change the selection:
+
+```bash
+forj atlas:update --discover
+```
+
+Explicit `--agent` selections replace the committed agent set. `--all-agents` remains available for teams that intentionally commit every supported projection. When an agent or installation feature is deselected, Atlas removes its own guideline block, MCP entry, and recorded generated skills while preserving unrelated configuration and user-authored content.
 
 ## Project-owned skills
 
@@ -79,7 +97,7 @@ Atlas copies those skills into each selected agent's native location:
 .agents/skills/checkout-rules/SKILL.md             # Codex
 .claude/skills/checkout-rules/SKILL.md             # Claude Code
 .github/instructions/checkout-rules.instructions.md # GitHub Copilot
-.gemini/skills/checkout-rules/GEMINI.md            # Gemini CLI
+.gemini/skills/checkout-rules/SKILL.md             # Gemini CLI
 ```
 
 Use project-owned skills for conventions that only exist in your repo: package boundaries, domain naming, deployment rules, generated file ownership, review expectations, or local testing habits.
@@ -254,6 +272,7 @@ Reach for Atlas commands when:
 - you want to refresh installed skills or instructions
 - you want to point MCP at a local docs checkout
 - you want agents to understand a newly rendered GoForj project
+- you deliberately want to re-detect the preferred local agent
 
 Useful commands:
 
