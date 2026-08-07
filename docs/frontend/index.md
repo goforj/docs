@@ -16,10 +16,10 @@ The default app uses:
 ```text
 cmd/app/frontend/       frontend source and package configuration
 cmd/app/frontend/dist/  browser assets produced by the frontend build
-cmd/app/main.go         embeds and registers the built assets
+cmd/app/main.go         embeds and registers the built assets before App launch
 ```
 
-An additional app uses the same layout under `cmd/<app>/frontend/`. Each app owns its frontend lifecycle and embeds only its own `dist` directory.
+An additional app uses the same layout under `cmd/<app>/frontend/`. Each app owns its frontend lifecycle and embeds only its own `dist` directory. The framework-managed entrypoint performs this required registration before delegating startup to the App's Wire package; application routes and services still belong under `app/` and `internal/`.
 
 ## Development Lifecycle
 

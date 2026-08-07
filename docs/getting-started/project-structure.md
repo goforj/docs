@@ -13,7 +13,7 @@ The default app is named `app`. Most Projects need only this app.
 
 1. `internal/` owns behavior. It should not need to know which App or runtime exposes it.
 2. `app/` owns wiring and exposure. It connects dependencies and registers routes, commands, schedules, and lifecycle hooks without becoming a business-logic package.
-3. `cmd/app/main.go` owns process entry. It starts the default App and is not the normal extension point.
+3. `cmd/app/main.go` owns process entry. It registers anything that must exist before wiring, such as embedded frontend assets, then delegates startup through the App's Wire package. Rendering refreshes this file, so it is not an application extension point.
 
 For example, generating a reports controller:
 
