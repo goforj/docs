@@ -11,27 +11,27 @@
   "highlights": [
     {
       "library": "Cache",
-      "label": "Memory read",
+      "label": "Memory GetBytes",
       "value": 70,
       "unit": "ns/op"
     },
     {
       "library": "Queue",
-      "label": "Synchronous dispatch",
+      "label": "Synchronous Dispatch return",
       "value": 282.5,
       "unit": "ns/op"
     },
     {
       "library": "Events",
-      "label": "Synchronous round trip",
+      "label": "Publish + handler round trip",
       "value": 371.8,
       "unit": "ns/op"
     },
     {
-      "library": "Web",
-      "label": "Static route",
-      "value": 11047264,
-      "unit": "ops/s"
+      "library": "Storage",
+      "label": "Memory small-object Get",
+      "value": 752.9147821215927,
+      "unit": "ns/op"
     }
   ],
   "driverStories": [
@@ -689,7 +689,7 @@
     {
       "repo": "web",
       "path": "docs/bench/benchmarks_rows.json",
-      "revision": "b1c88179b24ef67ccc51521e3b731a6cce0190a5",
+      "revision": "8ae67c788fbf8c8ac3c0d0c6ca73d5df221b3b2e",
       "sha256": "2f4567eaef1f4246c60ed735e112172abb9c16e231c931b05c0a3281747f1eea"
     }
   ]
