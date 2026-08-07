@@ -48,12 +48,50 @@ const driverRows = computed(() => [...driverStory.value.rows].sort((left, right)
   return kindDifference || left.value - right.value
 }))
 const webScenario = computed(() => performance.web.scenarios.find((scenario) => scenario.id === selectedWebScenarioID.value))
-const webRows = computed(() => [...webScenario.value.rows].sort((left, right) => right.throughput - left.throughput))
+const webRows = computed(() => webScenario.value.rows
+  .filter((row) => row.framework !== 'httprouter')
+  .sort((left, right) => right.throughput - left.throughput))
 const goforjWeb = computed(() => webScenario.value.rows.find((row) => row.framework === 'goforj_web'))
 const liveHTTP = computed(() => performance.web.scenarios.find((scenario) => scenario.id === 'live_plain_text'))
 const liveGoforjWeb = computed(() => liveHTTP.value.rows.find((row) => row.framework === 'goforj_web'))
 const liveNetHTTP = computed(() => liveHTTP.value.rows.find((row) => row.framework === 'net_http'))
-const highlight = (library) => performance.highlights.find((item) => item.library === library)
+const driverRow = (storyID, label) => performance.driverStories
+  .find((story) => story.id === storyID)
+  .rows.find((row) => row.label === label)
+const performancePairs = [
+  {
+    id: 'cache',
+    title: 'Cache',
+    operation: 'Seeded read',
+    local: driverRow('cache', 'Memory'),
+    production: driverRow('cache', 'Redis'),
+    buys: 'Shared cache state across App instances.'
+  },
+  {
+    id: 'queue',
+    title: 'Queue',
+    operation: 'Dispatch return',
+    local: driverRow('queue', 'Worker pool'),
+    production: driverRow('queue', 'RabbitMQ'),
+    buys: 'Broker-backed delivery to independent workers.'
+  },
+  {
+    id: 'events',
+    title: 'Events',
+    operation: 'Publish + handle',
+    local: driverRow('events', 'Synchronous'),
+    production: driverRow('events', 'NATS JetStream'),
+    buys: 'Durable event delivery across processes.'
+  },
+  {
+    id: 'storage',
+    title: 'Storage',
+    operation: 'Small-object read',
+    local: driverRow('storage', 'Local'),
+    production: driverRow('storage', 'S3'),
+    buys: 'Object storage shared beyond one host.'
+  }
+]
 
 const driverWidth = (value) => {
   const values = driverRows.value.map((row) => row.value)
@@ -74,7 +112,6 @@ const formatRate = (value) => {
   if (value >= 1_000) return `${Math.round(value / 1_000)}K`
   return Math.round(value).toLocaleString()
 }
-const formatHighlight = (item) => item.unit === 'ops/s' ? formatRate(item.value) : formatLatency(item.value).replace(' ', '')
 const kindLabel = (kind) => ({ process: 'In process', local: 'Host-local', service: 'External boundary' })[kind]
 const scenarioLabel = (id) => ({
   live_plain_text: 'HTTP loopback',
@@ -103,22 +140,29 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
         </div>
       </div>
 
-      <div class="gf-performance-radar" aria-label="Selected GoForj benchmark results">
-        <div class="gf-performance-radar__grid" aria-hidden="true"></div>
-        <div class="gf-performance-radar__core">
-          <span>{{ highlight('Cache').label }}</span>
-          <strong>{{ formatHighlight(highlight('Cache')).replace('ns', '') }}<small>ns</small></strong>
+      <div class="gf-performance-pairs" aria-label="Local and production-oriented driver performance">
+        <div class="gf-performance-pairs__heading">
+          <div><span>Start local</span><strong>Fast feedback</strong></div>
+          <i aria-hidden="true">same contract</i>
+          <div><span>Cross the boundary</span><strong>Production capability</strong></div>
         </div>
-        <div class="gf-performance-radar__node gf-performance-radar__node--queue">
-          <span>Queue</span><strong>{{ formatLatency(highlight('Queue').value) }}</strong>
-        </div>
-        <div class="gf-performance-radar__node gf-performance-radar__node--events">
-          <span>Events</span><strong>{{ formatLatency(highlight('Events').value) }}</strong>
-        </div>
-        <div class="gf-performance-radar__node gf-performance-radar__node--web">
-          <span>Storage</span><strong>{{ formatLatency(highlight('Storage').value) }}</strong>
-        </div>
-        <div class="gf-performance-radar__sweep" aria-hidden="true"></div>
+        <article v-for="pair in performancePairs" :key="pair.id">
+          <div class="gf-performance-pairs__label">
+            <strong>{{ pair.title }}</strong>
+            <span>{{ pair.operation }}</span>
+          </div>
+          <div class="gf-performance-pairs__driver is-local">
+            <span>{{ pair.local.label }}</span>
+            <strong>{{ formatLatency(pair.local.value) }}</strong>
+          </div>
+          <div class="gf-performance-pairs__bridge" aria-hidden="true"><span></span><i>→</i></div>
+          <div class="gf-performance-pairs__driver is-production">
+            <span>{{ pair.production.label }}</span>
+            <strong>{{ formatLatency(pair.production.value) }}</strong>
+          </div>
+          <p>{{ pair.buys }}</p>
+        </article>
+        <small>Measured locally. Each row compares the same library operation; lower is faster.</small>
       </div>
     </section>
 
@@ -129,27 +173,46 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
       <div><strong>SHA</strong><span>revision and content hash recorded</span></div>
     </section>
 
-    <section class="gf-performance-section gf-performance-local">
+    <section class="gf-performance-section gf-performance-contract">
       <header class="gf-performance-section__header">
-        <p class="gf-performance-eyebrow">The cheapest useful boundary</p>
-        <h2>Local work stays local.</h2>
+        <p class="gf-performance-eyebrow">Performance without a fork in the road</p>
+        <h2>Your service code stays put.</h2>
         <p>
-          A memory cache read takes 70 ns. Synchronous queue dispatch returns in 283 ns. A
-          synchronous event publish plus handler round trip takes 372 ns. An in-memory small-object
-          read takes 753 ns. These are focused local measurements, not end-to-end App timings. Their
-          practical value is simple: your App can use real cache, queue, event, and storage contracts
-          before it needs a broker, database, or cloud service.
+          Local drivers are not toy substitutes. They implement the contracts your App uses in
+          production. Start with fewer processes and faster feedback, then change configuration and
+          wiring when a workload needs shared state, independent workers, durable delivery, or
+          storage beyond one host.
         </p>
       </header>
 
-      <div class="gf-performance-highlights">
-        <article v-for="item in performance.highlights" :key="item.library">
-          <div class="gf-performance-highlights__beam" aria-hidden="true"></div>
-          <p>{{ item.library }}</p>
-          <strong>{{ formatHighlight(item) }}</strong>
-          <span>{{ item.label }}</span>
-          <small>{{ item.unit }}</small>
-        </article>
+      <div class="gf-performance-contract-map">
+        <div class="gf-performance-contract-map__service">
+          <span>Application service</span>
+          <strong>Business logic</strong>
+          <code>cache.Get(ctx, key)</code>
+          <code>queue.Dispatch(ctx, job)</code>
+          <code>events.Publish(ctx, event)</code>
+          <code>storage.Get(ctx, path)</code>
+          <small>unchanged</small>
+        </div>
+        <div class="gf-performance-contract-map__contracts">
+          <span>GoForj contracts</span>
+          <i aria-hidden="true">→</i>
+          <strong>Cache · Queue · Events · Storage</strong>
+          <i aria-hidden="true">→</i>
+        </div>
+        <div class="gf-performance-contract-map__modes">
+          <div>
+            <span>Local profile</span>
+            <strong>Memory · Worker pool<br>Synchronous · Disk</strong>
+            <small>one command, no supporting services</small>
+          </div>
+          <div>
+            <span>Production profile</span>
+            <strong>Redis · RabbitMQ<br>JetStream · S3</strong>
+            <small>coordination, durability, distribution</small>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -399,7 +462,7 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
 .gf-performance-hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(520px, 1.1fr);
+  grid-template-columns: minmax(0, 0.78fr) minmax(660px, 1.22fr);
   gap: clamp(30px, 6vw, 110px);
   align-items: center;
   min-height: calc(100vh - var(--vp-nav-height));
@@ -494,112 +557,53 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
   border-color: var(--perf-gold);
 }
 
-.gf-performance-radar {
-  position: relative;
-  aspect-ratio: 1;
-  width: min(100%, 720px);
-  margin: auto;
-  border: 1px solid rgba(255, 130, 87, 0.17);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(255, 106, 61, 0.13) 0 1px, transparent 2px),
-    radial-gradient(circle, transparent 0 24%, var(--perf-faint) 24.2% 24.5%, transparent 24.8% 49%, var(--perf-faint) 49.2% 49.5%, transparent 49.8% 74%, var(--perf-faint) 74.2% 74.5%, transparent 74.8%),
-    var(--gf-code-well);
-  background-size: 18px 18px, 100% 100%, 100% 100%;
-  box-shadow: inset 0 0 100px rgba(255, 106, 61, 0.06), 0 40px 120px rgba(0, 0, 0, 0.22);
+.gf-performance-pairs {
+  padding: clamp(20px, 2.6vw, 34px);
+  border: 1px solid rgba(255, 130, 87, 0.22);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(255, 106, 61, 0.07), var(--perf-panel) 35%);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.25);
 }
 
-.gf-performance-radar__grid {
-  position: absolute;
-  inset: 8%;
-  border: 1px solid var(--perf-faint);
-  border-radius: 50%;
-}
-
-.gf-performance-radar__grid::before,
-.gf-performance-radar__grid::after {
-  position: absolute;
-  background: var(--perf-faint);
-  content: "";
-}
-
-.gf-performance-radar__grid::before { top: 50%; left: 0; width: 100%; height: 1px; }
-.gf-performance-radar__grid::after { top: 0; left: 50%; width: 1px; height: 100%; }
-
-.gf-performance-radar__sweep {
-  position: absolute;
-  inset: 8%;
-  overflow: hidden;
-  border-radius: 50%;
-  animation: gf-performance-sweep 8s linear infinite;
-}
-
-.gf-performance-radar__sweep::before {
-  position: absolute;
-  inset: 0 50% 50% 0;
-  background: conic-gradient(from 270deg at 100% 100%, transparent 0deg, rgba(255, 106, 61, 0.18) 52deg, transparent 54deg);
-  content: "";
-  transform-origin: 100% 100%;
-}
-
-.gf-performance-radar__core {
-  position: absolute;
-  z-index: 3;
-  top: 50%;
-  left: 50%;
+.gf-performance-pairs__heading,
+.gf-performance-pairs article {
   display: grid;
-  width: 38%;
-  aspect-ratio: 1;
-  place-content: center;
-  border: 1px solid rgba(255, 130, 87, 0.44);
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 38%, rgba(255, 106, 61, 0.28), var(--gf-code-well) 68%);
-  box-shadow: 0 0 80px rgba(255, 106, 61, 0.18), inset 0 1px rgba(255, 255, 255, 0.08);
-  text-align: center;
-  transform: translate(-50%, -50%);
+  grid-template-columns: minmax(72px, 0.45fr) minmax(126px, 0.8fr) minmax(74px, 0.48fr) minmax(126px, 0.8fr) minmax(160px, 1.2fr);
+  gap: 14px;
+  align-items: center;
 }
 
-.gf-performance-radar__core span,
-.gf-performance-radar__node span {
-  color: var(--gf-ink-2);
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.gf-performance-pairs__heading {
+  padding: 0 14px 15px;
+  border-bottom: 1px solid rgba(166, 156, 176, 0.16);
 }
 
-.gf-performance-radar__core strong {
-  color: var(--gf-ink);
-  font-size: clamp(2.8rem, 5vw, 5.8rem);
-  letter-spacing: -0.08em;
-  line-height: 0.95;
+.gf-performance-pairs__heading > div:first-child { grid-column: 2; }
+.gf-performance-pairs__heading > i { grid-column: 3; color: var(--gf-ink-2); font-size: 0.64rem; font-style: normal; text-align: center; }
+.gf-performance-pairs__heading > div:last-child { grid-column: 4 / 6; }
+.gf-performance-pairs__heading div { display: grid; gap: 2px; }
+.gf-performance-pairs__heading span,
+.gf-performance-pairs > small { color: var(--gf-ink-2); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.gf-performance-pairs__heading strong { color: var(--gf-ink); font-size: 0.82rem; }
+
+.gf-performance-pairs article {
+  padding: 17px 14px;
+  border-bottom: 1px solid rgba(166, 156, 176, 0.13);
 }
 
-.gf-performance-radar__core small {
-  margin-left: 4px;
-  color: var(--perf-coral);
-  font-size: 0.34em;
-  letter-spacing: -0.03em;
-}
-
-.gf-performance-radar__node {
-  position: absolute;
-  z-index: 4;
-  display: grid;
-  gap: 2px;
-  min-width: 112px;
-  padding: 11px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 7px;
-  background: var(--gf-code-chrome);
-  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(14px);
-}
-
-.gf-performance-radar__node strong { color: var(--gf-ink); font-size: 1rem; }
-.gf-performance-radar__node--queue { top: 16%; right: 4%; border-color: rgba(103, 199, 255, 0.38); }
-.gf-performance-radar__node--events { right: 0; bottom: 22%; border-color: rgba(183, 164, 255, 0.42); }
-.gf-performance-radar__node--web { bottom: 6%; left: 10%; border-color: rgba(115, 226, 196, 0.4); }
+.gf-performance-pairs__label,
+.gf-performance-pairs__driver { display: grid; gap: 3px; }
+.gf-performance-pairs__label strong { color: var(--gf-ink); font-size: 0.88rem; }
+.gf-performance-pairs__label span { color: var(--gf-ink-2); font-size: 0.65rem; }
+.gf-performance-pairs__driver { padding: 11px 12px; border: 1px solid rgba(183, 164, 255, 0.3); border-radius: 7px; background: rgba(183, 164, 255, 0.07); }
+.gf-performance-pairs__driver.is-production { border-color: rgba(103, 199, 255, 0.34); background: rgba(103, 199, 255, 0.07); }
+.gf-performance-pairs__driver span { color: var(--gf-ink-2); font-size: 0.66rem; font-weight: 800; text-transform: uppercase; }
+.gf-performance-pairs__driver strong { color: var(--gf-ink); font-family: var(--vp-font-family-mono); font-size: 1rem; }
+.gf-performance-pairs__bridge { display: flex; align-items: center; color: var(--gf-accent-hi); }
+.gf-performance-pairs__bridge span { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(183, 164, 255, 0.5), rgba(103, 199, 255, 0.5)); }
+.gf-performance-pairs__bridge i { font-style: normal; }
+.gf-performance-pairs article > p { margin: 0; color: var(--gf-ink-2); font-size: 0.72rem; line-height: 1.45; }
+.gf-performance-pairs > small { display: block; padding: 15px 14px 0; line-height: 1.5; text-transform: none; }
 
 .gf-performance-proof {
   display: grid;
@@ -645,41 +649,25 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
   line-height: 1.72;
 }
 
-.gf-performance-highlights {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 15px;
-  margin-top: 54px;
-}
-
-.gf-performance-highlights article {
-  position: relative;
-  display: grid;
-  min-height: 250px;
-  overflow: hidden;
-  padding: clamp(22px, 2.8vw, 34px);
-  border: 1px solid rgba(166, 156, 176, 0.2);
-  border-radius: 10px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.018));
-}
-
-.gf-performance-highlights__beam {
-  position: absolute;
-  right: -30%;
-  bottom: -50%;
-  width: 110%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 106, 61, 0.18), transparent 68%);
-}
-
-.gf-performance-highlights article:nth-child(2) .gf-performance-highlights__beam { background: radial-gradient(circle, rgba(103, 199, 255, 0.16), transparent 68%); }
-.gf-performance-highlights article:nth-child(3) .gf-performance-highlights__beam { background: radial-gradient(circle, rgba(183, 164, 255, 0.17), transparent 68%); }
-.gf-performance-highlights article:nth-child(4) .gf-performance-highlights__beam { background: radial-gradient(circle, rgba(115, 226, 196, 0.17), transparent 68%); }
-.gf-performance-highlights p { position: relative; margin: 0; color: var(--gf-ink-2); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
-.gf-performance-highlights strong { position: relative; align-self: end; color: var(--gf-ink); font-size: clamp(2.7rem, 4vw, 5rem); letter-spacing: -0.075em; line-height: 1; }
-.gf-performance-highlights span { position: relative; margin-top: 12px; color: var(--gf-ink); font-weight: 750; }
-.gf-performance-highlights small { position: relative; margin-top: 4px; color: var(--gf-ink-2); }
+.gf-performance-contract { display: grid; grid-template-columns: minmax(320px, 0.6fr) minmax(660px, 1.4fr); gap: clamp(44px, 7vw, 110px); align-items: center; }
+.gf-performance-contract h2 { font-size: clamp(2.8rem, 4.7vw, 5.7rem); }
+.gf-performance-contract-map { display: grid; grid-template-columns: minmax(190px, 0.8fr) minmax(180px, 0.7fr) minmax(240px, 1fr); gap: 16px; align-items: stretch; }
+.gf-performance-contract-map__service,
+.gf-performance-contract-map__modes > div { display: grid; gap: 9px; padding: 24px; border: 1px solid rgba(166, 156, 176, 0.2); border-radius: 10px; background: var(--perf-panel); }
+.gf-performance-contract-map__service { position: relative; align-content: center; border-color: rgba(255, 130, 87, 0.38); box-shadow: 0 24px 70px rgba(255, 106, 61, 0.08); }
+.gf-performance-contract-map span { color: var(--gf-ink-2); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.gf-performance-contract-map strong { color: var(--gf-ink); }
+.gf-performance-contract-map__service > strong { margin-bottom: 8px; font-size: 1.25rem; }
+.gf-performance-contract-map__service code { padding: 5px 7px; background: rgba(255, 255, 255, 0.04); color: var(--gf-reference); font-size: 0.7rem; white-space: nowrap; }
+.gf-performance-contract-map__service small { position: absolute; top: 14px; right: 14px; padding: 3px 7px; border: 1px solid rgba(115, 226, 196, 0.3); border-radius: 999px; color: var(--perf-mint); font-size: 0.62rem; font-weight: 800; text-transform: uppercase; }
+.gf-performance-contract-map__contracts { display: grid; place-content: center; gap: 11px; color: var(--gf-ink); text-align: center; }
+.gf-performance-contract-map__contracts strong { font-size: 0.8rem; line-height: 1.7; }
+.gf-performance-contract-map__contracts i { color: var(--gf-accent-hi); font-size: 1.6rem; font-style: normal; line-height: 1; }
+.gf-performance-contract-map__modes { display: grid; gap: 12px; }
+.gf-performance-contract-map__modes > div:first-child { border-color: rgba(183, 164, 255, 0.3); background: linear-gradient(135deg, rgba(183, 164, 255, 0.08), var(--perf-panel)); }
+.gf-performance-contract-map__modes > div:last-child { border-color: rgba(103, 199, 255, 0.34); background: linear-gradient(135deg, rgba(103, 199, 255, 0.08), var(--perf-panel)); }
+.gf-performance-contract-map__modes strong { font-size: 0.9rem; line-height: 1.55; }
+.gf-performance-contract-map__modes small { color: var(--gf-ink-2); font-size: 0.68rem; }
 
 .gf-performance-drivers { background: rgba(255, 255, 255, 0.012); }
 .gf-performance-drivers__intro { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.65fr); gap: 48px; align-items: end; }
@@ -851,14 +839,10 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
 .gf-performance-closing > p:not(.gf-performance-eyebrow) { margin-right: auto; margin-left: auto; }
 .gf-performance-actions--center { justify-content: center; }
 
-@keyframes gf-performance-sweep {
-  to { transform: rotate(360deg); }
-}
-
 @media (max-width: 1100px) {
   .gf-performance-hero { grid-template-columns: 1fr; min-height: auto; }
-  .gf-performance-radar { width: min(100%, 620px); }
-  .gf-performance-highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gf-performance-pairs { width: 100%; }
+  .gf-performance-contract { grid-template-columns: 1fr; }
   .gf-performance-web,
   .gf-performance-methodology { grid-template-columns: 1fr; }
 }
@@ -866,12 +850,19 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
 @media (max-width: 760px) {
   .gf-performance-hero { padding-top: 56px; }
   .gf-performance-hero h1 { font-size: clamp(3.5rem, 17vw, 5.4rem); }
-  .gf-performance-radar__node { min-width: 96px; padding: 8px 10px; }
+  .gf-performance-pairs__heading { display: none; }
+  .gf-performance-pairs article { grid-template-columns: minmax(80px, 0.65fr) minmax(102px, 1fr) 28px minmax(102px, 1fr); gap: 8px; padding-right: 0; padding-left: 0; }
+  .gf-performance-pairs article > p { grid-column: 2 / -1; }
+  .gf-performance-pairs__driver { padding: 9px; }
+  .gf-performance-pairs__driver strong { font-size: 0.82rem; }
+  .gf-performance-pairs__bridge span { display: none; }
+  .gf-performance-pairs__bridge { justify-content: center; }
   .gf-performance-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gf-performance-proof > div:nth-child(2) { border-right: 0; }
   .gf-performance-proof > div:nth-child(-n + 2) { border-bottom: 1px solid rgba(166, 156, 176, 0.16); }
-  .gf-performance-highlights { grid-template-columns: 1fr; }
-  .gf-performance-highlights article { min-height: 205px; }
+  .gf-performance-contract-map { grid-template-columns: 1fr; }
+  .gf-performance-contract-map__contracts { min-height: 110px; }
+  .gf-performance-contract-map__contracts i { transform: rotate(90deg); }
   .gf-performance-drivers__intro { grid-template-columns: 1fr; gap: 8px; }
   .gf-performance-boundary { grid-template-columns: 1fr; }
   .gf-performance-boundary__bridge { min-height: 82px; }
@@ -885,7 +876,6 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gf-performance-radar__sweep { animation: none; }
   .gf-performance-driver-row__bar,
   .gf-performance-web-row__track span { transition: none; }
 }
