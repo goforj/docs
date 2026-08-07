@@ -1,0 +1,99 @@
+{
+  "name": "GoForj Temper - Ember",
+  "author": "GoForj",
+  "variables": {
+    "plain": "#E4DDE8",
+    "comment": "#8A8196",
+    "keyword": "#FF8A6B",
+    "builtin": "#FFAB8F",
+    "type": "#9BD7C4",
+    "func": "#FFC24D",
+    "string": "#D9CE7A",
+    "number": "#FFAB8F",
+    "verb": "#B8D96B",
+    "punct": "#9089A0",
+    "background": "#0C0A0E",
+    "chrome": "#131017",
+    "surface": "#2C2734",
+    "line": "#2A2333",
+    "lineStrong": "#3D3349",
+    "ink": "#FFFFFF",
+    "muted": "#A9A1B3",
+    "faint": "#746C80",
+    "accent": "#FF5E3A",
+    "accentHigh": "#FF8257",
+    "navigation": "#FFC24D",
+    "navigationHigh": "#FFD37A",
+    "success": "#5FCFA8",
+    "warning": "#FFB454",
+    "danger": "#FF6B85"
+  },
+  "globals": {
+    "background": "var(background)",
+    "foreground": "var(plain)",
+    "caret": "var(accentHigh)",
+    "line_highlight": "var(chrome)",
+    "selection": "var(lineStrong)",
+    "selection_border": "var(navigation)",
+    "inactive_selection": "var(surface)",
+    "misspelling": "var(danger)",
+    "shadow": "var(background)"
+  },
+  "rules": [
+    {
+      "name": "Comments",
+      "scope": "comment",
+      "foreground": "var(comment)"
+    },
+    {
+      "name": "Keywords",
+      "scope": "keyword, storage.modifier, storage.type.function",
+      "foreground": "var(keyword)"
+    },
+    {
+      "name": "Built-in types",
+      "scope": "storage.type, support.type, keyword.type",
+      "foreground": "var(builtin)"
+    },
+    {
+      "name": "Types",
+      "scope": "entity.name.type, entity.name.class, entity.name.namespace, support.class",
+      "foreground": "var(type)"
+    },
+    {
+      "name": "Functions",
+      "scope": "entity.name.function, support.function, meta.function-call",
+      "foreground": "var(func)"
+    },
+    {
+      "name": "Strings",
+      "scope": "string",
+      "foreground": "var(string)"
+    },
+    {
+      "name": "Numbers and constants",
+      "scope": "constant.numeric, constant.language, variable.language",
+      "foreground": "var(number)"
+    },
+    {
+      "name": "Tags and escapes",
+      "scope": "entity.name.tag, constant.character.escape, support.type.property-name",
+      "foreground": "var(verb)"
+    },
+    {
+      "name": "Punctuation",
+      "scope": "punctuation, meta.brace, keyword.operator",
+      "foreground": "var(punct)"
+    },
+    {
+      "name": "Inserted",
+      "scope": "markup.inserted",
+      "foreground": "var(success)"
+    },
+    {
+      "name": "Deleted and invalid",
+      "scope": "markup.deleted, invalid",
+      "foreground": "var(danger)"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+# GoForj Temper - Ember
+# Generated from the GoForj design-system palette.
+
+"ui.background" = { bg = "background" }
+"ui.text" = { fg = "plain" }
+"ui.text.focus" = { fg = "ink", bg = "surface" }
+"ui.cursor" = { fg = "background", bg = "accent_high" }
+"ui.cursorline.primary" = { bg = "chrome" }
+"ui.linenr" = { fg = "faint", bg = "chrome" }
+"ui.linenr.selected" = { fg = "navigation", bg = "chrome", modifiers = ["bold"] }
+"ui.selection" = { bg = "line_strong" }
+"ui.statusline" = { fg = "muted", bg = "chrome" }
+"ui.statusline.active" = { fg = "ink", bg = "surface" }
+"ui.popup" = { fg = "plain", bg = "surface" }
+"ui.window" = { fg = "line" }
+"ui.virtual.whitespace" = { fg = "line_strong" }
+"ui.virtual.indent-guide" = { fg = "line" }
+"diagnostic.error" = { underline = { color = "danger", style = "curl" } }
+"diagnostic.warning" = { underline = { color = "warning", style = "curl" } }
+"diagnostic.info" = { underline = { color = "type", style = "line" } }
+"comment" = "comment"
+"keyword" = "keyword"
+"keyword.control" = "keyword"
+"keyword.function" = "keyword"
+"type" = "type"
+"type.builtin" = "builtin"
+"function" = "func"
+"function.builtin" = "func"
+"function.method" = "func"
+"string" = "string"
+"constant.numeric" = "number"
+"constant.builtin" = "number"
+"constant.character.escape" = "verb"
+"tag" = "verb"
+"operator" = "punct"
+"punctuation" = "punct"
+"diff.plus" = "success"
+"diff.minus" = "danger"
+"diff.delta" = "warning"
+
+[palette]
+background = "#0C0A0E"
+chrome = "#131017"
+surface = "#2C2734"
+line = "#2A2333"
+line_strong = "#3D3349"
+ink = "#FFFFFF"
+muted = "#A9A1B3"
+faint = "#746C80"
+accent = "#FF5E3A"
+accent_high = "#FF8257"
+navigation = "#FFC24D"
+success = "#5FCFA8"
+warning = "#FFB454"
+danger = "#FF6B85"
+plain = "#E4DDE8"
+comment = "#8A8196"
+keyword = "#FF8A6B"
+builtin = "#FFAB8F"
+type = "#9BD7C4"
+func = "#FFC24D"
+string = "#D9CE7A"
+number = "#FFAB8F"
+verb = "#B8D96B"
+punct = "#9089A0"

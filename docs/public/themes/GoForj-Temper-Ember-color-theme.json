@@ -1,0 +1,183 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "GoForj Temper - Ember",
+  "type": "dark",
+  "semanticHighlighting": true,
+  "colors": {
+    "editor.background": "#0C0A0E",
+    "editor.foreground": "#E4DDE8",
+    "editorCursor.foreground": "#FF8257",
+    "editor.lineHighlightBackground": "#131017",
+    "editor.selectionBackground": "#3D3349",
+    "editor.inactiveSelectionBackground": "#2C2734",
+    "editorLineNumber.foreground": "#746C80",
+    "editorLineNumber.activeForeground": "#FFC24D",
+    "editorIndentGuide.background1": "#2A2333",
+    "editorIndentGuide.activeBackground1": "#3D3349",
+    "editorWhitespace.foreground": "#3D3349",
+    "editorGutter.background": "#131017",
+    "editorBracketMatch.background": "#2C2734",
+    "editorBracketMatch.border": "#FFC24D",
+    "editor.findMatchBackground": "#594313",
+    "editor.findMatchHighlightBackground": "#3A2D15",
+    "editorError.foreground": "#FF6B85",
+    "editorWarning.foreground": "#FFB454",
+    "editorInfo.foreground": "#9BD7C4",
+    "diffEditor.insertedTextBackground": "#143228AA",
+    "diffEditor.removedTextBackground": "#3A1720AA",
+    "terminal.background": "#0C0A0E",
+    "terminal.foreground": "#E4DDE8",
+    "terminal.ansiBlack": "#0C0A0E",
+    "terminal.ansiRed": "#FF6B85",
+    "terminal.ansiGreen": "#5FCFA8",
+    "terminal.ansiYellow": "#FFB454",
+    "terminal.ansiBlue": "#9BD7C4",
+    "terminal.ansiMagenta": "#FF8A6B",
+    "terminal.ansiCyan": "#FFAB8F",
+    "terminal.ansiWhite": "#E4DDE8",
+    "terminal.ansiBrightBlack": "#746C80",
+    "terminal.ansiBrightRed": "#FF8257",
+    "terminal.ansiBrightGreen": "#B8D96B",
+    "terminal.ansiBrightYellow": "#FFD37A",
+    "terminal.ansiBrightBlue": "#9BD7C4",
+    "terminal.ansiBrightMagenta": "#FF8A6B",
+    "terminal.ansiBrightCyan": "#FFAB8F",
+    "terminal.ansiBrightWhite": "#FFFFFF"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "source",
+        "variable",
+        "meta.embedded"
+      ],
+      "settings": {
+        "foreground": "#E4DDE8"
+      }
+    },
+    {
+      "scope": [
+        "comment",
+        "punctuation.definition.comment"
+      ],
+      "settings": {
+        "foreground": "#8A8196"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "storage.modifier",
+        "storage.type.function"
+      ],
+      "settings": {
+        "foreground": "#FF8A6B"
+      }
+    },
+    {
+      "scope": [
+        "storage.type",
+        "support.type",
+        "keyword.type"
+      ],
+      "settings": {
+        "foreground": "#FFAB8F"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.type",
+        "entity.name.class",
+        "entity.name.namespace",
+        "support.class"
+      ],
+      "settings": {
+        "foreground": "#9BD7C4"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.function",
+        "support.function",
+        "meta.function-call"
+      ],
+      "settings": {
+        "foreground": "#FFC24D"
+      }
+    },
+    {
+      "scope": [
+        "string",
+        "string.quoted",
+        "string.template"
+      ],
+      "settings": {
+        "foreground": "#D9CE7A"
+      }
+    },
+    {
+      "scope": [
+        "constant.numeric",
+        "constant.language",
+        "variable.language"
+      ],
+      "settings": {
+        "foreground": "#FFAB8F"
+      }
+    },
+    {
+      "scope": [
+        "constant.character.escape",
+        "entity.name.tag",
+        "support.type.property-name"
+      ],
+      "settings": {
+        "foreground": "#B8D96B"
+      }
+    },
+    {
+      "scope": [
+        "punctuation",
+        "meta.brace",
+        "keyword.operator"
+      ],
+      "settings": {
+        "foreground": "#9089A0"
+      }
+    },
+    {
+      "scope": [
+        "markup.inserted"
+      ],
+      "settings": {
+        "foreground": "#5FCFA8"
+      }
+    },
+    {
+      "scope": [
+        "markup.deleted",
+        "invalid"
+      ],
+      "settings": {
+        "foreground": "#FF6B85"
+      }
+    }
+  ],
+  "semanticTokenColors": {
+    "type": "#9BD7C4",
+    "class": "#9BD7C4",
+    "interface": "#9BD7C4",
+    "namespace": "#9BD7C4",
+    "function": "#FFC24D",
+    "method": "#FFC24D",
+    "parameter": "#E4DDE8",
+    "variable": "#E4DDE8",
+    "property": "#E4DDE8",
+    "enumMember": "#FFAB8F",
+    "keyword": "#FF8A6B",
+    "string": "#D9CE7A",
+    "number": "#FFAB8F",
+    "regexp": "#B8D96B",
+    "comment": "#8A8196"
+  }
+}

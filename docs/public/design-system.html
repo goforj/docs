@@ -252,6 +252,28 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   padding: 12px 22px; border-radius: var(--gf-radius); cursor: pointer;
   background: var(--gf-accent); border: 1px solid var(--gf-accent); color: var(--gf-on-accent); }
 .btn.ghost { background: transparent; color: var(--gf-ink); border-color: var(--gf-line-strong); }
+.editor-themes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px; margin: 18px 0;
+}
+.editor-theme {
+  display: flex; flex-direction: column; gap: 8px; min-height: 178px;
+  padding: 16px; border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-ground-alt);
+}
+.editor-theme h3 {
+  margin: 0; color: var(--gf-ink); font-family: var(--gf-font-display);
+  font-size: 17px; letter-spacing: -0.015em;
+}
+.editor-theme .format {
+  margin: 0; color: var(--gf-ink-3); font-family: var(--gf-font-mono);
+  font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.editor-theme p { margin: 0 0 8px; color: var(--gf-ink-2); font-size: 13px; line-height: 1.55; }
+.editor-theme .btn {
+  align-self: flex-start; margin-top: auto; padding: 9px 14px; color: var(--gf-on-accent);
+  text-decoration: none; text-underline-offset: initial;
+}
 .well { background: var(--gf-code-well); border: 1px solid var(--gf-line);
   border-radius: var(--gf-radius); padding: 15px 18px; font-family: var(--gf-font-mono);
   font-size: 13px; line-height: 1.75; overflow-x: auto; margin: 14px 0;
@@ -681,6 +703,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     <a href="#type">Type</a>
     <a href="#planes">Planes</a>
     <a href="#code">Code</a>
+    <a href="#editors">Editors</a>
     <a href="#components">Components</a>
     <a href="#states">States</a>
     <a href="#space">Space</a>
@@ -1300,6 +1323,62 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     replaced was the whole command in navigation gold at weight 900, which made
     it look like a link that had been shouted.
   </p>
+</section>
+
+<section class="ds-sec" id="editors">
+  <p class="ds-kicker">Editor themes</p>
+  <h2>Take Ember into <em>your editor</em></h2>
+  <p>
+    These dark themes carry the same Ember syntax palette and recessed code
+    surfaces used throughout GoForj. The portable source formats are regenerated
+    from the design-system palette before local development and production
+    builds, and the JetBrains scheme is checked against the same Ember values.
+  </p>
+
+  <div class="editor-themes">
+    <article class="editor-theme">
+      <h3>JetBrains</h3>
+      <p class="format">.icls colour scheme</p>
+      <p>For GoLand, IntelliJ IDEA, WebStorm, and the wider JetBrains family.</p>
+      <a class="btn" href="/themes/GoForj-Temper-Ember.icls" download>Download .icls</a>
+    </article>
+    <article class="editor-theme">
+      <h3>VS Code family</h3>
+      <p class="format">Color theme JSON</p>
+      <p>Theme source for VS Code, Cursor, and Windsurf extension packages.</p>
+      <a class="btn" href="/themes/GoForj-Temper-Ember-color-theme.json" download>Download JSON</a>
+    </article>
+    <article class="editor-theme">
+      <h3>Sublime Text</h3>
+      <p class="format">.sublime-color-scheme</p>
+      <p>Native colour scheme ready for the user Packages directory.</p>
+      <a class="btn" href="/themes/GoForj-Temper-Ember.sublime-color-scheme" download>Download scheme</a>
+    </article>
+    <article class="editor-theme">
+      <h3>Vim &amp; Neovim</h3>
+      <p class="format">.vim colourscheme</p>
+      <p>Shared highlight groups for terminal Vim and modern Neovim setups.</p>
+      <a class="btn" href="/themes/goforj-temper-ember.vim" download>Download .vim</a>
+    </article>
+    <article class="editor-theme">
+      <h3>Helix</h3>
+      <p class="format">Theme TOML</p>
+      <p>Native semantic scopes, interface colours, and diagnostics.</p>
+      <a class="btn" href="/themes/goforj-temper-ember.toml" download>Download .toml</a>
+    </article>
+  </div>
+
+  <div class="ds-note">
+    <b>Installation paths</b>
+    <p>
+      Import the JetBrains scheme from the Editor colour-scheme settings. Put
+      Sublime’s file in <code>Packages/User</code>, Vim’s in
+      <code>~/.vim/colors</code> or <code>~/.config/nvim/colors</code>, and
+      Helix’s in <code>~/.config/helix/themes</code>. The VS Code-family download
+      is native theme source for extension authors; a one-click extension is a
+      separate package.
+    </p>
+  </div>
 </section>
 
 <section class="ds-sec" id="components">
