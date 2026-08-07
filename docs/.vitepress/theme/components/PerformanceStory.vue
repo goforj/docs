@@ -7,6 +7,42 @@ const selectedWebScenarioID = ref('path_param_json')
 
 const kindOrder = { process: 0, local: 1, service: 2 }
 const driverStory = computed(() => performance.driverStories.find((story) => story.id === selectedDriverStoryID.value))
+const driverNarratives = {
+  cache: {
+    local: 'CACHE_DRIVER=memory',
+    external: 'CACHE_DRIVER=redis',
+    localDriver: 'Memory',
+    externalDriver: 'Redis',
+    buys: 'Shared cache state across App instances.',
+    measurement: 'Seeded GetBytes. Lower is faster.'
+  },
+  queue: {
+    local: 'QUEUE_DRIVER=workerpool',
+    external: 'QUEUE_DRIVER=rabbitmq',
+    localDriver: 'Worker pool',
+    externalDriver: 'RabbitMQ',
+    buys: 'Independent workers and broker-backed delivery.',
+    measurement: 'Producer-side Dispatch return. Job completion is not included.',
+    caveat: 'Core NATS is an ephemeral publish/subscribe adapter. Its Dispatch return does not provide the durability boundary represented by SQL, SQS, or durable brokers.'
+  },
+  events: {
+    local: 'EVENTS_DRIVER=inproc',
+    external: 'EVENTS_DRIVER=nats',
+    localDriver: 'In process',
+    externalDriver: 'NATS',
+    buys: 'Event delivery across process boundaries.',
+    measurement: 'Publish plus observed handler delivery round trip.'
+  },
+  storage: {
+    local: 'STORAGE_PUBLIC_DRIVER=local',
+    external: 'STORAGE_PUBLIC_DRIVER=s3',
+    localDriver: 'Local disk',
+    externalDriver: 'S3',
+    buys: 'Object storage shared beyond one host.',
+    measurement: 'Get a previously written small object.'
+  }
+}
+const driverNarrative = computed(() => driverNarratives[selectedDriverStoryID.value])
 const driverRows = computed(() => [...driverStory.value.rows].sort((left, right) => {
   const kindDifference = kindOrder[left.kind] - kindOrder[right.kind]
   return kindDifference || left.value - right.value
@@ -14,6 +50,9 @@ const driverRows = computed(() => [...driverStory.value.rows].sort((left, right)
 const webScenario = computed(() => performance.web.scenarios.find((scenario) => scenario.id === selectedWebScenarioID.value))
 const webRows = computed(() => [...webScenario.value.rows].sort((left, right) => right.throughput - left.throughput))
 const goforjWeb = computed(() => webScenario.value.rows.find((row) => row.framework === 'goforj_web'))
+const liveHTTP = computed(() => performance.web.scenarios.find((scenario) => scenario.id === 'live_plain_text'))
+const liveGoforjWeb = computed(() => liveHTTP.value.rows.find((row) => row.framework === 'goforj_web'))
+const liveNetHTTP = computed(() => liveHTTP.value.rows.find((row) => row.framework === 'net_http'))
 const highlight = (library) => performance.highlights.find((item) => item.library === library)
 
 const driverWidth = (value) => {
@@ -36,7 +75,7 @@ const formatRate = (value) => {
   return Math.round(value).toLocaleString()
 }
 const formatHighlight = (item) => item.unit === 'ops/s' ? formatRate(item.value) : formatLatency(item.value).replace(' ', '')
-const kindLabel = (kind) => ({ process: 'In process', local: 'Local durable', service: 'Service-backed' })[kind]
+const kindLabel = (kind) => ({ process: 'In process', local: 'Host-local', service: 'External boundary' })[kind]
 const scenarioLabel = (id) => ({
   live_plain_text: 'HTTP loopback',
   static_text: 'Static response',
@@ -50,16 +89,17 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
   <main class="gf-performance-page">
     <section class="gf-performance-hero">
       <div class="gf-performance-hero__copy">
-        <p class="gf-performance-eyebrow">Measured performance</p>
-        <h1>Fast enough to <em>disappear.</em></h1>
+        <p class="gf-performance-eyebrow">Performance by architecture</p>
+        <h1>Start local.<br><em>Scale without a rewrite.</em></h1>
         <p class="gf-performance-lede">
-          GoForj keeps local work close to your code. Cache reads, job dispatch, event delivery,
-          and HTTP routing stay in the nanosecond range until your architecture asks for a network,
-          durable storage, or another process.
+          GoForj gives cache, queues, events, and storage fast local implementations behind the
+          same contracts used by shared backends. Keep work in process while that fits. Move to
+          Redis, NATS, SQL, S3, or another service when you need coordination, persistence, or
+          distribution—without rewriting the service that uses it.
         </p>
         <div class="gf-performance-actions">
-          <a href="#driver-physics">Compare drivers</a>
-          <a href="#methodology">Read the methodology</a>
+          <a href="#driver-physics">Compare driver costs</a>
+          <a href="#methodology">See how these were measured</a>
         </div>
       </div>
 
@@ -76,27 +116,29 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
           <span>Events</span><strong>{{ formatLatency(highlight('Events').value) }}</strong>
         </div>
         <div class="gf-performance-radar__node gf-performance-radar__node--web">
-          <span>Web</span><strong>{{ formatRate(highlight('Web').value) }}/s</strong>
+          <span>Storage</span><strong>{{ formatLatency(highlight('Storage').value) }}</strong>
         </div>
         <div class="gf-performance-radar__sweep" aria-hidden="true"></div>
       </div>
     </section>
 
     <section class="gf-performance-proof" aria-label="Benchmark evidence summary">
-      <div><strong>{{ performance.totals.benchmarks }}</strong><span>benchmark functions</span></div>
-      <div><strong>{{ performance.totals.libraries }}</strong><span>first-party libraries inspected</span></div>
-      <div><strong>{{ performance.sources.length }}</strong><span>committed benchmark datasets</span></div>
-      <div><strong>JSON</strong><span>source-backed, checked at build time</span></div>
+      <div><strong>{{ performance.sources.length }}</strong><span>versioned benchmark datasets</span></div>
+      <div><strong>{{ performance.driverStories.length }}</strong><span>same-operation driver suites</span></div>
+      <div><strong>1</strong><span>shared HTTP harness</span></div>
+      <div><strong>SHA</strong><span>revision and content hash recorded</span></div>
     </section>
 
     <section class="gf-performance-section gf-performance-local">
       <header class="gf-performance-section__header">
-        <p class="gf-performance-eyebrow">The local fast path</p>
-        <h2>Your development loop should feel immediate.</h2>
+        <p class="gf-performance-eyebrow">The cheapest useful boundary</p>
+        <h2>Local work stays local.</h2>
         <p>
-          Local drivers avoid a network hop without replacing the library contract. Start with an
-          in-process queue, memory cache, or synchronous event bus. Move to shared infrastructure
-          when the workload needs coordination or durability.
+          A memory cache read takes 70 ns. Synchronous queue dispatch returns in 283 ns. A
+          synchronous event publish plus handler round trip takes 372 ns. An in-memory small-object
+          read takes 753 ns. These are focused local measurements, not end-to-end App timings. Their
+          practical value is simple: your App can use real cache, queue, event, and storage contracts
+          before it needs a broker, database, or cloud service.
         </p>
       </header>
 
@@ -114,13 +156,14 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
     <section id="driver-physics" class="gf-performance-section gf-performance-drivers">
       <div class="gf-performance-drivers__intro">
         <div>
-          <p class="gf-performance-eyebrow">One API. Different physics.</p>
-          <h2>Choose the semantics. See the cost.</h2>
+          <p class="gf-performance-eyebrow">Same contract. Different boundary.</p>
+          <h2>See the cost. Know what it buys.</h2>
         </div>
         <p>
-          These logarithmic charts compare the same operation inside each library. The distance is
-          the story: an in-process driver is nearly free, while production-capable drivers pay for
-          transport, serialization, durability, or coordination.
+          Each chart compares one operation inside a GoForj library. Latency changes because the
+          work changes: serialization, filesystem access, broker delivery, database commits,
+          emulator behavior, and network round trips all have a cost. Choose the guarantees the
+          workload needs, then see the local overhead of that choice.
         </p>
       </div>
 
@@ -138,6 +181,25 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
         </button>
       </div>
 
+      <div class="gf-performance-boundary">
+        <div>
+          <span>Start here</span>
+          <code>{{ driverNarrative.local }}</code>
+          <strong>{{ driverNarrative.localDriver }}</strong>
+        </div>
+        <div class="gf-performance-boundary__bridge">
+          <span>same library contract</span>
+          <i aria-hidden="true">→</i>
+          <small>configuration + wiring</small>
+        </div>
+        <div>
+          <span>Cross the boundary when needed</span>
+          <code>{{ driverNarrative.external }}</code>
+          <strong>{{ driverNarrative.externalDriver }}</strong>
+          <p>{{ driverNarrative.buys }}</p>
+        </div>
+      </div>
+
       <div class="gf-performance-chart">
         <div class="gf-performance-chart__topline">
           <div>
@@ -146,8 +208,8 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
           </div>
           <div class="gf-performance-legend" aria-label="Driver types">
             <span class="is-process">In process</span>
-            <span class="is-local">Local durable</span>
-            <span class="is-service">Service-backed</span>
+            <span class="is-local">Host-local</span>
+            <span class="is-service">External boundary</span>
           </div>
         </div>
 
@@ -167,23 +229,32 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
             <strong class="gf-performance-driver-row__value">{{ formatLatency(row.value) }}</strong>
           </div>
         </div>
-        <p class="gf-performance-chart__scale">Logarithmic latency scale · lower is faster</p>
+        <div class="gf-performance-chart__notes">
+          <p>{{ driverNarrative.measurement }}</p>
+          <p v-if="driverNarrative.caveat">{{ driverNarrative.caveat }}</p>
+          <small>Logarithmic latency scale. Compare rows within this suite only. External fixtures run locally in containers or emulators; they are not managed-service forecasts.</small>
+        </div>
       </div>
     </section>
 
     <section class="gf-performance-section gf-performance-web">
       <div class="gf-performance-web__copy">
-        <p class="gf-performance-eyebrow">HTTP without the tax</p>
-        <h2>Routing overhead stays out of your way.</h2>
+        <p class="gf-performance-eyebrow">Framework overhead</p>
+        <h2>The App stays close to <code>net/http</code>.</h2>
         <p>
-          The shared <code>net/http</code> suite measures complete route and handler dispatch. On
-          the path-and-JSON case, GoForj Web clears <strong>{{ formatRate(goforjWeb.throughput) }}</strong>
+          In the shared HTTP/1.1 loopback case, GoForj Web recorded
+          <strong>{{ formatRate(liveGoforjWeb.throughput) }}</strong> requests per second versus
+          <strong>{{ formatRate(liveNetHTTP.throughput) }}</strong> for <code>net/http</code>. In the
+          in-process path-and-JSON case, it recorded <strong>{{ formatRate(goforjWeb.throughput) }}</strong>
           operations per second with <strong>{{ goforjWeb.allocs }}</strong> allocations per operation.
+          The useful result is not a benchmark trophy: GoForj's routing and App abstractions remain
+          competitive with the underlying Go stack under the same harness.
         </p>
         <p class="gf-performance-web__note">
-          Each value is the median of {{ performance.web.metadata.sample_count }} samples at
+          Values are medians of {{ performance.web.metadata.sample_count }} samples at
           {{ performance.web.metadata.benchmark_time }} with GOMAXPROCS={{ performance.web.metadata.gomaxprocs }}.
-          This is an in-process ceiling, not a production capacity forecast.
+          Small differences are not rankings. The loopback case is a warm single-connection ceiling;
+          the other cases measure in-process dispatch. Neither predicts production capacity.
         </p>
       </div>
 
@@ -221,16 +292,19 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
 
     <section id="methodology" class="gf-performance-section gf-performance-methodology">
       <div class="gf-performance-methodology__copy">
-        <p class="gf-performance-eyebrow">Read the receipts</p>
-        <h2>The numbers are committed, not typed into this page.</h2>
+        <p class="gf-performance-eyebrow">Traceable measurements</p>
+        <h2>Every number points back to a versioned result.</h2>
         <p>
-          Library benchmark suites emit JSON. The docs normalize those files into the charts above,
-          record their source revisions and hashes, and reject stale output during the docs build.
+          This page is generated from five benchmark snapshots committed in the Cache, Queue,
+          Events, Storage, and Web repositories. The collector records each source revision and
+          SHA-256 hash, normalizes the selected rows, and makes the docs build fail when the
+          checked-in page data drifts from those sources.
         </p>
         <p>
-          Service-backed rows generally run against local containers or emulators. They are useful
-          for comparing driver overhead under controlled conditions. Real production latency also
-          includes your network, topology, service configuration, contention, and payloads.
+          Container- and emulator-backed results describe those local fixtures on the recorded
+          machine. Production latency depends on network topology, service configuration,
+          contention, payloads, and delivery guarantees. Use these results to compare implementation
+          boundaries and detect regressions, not to forecast deployed throughput.
         </p>
       </div>
 
@@ -249,7 +323,7 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
       </div>
 
       <div class="gf-performance-library-strip">
-        <span>Benchmark functions in source</span>
+        <span>{{ performance.totals.benchmarks }} benchmark functions across {{ performance.benchmarkLibraries.length }} libraries</span>
         <div>
           <a v-for="library in performance.benchmarkLibraries" :key="library.repo" :href="libraryLink(library.repo)">
             {{ library.repo }} <small>{{ library.benchmarks }}</small>
@@ -259,15 +333,16 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
     </section>
 
     <section class="gf-performance-closing">
-      <p class="gf-performance-eyebrow">Start local. Scale deliberately.</p>
-      <h2>Keep the App shape.<br>Swap the physics.</h2>
+      <p class="gf-performance-eyebrow">Change the boundary, not the service</p>
+      <h2>Keep the contract.<br>Add infrastructure deliberately.</h2>
       <p>
-        GoForj drivers let you optimize for a fast local loop today and choose shared,
-        durable infrastructure when the system actually needs it.
+        Run in process or on local storage while those semantics fit. Move to shared, durable, or
+        distributed drivers when coordination, persistence, and scale require them. GoForj keeps
+        that decision in wiring and configuration instead of spreading it through business logic.
       </p>
       <div class="gf-performance-actions gf-performance-actions--center">
-        <a href="/drivers">Explore the driver catalog</a>
-        <a href="/getting-started/quickstart">Build an App</a>
+        <a href="/drivers">Compare all {{ performance.totals.drivers }} drivers</a>
+        <a href="/getting-started/quickstart">Build a local-first App</a>
       </div>
     </section>
   </main>
@@ -636,6 +711,75 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
   color: var(--gf-ink);
 }
 
+.gf-performance-boundary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, 0.38fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+
+.gf-performance-boundary > div:not(.gf-performance-boundary__bridge) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px 18px;
+  padding: 20px 22px;
+  border: 1px solid rgba(166, 156, 176, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.gf-performance-boundary > div:last-child {
+  border-color: rgba(103, 199, 255, 0.3);
+  background: linear-gradient(135deg, rgba(103, 199, 255, 0.08), rgba(255, 255, 255, 0.02));
+}
+
+.gf-performance-boundary span {
+  color: var(--gf-ink-2);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gf-performance-boundary code {
+  justify-self: end;
+  padding: 0;
+  background: transparent;
+  color: var(--gf-reference);
+  font-size: 0.72rem;
+}
+
+.gf-performance-boundary strong {
+  color: var(--gf-ink);
+  font-size: 1.16rem;
+}
+
+.gf-performance-boundary p {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  color: var(--gf-ink-2);
+  font-size: 0.8rem;
+}
+
+.gf-performance-boundary__bridge {
+  display: grid;
+  place-content: center;
+  color: var(--gf-ink-2);
+  text-align: center;
+}
+
+.gf-performance-boundary__bridge i {
+  color: var(--gf-accent-hi);
+  font-size: 1.7rem;
+  font-style: normal;
+  line-height: 1;
+}
+
+.gf-performance-boundary__bridge small {
+  font-size: 0.66rem;
+}
+
 .gf-performance-chart,
 .gf-performance-web__panel {
   padding: clamp(22px, 3.2vw, 42px);
@@ -665,10 +809,14 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
 .gf-performance-driver-row__bar.is-local { background: linear-gradient(90deg, #7869d8, var(--perf-violet)); box-shadow: 0 0 24px rgba(183, 164, 255, 0.18); }
 .gf-performance-driver-row__bar.is-service { background: linear-gradient(90deg, #277da8, var(--perf-cyan)); box-shadow: 0 0 24px rgba(103, 199, 255, 0.18); }
 .gf-performance-driver-row__value { color: var(--gf-ink); font-family: var(--vp-font-family-mono); font-size: 0.78rem; text-align: right; }
-.gf-performance-chart__scale { margin: 22px 0 0; color: var(--gf-ink-2); font-size: 0.7rem; text-align: right; }
+.gf-performance-chart__notes { display: grid; gap: 7px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(166, 156, 176, 0.16); }
+.gf-performance-chart__notes p { max-width: 920px; margin: 0; color: var(--gf-ink); font-size: 0.76rem; line-height: 1.55; }
+.gf-performance-chart__notes p + p { color: var(--gf-ink-2); }
+.gf-performance-chart__notes small { color: var(--gf-ink-2); font-size: 0.68rem; line-height: 1.55; }
 
 .gf-performance-web { display: grid; grid-template-columns: minmax(360px, 0.65fr) minmax(560px, 1.1fr); gap: clamp(44px, 7vw, 110px); align-items: center; }
 .gf-performance-web__copy code { color: var(--gf-ink); }
+.gf-performance-web__copy h2 code { padding: 0; background: transparent; color: var(--gf-reference); font-size: 0.82em; }
 .gf-performance-web__note { font-size: 0.84rem !important; }
 .gf-performance-tabs--compact { margin: 0 0 30px; }
 .gf-performance-tabs--compact button { padding: 8px 12px; font-size: 0.74rem; }
@@ -725,6 +873,9 @@ const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
   .gf-performance-highlights { grid-template-columns: 1fr; }
   .gf-performance-highlights article { min-height: 205px; }
   .gf-performance-drivers__intro { grid-template-columns: 1fr; gap: 8px; }
+  .gf-performance-boundary { grid-template-columns: 1fr; }
+  .gf-performance-boundary__bridge { min-height: 82px; }
+  .gf-performance-boundary__bridge i { transform: rotate(90deg); }
   .gf-performance-chart__topline { display: grid; align-items: start; }
   .gf-performance-driver-row { grid-template-columns: 90px minmax(100px, 1fr) 70px; gap: 9px; }
   .gf-performance-driver-row__label span { display: none; }

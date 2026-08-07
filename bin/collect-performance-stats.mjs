@@ -130,16 +130,15 @@ const webScenarios = ['live_plain_text', 'static_text', 'path_param_json', 'midd
 })
 
 const findRow = (rows, label) => required(rows.find((row) => row.label === label), label)
-const staticWeb = required(webScenarios.find((scenario) => scenario.id === 'static_text'), 'web static_text')
 
 const stats = {
   generatedAt: new Date().toISOString().slice(0, 10),
   totals: proof.totals,
   highlights: [
-    { library: 'Cache', label: 'Memory read', value: findRow(cacheRows, 'Memory').value, unit: 'ns/op' },
-    { library: 'Queue', label: 'Synchronous dispatch', value: findRow(queueRows, 'Sync').value, unit: 'ns/op' },
-    { library: 'Events', label: 'Synchronous round trip', value: findRow(eventRows, 'Synchronous').value, unit: 'ns/op' },
-    { library: 'Web', label: 'Static route', value: findRow(staticWeb.rows, 'GoForj Web').throughput, unit: 'ops/s' }
+    { library: 'Cache', label: 'Memory GetBytes', value: findRow(cacheRows, 'Memory').value, unit: 'ns/op' },
+    { library: 'Queue', label: 'Synchronous Dispatch return', value: findRow(queueRows, 'Sync').value, unit: 'ns/op' },
+    { library: 'Events', label: 'Publish + handler round trip', value: findRow(eventRows, 'Synchronous').value, unit: 'ns/op' },
+    { library: 'Storage', label: 'Memory small-object Get', value: findRow(storageRows, 'Memory').value, unit: 'ns/op' }
   ],
   driverStories: [
     { id: 'cache', title: 'Cache reads', operation: 'GetBytes', rows: cacheRows },
