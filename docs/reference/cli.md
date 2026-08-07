@@ -167,7 +167,7 @@ Atlas commands manage optional project-local agent guidance:
 | `forj atlas:list-skills` | List built-in and project-owned Atlas skills. |
 | `forj atlas:make-skill <name>` | Create a project-owned skill using a lowercase kebab-case name. |
 
-`atlas:install` and `atlas:update` accept repeatable `--agent` selections, `--all-agents`, `--guidelines`, `--skills`, `--mcp`, `--no-interaction`, and `--dry-run`. See [Atlas](/developer-tools/atlas) for installation and workflow guidance.
+`atlas:install` and `atlas:update` accept repeatable `--agent` selections, `--all-agents`, `--guidelines`, `--skills`, `--mcp`, `--no-interaction`, and `--dry-run`. `atlas:update --discover` deliberately replaces the committed agent selection with the preferred locally installed agent; an ordinary update keeps the selection in `.goforj/atlas.json`. See [Atlas](/developer-tools/atlas) for installation and workflow guidance.
 
 Database shell examples:
 
