@@ -113,6 +113,25 @@ environment=local
 
 This label set identifies a background staff-operations job from `admin`. Use `source` for logical runtime attribution and `process` for scrape topology.
 
+## Deployment Markers
+
+Set release identity in the Project-owned environment used to generate the deployment artifact:
+
+```dotenv
+APP_VERSION=v1.8.0
+APP_REVISION=8d5c20f
+```
+
+Then build the artifact:
+
+```bash
+forj build
+```
+
+When present, `APP_VERSION` becomes the bounded `release` target label and `APP_REVISION` becomes `revision`. Blank values are omitted. Keep both values low-cardinality: use one release version and one immutable commit or artifact revision, not a request ID or build timestamp. This lets a dashboard annotation or deployment comparison separate a real regression from ordinary traffic movement.
+
+Generation intentionally reads `.env.example` and `.env`, not unrelated ambient shell variables, so the discovery file and the artifact are derived from one reviewable Project snapshot. These labels are written into framework-managed local discovery files during generation. In an externally managed production scraper, apply the same release and revision labels in that platform's service-discovery configuration.
+
 Avoid user IDs, emails, raw URLs, raw SQL, cache keys, filenames, request IDs, and arbitrary error strings.
 
 ## Proving Path
