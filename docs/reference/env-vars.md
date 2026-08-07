@@ -516,6 +516,75 @@ These values configure generated local VictoriaMetrics and Grafana infrastructur
 | `INNODB_BUFFER_POOL_SIZE` | `512MB` | Build setting for the generated local MariaDB image. |
 | `TZ` | `UTC` | Time zone passed to generated local database services. |
 
+### Development Service Compose Settings
+
+The optional services in generated `docker-compose.yml` carry these defaults
+directly. New projects list the available profile names and
+`COMPOSE_PROFILES` in `.env`, but omit the settings below until you need to
+override a default. `DEV_SERVICE_IP_ADDRESS` controls the loopback bind used by
+the catalog services. Redis, Mailpit, VictoriaMetrics, and Grafana retain the
+`IP_ADDRESS` compatibility bind described above.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `DEV_SERVICE_IP_ADDRESS` | `127.0.0.1` | Host address used to publish development-service catalog ports. |
+| `RUSTFS_API_PORT` | `9000` | Published RustFS S3 API port. |
+| `RUSTFS_CONSOLE_PORT` | `9001` | Published RustFS console port. |
+| `RUSTFS_ACCESS_KEY` | `rustfsadmin` | Local RustFS access key. |
+| `RUSTFS_SECRET_KEY` | `rustfsadmin` | Local RustFS secret key. Replace it before network exposure. |
+| `OPENSEARCH_HTTP_PORT` | `9200` | Published OpenSearch HTTPS API port. |
+| `OPENSEARCH_ANALYZER_PORT` | `9600` | Published OpenSearch analyzer port. |
+| `OPENSEARCH_DASHBOARDS_PORT` | `5601` | Published OpenSearch Dashboards port. |
+| `OPENSEARCH_INITIAL_ADMIN_PASSWORD` | `G0Forj-Local-OpenSearch-2026!` | Bootstrap password for a fresh OpenSearch data volume. |
+| `NATS_CLIENT_PORT` | `4222` | Published NATS client port. |
+| `NATS_MONITORING_PORT` | `8222` | Published NATS monitoring port. |
+| `NATS_USERNAME` | `goforj` | Local NATS username. |
+| `NATS_PASSWORD` | `goforj` | Local NATS password. |
+| `RABBITMQ_AMQP_PORT` | `5672` | Published RabbitMQ AMQP port. |
+| `RABBITMQ_MANAGEMENT_PORT` | `15672` | Published RabbitMQ management UI port. |
+| `RABBITMQ_USERNAME` | `goforj` | Local RabbitMQ username. |
+| `RABBITMQ_PASSWORD` | `goforj` | Local RabbitMQ password. |
+| `REDPANDA_ADVERTISED_HOST` | `localhost` | Host advertised by Redpanda for published Kafka and HTTP proxy endpoints. |
+| `REDPANDA_SCHEMA_REGISTRY_PORT` | `18081` | Published Redpanda schema registry port. |
+| `REDPANDA_PANDAPROXY_PORT` | `18082` | Published Redpanda HTTP proxy port. |
+| `REDPANDA_KAFKA_PORT` | `19092` | Published Redpanda Kafka port. |
+| `REDPANDA_ADMIN_PORT` | `19644` | Published Redpanda admin API port. |
+| `REDPANDA_CONSOLE_PORT` | `18080` | Published Redpanda Console port. |
+| `DYNAMODB_PORT` | `8000` | Published DynamoDB Local port. |
+| `ELASTICMQ_PORT` | `9324` | Published ElasticMQ SQS API port. |
+| `ELASTICMQ_UI_PORT` | `9325` | Published ElasticMQ UI port. |
+| `PUBSUB_PORT` | `8085` | Published Google Pub/Sub emulator port. |
+| `MEMCACHED_PORT` | `11211` | Published Memcached port. |
+| `MEMCACHED_MEMORY_MB` | `64` | Memcached memory limit in MiB. |
+| `SFTPGO_SFTP_PORT` | `2022` | Published SFTPGo SFTP port. |
+| `SFTPGO_HTTP_PORT` | `8081` | Published SFTPGo administration port. |
+| `SFTPGO_ADMIN_USERNAME` | `goforj` | Bootstrap SFTPGo administrator username. |
+| `SFTPGO_ADMIN_PASSWORD` | `goforj-local` | Bootstrap SFTPGo administrator password. |
+| `ADMINER_PORT` | `8080` | Published Adminer HTTP port. |
+| `JAEGER_UI_PORT` | `16686` | Published Jaeger UI port. |
+| `JAEGER_OTLP_GRPC_PORT` | `4317` | Published Jaeger OTLP gRPC port. |
+| `JAEGER_OTLP_HTTP_PORT` | `4318` | Published Jaeger OTLP HTTP port. |
+| `QDRANT_HTTP_PORT` | `6333` | Published Qdrant HTTP port. |
+| `QDRANT_GRPC_PORT` | `6334` | Published Qdrant gRPC port. |
+| `TEMPORAL_GRPC_PORT` | `7233` | Published Temporal gRPC port. |
+| `TEMPORAL_UI_PORT` | `8233` | Published Temporal UI port. |
+| `KEYCLOAK_HTTP_PORT` | `8180` | Published Keycloak HTTP port. |
+| `KEYCLOAK_MEMORY_LIMIT` | `1g` | Keycloak container memory limit. |
+| `KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME` | `admin` | Bootstrap Keycloak administrator username. |
+| `KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD` | `G0Forj-Local-Keycloak!` | Bootstrap Keycloak administrator password. |
+| `MOCKSERVER_PORT` | `1080` | Published MockServer HTTP port. |
+| `MOCKSERVER_MEMORY_LIMIT` | `1g` | MockServer container memory limit. |
+| `MOCKSERVER_LOG_LEVEL` | `INFO` | MockServer log level. |
+| `TOXIPROXY_API_PORT` | `8474` | Published Toxiproxy control API port. |
+| `TOXIPROXY_PROXY_PORT` | `8666` | Published default Toxiproxy listener port. GoForj does not create a proxy automatically. |
+| `TOXIPROXY_LOG_LEVEL` | `info` | Toxiproxy log level. |
+| `CLICKHOUSE_HTTP_PORT` | `8123` | Published ClickHouse HTTP port. |
+| `CLICKHOUSE_NATIVE_PORT` | `19000` | Published ClickHouse native protocol port. |
+| `CLICKHOUSE_DATABASE` | `app` | Local ClickHouse database. |
+| `CLICKHOUSE_USERNAME` | `goforj` | Local ClickHouse username. |
+| `CLICKHOUSE_PASSWORD` | `goforj-local` | Local ClickHouse password. |
+| `MEILISEARCH_PORT` | `7700` | Published Meilisearch HTTP port. |
+
 ## Backups
 
 | Variable | Default | Purpose |
