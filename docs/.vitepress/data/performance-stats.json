@@ -1,0 +1,696 @@
+{
+  "generatedAt": "2026-08-07",
+  "totals": {
+    "unitTests": 1461,
+    "integrationTests": 952,
+    "testFunctions": 3401,
+    "benchmarks": 85,
+    "drivers": 48,
+    "libraries": 18
+  },
+  "highlights": [
+    {
+      "library": "Cache",
+      "label": "Memory read",
+      "value": 70,
+      "unit": "ns/op"
+    },
+    {
+      "library": "Queue",
+      "label": "Synchronous dispatch",
+      "value": 282.5,
+      "unit": "ns/op"
+    },
+    {
+      "library": "Events",
+      "label": "Synchronous round trip",
+      "value": 371.8,
+      "unit": "ns/op"
+    },
+    {
+      "library": "Web",
+      "label": "Static route",
+      "value": 11047264,
+      "unit": "ops/s"
+    }
+  ],
+  "driverStories": [
+    {
+      "id": "cache",
+      "title": "Cache reads",
+      "operation": "GetBytes",
+      "rows": [
+        {
+          "label": "Memory",
+          "value": 70,
+          "bytes": 1,
+          "allocs": 1,
+          "kind": "process"
+        },
+        {
+          "label": "File",
+          "value": 100977,
+          "bytes": 1352,
+          "allocs": 9,
+          "kind": "local"
+        },
+        {
+          "label": "Redis",
+          "value": 73175,
+          "bytes": 200,
+          "allocs": 8,
+          "kind": "service"
+        },
+        {
+          "label": "Memcached",
+          "value": 70363,
+          "bytes": 192,
+          "allocs": 9,
+          "kind": "service"
+        },
+        {
+          "label": "PostgreSQL",
+          "value": 86657,
+          "bytes": 1064,
+          "allocs": 32,
+          "kind": "service"
+        },
+        {
+          "label": "MySQL",
+          "value": 81964,
+          "bytes": 744,
+          "allocs": 26,
+          "kind": "service"
+        },
+        {
+          "label": "SQLite",
+          "value": 7494,
+          "bytes": 1432,
+          "allocs": 39,
+          "kind": "local"
+        },
+        {
+          "label": "NATS",
+          "value": 96450,
+          "bytes": 2573,
+          "allocs": 40,
+          "kind": "service"
+        },
+        {
+          "label": "NATS KV + TTL",
+          "value": 82872,
+          "bytes": 2556,
+          "allocs": 40,
+          "kind": "service"
+        }
+      ]
+    },
+    {
+      "id": "queue",
+      "title": "Queue dispatch",
+      "operation": "Queue",
+      "rows": [
+        {
+          "label": "Sync",
+          "value": 282.5,
+          "bytes": 408,
+          "allocs": 6,
+          "kind": "process"
+        },
+        {
+          "label": "Worker pool",
+          "value": 650,
+          "bytes": 456,
+          "allocs": 7,
+          "kind": "process"
+        },
+        {
+          "label": "Redis",
+          "value": 95295,
+          "bytes": 2113,
+          "allocs": 33,
+          "kind": "service"
+        },
+        {
+          "label": "NATS",
+          "value": 774.1,
+          "bytes": 1258,
+          "allocs": 13,
+          "kind": "service"
+        },
+        {
+          "label": "SQS",
+          "value": 1873911,
+          "bytes": 94784,
+          "allocs": 1082,
+          "kind": "service"
+        },
+        {
+          "label": "RabbitMQ",
+          "value": 165780,
+          "bytes": 1882,
+          "allocs": 57,
+          "kind": "service"
+        },
+        {
+          "label": "MySQL",
+          "value": 2286406,
+          "bytes": 3303,
+          "allocs": 62,
+          "kind": "service"
+        },
+        {
+          "label": "PostgreSQL",
+          "value": 1056731,
+          "bytes": 3809,
+          "allocs": 78,
+          "kind": "service"
+        },
+        {
+          "label": "SQLite",
+          "value": 202380,
+          "bytes": 1931,
+          "allocs": 47,
+          "kind": "local"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Event round trips",
+      "operation": "Publish + handle",
+      "rows": [
+        {
+          "label": "Synchronous",
+          "value": 371.8,
+          "bytes": 320,
+          "allocs": 9,
+          "kind": "process"
+        },
+        {
+          "label": "Google Pub/Sub",
+          "value": 52848425,
+          "bytes": 21971,
+          "allocs": 369,
+          "kind": "service"
+        },
+        {
+          "label": "Kafka",
+          "value": 499091,
+          "bytes": 5040,
+          "allocs": 67,
+          "kind": "service"
+        },
+        {
+          "label": "NATS JetStream",
+          "value": 127165,
+          "bytes": 3609,
+          "allocs": 60,
+          "kind": "service"
+        },
+        {
+          "label": "NATS",
+          "value": 73316,
+          "bytes": 681,
+          "allocs": 18,
+          "kind": "service"
+        },
+        {
+          "label": "Redis",
+          "value": 95149,
+          "bytes": 914,
+          "allocs": 31,
+          "kind": "service"
+        },
+        {
+          "label": "SNS",
+          "value": 2553117,
+          "bytes": 104563,
+          "allocs": 1271,
+          "kind": "service"
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "title": "Small-file reads",
+      "operation": "Get",
+      "rows": [
+        {
+          "label": "Local",
+          "value": 13811.52516435556,
+          "bytes": 1536.2368929893375,
+          "allocs": 14.001602121429755,
+          "kind": "local"
+        },
+        {
+          "label": "Memory",
+          "value": 752.9147821215927,
+          "bytes": 496.081603888653,
+          "allocs": 9.00039452721485,
+          "kind": "process"
+        },
+        {
+          "label": "GCS",
+          "value": 210780.62913907284,
+          "bytes": 201477.99157134257,
+          "allocs": 6831.402167369055,
+          "kind": "service"
+        },
+        {
+          "label": "FTP",
+          "value": 243278.00972222222,
+          "bytes": 5429.788888888889,
+          "allocs": 99.03194444444445,
+          "kind": "service"
+        },
+        {
+          "label": "rclone local",
+          "value": 17957.60648504438,
+          "bytes": 2168.0258580883483,
+          "allocs": 21.000564363039352,
+          "kind": "local"
+        },
+        {
+          "label": "Redis",
+          "value": 79510.93253066788,
+          "bytes": 936.0327124034529,
+          "allocs": 24.000227169468424,
+          "kind": "service"
+        },
+        {
+          "label": "S3",
+          "value": 382576.1599081867,
+          "bytes": 45419.268553940325,
+          "allocs": 630.1384850803366,
+          "kind": "service"
+        },
+        {
+          "label": "SFTP",
+          "value": 429232.65321888414,
+          "bytes": 2523.7836909871244,
+          "allocs": 47.01030042918455,
+          "kind": "service"
+        }
+      ]
+    }
+  ],
+  "web": {
+    "metadata": {
+      "go_version": "go1.26.1",
+      "goos": "linux",
+      "goarch": "arm64",
+      "cpu": "arm64 (CPU model unavailable)",
+      "kernel": "Linux 7.0.11-orbstack-00360-gc9bc4d96ac70",
+      "gomaxprocs": 1,
+      "sample_count": 7,
+      "benchmark_time": "1s",
+      "repository_revision": "df4a3d1f75f6",
+      "repository_dirty": false,
+      "benchmark_input_fingerprint": "sha256:34d8f1b557a3681b44748966456fee27d79c89111d49b01fa6da04ae6b6323c2",
+      "build_settings": [
+        {
+          "name": "CGO_ENABLED",
+          "value": "1"
+        },
+        {
+          "name": "GOARM64",
+          "value": "v8.0"
+        },
+        {
+          "name": "GODEBUG",
+          "value": ""
+        },
+        {
+          "name": "GOEXPERIMENT",
+          "value": ""
+        },
+        {
+          "name": "GOFLAGS",
+          "value": ""
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "net/http",
+          "module": "standard library",
+          "version": "go1.26.1"
+        },
+        {
+          "name": "GoForj Web",
+          "module": "github.com/goforj/web",
+          "version": "local checkout"
+        },
+        {
+          "name": "Echo",
+          "module": "github.com/labstack/echo/v5",
+          "version": "v5.1.0"
+        },
+        {
+          "name": "Gin",
+          "module": "github.com/gin-gonic/gin",
+          "version": "v1.12.0"
+        },
+        {
+          "name": "Chi",
+          "module": "github.com/go-chi/chi/v5",
+          "version": "v5.3.1"
+        },
+        {
+          "name": "Gorilla Mux",
+          "module": "github.com/gorilla/mux",
+          "version": "v1.8.1"
+        },
+        {
+          "name": "httprouter",
+          "module": "github.com/julienschmidt/httprouter",
+          "version": "v1.3.0"
+        }
+      ]
+    },
+    "scenarios": [
+      {
+        "id": "live_plain_text",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 118993,
+            "nsOp": 8404,
+            "bytes": 4891,
+            "allocs": 60
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 117923,
+            "nsOp": 8480,
+            "bytes": 4891,
+            "allocs": 60
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 117586,
+            "nsOp": 8504,
+            "bytes": 4915,
+            "allocs": 61
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 118609,
+            "nsOp": 8431,
+            "bytes": 4923,
+            "allocs": 60
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 116782,
+            "nsOp": 8563,
+            "bytes": 5259,
+            "allocs": 62
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 113899,
+            "nsOp": 8780,
+            "bytes": 5739,
+            "allocs": 67
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 120078,
+            "nsOp": 8328,
+            "bytes": 4891,
+            "allocs": 60
+          }
+        ]
+      },
+      {
+        "id": "static_text",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 11047264,
+            "nsOp": 90.52,
+            "bytes": 16,
+            "allocs": 1
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 8105840,
+            "nsOp": 123.4,
+            "bytes": 16,
+            "allocs": 1
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 7490212,
+            "nsOp": 133.5,
+            "bytes": 40,
+            "allocs": 2
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 9447802,
+            "nsOp": 105.8,
+            "bytes": 48,
+            "allocs": 1
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 4079741,
+            "nsOp": 245.1,
+            "bytes": 384,
+            "allocs": 3
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 2210706,
+            "nsOp": 452.3,
+            "bytes": 864,
+            "allocs": 8
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 15683540,
+            "nsOp": 63.76,
+            "bytes": 16,
+            "allocs": 1
+          }
+        ]
+      },
+      {
+        "id": "path_param_json",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 5937455,
+            "nsOp": 168.4,
+            "bytes": 32,
+            "allocs": 2
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 4358405,
+            "nsOp": 229.4,
+            "bytes": 48,
+            "allocs": 3
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 5351530,
+            "nsOp": 186.9,
+            "bytes": 32,
+            "allocs": 2
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 5302719,
+            "nsOp": 188.6,
+            "bytes": 48,
+            "allocs": 3
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 2257553,
+            "nsOp": 443,
+            "bytes": 736,
+            "allocs": 6
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 1548628,
+            "nsOp": 645.7,
+            "bytes": 1184,
+            "allocs": 10
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 6261053,
+            "nsOp": 159.7,
+            "bytes": 64,
+            "allocs": 3
+          }
+        ]
+      },
+      {
+        "id": "middleware_chain",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 5834930,
+            "nsOp": 171.4,
+            "bytes": 32,
+            "allocs": 2
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 3375985,
+            "nsOp": 296.2,
+            "bytes": 400,
+            "allocs": 4
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 2674599,
+            "nsOp": 373.9,
+            "bytes": 440,
+            "allocs": 8
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 3559858,
+            "nsOp": 280.9,
+            "bytes": 400,
+            "allocs": 4
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 2456688,
+            "nsOp": 407.1,
+            "bytes": 768,
+            "allocs": 6
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 1428773,
+            "nsOp": 699.9,
+            "bytes": 1320,
+            "allocs": 14
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 4359708,
+            "nsOp": 229.4,
+            "bytes": 400,
+            "allocs": 4
+          }
+        ]
+      }
+    ]
+  },
+  "benchmarkLibraries": [
+    {
+      "repo": "cache",
+      "benchmarks": 5
+    },
+    {
+      "repo": "crypt",
+      "benchmarks": 3
+    },
+    {
+      "repo": "events",
+      "benchmarks": 7
+    },
+    {
+      "repo": "execx",
+      "benchmarks": 2
+    },
+    {
+      "repo": "mail",
+      "benchmarks": 3
+    },
+    {
+      "repo": "metrics",
+      "benchmarks": 10
+    },
+    {
+      "repo": "queue",
+      "benchmarks": 6
+    },
+    {
+      "repo": "storage",
+      "benchmarks": 1
+    },
+    {
+      "repo": "str",
+      "benchmarks": 10
+    },
+    {
+      "repo": "web",
+      "benchmarks": 36
+    },
+    {
+      "repo": "wire",
+      "benchmarks": 2
+    }
+  ],
+  "sources": [
+    {
+      "repo": "cache",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "5e5d0f26e54b2e014e86630caa2ab72e6c8b0fe1",
+      "sha256": "560cbd0e2847840efe83a7dc474c6d77bb41585d305ee5878a287497fa630507"
+    },
+    {
+      "repo": "events",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "21c6e503c3e99f4b95efa47c603daf87433e5af9",
+      "sha256": "3ca9808d2e0b5ab2796854e6c7d99bfa509e721a06ed4cddde929a71799ee679"
+    },
+    {
+      "repo": "queue",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "439da9bbc0436f3ab8251dde0b296a1c3cf8a954",
+      "sha256": "ed230e76699758a15b044aad71038511888af093ca89377ab1e61703afb1b883"
+    },
+    {
+      "repo": "storage",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "1ba3e4ca4bbdf19c4203c02413468dc934430c55",
+      "sha256": "b324cc04e5cb4d6fd9d7518c6e9b4400ac0c8fdb2ce7a10696e20669bb8a4391"
+    },
+    {
+      "repo": "web",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "b1c88179b24ef67ccc51521e3b731a6cce0190a5",
+      "sha256": "2f4567eaef1f4246c60ed735e112172abb9c16e231c931b05c0a3281747f1eea"
+    }
+  ]
+}
