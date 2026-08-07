@@ -9,6 +9,12 @@ Lighthouse is GoForj's UI for inspecting running applications during development
 
 It brings inspects, logs, routes, schedules, queue state, cache, storage, and metrics-backed views into one operator workspace.
 
+<LighthouseProductView />
+
+Instead of reconstructing a failure from several terminals, select the app and Runtime that produced it, follow its recent execution timeline, and move directly to the registered route, queue, schedule, cache, or storage resource involved. The workspace follows the components compiled into each App, so a focused worker and a full web app do not pretend to expose the same controls.
+
+Use Lighthouse when you need the fast, connected view. Keep logs, metrics, health checks, and Inspects independently useful so production diagnosis never depends on one UI.
+
 ## Role
 
 Lighthouse should present already-useful operational data.
@@ -90,6 +96,12 @@ Queue actions depend on the selected queue backend. The queue contract defines a
 
 Treat operator actions as production changes. Before retrying or deleting queue work, identify the app, process, queue, job, and driver capability; use application logs, metrics, and inspects to establish impact. A control that returns unsupported is a driver capability limit, not an empty queue.
 
+## Browser Benchmarks
+
+Lighthouse includes a browser workflow for controlled HTTP, cache, queue, storage, and database comparisons. It discovers only the suites and configured resource instances available to the selected App, then reports throughput, latency percentiles, errors, driver details, and the system baseline together.
+
+Benchmarks create real load and can leave data behind after interruption or backend failure. Read [Performance Benchmarks](/operations/performance-benchmarks) before choosing a target, changing concurrency, or using results for a capacity decision.
+
 ## Operational Workflow
 
 Use Lighthouse after the underlying signal has identified a problem:
@@ -118,10 +130,12 @@ This order keeps Lighthouse a useful operator view without turning it into the o
 - Every replica has an unambiguous app, process role, and instance identity.
 - Connection and authentication warnings are collected with application logs.
 - A Lighthouse outage has a documented fallback using direct health, logs, metrics, and app commands.
+- Browser benchmark access is limited to operators, and production runs require a reviewed target and load budget.
 
 ## Next Steps
 
 - [Inspects](/operations/inspects)
 - [Metrics](/operations/metrics)
+- [Performance Benchmarks](/operations/performance-benchmarks)
 - [Environment Reference](/reference/env-vars#lighthouse-and-inspects)
-- [Generated Extension Points](/core/code-generation#choose-a-safe-extension-point)
+- [App Extension Points](/core/code-generation#choose-a-safe-extension-point)
