@@ -3,6 +3,8 @@
   "scripts": {
     "proof:refresh": "node ../bin/collect-proof-stats.mjs",
     "proof:check": "node ../bin/collect-proof-stats.mjs --check",
+    "performance:refresh": "node ../bin/collect-performance-stats.mjs",
+    "performance:check": "node ../bin/collect-performance-stats.mjs --check",
     "sync:design": "node .vitepress/scripts/sync-design-css.mjs",
     "audit:content": "node .vitepress/scripts/audit-content-value.mjs",
     "predev": "npm run sync:design",

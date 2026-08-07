@@ -78,10 +78,16 @@ docs-proof-stats: ##@docs Refresh checked-in proof statistics from sibling repos
 docs-check-proof-stats: ##@docs Verify checked-in proof statistics match sibling repositories
 	@cd docs && npm run proof:check
 
+docs-performance-stats: ##@docs Refresh checked-in performance statistics from sibling repositories
+	@cd docs && npm run performance:refresh
+
+docs-check-performance-stats: ##@docs Verify checked-in performance statistics match sibling repositories
+	@cd docs && npm run performance:check
+
 docs-check-scenarios: ##@docs Verify generated scenario pages match framework specs
 	@cd ../goforj && go run ./cmd/forj scenario:generate --all --check
 
-docs-build: docs-check-proof-stats docs-check-scenarios ##@docs Verify generated evidence and build VitePress docs
+docs-build: docs-check-proof-stats docs-check-performance-stats docs-check-scenarios ##@docs Verify generated evidence and build VitePress docs
 	@cd docs && npm run build
 
 docs-embed: ##@docs Copy built docs into backend embed folder

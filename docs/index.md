@@ -677,7 +677,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
   :style="i ? { '--reveal-delay': `${i * 0.08}s` } : undefined"
 ><strong :data-count="stat.count" :data-suffix="stat.suffix">{{ fmt(stat.count) }}{{ stat.suffix }}</strong><span>{{ stat.label }}</span></div>
 </div>
-<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators. These numbers are generated from the repositories, not written by hand: <a href="https://github.com/goforj/docs/blob/main/bin/collect-proof-stats.mjs" target="_blank" rel="noreferrer noopener">see how they are counted →</a></p>
+<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators. These numbers are generated from the repositories, not written by hand. <a href="/performance">See the performance story →</a> <a href="https://github.com/goforj/docs/blob/main/bin/collect-proof-stats.mjs" target="_blank" rel="noreferrer noopener">Read the counting methodology →</a></p>
 </div>
 </section>
 

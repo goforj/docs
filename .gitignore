@@ -14,6 +14,7 @@
 backend/frontend/dist/
 /bin/*
 !/bin/collect-proof-stats.mjs
+!/bin/collect-performance-stats.mjs
 _data/
 
 # Local environment files
