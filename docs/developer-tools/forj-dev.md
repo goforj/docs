@@ -153,12 +153,12 @@ dev:
       spas:
         frontend:
           path: ./cmd/app/frontend
-          build: npm run build -s -- --logLevel silent
+          build: npm run build -s -- --logLevel error
           watch: [.ts, .tsx, .js, .jsx, .vue, .css, .html, package.json, package-lock.json]
           ignore: [_data, node_modules, dist]
 ```
 
-The compact matcher lists use standard YAML flow-sequence syntax. Block lists decode to the same string lists and remain valid if a team prefers them.
+The SPA command suppresses routine Vite output while retaining compiler and bundler diagnostics when a build fails. The compact matcher lists use standard YAML flow-sequence syntax. Block lists decode to the same string lists and remain valid if a team prefers them.
 
 For a templ + htmx App, the build matchers also include `.templ` and ignore generated files with `re:.*_templ\.go$`.
 

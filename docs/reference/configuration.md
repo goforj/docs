@@ -115,12 +115,12 @@ dev:
       spas:
         frontend:
           path: ./cmd/app/frontend
-          build: npm run build -s -- --logLevel silent
+          build: npm run build -s -- --logLevel error
           watch: [.ts, .tsx, .js, .jsx, .vue, .css, .html, package.json, package-lock.json]
           ignore: [_data, node_modules, dist]
 ```
 
-These are lifecycle graphs rather than flat watcher entries. A successful SPA build requests its owning App build, and a successful App build requests runtime replacement. Failures do not traverse those success edges. The generated bare-binary runtime uses validated executable snapshots so a failed build cannot replace a healthy process.
+These are lifecycle graphs rather than flat watcher entries. The conventional SPA command stays quiet on success but retains compiler and bundler diagnostics on failure. A successful SPA build requests its owning App build, and a successful App build requests runtime replacement. Failures do not traverse those success edges. The generated bare-binary runtime uses validated executable snapshots so a failed build cannot replace a healthy process.
 
 ### App Participation
 
