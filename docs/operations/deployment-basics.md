@@ -20,6 +20,8 @@ flowchart LR
 
 This page owns that path. The linked operations pages cover process topology, probes, metrics, backups, and security policy in more depth.
 
+This page uses `forj` while preparing source and `./bin/<app>` after an artifact has been built. Production supervisors and release checks should execute the exact binary being deployed, not source-aware development commands.
+
 ## Before You Start
 
 Decide which Apps belong in the release and where they will run. Provision the production database, queue, cache, storage, and other external services selected by those Apps. The deployment platform must also own DNS, TLS termination, network policy, process supervision, and secret delivery.
@@ -35,7 +37,7 @@ forj build &&
   test -x ./bin/app
 ```
 
-Expected result: `bin/app` exists and is executable. The build refreshes generated Project files, runs Wire, prepares the API index, and compiles the default App.
+Expected result: `bin/app` exists and is executable. The build refreshes Framework-managed Project files, runs Wire, prepares the API index, and compiles the default App.
 
 ### Apps with Web UI
 
@@ -51,16 +53,30 @@ Expected result: `cmd/app/frontend/dist` contains current frontend output and `b
 
 ### Additional Apps
 
-Build each independently deployable App:
+Build each independently deployable App. If it has frontend source, build that App's frontend first using its path under `cmd/<app>/frontend/`:
 
 ```bash
-forj admin build &&
+npm --prefix cmd/admin/frontend ci &&
+  npm --prefix cmd/admin/frontend run build &&
+  forj admin build &&
   test -x ./bin/admin
 ```
 
-Expected result: `bin/admin` contains the staff-facing App selected by the command prefix. Repeat the build for every App included in the release.
+Expected result: `cmd/admin/frontend/dist` contains the current staff frontend and `bin/admin` contains the staff-facing App selected by the command prefix. Omit the npm steps when that App has no frontend source. Repeat the applicable frontend build, App build, and artifact check for every App included in the release.
 
 Keep the artifact immutable after it has been tested. If a release is transferred to another host or registry, verify its checksum or image digest before activation.
+
+### Hand Off the Artifact
+
+The build system should hand the deployment system one identified, immutable release. Record at least:
+
+- the binary or image digest;
+- every App binary included in the release;
+- the target operating system and architecture;
+- the source revision and build time; and
+- any non-secret defaults or overrides compiled with `forj build`.
+
+Frontend output is already embedded in an App binary after the frontend build and `forj build`; do not deploy an unrelated `dist` directory beside it. Promote the same tested bytes between environments. If configuration or frontend assets require a rebuild, assign the result a new release identity and repeat artifact checks.
 
 ## Keep Configuration Outside the Artifact
 
@@ -80,6 +96,8 @@ APP_DIAG_TOKEN=<value-from-your-secret-store>
 ```
 
 The rendered App determines the rest. Configure its selected database, queue, cache, storage, event, mail, and observability drivers with production values. Do not allow a missing production dependency to silently fall back to a process-local driver.
+
+`forj build --env-defaults` and `--env-overrides` are explicit exceptions: they pin non-secret values into the binary. Defaults remain replaceable by deployment configuration; overrides do not. Use defaults only for artifact-level fallbacks and overrides only when every deployment of that artifact must use the same value. A rotated credential, environment endpoint, port, replica-specific identity, or retention setting belongs to the deployment system instead. See [Compiled Environment Values](/reference/configuration#compiled-environment-values) for exact precedence.
 
 Bind to `127.0.0.1` when a reverse proxy on the same host owns public traffic. Bind to `0.0.0.0` only when a container network, firewall, or host network policy controls access.
 
@@ -110,6 +128,16 @@ Changing the command does not change application behavior or make in-memory driv
 
 Run one scheduler process unless the schedules use deliberate cross-process locking. See [Runtime Processes](/operations/runtime-processes) before introducing a split topology.
 
+A concrete split deployment might use the same immutable artifact in these supervised process groups:
+
+| Process group | Replicas | Traffic or work handoff | Scaling signal |
+| --- | ---: | --- | --- |
+| `./bin/app api` | Two or more | The platform sends HTTP traffic only to ready instances. | Request load, latency, and resource use. |
+| `./bin/app worker --queue emails` | One or more | A shared queue backend hands jobs to workers. | Queue depth, job age, failures, and resource use. |
+| `./bin/app scheduler` | One | The supervisor maintains singleton ownership unless schedules use a shared lock. | Availability and due-run outcomes, not HTTP load. |
+
+This is a topology example, not a required replica count. Each group receives its own environment, resource limits, probe configuration, and restart policy. If an App has another binary such as `bin/admin`, model its HTTP, worker, and scheduler roles independently rather than assuming the default App process owns them.
+
 ## Give the Process to a Supervisor
 
 The deployment platform should:
@@ -125,7 +153,21 @@ The deployment platform should:
 
 This contract applies equally to systemd, a container runtime, Kubernetes, Nomad, or another supervisor. The exact service unit or workload manifest belongs to that platform.
 
-Set the supervisor's stop grace period above the longest effective App shutdown path, with additional margin for the supervisor itself. In combined mode, runtime shutdown happens concurrently before the outer App lifecycle finishes. Test shutdown with real in-flight jobs instead of relying only on arithmetic.
+### Budget Timeouts as a System
+
+Timeouts protect different boundaries and should be planned together:
+
+| Boundary | Example control | What it bounds |
+| --- | --- | --- |
+| One unit of work | A job timeout or `SCHEDULER_COMMAND_TIMEOUT` | The handler or scheduled command execution. |
+| Runtime cleanup | `QUEUE_SHUTDOWN_TIMEOUT` | Queue drain and backend cleanup inside App shutdown. |
+| App shutdown | `APP_SHUTDOWN_TIMEOUT` | The HTTP or scheduler graceful-stop path and outer App lifecycle. |
+| Readiness request | Probe or `health --timeout-ms` | One operator or platform request, including sequential resource checks. |
+| Process supervision | Platform stop grace period | The complete interval before the platform may force termination. |
+
+The App resolves this policy once at startup. A queue or scheduler subprocess value larger than `APP_SHUTDOWN_TIMEOUT` is capped to the App budget and emits one structured warning with the configured and effective values. Run `./bin/app about` to inspect the effective Runtime settings before changing supervisor limits.
+
+Do not add every configured duration and assume that sum is the required supervisor value. Some shutdown work is concurrent, some limits are nested, and a handler that ignores cancellation can outlive its intended budget. Set the supervisor's stop grace period above the longest observed graceful-stop path with margin for traffic removal and supervisor overhead. In combined mode, runtime shutdown happens concurrently before the outer App lifecycle finishes. Test `SIGTERM` with real in-flight requests, jobs, and scheduled commands; make interrupted work safe to retry.
 
 The long-running command must be the deployed binary:
 
@@ -149,7 +191,29 @@ Expected result: the migration command exits successfully before processes from 
 
 Run the command once per migration-owning App, not once per HTTP replica. During a rolling deployment, prefer additive schema changes that work with both the old and new binaries.
 
+For an additional migration-owning App, run that App's staged binary independently:
+
+```bash
+/srv/example/releases/2026-07-28/bin/admin migrate
+```
+
+Expected result: only the `admin` App's migration streams run. Repeat this once for each migration-owning App in the release; do not infer that the default App command migrated additional Apps.
+
 Use stable paths for backup output rather than writing backup sets inside a versioned release directory. [Backup and Restore](/operations/backups) covers discovery, verification, retention, and restore safeguards.
+
+## Hand Off Observability and Retention
+
+The App emits signals; the deployment platform and operators own their transport, access, and retention. Before activation, assign each signal to an operational destination:
+
+| Signal or data | App/process responsibility | Deployment responsibility |
+| --- | --- | --- |
+| Logs | Write structured runtime output to standard output and standard error. | Collect, index, redact, retain, and alert on it. |
+| Metrics | Expose the endpoint appropriate to combined or split topology. | Scrape it with bounded labels, retain time series, and define alerts. |
+| Health and readiness | Report process liveness and required dependency state. | Route probes correctly and remove unready HTTP instances from traffic. |
+| Inspects and Lighthouse | Capture and present bounded recent execution detail when enabled. | Restrict operator access and choose capture, sampling, and recent-window limits. |
+| Backups and durable data | Use the configured stable paths and backends. | Schedule backups, apply retention, verify restore, and keep data outside release directories. |
+
+Preserve the app name, runtime role, release identity, and instance identity in the surrounding platform metadata so an alert can be traced to the exact process and artifact. Set `APP_VERSION` and `APP_REVISION` while building framework-managed metrics discovery, and apply equivalent bounded labels in an external production scraper. Lighthouse's recent Inspect window is not a substitute for retained logs, metrics, or backups.
 
 ## Activate the Release
 
@@ -246,12 +310,14 @@ Queue payloads are another compatibility boundary. A previous worker binary must
 - Build every App for the deployment target.
 - Build frontend assets before `forj build` when the App has Web UI.
 - Store production configuration and secrets outside the artifact.
+- Record any non-secret defaults or overrides intentionally compiled into it.
 - Use production drivers for state shared across processes or hosts.
 - Keep writable data and backup sets outside immutable release directories.
 - Run the staged release's migrations once before it receives traffic.
 - Supervise each required process with the deployed binary.
 - Keep the scheduler singleton unless locking makes overlap safe.
 - Set and test graceful shutdown budgets.
+- Assign logs, metrics, Inspects, and backups explicit access and retention owners.
 - Verify liveness, readiness, metrics, and one application workflow.
 - Keep the previous artifact available for binary rollback.
 - Treat database migrations and queued payloads as separate rollback contracts.

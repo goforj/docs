@@ -69,7 +69,7 @@ Common variables:
 ```text
 APP_SHUTDOWN_TIMEOUT=30s
 QUEUE_SHUTDOWN_TIMEOUT=10s
-SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=90s
+SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=30s
 ```
 
 Constructors should build dependencies, not start long-running work. Keep business behavior independent of process topology, allow workers time to finish in-flight jobs, and use locking or singleton control before running multiple schedulers. Splitting processes does not provide shared state or job correctness by itself.
