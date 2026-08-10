@@ -1415,8 +1415,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
   </p>
 
   <h3>The code well</h3>
-  <pre class="well" data-ember><span data-t="comment">// Services depend on contracts, not drivers. The disk is a</span>
-<span data-t="comment">// storage.Storage, so local disk and S3 are the same call.</span>
+  <pre class="well" data-ember><span data-t="comment">// Package photos keeps upload workflows independent from configured Drivers.</span>
 <span data-t="keyword">package</span> photos
 
 <span data-t="keyword">import</span> <span data-t="punct">(</span>
@@ -1427,17 +1426,20 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
 
 <span data-t="keyword">const</span> maxUploadBytes <span data-t="punct">=</span> <span data-t="number">25</span> <span data-t="punct">&lt;&lt;</span> <span data-t="number">20</span>
 
+<span data-t="comment">// Photo identifies an uploaded object without exposing its backing Driver.</span>
 <span data-t="keyword">type</span> <span data-t="type">Photo</span> <span data-t="keyword">struct</span> <span data-t="punct">{</span>
     ID        <span data-t="builtin">string</span>    <span data-t="string">`<span data-t="tagkey">json</span>:"id" <span data-t="tagkey">db</span>:"id"`</span>
     OwnerID   <span data-t="builtin">string</span>    <span data-t="string">`<span data-t="tagkey">json</span>:"owner_id" <span data-t="tagkey">db</span>:"owner_id"`</span>
     CreatedAt <span data-t="type">time</span><span data-t="punct">.</span><span data-t="type">Time</span> <span data-t="string">`<span data-t="tagkey">json</span>:"created_at"`</span>
 <span data-t="punct">}</span>
 
+<span data-t="comment">// Service keeps photo workflows portable across storage and cache Drivers.</span>
 <span data-t="keyword">type</span> <span data-t="type">Service</span> <span data-t="keyword">struct</span> <span data-t="punct">{</span>
     disk  storage<span data-t="punct">.</span><span data-t="type">Storage</span>
     cache cache<span data-t="punct">.</span><span data-t="type">Cache</span>
 <span data-t="punct">}</span>
 
+<span data-t="comment">// Store persists an upload before invalidating its cached photo state.</span>
 <span data-t="keyword">func</span> <span data-t="punct">(</span>s <span data-t="punct">*</span><span data-t="type">Service</span><span data-t="punct">)</span> <span data-t="func">Store</span><span data-t="punct">(</span>ctx context<span data-t="punct">.</span><span data-t="type">Context</span><span data-t="punct">,</span> name <span data-t="builtin">string</span><span data-t="punct">,</span> body <span data-t="punct">[]</span><span data-t="builtin">byte</span><span data-t="punct">)</span> <span data-t="punct">(</span><span data-t="type">Photo</span><span data-t="punct">,</span> <span data-t="builtin">error</span><span data-t="punct">)</span> <span data-t="punct">{</span>
     <span data-t="keyword">if</span> <span data-t="func">len</span><span data-t="punct">(</span>body<span data-t="punct">)</span> <span data-t="punct">&gt;</span> maxUploadBytes <span data-t="punct">{</span>
         <span data-t="keyword">return</span> <span data-t="type">Photo</span><span data-t="punct">{},</span> <span data-t="type">ErrTooLarge</span>
@@ -1786,10 +1788,11 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
         <p>Every Project has a default app named <code>app</code>:</p>
         <div class="well codewell" style="font-size:11.5px;line-height:1.7">
           <span class="planetag">well · −5.16 L*</span>
-          <span style="color: var(--em-comment)">// Services depend on contracts, not drivers.</span><br>
+          <span style="color: var(--em-comment)">// Service keeps App workflows independent from configured Drivers.</span><br>
           <span style="color: var(--em-keyword)">type</span> <span style="color: var(--em-type)">Service</span> <span style="color: var(--em-keyword)">struct</span> <span style="color: var(--em-punct)">{</span><br>
           &nbsp;&nbsp;&nbsp;&nbsp;disk storage<span style="color: var(--em-punct)">.</span><span style="color: var(--em-type)">Storage</span><br>
           <span style="color: var(--em-punct)">}</span><br><br>
+          <span style="color: var(--em-comment)">// NewService creates an App service from its portable storage contract.</span><br>
           <span style="color: var(--em-keyword)">func</span> <span style="color: var(--em-func)">NewService</span><span style="color: var(--em-punct)">()</span> <span style="color: var(--em-punct)">(</span><span style="color: var(--em-type)">Service</span><span style="color: var(--em-punct)">,</span> <span style="color: var(--em-builtin)">error</span><span style="color: var(--em-punct)">)</span> <span style="color: var(--em-punct)">{</span><br>
           &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--em-keyword)">return</span> <span style="color: var(--em-type)">Service</span><span style="color: var(--em-punct)">{},</span> <span style="color: var(--em-builtin)">nil</span><br>
           <span style="color: var(--em-punct)">}</span>
@@ -2133,7 +2136,7 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     mode and watch the sample block change hue, not just value.
   </p>
   <div class="well" data-ember style="font-size:12.5px">
-<span data-t="comment">// Services depend on contracts, not drivers.</span>
+<span data-t="comment">// NewService binds photo workflows to the configured storage contract.</span>
 <span data-t="keyword">func</span> <span data-t="func">NewService</span><span data-t="punct">(</span>disk storage<span data-t="punct">.</span><span data-t="type">Storage</span><span data-t="punct">)</span> <span data-t="punct">(</span><span data-t="type">Service</span><span data-t="punct">,</span> <span data-t="builtin">error</span><span data-t="punct">)</span> <span data-t="punct">{</span>
     <span data-t="keyword">return</span> <span data-t="type">Service</span><span data-t="punct">{</span>disk<span data-t="punct">:</span> disk<span data-t="punct">},</span> <span data-t="builtin">nil</span>
 <span data-t="punct">}</span>
