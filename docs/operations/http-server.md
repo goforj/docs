@@ -90,7 +90,7 @@ Expected result: health returns HTTP 200 with `{"status":"ok"}`. The App `health
 
 ## Logs, Metrics, and Inspects
 
-HTTP access logging is enabled by default and emits structured URI, method, status, latency, and client-IP fields. Set `HTTP_ACCESS_LOG_ENABLED=false` only when request volume makes higher-signal lifecycle and error logs unreadable; retain HTTP metrics and Inspects for visibility.
+HTTP access logging is enabled by default and emits structured URI, method, status, latency, and client-IP fields. Successful requests served by a registered SPA are quiet by default because a page load can fetch dozens of assets; set `HTTP_SPA_ACCESS_LOG_ENABLED=true` when you need to diagnose SPA delivery. Failed SPA requests remain visible. Set `HTTP_ACCESS_LOG_ENABLED=false` only when request volume makes higher-signal lifecycle and error logs unreadable; retain HTTP metrics and Inspects for visibility.
 
 When metrics are enabled, the HTTP Runtime can start a dedicated Prometheus endpoint on `METRICS_PORT` and can expose `GET /metrics` through the HTTP route surface. Scrape the endpoint that the deployed topology makes reachable, and use route patterns rather than raw URLs as metric dimensions.
 
