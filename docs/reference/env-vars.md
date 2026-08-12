@@ -78,6 +78,7 @@ See [Logging](/operations/logging) for event shape, output modes, and sensitive-
 | `API_HTTP_PORT` | App port, starting at `3000` | HTTP bind port. |
 | `PORT` | Empty | Compatibility override for the default or selected App HTTP port. When set, it takes precedence over `API_HTTP_PORT`; prefer leaving it unset and configuring `API_HTTP_PORT`. |
 | `HTTP_ACCESS_LOG_ENABLED` | `true` | Enable generated HTTP access log events. |
+| `HTTP_SPA_ACCESS_LOG_ENABLED` | `false` | Include successful requests served by a registered SPA in HTTP access logs. SPA failures remain visible when disabled. |
 | `HTTP_CORS_ALLOW_ENDPOINTS` | `http://localhost:8080` in `local`; otherwise empty | Comma-separated credentialed CORS origins. Configure production origins explicitly. |
 | `API_SWAGGER_ENABLED` | `true` | Enable generated API reference routes. |
 | `SWAGGER_ENABLED` | `true` | Compatibility fallback for `API_SWAGGER_ENABLED`. Prefer `API_SWAGGER_ENABLED`. |
