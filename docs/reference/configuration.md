@@ -56,7 +56,9 @@ Each filename is discovered independently by searching the current directory and
 
 The default app uses unprefixed keys. An additional app promotes its `<APP>_<KEY>` values over the corresponding base keys after file loading. For example, `ADMIN_API_HTTP_PORT` becomes the effective `API_HTTP_PORT` for the `admin` app. The [Environment Reference](/reference/env-vars#resolution-and-naming) defines this overlay and every public variable.
 
-Generated `.env`, `.env.local`, `.env.host`, and `.env.testing` files are ignored by Git. `.env.example` is the deliberate exception: commit it as the safe inventory and keep deployment secrets in the process environment or a secret manager.
+Generated `.env`, `.env.local`, and `.env.host` files are ignored by Git. Commit `.env.example` as the safe key inventory and `.env.testing` as the safe deterministic test profile. GoForj synchronizes both committed contracts during rendering and normal generation, while process environment variables remain authoritative for CI and deployment secrets.
+
+A source-aware command initializes a missing `.env` from `.env.example`, generating fresh local framework secrets without replacing an existing file. `forj env:set KEY` accepts a value through a hidden terminal prompt. `forj env:check` verifies contract drift without writing files, including on a clean CI checkout where `.env` is absent. GoForj uses `.env.testing`, not `.env.test`.
 
 ## Compiled Environment Values
 

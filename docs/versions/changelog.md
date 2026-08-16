@@ -18,6 +18,12 @@ The current documentation follows `main`. Changes remain in this section until t
 - Made `forj build` prepare every stale SPA configured under `dev.apps` before compiling the App, while reusing successful `forj dev` output and skipping unchanged frontend work.
 - Kept the freshness check lightweight with metadata-only receipts and ran frontend preparation alongside independent backend build stages.
 
+### Environment Contracts
+
+- Added automatic private `.env` initialization with fresh local framework secrets and hidden `forj env:set` value entry.
+- Made normal rendering and generation synchronize committed `.env.example` and `.env.testing` contracts while redacting local secrets.
+- Added deterministic test-friendly values and `forj env:check` so CI can verify and use the committed test profile instead of reconstructing a complete `.env`.
+
 ### Starter Kits and App Help
 
 - Added a default-on component-library choice for Vue, React, and templ + htmx starter kits, with a smaller working shell when the showcase is disabled.
