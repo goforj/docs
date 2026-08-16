@@ -58,15 +58,17 @@ A Project can include:
 - `.env.example` for the safe, committed inventory
 - `.env.testing` for safe, deterministic test values
 
-`.env` and its local and host overlays are ignored by Git. Commit `.env.example` and `.env.testing`: GoForj keeps their keys synchronized during normal generation, redacts local secrets, and supplies test-friendly framework values such as isolated database names and `DB_PASSWORD=test`. Process environment variables still take precedence, so CI only needs to inject credentials for tests that intentionally contact live services.
+`.env` and its local and host overlays are ignored by Git. Commit `.env.example` and `.env.testing`: GoForj keeps their keys synchronized during normal generation, blanks secret-like framework values and every newly discovered application value, and supplies test-friendly framework values such as isolated database names and `DB_PASSWORD=test`. To share a non-secret application default, add it explicitly to the reviewed `.env.example`; generation preserves that committed value rather than copying later changes from private `.env`. Process environment variables still take precedence, so CI only needs to inject credentials for tests that intentionally contact live services.
 
-A `forj` command that needs the runtime environment creates a missing `.env` from `.env.example` and generates fresh local framework secrets. Help, version, and environment checks remain read-only. You can invoke initialization directly with `forj env:init`. To set a local secret without putting its value in shell history or the process argument list, use the hidden prompt:
+The natural project commands `forj build`, `forj generate`, `forj dev`, and `forj run` create a missing `.env` from `.env.example` and generate fresh values for the framework signing and diagnostic keys present in the Project. Help, version, invalid commands, and environment checks remain read-only. You can invoke initialization directly with `forj env:init`, but it is not required for the normal clone-and-build workflow. To set a local secret without putting its value in shell history or the process argument list, use the hidden prompt:
 
 ```bash
 forj env:set DISCORD_TOKEN
 ```
 
-`forj build`, `forj dev`, and `forj generate` refresh the committed contracts through one generation lifecycle. Run `forj env:check` in CI to fail on drift without creating or rewriting `.env`. If an upgrade finds an unmanaged `.env.testing`, GoForj stops before changing it so you can move private values into `.env`, remove the legacy file, and generate the committed profile safely.
+`forj build`, `forj dev`, and `forj generate` refresh the committed contracts through one generation lifecycle. A newly entered application key appears there with a blank value until you deliberately provide a safe committed default. Run `forj env:check` in CI to fail on drift without creating or rewriting `.env`. If an upgrade finds an unmanaged `.env.testing`, GoForj stops before changing ignore rules so you can move private values into `.env`, remove the legacy file, and generate the committed profile safely.
+
+GoForj rejects active dotenv keys outside its portable letters, digits, and underscores grammar before publishing contracts. The fail-closed default substantially reduces accidental disclosure, but committed contract changes still deserve review and a repository secret scanner in CI.
 
 The [Environment Reference](/reference/env-vars) owns the complete variable list and naming rules. [Configuration Reference](/reference/configuration#environment-file-resolution) defines file precedence and process-environment behavior.
 

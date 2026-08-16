@@ -56,7 +56,7 @@ forj env:check
 go test ./...
 ```
 
-Ordinary application tests should use the deterministic values in `.env.testing`. Set only the additional process variables required by tests that intentionally contact a live external service; do not reconstruct the entire dotenv file in CI. On upgrade, review and remove an unmanaged legacy `.env.testing` before generation creates the committed profile.
+Ordinary application tests should use the deterministic values in `.env.testing`. Database, Redis, and SMTP host keys use loopback defaults; generated NATS and RabbitMQ URLs use their local container service names. Set only the additional process variables required by tests that intentionally contact a live external service; do not reconstruct the entire dotenv file in CI. On upgrade, review and remove an unmanaged legacy `.env.testing` before generation changes ignore rules or creates the committed profile.
 
 Avoid depending on a developer's local `.env` unless the test is intentionally validating rendered App behavior from that file.
 
