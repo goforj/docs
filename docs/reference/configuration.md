@@ -64,7 +64,7 @@ Generated `.env`, `.env.local`, and `.env.host` files are ignored by Git. Commit
 
 Initialization and synchronization operate on the shared root contract. Additional Apps receive deterministic framework test values through their `<APP>_<KEY>` overlays and otherwise inherit base signing values unless an explicit process or file overlay supplies a prefixed value.
 
-The generated `.env.testing` contract forces `APP_MAINTENANCE_ENABLED=false`, including named-App forms, so a developer's local maintenance setting cannot unexpectedly turn integration tests into HTTP 503 responses.
+The generated `.env.testing` contract forces `APP_MAINTENANCE_ENABLED=false`, including named-App forms, so environment-enforced maintenance cannot unexpectedly pause application work in tests. Command-managed state remains local under the ignored `_data` directory.
 
 ## Compiled Environment Values
 
