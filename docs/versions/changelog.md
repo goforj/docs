@@ -15,7 +15,7 @@ The current documentation follows `main`. Changes remain in this section until t
 
 ### Maintenance Mode
 
-- Added live `down` and `up` commands that coordinate HTTP, queue workers, and scheduled launches through App-scoped maintenance state.
+- Added live `maintenance:enable` and `maintenance:disable` commands that coordinate HTTP, queue workers, and scheduled launches through App-scoped maintenance state.
 - Added browser and JSON HTTP 503 responses shared by every official starter kit while keeping health, readiness, metrics, and Lighthouse routes reachable.
 - Preserved environment-enforced maintenance for deployment policy, surfaced the live state through `forj about`, and disabled the environment setting in generated test profiles.
 

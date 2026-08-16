@@ -90,7 +90,7 @@ See [Environment Reference](/reference/env-vars) for the complete generated conf
 Use the built App when application work must pause during a deployment or planned operation:
 
 ```bash
-./bin/app down
+./bin/app maintenance:enable
 ```
 
 The command publishes App-scoped state without booting the dependency graph. Already-running runtimes observe it directly:
@@ -115,14 +115,14 @@ curl --fail-with-body http://127.0.0.1:3000/
 Expected result: the operational routes remain available and the application request returns HTTP 503. Restore normal work when the operation is complete:
 
 ```bash
-./bin/app up
+./bin/app maintenance:disable
 ```
 
-Additional Apps own separate state through their binaries, such as `./bin/admin down`. Queue- and schedule-specific pause controls remain independent; `up` does not clear a scheduler pause that existed before maintenance began.
+Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`. Queue- and schedule-specific pause controls remain independent; `maintenance:disable` does not clear a scheduler pause that existed before maintenance began.
 
 Combined runtimes naturally share the state file. Split runtime processes must use the same working directory and shared `_data` volume so they observe `_data/runtime/<app>/maintenance.json`. For replicas without a shared filesystem, run the command for every deployment unit or enforce maintenance fleet-wide through deployment configuration.
 
-Set `APP_MAINTENANCE_ENABLED=true` when deployment policy must force maintenance from process startup. That environment value is authoritative: `./bin/app up` cannot override it, and clearing it requires restarting the affected processes.
+Set `APP_MAINTENANCE_ENABLED=true` when deployment policy must force maintenance from process startup. That environment value is authoritative: `./bin/app maintenance:disable` cannot override it, and clearing it requires restarting the affected processes.
 
 ## Choose the Processes to Run
 

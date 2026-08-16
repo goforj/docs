@@ -36,7 +36,7 @@ Expected result: the API listens on port `3001` and the health request succeeds.
 
 Runtime settings are read during startup. Restart a running app after changing its environment; this port change does not require regeneration or a rebuild.
 
-Maintenance mode has a live command path instead of requiring an environment edit. Run `./bin/app down` to pause application traffic, new job consumption, and future schedule launches; run `./bin/app up` to resume them. Browser requests receive the starter-kit-independent maintenance page, while API requests receive JSON. See [Deploy an App](/operations/deployment-basics#use-maintenance-mode) for the operational workflow, split-runtime requirements, and route exceptions.
+Maintenance mode has a live command path instead of requiring an environment edit. Run `./bin/app maintenance:enable` to pause application traffic, new job consumption, and future schedule launches; run `./bin/app maintenance:disable` to resume them. Browser requests receive the starter-kit-independent maintenance page, while API requests receive JSON. See [Deploy an App](/operations/deployment-basics#use-maintenance-mode) for the operational workflow, split-runtime requirements, and route exceptions.
 
 ## Choose the Right Layer
 
