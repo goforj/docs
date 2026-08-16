@@ -58,7 +58,11 @@ The default app uses unprefixed keys. An additional app promotes its `<APP>_<KEY
 
 Generated `.env`, `.env.local`, and `.env.host` files are ignored by Git. Commit `.env.example` as the safe key inventory and `.env.testing` as the safe deterministic test profile. Generation owns synchronization of both committed contracts; rendering, build, and development receive that behavior through their generation phase. Process environment variables remain authoritative for CI and deployment secrets.
 
-A command that needs the runtime environment initializes a missing `.env` from `.env.example`, generating fresh local framework secrets without replacing an existing file. `forj env:set KEY` accepts a value through a hidden terminal prompt and updates only `.env`; the next generation refreshes committed contracts. `forj env:check` verifies contract consistency without writing files, including on a clean CI checkout where `.env` is absent. It cannot infer a key omitted from both committed files. GoForj uses `.env.testing`, not `.env.test`, and refuses to overwrite an existing profile without its managed marker.
+`forj build`, `forj generate`, `forj dev`, and `forj run` initialize a missing `.env` from `.env.example`, generating fresh local values for framework-owned signing and diagnostic keys that are present without replacing an existing file. `forj env:set KEY` accepts a value through a hidden terminal prompt and updates only `.env`; the next generation adds a blank committed entry for a newly discovered application key. Put a safe public default in `.env.example` explicitly when `.env.testing` should inherit it.
+
+`forj env:check` verifies contract consistency without writing files. Locally it derives expected output from `.env` when present; on a clean CI checkout it derives from `.env.example`. It cannot infer a key omitted from both committed files. GoForj uses `.env.testing`, not `.env.test`, and refuses to overwrite or make stageable an existing profile without its managed marker.
+
+Initialization and synchronization operate on the shared root contract. Additional Apps receive deterministic framework test values through their `<APP>_<KEY>` overlays and otherwise inherit base signing values unless an explicit process or file overlay supplies a prefixed value.
 
 ## Compiled Environment Values
 
