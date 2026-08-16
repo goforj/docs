@@ -23,13 +23,14 @@ The project file records render-time choices and local development workflow.
 | `updated_at` | Timestamp written by rendering workflows. |
 | `render.components` | Selected framework components. |
 | `render.starter_kit` | Selected starter kit. |
+| `render.starter_kit_options` | Options for the selected default-app starter kit. |
 | `render.help_format` | Default app CLI help presentation. |
 | `render.goforj_version` | GoForj version recorded for the rendered App. |
 | `render.module_replaces` | Local module replacements for sibling repos. |
 | `apps` | Optional per-app render metadata for additional apps. |
 | `dev.pre` | Development pre-tasks. |
 | `dev.down` | Development teardown tasks. |
-| `dev.apps` | App-aware build, run, and SPA lifecycle configuration. |
+| `dev.apps` | App-aware build, run, and SPA lifecycle configuration used by `forj dev`; its SPA entries also participate in `forj build`. |
 | `dev.watches` | Independent custom watcher commands. |
 | `dev.auto_migrate` | Development auto-migrate behavior. |
 | `dev.down_on_exit` | Development cleanup behavior on exit. |
@@ -199,6 +200,8 @@ SPA map keys must be safe lowercase slugs. An SPA value accepts a path string or
 
 Expanded SPAs support only `path`, `build`, `watch`, and `ignore`. `path` is required and is both the watch root and command working directory. An empty or omitted `build` selects the conventional build command. Empty or omitted `watch` and `ignore` lists use conventional SPA defaults; non-empty lists replace their respective defaults.
 
+`forj build` checks every SPA in this map, not only the SPA owned by the App binary being compiled. It skips `node_modules`, checks `dist` as build output, and runs the configured build command only when source metadata, output metadata, or the command has changed. A build command beginning with `npm` also receives automatic npm dependency installation. Successful `forj dev` builds update the same freshness receipt, so switching from the development loop to `forj build` does not normally rebuild an unchanged SPA.
+
 ## Custom Watches
 
 Use sibling `dev.watches` entries for arbitrary commands that do not own an App lifecycle:
@@ -285,8 +288,8 @@ Top-level `apps` and `dev.apps` have different responsibilities:
 
 | Key | Responsibility |
 | --- | --- |
-| `apps` | Per-App render components, starter kit, and help-format metadata. |
-| `dev.apps` | Participation and lifecycle behavior under `forj dev`. |
+| `apps` | Per-App render components, starter kit, starter-kit options, and help-format metadata. |
+| `dev.apps` | Participation and lifecycle behavior under `forj dev`, plus SPA discovery for `forj build`. |
 
 Additional apps are discovered from layout:
 
@@ -304,6 +307,24 @@ apps:
     starter_kit: none
     help_format: guided
 ```
+
+Starter-kit component libraries are enabled when their option is omitted. To create the smaller shell for a first-party kit, disable the option for the owning App:
+
+```yaml
+render:
+  starter_kit: vue
+  starter_kit_options:
+    component_library: false
+
+apps:
+  admin:
+    components: [web_api, web_ui]
+    starter_kit: react
+    starter_kit_options:
+      component_library: false
+```
+
+The option controls the generated component showcase, not whether the App has Web UI. `false` retains a working starter shell and omits showcase navigation and pages. See [Choose a Starter Kit](/getting-started/starter-kits) for the resulting frontend behavior.
 
 `render.components` describes the default App and Project-owned tooling. Additional app selections stay under `apps`; when shared generated packages need the combined capability set, the renderer derives that union in memory without rewriting the default App selection.
 

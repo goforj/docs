@@ -66,9 +66,10 @@ Without selection flags in an interactive terminal, the command opens the app wi
 ```bash
 forj make:app admin --components web-api,jobs
 forj make:app statuspage --components web-api,web-ui --starter-kit vue
+forj make:app statuspage --components web-api,web-ui --starter-kit vue --component-library off
 ```
 
-Use `--without` to remove components from the project-derived default selection. Use `--help-format framework`, `--help-format external_cli`, or `--help-format guided` to choose the App command-help style. `--skip-wire` renders the App files without regenerating Wire; it is intended for generator debugging or a workflow that deliberately runs Wire separately.
+Use `--without` to remove components from the project-derived default selection. Use `--component-library on` or `--component-library off` to include or omit the selected first-party starter kit's component showcase; omission uses the Project-derived, default-on selection. Use `--help-format framework`, `--help-format external_cli`, or `--help-format guided` to choose the App command-help style. `--skip-wire` renders the App files without regenerating Wire; it is intended for generator debugging or a workflow that deliberately runs Wire separately.
 
 The command creates the conventional binary entrypoint under `cmd/admin/`, app-owned composition under `app/admin/`, and app-specific Wire graph under `app/admin/wire/`. Exact files depend on the selected components; a CLI-only app does not receive HTTP, scheduler, or worker files merely because another app has them.
 
@@ -79,6 +80,17 @@ apps:
   admin:
     components: [web_api, jobs]
     starter_kit: none
+```
+
+When explicitly disabled for a selected starter kit, the App metadata also records:
+
+```yaml
+apps:
+  statuspage:
+    components: [web_api, web_ui]
+    starter_kit: vue
+    starter_kit_options:
+      component_library: false
 ```
 
 The interactive wizard enrolls an app with HTTP, jobs, or schedules in `forj dev` and proposes the combined `run` command. A CLI-only app remains unenrolled. Review the Dev Run step when the app needs a narrower long-running command.

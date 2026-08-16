@@ -28,26 +28,24 @@ Choose a build environment compatible with the deployment target. If the Project
 
 ## Build the Release
 
-For an App without frontend source:
+Build the default App:
 
 ```bash
 forj build &&
   test -x ./bin/app
 ```
 
-Expected result: `bin/app` exists and is executable. The build refreshes generated Project files, runs Wire, prepares the API index, and compiles the default App.
+Expected result: `bin/app` exists and is executable. The build refreshes generated Project files, ensures configured SPA assets are current, runs Wire, prepares the API index, and compiles the default App.
 
 ### Apps with Web UI
 
-`forj dev` coordinates frontend and Go builds while you work. A standalone `forj build` does not currently rebuild React, Vue, or templ + htmx assets, so build them explicitly for a release:
+Use the same release command for an App with frontend source:
 
 ```bash
-npm --prefix cmd/app/frontend ci &&
-  npm --prefix cmd/app/frontend run build &&
-  forj build
+forj build
 ```
 
-Expected result: `cmd/app/frontend/dist` contains current frontend output and `bin/app` embeds that output. The deployed release does not need a separate frontend server unless the application was deliberately designed around one.
+GoForj checks all SPAs configured under `dev.apps` and runs only stale SPA builds before compiling Go. It also installs dependencies for npm-based builds. A successful `forj dev` frontend build is reused by this check. Expected result: every configured `dist` directory contains current frontend output and `bin/app` embeds the default App's output. The deployed release does not need a separate frontend server unless the application was deliberately designed around one.
 
 ### Additional Apps
 
@@ -234,7 +232,7 @@ Queue payloads are another compatibility boundary. A previous worker binary must
 
 | Symptom | Likely cause | What to check |
 | --- | --- | --- |
-| The new binary serves an older frontend | `frontend/dist` was not rebuilt before `forj build` | Rebuild the owning App's frontend and compile a new artifact. |
+| The new binary serves an older frontend | The SPA is not listed under `dev.apps`, or external tooling preserved both file size and modification time while replacing source contents | Add the SPA lifecycle configuration, or update the source modification time and rerun `forj build`. |
 | Health passes but readiness fails | The process is alive, but a required dependency is unavailable | Run the authorized `health` command and inspect the failed check without exposing its detail publicly. |
 | A migration is missing | The old or active release ran `migrate` instead of the staged release | Run the staged binary explicitly and confirm the migration-owning App. |
 | Local data disappears after activation | A relative SQLite or storage path resolved inside the replaced release | Move durable data to a stable directory and configure an absolute path. |
@@ -244,7 +242,7 @@ Queue payloads are another compatibility boundary. A previous worker binary must
 ## Production Checklist
 
 - Build every App for the deployment target.
-- Build frontend assets before `forj build` when the App has Web UI.
+- Confirm every deployable SPA is configured under `dev.apps`; `forj build` then keeps its assets current.
 - Store production configuration and secrets outside the artifact.
 - Use production drivers for state shared across processes or hosts.
 - Keep writable data and backup sets outside immutable release directories.

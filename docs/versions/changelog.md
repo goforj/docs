@@ -13,6 +13,41 @@ GoForj is pre-`v1.0`, and several early versions were assigned retrospectively t
 
 The current documentation follows `main`. Changes remain in this section until they are included in a tagged framework release.
 
+### Project Builds
+
+- Made `forj build` prepare every stale SPA configured under `dev.apps` before compiling the App, while reusing successful `forj dev` output and skipping unchanged frontend work.
+- Kept the freshness check lightweight with metadata-only receipts and ran frontend preparation alongside independent backend build stages.
+
+### Starter Kits and App Help
+
+- Added a default-on component-library choice for Vue, React, and templ + htmx starter kits, with a smaller working shell when the showcase is disabled.
+- Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
+- Built a missing conventional App binary before displaying source-aware root command help.
+
+## v0.24.1
+
+Released August 12, 2026.
+
+### HTTP Access Logs
+
+- Kept successful SPA delivery and routine metrics scraping quiet by default while preserving failures and ordinary application requests.
+- Added `HTTP_SPA_ACCESS_LOG_ENABLED` for Apps that need successful SPA requests in the access log.
+
+## v0.24.0
+
+Released August 9, 2026.
+
+### Development Lifecycle
+
+- Reworked `forj dev` output around compact preparation, build, restart, and runtime transitions while preserving diagnostics when App or SPA builds fail.
+- Coordinated build waves and runtime replacement so overlapping changes converge on the newest successful App binary.
+- Preserved App lifecycle ownership boundaries and custom frontend files during rerendering.
+
+### App Scaffolding
+
+- Simplified framework-managed App entrypoint files and added typed job payload scaffolds.
+- Rendered only the selected Atlas agent and stopped creating the retired root frontend directory.
+
 ## v0.23.1
 
 Released July 28, 2026.

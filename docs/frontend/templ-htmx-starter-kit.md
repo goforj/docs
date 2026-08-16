@@ -7,7 +7,7 @@ description: Build a server-rendered Go application with templ components, htmx 
 
 The templ + htmx starter kit is the Go-first Web UI option. Routes, application behavior, view models, and HTML rendering stay in Go; htmx makes navigation and form interactions feel immediate without introducing a client-side application architecture.
 
-The generated starter includes a dashboard, settings pages, a component gallery, Tailwind CSS, and local Basecoat components. See [Choose a Starter Kit](/getting-started/starter-kits) when choosing between this approach and React or Vue.
+With its component library enabled, the generated starter includes a dashboard, settings pages, a component gallery, Tailwind CSS, and local Basecoat components. Turn the component library Off during creation for a smaller shell with an empty dashboard and no component-gallery routes. See [Choose a Starter Kit](/getting-started/starter-kits) when choosing between this approach and React or Vue.
 
 ## Create and Run
 
@@ -19,7 +19,7 @@ forj new
 
 Expected result: the wizard asks whether the Project needs Web UI and offers templ + htmx as a starter-kit choice.
 
-Enable Web UI, choose templ + htmx, and then start the development loop:
+Enable Web UI, choose templ + htmx, choose whether to include the component library, and then start the development loop:
 
 ```bash
 forj dev
@@ -246,15 +246,13 @@ Keep application and authorization decisions on the server. Use `app.ts` for beh
 
 ## Build for Deployment
 
-`forj dev` rebuilds frontend assets as they change. For a release build, build the assets explicitly before building the Go application:
+`forj dev` rebuilds frontend assets as they change. For a release build, use the complete Project build:
 
 ```bash
-npm --prefix cmd/app/frontend ci &&
-  npm --prefix cmd/app/frontend run build &&
-  forj build
+forj build
 ```
 
-Expected result: `cmd/app/frontend/dist` contains `app.js` and `app.css`, generated templ Go is current, and `bin/app` contains the App that serves those assets.
+Expected result: GoForj installs npm dependencies and rebuilds stale frontend assets, `cmd/app/frontend/dist` contains `app.js` and `app.css`, generated templ Go is current, and `bin/app` contains the App that serves those assets. An unchanged build skips the npm work.
 
 ## Test Rendered Behavior
 

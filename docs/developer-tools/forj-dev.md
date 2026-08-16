@@ -158,7 +158,7 @@ dev:
           ignore: [_data, node_modules, dist]
 ```
 
-The SPA command suppresses routine Vite output while retaining compiler and bundler diagnostics when a build fails. The compact matcher lists use standard YAML flow-sequence syntax. Block lists decode to the same string lists and remain valid if a team prefers them.
+The generated dependency-install task and SPA command suppress routine output while retaining diagnostics when either command fails. A successful structured SPA build records the current source and output metadata for `forj build`, so leaving the development loop and building the Project does not repeat unchanged frontend work. The compact matcher lists use standard YAML flow-sequence syntax. Block lists decode to the same string lists and remain valid if a team prefers them.
 
 For a templ + htmx App, the build matchers also include `.templ` and ignore generated files with `re:.*_templ\.go$`.
 

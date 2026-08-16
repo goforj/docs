@@ -100,7 +100,7 @@ Use this rule:
 - Rebuild when the change affects generated Go code, compiled drivers, named generated accessors, or Wire inputs.
 - Restart `forj dev` when its `.goforj.yml` lifecycle graph changes.
 
-During a normal `forj dev` session, configured app builds run automatically after matching source or environment changes. Use `forj build` when working outside that loop or when you want one explicit generation, Wire, API index, and binary build.
+During a normal `forj dev` session, configured app builds run automatically after matching source or environment changes. Use `forj build` when working outside that loop or when you want one explicit stale-SPA, generation, Wire, API index, and binary build. Successful frontend work from `forj dev` is reused when its source and output remain unchanged.
 
 ## Next Steps
 

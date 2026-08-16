@@ -17,7 +17,7 @@ Start with the interactive Project wizard:
 forj new
 ```
 
-Enable Web UI and choose React when prompted. The new default app will include the React starter kit without requiring you to know component or starter-kit flags up front.
+Enable Web UI and choose React when prompted. Leave the component library On for the full dashboard and component showcase, or turn it Off for a smaller shell with an empty dashboard and no showcase routes. The new default app will include the React starter kit without requiring you to know component or starter-kit flags up front.
 
 The React kit requires Web UI. Starter kits remain optional; choose `none` when the App owns a different frontend.
 
@@ -71,15 +71,13 @@ npm run dev
 
 The default deployment remains one App binary. React compiles into `frontend/dist`, then `forj build` embeds those assets alongside the Go application.
 
-`forj dev` already performs this sequence while you work. In CI or a release build, run it explicitly:
+`forj dev` already performs this sequence while you work. In CI or a release build, use the same Project build entry point:
 
 ```bash
-npm --prefix cmd/app/frontend ci &&
-  npm --prefix cmd/app/frontend run build &&
-  forj build
+forj build
 ```
 
-Expected result: `cmd/app/frontend/dist` contains the production frontend and `bin/app` contains the App that serves it. The default deployment does not need a separate frontend server or static-site release.
+Expected result: GoForj installs npm dependencies and rebuilds React when its source or output is stale, `cmd/app/frontend/dist` contains the production frontend, and `bin/app` contains the App that serves it. An unchanged build skips the npm work. The default deployment does not need a separate frontend server or static-site release.
 
 ## Auth-Aware Surfaces
 

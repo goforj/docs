@@ -28,6 +28,8 @@ forj new
 
 Enable **Web UI**, then select one starter kit. The starter-kit step is skipped when Web UI is disabled. Selecting the Demo App also skips this step because the demo provides its own frontend.
 
+For a first-party kit, the next step asks whether to include its component library. Leave it **On** for the complete dashboard and component showcase, or press Space to select **Off** for a smaller application shell with an empty dashboard and no showcase pages. The component library defaults to On for existing and new configuration that omits this choice.
+
 The default app receives frontend source under:
 
 ```text
@@ -44,7 +46,7 @@ For the default app:
 forj dev
 ```
 
-The generated development configuration installs the kit's frontend dependencies and runs its App-owned SPA build. A successful build writes browser assets to `cmd/app/frontend/dist`, then the Go build embeds them in the app binary.
+The generated development configuration installs the kit's frontend dependencies and runs its App-owned SPA build. A successful build writes browser assets to `cmd/app/frontend/dist`, then the Go build embeds them in the app binary. Outside the development loop, `forj build` installs dependencies and rebuilds stale SPA assets before compiling the binary.
 
 Open `http://localhost:3000` after `forj dev` reports that the app is ready. The page you see depends on the selected kit and enabled components.
 
@@ -61,7 +63,11 @@ Valid values are:
 ```yaml
 render:
   starter_kit: vue # vue, react, templ_htmx, or none
+  starter_kit_options:
+    component_library: false
 ```
+
+`starter_kit_options.component_library` applies to the selected first-party kit. Omit it, or set it to `true`, to include the component showcase. Set it to `false` to keep the kit's working shell while omitting the showcase navigation and pages.
 
 Setting the value to `none` stops starter-kit scaffolding on later renders. It does not delete an existing frontend.
 
