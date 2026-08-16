@@ -80,6 +80,16 @@ Do not edit generated storage files by hand.
 
 Add a named `uploads` disk to `.env`, then run the build pipeline so your App exposes `app.Storage().Uploads()`.
 
+Update `.env` so it includes:
+
+```dotenv
+STORAGE_SUPPORTED_DRIVERS=local,memory
+```
+
+## Step 2: Configure the Uploads Disk
+
+Keep the named disk's driver and path in application configuration.
+
 Append to `.env`:
 
 ```dotenv
@@ -88,17 +98,15 @@ STORAGE_UPLOADS_ROOT=storage/app/uploads
 STORAGE_UPLOADS_PREFIX=
 ```
 
-Update `.env` so it includes:
+## Step 3: Refresh Storage Resources
 
-```dotenv
-STORAGE_SUPPORTED_DRIVERS=local,memory
-```
+Run the build pipeline after changing named resource configuration.
 
 ```bash
 forj build
 ```
 
-## Step 2: Scaffold the Controller
+## Step 4: Scaffold the Controller
 
 Start with the real make command. It creates the uploads controller, wires the constructor, and registers its routes.
 
@@ -106,7 +114,7 @@ Start with the real make command. It creates the uploads controller, wires the c
 forj make:controller uploads
 ```
 
-## Step 3: Add the Service
+## Step 5: Add the Service
 
 Create `internal/uploads/service.go`.
 
@@ -221,7 +229,7 @@ func safeFilename(name string) string {
 }
 ```
 
-## Step 4: Replace the Starter Controller
+## Step 6: Replace the Starter Controller
 
 Replace `internal/uploads/controller.go`.
 
@@ -294,7 +302,7 @@ func (c *Controller) Store(ctx web.Context) error {
 }
 ```
 
-## Step 5: Add Upload Imports
+## Step 7: Add Upload Imports
 
 Add imports for the generated storage manager and uploads package.
 
@@ -306,7 +314,7 @@ Update `app/wire/inject_services_app.go` so it includes:
 "your/module/internal/uploads"
 ```
 
-## Step 6: Add Upload Providers
+## Step 8: Add Upload Providers
 
 Add the upload service provider, which selects its named disk at the composition root.
 
@@ -317,7 +325,7 @@ provideUploadsService,
 provideUserProfileCache,
 ```
 
-## Step 7: Add the Upload Service Provider
+## Step 9: Add the Upload Service Provider
 
 `provideUploadsService` keeps named disk selection out of application behavior without exporting an ambiguous `storage.Storage` to Wire.
 
@@ -333,7 +341,7 @@ func provideUploadsService(manager *storages.Manager) *uploads.Service {
 func provideUserRepository(source *users.MemoryUserRepository, profileCache *cache.Cache) users.UserRepository {
 ```
 
-## Step 8: Add a Service Test
+## Step 10: Add a Service Test
 
 Create `internal/uploads/service_test.go`.
 

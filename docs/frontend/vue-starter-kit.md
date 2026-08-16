@@ -64,6 +64,16 @@ forj dev
 
 for the default local App lifecycle.
 
+## Load Data Without Flicker
+
+Keep feature-local server data in the view that owns it or in a colocated composable. A global store is useful for genuinely application-wide client state; it should not become the default home for every request merely to centralize loading behavior.
+
+Fast requests need a different pending treatment from slow ones. Delay a transient skeleton or spinner briefly. If the request resolves before that threshold, render the result directly and never show the pending state. Once useful content is visible, keep it visible during refresh or revalidation instead of replacing it with a skeleton.
+
+The view should still define intentional loading, error, empty, and ready states. Match pending layout dimensions to the completed view when a slower request does make loading visible, and do not delay successfully loaded content simply to keep an animation on screen.
+
+For data that must exist before a route makes sense, prefer loading it before committing that route. Prefetch predictable modal or detail data when practical so opening the interface does not immediately replace its contents.
+
 ## Build for Deployment
 
 The default deployment remains one App binary. Vue compiles into `frontend/dist`, then `forj build` embeds those assets alongside the Go application.

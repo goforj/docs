@@ -17,6 +17,8 @@ This page covers your App's generated disks and their configuration. The [storag
 
 Use storage when a workflow produces or consumes files, blobs, exports, uploads, or remote objects. Start with local or memory storage for development and tests. Choose object storage or a remote filesystem when more than one host or process needs the same files.
 
+When a feature introduces a durable category such as avatars, invoice attachments, or generated reports, consider giving it a named storage disk. A distinct name is valuable when the category has its own access, retention, visibility, or deployment policy. Reuse an existing disk when those policies are genuinely shared; do not create names merely to mirror directories.
+
 Keep relational metadata, ownership, authorization state, and transactional updates in the database.
 
 ## Access Storage from Application Code
