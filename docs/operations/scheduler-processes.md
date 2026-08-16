@@ -69,6 +69,12 @@ SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=30s
 
 `SCHEDULER_COMMAND_TIMEOUT` bounds one command task. `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` gives an App command launched with scheduler-command origin its own graceful shutdown budget, but it cannot extend the remaining parent `APP_SHUTDOWN_TIMEOUT`. Leave it empty to inherit the App budget.
 
+## Maintenance Mode
+
+`./bin/app down` pauses future schedule launches in an already-running scheduler without interrupting work already executing. `./bin/app up` releases only the scheduler-wide pause owned by maintenance; a scheduler pause that was already active remains active.
+
+Named schedule controls remain available for narrower operational changes. Split scheduler processes must observe the same App maintenance state described in [Deploy an App](/operations/deployment-basics#use-maintenance-mode).
+
 ## Verify a Deployment
 
 1. Start the exact supervised command as the deployment service account.

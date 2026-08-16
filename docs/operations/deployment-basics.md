@@ -87,13 +87,21 @@ See [Environment Reference](/reference/env-vars) for the complete generated conf
 
 ## Use Maintenance Mode
 
-Set maintenance mode through deployment configuration when application traffic must pause during planned work:
+Use the built App when application work must pause during a deployment or planned operation:
 
-```text
-APP_MAINTENANCE_ENABLED=true
+```bash
+./bin/app down
 ```
 
-Restart the App after changing the value. Application routes then return HTTP 503 without rebuilding the binary or any frontend. Browser navigation receives a self-contained maintenance page shared by every official starter kit; `/api` routes and clients that explicitly request JSON receive a stable JSON error response. `forj about` reports whether maintenance mode was enabled when the process started.
+The command publishes App-scoped state without booting the dependency graph. Already-running runtimes observe it directly:
+
+| Runtime | While maintenance is active |
+| --- | --- |
+| HTTP | Application routes return HTTP 503. Browser navigation receives a self-contained page; `/api` routes and explicit JSON clients receive a stable JSON error. |
+| Queue worker | Stops taking new work after jobs already accepted by the current worker generation finish. Durable pending jobs remain in the queue. |
+| Scheduler | Stops future launches while allowing an execution already in progress to finish. |
+
+No binary or frontend rebuild is required. `forj about` reports the current state.
 
 Health, readiness, metrics, and Lighthouse routes stay available during maintenance. This keeps the process observable and prevents planned application downtime from looking like a crashed instance:
 
@@ -104,7 +112,17 @@ curl --fail http://127.0.0.1:3000/metrics
 curl --fail-with-body http://127.0.0.1:3000/
 ```
 
-Expected result: the operational routes remain available and the application request returns HTTP 503. Disable the setting and restart the App when the work is complete. For an additional App, use its normal environment overlay, such as `ADMIN_APP_MAINTENANCE_ENABLED=true`.
+Expected result: the operational routes remain available and the application request returns HTTP 503. Restore normal work when the operation is complete:
+
+```bash
+./bin/app up
+```
+
+Additional Apps own separate state through their binaries, such as `./bin/admin down`. Queue- and schedule-specific pause controls remain independent; `up` does not clear a scheduler pause that existed before maintenance began.
+
+Combined runtimes naturally share the state file. Split runtime processes must use the same working directory and shared `_data` volume so they observe `_data/runtime/<app>/maintenance.json`. For replicas without a shared filesystem, run the command for every deployment unit or enforce maintenance fleet-wide through deployment configuration.
+
+Set `APP_MAINTENANCE_ENABLED=true` when deployment policy must force maintenance from process startup. That environment value is authoritative: `./bin/app up` cannot override it, and clearing it requires restarting the affected processes.
 
 ## Choose the Processes to Run
 
