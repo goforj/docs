@@ -13,6 +13,11 @@ GoForj is pre-`v1.0`, and several early versions were assigned retrospectively t
 
 The current documentation follows `main`. Changes remain in this section until they are included in a tagged framework release.
 
+### Maintenance Mode
+
+- Added first-class HTTP maintenance mode through `APP_MAINTENANCE_ENABLED`, with browser and JSON 503 responses shared by every official starter kit.
+- Kept health, readiness, metrics, and Lighthouse routes reachable during planned maintenance, surfaced the active mode through `forj about`, and disabled it in generated test environments.
+
 ### Project Builds
 
 - Made `forj build` prepare every stale SPA configured under `dev.apps` before compiling the App, while reusing successful `forj dev` output and skipping unchanged frontend work.

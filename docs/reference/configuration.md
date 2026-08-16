@@ -64,6 +64,8 @@ Generated `.env`, `.env.local`, and `.env.host` files are ignored by Git. Commit
 
 Initialization and synchronization operate on the shared root contract. Additional Apps receive deterministic framework test values through their `<APP>_<KEY>` overlays and otherwise inherit base signing values unless an explicit process or file overlay supplies a prefixed value.
 
+The generated `.env.testing` contract forces `APP_MAINTENANCE_ENABLED=false`, including named-App forms, so a developer's local maintenance setting cannot unexpectedly turn integration tests into HTTP 503 responses.
+
 ## Compiled Environment Values
 
 `forj build` can package unset-only defaults or forced overrides into an app binary:
