@@ -14,7 +14,7 @@ Use workflow pages for full context.
 | Command | Purpose |
 | --- | --- |
 | `forj new` | Create a new GoForj Project through the interactive wizard. |
-| `forj build` | Run generation, Wire, API indexing, then `go build`. |
+| `forj build` | Refresh stale configured SPAs, run generation, Wire, API indexing, then `go build`. |
 | `forj build:api-index` | Build the active App's API index, diagnostics, and OpenAPI artifacts. |
 | `forj run [<app-command>]` | Build an exact temporary App binary, start it with the optional command, then publish prepared API artifacts after the process-start boundary. |
 | `forj dev` | Run App development lifecycles and custom watches from `.goforj.yml`. |
@@ -39,7 +39,7 @@ Run `forj <command> --help` for the exact command metadata installed with your C
 | `forj build:api-index` | `--strict` rejects warnings and errors; `--tags` selects comma-separated Go build tags. |
 | `forj run` | `--timings`, `--api-index-strict`, and `--root`; remaining arguments pass to the compiled App. |
 | `forj generate` | `--storage`, `--cache`, `--mail`, `--queue`, `--events`, `--db`, and `--observability` select individual components. With no flags, all available generators run. |
-| `forj make:app` | `--components`, `--without`, `--starter-kit`, `--help-format`, `--dev-run`, `--skip-wire`, and `--remove`. |
+| `forj make:app` | `--components`, `--without`, `--starter-kit`, `--component-library`, `--help-format`, `--dev-run`, `--skip-wire`, and `--remove`. |
 | `forj project:describe` | `--json` is required and prints the versioned machine contract. |
 
 `forj dev` and `forj down` take their behavior from `.goforj.yml` and do not accept command-specific flags.
@@ -68,6 +68,8 @@ The command surface communicates intent:
 | Run the combined artifact | `./bin/app` | `./bin/admin` |
 
 `forj` uses the source-aware App path so current source does not silently run through a stale binary. Direct binary commands run exactly the artifact on disk and are the deployment and process-supervision surface.
+
+When a source-aware root help request needs App command help but the selected conventional binary does not exist, GoForj first runs `forj build` for the default App or `forj <app> build` for an additional App. It reports that one-time build, then displays the App's current command help. Once the binary exists, root help does not rebuild it.
 
 `build:api-index --strict` rejects warnings as well as errors. Complete `build` and `run` commands use `--api-index-strict`. See [API Index](/applications/api-index) for build-tag and publication behavior.
 

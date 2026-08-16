@@ -33,17 +33,19 @@ The SPA build runs before the owning Go app is built. Successful frontend change
 
 Run a framework-specific development server only when you need that tool's behavior. Vue and React use relative `/api` requests so a Vite proxy can reach the Go backend during that workflow.
 
-## Deployment
+## Build and Deployment
 
-Build the frontend before the Go binary:
+Build the complete Project artifact with one command:
 
 ```bash
-npm --prefix cmd/app/frontend ci
-npm --prefix cmd/app/frontend run build
 forj build
 ```
 
-Expected result: `cmd/app/frontend/dist` contains the production assets and `bin/app` contains the executable that serves them. The normal deployment does not require a separate static-file service.
+Before compiling Go, `forj build` checks every SPA configured under `dev.apps`, including SPAs owned by additional Apps. For an npm-based SPA, it installs dependencies and runs the configured SPA build only when the frontend source or its `dist` output has changed. Successful `forj dev` SPA builds satisfy the same check, so the next unchanged `forj build` does not repeat that work. After generation, stale SPA work overlaps independent backend preparation; the final Go compilation waits for all required assets.
+
+Expected result: each configured SPA has current production assets in its `dist` directory, and `bin/app` contains the executable that serves the default App's assets. The normal deployment does not require a separate static-file service.
+
+The freshness check uses file paths and metadata rather than reading frontend source contents. It ignores `node_modules` and treats `dist` as output. A first build, a missing or invalid build receipt, changed source metadata, changed output, or a changed SPA build command causes a rebuild. Each SPA stores one fixed-size receipt under `bin/.forj-build-cache/spas/`; source contents and per-file records are not persisted. This keeps unchanged Go builds fast while making `forj build` the release-build entry point for both frontend and backend code.
 
 ## Backend Boundary
 
