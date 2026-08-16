@@ -66,6 +66,23 @@ func (s *Service) Create(ctx context.Context, input CreateReportInput) (Report, 
 
 This keeps service APIs independent from HTTP request structs, CLI flag structs, and queue payload structs.
 
+When several returned values describe one application outcome, give that outcome a name rather than growing a tuple:
+
+<!-- go-example: illustrative-fragment -->
+```go
+type CreateReportResult struct {
+	Report       Report
+	Queued       bool
+	DeliveryTime time.Time
+}
+
+func (s *Service) Create(ctx context.Context, input CreateReportInput) (CreateReportResult, error) {
+	// ...
+}
+```
+
+Keep conventional and naturally small returns such as `(Report, error)`. The point is to make a cohesive result easier to understand and extend, not to replace every pair of values with a struct.
+
 ## Runtime Boundaries
 
 Multiple entry points may call the same service:
