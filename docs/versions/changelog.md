@@ -21,7 +21,7 @@ The current documentation follows `main`. Changes remain in this section until t
 ### Environment Contracts
 
 - Added automatic private `.env` initialization with fresh local framework secrets and hidden `forj env:set` value entry.
-- Made normal rendering and generation synchronize committed `.env.example` and `.env.testing` contracts while redacting local secrets.
+- Made generation the single owner that synchronizes committed `.env.example` and `.env.testing` contracts while redacting local secrets and refusing unsafe legacy test-profile migration.
 - Added deterministic test-friendly values and `forj env:check` so CI can verify and use the committed test profile instead of reconstructing a complete `.env`.
 
 ### Starter Kits and App Help

@@ -48,7 +48,7 @@ The App loads environment files before constructing its Wire graph. It searches 
 1. `.env`
 2. `.env.<APP_ENV>`, such as `.env.local` or `.env.production`
 3. `.env.host` when running on the host or in Docker-in-Docker
-4. `.env.testing` when `APP_ENV=testing` or the process has Go test markers
+4. `.env.testing` when an environment load sees `APP_ENV=testing` or Go test markers
 
 Later files override earlier file values. Values already present in the process environment, including explicitly empty values, take precedence over every file. If neither the process nor a file selects `APP_ENV`, it defaults to `local`.
 
@@ -56,9 +56,9 @@ Each filename is discovered independently by searching the current directory and
 
 The default app uses unprefixed keys. An additional app promotes its `<APP>_<KEY>` values over the corresponding base keys after file loading. For example, `ADMIN_API_HTTP_PORT` becomes the effective `API_HTTP_PORT` for the `admin` app. The [Environment Reference](/reference/env-vars#resolution-and-naming) defines this overlay and every public variable.
 
-Generated `.env`, `.env.local`, and `.env.host` files are ignored by Git. Commit `.env.example` as the safe key inventory and `.env.testing` as the safe deterministic test profile. GoForj synchronizes both committed contracts during rendering and normal generation, while process environment variables remain authoritative for CI and deployment secrets.
+Generated `.env`, `.env.local`, and `.env.host` files are ignored by Git. Commit `.env.example` as the safe key inventory and `.env.testing` as the safe deterministic test profile. Generation owns synchronization of both committed contracts; rendering, build, and development receive that behavior through their generation phase. Process environment variables remain authoritative for CI and deployment secrets.
 
-A source-aware command initializes a missing `.env` from `.env.example`, generating fresh local framework secrets without replacing an existing file. `forj env:set KEY` accepts a value through a hidden terminal prompt. `forj env:check` verifies contract drift without writing files, including on a clean CI checkout where `.env` is absent. GoForj uses `.env.testing`, not `.env.test`.
+A command that needs the runtime environment initializes a missing `.env` from `.env.example`, generating fresh local framework secrets without replacing an existing file. `forj env:set KEY` accepts a value through a hidden terminal prompt and updates only `.env`; the next generation refreshes committed contracts. `forj env:check` verifies contract consistency without writing files, including on a clean CI checkout where `.env` is absent. It cannot infer a key omitted from both committed files. GoForj uses `.env.testing`, not `.env.test`, and refuses to overwrite an existing profile without its managed marker.
 
 ## Compiled Environment Values
 

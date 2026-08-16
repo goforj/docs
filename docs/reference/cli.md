@@ -21,7 +21,7 @@ Use workflow pages for full context.
 | `forj down` | Run the configured `dev.down` teardown tasks without starting a development session. |
 | `forj generate` | Refresh generated component code and derived files. |
 | `forj env:init` | Create a missing private `.env` from `.env.example` with fresh local framework secrets. |
-| `forj env:set <key>` | Set one local value through a hidden prompt and refresh safe committed contracts. |
+| `forj env:set <key>` | Set one private local value through a hidden prompt; the next generation refreshes safe committed contracts. |
 | `forj env:check` | Fail when `.env.example` or `.env.testing` is stale without rewriting either file. |
 | `forj make:app <name>` | Create an additional runnable app in the current Project. |
 | `forj make:controller <name>` | Generate an HTTP controller and wire it into HTTP. |
@@ -47,7 +47,7 @@ Run `forj <command> --help` for the exact command metadata installed with your C
 
 `forj dev` and `forj down` take their behavior from `.goforj.yml` and do not accept command-specific flags.
 
-Inside a generated Project, source-aware commands create `.env` automatically when it is missing and `.env.example` is available. Normal build, development, and generation paths synchronize `.env.example` and `.env.testing`; the `env:*` commands expose explicit initialization, hidden local value entry, and read-only CI drift checking rather than a separate environment build workflow.
+Inside a generated Project, commands that need the runtime environment create `.env` when it is missing and `.env.example` is available. Help, version, and environment checks do not create it. Generation is the single synchronization owner; normal build, development, and rendering paths receive the same `.env.example` and `.env.testing` behavior through generation. The `env:*` commands expose explicit initialization, hidden local value entry, and read-only CI consistency checking rather than a separate environment build workflow.
 
 Inside a GoForj Project, `forj <command>` is the normal default-app development surface. Native GoForj commands take precedence. If no native command matches, GoForj delegates to the default app through the same source-aware path as `forj run <command>`.
 
