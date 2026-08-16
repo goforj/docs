@@ -40,7 +40,8 @@ The exact tree depends on the components selected when the Project is created. S
 ```text [Single App (most Projects)]
 .
 ├── .goforj.yml                         Project shape and local dev lifecycles
-├── .env, .env.host                     Runtime configuration
+├── .env, .env.host                     Private local runtime configuration
+├── .env.example, .env.testing          Committed safe and test contracts
 ├── .env.local                          Rendered local-dev overrides
 ├── go.mod                              Go module and dependencies
 │
@@ -80,7 +81,8 @@ The exact tree depends on the components selected when the Project is created. S
 ```diff [Multi-App — highlighted lines differ]
 .
 ├── .goforj.yml                         Project shape, apps, and local dev lifecycles
-├── .env, .env.host                     Shared and App-prefixed runtime configuration
+├── .env, .env.host                     Private shared and App-prefixed configuration
+├── .env.example, .env.testing          Committed safe and test contracts
 ├── .env.local                          Rendered local-dev overrides
 ├── go.mod                              One Go module shared by every App
 │
@@ -251,6 +253,7 @@ The root configuration files control different stages:
 | `.goforj.yml` | Components, app metadata, rendering, local development lifecycles, and renderer-managed module replacements | Run `forj render` for Project-shape changes |
 | `.env`, `.env.host` | Runtime defaults and host-specific overrides | Restart the app; `forj dev` handles watched local changes |
 | `.env.local` | Local-dev overrides generated from the current Project shape | A full `forj render` refreshes this file |
+| `.env.example`, `.env.testing` | Safe committed key inventory and deterministic test profile | Normal generation synchronizes them; `forj env:check` verifies drift in CI |
 | `go.mod` | Go dependencies and the replacements emitted from `.goforj.yml` | Run the normal Go module commands, then rebuild |
 
 [Configuration](/getting-started/configuration) explains how Project configuration, runtime environment, and driver selection fit together.

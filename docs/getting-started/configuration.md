@@ -52,12 +52,21 @@ Use configuration for deployment policy and infrastructure choices. Keep busines
 
 A Project can include:
 
-- `.env` for the main local configuration
+- `.env` for private local configuration and secrets
 - `.env.local` for local environment overrides
 - `.env.host` for host-specific local infrastructure values
 - `.env.example` for the safe, committed inventory
+- `.env.testing` for safe, deterministic test values
 
-Local environment files are ignored by Git; `.env.example` is the deliberate exception. Commit that inventory with secrets blank or replaced by safe placeholders, and supply deployment secrets through the process environment or a secret manager.
+`.env` and its local and host overlays are ignored by Git. Commit `.env.example` and `.env.testing`: GoForj keeps their keys synchronized during normal generation, redacts local secrets, and supplies test-friendly framework values such as isolated database names and `DB_PASSWORD=test`. Process environment variables still take precedence, so CI only needs to inject credentials for tests that intentionally contact live services.
+
+A source-aware `forj` command creates a missing `.env` from `.env.example` and generates fresh local framework secrets. You can invoke that behavior directly with `forj env:init`. To set a local secret without putting its value in shell history or the process argument list, use the hidden prompt:
+
+```bash
+forj env:set DISCORD_TOKEN
+```
+
+`forj build`, `forj dev`, and `forj generate` refresh the committed contracts automatically. Run `forj env:check` in CI to fail on drift without creating or rewriting `.env`.
 
 The [Environment Reference](/reference/env-vars) owns the complete variable list and naming rules. [Configuration Reference](/reference/configuration#environment-file-resolution) defines file precedence and process-environment behavior.
 

@@ -47,7 +47,16 @@ Keep container-backed tests clearly marked and avoid making ordinary unit tests 
 
 ## Environment
 
-Integration tests should set required environment explicitly.
+GoForj commits `.env.testing` as the complete safe test profile. `goforj/env` loads it when `APP_ENV=testing` or Go test markers are present, and process environment variables retain precedence.
+
+Run the contract check before tests in CI:
+
+```bash
+forj env:check
+go test ./...
+```
+
+Ordinary tests should use the deterministic values in `.env.testing`. Set only the additional process variables required by tests that intentionally contact a live external service; do not reconstruct the entire dotenv file in CI.
 
 Avoid depending on a developer's local `.env` unless the test is intentionally validating rendered App behavior from that file.
 
