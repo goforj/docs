@@ -87,7 +87,7 @@ Useful diagnostics show whether workers are waiting for active work. A forced st
 
 ## Maintenance Mode
 
-`./bin/app down` tells an already-running worker to stop intake and drain jobs accepted by its current worker generation. The process stays alive without reserving new durable work. `./bin/app up` rebuilds the configured queue runtimes, restores registered handlers, and resumes the same `--queue` selection.
+`./bin/app maintenance:enable` tells an already-running worker to stop intake and drain jobs accepted by its current worker generation. The process stays alive without reserving new durable work. `./bin/app maintenance:disable` rebuilds the configured queue runtimes, restores registered handlers, and resumes the same `--queue` selection.
 
 This App-wide maintenance state is separate from backend-specific named queue controls. In split deployments, mount the same `_data` volume into HTTP, worker, and scheduler processes or invoke the command for each deployment unit. See [Deploy an App](/operations/deployment-basics#use-maintenance-mode).
 

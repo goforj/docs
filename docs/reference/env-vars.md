@@ -45,7 +45,7 @@ Variables for components that are not selected are not rendered and have no gene
 | `APP_ENV` | `local` | Environment name, such as `local`, `staging`, or `production`. |
 | `APP_DEBUG` | `0` | Numeric log verbosity from `0` through `3`. |
 | `APP_URL` | `http://localhost:3000` when Web API is rendered | Public base URL used by generated browser and runtime features. |
-| `APP_MAINTENANCE_ENABLED` | `false` | Force maintenance mode from process startup. This pauses application HTTP traffic, new job consumption, and future schedule launches while keeping operational routes available. Prefer the live `./bin/<app> down` and `up` commands for planned work; restart after changing this environment policy. |
+| `APP_MAINTENANCE_ENABLED` | `false` | Force maintenance mode from process startup. This pauses application HTTP traffic, new job consumption, and future schedule launches while keeping operational routes available. Prefer the live `./bin/<app> maintenance:enable` and `maintenance:disable` commands for planned work; restart after changing this environment policy. |
 | `APP_DIAG_TOKEN` | Generated when Web API is rendered | Bearer token for protected diagnostic commands and endpoints. |
 | `APP_SHUTDOWN_TIMEOUT` | `30s` | Root graceful-shutdown budget. |
 | `APP_VERSION` | Empty | Deployment version reported to Lighthouse. |
