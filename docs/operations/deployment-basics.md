@@ -85,6 +85,27 @@ If the App intentionally uses SQLite, local storage, uploads, or another writabl
 
 See [Environment Reference](/reference/env-vars) for the complete generated configuration surface and [Production Hardening](/security/production-hardening) for security-sensitive settings.
 
+## Use Maintenance Mode
+
+Set maintenance mode through deployment configuration when application traffic must pause during planned work:
+
+```text
+APP_MAINTENANCE_ENABLED=true
+```
+
+Restart the App after changing the value. Application routes then return HTTP 503 without rebuilding the binary or any frontend. Browser navigation receives a self-contained maintenance page shared by every official starter kit; `/api` routes and clients that explicitly request JSON receive a stable JSON error response. `forj about` reports whether maintenance mode was enabled when the process started.
+
+Health, readiness, metrics, and Lighthouse routes stay available during maintenance. This keeps the process observable and prevents planned application downtime from looking like a crashed instance:
+
+```bash
+curl --fail http://127.0.0.1:3000/-/health
+curl --fail http://127.0.0.1:3000/-/ready
+curl --fail http://127.0.0.1:3000/metrics
+curl --fail-with-body http://127.0.0.1:3000/
+```
+
+Expected result: the operational routes remain available and the application request returns HTTP 503. Disable the setting and restart the App when the work is complete. For an additional App, use its normal environment overlay, such as `ADMIN_APP_MAINTENANCE_ENABLED=true`.
+
 ## Choose the Processes to Run
 
 Most initial deployments can supervise the combined runtime:
@@ -251,6 +272,7 @@ Queue payloads are another compatibility boundary. A previous worker binary must
 - Keep the scheduler singleton unless locking makes overlap safe.
 - Set and test graceful shutdown budgets.
 - Verify liveness, readiness, metrics, and one application workflow.
+- Use maintenance mode when planned work requires application traffic to return HTTP 503 while operational routes remain available.
 - Keep the previous artifact available for binary rollback.
 - Treat database migrations and queued payloads as separate rollback contracts.
 

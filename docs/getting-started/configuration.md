@@ -36,6 +36,8 @@ Expected result: the API listens on port `3001` and the health request succeeds.
 
 Runtime settings are read during startup. Restart a running app after changing its environment; this port change does not require regeneration or a rebuild.
 
+The same startup rule applies to maintenance mode. Set `APP_MAINTENANCE_ENABLED=true` and restart the App to temporarily return HTTP 503 from application routes. Browser requests receive the starter-kit-independent maintenance page, while API requests receive JSON. See [Deploy an App](/operations/deployment-basics#use-maintenance-mode) for the operational workflow and route exceptions.
+
 ## Choose the Right Layer
 
 | Change | Owner | What to do next |
