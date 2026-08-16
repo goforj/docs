@@ -47,7 +47,7 @@ Keep container-backed tests clearly marked and avoid making ordinary unit tests 
 
 ## Environment
 
-GoForj commits `.env.testing` as the complete safe test profile. `goforj/env` loads it when `APP_ENV=testing` or Go test markers are present, and process environment variables retain precedence.
+GoForj commits `.env.testing` as the complete safe test profile. When application or test code loads `goforj/env`, it selects this file if `APP_ENV=testing` or Go test markers are present; merely starting an arbitrary Go test does not itself load dotenv files. Process environment variables retain precedence.
 
 Run the contract check before tests in CI:
 
@@ -56,7 +56,7 @@ forj env:check
 go test ./...
 ```
 
-Ordinary tests should use the deterministic values in `.env.testing`. Set only the additional process variables required by tests that intentionally contact a live external service; do not reconstruct the entire dotenv file in CI.
+Ordinary application tests should use the deterministic values in `.env.testing`. Set only the additional process variables required by tests that intentionally contact a live external service; do not reconstruct the entire dotenv file in CI. On upgrade, review and remove an unmanaged legacy `.env.testing` before generation creates the committed profile.
 
 Avoid depending on a developer's local `.env` unless the test is intentionally validating rendered App behavior from that file.
 

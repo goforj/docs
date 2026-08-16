@@ -60,13 +60,13 @@ A Project can include:
 
 `.env` and its local and host overlays are ignored by Git. Commit `.env.example` and `.env.testing`: GoForj keeps their keys synchronized during normal generation, redacts local secrets, and supplies test-friendly framework values such as isolated database names and `DB_PASSWORD=test`. Process environment variables still take precedence, so CI only needs to inject credentials for tests that intentionally contact live services.
 
-A source-aware `forj` command creates a missing `.env` from `.env.example` and generates fresh local framework secrets. You can invoke that behavior directly with `forj env:init`. To set a local secret without putting its value in shell history or the process argument list, use the hidden prompt:
+A `forj` command that needs the runtime environment creates a missing `.env` from `.env.example` and generates fresh local framework secrets. Help, version, and environment checks remain read-only. You can invoke initialization directly with `forj env:init`. To set a local secret without putting its value in shell history or the process argument list, use the hidden prompt:
 
 ```bash
 forj env:set DISCORD_TOKEN
 ```
 
-`forj build`, `forj dev`, and `forj generate` refresh the committed contracts automatically. Run `forj env:check` in CI to fail on drift without creating or rewriting `.env`.
+`forj build`, `forj dev`, and `forj generate` refresh the committed contracts through one generation lifecycle. Run `forj env:check` in CI to fail on drift without creating or rewriting `.env`. If an upgrade finds an unmanaged `.env.testing`, GoForj stops before changing it so you can move private values into `.env`, remove the legacy file, and generate the committed profile safely.
 
 The [Environment Reference](/reference/env-vars) owns the complete variable list and naming rules. [Configuration Reference](/reference/configuration#environment-file-resolution) defines file precedence and process-environment behavior.
 
