@@ -93,7 +93,7 @@ Use the built App when application work must pause during a deployment or planne
 ./bin/app maintenance:enable
 ```
 
-The command calls the running App at `APP_URL` using `APP_DIAG_TOKEN` without booting the dependency graph. The HTTP process changes its configured maintenance backend:
+The command calls the running App over `127.0.0.1` at its configured HTTP port using `APP_DIAG_TOKEN`, without booting the dependency graph. Run it on the same host or with an execution facility such as `docker exec` or `kubectl exec` inside the HTTP runtime's network namespace. The control route rejects non-loopback callers even when they present the diagnostic token. The HTTP process changes its configured maintenance backend:
 
 | Runtime | While maintenance is active |
 | --- | --- |
@@ -101,7 +101,7 @@ The command calls the running App at `APP_URL` using `APP_DIAG_TOKEN` without bo
 
 Queue workers and scheduled tasks continue normally. Use their own operational controls when they need to be paused independently.
 
-No binary or frontend rebuild is required. `forj about` reports the current state.
+No binary or frontend rebuild is required.
 
 Health, readiness, metrics, and Lighthouse routes stay available during maintenance. This keeps the process observable and prevents planned application downtime from looking like a crashed instance:
 
@@ -118,7 +118,7 @@ Expected result: the operational routes remain available and the application req
 ./bin/app maintenance:disable
 ```
 
-Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`. Their App-scoped environment selects the appropriate URL and diagnostic token.
+Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`. Their App-scoped environment selects the appropriate HTTP port and diagnostic token.
 
 `APP_MAINTENANCE_DRIVER=memory` is the dependency-free local default. It changes only the process reached by the command and loses its state when that process exits. Do not use memory mode as production maintenance state. Production deployments should use `APP_MAINTENANCE_DRIVER=cache` and set `APP_MAINTENANCE_STORE` to a generated named cache resource backed by shared infrastructure. That keeps maintenance active across process replacement and makes every replica observe the same App-scoped state. For example, `APP_MAINTENANCE_STORE=operations` uses the existing `CACHE_OPERATIONS_*` configuration; maintenance does not duplicate its driver or credentials.
 
