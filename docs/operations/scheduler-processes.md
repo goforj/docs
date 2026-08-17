@@ -71,9 +71,7 @@ SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT=30s
 
 ## Maintenance Mode
 
-`./bin/app maintenance:enable` pauses future schedule launches in an already-running scheduler without interrupting work already executing. `./bin/app maintenance:disable` releases only the scheduler-wide pause owned by maintenance; a scheduler pause that was already active remains active.
-
-Named schedule controls remain available for narrower operational changes. Split scheduler processes must observe the same App maintenance state described in [Deploy an App](/operations/deployment-basics#use-maintenance-mode).
+Application maintenance mode gates HTTP traffic only. Scheduled tasks continue launching in combined and split runtimes while maintenance is active. Use the scheduler's own operational controls when schedule execution must pause independently. See [Deploy an App](/operations/deployment-basics#use-maintenance-mode) for the HTTP maintenance workflow.
 
 ## Verify a Deployment
 
