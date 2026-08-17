@@ -95,6 +95,8 @@ Use the built App when application work must pause during a deployment or planne
 
 The command calls the running App over `127.0.0.1` at its configured HTTP port using `APP_DIAG_TOKEN`, without booting the dependency graph. Run it on the same host or with an execution facility such as `docker exec` or `kubectl exec` inside the HTTP runtime's network namespace. The control route returns the same empty `404 Not Found` as an absent route to non-loopback callers, even when they present the diagnostic token. The HTTP process changes its configured maintenance backend:
 
+If a reverse proxy or sidecar connects to the App over loopback, explicitly deny `/-/maintenance/*` at that proxy. The App can only identify its immediate socket peer, so public traffic relayed by a loopback peer is indistinguishable from the local CLI.
+
 | Runtime | While maintenance is active |
 | --- | --- |
 | HTTP | Application routes return HTTP 503. Browser navigation receives a self-contained page; `/api` routes and explicit JSON clients receive a stable JSON error. |
@@ -121,6 +123,10 @@ Expected result: the operational routes remain available and the application req
 Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`. Their App-scoped environment selects the appropriate HTTP port and diagnostic token.
 
 `APP_MAINTENANCE_DRIVER=memory` is the dependency-free local default. It changes only the process reached by the command and loses its state when that process exits. Do not use memory mode as production maintenance state. Production deployments should use `APP_MAINTENANCE_DRIVER=cache`. Maintenance reuses the cache manager already owned by the App runtime, and `APP_MAINTENANCE_STORE` selects one of its generated resources, defaulting to `default`. That keeps maintenance active across process replacement and makes every replica observe the same App-scoped state. For example, `APP_MAINTENANCE_STORE=operations` uses the existing `CACHE_OPERATIONS_*` configuration; maintenance does not duplicate its manager, driver, connections, or credentials.
+
+Cache-backed maintenance keys include a one-way namespace derived from `APP_KEY`, `APP_ENV`, and the selected App name. Separate projects, environments, and Apps therefore remain isolated when they intentionally share cache infrastructure, without placing `APP_KEY` itself in backend metadata.
+
+Rotating `APP_KEY` or changing `APP_ENV` changes that namespace. If cache-backed maintenance is active during either change, run `maintenance:enable` again after the rollout reaches the new namespace.
 
 Set `APP_MAINTENANCE_ENABLED=true` when deployment policy must force maintenance from process startup. That environment value is authoritative: `./bin/app maintenance:disable` cannot override it, and clearing it requires restarting the affected processes.
 
