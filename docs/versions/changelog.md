@@ -15,10 +15,10 @@ The current documentation follows `main`. Changes remain in this section until t
 
 ### Maintenance Mode
 
-- Added live `maintenance:enable` and `maintenance:disable` commands that gate HTTP traffic through App-scoped maintenance state while queue workers and scheduled tasks continue normally.
-- Added `APP_RUNTIME_STATE_DIR` so split and replicated HTTP runtimes can coordinate through an explicit shared state volume.
+- Added live `maintenance:enable` and `maintenance:disable` commands that use an authenticated control endpoint to gate HTTP traffic while queue workers and scheduled tasks continue normally.
+- Added memory and named-cache maintenance backends so single-process Apps need no infrastructure and replicas can share state through an existing generated cache resource.
 - Added browser and JSON HTTP 503 responses shared by every official starter kit while keeping health, readiness, metrics, and Lighthouse routes reachable.
-- Preserved environment-enforced maintenance for deployment policy, surfaced the live state through `forj about`, and disabled the environment setting in generated test profiles.
+- Preserved environment-enforced maintenance for deployment policy and disabled shared maintenance state in generated test profiles.
 
 ### Project Builds
 
