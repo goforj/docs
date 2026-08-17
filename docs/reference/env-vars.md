@@ -47,7 +47,7 @@ Variables for components that are not selected are not rendered and have no gene
 | `APP_URL` | `http://localhost:3000` when Web API is rendered | Public base URL used by generated browser and runtime features. |
 | `APP_MAINTENANCE_ENABLED` | `false` | Force HTTP maintenance mode from process startup while keeping operational routes available. Queue workers and scheduled tasks continue normally. Prefer the live `./bin/<app> maintenance:enable` and `maintenance:disable` commands for planned work; they connect to the App's configured HTTP port over loopback. Restart after changing this environment policy. |
 | `APP_MAINTENANCE_DRIVER` | `memory` | Maintenance state mechanism. `memory` is local-only, process-scoped, and not recommended for production. Use `cache` with a distributed generated cache resource in production. |
-| `APP_MAINTENANCE_STORE` | `default` | Generated cache resource used only when `APP_MAINTENANCE_DRIVER=cache`. A value such as `operations` selects the existing `CACHE_OPERATIONS_*` driver and connection settings. |
+| `APP_MAINTENANCE_STORE` | `default` | Resource selected from the App runtime's existing generated cache manager when `APP_MAINTENANCE_DRIVER=cache`. A value such as `operations` selects the existing `CACHE_OPERATIONS_*` driver and connection settings. |
 | `APP_DIAG_TOKEN` | Generated when Web API is rendered | Bearer token for protected diagnostic commands and endpoints. |
 | `APP_SHUTDOWN_TIMEOUT` | `30s` | Root graceful-shutdown budget. |
 | `APP_VERSION` | Empty | Deployment version reported to Lighthouse. |
