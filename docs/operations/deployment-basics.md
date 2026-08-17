@@ -93,7 +93,7 @@ Use the built App when application work must pause during a deployment or planne
 ./bin/app maintenance:enable
 ```
 
-The command publishes App-scoped state without booting the dependency graph. Running HTTP processes observe it directly:
+The command calls the running App at `APP_URL` using `APP_DIAG_TOKEN` without booting the dependency graph. The HTTP process changes its configured maintenance backend:
 
 | Runtime | While maintenance is active |
 | --- | --- |
@@ -118,9 +118,9 @@ Expected result: the operational routes remain available and the application req
 ./bin/app maintenance:disable
 ```
 
-Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`.
+Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`. Their App-scoped environment selects the appropriate URL and diagnostic token.
 
-Combined runtimes naturally share the state file. Split or replicated HTTP processes should set `APP_RUNTIME_STATE_DIR` to the same absolute path backed by a shared volume; the marker is `<APP_RUNTIME_STATE_DIR>/<app>/maintenance.json`. The filesystem must support atomic same-directory rename. HTTP runtime users need read and directory traversal access, while the command user also needs create, rename, and delete access. Generated state is readable but not writable by group or other users, so configure deliberate ownership or an ACL when commands and services run as different OS users. For replicas without a shared filesystem, run the command for every deployment unit or enforce maintenance fleet-wide through deployment configuration.
+`APP_MAINTENANCE_DRIVER=memory` is the dependency-free default. It changes the process reached by the command, which is appropriate for a single HTTP process. Replicated deployments should use `APP_MAINTENANCE_DRIVER=cache` and set `APP_MAINTENANCE_STORE` to a generated named cache resource backed by shared infrastructure. For example, `APP_MAINTENANCE_STORE=operations` uses the existing `CACHE_OPERATIONS_*` configuration; maintenance does not duplicate its driver or credentials.
 
 Set `APP_MAINTENANCE_ENABLED=true` when deployment policy must force maintenance from process startup. That environment value is authoritative: `./bin/app maintenance:disable` cannot override it, and clearing it requires restarting the affected processes.
 
