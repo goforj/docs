@@ -16,7 +16,7 @@ The current documentation follows `main`. Changes remain in this section until t
 ### Maintenance Mode
 
 - Added live `maintenance:enable` and `maintenance:disable` commands that use an authenticated control endpoint to gate HTTP traffic while queue workers and scheduled tasks continue normally.
-- Added memory and named-cache maintenance backends so single-process Apps need no infrastructure and replicas can share state through an existing generated cache resource.
+- Added a dependency-free memory backend for local use and a production-oriented named-cache backend that preserves maintenance state across process replacement and replicas.
 - Added browser and JSON HTTP 503 responses shared by every official starter kit while keeping health, readiness, metrics, and Lighthouse routes reachable.
 - Preserved environment-enforced maintenance for deployment policy and disabled shared maintenance state in generated test profiles.
 
