@@ -93,7 +93,7 @@ Use the built App when application work must pause during a deployment or planne
 ./bin/app maintenance:enable
 ```
 
-The command calls the running App over `127.0.0.1` at its configured HTTP port using `APP_DIAG_TOKEN`, without booting the dependency graph. Run it on the same host or with an execution facility such as `docker exec` or `kubectl exec` inside the HTTP runtime's network namespace. The control route rejects non-loopback callers even when they present the diagnostic token. The HTTP process changes its configured maintenance backend:
+The command calls the running App over `127.0.0.1` at its configured HTTP port using `APP_DIAG_TOKEN`, without booting the dependency graph. Run it on the same host or with an execution facility such as `docker exec` or `kubectl exec` inside the HTTP runtime's network namespace. The control route returns the same empty `404 Not Found` as an absent route to non-loopback callers, even when they present the diagnostic token. The HTTP process changes its configured maintenance backend:
 
 | Runtime | While maintenance is active |
 | --- | --- |
