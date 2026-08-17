@@ -93,13 +93,13 @@ Use the built App when application work must pause during a deployment or planne
 ./bin/app maintenance:enable
 ```
 
-The command publishes App-scoped state without booting the dependency graph. Already-running runtimes observe it directly:
+The command publishes App-scoped state without booting the dependency graph. Running HTTP processes observe it directly:
 
 | Runtime | While maintenance is active |
 | --- | --- |
 | HTTP | Application routes return HTTP 503. Browser navigation receives a self-contained page; `/api` routes and explicit JSON clients receive a stable JSON error. |
-| Queue worker | Stops taking new work after jobs already accepted by the current worker generation finish. Durable pending jobs remain in the queue. |
-| Scheduler | Stops future launches while allowing an execution already in progress to finish. |
+
+Queue workers and scheduled tasks continue normally. Use their own operational controls when they need to be paused independently.
 
 No binary or frontend rebuild is required. `forj about` reports the current state.
 
@@ -118,9 +118,9 @@ Expected result: the operational routes remain available and the application req
 ./bin/app maintenance:disable
 ```
 
-Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`. Queue- and schedule-specific pause controls remain independent; `maintenance:disable` does not clear a scheduler pause that existed before maintenance began.
+Additional Apps own separate state through their binaries, such as `./bin/admin maintenance:enable`.
 
-Combined runtimes naturally share the state file. Split runtime processes must use the same working directory and shared `_data` volume so they observe `_data/runtime/<app>/maintenance.json`. For replicas without a shared filesystem, run the command for every deployment unit or enforce maintenance fleet-wide through deployment configuration.
+Combined runtimes naturally share the state file. Split or replicated HTTP processes should set `APP_RUNTIME_STATE_DIR` to the same absolute path backed by a shared volume; the marker is `<APP_RUNTIME_STATE_DIR>/<app>/maintenance.json`. The filesystem must support atomic same-directory rename. HTTP runtime users need read and directory traversal access, while the command user also needs create, rename, and delete access. Generated state is readable but not writable by group or other users, so configure deliberate ownership or an ACL when commands and services run as different OS users. For replicas without a shared filesystem, run the command for every deployment unit or enforce maintenance fleet-wide through deployment configuration.
 
 Set `APP_MAINTENANCE_ENABLED=true` when deployment policy must force maintenance from process startup. That environment value is authoritative: `./bin/app maintenance:disable` cannot override it, and clearing it requires restarting the affected processes.
 
