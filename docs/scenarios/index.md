@@ -51,6 +51,10 @@ Each scenario uses the same small internal reporting app shape.
 
 The examples are intentionally local-first. Production drivers, distributed backends, and operational deployment notes appear only after the local path works.
 
+## Focused Workflows
+
+[Add a Database-Backed Resource](/scenarios/create-photo-data-resource) is a focused, verified workflow for adding a new persistence boundary. It uses photos as a concrete example while keeping the reusable schema-first order explicit: add and apply the migration, generate the model and repository from the live schema, then extend the App-owned repository package.
+
 ## After the Path
 
 Finishing all seven leaves you with the App this whole documentation set describes. From there:
