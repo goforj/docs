@@ -969,6 +969,7 @@ const testingSidebar = sectionSidebar('Testing', [
 const scenariosSidebar = sectionSidebar('Runnable Scenarios', [
   { text: 'Overview', link: '/scenarios/' },
   { text: 'JSON API Route', link: '/scenarios/json-api-route' },
+  { text: 'Add a Database-Backed Resource', link: '/scenarios/create-photo-data-resource' },
   { text: 'Cached User Profile', link: '/scenarios/cached-user-profile' },
   { text: 'File Upload To Storage', link: '/scenarios/file-upload-storage' },
   { text: 'Users Created Event', link: '/scenarios/users-created-event' },
