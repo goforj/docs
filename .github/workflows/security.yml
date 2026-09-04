@@ -36,3 +36,60 @@ jobs:
           languages: ${{ matrix.language }}
       - uses: github/codeql-action/autobuild@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
       - uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+        with:
+          go-version: stable
+      - name: Install govulncheck
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/gobin"
+          echo "$RUNNER_TEMP/gobin" >> "$GITHUB_PATH"
+          GOBIN="$RUNNER_TEMP/gobin" go install golang.org/x/vuln/cmd/govulncheck@latest
+      - name: Audit every Go module
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' go_modules < <(find . -type d -name node_modules -prune -o -type f -name go.mod -print0)
+          if (( ${#go_modules[@]} == 0 )); then
+            echo 'No Go modules found.'
+            exit 0
+          fi
+          for go_mod in "${go_modules[@]}"; do
+            module_dir="${go_mod%/go.mod}"
+            if (cd "$module_dir" && GOWORK=off go list ./... >/dev/null); then
+              (cd "$module_dir" && GOWORK=off govulncheck ./...)
+            else
+              echo "Skipping non-analyzable Go module: $module_dir" >&2
+            fi
+          done
+      - name: Audit every npm lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' npm_locks < <(find . -type d -name node_modules -prune -o -type f -name package-lock.json -print0)
+          if (( ${#npm_locks[@]} == 0 )); then
+            echo 'No npm lockfiles found.'
+            exit 0
+          fi
+          for npm_lock in "${npm_locks[@]}"; do
+            npm audit --prefix "$(dirname "$npm_lock")"
+          done
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
