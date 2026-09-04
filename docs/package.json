@@ -16,12 +16,12 @@
   },
   "devDependencies": {
     "playwright": "^1.60.0",
-    "vitepress": "^1.6.3"
+    "vitepress": "^2.0.0-alpha.20"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.96",
     "@iconify-json/simple-icons": "^1.2.33",
-    "mermaid": "^11.15.0",
+    "mermaid": "^11.16.1",
     "three": "0.170.0"
   }
 }
