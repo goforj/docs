@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   dependency-review:
-    if: github.event_name == 'pull_request' && vars.ENABLE_GITHUB_ADVANCED_SECURITY == 'true'
+    if: github.event_name == 'pull_request' && vars.ENABLE_DEPENDENCY_REVIEW == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -99,11 +99,30 @@ jobs:
             if [[ -z "$packages" ]]; then
               continue
             fi
-            cyclonedx-gomod mod -json -output "$sbom_dir/go-$generated.cdx.json" "$module_dir"
+            output="$sbom_dir/go-$generated.cdx.json"
+            module_path=$(cd "$module_dir" && GOWORK=off go list -m -f '{{.Path}}')
+            cyclonedx-gomod mod -json -output "$output" "$module_dir"
+            jq -e --arg module_path "$module_path" '
+              .bomFormat == "CycloneDX" and
+              .metadata.component.type == "application" and
+              .metadata.component.name == $module_path and
+              (.components | type == "array") and
+              (.components | length > 0)
+            ' "$output" >/dev/null
             ((generated += 1))
           done
           for npm_lock in "${npm_locks[@]}"; do
-            npm exec --yes --package=@cyclonedx/cyclonedx-npm@6.0.1 -- cyclonedx-npm --output-file "$sbom_dir/npm-$generated.cdx.json" --package-lock-only "$(dirname "$npm_lock")/package.json"
+            package_json="$(dirname "$npm_lock")/package.json"
+            output="$sbom_dir/npm-$generated.cdx.json"
+            package_name=$(jq -er '.packages[""].name // .name' "$npm_lock")
+            npm exec --yes --package=@cyclonedx/cyclonedx-npm@6.0.1 -- cyclonedx-npm --output-file "$output" --package-lock-only "$package_json"
+            jq -e --arg package_name "$package_name" '
+              .bomFormat == "CycloneDX" and
+              .metadata.component.type == "application" and
+              .metadata.component.name == $package_name and
+              (.components | type == "array") and
+              (.components | length > 0)
+            ' "$output" >/dev/null
             ((generated += 1))
           done
           actual=$(find "$sbom_dir" -type f -name '*.cdx.json' -print | wc -l | tr -d ' ')
