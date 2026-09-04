@@ -37,6 +37,14 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.27.1
+
+Released September 3, 2026.
+
+### Development Watchers
+
+- Scoped macOS development watches to selected files so unrelated filesystem activity does not restart an App.
+
 ## v0.24.1
 
 Released August 12, 2026.
