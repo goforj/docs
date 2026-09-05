@@ -7026,6 +7026,12 @@ body,
     outline-style: solid;
 }
 
+/* Local search presents focus on the enclosing search bar, so a second ring
+   around its text input obscures the control hierarchy. */
+.VPLocalSearchBox .search-input:focus-visible {
+    outline: none;
+}
+
 /* --- Code chrome labels, pre-emptively --------------------
    The design system's specimens exposed two more ink-3 labels
    that fail AA at their size. Neither appears on the pages
