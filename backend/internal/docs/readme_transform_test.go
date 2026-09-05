@@ -170,6 +170,34 @@ func TestTransformReadmePreservesConsoleAPIExampleLinks(t *testing.T) {
 	}
 }
 
+// TestTransformReadmeNormalizesDottedAnchors verifies VitePress links and explicit heading IDs cannot diverge.
+func TestTransformReadmeNormalizesDottedAnchors(t *testing.T) {
+	repo := RepoConfig{
+		Slug:     "collection",
+		Title:    "Collections",
+		CloneURL: "https://github.com/goforj/collection.git",
+		Branch:   "main",
+	}
+	input := strings.Join([]string{
+		"## Slice Dump",
+		"",
+		"[Slice.Dump](#slice.dump)",
+		"",
+		`### <a id="slice.dump"></a>Slice.Dump`,
+	}, "\n")
+
+	got := transformReadme(input, repo, "https://raw.githubusercontent.com/goforj/collection/main/")
+	for _, want := range []string{
+		"## Slice Dump {#slice-dump-2}",
+		"[Slice.Dump](#slice-dump)",
+		"### Slice.Dump {#slice-dump}",
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("transformReadme() missing %q in:\n%s", want, got)
+		}
+	}
+}
+
 // TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed verifies ordinary library pages retain their configured search title.
 func TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed(t *testing.T) {
 	repo := RepoConfig{

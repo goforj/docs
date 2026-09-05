@@ -156,7 +156,7 @@ func rewriteLinkURL(url string, base string, branch string) string {
 		return trimmed
 	}
 	if strings.HasPrefix(trimmed, "#") {
-		return trimmed
+		return "#" + normalizeHeadingAnchor(strings.TrimPrefix(trimmed, "#"))
 	}
 
 	pathPart := trimmed
@@ -203,7 +203,7 @@ func rewriteHeadingAnchors(content string) string {
 	for i, line := range lines {
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
 			level := matches[1]
-			anchor := matches[2]
+			anchor := normalizeHeadingAnchor(matches[2])
 			title := strings.TrimSpace(matches[3])
 			explicitAnchors[anchor]--
 			unique := claimHeadingAnchor(anchor, used, explicitAnchors, true)
@@ -213,7 +213,7 @@ func rewriteHeadingAnchors(content string) string {
 		if matches := headingWithIDRegex.FindStringSubmatch(line); len(matches) == 4 {
 			level := matches[1]
 			title := strings.TrimSpace(matches[2])
-			anchor := matches[3]
+			anchor := normalizeHeadingAnchor(matches[3])
 			explicitAnchors[anchor]--
 			unique := claimHeadingAnchor(anchor, used, explicitAnchors, true)
 			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
@@ -235,14 +235,19 @@ func explicitHeadingAnchorCounts(lines []string) map[string]int {
 	counts := map[string]int{}
 	for _, line := range lines {
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
-			counts[matches[2]]++
+			counts[normalizeHeadingAnchor(matches[2])]++
 			continue
 		}
 		if matches := headingWithIDRegex.FindStringSubmatch(line); len(matches) == 4 {
-			counts[matches[3]]++
+			counts[normalizeHeadingAnchor(matches[3])]++
 		}
 	}
 	return counts
+}
+
+// normalizeHeadingAnchor keeps explicit IDs aligned with VitePress link normalization.
+func normalizeHeadingAnchor(anchor string) string {
+	return strings.ReplaceAll(anchor, ".", "-")
 }
 
 // claimHeadingAnchor keeps the preferred explicit ID when possible and otherwise selects the first unclaimed, unreserved suffix.
