@@ -5,9 +5,9 @@ description: Authentication, sessions, cookies, refresh behavior, and security-s
 
 # Security
 
-Security covers framework and application behavior that affects identity, sessions, authorization, secrets, and runtime safety.
+Security covers both the GoForj software supply chain and application behavior that affects identity, sessions, authorization, secrets, and runtime safety.
 
-Start with [Auth](/security/auth) when the App includes generated account and session support. Then use the session, OAuth, and production guides for the security boundaries that surround it.
+Enterprise reviewers can start with [Security Assurance](/security/assurance) for the ecosystem scope, controls, evidence, and stated limits. Application teams should start with [Auth](/security/auth) when the App includes generated account and session support.
 
 ## Pages
 
@@ -15,6 +15,14 @@ Start with [Auth](/security/auth) when the App includes generated account and se
 - [Sessions and Cookies](/security/sessions-cookies)
 - [OAuth](/security/oauth)
 - [Production Hardening](/security/production-hardening)
+
+## Assurance and Review
+
+- [Security Assurance](/security/assurance) provides the single entry point for a security review.
+- [Security Controls](/security/controls) explains what each automated control proves and does not prove.
+- [Repository Coverage](/security/repository-coverage) maps every in-scope repository to its baseline and evidence.
+- [Vulnerability Management](/security/vulnerability-management) explains reporting, remediation, and exceptions.
+- [Enterprise Assessment](/security/enterprise-assessment) separates GoForj evidence from deployment-owned controls.
 
 ## Related Sections
 

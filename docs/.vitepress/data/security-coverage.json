@@ -1,0 +1,54 @@
+{
+  "reviewed": "2026-09-05",
+  "profiles": {
+    "policy": {
+      "name": "Organization policy",
+      "controls": "Private reporting route and coordinated disclosure policy"
+    },
+    "static-example": {
+      "name": "Static example",
+      "controls": "Immutable actions, scoped permissions, full-history Gitleaks, Dependabot for actions, and HTML proofing"
+    },
+    "go-library": {
+      "name": "Go source",
+      "controls": "CodeQL, govulncheck, Dependency Review, full-history Gitleaks, CycloneDX SBOMs, Dependabot, and immutable actions"
+    },
+    "go-application": {
+      "name": "Go and npm application",
+      "controls": "Go source baseline plus npm audit, npm SBOM coverage, and npm dependency updates"
+    },
+    "framework": {
+      "name": "Framework and generated assets",
+      "controls": "Go and npm application baseline plus generated asset inventory and container policy checks"
+    }
+  },
+  "repositories": [
+    { "name": ".github", "role": "Organization security policy", "profile": "policy" },
+    { "name": "goforj", "role": "Framework, generator, and application templates", "profile": "framework" },
+    { "name": "demo-repository", "role": "Private workflow and HTML demonstration", "profile": "static-example" },
+    { "name": "docs", "role": "Documentation frontend and Go backend", "profile": "go-application" },
+    { "name": "atlas", "role": "Documentation indexing and generation", "profile": "go-library" },
+    { "name": "cache", "role": "Cache contracts and drivers", "profile": "go-library" },
+    { "name": "collection", "role": "Collection helpers", "profile": "go-library" },
+    { "name": "console", "role": "Console output", "profile": "go-library" },
+    { "name": "crypt", "role": "Encryption helpers", "profile": "go-library" },
+    { "name": "env", "role": "Environment loading", "profile": "go-library" },
+    { "name": "events", "role": "Event contracts and drivers", "profile": "go-library" },
+    { "name": "execx", "role": "Process execution", "profile": "go-library" },
+    { "name": "godump", "role": "Debug value inspection", "profile": "go-library" },
+    { "name": "httpx", "role": "Outbound HTTP requests", "profile": "go-library" },
+    { "name": "mail", "role": "Mail contracts and drivers", "profile": "go-library" },
+    { "name": "metrics", "role": "Metrics contracts", "profile": "go-library" },
+    { "name": "null", "role": "Nullable value types", "profile": "go-library" },
+    { "name": "queue", "role": "Queue contracts and drivers", "profile": "go-library" },
+    { "name": "scheduler", "role": "Scheduled task execution", "profile": "go-library" },
+    { "name": "storage", "role": "Storage contracts and drivers", "profile": "go-library" },
+    { "name": "str", "role": "String helpers", "profile": "go-library" },
+    { "name": "web", "role": "HTTP contracts, middleware, and adapters", "profile": "go-library" },
+    { "name": "wire", "role": "Compile-time dependency injection", "profile": "go-library" }
+  ],
+  "excluded": [
+    { "name": "ship", "reason": "Excluded from the current security baseline" },
+    { "name": "harbor", "reason": "Excluded from the current security baseline" }
+  ]
+}

@@ -23,6 +23,11 @@
       ["async/**/*.md", "task"],
       ["data/**/*.md", "task"],
       ["security/oauth.md", "concept"],
+      ["security/assurance.md", "concept"],
+      ["security/controls.md", "reference"],
+      ["security/enterprise-assessment.md", "reference"],
+      ["security/repository-coverage.md", "reference"],
+      ["security/vulnerability-management.md", "concept"],
       ["security/**/*.md", "feature"],
       ["frontend/**/*.md", "feature"],
       ["*.md", "reference"]
