@@ -1,5 +1,31 @@
 {
   "reviewed": "2026-09-05",
+  "groups": {
+    "governance": {
+      "name": "Organization governance",
+      "focus": "Reporting, inherited policy, and administrator-owned controls"
+    },
+    "framework-applications": {
+      "name": "Framework and applications",
+      "focus": "Generation, templates, application dependencies, and workflow examples"
+    },
+    "data-workflows": {
+      "name": "Data and workflows",
+      "focus": "Drivers, remote services, credentials, retries, and distributed coordination"
+    },
+    "network-process": {
+      "name": "Network and process boundaries",
+      "focus": "HTTP behavior, redirects, headers, command execution, mail, and transport security"
+    },
+    "sensitive-values": {
+      "name": "Configuration and sensitive values",
+      "focus": "Encryption, environment secrets, serialization, and safe defaults"
+    },
+    "developer-tooling": {
+      "name": "Generation and developer tooling",
+      "focus": "Remote repository input, generated code, terminal output, diagnostics, and helper behavior"
+    }
+  },
   "profiles": {
     "policy": {
       "name": "Organization policy",
@@ -23,29 +49,29 @@
     }
   },
   "repositories": [
-    { "name": ".github", "role": "Organization security policy", "profile": "policy" },
-    { "name": "goforj", "role": "Framework, generator, and application templates", "profile": "framework" },
-    { "name": "demo-repository", "role": "Private workflow and HTML demonstration", "profile": "static-example" },
-    { "name": "docs", "role": "Documentation frontend and Go backend", "profile": "go-application" },
-    { "name": "atlas", "role": "Documentation indexing and generation", "profile": "go-library" },
-    { "name": "cache", "role": "Cache contracts and drivers", "profile": "go-library" },
-    { "name": "collection", "role": "Collection helpers", "profile": "go-library" },
-    { "name": "console", "role": "Console output", "profile": "go-library" },
-    { "name": "crypt", "role": "Encryption helpers", "profile": "go-library" },
-    { "name": "env", "role": "Environment loading", "profile": "go-library" },
-    { "name": "events", "role": "Event contracts and drivers", "profile": "go-library" },
-    { "name": "execx", "role": "Process execution", "profile": "go-library" },
-    { "name": "godump", "role": "Debug value inspection", "profile": "go-library" },
-    { "name": "httpx", "role": "Outbound HTTP requests", "profile": "go-library" },
-    { "name": "mail", "role": "Mail contracts and drivers", "profile": "go-library" },
-    { "name": "metrics", "role": "Metrics contracts", "profile": "go-library" },
-    { "name": "null", "role": "Nullable value types", "profile": "go-library" },
-    { "name": "queue", "role": "Queue contracts and drivers", "profile": "go-library" },
-    { "name": "scheduler", "role": "Scheduled task execution", "profile": "go-library" },
-    { "name": "storage", "role": "Storage contracts and drivers", "profile": "go-library" },
-    { "name": "str", "role": "String helpers", "profile": "go-library" },
-    { "name": "web", "role": "HTTP contracts, middleware, and adapters", "profile": "go-library" },
-    { "name": "wire", "role": "Compile-time dependency injection", "profile": "go-library" }
+    { "name": ".github", "role": "Organization security policy", "profile": "policy", "group": "governance" },
+    { "name": "goforj", "role": "Framework, generator, and application templates", "profile": "framework", "group": "framework-applications" },
+    { "name": "demo-repository", "role": "Private workflow and HTML demonstration", "profile": "static-example", "group": "framework-applications" },
+    { "name": "docs", "role": "Documentation frontend and Go backend", "profile": "go-application", "group": "framework-applications" },
+    { "name": "atlas", "role": "Documentation indexing and generation", "profile": "go-library", "group": "developer-tooling" },
+    { "name": "cache", "role": "Cache contracts and drivers", "profile": "go-library", "group": "data-workflows" },
+    { "name": "collection", "role": "Collection helpers", "profile": "go-library", "group": "developer-tooling" },
+    { "name": "console", "role": "Console output", "profile": "go-library", "group": "developer-tooling" },
+    { "name": "crypt", "role": "Encryption helpers", "profile": "go-library", "group": "sensitive-values" },
+    { "name": "env", "role": "Environment loading", "profile": "go-library", "group": "sensitive-values" },
+    { "name": "events", "role": "Event contracts and drivers", "profile": "go-library", "group": "data-workflows" },
+    { "name": "execx", "role": "Process execution", "profile": "go-library", "group": "network-process" },
+    { "name": "godump", "role": "Debug value inspection", "profile": "go-library", "group": "developer-tooling" },
+    { "name": "httpx", "role": "Outbound HTTP requests", "profile": "go-library", "group": "network-process" },
+    { "name": "mail", "role": "Mail contracts and drivers", "profile": "go-library", "group": "network-process" },
+    { "name": "metrics", "role": "Metrics contracts", "profile": "go-library", "group": "data-workflows" },
+    { "name": "null", "role": "Nullable value types", "profile": "go-library", "group": "sensitive-values" },
+    { "name": "queue", "role": "Queue contracts and drivers", "profile": "go-library", "group": "data-workflows" },
+    { "name": "scheduler", "role": "Scheduled task execution", "profile": "go-library", "group": "data-workflows" },
+    { "name": "storage", "role": "Storage contracts and drivers", "profile": "go-library", "group": "data-workflows" },
+    { "name": "str", "role": "String helpers", "profile": "go-library", "group": "developer-tooling" },
+    { "name": "web", "role": "HTTP contracts, middleware, and adapters", "profile": "go-library", "group": "network-process" },
+    { "name": "wire", "role": "Compile-time dependency injection", "profile": "go-library", "group": "developer-tooling" }
   ],
   "excluded": [
     { "name": "ship", "reason": "Excluded from the current security baseline" },

@@ -6,7 +6,10 @@ const scriptRoot = path.dirname(fileURLToPath(import.meta.url))
 const docsRoot = path.resolve(scriptRoot, '../..')
 const manifestPath = path.join(docsRoot, '.vitepress', 'data', 'security-coverage.json')
 const outputPath = path.join(docsRoot, 'security', 'repository-coverage.md')
+const assessmentPath = path.join(docsRoot, 'security', 'enterprise-assessment.md')
 const check = process.argv.includes('--check')
+const assessmentStart = '<!-- security-coverage:assessment:start -->'
+const assessmentEnd = '<!-- security-coverage:assessment:end -->'
 
 const expectedRepositories = [
   '.github', 'atlas', 'cache', 'collection', 'console', 'crypt', 'demo-repository', 'docs',
@@ -18,15 +21,22 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
 
 validateManifest(manifest)
 const output = renderCoverage(manifest)
+const assessment = renderAssessment(manifest, fs.readFileSync(assessmentPath, 'utf8'))
 
 if (check) {
-  if (!fs.existsSync(outputPath) || fs.readFileSync(outputPath, 'utf8') !== output) {
+  if (
+    !fs.existsSync(outputPath) ||
+    fs.readFileSync(outputPath, 'utf8') !== output ||
+    fs.readFileSync(assessmentPath, 'utf8') !== assessment
+  ) {
     throw new Error('security repository coverage is stale; run npm run security:refresh')
   }
   console.log(`security repository coverage is current: ${outputPath}`)
 } else {
   fs.writeFileSync(outputPath, output)
+  fs.writeFileSync(assessmentPath, assessment)
   console.log(`wrote ${outputPath}`)
+  console.log(`updated ${assessmentPath}`)
 }
 
 function validateManifest(value) {
@@ -36,6 +46,8 @@ function validateManifest(value) {
 
   const profileNames = new Set(Object.keys(value.profiles ?? {}))
   if (profileNames.size === 0) throw new Error('security coverage must define profiles')
+  const groupNames = new Set(Object.keys(value.groups ?? {}))
+  if (groupNames.size === 0) throw new Error('security coverage must define assessment groups')
 
   const actualRepositories = value.repositories.map((repository) => repository.name)
   assertUnique(actualRepositories, 'included repository')
@@ -46,11 +58,23 @@ function validateManifest(value) {
     if (!profileNames.has(repository.profile)) {
       throw new Error(`${repository.name}: unknown profile ${repository.profile}`)
     }
+    if (!groupNames.has(repository.group)) {
+      throw new Error(`${repository.name}: unknown assessment group ${repository.group}`)
+    }
   }
 
   for (const [name, profile] of Object.entries(value.profiles)) {
     if (!profile.name?.trim() || !profile.controls?.trim()) {
       throw new Error(`${name}: profile name and controls are required`)
+    }
+  }
+
+  for (const [name, group] of Object.entries(value.groups)) {
+    if (!group.name?.trim() || !group.focus?.trim()) {
+      throw new Error(`${name}: assessment group name and focus are required`)
+    }
+    if (!value.repositories.some((repository) => repository.group === name)) {
+      throw new Error(`${name}: assessment group must contain a repository`)
     }
   }
 
@@ -128,4 +152,37 @@ function renderCoverage(value) {
   )
 
   return lines.join('\n')
+}
+
+function renderAssessment(value, source) {
+  const start = source.indexOf(assessmentStart)
+  const end = source.indexOf(assessmentEnd)
+  if (start === -1 || end === -1 || end < start) {
+    throw new Error('enterprise assessment must contain one ordered security coverage marker pair')
+  }
+  if (source.indexOf(assessmentStart, start + assessmentStart.length) !== -1 || source.indexOf(assessmentEnd, end + assessmentEnd.length) !== -1) {
+    throw new Error('enterprise assessment must contain exactly one security coverage marker pair')
+  }
+
+  const lines = [
+    assessmentStart,
+    '<!-- This section is generated from .vitepress/data/security-coverage.json. -->',
+    '',
+    '| Reviewed Area | Primary Security Focus | Repositories |',
+    '| --- | --- | --- |'
+  ]
+  for (const [groupName, group] of Object.entries(value.groups)) {
+    const repositories = value.repositories
+      .filter((repository) => repository.group === groupName)
+      .map((repository) => `[${repository.name}](https://github.com/goforj/${repository.name})`)
+      .join(', ')
+    lines.push(`| ${group.name} | ${group.focus} | ${repositories} |`)
+  }
+
+  const excluded = value.excluded
+    .map((repository) => `[${repository.name}](https://github.com/goforj/${repository.name})`)
+    .join(' and ')
+  lines.push('', `**Explicit exclusions:** ${excluded}. These repositories require independent assessment.`, assessmentEnd)
+
+  return `${source.slice(0, start)}${lines.join('\n')}${source.slice(end + assessmentEnd.length)}`
 }
