@@ -20,7 +20,7 @@ The event still announces that a user was created. The subscriber now queues `re
 - `QUEUE_*` config selects the queue backend used by API and worker processes.
 - `STORAGE_REPORTS_*` defines a named disk for generated report artifacts.
 - `reports.Service` writes a report file to storage.
-- `reports.GenerateJob` owns the queue payload, dispatch shape, and handler.
+- `reports.GenerateJob` owns an ID-only queue payload, dispatch shape, and handler.
 - `notifications.Service` dispatches the job from the `users.created` subscriber.
 - Wire binds the job to a small queueing interface used by notifications.
 
@@ -117,7 +117,7 @@ forj build
 
 Create `internal/reports/service.go`.
 
-The service writes through `storage.Storage`, not a local filesystem or cloud SDK. The selected driver remains configuration.
+The service reloads the user through its repository before writing through `storage.Storage`. A delayed job therefore uses current user state without coupling the handler to persistence or a concrete storage backend.
 
 Create or replace `internal/reports/service.go`:
 
@@ -135,6 +135,8 @@ import (
 	"time"
 
 	"github.com/goforj/storage"
+
+	"your/module/internal/users"
 )
 
 var (
@@ -144,15 +146,16 @@ var (
 	ErrEmailRequired = errors.New("email is required")
 )
 
-// Service writes report artifacts through a configured storage disk rather than a concrete backend.
+// Service reloads report subjects through the repository and writes artifacts through a configured storage disk.
 type Service struct {
-	disk storage.Storage
+	users users.UserRepository
+	disk  storage.Storage
 }
 
 // ReportQueue keeps report requesters independent of queue payloads and dispatch policy.
 type ReportQueue interface {
 	// Queue moves report generation behind the configured worker lifecycle.
-	Queue(ctx context.Context, userID string, email string) error
+	Queue(ctx context.Context, userID string) error
 }
 
 // UserReport is the stable artifact stored by the runnable report workflow.
@@ -162,19 +165,24 @@ type UserReport struct {
 	GeneratedAt time.Time `json:"generated_at"`
 }
 
-// NewService requires the named report disk because successful generation must persist an artifact.
-func NewService(disk storage.Storage) *Service {
-	return &Service{disk: disk}
+// NewService requires current user state and the named report disk because queued identity data can become stale before execution.
+func NewService(userRepository users.UserRepository, disk storage.Storage) *Service {
+	return &Service{users: userRepository, disk: disk}
 }
 
-// GenerateForUser validates path and identity data before writing one deterministic report location.
-func (s *Service) GenerateForUser(ctx context.Context, userID string, email string) (string, error) {
+// GenerateForUser reloads current user state before writing one deterministic report location.
+func (s *Service) GenerateForUser(ctx context.Context, userID string) (string, error) {
 	userID = reportPathSegment(userID)
 	if userID == "" {
 		return "", ErrUserIDRequired
 	}
 
-	email = strings.TrimSpace(email)
+	user, err := s.users.Find(ctx, userID)
+	if err != nil {
+		return "", fmt.Errorf("find user: %w", err)
+	}
+
+	email := strings.TrimSpace(user.Email)
 	if email == "" {
 		return "", ErrEmailRequired
 	}
@@ -241,10 +249,9 @@ import (
 // GenerateJobTypeName is the stable queue identity shared by dispatchers and workers.
 const GenerateJobTypeName = "reports:generate"
 
-// GeneratePayload keeps queued data small so report artifacts remain in storage rather than the queue.
+// GeneratePayload carries durable identity so delayed work reloads current state instead of consuming a stale snapshot.
 type GeneratePayload struct {
 	UserID string `json:"user_id"`
-	Email  string `json:"email"`
 }
 
 // GenerateJob owns report dispatch policy and translates queue messages into service calls.
@@ -262,10 +269,9 @@ func NewGenerateJob(queues *queues.Manager, service *Service) *GenerateJob {
 }
 
 // Queue serializes the stable payload and applies retry and timeout policy at the job boundary.
-func (j *GenerateJob) Queue(ctx context.Context, userID string, email string) error {
+func (j *GenerateJob) Queue(ctx context.Context, userID string) error {
 	payload, err := json.Marshal(GeneratePayload{
 		UserID: userID,
-		Email:  email,
 	})
 	if err != nil {
 		return fmt.Errorf("encode generate report payload: %w", err)
@@ -291,7 +297,7 @@ func (j *GenerateJob) HandleTask(ctx context.Context, msg queue.Message) error {
 		return fmt.Errorf("bind generate report payload: %w", err)
 	}
 
-	if _, err := j.service.GenerateForUser(ctx, payload.UserID, payload.Email); err != nil {
+	if _, err := j.service.GenerateForUser(ctx, payload.UserID); err != nil {
 		return fmt.Errorf("generate user report: %w", err)
 	}
 	return nil
@@ -337,8 +343,8 @@ func NewService(generateReport reports.ReportQueue) *Service {
 }
 
 // HandleUserCreated dispatches report work without making the event subscriber understand queue details.
-func (s *Service) HandleUserCreated(ctx context.Context, userID string, email string) error {
-	return s.generateReport.Queue(ctx, userID, email)
+func (s *Service) HandleUserCreated(ctx context.Context, userID string, _ string) error {
+	return s.generateReport.Queue(ctx, userID)
 }
 ```
 
@@ -434,8 +440,8 @@ Update `app/wire/inject_services_app.go` so it includes:
 
 ```go
 // provideReportService selects the named disk where dependencies are composed instead of inside report behavior.
-func provideReportService(manager *storages.Manager) *reports.Service {
-        return reports.NewService(manager.Reports())
+func provideReportService(userRepository users.UserRepository, manager *storages.Manager) *reports.Service {
+        return reports.NewService(userRepository, manager.Reports())
 }
 
 // provideEventBus exposes the default generated bus without coupling the publisher to its manager.
@@ -462,6 +468,8 @@ import (
 
 	"github.com/goforj/storage"
 	"github.com/goforj/storage/driver/memorystorage"
+
+	"your/module/internal/users"
 )
 
 // newTestDisk keeps test setup focused on report behavior while failing immediately on invalid storage wiring.
@@ -495,8 +503,8 @@ func readTestReport(t *testing.T, disk storage.Storage, reportPath string) UserR
 func TestServiceGeneratesUserReport(t *testing.T) {
 	ctx := context.Background()
 	disk := newTestDisk(t)
-	service := NewService(disk)
-	reportPath, err := service.GenerateForUser(ctx, "42", "ada@example.test")
+	service := NewService(users.NewMemoryUserRepository(), disk)
+	reportPath, err := service.GenerateForUser(ctx, "42")
 	if err != nil {
 		t.Fatalf("generate report: %v", err)
 	}
@@ -519,28 +527,31 @@ func TestServiceGeneratesUserReport(t *testing.T) {
 // TestServiceRejectsInvalidReports keeps malformed identity data from reaching storage.
 func TestServiceRejectsInvalidReports(t *testing.T) {
 	ctx := context.Background()
-	service := NewService(newTestDisk(t))
+	repository := users.NewMemoryUserRepository()
+	userWithoutEmail, err := repository.Save(ctx, users.User{Name: "Missing Email"})
+	if err != nil {
+		t.Fatalf("save user without email: %v", err)
+	}
+	service := NewService(repository, newTestDisk(t))
 	tests := []struct {
 		name    string
 		userID  string
-		email   string
 		wantErr error
 	}{
 		{
 			name:    "missing user id",
-			email:   "ada@example.test",
 			wantErr: ErrUserIDRequired,
 		},
 		{
 			name:    "missing email",
-			userID:  "42",
+			userID:  userWithoutEmail.ID,
 			wantErr: ErrEmailRequired,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			_, err := service.GenerateForUser(ctx, test.userID, test.email)
+			_, err := service.GenerateForUser(ctx, test.userID)
 			if !errors.Is(err, test.wantErr) {
 				t.Fatalf("GenerateForUser() error = %v, want %v", err, test.wantErr)
 			}
@@ -553,7 +564,7 @@ func TestServiceRejectsInvalidReports(t *testing.T) {
 
 Create `internal/reports/generate_job_test.go`.
 
-The synchronous queue supplies the real `queue.Message` contract, so the test proves payload binding and delegation without testing private fields or starting external infrastructure.
+The synchronous queue supplies the real `queue.Message` contract, so the test proves ID-only payload binding, current-state lookup, and delegation without testing private fields or starting external infrastructure.
 
 Create or replace `internal/reports/generate_job_test.go`:
 
@@ -568,6 +579,7 @@ import (
 	"github.com/goforj/queue"
 
 	"your/module/internal/queues"
+	"your/module/internal/users"
 )
 
 // TestGenerateJobHandlesPayload proves a queue message is bound and delegated to report generation.
@@ -587,7 +599,11 @@ func TestGenerateJobHandlesPayload(t *testing.T) {
 	})
 
 	disk := newTestDisk(t)
-	job := NewGenerateJob(queueManager, NewService(disk))
+	userRepository := users.NewMemoryUserRepository()
+	if _, err := userRepository.Save(ctx, users.User{ID: "42", Name: "Ada Lovelace", Email: "current@example.test"}); err != nil {
+		t.Fatalf("update user before job execution: %v", err)
+	}
+	job := NewGenerateJob(queueManager, NewService(userRepository, disk))
 	queueManager.Register(GenerateJobTypeName, job.HandleTask)
 	if err := runtimeQueue.StartWorkers(ctx); err != nil {
 		t.Fatalf("start queue workers: %v", err)
@@ -595,7 +611,7 @@ func TestGenerateJobHandlesPayload(t *testing.T) {
 
 	_, err = queueManager.WithContext(ctx).Dispatch(
 		queue.NewJob(GenerateJobTypeName).
-			Payload([]byte(`{"user_id":"42","email":"ada@example.test"}`)).
+			Payload([]byte(`{"user_id":"42"}`)).
 			OnQueue("default"),
 	)
 	if err != nil {
@@ -606,8 +622,8 @@ func TestGenerateJobHandlesPayload(t *testing.T) {
 	if report.UserID != "42" {
 		t.Fatalf("report user id = %q, want %q", report.UserID, "42")
 	}
-	if report.Email != "ada@example.test" {
-		t.Fatalf("report email = %q, want %q", report.Email, "ada@example.test")
+	if report.Email != "current@example.test" {
+		t.Fatalf("report email = %q, want current repository state", report.Email)
 	}
 }
 ```
@@ -668,7 +684,7 @@ Operational notes:
 - Durability and cross-process delivery come from the selected queue driver; `workerpool` remains process-local.
 - Use this boundary for work that sends email, generates reports, calls external APIs, or may need operational recovery.
 - The job can appear in queue metrics, inspect records, Lighthouse queue views, worker logs, and driver backend state.
-- Keep job payloads stable and small. Store large artifacts in storage, not inside queue payloads.
+- Keep job payloads stable and small. Carry identity, reload current state in the service, and store large artifacts outside the queue payload.
 
 ## Swap the Driver
 

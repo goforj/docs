@@ -117,6 +117,14 @@ The starter uses `hx-boost` on its navigation. A click still performs a normal `
 
 This means the route, controller, and page remain useful when JavaScript is unavailable. htmx enhances the request rather than defining a separate browser-side routing model.
 
+### Keep Pending UI Stable
+
+Resolve data required by the initial page contract in the controller or service before rendering the page. Do not send a page that visually presents itself as complete and then immediately replaces its primary contents when required data arrives.
+
+For htmx refreshes, keep the existing target visible while the request is pending. Delay transient progress indicators so a fast response does not flash a loader, and use a stable target whose dimensions do not collapse before the swap. If the request fails, replace or annotate the target with an intentional error state rather than leaving it blank.
+
+Progressive regions are still useful when they are genuinely independent. The distinction is ownership: required page data should be ready for the page render, while an independently useful region may load separately without making the rest of the page appear unfinished.
+
 ### Add a Partial Update
 
 The starter pages return complete documents. When one interaction benefits from replacing a smaller region, render a smaller templ component from a dedicated handler.

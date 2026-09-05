@@ -67,6 +67,16 @@ npm install
 npm run dev
 ```
 
+## Load Data Without Flicker
+
+Keep feature-local server data in the route or component that owns it, or in a colocated hook. Global context is appropriate for genuinely application-wide client state; it should not become the default home for every request merely to share loading machinery.
+
+Delay transient skeletons or spinners briefly. If a fast request resolves before that threshold, commit the content directly without flashing a pending state. During refresh or revalidation, retain the current usable content until replacement data is ready instead of clearing the view.
+
+Still model explicit loading, error, empty, and ready states. A slower request should reveal a stable pending layout with the same general dimensions as the result, while a completed request should never be artificially delayed to satisfy an animation.
+
+Route-critical data can load before navigation commits. Predictable modal and detail data can be prefetched so opening the interface does not immediately tear down and replace its contents.
+
 ## Build for Deployment
 
 The default deployment remains one App binary. React compiles into `frontend/dist`, then `forj build` embeds those assets alongside the Go application.
