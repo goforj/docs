@@ -15,8 +15,6 @@ A baseline is active only when its configuration is present on the repository de
 
 | Profile | Controls |
 | --- | --- |
-| Organization policy | Private reporting route and coordinated disclosure policy |
-| Static example | Immutable actions, scoped permissions, full-history Gitleaks, Dependabot for actions, and HTML proofing |
 | Go source | CodeQL, govulncheck, Dependency Review, full-history Gitleaks, CycloneDX SBOMs, Dependabot, and immutable actions |
 | Go and npm application | Go source baseline plus npm audit, npm SBOM coverage, and npm dependency updates |
 | Framework and generated assets | Go and npm application baseline plus generated asset inventory and container policy checks |
@@ -25,9 +23,7 @@ A baseline is active only when its configuration is present on the repository de
 
 | Repository | Role | Baseline | Evidence |
 | --- | --- | --- | --- |
-| [.github](https://github.com/goforj/.github) | Organization security policy | Organization policy | [Policy](https://github.com/goforj/.github/blob/main/SECURITY.md) |
 | [goforj](https://github.com/goforj/goforj) | Framework, generator, and application templates | Framework and generated assets | [Actions](https://github.com/goforj/goforj/actions) |
-| [demo-repository](https://github.com/goforj/demo-repository) | Private workflow and HTML demonstration | Static example | [Actions](https://github.com/goforj/demo-repository/actions) |
 | [docs](https://github.com/goforj/docs) | Documentation frontend and Go backend | Go and npm application | [Actions](https://github.com/goforj/docs/actions) |
 | [atlas](https://github.com/goforj/atlas) | Documentation indexing and generation | Go source | [Actions](https://github.com/goforj/atlas/actions) |
 | [cache](https://github.com/goforj/cache) | Cache contracts and drivers | Go source | [Actions](https://github.com/goforj/cache/actions) |

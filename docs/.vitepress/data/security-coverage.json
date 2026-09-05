@@ -1,10 +1,6 @@
 {
   "reviewed": "2026-09-05",
   "groups": {
-    "governance": {
-      "name": "Organization governance",
-      "focus": "Reporting, inherited policy, and administrator-owned controls"
-    },
     "framework-applications": {
       "name": "Framework and applications",
       "focus": "Generation, templates, application dependencies, and workflow examples"
@@ -27,14 +23,6 @@
     }
   },
   "profiles": {
-    "policy": {
-      "name": "Organization policy",
-      "controls": "Private reporting route and coordinated disclosure policy"
-    },
-    "static-example": {
-      "name": "Static example",
-      "controls": "Immutable actions, scoped permissions, full-history Gitleaks, Dependabot for actions, and HTML proofing"
-    },
     "go-library": {
       "name": "Go source",
       "controls": "CodeQL, govulncheck, Dependency Review, full-history Gitleaks, CycloneDX SBOMs, Dependabot, and immutable actions"
@@ -49,9 +37,7 @@
     }
   },
   "repositories": [
-    { "name": ".github", "role": "Organization security policy", "profile": "policy", "group": "governance" },
     { "name": "goforj", "role": "Framework, generator, and application templates", "profile": "framework", "group": "framework-applications" },
-    { "name": "demo-repository", "role": "Private workflow and HTML demonstration", "profile": "static-example", "group": "framework-applications" },
     { "name": "docs", "role": "Documentation frontend and Go backend", "profile": "go-application", "group": "framework-applications" },
     { "name": "atlas", "role": "Documentation indexing and generation", "profile": "go-library", "group": "developer-tooling" },
     { "name": "cache", "role": "Cache contracts and drivers", "profile": "go-library", "group": "data-workflows" },

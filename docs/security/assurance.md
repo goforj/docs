@@ -13,7 +13,7 @@ A control applies to a repository only when its configuration is present on the 
 
 ## Scope
 
-The assurance baseline covers the GoForj framework, first-party libraries, documentation application, organization policy repository, and demonstration repository. [Repository Coverage](/security/repository-coverage) lists every included repository and links to its evidence.
+The assurance baseline covers the GoForj framework, first-party libraries, and documentation application. [Repository Coverage](/security/repository-coverage) lists every included repository and links to its evidence.
 
 ## Baseline at a Glance
 
