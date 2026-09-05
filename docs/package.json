@@ -21,7 +21,7 @@
     "vitepress": "^2.0.0-alpha.20"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.96",
+    "@iconify-json/lucide": "^1.2.129",
     "@iconify-json/simple-icons": "^1.2.33",
     "mermaid": "^11.16.1",
     "three": "0.170.0"
