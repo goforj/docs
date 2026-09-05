@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/kong v1.13.0
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/gammazero/workerpool v1.1.3
-	github.com/goforj/env v1.0.0
+	github.com/goforj/env v1.1.0
 	github.com/google/wire v0.7.0
 	github.com/labstack/echo/v4 v4.15.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
