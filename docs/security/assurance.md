@@ -15,8 +15,6 @@ A control applies to a repository only when its configuration is present on the 
 
 The assurance baseline covers the GoForj framework, first-party libraries, documentation application, organization policy repository, and demonstration repository. [Repository Coverage](/security/repository-coverage) lists every included repository and links to its evidence.
 
-Ship and Harbor are outside this baseline. They are not implied to have the controls documented here.
-
 ## Baseline at a Glance
 
 | Review Question | GoForj Evidence |
@@ -61,7 +59,7 @@ This baseline is not a certification, penetration test, or guarantee that no vul
 
 Repository workflow runs are the freshest evidence. Scheduled scans detect changes in vulnerability databases even when source does not change, while pull-request scans evaluate proposed changes before merge.
 
-The repository coverage manifest was last reviewed on **September 5, 2026**. Its generator rejects missing, duplicate, unknown, or explicitly excluded repositories so the published matrix cannot silently drift from the declared scope.
+The repository coverage manifest was last reviewed on **September 5, 2026**. Its generator rejects missing, duplicate, or unknown repositories so the published matrix cannot silently drift from the declared scope.
 
 ## Security Contact
 

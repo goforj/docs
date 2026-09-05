@@ -16,7 +16,6 @@ const expectedRepositories = [
   'env', 'events', 'execx', 'godump', 'goforj', 'httpx', 'mail', 'metrics', 'null', 'queue',
   'scheduler', 'storage', 'str', 'web', 'wire'
 ]
-const excludedRepositories = ['harbor', 'ship']
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
 
 validateManifest(manifest)
@@ -77,13 +76,6 @@ function validateManifest(value) {
       throw new Error(`${name}: assessment group must contain a repository`)
     }
   }
-
-  const actualExcluded = value.excluded.map((repository) => repository.name)
-  assertUnique(actualExcluded, 'excluded repository')
-  assertExactSet(actualExcluded, excludedRepositories, 'excluded repositories')
-  for (const repository of value.excluded) {
-    if (!repository.reason?.trim()) throw new Error(`${repository.name}: exclusion reason is required`)
-  }
 }
 
 function assertUnique(values, label) {
@@ -134,18 +126,11 @@ function renderCoverage(value) {
     lines.push(`| [${repository.name}](${repositoryURL}) | ${repository.role} | ${value.profiles[repository.profile].name} | [${evidenceLabel}](${evidenceURL}) |`)
   }
 
-  lines.push('', '## Explicit Exclusions', '', '| Repository | Reason |', '| --- | --- |')
-  for (const repository of value.excluded) {
-    lines.push(`| [${repository.name}](https://github.com/goforj/${repository.name}) | ${repository.reason} |`)
-  }
-
   lines.push(
-    '',
-    'An excluded repository must be assessed independently. Its exclusion is not evidence of either a positive or negative security result.',
     '',
     '## Coverage Maintenance',
     '',
-    'The generator rejects missing, duplicate, unknown, or undeclared excluded repositories. Repository workflows independently discover manifests so module-level coverage does not depend on this documentation list.',
+    'The generator rejects missing, duplicate, or unknown repositories. Repository workflows independently discover manifests so module-level coverage does not depend on this documentation list.',
     '',
     'When the ecosystem scope changes, update the manifest, the generator\'s expected repository set, and the relevant repository controls in the same reviewed change.',
     ''
@@ -179,10 +164,7 @@ function renderAssessment(value, source) {
     lines.push(`| ${group.name} | ${group.focus} | ${repositories} |`)
   }
 
-  const excluded = value.excluded
-    .map((repository) => `[${repository.name}](https://github.com/goforj/${repository.name})`)
-    .join(' and ')
-  lines.push('', `**Explicit exclusions:** ${excluded}. These repositories require independent assessment.`, assessmentEnd)
+  lines.push('', assessmentEnd)
 
   return `${source.slice(0, start)}${lines.join('\n')}${source.slice(end + assessmentEnd.length)}`
 }

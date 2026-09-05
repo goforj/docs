@@ -49,17 +49,8 @@ A baseline is active only when its configuration is present on the repository de
 | [web](https://github.com/goforj/web) | HTTP contracts, middleware, and adapters | Go source | [Actions](https://github.com/goforj/web/actions) |
 | [wire](https://github.com/goforj/wire) | Compile-time dependency injection | Go source | [Actions](https://github.com/goforj/wire/actions) |
 
-## Explicit Exclusions
-
-| Repository | Reason |
-| --- | --- |
-| [ship](https://github.com/goforj/ship) | Excluded from the current security baseline |
-| [harbor](https://github.com/goforj/harbor) | Excluded from the current security baseline |
-
-An excluded repository must be assessed independently. Its exclusion is not evidence of either a positive or negative security result.
-
 ## Coverage Maintenance
 
-The generator rejects missing, duplicate, unknown, or undeclared excluded repositories. Repository workflows independently discover manifests so module-level coverage does not depend on this documentation list.
+The generator rejects missing, duplicate, or unknown repositories. Repository workflows independently discover manifests so module-level coverage does not depend on this documentation list.
 
 When the ecosystem scope changes, update the manifest, the generator's expected repository set, and the relevant repository controls in the same reviewed change.
