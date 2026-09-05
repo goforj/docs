@@ -3,7 +3,7 @@ module github.com/goforj/docs
 go 1.26.0
 
 require (
-	github.com/alecthomas/kong v1.13.0
+	github.com/alecthomas/kong v1.16.1
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/gammazero/workerpool v1.1.3
 	github.com/goforj/env v1.0.0
