@@ -10,7 +10,7 @@ require (
 	github.com/google/wire v0.7.0
 	github.com/labstack/echo/v4 v4.15.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/rs/zerolog v1.34.0
+	github.com/rs/zerolog v1.35.1
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/text v0.41.0
 )
