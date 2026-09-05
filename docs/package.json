@@ -17,7 +17,7 @@
     "preview": "vitepress preview ."
   },
   "devDependencies": {
-    "playwright": "^1.60.0",
+    "playwright": "^1.62.1",
     "vitepress": "^2.0.0-alpha.20"
   },
   "dependencies": {
