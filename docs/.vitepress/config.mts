@@ -918,6 +918,11 @@ const applicationsSidebar = sectionSidebar('Applications', [
 
 const securitySidebar = sectionSidebar('Security', [
   { text: 'Overview', link: '/security/' },
+  { text: 'Security Assurance', link: '/security/assurance' },
+  { text: 'Security Controls', link: '/security/controls' },
+  { text: 'Repository Coverage', link: '/security/repository-coverage' },
+  { text: 'Vulnerability Management', link: '/security/vulnerability-management' },
+  { text: 'Enterprise Assessment', link: '/security/enterprise-assessment' },
   { text: 'Auth', link: '/security/auth' },
   { text: 'Sessions and Cookies', link: '/security/sessions-cookies' },
   { text: 'OAuth', link: '/security/oauth' },
