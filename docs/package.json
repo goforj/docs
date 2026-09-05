@@ -24,6 +24,6 @@
     "@iconify-json/lucide": "^1.2.96",
     "@iconify-json/simple-icons": "^1.2.33",
     "mermaid": "^11.16.1",
-    "three": "0.170.0"
+    "three": "0.185.1"
   }
 }
