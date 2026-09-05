@@ -1,16 +1,36 @@
 version: 2
+# Compatible releases are batched by dependency surface to keep CI evidence
+# complete without opening one pull request per package.
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+      day: friday
+    open-pull-requests-limit: 3
+    groups:
+      actions-compatible:
+        patterns: ["*"]
+        update-types: [minor, patch]
 
   - package-ecosystem: gomod
     directory: /backend
     schedule:
       interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      backend-go-compatible:
+        patterns: ["*"]
+        update-types: [minor, patch]
 
   - package-ecosystem: npm
     directory: /docs
     schedule:
       interval: weekly
+      day: wednesday
+    open-pull-requests-limit: 3
+    groups:
+      docs-npm-compatible:
+        patterns: ["*"]
+        update-types: [minor, patch]
