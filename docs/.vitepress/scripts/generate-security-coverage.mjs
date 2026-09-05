@@ -12,7 +12,7 @@ const assessmentStart = '<!-- security-coverage:assessment:start -->'
 const assessmentEnd = '<!-- security-coverage:assessment:end -->'
 
 const expectedRepositories = [
-  '.github', 'atlas', 'cache', 'collection', 'console', 'crypt', 'demo-repository', 'docs',
+  'atlas', 'cache', 'collection', 'console', 'crypt', 'docs',
   'env', 'events', 'execx', 'godump', 'goforj', 'httpx', 'mail', 'metrics', 'null', 'queue',
   'scheduler', 'storage', 'str', 'web', 'wire'
 ]
@@ -121,9 +121,7 @@ function renderCoverage(value) {
   lines.push('', '## Included Repositories', '', '| Repository | Role | Baseline | Evidence |', '| --- | --- | --- | --- |')
   for (const repository of value.repositories) {
     const repositoryURL = `https://github.com/goforj/${repository.name}`
-    const evidenceURL = repository.profile === 'policy' ? `${repositoryURL}/blob/main/SECURITY.md` : `${repositoryURL}/actions`
-    const evidenceLabel = repository.profile === 'policy' ? 'Policy' : 'Actions'
-    lines.push(`| [${repository.name}](${repositoryURL}) | ${repository.role} | ${value.profiles[repository.profile].name} | [${evidenceLabel}](${evidenceURL}) |`)
+    lines.push(`| [${repository.name}](${repositoryURL}) | ${repository.role} | ${value.profiles[repository.profile].name} | [Actions](${repositoryURL}/actions) |`)
   }
 
   lines.push(

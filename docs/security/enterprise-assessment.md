@@ -15,15 +15,14 @@ For Apps created by GoForj, include the framework version, selected first-party 
 
 ## Assessed Repository Estate
 
-The baseline covers all 23 repositories below. The grouping makes the reviewed security boundaries visible, while [Repository Coverage](/security/repository-coverage) maps each repository to its exact control profile and current evidence.
+The baseline covers all 21 repositories below. The grouping makes the reviewed security boundaries visible, while [Repository Coverage](/security/repository-coverage) maps each repository to its exact control profile and current evidence.
 
 <!-- security-coverage:assessment:start -->
 <!-- This section is generated from .vitepress/data/security-coverage.json. -->
 
 | Reviewed Area | Primary Security Focus | Repositories |
 | --- | --- | --- |
-| Organization governance | Reporting, inherited policy, and administrator-owned controls | [.github](https://github.com/goforj/.github) |
-| Framework and applications | Generation, templates, application dependencies, and workflow examples | [goforj](https://github.com/goforj/goforj), [demo-repository](https://github.com/goforj/demo-repository), [docs](https://github.com/goforj/docs) |
+| Framework and applications | Generation, templates, application dependencies, and workflow examples | [goforj](https://github.com/goforj/goforj), [docs](https://github.com/goforj/docs) |
 | Data and workflows | Drivers, remote services, credentials, retries, and distributed coordination | [cache](https://github.com/goforj/cache), [events](https://github.com/goforj/events), [metrics](https://github.com/goforj/metrics), [queue](https://github.com/goforj/queue), [scheduler](https://github.com/goforj/scheduler), [storage](https://github.com/goforj/storage) |
 | Network and process boundaries | HTTP behavior, redirects, headers, command execution, mail, and transport security | [execx](https://github.com/goforj/execx), [httpx](https://github.com/goforj/httpx), [mail](https://github.com/goforj/mail), [web](https://github.com/goforj/web) |
 | Configuration and sensitive values | Encryption, environment secrets, serialization, and safe defaults | [crypt](https://github.com/goforj/crypt), [env](https://github.com/goforj/env), [null](https://github.com/goforj/null) |
