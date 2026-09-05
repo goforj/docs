@@ -72,9 +72,5 @@
     { "name": "str", "role": "String helpers", "profile": "go-library", "group": "developer-tooling" },
     { "name": "web", "role": "HTTP contracts, middleware, and adapters", "profile": "go-library", "group": "network-process" },
     { "name": "wire", "role": "Compile-time dependency injection", "profile": "go-library", "group": "developer-tooling" }
-  ],
-  "excluded": [
-    { "name": "ship", "reason": "Excluded from the current security baseline" },
-    { "name": "harbor", "reason": "Excluded from the current security baseline" }
   ]
 }

@@ -29,7 +29,6 @@ The baseline covers all 23 repositories below. The grouping makes the reviewed s
 | Configuration and sensitive values | Encryption, environment secrets, serialization, and safe defaults | [crypt](https://github.com/goforj/crypt), [env](https://github.com/goforj/env), [null](https://github.com/goforj/null) |
 | Generation and developer tooling | Remote repository input, generated code, terminal output, diagnostics, and helper behavior | [atlas](https://github.com/goforj/atlas), [collection](https://github.com/goforj/collection), [console](https://github.com/goforj/console), [godump](https://github.com/goforj/godump), [str](https://github.com/goforj/str), [wire](https://github.com/goforj/wire) |
 
-**Explicit exclusions:** [ship](https://github.com/goforj/ship) and [harbor](https://github.com/goforj/harbor). These repositories require independent assessment.
 <!-- security-coverage:assessment:end -->
 
 ## Evidence Checklist
