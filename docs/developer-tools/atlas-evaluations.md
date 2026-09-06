@@ -38,15 +38,13 @@ A successful attempt must provide the requested behavior. Preferred command use 
 ## Evaluation Flow
 
 ```mermaid
-flowchart TD
-    A[Natural application request] --> B[Disposable prepared Project]
-    B --> C[Fresh agent session]
-    C --> D[One guidance profile]
+flowchart LR
+    A[Natural request] --> D[Fresh agent session]
+    B[Prepared Project] --> D
+    C[Guidance profile] --> D
     D --> E[Application changes]
-    E --> F[Seal candidate evidence]
-    F --> G[Supervisor-owned verification]
-    G --> H[Authenticated result artifact]
-    H --> I[Per-evaluation scorecard]
+    E --> F[Independent verification]
+    F --> G[Authenticated result]
 ```
 
 Every treatment receives an independent writable copy of equivalent prepared state. Agent sessions are fresh and do not resume earlier conversations. The runner records the exact agent, model, Atlas version, GoForj revision, evaluation catalog, backend, and executable identities used for the attempt.
