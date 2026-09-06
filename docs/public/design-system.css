@@ -5131,6 +5131,11 @@ div[class*='language-'] .lang {
     margin-top: 16px;
 }
 
+.vp-doc details[open] > :not(summary) {
+    margin-right: clamp(12px, 2vw, 24px);
+    margin-left: clamp(12px, 2vw, 24px);
+}
+
 /* --- Keyboard keys: physical, neutral --------------------- */
 .vp-doc kbd {
     background-color: var(--gf-surface-2);
