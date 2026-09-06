@@ -14,6 +14,7 @@
       ["blog/**/*.md", "reference"],
       ["core/**/*.md", "concept"],
       ["getting-started/**/*.md", "task"],
+      ["developer-tools/atlas-evaluations.md", "reference"],
       ["developer-tools/**/*.md", "task"],
       ["testing/**/*.md", "task"],
       ["applications/{api-index,http-services,mail}.md", "feature"],
