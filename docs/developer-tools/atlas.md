@@ -9,6 +9,8 @@ Atlas gives AI coding agents enough local project context to work inside a GoFor
 
 It is optional, but first-class. During `forj new`, the `Atlas - Agent Support` step can install agent guidance for the tools you use. Atlas can also be added later from an existing project.
 
+See the [Atlas Evaluation Program](/developer-tools/atlas-evaluations) for the evaluation method, complete scenario portfolio, latest four-profile scorecard, and current trust limitations.
+
 ## Install and Verify
 
 During project creation, run the wizard:
@@ -289,6 +291,7 @@ forj atlas:mcp
 
 ## Related
 
+- [Atlas Evaluation Program](/developer-tools/atlas-evaluations)
 - [Quickstart](/getting-started/quickstart)
 - [Make Command Reference](/reference/make-commands)
 - [Apps](/core/apps)

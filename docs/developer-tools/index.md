@@ -12,6 +12,7 @@ Start with [forj dev](/developer-tools/forj-dev) for local App lifecycle orchest
 ## Pages
 
 - [Atlas](/developer-tools/atlas)
+- [Atlas Evaluation Program](/developer-tools/atlas-evaluations)
 - [Atlas Debug Recipes](/developer-tools/atlas-debug-recipes)
 - [forj dev](/developer-tools/forj-dev)
 - [Make Command Shared Options](/reference/make-commands#shared-options)

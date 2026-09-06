@@ -1004,6 +1004,7 @@ const developerToolsSidebar = sectionSidebar('Developer Tools', [
   { text: 'Wiring Recipes', link: '/developer-tools/wiring-recipes' },
   { text: 'Reading Wire Errors', link: '/developer-tools/reading-wire-errors' },
   { text: 'Atlas', link: '/developer-tools/atlas' },
+  { text: 'Atlas Evaluation Program', link: '/developer-tools/atlas-evaluations' },
   { text: 'Atlas Debug Recipes', link: '/developer-tools/atlas-debug-recipes' },
   { text: 'forj dev', link: '/developer-tools/forj-dev' }
 ])
