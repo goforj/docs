@@ -5119,6 +5119,8 @@ div[class*='language-'] .lang {
 .vp-doc details {
     border: 1px solid var(--gf-line);
     background-color: var(--gf-ground-alt);
+    padding-right: 10px;
+    padding-left: 10px;
 }
 .vp-doc details summary {
     font-weight: 500;
@@ -5129,11 +5131,6 @@ div[class*='language-'] .lang {
 
 .vp-doc details + details {
     margin-top: 16px;
-}
-
-.vp-doc details[open] > :not(summary) {
-    margin-right: clamp(12px, 2vw, 24px);
-    margin-left: clamp(12px, 2vw, 24px);
 }
 
 /* --- Keyboard keys: physical, neutral --------------------- */
