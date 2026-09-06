@@ -5127,6 +5127,10 @@ div[class*='language-'] .lang {
 }
 .vp-doc details summary::marker { color: var(--gf-nav); }
 
+.vp-doc details + details {
+    margin-top: 16px;
+}
+
 /* --- Keyboard keys: physical, neutral --------------------- */
 .vp-doc kbd {
     background-color: var(--gf-surface-2);
