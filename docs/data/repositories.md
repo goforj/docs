@@ -57,6 +57,30 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 
 Keep service inputs independent from database model structs unless that type is intentionally the application model.
 
+## Relationships
+
+Use `forj make:model <table> --package <package>` when an existing table needs the conventional schema-derived model and repository scaffold. Inspect the real table, foreign keys, and nearby package ownership first. The generator derives columns from the selected table and reads supported relationship declarations from `.db-relationships.yaml`.
+
+For example, this declaration gives generated users their related posts while keeping the key mapping explicit and schema-validated:
+
+```yaml
+users:
+  - "1-many id->posts:user_id"
+```
+
+Generate the referenced model in the same package before the model that exposes it:
+
+```bash
+forj make:model posts --package content
+forj make:model users --package content
+```
+
+The generated user model receives the relationship field and reports its eager-loading path through `Relationships()`.
+
+The config owns the generated relationship fields. Repositories still own persistence-specific joins, preloads, and mapping across related rows. Return a domain or application result that expresses what the caller needs rather than making controllers, commands, jobs, or frontend code navigate database relationships directly.
+
+For example, a billing repository can return `InvoiceDetails` containing an invoice and its line items. Whether that query uses a join, preload, or separate bounded reads stays behind the repository method and can change without rewriting its callers.
+
 ## Named Connections
 
 Use named connections when a feature has a real persistence boundary:

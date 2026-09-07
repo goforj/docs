@@ -97,16 +97,10 @@ import (
 	"fmt"
 )
 
-// DailyTarget carries the stable identity required to queue a report without loading the full user model.
-type DailyTarget struct {
-	UserID string
-	Email  string
-}
-
 // DailyTargetRepository keeps schedule eligibility rules behind the application's persistence boundary.
 type DailyTargetRepository interface {
-	// ListDailyReportTargets returns only the stable fields needed to enqueue daily work.
-	ListDailyReportTargets(ctx context.Context) ([]DailyTarget, error)
+	// ListDailyReportTargets returns only stable identities needed to enqueue daily work.
+	ListDailyReportTargets(ctx context.Context) ([]string, error)
 }
 
 // DailyRunner turns one scheduler invocation into queue-backed report jobs without generating reports inline.
@@ -130,9 +124,9 @@ func (r *DailyRunner) Run(ctx context.Context) error {
 		return fmt.Errorf("load daily report targets: %w", err)
 	}
 
-	for _, target := range targets {
-		if err := r.queue.Queue(ctx, target.UserID, target.Email); err != nil {
-			return fmt.Errorf("queue daily report for %s: %w", target.UserID, err)
+	for _, userID := range targets {
+		if err := r.queue.Queue(ctx, userID); err != nil {
+			return fmt.Errorf("queue daily report for %s: %w", userID, err)
 		}
 	}
 
@@ -142,19 +136,7 @@ func (r *DailyRunner) Run(ctx context.Context) error {
 
 ## Step 2: Add Daily Targets to the Repository
 
-Extend `MemoryUserRepository` so the schedule can ask the repository for due report targets.
-
-Update `internal/users/repository.go` so it includes:
-
-```go
-"github.com/goforj/cache"
-
-"your/module/internal/reports"
-```
-
-## Step 3: Implement Daily Target Lookup
-
-Keep target selection behind the repository boundary.
+Extend `MemoryUserRepository` so the schedule can ask for due user IDs while target selection stays behind the persistence boundary.
 
 Update `internal/users/repository.go` so it includes:
 
@@ -173,22 +155,19 @@ func (r *MemoryUserRepository) Save(_ context.Context, user User) (User, error) 
 }
 
 // ListDailyReportTargets keeps selection behind the repository; this in-memory example treats every user as due.
-func (r *MemoryUserRepository) ListDailyReportTargets(_ context.Context) ([]reports.DailyTarget, error) {
+func (r *MemoryUserRepository) ListDailyReportTargets(_ context.Context) ([]string, error) {
         r.mu.RLock()
         defer r.mu.RUnlock()
 
-	targets := make([]reports.DailyTarget, 0, len(r.users))
-	for _, user := range r.users {
-		targets = append(targets, reports.DailyTarget{
-			UserID: user.ID,
-			Email:  user.Email,
-		})
-	}
-	return targets, nil
+        targets := make([]string, 0, len(r.users))
+        for _, user := range r.users {
+                targets = append(targets, user.ID)
+        }
+        return targets, nil
 }
 ```
 
-## Step 4: Scaffold the Daily Schedule
+## Step 3: Scaffold the Daily Schedule
 
 Use the App-owned generator so the schedule enters the existing `AppSchedules` collection without replacing the App registry or any schedules already registered there.
 
@@ -196,7 +175,7 @@ Use the App-owned generator so the schedule enters the existing `AppSchedules` c
 forj make:schedule reports:daily --every 24h --no-open
 ```
 
-## Step 5: Connect the Schedule to the Runner
+## Step 4: Connect the Schedule to the Runner
 
 Replace the new App-owned schedule scaffold with its real dependency and handler. Its constructor is already present in `app/wire/inject_schedules_app.go`, so Wire supplies `DailyRunner` when it builds the schedule collection.
 
@@ -237,7 +216,7 @@ func (s *DailySchedule) Handle(ctx context.Context) error {
 }
 ```
 
-## Step 6: Wire the Runner
+## Step 5: Wire the Runner
 
 The previous scenario already binds the report job to `ReportQueue`. Add the daily runner and bind the user repository to daily target lookup.
 
@@ -249,7 +228,7 @@ reports.NewDailyRunner,
 wire.Bind(new(reports.DailyTargetRepository), new(*users.MemoryUserRepository)),
 ```
 
-## Step 7: Test the Runner
+## Step 6: Test the Runner
 
 Create `internal/reports/daily_test.go`.
 
@@ -269,31 +248,28 @@ import (
 
 // fakeDailyTargetRepository gives the runner a fixed eligibility result without persistence setup.
 type fakeDailyTargetRepository struct {
-	targets []DailyTarget
+	targets []string
 }
 
 // ListDailyReportTargets returns the fixture's declared targets so the test controls schedule input.
-func (repo fakeDailyTargetRepository) ListDailyReportTargets(context.Context) ([]DailyTarget, error) {
+func (repo fakeDailyTargetRepository) ListDailyReportTargets(context.Context) ([]string, error) {
 	return repo.targets, nil
 }
 
 // recordingReportQueue exposes queued targets without starting a worker runtime.
 type recordingReportQueue struct {
-	queued []DailyTarget
+	queued []string
 }
 
 // Queue records the job-dispatch boundary while satisfying the same interface as the generated report job.
-func (queue *recordingReportQueue) Queue(_ context.Context, userID string, email string) error {
-	queue.queued = append(queue.queued, DailyTarget{UserID: userID, Email: email})
+func (queue *recordingReportQueue) Queue(_ context.Context, userID string) error {
+	queue.queued = append(queue.queued, userID)
 	return nil
 }
 
 // TestDailyRunnerQueuesReports proves one schedule invocation dispatches every eligible target exactly once.
 func TestDailyRunnerQueuesReports(t *testing.T) {
-	targets := []DailyTarget{
-		{UserID: "42", Email: "ada@example.test"},
-		{UserID: "43", Email: "grace@example.test"},
-	}
+	targets := []string{"42", "43"}
 	queue := &recordingReportQueue{}
 	runner := NewDailyRunner(
 		fakeDailyTargetRepository{targets: targets},

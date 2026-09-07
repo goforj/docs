@@ -85,11 +85,15 @@ CACHE_PROFILES_DEFAULT_TTL_SECONDS=300
 CACHE_PROFILES_PREFIX=profiles
 ```
 
+## Step 2: Refresh Cache Resources
+
+Run the build pipeline after changing named resource configuration.
+
 ```bash
 forj build
 ```
 
-## Step 2: Add the Repository
+## Step 3: Add the Repository
 
 Create `internal/users/repository.go`.
 
@@ -190,7 +194,7 @@ func profileCacheKey(id string) string {
 }
 ```
 
-## Step 3: Use the Repository in the Service
+## Step 4: Use the Repository in the Service
 
 Replace `internal/users/service.go`.
 
@@ -237,7 +241,7 @@ func (s *Service) Find(ctx context.Context, id string) (User, error) {
 }
 ```
 
-## Step 4: Wire the Repository and Cache
+## Step 5: Wire the Repository and Cache
 
 Open `app/wire/inject_services_app.go`.
 
@@ -252,7 +256,7 @@ import (
         "your/module/internal/caches"
 ```
 
-## Step 5: Add Repository Providers
+## Step 6: Add Repository Providers
 
 Add the source repository, cached repository provider, and named cache provider.
 
@@ -265,7 +269,7 @@ provideUserRepository,
 users.NewService,
 ```
 
-## Step 6: Add Provider Functions
+## Step 7: Add Provider Functions
 
 `provideUserProfileCache` selects the named resource. `provideUserRepository` keeps the service wired to the repository interface.
 
@@ -283,7 +287,7 @@ func provideUserProfileCache(manager *caches.Manager) *cache.Cache {
 }
 ```
 
-## Step 7: Add Repository Tests
+## Step 8: Add Repository Tests
 
 Create `internal/users/repository_test.go`.
 
@@ -339,7 +343,7 @@ func TestCachedUserRepositoryFindsAndCachesUser(t *testing.T) {
 }
 ```
 
-## Step 8: Update the Service Test
+## Step 9: Update the Service Test
 
 Keep the service test focused on service behavior.
 

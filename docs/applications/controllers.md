@@ -204,6 +204,31 @@ report, err := c.service.Generate(ctx.Context(), input)
 
 Use `web.Context` for HTTP-specific behavior such as params, binding, response helpers, request metadata, and response writing.
 
+## Cacheable File Responses
+
+When a controller returns an image or another stable file, choose an explicit browser cache policy and support revalidation when the content has a stable version. Keep authorization and storage lookup in the service; the controller translates the returned representation into HTTP headers and status codes.
+
+<!-- go-example: illustrative-fragment -->
+```go
+func (c *Controller) Image(r web.Context) error {
+	image, err := c.service.Image(r.Context(), r.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	etag := `"` + image.Digest + `"`
+	r.SetHeader("Cache-Control", "private, max-age=0, must-revalidate")
+	r.SetHeader("ETag", etag)
+	if r.Request().Header.Get("If-None-Match") == etag {
+		return r.NoContent(http.StatusNotModified)
+	}
+
+	return r.Blob(http.StatusOK, image.ContentType, image.Body)
+}
+```
+
+The cache policy depends on the resource. Public immutable assets can use a long lifetime and content-addressed URL. Private or replaceable media usually needs a validator and an authorization decision on each revalidation. Test both the initial `200` response and the matching conditional request that returns `304 Not Modified` without a response body.
+
 ## Next Steps
 
 - [JSON API Route](/scenarios/json-api-route) follows a complete controller, service, test, build, route-list, and request workflow.

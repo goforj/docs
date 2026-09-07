@@ -865,6 +865,16 @@ forj make:model invoices --package billing
 
 The positional argument is the exact name of an existing table. The generator inspects `invoices` through the default database connection, so that connection must be available. It does not create or migrate the table, and `make:model` does not select a named connection. The generated Go type and filename are singularized from the inspected table name; when an exact table is missing, the command may suggest an existing singular or plural variant. Models use `--package` rather than `-d` because their placement follows database table ownership.
 
+By default, `make:model` also reads `.db-relationships.yaml`. Use `--config <path>` when the Project keeps that relationship contract elsewhere. Relationship declarations are explicit so the generator can validate every referenced local, remote, and join key against the active schema before changing source.
+
+```yaml
+users:
+  - "1-many id->posts:user_id"
+  - "many-many id->roles:id via user_roles:user_id:role_id"
+```
+
+Supported declarations cover one-to-many, many-to-many, and polymorphic relationships. Generate every referenced model in the same package when the resulting fields refer to one another. Keep application-specific query selection, preload policy, and result mapping in repository methods rather than making transports navigate persistence relationships.
+
 ```bash
 forj make:model invoices --package billing --remove
 ```
@@ -1164,7 +1174,7 @@ Generated files are starting points. Your App still owns:
 - schedule intervals and handler behavior
 - event payloads and subscribers
 - migration SQL
-- model relationships and repository options
+- repository query, preload, and persistence options beyond the generated relationship contract
 
 Keep dependencies explicit. If a generated controller, command, or job needs an application service, add that service constructor to the right provider set and let Wire pass it in.
 
