@@ -920,6 +920,7 @@ const securitySidebar = sectionSidebar('Security', [
   { text: 'Overview', link: '/security/' },
   { text: 'Security Assurance', link: '/security/assurance' },
   { text: 'Security Controls', link: '/security/controls' },
+  { text: 'Threat Model', link: '/security/threat-model' },
   { text: 'Repository Coverage', link: '/security/repository-coverage' },
   { text: 'Vulnerability Management', link: '/security/vulnerability-management' },
   { text: 'Enterprise Assessment', link: '/security/enterprise-assessment' },

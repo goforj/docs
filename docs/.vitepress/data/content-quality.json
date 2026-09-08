@@ -28,6 +28,7 @@
       ["security/controls.md", "reference"],
       ["security/enterprise-assessment.md", "reference"],
       ["security/repository-coverage.md", "reference"],
+      ["security/threat-model.md", "concept"],
       ["security/vulnerability-management.md", "concept"],
       ["security/**/*.md", "feature"],
       ["frontend/**/*.md", "feature"],

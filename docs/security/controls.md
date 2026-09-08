@@ -17,6 +17,7 @@ GoForj uses complementary controls because no single scanner covers source, depe
 | Dependency Review | Pull requests that change dependency resolution | Newly introduced dependency vulnerabilities, licenses, and supply-chain changes are visible before merge | It reviews the pull-request delta and requires the GitHub dependency graph |
 | Gitleaks | Pull requests, default-branch pushes, schedules, and manual runs | Complete Git history is checked for known secret patterns and output is redacted | Pattern matching can miss unknown formats and cannot scan external secret stores |
 | CycloneDX SBOM | Security and supply-chain workflows | Every discovered manifest has a machine-readable dependency inventory with validated identity and contents | A CI artifact is not a signed release attestation and follows artifact retention policy |
+| Resolved dependency submission | Default-branch security runs in applicable multi-module repositories | GitHub receives the dependency graph resolved from each current Go module, so obsolete module history does not remain the active alert graph | The snapshot covers repository Go modules, not software downloaded or produced outside the reviewed build |
 | Dependabot | Weekly | Go modules, npm packages, and GitHub Actions receive update proposals for declared manifests | An update proposal still requires CI and maintainer review |
 | Immutable action references | Every workflow run | Third-party workflow code resolves to a reviewed commit instead of a mutable tag | A pinned dependency can later receive an advisory and still needs update monitoring |
 | Unit, integration, race, vet, and compatibility checks | Repository-specific CI events | Supported behavior, concurrency, static correctness, and minimum Go claims are exercised where configured | Tests establish only the behavior represented by their cases and environments |
@@ -43,6 +44,19 @@ An unresolved upstream advisory can be recorded only for its exact advisory, mod
 ### Keep Ownership Visible
 
 CodeQL default setup and Dependency Review depend on GitHub organization settings. Repository workflows own the remaining automation and link findings to the source revision that produced them. Reviewers should verify both layers when collecting evidence.
+
+### Reconcile Dependency Evidence
+
+Multi-module repositories can retain old dependency resolutions in GitHub's
+built-in graph after a module changes or disappears. Applicable repositories
+build one dependency snapshot from their current per-module CycloneDX SBOMs and
+submit it only from the default branch. Pull requests build and validate the
+same snapshot without write permission.
+
+The submitted graph preserves module paths, direct and transitive
+relationships, and runtime or development scope. This lets GitHub reconcile
+Dependabot alerts against current resolved modules without dismissing findings
+or forcing unused dependency pins into `go.mod`.
 
 ## Evidence Locations
 

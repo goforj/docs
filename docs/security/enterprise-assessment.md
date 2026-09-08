@@ -40,7 +40,8 @@ The baseline covers all 21 repositories below. The grouping makes the reviewed s
 | Inventory | Validated CycloneDX CI SBOMs for discovered manifests | Application and release SBOM retention, signing, and asset inventory |
 | Secrets | Full-history Gitleaks scanning | Secrets manager, rotation, access review, and production leak detection |
 | Runtime security | Hardened framework behavior and [Production Hardening](/security/production-hardening) guidance | Network policy, identity, authorization, encryption, logging, backups, and operator controls |
-| Incident response | Private reporting policy and coordinated disclosure process | Internal triage, escalation, notification, forensics, recovery, and exercise evidence |
+| Threat modeling | GoForj [trust boundaries, threats, mitigations, and residual risks](/security/threat-model) | Application data flows, abuse cases, authorization, tenant boundaries, and accepted risks |
+| Incident response | Organization-wide [reporting, response targets, and coordinated disclosure policy](https://github.com/goforj/.github/security/policy) | Internal triage, escalation, notification, forensics, recovery, and exercise evidence |
 | Release integrity | Tagged public source and CI results | Approved build system, artifact signing, provenance, promotion, and rollback controls |
 
 ## Questions the Baseline Can Answer
@@ -69,11 +70,12 @@ Provide reviewers with:
 
 1. This [Security Assurance](/security/assurance) entry point.
 2. The [control definitions and limits](/security/controls).
-3. The [repository coverage matrix](/security/repository-coverage) filtered to adopted components.
-4. The application dependency graph and retained SBOMs.
-5. Links or exports for the latest successful required workflows and open security findings.
-6. The application's threat model, data-flow diagram, deployment architecture, and production hardening record.
-7. The enterprise exception register and remediation owners.
+3. The GoForj [Threat Model](/security/threat-model), extended for the application and deployment.
+4. The [repository coverage matrix](/security/repository-coverage) filtered to adopted components.
+5. The application dependency graph and retained SBOMs.
+6. Links or exports for the latest successful required workflows and open security findings.
+7. The application's data-flow diagram, deployment architecture, authorization model, and production hardening record.
+8. The enterprise exception register and remediation owners.
 
 ## Interpreting the Result
 
