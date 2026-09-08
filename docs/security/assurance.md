@@ -51,15 +51,22 @@ This baseline is not a certification, penetration test, or guarantee that no vul
 
 1. Use [Repository Coverage](/security/repository-coverage) to confirm that every adopted GoForj repository is in scope.
 2. Use [Security Controls](/security/controls) to inspect how findings are produced and kept actionable.
-3. Read [Vulnerability Management](/security/vulnerability-management) for private reporting, remediation, disclosure, and exception handling.
-4. Complete the [Enterprise Assessment](/security/enterprise-assessment) with the controls owned by your deployment.
-5. Review [Production Hardening](/security/production-hardening) before promoting an App.
+3. Use the [Threat Model](/security/threat-model) to review assets, trust boundaries, mitigations, and residual risks.
+4. Read [Vulnerability Management](/security/vulnerability-management) for private reporting, remediation, disclosure, and exception handling.
+5. Complete the [Enterprise Assessment](/security/enterprise-assessment) with the controls owned by your deployment.
+6. Review [Production Hardening](/security/production-hardening) before promoting an App.
 
 ## Evidence Freshness
 
 Repository workflow runs are the freshest evidence. Scheduled scans detect changes in vulnerability databases even when source does not change, while pull-request scans evaluate proposed changes before merge.
 
-The repository coverage manifest was last reviewed on **September 5, 2026**. Its generator rejects missing, duplicate, or unknown repositories so the published matrix cannot silently drift from the declared scope.
+On **September 8, 2026**, all 21 in-scope repositories had zero open Dependabot
+alerts. Resolved dependency submissions in `cache`, `events`, and `storage`
+reconciled 147 alerts caused by obsolete module history without dismissing them
+or adding unused dependency pins. Current alert state remains available through
+the direct Dependabot links in [Repository Coverage](/security/repository-coverage).
+
+The repository coverage manifest was last reviewed on **September 8, 2026**. Its generator rejects missing, duplicate, or unknown repositories so the published matrix cannot silently drift from the declared scope.
 
 ## Security Contact
 

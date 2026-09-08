@@ -121,7 +121,12 @@ function renderCoverage(value) {
   lines.push('', '## Included Repositories', '', '| Repository | Role | Baseline | Evidence |', '| --- | --- | --- | --- |')
   for (const repository of value.repositories) {
     const repositoryURL = `https://github.com/goforj/${repository.name}`
-    lines.push(`| [${repository.name}](${repositoryURL}) | ${repository.role} | ${value.profiles[repository.profile].name} | [Actions](${repositoryURL}/actions) |`)
+    const evidence = [
+      `[Actions](${repositoryURL}/actions?query=branch%3Amain)`,
+      `[Dependabot](${repositoryURL}/security/dependabot)`,
+      `[Code scanning](${repositoryURL}/security/code-scanning)`
+    ].join(', ')
+    lines.push(`| [${repository.name}](${repositoryURL}) | ${repository.role} | ${value.profiles[repository.profile].name} | ${evidence} |`)
   }
 
   lines.push(

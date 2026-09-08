@@ -20,6 +20,7 @@ Enterprise reviewers can start with [Security Assurance](/security/assurance) fo
 
 - [Security Assurance](/security/assurance) provides the single entry point for a security review.
 - [Security Controls](/security/controls) explains what each automated control proves and does not prove.
+- [Threat Model](/security/threat-model) maps assets, trust boundaries, threats, mitigations, ownership, and residual risks.
 - [Repository Coverage](/security/repository-coverage) maps every in-scope repository to its baseline and evidence.
 - [Vulnerability Management](/security/vulnerability-management) explains reporting, remediation, and exceptions.
 - [Enterprise Assessment](/security/enterprise-assessment) separates GoForj evidence from deployment-owned controls.
