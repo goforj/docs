@@ -42,7 +42,7 @@ The baseline covers all 21 repositories below. The grouping makes the reviewed s
 | Runtime security | Hardened framework behavior and [Production Hardening](/security/production-hardening) guidance | Network policy, identity, authorization, encryption, logging, backups, and operator controls |
 | Threat modeling | GoForj [trust boundaries, threats, mitigations, and residual risks](/security/threat-model) | Application data flows, abuse cases, authorization, tenant boundaries, and accepted risks |
 | Incident response | Organization-wide [reporting, response targets, and coordinated disclosure policy](https://github.com/goforj/.github/security/policy) | Internal triage, escalation, notification, forensics, recovery, and exercise evidence |
-| Release integrity | Tagged public source and CI results | Approved build system, artifact signing, provenance, promotion, and rollback controls |
+| Release integrity | Versioned public Go modules, checksum transparency, and CI results | Approved source intake, build system, artifact signing, provenance, promotion, and rollback controls |
 
 ## Questions the Baseline Can Answer
 
@@ -74,8 +74,9 @@ Provide reviewers with:
 4. The [repository coverage matrix](/security/repository-coverage) filtered to adopted components.
 5. The application dependency graph and retained SBOMs.
 6. Links or exports for the latest successful required workflows and open security findings.
-7. The application's data-flow diagram, deployment architecture, authorization model, and production hardening record.
-8. The enterprise exception register and remediation owners.
+7. The [source and build integrity record](/security/source-build-integrity) for the approved framework version and deployable application artifact.
+8. The application's data-flow diagram, deployment architecture, authorization model, and production hardening record.
+9. The enterprise exception register and remediation owners.
 
 ## Interpreting the Result
 

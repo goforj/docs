@@ -53,8 +53,9 @@ This baseline is not a certification, penetration test, or guarantee that no vul
 2. Use [Security Controls](/security/controls) to inspect how findings are produced and kept actionable.
 3. Use the [Threat Model](/security/threat-model) to review assets, trust boundaries, mitigations, and residual risks.
 4. Read [Vulnerability Management](/security/vulnerability-management) for private reporting, remediation, disclosure, and exception handling.
-5. Complete the [Enterprise Assessment](/security/enterprise-assessment) with the controls owned by your deployment.
-6. Review [Production Hardening](/security/production-hardening) before promoting an App.
+5. Follow [Source and Build Integrity](/security/source-build-integrity) to verify the approved module version and preserve its identity through the application build.
+6. Complete the [Enterprise Assessment](/security/enterprise-assessment) with the controls owned by your deployment.
+7. Review [Production Hardening](/security/production-hardening) before promoting an App.
 
 ## Evidence Freshness
 

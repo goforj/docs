@@ -23,6 +23,7 @@ Enterprise reviewers can start with [Security Assurance](/security/assurance) fo
 - [Threat Model](/security/threat-model) maps assets, trust boundaries, threats, mitigations, ownership, and residual risks.
 - [Repository Coverage](/security/repository-coverage) maps every in-scope repository to its baseline and evidence.
 - [Vulnerability Management](/security/vulnerability-management) explains reporting, remediation, and exceptions.
+- [Source and Build Integrity](/security/source-build-integrity) shows how to verify an approved framework version and preserve its identity through an application build.
 - [Enterprise Assessment](/security/enterprise-assessment) separates GoForj evidence from deployment-owned controls.
 
 ## Related Sections
