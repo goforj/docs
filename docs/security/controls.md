@@ -23,6 +23,11 @@ GoForj uses complementary controls because no single scanner covers source, depe
 | Unit, integration, race, vet, and compatibility checks | Repository-specific CI events | Supported behavior, concurrency, static correctness, and minimum Go claims are exercised where configured | Tests establish only the behavior represented by their cases and environments |
 | Container policy checks | Core framework security events | Build images and generated container defaults are checked for vulnerabilities and unsafe exposure policy | Image findings do not prove deployment network or runtime hardening |
 
+GoForj's CLI is installed from a versioned Go module rather than a published
+binary asset. [Source and Build Integrity](/security/source-build-integrity)
+shows how to retain the module checksum and source commit, inspect the installed
+binary, and connect that identity to an enterprise-built application artifact.
+
 ## How Findings Stay Actionable
 
 ### Scan Real Inputs

@@ -923,6 +923,7 @@ const securitySidebar = sectionSidebar('Security', [
   { text: 'Threat Model', link: '/security/threat-model' },
   { text: 'Repository Coverage', link: '/security/repository-coverage' },
   { text: 'Vulnerability Management', link: '/security/vulnerability-management' },
+  { text: 'Source and Build Integrity', link: '/security/source-build-integrity' },
   { text: 'Enterprise Assessment', link: '/security/enterprise-assessment' },
   { text: 'Auth', link: '/security/auth' },
   { text: 'Sessions and Cookies', link: '/security/sessions-cookies' },
