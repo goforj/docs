@@ -85,12 +85,8 @@
     overflow: hidden;
 }
 
-/* Anchor the aura to the page so it continues behind the navbar. */
-.VPContent:has(.VPDoc) {
-    position: relative;
-}
-
-.VPContent:has(.VPDoc)::before {
+/* Fade the aura in below the navbar to avoid a visible colour seam. */
+.VPDoc::before {
     content: "";
     position: absolute;
     top: 0;
@@ -104,9 +100,9 @@
         radial-gradient(520px 240px at 76% -2%, rgba(255, 194, 77, 0.026), transparent 74%),
         radial-gradient(900px 380px at 55% -10%, rgba(160, 138, 182, 0.030), transparent 76%);
     mask-image:
-        linear-gradient(180deg, black 0, black 48%, rgba(0, 0, 0, 0.38) 70%, transparent 100%);
+        linear-gradient(180deg, transparent 0, black 64px, black 48%, rgba(0, 0, 0, 0.38) 70%, transparent 100%);
     -webkit-mask-image:
-        linear-gradient(180deg, black 0, black 48%, rgba(0, 0, 0, 0.38) 70%, transparent 100%);
+        linear-gradient(180deg, transparent 0, black 64px, black 48%, rgba(0, 0, 0, 0.38) 70%, transparent 100%);
 }
 
 /* Temper: --gf-ground-alt (#1D1923). Was a hardcoded near-black
@@ -6227,13 +6223,6 @@ body,
    as deliberate rather than as a rendering seam. */
 .VPDoc {
     border-left: 1px solid var(--gf-line);
-    background: transparent;
-}
-
-/* Keep the top navbar translucent; retain its solid backing after scrolling. */
-body:has(.VPDoc) .VPNav:has(.VPNavBar.top),
-body:has(.VPDoc) .VPNavBar.top .wrapper {
-    background-color: transparent;
 }
 @media (max-width: 959px) {
     .VPDoc { border-left: 0; }
