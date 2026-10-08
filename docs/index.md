@@ -2,6 +2,10 @@
 layout: home
 title: GoForj - The composable stack for building with Go
 titleTemplate: false
+ogImage: /assets/goforj-og-20260731.png
+ogImageAlt: GoForj, the composable stack for building with Go
+ogImageWidth: 1200
+ogImageHeight: 630
 description: Build APIs, workers, CLIs, and full web products in Go. Explicit wiring, interchangeable drivers, and the tools to run it all.
 ---
 

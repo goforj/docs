@@ -1,5 +1,9 @@
 ---
 title: Starter Kits
+ogImage: /assets/goforj-og-20260731.png
+ogImageAlt: GoForj, the composable stack for building with Go
+ogImageWidth: 1200
+ogImageHeight: 630
 description: Start with Vue, React, or templ + htmx, with account pages, settings, and local UI components.
 sidebar: false
 aside: false
