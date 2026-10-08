@@ -24,3 +24,4 @@ _data/
 # FUSE cleanup artifacts
 .fuse_hidden*
 .DS_Store
+.playwright-mcp/
