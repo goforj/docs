@@ -327,7 +327,7 @@ onBeforeUnmount(() => {
 <section class="gf-home-section gf-home-swap">
 <div class="gf-home-section__inner">
 <div class="gf-home-swap__grid">
-<div class="gf-home-demo__copy" :data-compact="compactSwapExample" data-reveal>
+<div class="gf-home-demo__copy" :data-compact="compactSwapExample">
 <p class="gf-home-eyebrow">The code</p>
 <h2 class="gf-home-h2">Build more.<br><em>Wire less</em></h2>
 <p class="gf-home-lead">{{ activeSwapDetails.lead }}</p>
@@ -346,7 +346,7 @@ onBeforeUnmount(() => {
 </div>
 <a class="gf-home-demo__guide" :href="activeSwapTab.href">{{ activeSwapTab.guide }} <span aria-hidden="true">→</span></a>
 </div>
-<div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
+<div class="gf-home-swap__code">
 <div class="gf-home-swap__tabs" role="tablist" aria-label="Explore GoForj code examples" @keydown="onSwapTabKeydown">
 <button
   v-for="tab in SWAP_TABS"
@@ -371,7 +371,7 @@ onBeforeUnmount(() => {
 
 <div class="gf-home-swap__panels">
 
-<div id="home-example-panel-http" :class="{ 'is-open': swapTab === 'http' }" :aria-hidden="swapTab !== 'http'" role="tabpanel" aria-labelledby="home-example-tab-http" tabindex="0">
+<div id="home-example-panel-http" v-if="swapTab === 'http'" :aria-hidden="swapTab !== 'http'" role="tabpanel" aria-labelledby="home-example-tab-http" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -388,7 +388,7 @@ func (c *Controller) Show(ctx web.Context) error {
 </div>
 
 
-<div id="home-example-panel-storage" :class="{ 'is-open': swapTab === 'storage' }" :aria-hidden="swapTab !== 'storage'" role="tabpanel" aria-labelledby="home-example-tab-storage" tabindex="0">
+<div id="home-example-panel-storage" v-if="swapTab === 'storage'" :aria-hidden="swapTab !== 'storage'" role="tabpanel" aria-labelledby="home-example-tab-storage" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -400,7 +400,7 @@ func (s *Service) Store(ctx context.Context, path string, body []byte) error {
 
 </div>
 
-<div id="home-example-panel-database" :class="{ 'is-open': swapTab === 'database' }" :aria-hidden="swapTab !== 'database'" role="tabpanel" aria-labelledby="home-example-tab-database" tabindex="0">
+<div id="home-example-panel-database" v-if="swapTab === 'database'" :aria-hidden="swapTab !== 'database'" role="tabpanel" aria-labelledby="home-example-tab-database" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -415,7 +415,7 @@ func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 
 </div>
 
-<div id="home-example-panel-cache" :class="{ 'is-open': swapTab === 'cache' }" :aria-hidden="swapTab !== 'cache'" role="tabpanel" aria-labelledby="home-example-tab-cache" tabindex="0">
+<div id="home-example-panel-cache" v-if="swapTab === 'cache'" :aria-hidden="swapTab !== 'cache'" role="tabpanel" aria-labelledby="home-example-tab-cache" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -433,7 +433,7 @@ func (f *Feed) Recent(ctx context.Context) ([]Photo, error) {
 
 </div>
 
-<div id="home-example-panel-queue" :class="{ 'is-open': swapTab === 'queue' }" :aria-hidden="swapTab !== 'queue'" role="tabpanel" aria-labelledby="home-example-tab-queue" tabindex="0">
+<div id="home-example-panel-queue" v-if="swapTab === 'queue'" :aria-hidden="swapTab !== 'queue'" role="tabpanel" aria-labelledby="home-example-tab-queue" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -457,7 +457,7 @@ func (t *ThumbnailJob) HandleTask(ctx context.Context, msg queue.Message) error 
 
 </div>
 
-<div id="home-example-panel-events" :class="{ 'is-open': swapTab === 'events' }" :aria-hidden="swapTab !== 'events'" role="tabpanel" aria-labelledby="home-example-tab-events" tabindex="0">
+<div id="home-example-panel-events" v-if="swapTab === 'events'" :aria-hidden="swapTab !== 'events'" role="tabpanel" aria-labelledby="home-example-tab-events" tabindex="0">
 <div v-if="eventFile === 'event'" id="home-event-code-event" role="tabpanel" aria-labelledby="home-event-file-event" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
@@ -490,7 +490,7 @@ func (s *UploadedSubscriber) Handle(ctx context.Context, event UploadedEvent) er
 </div>
 </div>
 
-<div id="home-example-panel-schedule" :class="{ 'is-open': swapTab === 'schedule' }" :aria-hidden="swapTab !== 'schedule'" role="tabpanel" aria-labelledby="home-example-tab-schedule" tabindex="0">
+<div id="home-example-panel-schedule" v-if="swapTab === 'schedule'" :aria-hidden="swapTab !== 'schedule'" role="tabpanel" aria-labelledby="home-example-tab-schedule" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -507,7 +507,7 @@ func (s *CleanupSchedule) Handle(ctx context.Context) error {
 
 </div>
 
-<div id="home-example-panel-command" :class="{ 'is-open': swapTab === 'command' }" :aria-hidden="swapTab !== 'command'" role="tabpanel" aria-labelledby="home-example-tab-command" tabindex="0">
+<div id="home-example-panel-command" v-if="swapTab === 'command'" :aria-hidden="swapTab !== 'command'" role="tabpanel" aria-labelledby="home-example-tab-command" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -535,7 +535,7 @@ func (c *ShowCmd) Run(ctx context.Context) error {
 
 </div>
 
-<div id="home-example-panel-testing" :class="{ 'is-open': swapTab === 'testing' }" :aria-hidden="swapTab !== 'testing'" role="tabpanel" aria-labelledby="home-example-tab-testing" tabindex="0">
+<div id="home-example-panel-testing" v-if="swapTab === 'testing'" :aria-hidden="swapTab !== 'testing'" role="tabpanel" aria-labelledby="home-example-tab-testing" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -561,7 +561,7 @@ func TestControllerShow(t *testing.T) {
 
 </div>
 
-<div id="home-example-panel-mail" :class="{ 'is-open': swapTab === 'mail' }" :aria-hidden="swapTab !== 'mail'" role="tabpanel" aria-labelledby="home-example-tab-mail" tabindex="0">
+<div id="home-example-panel-mail" v-if="swapTab === 'mail'" :aria-hidden="swapTab !== 'mail'" role="tabpanel" aria-labelledby="home-example-tab-mail" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go

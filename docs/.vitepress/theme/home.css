@@ -324,17 +324,17 @@
 }
 
 .gf-home .gf-home-swap__code .gf-home-swap__panels {
-    background: var(--gf-code-bg);
+    background: transparent;
     max-height: 520px;
     overflow: auto;
 }
 
+/* Vue renders only the selected example; no visibility state is needed. */
 .gf-home .gf-home-swap__code .gf-home-swap__panels > [role='tabpanel'] {
-    display: none;
-}
-
-.gf-home .gf-home-swap__code .gf-home-swap__panels > [role='tabpanel'].is-open {
     display: block;
+    visibility: visible;
+    opacity: 1;
+    transition: none;
 }
 
 .gf-home .gf-home-swap__code div[class*='language-'] pre {

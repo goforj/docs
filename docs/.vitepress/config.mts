@@ -196,7 +196,7 @@ const isProd = process.env.NODE_ENV === 'production'
 const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '')
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.'
 const docsVersion = 'Unreleased'
-const faviconVersion = '20260731-2'
+const faviconVersion = '20261008-1'
 const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260731.png`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
@@ -1223,6 +1223,8 @@ export default defineConfig({
     }],
     searchHydrationHead,
     deferredHashHead,
+    ['link', { rel: 'icon', type: 'image/x-icon', sizes: '16x16 32x32 48x48', href: faviconHref('/favicon.ico') }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: faviconHref('/favicon-32.png') }],
     ['link', {
       rel: 'icon',
       type: 'image/svg+xml',
