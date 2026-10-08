@@ -1385,7 +1385,7 @@ export default defineConfig({
       //   What is GoForj? -> promoted to first. It is what someone reads
       //     BEFORE the quickstart; it was sitting last.
       //   Version menu -> Reference. The release badge already communicates
-      //     status, while policy, changelog, and blog are lookup destinations.
+      //     status, while policy and changelog are lookup destinations.
       {
         text: 'Getting Started',
         items: [
@@ -1433,8 +1433,7 @@ export default defineConfig({
         items: [
           { text: 'Reference home', link: '/reference/' },
           { text: 'Version policy', link: '/versions/' },
-          { text: 'Changelog', link: '/versions/changelog' },
-          { text: 'Blog', link: '/blog/' }
+          { text: 'Changelog', link: '/versions/changelog' }
         ]
       }
     ],
