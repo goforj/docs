@@ -11,11 +11,11 @@ That separation is one of GoForj's main configuration strengths: the same servic
 
 ```mermaid
 flowchart LR
-    service[Application service] --> accessor[Queues().Critical()]
-    dev[Local config<br/>workerpool] --> driver[Selected queue driver]
-    prod[Production config<br/>redis] --> driver
+    service["Application service"] --> accessor["Queues().Critical()"]
+    dev["Local config<br/>workerpool"] --> driver["Selected queue driver"]
+    prod["Production config<br/>redis"] --> driver
     driver --> accessor
-    accessor --> queue[critical queue]
+    accessor --> queue["critical queue"]
 ```
 
 The accessor is compiled from the Project's named resource configuration. The active driver is selected at startup from the drivers already compiled into the App.
