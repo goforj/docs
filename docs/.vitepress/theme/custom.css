@@ -85,21 +85,12 @@
     overflow: hidden;
 }
 
-/* The forj aura.
+/* Anchor the aura to the page so it continues behind the navbar. */
+.VPContent:has(.VPDoc) {
+    position: relative;
+}
 
-   The 88px blueprint grid is gone. It was a second texture
-   competing with the code wells for attention, and a grid says
-   "schematic" where Temper's whole premise is heat — steel
-   announcing its temperature by colour.
-
-   What is left is the heat itself: an ember bloom off the top
-   of the page, a cooler violet wash trailing behind it, and a
-   thin accent seam along the very top edge. Two hues, both from
-   the palette, no geometry.
-
-   Kept very low: this sits under the reading column, so it has
-   to be felt rather than seen. The accent stops at 5%. */
-.VPDoc::before {
+.VPContent:has(.VPDoc)::before {
     content: "";
     position: absolute;
     top: 0;
@@ -109,7 +100,6 @@
     z-index: 0;
     pointer-events: none;
     background:
-        linear-gradient(180deg, rgba(255, 94, 58, 0.16), transparent 3px),
         radial-gradient(700px 280px at 34% -6%, rgba(255, 94, 58, 0.050), transparent 70%),
         radial-gradient(520px 240px at 76% -2%, rgba(255, 194, 77, 0.026), transparent 74%),
         radial-gradient(900px 380px at 55% -10%, rgba(160, 138, 182, 0.030), transparent 76%);
@@ -5632,11 +5622,11 @@ html.dark {
 .VPSidebarItem.level-0 > .item > .text,
 .VPSidebarItem.is-group > .item > .text {
     font-family: var(--vp-font-family-base);
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0;
     text-transform: none;
-    font-weight: 600;
-    color: var(--gf-ink-3);
+    font-weight: 700;
+    color: var(--gf-ink);
 }
 .VPSidebarItem .link .text {
     font-size: 13.5px;
@@ -6237,6 +6227,13 @@ body,
    as deliberate rather than as a rendering seam. */
 .VPDoc {
     border-left: 1px solid var(--gf-line);
+    background: transparent;
+}
+
+/* Keep the top navbar translucent; retain its solid backing after scrolling. */
+body:has(.VPDoc) .VPNav:has(.VPNavBar.top),
+body:has(.VPDoc) .VPNavBar.top .wrapper {
+    background-color: transparent;
 }
 @media (max-width: 959px) {
     .VPDoc { border-left: 0; }
@@ -6948,8 +6945,6 @@ body,
 
    ink-2 keeps them quiet while clearing AA. The visual weight
    barely moves; these are uppercase 10px kickers either way. */
-.VPSidebarItem.level-0 > .item > .text,
-.VPSidebarItem.is-group > .item > .text,
 .VPDocAsideOutline .outline-title,
 .vp-doc div[class*='language-'] .lang {
     color: var(--gf-ink-2);
