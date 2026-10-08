@@ -36,7 +36,6 @@ const apps = [
 .gf-project__branches::before { content: ''; height: 1px; width: 50%; background: var(--gf-line-strong); }
 .gf-project__branches > span:first-child { position: absolute; left: 50%; top: 0; bottom: 50%; width: 1px; background: var(--gf-line-strong); }
 .gf-project__branches > span:last-child { position: absolute; left: 50%; right: 0; top: 0; height: 1px; background: var(--gf-line-strong); }
-.gf-project__branches::after { content: ''; position: absolute; right: -3px; top: -2px; width: 5px; height: 5px; background: var(--gf-accent); }
 .gf-project__apps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; position: relative; padding-top: 24px; }
 .gf-project__apps::before { content: ''; position: absolute; top: 0; left: -1px; right: calc(25% - 4.5px); height: 1px; background: var(--gf-line-strong); }
 .gf-project__app { position: relative; border: 1px solid var(--gf-line-strong); border-radius: 10px; background: var(--gf-code-bg); --app-color: var(--gf-accent); }
@@ -66,7 +65,6 @@ const apps = [
  .gf-project__branches { height: 30px; justify-content: center; }
  .gf-project__branches::before { width: 1px; height: 100%; }
  .gf-project__branches > span { display: none; }
- .gf-project__branches::after { right: auto; top: auto; bottom: -3px; }
  .gf-project__apps { padding-top: 15px; }
  .gf-project__apps::before { top: 0; left: calc(25% - 3px); right: calc(25% - 3px); }
  .gf-project__app { overflow: visible; }

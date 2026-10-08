@@ -55,7 +55,7 @@ const runtimes = [
 .gf-topology__header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 19px 24px; border-bottom: 1px solid var(--gf-line); background: var(--gf-code-chrome); }
 .gf-topology__header > span { display: flex; align-items: center; gap: 9px; color: var(--gf-ink); font-size: 15px; font-weight: 650; }
 .gf-topology__header small { margin-left: 5px; color: var(--gf-ink-2); font-size: 9px; letter-spacing: .08em; font-weight: 500; }
-.gf-topology__status { width: 6px; height: 6px; background: var(--gf-accent); }
+.gf-topology__status { width: 5px; height: 5px; border-radius: 50%; background: var(--gf-ink-3); }
 .gf-topology code { padding: 0; background: transparent; color: var(--gf-ink); font-size: 13px; white-space: nowrap; }
 .gf-topology code span { color: var(--gf-accent); }
 .gf-topology__stage { position: relative; padding: 30px 24px 40px; background: radial-gradient(ellipse at 50% 10%, color-mix(in srgb, var(--gf-accent) 6%, transparent), transparent 75%); }
