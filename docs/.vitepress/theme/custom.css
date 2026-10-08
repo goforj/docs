@@ -5631,11 +5631,11 @@ html.dark {
 }
 .VPSidebarItem.level-0 > .item > .text,
 .VPSidebarItem.is-group > .item > .text {
-    font-family: var(--gf-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 500;
+    font-family: var(--vp-font-family-base);
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 600;
     color: var(--gf-ink-3);
 }
 .VPSidebarItem .link .text {

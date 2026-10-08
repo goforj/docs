@@ -634,27 +634,30 @@ func (c *ShowCmd) Run(ctx context.Context) error {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// TestControllerShow checks the handler without a running server.
+// TestControllerShow checks the photo response without a running server.
 func TestControllerShow(t *testing.T) {
-	// App-owned fixture helper seeds photo 42 in the test repository.
-	controller := NewController(newTestPhotoService(t))
+	service := newTestPhotoService(t) // Seeds photo 42 for this test.
+	controller := NewController(service)
+
 	req := httptest.NewRequest(http.MethodGet, "/photos/42", nil)
 	rec := httptest.NewRecorder()
-	ctx := webtest.NewContext(req, rec, "/photos/:id",
-		webtest.PathParams{"id": "42"})
+	params := webtest.PathParams{"id": "42"}
+	ctx := webtest.NewContext(req, rec, "/photos/:id", params)
 
 	if err := controller.Show(ctx); err != nil {
-		t.Fatalf("show photo: %v", err)
+		t.Fatal(err)
 	}
+
 	if rec.Code != http.StatusOK {
-		t.Fatalf("status = %d, want 200", rec.Code)
+		t.Fatalf("status: got %d, want %d", rec.Code, http.StatusOK)
 	}
+
 	var photo Photo
-	if err := json.Unmarshal(rec.Body.Bytes(), &photo); err != nil {
-		t.Fatalf("decode response: %v", err)
+	if err := json.NewDecoder(rec.Body).Decode(&photo); err != nil {
+		t.Fatal(err)
 	}
 	if photo.Path != "photos/42.jpg" {
-		t.Fatalf("photo path = %q", photo.Path)
+		t.Fatalf("path: got %q, want %q", photo.Path, "photos/42.jpg")
 	}
 }
 ```
