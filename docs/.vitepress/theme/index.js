@@ -1,6 +1,6 @@
 import DefaultTheme from 'vitepress/theme'
 import { useData, useRoute } from 'vitepress'
-import { defineAsyncComponent, h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
+import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
@@ -9,6 +9,8 @@ import SitePreview from './components/SitePreview.vue'
 import CodeFile from './components/CodeFile.vue'
 import MakeCommandTabs from './components/MakeCommandTabs.vue'
 import './custom.css'
+import './home.css'
+import './starter-kits.css'
 
 /* The hero is imported STATICALLY on purpose. As an async component it
    is the one thing on the page guaranteed to be late: the SSR HTML does
@@ -20,18 +22,52 @@ import './custom.css'
 
    Lazy-loading the largest above-the-fold element trades a visible
    layout shift for bytes on secondary pages. It is the wrong trade for
-   a hero. GoForjLiveTerminal stays async — it is 5KB and below the fold. */
+   a hero. */
 import GoForjHeroStack from './components/GoForjHeroStack.vue'
 
-const GoForjLiveTerminal = defineAsyncComponent(() => import('./components/GoForjLiveTerminal.vue'))
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
 const DEFERRED_HASH_KEY = '__goforjDeferredHash'
+const REFRESH_SCROLL_KEY = '__goforjRefreshScroll'
+let refreshScrollPosition = null
 const OUTLINE_SCROLL_KEY = '__goforjOutlineScrollState'
 const MERMAID_KEY = '__goforjMermaidState'
 const PAGE_IMAGE_PRELOAD_INTENT_MS = 80
 const attemptedPageImagePreloads = new Set()
 const retainedPageImagePreloads = new Map()
+
+// Consume a tab-local snapshot only on reload, never on a fresh page navigation.
+function initRefreshScrollRestoration() {
+  if (typeof window === 'undefined') return
+  const navigation = performance.getEntriesByType('navigation')[0]
+  const path = `${location.pathname}${location.search}`
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(REFRESH_SCROLL_KEY) || 'null')
+    sessionStorage.removeItem(REFRESH_SCROLL_KEY)
+    if (navigation?.type === 'reload' && saved?.path === path && Number.isFinite(saved.top) && saved.top >= 0) {
+      refreshScrollPosition = saved.top
+    }
+  } catch {
+    // Browsing with storage disabled still uses the router's normal behavior.
+  }
+  window.addEventListener('pagehide', () => {
+    try {
+      sessionStorage.setItem(REFRESH_SCROLL_KEY, JSON.stringify({
+        path: `${location.pathname}${location.search}`, top: window.scrollY
+      }))
+    } catch {
+      // Storage is optional, including in restricted browser contexts.
+    }
+  })
+}
+
+// VitePress scrolls before mounting; restore after hydration has put the page back.
+function restoreRefreshScrollPosition() {
+  if (refreshScrollPosition === null) return
+  const top = refreshScrollPosition
+  refreshScrollPosition = null
+  nextTick(() => window.requestAnimationFrame(() => window.scrollTo({ left: 0, top, behavior: 'instant' })))
+}
 
 function allowsPageImagePreloads() {
   if (typeof navigator === 'undefined') return false
@@ -531,7 +567,7 @@ function scheduleHashSettlePasses(hash, timers, options = {}) {
   })
 }
 
-function restoreDeferredInitialHash() {
+function restoreDeferredInitialHash(settle = true) {
   if (typeof window === 'undefined') return
   try {
     const raw = window.sessionStorage.getItem(DEFERRED_HASH_KEY)
@@ -541,6 +577,7 @@ function restoreDeferredInitialHash() {
     const currentPath = `${window.location.pathname}${window.location.search}`
     if (!payload || payload.path !== currentPath || !payload.hash) return
     history.replaceState(history.state || {}, '', `${currentPath}${payload.hash}`)
+    if (!settle) return
     const timers = []
     scheduleHashSettlePasses(payload.hash, timers, {
       smoothFirst: false,
@@ -677,10 +714,10 @@ export default {
   ...DefaultTheme,
   enhanceApp(ctx) {
     DefaultTheme.enhanceApp?.(ctx)
+    initRefreshScrollRestoration()
     ctx.app.component('StarterKitHeroScreens', StarterKitHeroScreens)
     ctx.app.component('StarterKitOptions', StarterKitOptions)
     ctx.app.component('SitePreview', SitePreview)
-    ctx.app.component('GoForjLiveTerminal', GoForjLiveTerminal)
     ctx.app.component('CodeFile', CodeFile)
     ctx.app.component('MakeCommandTabs', MakeCommandTabs)
   },
@@ -776,7 +813,8 @@ export default {
       window.addEventListener('resize', onBannerResize)
       refreshSoon()
       nextTick().then(replayDocEnter)
-      restoreDeferredInitialHash()
+      restoreDeferredInitialHash(refreshScrollPosition === null)
+      restoreRefreshScrollPosition()
       window.setTimeout(flashHashTarget, 700)
 
       onHashChange = () => {

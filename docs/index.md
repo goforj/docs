@@ -2,25 +2,42 @@
 layout: home
 title: GoForj - The composable stack for building with Go
 titleTemplate: false
-description: The composable stack for building with Go. One cohesive application model, explicit wiring, local-first drivers, and production-oriented tooling.
+description: Build APIs, workers, CLIs, and full web products in Go. Explicit wiring, interchangeable drivers, and the tools to run it all.
 ---
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { lucideIconBodies } from 'virtual:goforj-icons'
+import FrameworkBlockIcon from './.vitepress/theme/components/FrameworkBlockIcon.vue'
+import RuntimeTopology from './.vitepress/theme/components/RuntimeTopology.vue'
+import ProjectAppsDiagram from './.vitepress/theme/components/ProjectAppsDiagram.vue'
+import DevTerminalPreview from './.vitepress/theme/components/DevTerminalPreview.vue'
 import proofStats from './.vitepress/data/proof-stats.json'
+import dashboardPreview from './assets/starter-kits/app-dashboard-shell.png'
+import signinPreview from './assets/starter-kits/account-login.png'
+import settingsPreview from './assets/starter-kits/account-profile-settings.png'
 
 // Proof band numbers are generated, not written. See bin/collect-proof-stats.mjs
 // for methodology.
 const PROOF = [
-  { count: Math.floor(proofStats.totals.testFunctions / 100) * 100, suffix: '+', label: 'test functions across the first-party libraries' },
-  { count: Math.floor(proofStats.totals.integrationTests / 10) * 10, suffix: '+', label: 'integration test runs against real backends in containers' },
-  { count: proofStats.totals.drivers, suffix: '', label: 'interchangeable drivers across queue, events, cache, storage, database, and mail' },
-  { count: proofStats.totals.libraries, suffix: '', label: 'standalone libraries, each useful without the framework' }
+  { count: Math.floor(proofStats.totals.testFunctions / 100) * 100, suffix: '+', label: 'test functions in first-party libraries' },
+  { count: Math.floor(proofStats.totals.integrationTests / 10) * 10, suffix: '+', label: 'integration test runs against real backends' },
+  { count: proofStats.totals.drivers, suffix: '', label: 'drivers across six infrastructure libraries' },
+  { count: proofStats.totals.libraries, suffix: '', label: 'libraries you can use independently' }
 ]
 const fmt = (n) => n.toLocaleString('en-US')
 
 const swapMode = ref('local')
+
+// Driver values follow goforj/project/resource_catalog.go and generated env scopes.
+const DRIVER_OPTIONS = {
+  STORAGE_PHOTOS_DRIVER: ['local', 'memory', 'redis', 'ftp', 'sftp', 's3', 'gcs', 'dropbox', 'rclone'],
+  DB_DRIVER: ['sqlite', 'mysql', 'postgres'],
+  CACHE_DRIVER: ['memory', 'file', 'null', 'redis', 'memcached', 'dynamodb', 'sqlite', 'postgres', 'mysql', 'nats'],
+  QUEUE_DRIVER: ['null', 'sync', 'workerpool', 'redis', 'nats', 'sqs', 'rabbitmq', 'sqlite', 'postgres', 'mysql'],
+  EVENTS_DRIVER: ['inproc', 'null', 'redis', 'nats', 'natsjetstream', 'kafka', 'gcppubsub', 'sns'],
+  MAIL_DRIVER: ['log', 'smtp', 'resend', 'postmark', 'mailgun', 'sendgrid', 'ses']
+}
 
 const SWAP_ENV = {
   local: [
@@ -55,36 +72,153 @@ function setSwapMode(mode) {
 }
 
 const SWAP_TABS = [
-  { id: 'storage', label: 'Storage', env: 'STORAGE_PHOTOS_DRIVER' },
-  { id: 'database', label: 'Database', env: 'DB_DRIVER' },
-  { id: 'cache', label: 'Cache', env: 'CACHE_DRIVER' },
-  { id: 'queue', label: 'Queue', env: 'QUEUE_DRIVER' },
-  { id: 'events', label: 'Events', env: 'EVENTS_DRIVER' },
-  { id: 'mail', label: 'Mail', env: 'MAIL_DRIVER' }
+  { id: 'http', label: 'HTTP', file: 'internal/photos/controller.go', href: '/applications/controllers', guide: 'Write a controller' },
+  { id: 'database', label: 'Database', file: 'internal/photos/repository.go', env: 'DB_DRIVER', href: '/data/database-strategy', guide: 'Connect a database' },
+  { id: 'cache', label: 'Cache', file: 'internal/photos/feed.go', env: 'CACHE_DRIVER', href: '/data/cache-patterns', guide: 'Cache a result' },
+  { id: 'queue', label: 'Jobs', file: 'internal/photos/thumbnail_job.go', env: 'QUEUE_DRIVER', href: '/async/jobs', guide: 'Write a queue job' },
+  { id: 'events', label: 'Events', file: 'internal/photos/uploaded_subscriber.go', env: 'EVENTS_DRIVER', href: '/async/events', guide: 'Handle an event' },
+  { id: 'schedule', label: 'Schedules', file: 'internal/photos/cleanup_schedule.go', href: '/async/scheduler', guide: 'Schedule recurring work' },
+  { id: 'command', label: 'Commands', file: 'internal/photos/show_cmd.go', href: '/applications/commands', guide: 'Write an app command' },
+  { id: 'storage', label: 'Storage', file: 'internal/photos/service.go', env: 'STORAGE_PHOTOS_DRIVER', href: '/data/storage-patterns', guide: 'Store a file' },
+  { id: 'mail', label: 'Mail', file: 'internal/photos/welcome.go', env: 'MAIL_DRIVER', href: '/applications/mail', guide: 'Send a message' },
+  { id: 'testing', label: 'Testing', file: 'internal/photos/controller_test.go', href: '/testing/http-tests', guide: 'Test a controller' }
 ]
 
-const swapTab = ref('storage')
-const activeSwapEnvKey = computed(() => SWAP_TABS.find((tab) => tab.id === swapTab.value)?.env)
+const EXAMPLE_DETAILS = {
+  http: {
+    lead: 'Give your photos an API. Keep the controller small and let your Go services do the work.',
+    points: ['Routes and handlers in one controller', 'Constructor injection for your business logic'],
+    label: 'Create the controller',
+    commands: ['forj make:controller photos']
+  },
+  database: {
+    lead: 'Query your photos with GORM. Use the configured connection and keep database access in a repository.',
+    points: ['Context-aware queries', 'SQLite, MySQL, or Postgres'],
+    label: 'Create a model from your table',
+    commands: ['forj make:model photos --package photos'],
+    note: 'Run after the photos table exists. The command reads its schema.'
+  },
+  cache: {
+    lead: 'Keep popular photos close. Load a typed result on a cache miss and reuse it until the TTL expires.',
+    points: ['Typed values and explicit expiration', 'Change the driver through configuration'],
+    label: 'Configure your cache',
+    commands: ['CACHE_DRIVER=memory'],
+    note: 'Set in your .env file.'
+  },
+  queue: {
+    lead: 'Move thumbnail processing into the background. Dispatch and handle a typed payload in the same job.',
+    points: ['Queue and handler registered by make:job', 'Run workers together with HTTP or separately'],
+    label: 'Create the job',
+    commands: ['forj make:job photos:thumbnail --queue media']
+  },
+  events: {
+    lead: 'React when a photo is uploaded. A typed subscriber connects the event to your thumbnail workflow.',
+    points: ['Typed events with stable topics', 'Subscriber registration handled by make:subscriber'],
+    label: 'Create the event and subscriber',
+    commands: ['forj make:event photos:uploaded', 'forj make:subscriber photos:uploaded']
+  },
+  schedule: {
+    lead: 'Keep your photo library tidy. Run cleanup on a recurring interval through the same Go service.',
+    points: ['A named schedule with an explicit interval', 'Registered with the scheduler by make:schedule'],
+    label: 'Create the schedule',
+    commands: ['forj make:schedule photos:cleanup --every 24h']
+  },
+  command: {
+    lead: 'Bring your app to the command line. Parse arguments and call the same service used by your HTTP controller.',
+    points: ['Arguments, flags, and help with Kong', 'Dependencies supplied through your constructor'],
+    label: 'Create it, then run your implementation',
+    commands: ['forj make:command photos:show', 'forj photos:show 42']
+  },
+  testing: {
+    lead: 'Test the behavior that matters. Call your controller directly with your photo service and test data.',
+    points: ['No HTTP listener required', 'Standard Go tests with webtest request helpers'],
+    label: 'Run the photo package tests',
+    commands: ['go test ./internal/photos']
+  },
+  storage: {
+    lead: 'Give your photos a home. Write through a named disk and choose the storage driver in configuration.',
+    points: ['A storage dependency you can see', 'Local files today, object storage when you need it'],
+    label: 'Configure the photos disk',
+    commands: ['STORAGE_PHOTOS_DRIVER=local'],
+    note: 'Set in your .env file for the configured photos disk.'
+  },
+  mail: {
+    lead: 'Welcome your next user. Compose the message in Go and let the configured mail driver deliver it.',
+    points: ['Fluent message composition', 'Log mail locally, configure delivery for production'],
+    label: 'Configure local mail',
+    commands: ['MAIL_DRIVER=log'],
+    note: 'Set in your .env file.'
+  }
+}
+const eventFile = ref('event')
+const copiedMakeCommand = ref('')
 
+// copyMakeCommand confirms only successful clipboard writes.
+async function copyMakeCommand(command) {
+  try {
+    await navigator.clipboard.writeText(command)
+    copiedMakeCommand.value = command
+  } catch {
+    copiedMakeCommand.value = ''
+  }
+}
+
+const swapTab = ref('http')
+const activeSwapTab = computed(() => SWAP_TABS.find((tab) => tab.id === swapTab.value))
+const activeSwapDetails = computed(() => EXAMPLE_DETAILS[swapTab.value])
+const activeSwapEnvKey = computed(() => activeSwapTab.value.env)
+const activeConfigDriverOptions = computed(() => {
+  const key = activeSwapEnvKey.value
+  return key ? DRIVER_OPTIONS[key] : []
+})
+
+// setSwapTab keeps example selection and its analytics event together.
 function setSwapTab(id) {
   if (swapTab.value !== id) track('swap_primitive', { primitive: id })
   swapTab.value = id
+  copiedMakeCommand.value = ''
+  nextTick(() => {
+    const panels = document.querySelector('.gf-home-swap__panels')
+    if (panels) panels.scrollTop = 0
+  })
 }
 
-const BIN_TABS = [
-  { id: 'cli', label: 'CLI tool', chips: ['CLI commands', 'Typed configuration', 'Structured logging'] },
-  { id: 'api', label: 'API service', chips: ['HTTP server', 'Routes and middleware', 'CLI commands', 'Health endpoints'] },
-  { id: 'web', label: 'Web app', chips: ['Vue / React / templ', 'HTTP server', 'API routes', 'CLI commands'] },
-  { id: 'full', label: 'API + Scheduler + Jobs', chips: ['HTTP server', 'Queue workers', 'Scheduler', 'CLI commands', 'Migrations', 'Drivers', 'Health and metrics', 'Lighthouse UI'] }
+// setEventFile switches between the two App-owned event files.
+function setEventFile(file) {
+  eventFile.value = file
+  nextTick(() => {
+    const panels = document.querySelector('.gf-home-swap__panels')
+    if (panels) panels.scrollTop = 0
+  })
+}
+
+// onEventFileKeydown follows the keyboard convention for file tabs.
+function onEventFileKeydown(event) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+  event.preventDefault()
+  const file = event.key === 'Home' ? 'event' : event.key === 'End' ? 'subscriber' : eventFile.value === 'event' ? 'subscriber' : 'event'
+  setEventFile(file)
+  document.getElementById(`home-event-file-${file}`).focus()
+}
+
+// onSwapTabKeydown follows the keyboard convention for a horizontal tab list.
+function onSwapTabKeydown(event) {
+  const focusedId = event.target.closest('[role=tab]')?.id
+  const index = SWAP_TABS.findIndex((tab) => focusedId === `home-example-tab-${tab.id}`)
+  if (index < 0) return
+  const targets = { ArrowRight: (index + 1) % SWAP_TABS.length, ArrowLeft: (index + SWAP_TABS.length - 1) % SWAP_TABS.length, Home: 0, End: SWAP_TABS.length - 1 }
+  if (!(event.key in targets)) return
+  event.preventDefault()
+  const id = SWAP_TABS[targets[event.key]].id
+  setSwapTab(id)
+  document.getElementById(`home-example-tab-${id}`).focus()
+}
+
+const STARTER_VIEWS = [
+  { id: 'signin', src: signinPreview, alt: 'Vue starter kit sign-in page with email and password fields', width: 1148, height: 1492 },
+  { id: 'dashboard', src: dashboardPreview, alt: 'Vue starter kit dashboard with navigation and application components', width: 2992, height: 1876 },
+  { id: 'settings', src: settingsPreview, alt: 'Vue starter kit profile settings with name and email fields', width: 1248, height: 1000 }
 ]
-
-const binTab = ref('full')
-const activeBinChips = computed(() => BIN_TABS.find((tab) => tab.id === binTab.value)?.chips || [])
-
-function setBinTab(id) {
-  if (binTab.value !== id) track('binary_shape', { shape: id })
-  binTab.value = id
-}
 
 const CAPABILITIES = [
   { title: 'HTTP services', icon: 'globe', copy: 'Thin controllers, route groups, and middleware over the web abstraction. Health, readiness, and an OpenAPI reference included.', href: '/applications/http-services' },
@@ -99,16 +233,6 @@ const CAPABILITIES = [
   { title: 'Auth', icon: 'shield-check', copy: 'Server-authoritative sessions, HttpOnly cookies, refresh rotation, reset and verification flows.', href: '/security/auth' },
   { title: 'Metrics and inspects', icon: 'activity', copy: 'Prometheus-compatible metrics with bounded labels, plus execution records for every runtime.', href: '/operations/metrics' },
   { title: 'Lighthouse', icon: 'radar', copy: 'A first-party operator view over routes, inspects, schedules, queues, cache, and storage.', href: '/operations/lighthouse' }
-]
-
-const SCENARIOS = [
-  { label: 'JSON API route', href: '/scenarios/json-api-route' },
-  { label: 'Cached profile', href: '/scenarios/cached-user-profile' },
-  { label: 'File upload', href: '/scenarios/file-upload-storage' },
-  { label: 'users.created event', href: '/scenarios/users-created-event' },
-  { label: 'reports:generate job', href: '/scenarios/reports-generate-job' },
-  { label: 'reports:daily schedule', href: '/scenarios/reports-daily-schedule' },
-  { label: 'Runtime observability', href: '/scenarios/runtime-observability' }
 ]
 
 function iconBody(name) {
@@ -193,103 +317,121 @@ onBeforeUnmount(() => {
 
 <section class="gf-home">
 
-<!-- ============ A REAL APPLICATION IN TWO COMMANDS ============ -->
-
-<section class="gf-home-section gf-home-start">
-<div class="gf-home-section__inner gf-home-split">
-<div class="gf-home-split__copy" data-reveal>
-<p class="gf-home-eyebrow">Start</p>
-<h2 class="gf-home-h2">A real application in <em>two commands</em></h2>
-<p class="gf-home-lead"><code>forj new</code> renders a complete Go project - the components you choose, nothing more. <code>forj dev</code> brings it alive. Built for Go developers shipping services, workers, CLIs, and full products.</p>
-<div class="gf-home-shapes" aria-label="What you can build with GoForj">
-<span>A focused CLI</span>
-<span>An API service</span>
-<span>Workers and schedules</span>
-<span>A full product with auth and Vue, React, or templ</span>
-</div>
-<ul class="gf-home-points">
-<li><strong>Choose what you need.</strong> Add database access, cache, events, file storage, background jobs, auth, a frontend, and observability at <code>forj new</code> or later as the app grows.</li>
-<li><strong>The structure is already there.</strong> Routes, wiring, lifecycle, configuration, and tests have a place before you write a line.</li>
-<li><strong>It runs before you configure anything.</strong> Local drivers back the database, cache, queue, events, storage, and mail integrations, so day one needs no cloud account and no docker-compose archaeology.</li>
-</ul>
-<div class="gf-home-links">
-<a href="/getting-started/quickstart">Follow the Quickstart →</a>
-<a href="/developer-tools/atlas">Atlas for agents →</a>
-<span class="gf-home-links__note">a few minutes to a running app</span>
-</div>
-<a class="gf-home-atlas" href="/developer-tools/atlas" data-reveal style="--reveal-delay: 0.08s" aria-label="Read the Atlas agent support guide">
-<span class="gf-home-atlas__mark" aria-hidden="true">ATLAS</span>
-<span class="gf-home-atlas__body">
-<strong>Agent-aware from the first render</strong>
-<span><code>forj new</code> can install Atlas support for Codex, Claude Code, GitHub Copilot, and Gemini CLI, including project guidance, skills, and MCP context.</span>
-</span>
-</a>
-</div>
-<div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
-<GoForjLiveTerminal />
-</div>
-</div>
-</section>
-
 <!-- ============ SWAP DRIVERS ============ -->
 
 <section class="gf-home-section gf-home-swap">
 <div class="gf-home-section__inner">
-<div class="gf-home-section__header" data-reveal>
-<p class="gf-home-eyebrow">Infrastructure</p>
-<h2 class="gf-home-h2">Swap drivers, <em>not business logic</em></h2>
-<p class="gf-home-lead">Services depend on stable contracts. Configuration selects among the drivers compiled into the app, so a supported backend change leaves business logic alone.</p>
-</div>
 <div class="gf-home-swap__grid">
+<div class="gf-home-demo__copy" data-reveal>
+<p class="gf-home-eyebrow">The code</p>
+<h2 class="gf-home-h2">Build more.<br><em>Wire less</em></h2>
+<p class="gf-home-lead">{{ activeSwapDetails.lead }}</p>
+<ul class="gf-home-points">
+<li v-for="point in activeSwapDetails.points" :key="point">{{ point }}</li>
+</ul>
+<div class="gf-home-make">
+<p class="gf-home-make__label">{{ activeSwapDetails.label }}</p>
+<div v-for="command in activeSwapDetails.commands" :key="command" class="gf-home-make__row" :data-shell="command.startsWith('forj ') || command.startsWith('go ')">
+<code>{{ command }}</code>
+<button type="button" @click="copyMakeCommand(command)" :aria-label="`Copy ${command}`">{{ copiedMakeCommand === command ? 'Copied' : 'Copy' }}</button>
+</div>
+<p v-if="activeSwapDetails.note" class="gf-home-make__note">{{ activeSwapDetails.note }}</p>
+<p v-if="activeConfigDriverOptions.length" class="gf-home-make__drivers"><span>Available drivers</span> {{ activeConfigDriverOptions.join(', ') }}</p>
+<span class="gf-home-make__status" role="status">{{ copiedMakeCommand ? 'Command copied to clipboard.' : '' }}</span>
+</div>
+<a class="gf-home-demo__guide" :href="activeSwapTab.href">{{ activeSwapTab.guide }} <span aria-hidden="true">→</span></a>
+</div>
 <div class="gf-home-swap__code" data-reveal style="--reveal-delay: 0.08s">
-<div class="gf-home-swap__tabs" role="tablist" aria-label="Choose an integration">
+<div class="gf-home-swap__tabs" role="tablist" aria-label="Explore GoForj code examples" @keydown="onSwapTabKeydown">
 <button
   v-for="tab in SWAP_TABS"
   :key="tab.id"
+  :id="`home-example-tab-${tab.id}`"
   type="button"
   role="tab"
+  :aria-controls="`home-example-panel-${tab.id}`"
+  :tabindex="swapTab === tab.id ? 0 : -1"
   :aria-selected="swapTab === tab.id"
   :class="{ 'is-active': swapTab === tab.id }"
   @click="setSwapTab(tab.id)"
 >{{ tab.label }}</button>
 </div>
-<p class="gf-home-swap__label">Your service · the same file in every environment</p>
+<div class="gf-home-demo__window">
+<div v-if="swapTab === 'events'" class="gf-home-code-header gf-home-code-header--files" role="tablist" aria-label="Event example files" @keydown="onEventFileKeydown">
+<button v-for="file in ['event', 'subscriber']" :key="file" :id="`home-event-file-${file}`" type="button" role="tab" class="gf-home-code-file" :class="{ 'is-active': eventFile === file }" :title="`internal/photos/uploaded_${file}.go`" :aria-selected="eventFile === file" :aria-controls="`home-event-code-${file}`" :tabindex="eventFile === file ? 0 : -1" @click="setEventFile(file)">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span class="gf-home-code-file__name">uploaded_{{ file }}.go</span>
+</button>
+</div>
+<div v-else class="gf-home-code-header"><span class="gf-home-code-file" :title="activeSwapTab.file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span class="gf-home-code-file__name">{{ activeSwapTab.file }}</span></span></div>
 
 <div class="gf-home-swap__panels">
 
-<div :class="{ 'is-open': swapTab === 'storage' }" :aria-hidden="swapTab !== 'storage'" role="tabpanel">
+<div id="home-example-panel-http" :class="{ 'is-open': swapTab === 'http' }" :aria-hidden="swapTab !== 'http'" role="tabpanel" aria-labelledby="home-example-tab-http" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// internal/photos/service.go
-type Service struct {
-	disk storage.Storage
+// Controller exposes photo routes.
+type Controller struct {
+	service *Service
 }
 
-func NewService(disk storage.Storage) *Service {
-	return &Service{disk: disk}
+// NewController receives photo lookup through its constructor.
+func NewController(service *Service) *Controller {
+	return &Controller{service: service}
 }
 
-func (s *Service) Store(ctx context.Context, in UploadInput) (Photo, error) {
-	path := photoPath(in)
-	if err := s.disk.WithContext(ctx).Put(path, in.Body); err != nil {
-		return Photo{}, fmt.Errorf("store photo: %w", err)
+// Routes exposes the photo lookup endpoint.
+func (c *Controller) Routes() []web.Route {
+	return []web.Route{
+		web.NewRoute(http.MethodGet, "/photos/:id", c.Show),
 	}
-	return Photo{Path: path}, nil
+}
+
+// Show delegates lookup to the injected service.
+func (c *Controller) Show(ctx web.Context) error {
+	photo, err := c.service.Find(ctx.Context(), ctx.Param("id"))
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, photo)
 }
 ```
 
 </div>
 
-<div :class="{ 'is-open': swapTab === 'database' }" :aria-hidden="swapTab !== 'database'" role="tabpanel">
+
+<div id="home-example-panel-storage" :class="{ 'is-open': swapTab === 'storage' }" :aria-hidden="swapTab !== 'storage'" role="tabpanel" aria-labelledby="home-example-tab-storage" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// internal/photos/repository.go
+// Service writes files through the configured storage driver.
+type Service struct {
+	disk storage.Storage
+}
+
+// NewService receives the application's photo disk.
+func NewService(disk storage.Storage) *Service {
+	return &Service{disk: disk}
+}
+
+// Store writes photo bytes to an application-owned path.
+func (s *Service) Store(ctx context.Context, path string, body []byte) error {
+	return s.disk.WithContext(ctx).Put(path, body)
+}
+```
+
+</div>
+
+<div id="home-example-panel-database" :class="{ 'is-open': swapTab === 'database' }" :aria-hidden="swapTab !== 'database'" role="tabpanel" aria-labelledby="home-example-tab-database" tabindex="0">
+
+<!-- go-example: illustrative-fragment -->
+```go
+// Repository uses the application's database connection.
 type Repository struct {
 	db *gorm.DB
 }
 
+// NewRepository resolves the default connection at startup.
 func NewRepository(conns *database.Connections) (*Repository, error) {
 	db, err := conns.Default()
 	if err != nil {
@@ -298,6 +440,7 @@ func NewRepository(conns *database.Connections) (*Repository, error) {
 	return &Repository{db: db}, nil
 }
 
+// Recent returns the newest photos with a bounded query.
 func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 	var photos []Photo
 	err := r.db.WithContext(ctx).
@@ -308,95 +451,231 @@ func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 
 </div>
 
-<div :class="{ 'is-open': swapTab === 'cache' }" :aria-hidden="swapTab !== 'cache'" role="tabpanel">
+<div id="home-example-panel-cache" :class="{ 'is-open': swapTab === 'cache' }" :aria-hidden="swapTab !== 'cache'" role="tabpanel" aria-labelledby="home-example-tab-cache" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// internal/photos/feed.go
+// Feed caches rankings through the configured cache driver.
 type Feed struct {
 	cache *cache.Cache
 }
 
+// NewFeed receives the application's cache.
 func NewFeed(cache *cache.Cache) *Feed {
 	return &Feed{cache: cache}
 }
 
+// Trending caches rankings for five minutes, loading on a miss.
 func (f *Feed) Trending(ctx context.Context) ([]Photo, error) {
-	c := f.cache.WithContext(ctx)
-	photos, ok, err := cache.Get[[]Photo](c, "photos:trending")
-	if err != nil || ok {
-		return photos, err
-	}
-	photos = rankPhotos()
-	return photos, cache.Set(c, "photos:trending", photos, 5*time.Minute)
+	return f.cache.WithContext(ctx).Remember("photos:trending", 5*time.Minute,
+		func() ([]Photo, error) {
+			return rankPhotos(), nil
+		})
 }
 ```
 
 </div>
 
-<div :class="{ 'is-open': swapTab === 'queue' }" :aria-hidden="swapTab !== 'queue'" role="tabpanel">
+<div id="home-example-panel-queue" :class="{ 'is-open': swapTab === 'queue' }" :aria-hidden="swapTab !== 'queue'" role="tabpanel" aria-labelledby="home-example-tab-queue" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// internal/photos/thumbnails.go
-type Thumbnails struct {
+// ThumbnailJobTypeName identifies the registered job.
+const ThumbnailJobTypeName = "photos:thumbnail"
+
+// ThumbnailJobPayload carries the photo to process.
+type ThumbnailJobPayload struct {
+	Path string `json:"path"`
+}
+
+// ThumbnailJob dispatches and handles thumbnail work.
+type ThumbnailJob struct {
 	queues *queues.Manager
 }
 
-func NewThumbnails(queues *queues.Manager) *Thumbnails {
-	return &Thumbnails{queues: queues}
+// NewThumbnailJob receives the configured queue manager.
+func NewThumbnailJob(queues *queues.Manager) *ThumbnailJob {
+	return &ThumbnailJob{queues: queues}
 }
 
-func (t *Thumbnails) Enqueue(ctx context.Context, photo Photo) error {
-	payload, err := json.Marshal(ThumbnailPayload{Path: photo.Path})
+// Queue dispatches the payload to the media queue.
+func (t *ThumbnailJob) Queue(ctx context.Context, p ThumbnailJobPayload) error {
+	data, err := json.Marshal(p)
 	if err != nil {
 		return err
 	}
-	job := queue.NewJob("photos:thumbnail").
-		Payload(payload).OnQueue("media").Retry(3)
-	_, err = t.queues.WithContext(ctx).Dispatch(job)
+	_, err = t.queues.WithContext(ctx).Dispatch(
+		queue.NewJob(ThumbnailJobTypeName).Payload(data).OnQueue("media"),
+	)
 	return err
 }
-```
 
-</div>
-
-<div :class="{ 'is-open': swapTab === 'events' }" :aria-hidden="swapTab !== 'events'" role="tabpanel">
-
-<!-- go-example: illustrative-fragment -->
-```go
-// internal/photos/publisher.go
-type Publisher struct {
-	bus events.Bus
-}
-
-func NewPublisher(bus events.Bus) *Publisher {
-	return &Publisher{bus: bus}
-}
-
-func (p *Publisher) PhotoUploaded(ctx context.Context, photo Photo) error {
-	return p.bus.WithContext(ctx).Publish(events.PhotoUploaded{
-		Path:       photo.Path,
-		UploadedBy: photo.OwnerID,
-	})
+// HandleTask decodes the payload before processing it.
+func (t *ThumbnailJob) HandleTask(ctx context.Context, msg queue.Message) error {
+	var p ThumbnailJobPayload
+	if err := msg.Bind(&p); err != nil {
+		return fmt.Errorf("decode thumbnail payload: %w", err)
+	}
+	return createThumbnail(ctx, p.Path)
 }
 ```
 
 </div>
 
-<div :class="{ 'is-open': swapTab === 'mail' }" :aria-hidden="swapTab !== 'mail'" role="tabpanel">
+<div id="home-example-panel-events" :class="{ 'is-open': swapTab === 'events' }" :aria-hidden="swapTab !== 'events'" role="tabpanel" aria-labelledby="home-example-tab-events" tabindex="0">
+<div v-show="eventFile === 'event'" id="home-event-code-event" class="is-open" role="tabpanel" aria-labelledby="home-event-file-event" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// internal/photos/welcome.go
+// UploadedEventTopic is the stable routing key for uploads.
+const UploadedEventTopic = "photos.uploaded"
+
+// UploadedEvent carries the uploaded photo's path.
+type UploadedEvent struct {
+	Path string `json:"path"`
+}
+
+// Topic routes uploads to their subscribers.
+func (UploadedEvent) Topic() string {
+	return UploadedEventTopic
+}
+```
+
+</div>
+<div v-show="eventFile === 'subscriber'" id="home-event-code-subscriber" class="is-open" role="tabpanel" aria-labelledby="home-event-file-subscriber" tabindex="0">
+
+<!-- go-example: illustrative-fragment -->
+```go
+// UploadedSubscriber handles UploadedEvent messages.
+type UploadedSubscriber struct {
+	thumbnails *ThumbnailJob
+}
+
+// NewUploadedSubscriber receives the thumbnail workflow.
+func NewUploadedSubscriber(thumbnails *ThumbnailJob) *UploadedSubscriber {
+	return &UploadedSubscriber{thumbnails: thumbnails}
+}
+
+// Handle queues a thumbnail when a photo is uploaded.
+func (s *UploadedSubscriber) Handle(ctx context.Context, event UploadedEvent) error {
+	return s.thumbnails.Queue(ctx, ThumbnailJobPayload{Path: event.Path})
+}
+```
+
+</div>
+</div>
+
+<div id="home-example-panel-schedule" :class="{ 'is-open': swapTab === 'schedule' }" :aria-hidden="swapTab !== 'schedule'" role="tabpanel" aria-labelledby="home-example-tab-schedule" tabindex="0">
+
+<!-- go-example: illustrative-fragment -->
+```go
+// CleanupSchedule removes expired photos on a recurring interval.
+type CleanupSchedule struct {
+	service *Service
+}
+
+// NewCleanupSchedule receives the photo service.
+func NewCleanupSchedule(service *Service) *CleanupSchedule {
+	return &CleanupSchedule{service: service}
+}
+
+// Name identifies this schedule in logs and inspects.
+func (s *CleanupSchedule) Name() string {
+	return "photos:cleanup"
+}
+
+// Interval sets the time between runs.
+func (s *CleanupSchedule) Interval() (time.Duration, error) {
+	return time.ParseDuration("24h")
+}
+
+// Handle delegates cleanup to the photo service.
+func (s *CleanupSchedule) Handle(ctx context.Context) error {
+	return s.service.Cleanup(ctx)
+}
+```
+
+</div>
+
+<div id="home-example-panel-command" :class="{ 'is-open': swapTab === 'command' }" :aria-hidden="swapTab !== 'command'" role="tabpanel" aria-labelledby="home-example-tab-command" tabindex="0">
+
+<!-- go-example: illustrative-fragment -->
+```go
+// ShowCmd handles the photos:show app command.
+type ShowCmd struct {
+	ID string `arg:"" help:"Photo ID"`
+	service *Service
+}
+
+// Signature defines the public command and its help text.
+func (*ShowCmd) Signature() string {
+	return `name:"photos:show" help:"Show a photo"`
+}
+
+// NewShowCmd receives the same service used by HTTP.
+func NewShowCmd(service *Service) *ShowCmd {
+	return &ShowCmd{service: service}
+}
+
+// Run looks up the photo after Kong parses the arguments.
+func (c *ShowCmd) Run(ctx context.Context) error {
+	photo, err := c.service.Find(ctx, c.ID)
+	if err != nil {
+		return err
+	}
+	fmt.Println(photo.Path)
+	return nil
+}
+```
+
+</div>
+
+<div id="home-example-panel-testing" :class="{ 'is-open': swapTab === 'testing' }" :aria-hidden="swapTab !== 'testing'" role="tabpanel" aria-labelledby="home-example-tab-testing" tabindex="0">
+
+<!-- go-example: illustrative-fragment -->
+```go
+// TestControllerShow checks the handler without a running server.
+func TestControllerShow(t *testing.T) {
+	// App-owned fixture helper seeds photo 42 in the test repository.
+	controller := NewController(newTestPhotoService(t))
+	req := httptest.NewRequest(http.MethodGet, "/photos/42", nil)
+	rec := httptest.NewRecorder()
+	ctx := webtest.NewContext(req, rec, "/photos/:id",
+		webtest.PathParams{"id": "42"})
+
+	if err := controller.Show(ctx); err != nil {
+		t.Fatalf("show photo: %v", err)
+	}
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200", rec.Code)
+	}
+	var photo Photo
+	if err := json.Unmarshal(rec.Body.Bytes(), &photo); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if photo.Path != "photos/42.jpg" {
+		t.Fatalf("photo path = %q", photo.Path)
+	}
+}
+```
+
+</div>
+
+<div id="home-example-panel-mail" :class="{ 'is-open': swapTab === 'mail' }" :aria-hidden="swapTab !== 'mail'" role="tabpanel" aria-labelledby="home-example-tab-mail" tabindex="0">
+
+<!-- go-example: illustrative-fragment -->
+```go
+// Welcome sends onboarding mail through the configured driver.
 type Welcome struct {
 	mailer *mail.Mailer
 }
 
+// NewWelcome receives the application's mailer.
 func NewWelcome(mailer *mail.Mailer) *Welcome {
 	return &Welcome{mailer: mailer}
 }
 
+// Greet sends a welcome message in the caller's context.
 func (w *Welcome) Greet(ctx context.Context, user User) error {
 	return w.mailer.Message().
 		To(user.Email, user.Name).
@@ -411,381 +690,171 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </div>
 
 </div>
-<div class="gf-home-swap__env-col" data-reveal style="--reveal-delay: 0.16s">
-<p class="gf-home-swap__label">Your environment · the only thing that changes</p>
+</div>
+</div>
+<div class="gf-home-swap__env-col" data-reveal>
+<div class="gf-home-demo__environment">
+<p class="gf-home-eyebrow">Local → production</p>
+<h3>Swap drivers. Keep your Go</h3>
+<p class="gf-home-demo__driver-note">Choose local backends for development, then configure the drivers your deployment needs.</p>
 <div class="gf-home-swap__toggle" role="group" aria-label="Choose environment">
-<button type="button" :class="{ 'is-active': swapMode === 'local' }" @click="setSwapMode('local')">Local</button>
-<button type="button" :class="{ 'is-active': swapMode === 'production' }" @click="setSwapMode('production')">Production</button>
+<button type="button" :aria-pressed="swapMode === 'local'" :class="{ 'is-active': swapMode === 'local' }" @click="setSwapMode('local')">Local</button>
+<button type="button" :aria-pressed="swapMode === 'production'" :class="{ 'is-active': swapMode === 'production' }" @click="setSwapMode('production')">Production</button>
+</div>
+<p class="gf-home-demo__driver-note">Configuration selects a compiled-in driver at startup. <a href="/core/drivers-and-adapters">How drivers work →</a></p>
 </div>
 <div class="gf-home-env" :data-mode="swapMode">
-<div v-for="line in swapEnv" :key="line.key" class="gf-home-env__line" :class="{ 'is-spotlit': line.key === activeSwapEnvKey }">
+<div class="gf-home-code-header"><span class="gf-home-code-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>.env</span></div>
+<div class="gf-home-env__body">
+<div class="gf-home-env__comment"># {{ swapMode === 'local' ? 'Default local drivers' : 'Example selections; all available values below' }}</div>
+<div v-for="line in swapEnv" :key="line.key" class="gf-home-env__setting">
+<div class="gf-home-env__line" :class="{ 'is-spotlit': line.key === activeSwapEnvKey }">
 <span class="gf-home-env__key">{{ line.key }}</span><span class="gf-home-env__eq">=</span><span class="gf-home-env__value" :key="line.key + ':' + line.value">{{ line.value }}</span>
 </div>
-</div>
-<div class="gf-home-swap__zero">
-<strong>0</strong>
-<span>lines of Go changed</span>
-</div>
-<div class="gf-home-swap__after">
-<span class="gf-home-swap__after-cmd"><span class="t-prompt">$</span> forj build</span>
-<span class="gf-home-swap__after-note">Driver support is compiled in, selection happens at runtime, and misconfiguration fails fast instead of failing quietly.</span>
+<div v-if="swapMode === 'production'" class="gf-home-env__options"># {{ DRIVER_OPTIONS[line.key].join(' | ') }}</div>
 </div>
 </div>
 </div>
-<p class="gf-home-swap__all" data-reveal><strong>The same rule applies across the app.</strong> Cache, storage, queues, events, databases, and mail run on in-process or local drivers, then move to production infrastructure without changing service code.</p>
+</div>
 </div>
 </section>
 
-<!-- ============ CAPABILITY GRID ============ -->
+<!-- ============ STARTER KITS ============ -->
+
+<section class="gf-home-section gf-home-frontend">
+<div class="gf-home-section__inner">
+<div class="gf-home-frontend__grid">
+<div class="gf-home-frontend__copy" data-reveal>
+<p class="gf-home-eyebrow">Starter kits</p>
+<h2 class="gf-home-h2">Your next product.<br><em>Already taking shape</em></h2>
+<p class="gf-home-lead">Start with sign-in, account settings, and a dashboard. Choose Vue, React, or Go-rendered HTML with templ + htmx. Make the frontend your own.</p>
+<div class="gf-home-links"><a href="/starter-kits">Explore starter kits →</a></div>
+</div>
+<div class="gf-home-gallery" data-reveal>
+<figure v-for="view in STARTER_VIEWS" :key="view.id" class="gf-home-frontend__preview" :class="`gf-home-gallery__${view.id}`">
+<img :src="view.src" :alt="view.alt" loading="lazy" decoding="async" :width="view.width" :height="view.height">
+</figure>
+</div>
+</div>
+<div class="gf-home-frontend__choices" aria-label="Choose a frontend">
+<a class="gf-home-frontend__choice--vue" href="/frontend/vue-starter-kit"><span class="gf-home-frontend__brand" aria-hidden="true"><FrameworkBlockIcon framework="vue" /></span><strong>Vue</strong><span>Vue 3 + shadcn-vue</span><span aria-hidden="true">↗</span></a>
+<a class="gf-home-frontend__choice--react" href="/frontend/react-starter-kit"><span class="gf-home-frontend__brand" aria-hidden="true"><FrameworkBlockIcon framework="react" /></span><strong>React</strong><span>React + shadcn/ui</span><span aria-hidden="true">↗</span></a>
+<a class="gf-home-frontend__choice--templ" href="/frontend/templ-htmx-starter-kit"><span class="gf-home-frontend__brand" aria-hidden="true"><FrameworkBlockIcon framework="templ" /></span><strong>templ + htmx</strong><span>HTML rendered in Go</span><span aria-hidden="true">↗</span></a>
+</div>
+</div>
+</section>
+
+<!-- ============ DEVELOP AND OPERATE ============ -->
+
+<section class="gf-home-section gf-home-workflow gf-home-development">
+<div class="gf-home-section__inner">
+<div class="gf-home-workflow__start">
+<div data-reveal>
+<p class="gf-home-eyebrow">Your development loop</p>
+<h2 class="gf-home-h2">One command.<br><em>Everything running.</em></h2>
+<p class="gf-home-lead"><code>forj dev</code> builds your App, runs migrations, and starts its runtimes. Keep editing. It rebuilds as your code changes.</p>
+<div class="gf-home-development__steps">
+<div><span>01</span><strong>Choose your stack</strong><code>forj new</code></div>
+<div><span>02</span><strong>Start building</strong><code>forj dev</code></div>
+</div>
+<div class="gf-home-links"><a href="/getting-started/quickstart">Get started →</a><a href="/reference/make-commands">Make commands →</a></div>
+<a class="gf-home-workflow__atlas" href="/developer-tools/atlas"><strong>Atlas</strong> Project guidance and tools for your coding agent <span aria-hidden="true">→</span></a>
+</div>
+<div data-reveal><DevTerminalPreview /></div>
+</div>
+</div>
+</section>
+
+<section class="gf-home-section gf-home-workflow gf-home-lighthouse">
+<div class="gf-home-section__inner">
+<div class="gf-home-workflow__lighthouse">
+<div class="gf-home-workflow__lighthouse-copy" data-reveal>
+<p class="gf-home-eyebrow">Lighthouse</p>
+<h3>Your app,<br><em>in plain sight</em></h3>
+<p>Browse requests, jobs, schedules, logs, and connected resources. Open an inspect record to see what happened during an execution.</p>
+<div class="gf-home-links"><a href="/operations/lighthouse">Explore Lighthouse →</a></div>
+</div>
+<div class="gf-home-workflow__screen" data-reveal>
+<img src="/assets/lighthouse/request-inspect.png" alt="Lighthouse request inspect showing a successful HTTP request with seven timeline events, including cache calls, a SQLite query, and the HTTP response" width="2160" height="1050" loading="lazy" decoding="async">
+</div>
+</div>
+</div>
+</section>
+
+<section class="gf-home-section gf-home-workflow gf-home-deployment">
+<div class="gf-home-section__inner">
+<div class="gf-home-workflow__deploy">
+<div data-reveal>
+<p class="gf-home-eyebrow">Run it your way</p>
+<h2 class="gf-home-h2">One CLI.<br><em>Every app</em></h2>
+<p class="gf-home-lead">Start together. Scale independently.</p>
+<p>Run HTTP, workers, schedules, and your own custom runtimes together, or give each its own process.</p>
+<p>Add an app with <code>forj make:app admin</code>. Share your Go code, with separate wiring and a binary for each app.</p>
+<div class="gf-home-links"><a href="/core/runtime-topology">Runtime guide →</a><a href="/core/apps">Multi-app Projects →</a></div>
+</div>
+<div data-reveal><RuntimeTopology /></div>
+</div>
+<div data-reveal><ProjectAppsDiagram /></div>
+</div>
+</section>
+
+<!-- ============ CAPABILITIES AND EVIDENCE ============ -->
 
 <section class="gf-home-section gf-home-stack">
 <div class="gf-home-section__inner">
 <div class="gf-home-section__header" data-reveal>
-<p class="gf-home-eyebrow">The stack</p>
-<h2 class="gf-home-h2">Everything an application needs, in <em>one model</em></h2>
-<p class="gf-home-lead">The routes, workers, schedules, storage, cache, configuration, and operational tools teams rebuild in every service - already connected and ready to use.</p>
+<p class="gf-home-eyebrow">The foundation</p>
+<h2 class="gf-home-h2">The building blocks.<br><em>Already connected</em></h2>
+<p class="gf-home-lead">Choose what your app needs. GoForj connects the pieces through shared configuration and explicit wiring.</p>
 </div>
 <div class="gf-home-grid">
-<a
-  v-for="(cap, i) in CAPABILITIES"
-  :key="cap.title"
-  class="gf-home-card"
-  :href="cap.href"
-  data-reveal
-  :style="{ '--reveal-delay': `${(i % 4) * 0.06 + Math.floor(i / 4) * 0.05}s` }"
->
+<a v-for="(cap, i) in CAPABILITIES" :key="cap.title" :href="cap.href" class="gf-home-card" data-reveal :style="{ '--reveal-delay': `${(i % 4) * 0.06}s` }">
 <span v-if="iconBody(cap.icon)" class="gf-home-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" v-html="iconBody(cap.icon)"></svg></span>
-<h3>{{ cap.title }}</h3>
-<p>{{ cap.copy }}</p>
+<h3>{{ cap.title }}</h3><p>{{ cap.copy }}</p>
 <span class="gf-home-card__more" aria-hidden="true">→</span>
 </a>
 </div>
 </div>
 </section>
 
-<!-- ============ GENERATED CODE YOU OWN ============ -->
-
-<section class="gf-home-section gf-home-gen">
-<div class="gf-home-section__inner gf-home-split gf-home-split--reverse">
-<div class="gf-home-split__copy" data-reveal>
-<p class="gf-home-eyebrow">Generators</p>
-<h2 class="gf-home-h2">Generated code <em>you own</em></h2>
-<p class="gf-home-lead">Make commands create the file and the wiring: providers, routes, schedules, subscriptions. No annotations, no reflection container, no hidden registration.</p>
-<ul class="gf-home-points">
-<li><strong>Organized by package, not by file type.</strong> A feature's HTTP, CLI, queue, scheduler, and event entry points live beside the service that owns the work.</li>
-<li><strong>Reversible.</strong> <code>--remove</code> deletes the file and undoes the wiring the generator manages. <code>--dry-run</code> shows you first.</li>
-<li><strong>Readable output.</strong> Generated wiring is ordinary Go you can read, debug, and step through. If it would be embarrassing to look at, it does not ship.</li>
-</ul>
-<div class="gf-home-links">
-<a href="/reference/make-commands">Make commands →</a>
-<a href="/reference/make-commands#organize-by-package-ownership">Organizing generated code →</a>
-</div>
-</div>
-<div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
-<div class="gf-home-terminal" aria-label="Make commands and the package they build">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one feature · four entry points</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:controller photos</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj make:job photos:thumbnail --queue media</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj make:schedule photos:digest --every 24h</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj make:subscriber photos:photo-uploaded</span>
-<span></span>
-<span class="t-tree">internal/photos/</span>
-<span class="t-tree">├──</span> controller.go                 <span class="t-dim"># HTTP entry point</span>
-<span class="t-tree">├──</span> thumbnail_job.go              <span class="t-dim"># queue entry point</span>
-<span class="t-tree">├──</span> digest_schedule.go            <span class="t-dim"># scheduler entry point</span>
-<span class="t-tree">├──</span> photo_uploaded_subscriber.go  <span class="t-dim"># event entry point</span>
-<span class="t-tree">└──</span> service.go                    <span class="t-hl"># your workflow code</span></code></pre>
-</div>
-</div>
-</div>
-</section>
-
-<!-- ============ RUN IT, SEE IT ============ -->
-
-<section class="gf-home-section gf-home-ops">
-<div class="gf-home-section__inner">
-<div class="gf-home-section__header" data-reveal>
-<p class="gf-home-eyebrow">Operations</p>
-<h2 class="gf-home-h2">Run it your way. See <em>everything</em> it does</h2>
-<p class="gf-home-lead">One binary hosts everything locally, or splits into explicit processes when production needs to scale. Build one artifact, then run the entry point your environment needs.</p>
-</div>
-<div class="gf-home-ops__binary">
-<h3 class="gf-home-ops__binary-title" data-reveal>Your entire app is one file</h3>
-<div class="gf-home-swap__tabs gf-home-ops__binary-tabs" role="tablist" aria-label="Choose what the app runs" data-reveal>
-<button
-  v-for="tab in BIN_TABS"
-  :key="tab.id"
-  type="button"
-  role="tab"
-  :aria-selected="binTab === tab.id"
-  :class="{ 'is-active': binTab === tab.id }"
-  @click="setBinTab(tab.id)"
->{{ tab.label }}</button>
-</div>
-<div class="gf-home-ops__binary-copy" data-reveal>
-<p>Whatever you choose to include, <code>forj build</code> compiles it into one static binary, with nothing extra to install beside it.</p>
-<p class="gf-home-ops__binary-inside">Ships inside</p>
-<div class="gf-home-shapes gf-home-ops__binary-chips" :key="binTab" aria-label="What ships inside this binary">
-<span v-for="chip in activeBinChips" :key="chip">{{ chip }}</span>
-</div>
-</div>
-<div class="gf-home-ops__binary-visual" data-reveal style="--reveal-delay: 0.1s">
-<div class="gf-home-swap__panels">
-<div :class="{ 'is-open': binTab === 'cli' }" :aria-hidden="binTab !== 'cli'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Running a CLI tool from one binary">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · cli</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj make:command invoices:export</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app invoices:export --month 2026-05</span>
-<span class="t-ok">✔</span> invoices:export <span class="t-dim">· 1,204 invoices → exports/2026-05.csv</span></code></pre>
-</div>
-</div>
-<div :class="{ 'is-open': binTab === 'api' }" :aria-hidden="binTab !== 'api'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Running an API service from one binary">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · api</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli, web_api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app api</span>
-<span class="t-step">http</span>       listening on <span class="t-hl">:3000</span></code></pre>
-</div>
-</div>
-<div :class="{ 'is-open': binTab === 'web' }" :aria-hidden="binTab !== 'web'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Running a web app with its frontend from one binary">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · web</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · cli, web_api, web_ui · vue kit</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
-<span class="t-step">frontend</span>   built from <span class="t-hl">cmd/app/frontend</span>
-<span class="t-step">binary</span>     wrote <span class="t-hl">bin/app</span> with embedded assets
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
-<span class="t-step">http</span>       serving <span class="t-hl">/</span> and <span class="t-hl">/api</span> on <span class="t-hl">:3000</span>
-<span class="t-step">frontend</span>   Vue app served by the same process</code></pre>
-</div>
-</div>
-<div :class="{ 'is-open': binTab === 'full' }" :aria-hidden="binTab !== 'full'" role="tabpanel">
-<div class="gf-home-terminal" aria-label="Running a full GoForj app from one binary">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>bin/app · everything</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj new</span>  <span class="t-dim"># components · all of them</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj build</span>
-<span class="t-prompt">$</span> <span class="t-cmd">ls -lh bin/app</span>
--rwxr-xr-x  1 you  staff  <span class="t-hl">…</span>  bin/app
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
-<span class="t-dim">23:51:32.256</span> <span class="t-step">Scheduler</span>  Scheduler started
-<span class="t-dim">23:51:32.256</span> <span class="t-step">Jobs</span>       Queue worker started <span class="t-dim">→ workers=30</span>
-<span class="t-dim">23:51:32.257</span> <span class="t-step">HTTP</span>       Listening <span class="t-dim">→ addr=</span><span class="t-hl">0.0.0.0:3000</span></code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="gf-home-ops__topology">
-<div class="gf-home-ops__shape" data-reveal>
-<p class="gf-home-ops__shape-title">Standalone</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">./bin/app</span>
-<span class="t-dim">one process:</span> http <span class="t-dim">+</span> jobs <span class="t-dim">+</span> scheduler</code></pre>
-</div>
-<div class="gf-home-ops__shape" data-reveal style="--reveal-delay: 0.1s">
-<p class="gf-home-ops__shape-title">Distributed</p>
-<pre class="gf-home-ops__shape-body"><code><span class="t-prompt">$</span> <span class="t-cmd">./bin/app api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app worker --queue media</span>
-<span class="t-prompt">$</span> <span class="t-cmd">./bin/app scheduler</span></code></pre>
-</div>
-</div>
-<div class="gf-home-ops__surfaces">
-<div class="gf-home-ops__surface" data-reveal>
-<h3>Route lists</h3>
-<p><code>forj route:list</code> lists every registered HTTP route, so startup logs do not have to serve as route documentation.</p>
-</div>
-<div class="gf-home-ops__surface" data-reveal style="--reveal-delay: 0.07s">
-<h3>Health and readiness</h3>
-<p><code>/-/health</code> and <code>/-/ready</code> are included, with token-gated structured diagnostics.</p>
-</div>
-<div class="gf-home-ops__surface" data-reveal style="--reveal-delay: 0.14s">
-<h3>Metrics</h3>
-<p>Prometheus-compatible series with bounded labels: route patterns, queue names, job names, schedule names.</p>
-</div>
-<div class="gf-home-ops__surface" data-reveal style="--reveal-delay: 0.21s">
-<h3>Inspects and Lighthouse</h3>
-<p>Execution records for every request, job, schedule run, and command, browsable in a first-party operator UI.</p>
-</div>
-</div>
-<div class="gf-home-links gf-home-links--center" data-reveal>
-<a href="/operations/">Operations guide →</a>
-<a href="/operations/lighthouse">Lighthouse →</a>
-</div>
-</div>
-</section>
-
-<!-- ============ SCALE: ONE APP TO MANY ============ -->
-
-<section class="gf-home-section gf-home-scale">
-<div class="gf-home-section__inner gf-home-split">
-<div class="gf-home-split__copy" data-reveal>
-<p class="gf-home-eyebrow">Scale</p>
-<h2 class="gf-home-h2">Start with one app. <em>Grow into many</em></h2>
-<p class="gf-home-lead">Most products stay in one app. When a Project needs another deployment or scaling boundary, one command adds another runnable app in the same repo: shared code, separate wiring, and separate binaries.</p>
-<ul class="gf-home-points">
-<li><strong>Apps are runnable boundaries, not automatic microservices.</strong> Apps in a multi-app Project share one repo, one Go module, and everything under <code>internal/</code>. No RPC ceremony, no duplicated plumbing.</li>
-<li><strong>Each app deploys on its own terms.</strong> Its own binary, ports, wiring, and runtime identity in logs, metrics, and Lighthouse - scale <code>admin</code> without touching the rest.</li>
-<li><strong>Nothing changes until you need it.</strong> A single-app Project never pays for this. Add another app only when larger systems, teams, or monorepos need separate runnable boundaries.</li>
-</ul>
-<div class="gf-home-links">
-<a href="/core/apps">Apps →</a>
-<a href="/core/runtime-topology">Runtime topology →</a>
-</div>
-</div>
-<div class="gf-home-split__visual" data-reveal style="--reveal-delay: 0.12s">
-<div class="gf-home-terminal" aria-label="Adding another app to a GoForj Project">
-<div class="gf-home-terminal__bar"><span></span><span></span><span></span><em>one project · many apps</em></div>
-<pre class="gf-home-terminal__body"><code><span class="t-prompt">$</span> <span class="t-cmd">forj make:app admin</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj admin make:controller users</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj admin route:list</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj dev</span>  <span class="t-dim"># manages apps listed in dev.apps</span>
-<span></span>
-<span class="t-tree">photodrop/</span>
-<span class="t-tree">├──</span> cmd/app/         <span class="t-dim"># default app</span>
-<span class="t-tree">├──</span> cmd/admin/ <span class="t-dim"># additional app binary</span>
-<span class="t-tree">├──</span> app/admin/ <span class="t-dim"># routes, commands, wiring</span>
-<span class="t-tree">└──</span> internal/        <span class="t-hl"># shared behavior, one module</span>
-<span></span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj api</span>
-<span class="t-prompt">$</span> <span class="t-cmd">forj admin worker</span></code></pre>
-</div>
-</div>
-</div>
-</section>
-
-<!-- ============ PROOF BAND ============ -->
-
 <section class="gf-home-section gf-home-proof">
 <div class="gf-home-section__inner">
-<div class="gf-home-section__header" data-reveal>
-<p class="gf-home-eyebrow">Tested foundation</p>
-<h2 class="gf-home-h2">Drivers tested against <em>real backends</em></h2>
-<p class="gf-home-lead">A driver should not only compile - it should prove its behavior against the backend it claims to support.</p>
-</div>
+<div class="gf-home-evidence" data-reveal>
+<div class="gf-home-evidence__intro"><h3>Tested against real backends</h3><p>First-party libraries are exercised against real services, testcontainers, and emulators.</p></div>
 <div class="gf-home-proof__stats">
-<div
-  v-for="(stat, i) in PROOF"
-  :key="stat.label"
-  class="gf-home-proof__stat"
-  data-reveal
-  :style="i ? { '--reveal-delay': `${i * 0.08}s` } : undefined"
-><strong :data-count="stat.count" :data-suffix="stat.suffix">{{ fmt(stat.count) }}{{ stat.suffix }}</strong><span>{{ stat.label }}</span></div>
+<div v-for="stat in PROOF" :key="stat.label" class="gf-home-proof__stat"><strong :data-count="stat.count" :data-suffix="stat.suffix">{{ fmt(stat.count) }}{{ stat.suffix }}</strong><span>{{ stat.label }}</span></div>
 </div>
-<p class="gf-home-proof__note" data-reveal>Driver suites run against Redis, Postgres, MySQL, NATS, Kafka, MinIO, SQS, and more through testcontainers and emulators. These numbers are generated from the repositories, not written by hand: <a href="https://github.com/goforj/docs/blob/main/bin/collect-proof-stats.mjs" target="_blank" rel="noreferrer noopener">see how they are counted →</a></p>
-</div>
-</section>
-
-<!-- ============ VERIFIED SCENARIOS ============ -->
-
-<section class="gf-home-section gf-home-scenarios">
-<div class="gf-home-section__inner">
-<div class="gf-home-section__header" data-reveal>
-<p class="gf-home-eyebrow">Verified scenarios</p>
-<h2 class="gf-home-h2">Learn it by <em>building it</em></h2>
-<p class="gf-home-lead">Seven scenarios grow one small app from a single route to a fully observable system. Each ships only after it executes against the current templates, keeping the tutorial aligned with the framework.</p>
-</div>
-<ol class="gf-home-path">
-<li
-  v-for="(s, i) in SCENARIOS"
-  :key="s.href"
-  class="gf-home-path__step"
-  data-reveal
-  :style="{ '--reveal-delay': `${i * 0.045}s` }"
->
-<a :href="s.href"><span class="gf-home-path__num">{{ i + 1 }}</span><span class="gf-home-path__label">{{ s.label }}</span></a>
-</li>
-</ol>
-<div class="gf-home-links gf-home-links--center" data-reveal style="--reveal-delay: 0.3s">
-<a href="/scenarios/">Start the scenario path →</a>
+<a class="gf-home-text-link" href="https://github.com/goforj/docs/blob/main/bin/collect-proof-stats.mjs" target="_blank" rel="noreferrer noopener">How these numbers are counted →</a>
 </div>
 </div>
 </section>
 
-<!-- ============ FIT ============ -->
-
-<section class="gf-home-section gf-home-fit">
-<div class="gf-home-section__inner">
-<div class="gf-home-section__header" data-reveal>
-<p class="gf-home-eyebrow">Fit</p>
-<h2 class="gf-home-h2">Is GoForj <em>for you?</em></h2>
-<p class="gf-home-lead">A framework should say who it serves and who it does not. Here is the honest version.</p>
-</div>
-<div class="gf-home-fit__grid">
-<div class="gf-home-fit__card" data-reveal>
-<h3>Reach for GoForj when</h3>
-<ul>
-<li>You are building services, APIs, workers, schedulers, CLIs, or full products in Go.</li>
-<li>You want the foundation every service repeats, wiring, queues, cache, auth, observability, built and tested before day one.</li>
-<li>You want infrastructure to be a configuration decision instead of an architecture rewrite.</li>
-</ul>
-</div>
-<div class="gf-home-fit__card gf-home-fit__card--alt" data-reveal style="--reveal-delay: 0.1s">
-<h3>Reach for something else when</h3>
-<ul>
-<li>You want a thin router and nothing more. A minimal mux and hand-picked libraries will be lighter.</li>
-<li>Your team rules out code generation. GoForj's model is rendered code you own, and that is not negotiable.</li>
-<li>You are building a library, not an application. Use the <a href="/libraries/">standalone libraries</a> instead.</li>
-</ul>
-</div>
-</div>
-<div class="gf-home-fit__eject" data-reveal style="--reveal-delay: 0.18s">
-<h3>If you outgrow it, you keep everything</h3>
-<p>A GoForj app is ordinary Go: explicit wiring, readable files, standard modules. Stop running <code>forj</code> tomorrow and your application still builds, tests, and deploys. The framework earns its place in your workflow, not in your lock-in.</p>
-</div>
-</div>
-</section>
-
-<!-- ============ MANIFESTO ============ -->
-
-<section class="gf-home-section gf-home-manifesto">
-<div class="gf-home-section__inner" data-reveal>
-<blockquote class="gf-home-manifesto__quote">
-<p>I love building in Go. I love how direct it feels, how simple it is to ship, and how long production services can stay understandable. But I got tired of rebuilding the same application foundation every time: commands, queues, schedules, cache, storage, mail, metrics, wiring, local dev. GoForj is the stack I wanted for complete Go applications: cohesive, explicit, compiled, and still recognizably Go.</p>
-<footer>
-<strong>Chris Miles</strong>
-<span>Creator of GoForj</span>
-</footer>
-</blockquote>
-<div class="gf-home-links gf-home-links--center">
-<a href="/blog/the-composable-stack-for-building-with-go">Read why GoForj exists →</a>
-</div>
-</div>
-</section>
-
-<!-- ============ CLOSING ============ -->
+<!-- ============ START BUILDING ============ -->
 
 <section class="gf-home-section gf-home-close">
 <div class="gf-home-section__inner">
-<div class="gf-home-close__paths">
-<a class="gf-home-close__path" href="/getting-started/quickstart" data-reveal>
-<p class="gf-home-eyebrow">For your next application</p>
-<h3>Build an app with GoForj</h3>
-<p>Explicit process management and dependency wiring, local-first drivers, and an optional Vue starter kit with auth, settings, and dashboard screens ready to extend.</p>
-<span class="gf-home-close__cta">Quickstart →</span>
-</a>
-<a class="gf-home-close__path" href="/libraries/" data-reveal style="--reveal-delay: 0.1s">
-<p class="gf-home-eyebrow">For your existing services</p>
-<h3>Adopt one library</h3>
-<p>Queue, events, cache, storage, web, mail, scheduler, and more - standalone Go packages with their own APIs, drivers, and test suites.</p>
-<span class="gf-home-close__cta">Browse libraries →</span>
-</a>
-</div>
-<div class="gf-home-close__final" data-reveal>
-<h2 class="gf-home-h2"><em>Start building</em></h2>
+<div class="gf-home-close__layout">
+<div data-reveal>
+<p class="gf-home-eyebrow">Your next application</p>
+<h2 class="gf-home-h2">From an idea.<br><em>To your first feature</em></h2>
+<p class="gf-home-lead">Choose your stack, run your app, and start building what matters to you.</p>
 <pre class="gf-home-close__cmd"><code><span class="t-prompt">$</span> go install github.com/goforj/goforj/cmd/forj@latest
 <span class="t-prompt">$</span> forj new</code></pre>
 <p class="gf-home-close__version"><a href="/versions/">Unreleased documentation</a><span aria-hidden="true"> · </span><code>@latest</code> installs the latest tagged release.</p>
-<div class="gf-home-close__actions">
-<a class="gf-home-btn gf-home-btn--primary" href="/getting-started/quickstart">Read the Quickstart</a>
-<a class="gf-home-btn" href="/about">What is GoForj?</a>
-<a class="gf-home-btn" href="https://github.com/goforj" target="_blank" rel="noreferrer noopener">GitHub</a>
+<div class="gf-home-close__actions"><a class="gf-home-btn gf-home-btn--primary" href="/getting-started/quickstart">Create your app →</a><a class="gf-home-close__github" href="https://github.com/goforj" target="_blank" rel="noreferrer noopener">Explore on GitHub ↗</a></div>
 </div>
+<nav class="gf-home-close__next" aria-label="Start building with GoForj" data-reveal>
+<p class="gf-home-eyebrow">A clear path forward</p>
+<a class="gf-home-close__step" href="/getting-started/starter-kits">
+<span class="gf-home-close__number" aria-hidden="true">01</span><span><strong>Choose your starting point</strong><span>Vue, React, templ + htmx, or your own frontend.</span></span><span class="gf-home-close__arrow" aria-hidden="true">↗</span>
+</a>
+<a class="gf-home-close__step" href="/getting-started/quickstart">
+<span class="gf-home-close__number" aria-hidden="true">02</span><span><strong>Get it running locally</strong><span>One development loop for your app and services.</span></span><span class="gf-home-close__arrow" aria-hidden="true">↗</span>
+</a>
+<a class="gf-home-close__step" href="/scenarios/">
+<span class="gf-home-close__number" aria-hidden="true">03</span><span><strong>Build your first feature</strong><span>Follow working examples, from routes to jobs.</span></span><span class="gf-home-close__arrow" aria-hidden="true">↗</span>
+</a>
+</nav>
 </div>
 </div>
 </section>

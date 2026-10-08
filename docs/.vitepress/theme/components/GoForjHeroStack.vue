@@ -1384,20 +1384,21 @@ function adjustColor(color, amount) {
   <div class="gf-home-hero">
     <div class="gf-hero-container">
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
+        <p class="gf-hero-audience">For gophers and agents</p>
         <h1 class="gf-hero-title">
           <!-- Two-tone headline. The mock is .m-h1 with an <em> on the
                closing phrase: `.m-h1 em { font-style:normal; color:accent }`.
                The accent is doing what it does everywhere else here — it is a
                filled mark, not a link — so the phrase reads as emphasis rather
                than as something clickable. -->
-          <span class="gf-hero-headline">The composable stack for <em>building with Go</em></span>
+          <span class="gf-hero-headline">The composable<br class="gf-hero-desktop-break" /> stack for<br class="gf-hero-desktop-break" /> <em>building with Go</em></span>
         </h1>
         <p class="gf-hero-tagline">
-          One cohesive application model. Explicit dependency wiring. Local-first drivers. Production-ready primitives across the application stack.
+          GoForj helps you build and ship Go apps fast, with quality and performance.
         </p>
         <div class="gf-hero-actions">
-          <a href="/getting-started/quickstart" class="gf-hero-btn gf-hero-btn--primary">Build a GoForj App</a>
-          <a href="/libraries/" class="gf-hero-btn gf-hero-btn--secondary">Use a standalone library</a>
+          <a href="/getting-started/quickstart" class="gf-hero-btn gf-hero-btn--primary">Get started</a>
+          <a href="/libraries/" class="gf-hero-btn gf-hero-btn--secondary">Explore libraries</a>
         </div>
         <button
           type="button"
@@ -1413,19 +1414,10 @@ function adjustColor(color, amount) {
           <span class="gf-hero-install__state">{{ installCopied ? 'copied' : 'copy' }}</span>
         </button>
         <span class="gf-sr-only" role="status" aria-live="polite">{{ installCopyStatus }}</span>
-        <div class="gf-hero-principles" aria-label="GoForj application model">
-          <div class="gf-hero-principle">
-            <strong>App-owned composition</strong>
-            <span>Generated code keeps application boundaries and extension points explicit.</span>
-          </div>
-          <div class="gf-hero-principle">
-            <strong>Explicit Runtimes</strong>
-            <span>Run together locally, then split into production processes.</span>
-          </div>
-          <div class="gf-hero-principle">
-            <strong>Swap drivers, not business logic</strong>
-            <span>Move between local and production infrastructure behind the same APIs.</span>
-          </div>
+        <div class="gf-hero-foundation" aria-label="GoForj application model">
+          <span>Code you own</span>
+          <span>Local-first drivers</span>
+          <span>One app binary</span>
         </div>
       </div>
 
@@ -1930,8 +1922,8 @@ function adjustColor(color, amount) {
 .gf-home-hero {
   position: relative;
   width: 100%;
-  padding: 1.35rem 2rem 5rem;
-  overflow: visible;
+  padding: 1.85rem 2rem 0;
+  overflow: hidden;
   /* Temper's --glow token geometry, verbatim from the prototype:
      top-anchored ambient heat over the whole hero, not a bloom
      centred on the illustration. The old pair of gradients sat at
@@ -1939,16 +1931,31 @@ function adjustColor(color, amount) {
      the tower — the warmest object on the page already. */
   background: radial-gradient(58% 46% at 68% -5%, rgba(255, 94, 58, 0.18), transparent 70%);
 }
+.gf-home-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--gf-ink) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--gf-ink) 8%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+  opacity: 0.7;
+  mask-image: radial-gradient(ellipse 65% 90% at 78% 35%, #000, rgba(0, 0, 0, 0.7) 45%, transparent 80%);
+}
 .gf-hero-container {
+  position: relative;
   max-width: 1280px;
-  margin: 0 auto;
+  /* Bring the next rail to the plate, trimming the SVG's lower whitespace. */
+  margin: 0 auto -3.5rem;
   display: flex;
   align-items: center;
   gap: 5rem;
-  min-height: calc(100vh - 140px);
+  min-height: min(740px, calc(100svh - 110px));
 }
 .gf-hero-content {
-  flex: 1.1;
+  flex: 1.25;
   opacity: 0;
   transform: translateY(-16px);
   transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1965,6 +1972,16 @@ function adjustColor(color, amount) {
    this file silently wins over the token layer. Only layout that
    the Temper block does not own belongs in these rules. */
 
+.gf-hero-audience {
+  margin: 0 0 18px;
+  color: var(--gf-accent);
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .gf-hero-title {
   font-size: clamp(4rem, 4.6vw, 4.6rem);
   font-weight: 700;
@@ -1974,6 +1991,9 @@ function adjustColor(color, amount) {
   max-width: 12ch;
   text-wrap: balance;
   margin-bottom: 1.45rem;
+}
+.gf-hero-desktop-break {
+  display: none;
 }
 /* .gf-hero-headline carries no colour of its own — the flat ink of
    .gf-hero-title, with the <em> lifted to --gf-accent by custom.css.
@@ -2148,7 +2168,7 @@ function adjustColor(color, amount) {
   border-color: var(--gf-ink-3);
 }
 .gf-hero-graphic {
-  flex: 1.4;
+  flex: 1.25;
   position: relative;
   opacity: 0;
   transition: transform 1.8s ease, opacity 1.8s ease;
@@ -2157,11 +2177,11 @@ function adjustColor(color, amount) {
      bleeds past the right edge on purpose. These offsets pull it back
      toward the centre of the row so the slab's right end stays on
      screen at common widths. */
-  transform: translate3d(-140px, -10px, 0);
+  transform: translate3d(-125px, -10px, 0);
 }
 .gf-hero-graphic.is-visible {
   opacity: 1;
-  transform: translate3d(-150px, -10px, 0);
+  transform: translate3d(-135px, -10px, 0);
 }
 .gf-hero-svg {
   width: 100%;
@@ -2489,6 +2509,24 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 .iso-stamp__highlight {
   fill: rgba(255, 224, 182, 0.26);
 }
+@media (min-width: 1025px) {
+  .gf-hero-content {
+    margin-top: -3rem;
+  }
+  .gf-hero-title {
+    font-size: clamp(3.25rem, 4.6vw, 4.6rem);
+    line-height: 1.04;
+    max-width: none;
+    text-wrap: wrap;
+  }
+  .gf-hero-desktop-break {
+    display: initial;
+  }
+  .gf-hero-headline em {
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 1024px) {
   .gf-home-hero {
     padding-top: 2rem;
@@ -2500,6 +2538,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
     gap: 3rem;
     min-height: auto;
     width: 100%;
+    margin-bottom: 0;
   }
   .gf-hero-content,
   .gf-hero-graphic {
@@ -2541,7 +2580,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 }
 @media (max-width: 640px) {
   .gf-home-hero {
-    padding: 1.15rem 1.25rem 3rem;
+    padding: 1.15rem 1.25rem 0;
     overflow: hidden;
   }
   .gf-hero-container {

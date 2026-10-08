@@ -9,9 +9,33 @@ Read this before editing `docs/.vitepress/theme/custom.css` or `docs/.vitepress/
 ## File Map
 
 - `docs/.vitepress/theme/custom.css` - all theme styling (~3700 lines). Landing (`gf-home-*`), starter kit page (`gf-starter-*`), docs view refinements, code variants, search, 404, lightbox, banner.
+- `docs/.vitepress/theme/starter-kits.css` - starter showcase rails, static hero preview, frontend choices, account and settings grids. Loaded after the landing stylesheet.
+- `docs/.vitepress/theme/home.css` - landing-only connected panels, code explorer, starter-kit preview, and responsive overrides. Imported after `custom.css`; uses the existing theme tokens in both color modes.
 - `docs/.vitepress/theme/index.js` - theme entry. Layout slots (preview banner, 404, motion/code pickers), lightbox, mermaid, outline/sidebar auto-scroll, hash-offset settle passes, page-enter replay, banner height measurement.
-- `docs/.vitepress/theme/components/` - `GoForjHeroStack.vue` (isometric forge hero), `StarterKitHeroScreens.vue` (CSS class-toggled screenshot reveal), `MotionPicker.vue`, `CodeVariantPicker.vue`, `ApiIndexJump.vue`, `LibraryRepoHeader.vue`.
+- `docs/.vitepress/theme/components/` - `GoForjHeroStack.vue` (isometric forge hero), `StarterKitHeroScreens.vue` (static dashboard preview with dimensions reserved before load), `MotionPicker.vue`, `CodeVariantPicker.vue`, `ApiIndexJump.vue`, `LibraryRepoHeader.vue`.
 - `docs/index.md` - landing page sections and inline `<script setup>` (swap toggle, count-ups, section analytics).
+
+## Landing Page Story
+
+Keep the primary sequence: forge hero, code explorer, starter kits, development and Lighthouse, capabilities and evidence, then getting started. The full first-run transcript is optional; multi-app guidance belongs alongside deployment. Use the same primary action label, `Get started`, throughout.
+
+The hero uses a static 48px background grid, masked toward the forge and away from the copy. Keep it low contrast in both color modes and behind the content.
+
+Keep section rails square. Use 14px outer corners on configuration panels, preview frames, grouped capability cards, frontend choices, and statistics. Selectors use inset pills with a visible keyboard focus ring. Configuration examples use a filename header and a single column of monospace lines, with the environment selector and startup explanation beside the panel. Avoid spreading code assignments into a dashboard-style grid.
+
+The runtime section uses `RuntimeTopology.vue` to switch between one process containing all runtimes and separate process boundaries for HTTP, workers, schedules, and an illustrative custom Runtime. Label the custom Runtime as wired by the user and leave its CLI command user-defined. Keep source commands inside their process boundaries. The shared service node represents code, not shared in-memory state between processes. `ProjectAppsDiagram.vue` shows shared Go packages feeding independent Apps, each with its own wiring, source command, build command, and standalone binary. Framework and runtime icons use original outlined blocks that echo the forge, with brand marks from the existing icon subset.
+
+The starter-kit preview shows sign-in, dashboard, and profile surfaces together in a static grid with minimal bordered panels and no browser chrome. Sign-in leads the reading order and uses a close crop; no screenshot is hidden behind a selector. The preview uses screenshots from `docs/assets/starter-kits/`. Import assets used by dynamic Vue bindings so VitePress includes their hashed production files.
+
+All 20 starter-kit screenshots were refreshed on 2026-10-07 from a newly rendered Vue starter with auth and the component library enabled, using the GoForj checkout at `9e6dc6fb`. The generator and app were built from current source in an isolated `/tmp` project. The app used SQLite, memory cache, local storage, log mail, and HTTP port 5194. A subsequent copy pass replaced generator terminology in the Vue, React, and templ + htmx templates with direct application language. Dashboard, profile, component overview, navigation, and command-menu screenshots were recaptured from a fresh SQLite app after rebuilding the Vue frontend. Full-screen images use a 1496 by 938 viewport at 2x resolution; account detail images are browser crops. The password-reset confirmation was captured after submitting the real form, and the invite dialog and command palette were opened through the UI. Refresh the complete set from a fresh rendered app when starter templates change, including images used by `/starter-kits` and `StarterKitHeroScreens.vue`.
+
+`docs/assets/lighthouse/overview.png` is a real screenshot captured on 2026-10-07 from an isolated local photodrop app binary (GoForj 0.19.0). It shows a connected HTTP runtime with SQLite, memory cache, local storage, a workerpool queue, in-process events, and log mail. The capture contains no credentials or user project data. Refresh it from a current generated app when the Lighthouse interface changes; do not fabricate runtime records or edit displayed version metadata.
+
+The landing page uses `docs/assets/lighthouse/request-inspect.png`, captured on 2026-10-07 from an isolated SQLite runtime using the existing `/tmp/test3/bin/app` binary. Actual login and authenticated requests populated the inspect list. The selected `GET /api/v1/auth/sessions` record shows cache calls, a SQLite query, and the HTTP exchange. The sidebar was collapsed through the UI. The viewport is 1440 by 700 at 1.5x resolution. Only local sample data was used; the temporary runtime, database, credentials, and browser session were removed after capture.
+
+## Starter Showcase
+
+`docs/starter-kits.md` follows the landing page frame: straight full-width rails, square orange intersection markers, and rounded app previews. Hero and component screenshots extend below their blocks and clip at the following rail. `StarterKitOptions.vue` lists rendering choices once and copies the documented `forj new` command. Keep account screenshots captioned as Vue previews, and preserve the distinction between Vue/React authentication and the templ account pages.
 
 ## Critical Scoping Rule
 
@@ -87,3 +111,11 @@ If the banner is ever removed, delete all three pieces together.
 
 - `docs/assets/starter-kits/*` screenshots are tracked in git and available to production builds.
 - Landing page and docs share `.vp-doc`; re-read the Critical Scoping Rule before adding any content-element rule.
+
+The development section uses `DevTerminalPreview.vue` with the result fully visible, without replay or an expandable transcript. Its preparation and App startup output was captured from the local framework CLI on 2026-10-07 in a fresh `/tmp` App using templ + htmx, SQLite, memory cache, workerpool, inproc events, local storage, and log mail. The isolated capture port 5196 is displayed as the default 3000; measured durations are capture details, not performance guarantees. The running App returned `{"status":"ok"}` from `/-/health`.
+
+Landing preview frames use a single subtle border without an orange outer halo. Code and environment panels share the compact file-tab header. The Lighthouse screenshot uses its own navigation without an additional marketing title bar. Terminal grouping rails span the line spacing continuously while preserving the captured transcript text.
+
+The landing code section updates its description, benefits, guide link, and copyable commands with the selected example. Scaffold examples use the relevant make command; cache, storage, and mail show configuration values, and testing shows the package test command. Model scaffolding explains that its table must already exist. Its job, subscriber, schedule, and command examples retain the current make-template contracts with photo workflow logic added. The controller receives the concrete photo service. Testing uses `webtest.NewContext` with an explicitly App-owned test fixture helper that seeds photo 42; no HTTP server is required. Ten example tabs use a minimal grid with an ember-colored active indicator. Code frames size to their content without stretching to the copy column; long snippets scroll inside a bounded code panel and reset to the top on selection.
+
+The starter kits showcase follows the landing page's thin preview borders, full section rails and square markers, restrained ember backgrounds, framework block icons, and compact command wrappers. Its hero leads with sign-in and layers a dashboard behind it, clipped at the page frame and the next section. The three first-party kits have individual cards; bringing an existing frontend remains a separate guide link. `forj new` and `forj dev` are individually copyable, with development run from the new project.
