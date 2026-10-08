@@ -523,7 +523,7 @@ func (t *ThumbnailJob) HandleTask(ctx context.Context, msg queue.Message) error 
 </div>
 
 <div id="home-example-panel-events" :class="{ 'is-open': swapTab === 'events' }" :aria-hidden="swapTab !== 'events'" role="tabpanel" aria-labelledby="home-example-tab-events" tabindex="0">
-<div v-show="eventFile === 'event'" id="home-event-code-event" class="is-open" role="tabpanel" aria-labelledby="home-event-file-event" tabindex="0">
+<div v-if="eventFile === 'event'" id="home-event-code-event" role="tabpanel" aria-labelledby="home-event-file-event" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -542,7 +542,7 @@ func (UploadedEvent) Topic() string {
 ```
 
 </div>
-<div v-show="eventFile === 'subscriber'" id="home-event-code-subscriber" class="is-open" role="tabpanel" aria-labelledby="home-event-file-subscriber" tabindex="0">
+<div v-else id="home-event-code-subscriber" role="tabpanel" aria-labelledby="home-event-file-subscriber" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go

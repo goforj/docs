@@ -316,11 +316,11 @@
     overflow: auto;
 }
 
-.gf-home .gf-home-swap__code [role='tabpanel'] {
+.gf-home .gf-home-swap__code .gf-home-swap__panels > [role='tabpanel'] {
     display: none;
 }
 
-.gf-home .gf-home-swap__code [role='tabpanel'].is-open {
+.gf-home .gf-home-swap__code .gf-home-swap__panels > [role='tabpanel'].is-open {
     display: block;
 }
 
