@@ -108,8 +108,8 @@
 .gf-home .gf-home-swap__grid {
     grid-template-columns: minmax(0, 0.52fr) minmax(0, 1fr);
     gap: 40px;
-    align-items: start;
-    padding: 6px 6px 36px;
+    align-items: stretch;
+    padding: 6px 6px 0;
     margin: -6px -6px 0;
     overflow: hidden;
 }
@@ -141,6 +141,18 @@
 
 .gf-home .gf-home-make {
     margin-top: 24px;
+}
+
+.gf-home .gf-home-demo__copy[data-compact="true"] {
+    padding-bottom: 20px;
+}
+
+.gf-home .gf-home-demo__copy[data-compact="true"] .gf-home-make {
+    margin-top: 18px;
+}
+
+.gf-home .gf-home-demo__copy[data-compact="true"] .gf-home-demo__guide {
+    margin-top: 20px;
 }
 
 .gf-home .gf-home-make__label {
@@ -229,10 +241,11 @@
 }
 
 .gf-home .gf-home-demo__window {
-    flex: none;
+    flex: 1;
     overflow: hidden;
     border: 1px solid var(--gf-line-strong);
-    border-radius: 14px;
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
     background: var(--gf-code-bg);
     box-shadow: var(--gf-home-frame);
 }

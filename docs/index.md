@@ -86,20 +86,20 @@ const SWAP_TABS = [
 
 const EXAMPLE_DETAILS = {
   http: {
-    lead: 'Give your photos an API. Keep the controller small and let your Go services do the work.',
+    lead: 'Serve photos through a small controller and your Go service.',
     points: ['Routes and handlers in one controller', 'Constructor injection for your business logic'],
     label: 'Create the controller',
     commands: ['forj make:controller photos']
   },
   database: {
-    lead: 'Query your photos with GORM. Use the configured connection and keep database access in a repository.',
+    lead: 'Query photos with GORM through your configured database.',
     points: ['Context-aware queries', 'SQLite, MySQL, or Postgres'],
     label: 'Create a model from your table',
     commands: ['forj make:model photos --package photos'],
-    note: 'Run after the photos table exists. The command reads its schema.'
+    note: 'Reads the schema of your existing photos table.'
   },
   cache: {
-    lead: 'Keep popular photos close. Load a typed result on a cache miss and reuse it until the TTL expires.',
+    lead: 'Cache typed results and query the database on a miss.',
     points: ['Typed values and explicit expiration', 'Change the driver through configuration'],
     label: 'Configure your cache',
     commands: ['CACHE_DRIVER=memory'],
@@ -112,13 +112,13 @@ const EXAMPLE_DETAILS = {
     commands: ['forj make:job photos:thumbnail --queue media']
   },
   events: {
-    lead: 'React when a photo is uploaded. A typed subscriber connects the event to your thumbnail workflow.',
+    lead: 'Connect photo uploads to thumbnail processing with typed events.',
     points: ['Typed events with stable topics', 'Subscriber registration handled by make:subscriber'],
     label: 'Create the event and subscriber',
     commands: ['forj make:event photos:uploaded', 'forj make:subscriber photos:uploaded']
   },
   schedule: {
-    lead: 'Keep your photo library tidy. Run cleanup on a recurring interval through the same Go service.',
+    lead: 'Run photo cleanup every day through your Go service.',
     points: ['A named schedule with an explicit interval', 'Registered with the scheduler by make:schedule'],
     label: 'Create the schedule',
     commands: ['forj make:schedule photos:cleanup --every 24h']
@@ -136,14 +136,14 @@ const EXAMPLE_DETAILS = {
     commands: ['go test ./internal/photos']
   },
   storage: {
-    lead: 'Give your photos a home. Write through a named disk and choose the storage driver in configuration.',
+    lead: 'Store photos through a named disk with a configurable driver.',
     points: ['A storage dependency you can see', 'Local files today, object storage when you need it'],
     label: 'Configure the photos disk',
     commands: ['STORAGE_PHOTOS_DRIVER=local'],
-    note: 'Set in your .env file for the configured photos disk.'
+    note: 'Set in your .env file.'
   },
   mail: {
-    lead: 'Welcome your next user. Compose the message in Go and let the configured mail driver deliver it.',
+    lead: 'Compose welcome mail in Go and deliver it through your configured driver.',
     points: ['Fluent message composition', 'Log mail locally, configure delivery for production'],
     label: 'Configure local mail',
     commands: ['MAIL_DRIVER=log'],
@@ -166,6 +166,7 @@ async function copyMakeCommand(command) {
 const swapTab = ref('http')
 const activeSwapTab = computed(() => SWAP_TABS.find((tab) => tab.id === swapTab.value))
 const activeSwapDetails = computed(() => EXAMPLE_DETAILS[swapTab.value])
+const compactSwapExample = computed(() => !['queue', 'command', 'testing'].includes(swapTab.value))
 const activeSwapEnvKey = computed(() => activeSwapTab.value.env)
 const activeConfigDriverOptions = computed(() => {
   const key = activeSwapEnvKey.value
@@ -322,11 +323,11 @@ onBeforeUnmount(() => {
 <section class="gf-home-section gf-home-swap">
 <div class="gf-home-section__inner">
 <div class="gf-home-swap__grid">
-<div class="gf-home-demo__copy" data-reveal>
+<div class="gf-home-demo__copy" :data-compact="compactSwapExample" data-reveal>
 <p class="gf-home-eyebrow">The code</p>
 <h2 class="gf-home-h2">Build more.<br><em>Wire less</em></h2>
 <p class="gf-home-lead">{{ activeSwapDetails.lead }}</p>
-<ul class="gf-home-points">
+<ul v-if="!compactSwapExample" class="gf-home-points">
 <li v-for="point in activeSwapDetails.points" :key="point">{{ point }}</li>
 </ul>
 <div class="gf-home-make">
@@ -370,23 +371,6 @@ onBeforeUnmount(() => {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// Controller exposes photo routes.
-type Controller struct {
-	service *Service
-}
-
-// NewController receives photo lookup through its constructor.
-func NewController(service *Service) *Controller {
-	return &Controller{service: service}
-}
-
-// Routes exposes the photo lookup endpoint.
-func (c *Controller) Routes() []web.Route {
-	return []web.Route{
-		web.NewRoute(http.MethodGet, "/photos/:id", c.Show),
-	}
-}
-
 // Show delegates lookup to the injected service.
 func (c *Controller) Show(ctx web.Context) error {
 	photo, err := c.service.Find(ctx.Context(), ctx.Param("id"))
@@ -404,16 +388,6 @@ func (c *Controller) Show(ctx web.Context) error {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// Service writes files through the configured storage driver.
-type Service struct {
-	disk storage.Storage
-}
-
-// NewService receives the application's photo disk.
-func NewService(disk storage.Storage) *Service {
-	return &Service{disk: disk}
-}
-
 // Store writes photo bytes to an application-owned path.
 func (s *Service) Store(ctx context.Context, path string, body []byte) error {
 	return s.disk.WithContext(ctx).Put(path, body)
@@ -426,20 +400,6 @@ func (s *Service) Store(ctx context.Context, path string, body []byte) error {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// Repository uses the application's database connection.
-type Repository struct {
-	db *gorm.DB
-}
-
-// NewRepository resolves the default connection at startup.
-func NewRepository(conns *database.Connections) (*Repository, error) {
-	db, err := conns.Default()
-	if err != nil {
-		return nil, err
-	}
-	return &Repository{db: db}, nil
-}
-
 // Recent returns the newest photos with a bounded query.
 func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 	var photos []Photo
@@ -455,21 +415,14 @@ func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// Feed caches rankings through the configured cache driver.
-type Feed struct {
-	cache *cache.Cache
-}
-
-// NewFeed receives the application's cache.
-func NewFeed(cache *cache.Cache) *Feed {
-	return &Feed{cache: cache}
-}
-
-// Trending caches rankings for five minutes, loading on a miss.
-func (f *Feed) Trending(ctx context.Context) ([]Photo, error) {
-	return f.cache.WithContext(ctx).Remember("photos:trending", 5*time.Minute,
-		func() ([]Photo, error) {
-			return rankPhotos(), nil
+// Recent caches the ten newest photos for five minutes.
+func (f *Feed) Recent(ctx context.Context) ([]Photo, error) {
+	return f.cache.WithContext(ctx).
+		Remember("photos:recent", 5*time.Minute, func() ([]Photo, error) {
+			var photos []Photo
+			err := f.db.WithContext(ctx).
+				Order("created_at desc").Limit(10).Find(&photos).Error
+			return photos, err
 		})
 }
 ```
@@ -480,32 +433,10 @@ func (f *Feed) Trending(ctx context.Context) ([]Photo, error) {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// ThumbnailJobTypeName identifies the registered job.
-const ThumbnailJobTypeName = "photos:thumbnail"
-
-// ThumbnailJobPayload carries the photo to process.
-type ThumbnailJobPayload struct {
-	Path string `json:"path"`
-}
-
-// ThumbnailJob dispatches and handles thumbnail work.
-type ThumbnailJob struct {
-	queues *queues.Manager
-}
-
-// NewThumbnailJob receives the configured queue manager.
-func NewThumbnailJob(queues *queues.Manager) *ThumbnailJob {
-	return &ThumbnailJob{queues: queues}
-}
-
 // Queue dispatches the payload to the media queue.
 func (t *ThumbnailJob) Queue(ctx context.Context, p ThumbnailJobPayload) error {
-	data, err := json.Marshal(p)
-	if err != nil {
-		return err
-	}
-	_, err = t.queues.WithContext(ctx).Dispatch(
-		queue.NewJob(ThumbnailJobTypeName).Payload(data).OnQueue("media"),
+	_, err := t.queues.WithContext(ctx).Dispatch(
+		queue.NewJob(ThumbnailJobTypeName).Payload(p).OnQueue("media"),
 	)
 	return err
 }
@@ -546,16 +477,6 @@ func (UploadedEvent) Topic() string {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// UploadedSubscriber handles UploadedEvent messages.
-type UploadedSubscriber struct {
-	thumbnails *ThumbnailJob
-}
-
-// NewUploadedSubscriber receives the thumbnail workflow.
-func NewUploadedSubscriber(thumbnails *ThumbnailJob) *UploadedSubscriber {
-	return &UploadedSubscriber{thumbnails: thumbnails}
-}
-
 // Handle queues a thumbnail when a photo is uploaded.
 func (s *UploadedSubscriber) Handle(ctx context.Context, event UploadedEvent) error {
 	return s.thumbnails.Queue(ctx, ThumbnailJobPayload{Path: event.Path})
@@ -569,21 +490,6 @@ func (s *UploadedSubscriber) Handle(ctx context.Context, event UploadedEvent) er
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// CleanupSchedule removes expired photos on a recurring interval.
-type CleanupSchedule struct {
-	service *Service
-}
-
-// NewCleanupSchedule receives the photo service.
-func NewCleanupSchedule(service *Service) *CleanupSchedule {
-	return &CleanupSchedule{service: service}
-}
-
-// Name identifies this schedule in logs and inspects.
-func (s *CleanupSchedule) Name() string {
-	return "photos:cleanup"
-}
-
 // Interval sets the time between runs.
 func (s *CleanupSchedule) Interval() (time.Duration, error) {
 	return time.ParseDuration("24h")
@@ -612,11 +518,6 @@ func (*ShowCmd) Signature() string {
 	return `name:"photos:show" help:"Show a photo"`
 }
 
-// NewShowCmd receives the same service used by HTTP.
-func NewShowCmd(service *Service) *ShowCmd {
-	return &ShowCmd{service: service}
-}
-
 // Run looks up the photo after Kong parses the arguments.
 func (c *ShowCmd) Run(ctx context.Context) error {
 	photo, err := c.service.Find(ctx, c.ID)
@@ -634,7 +535,7 @@ func (c *ShowCmd) Run(ctx context.Context) error {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// TestControllerShow checks the photo response without a running server.
+// TestControllerShow checks the status without a running server.
 func TestControllerShow(t *testing.T) {
 	service := newTestPhotoService(t) // Seeds photo 42 for this test.
 	controller := NewController(service)
@@ -651,14 +552,6 @@ func TestControllerShow(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status: got %d, want %d", rec.Code, http.StatusOK)
 	}
-
-	var photo Photo
-	if err := json.NewDecoder(rec.Body).Decode(&photo); err != nil {
-		t.Fatal(err)
-	}
-	if photo.Path != "photos/42.jpg" {
-		t.Fatalf("path: got %q, want %q", photo.Path, "photos/42.jpg")
-	}
 }
 ```
 
@@ -668,16 +561,6 @@ func TestControllerShow(t *testing.T) {
 
 <!-- go-example: illustrative-fragment -->
 ```go
-// Welcome sends onboarding mail through the configured driver.
-type Welcome struct {
-	mailer *mail.Mailer
-}
-
-// NewWelcome receives the application's mailer.
-func NewWelcome(mailer *mail.Mailer) *Welcome {
-	return &Welcome{mailer: mailer}
-}
-
 // Greet sends a welcome message in the caller's context.
 func (w *Welcome) Greet(ctx context.Context, user User) error {
 	return w.mailer.Message().
