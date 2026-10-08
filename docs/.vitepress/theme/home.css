@@ -23,7 +23,9 @@
     content: '';
     width: 4px;
     height: 4px;
-    background: var(--gf-accent);
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--gf-ink-3);
 }
 
 .gf-home {

@@ -6,6 +6,8 @@ This file maps the visual layer of the docs site so future sessions can extend i
 
 Read this before editing `docs/.vitepress/theme/custom.css` or `docs/.vitepress/theme/index.js`.
 
+For the latest landing and starter showcase decisions, screenshot capture workflow, code-panel visibility fixes, and favicon exports, read the [2026-10-08 site refresh handoff](handoffs/2026-10-08-site-refresh.md). Its dated notes supersede older descriptions below where the implementation has changed.
+
 ## File Map
 
 - `docs/.vitepress/theme/custom.css` - all theme styling (~3700 lines). Landing (`gf-home-*`), starter kit page (`gf-starter-*`), docs view refinements, code variants, search, 404, lightbox, banner.
