@@ -745,7 +745,18 @@ export default {
   },
   setup() {
     const route = useRoute()
-    const { theme } = useData()
+    const { theme, isDark } = useData()
+    const onThemeKeydown = (event) => {
+      if (event.key.toLowerCase() !== 'd' || event.defaultPrevented || event.repeat || event.isComposing ||
+          event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return
+      const editing = event.composedPath().some((element) =>
+        element instanceof HTMLElement && (element.isContentEditable ||
+          element.matches('input, textarea, select, [role="textbox"], [role="searchbox"], [role="combobox"]'))
+      )
+      if (editing) return
+      event.preventDefault()
+      isDark.value = !isDark.value
+    }
     let routeHashTimers = []
     let onHashChange = null
     let sidebarImageIntentTimer = 0
@@ -808,6 +819,7 @@ export default {
     let onBannerResize = null
 
     onMounted(() => {
+      document.addEventListener('keydown', onThemeKeydown)
       revealNavbarSearch()
       initLightbox()
       updateBannerOffsetVar()
@@ -871,6 +883,7 @@ export default {
     })
 
     onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onThemeKeydown)
       clearSidebarImageIntent()
       routeHashTimers.forEach((id) => window.clearTimeout(id))
       routeHashTimers = []
