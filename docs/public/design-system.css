@@ -4295,6 +4295,39 @@ html[data-gf-motion='reduced'] .VPDocFooter .pager-link:hover .title::before {
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.45);
 }
 
+:root:not(.dark) {
+    --vp-local-search-bg: var(--gf-ground);
+    --vp-local-search-result-bg: var(--gf-surface);
+    --vp-local-search-result-border: var(--gf-line);
+    --vp-local-search-result-selected-bg: color-mix(in srgb, var(--gf-accent) 8%, var(--gf-ground));
+    --vp-local-search-result-selected-border: var(--gf-accent);
+    --vp-local-search-highlight-bg: color-mix(in srgb, var(--gf-accent) 16%, transparent);
+    --vp-local-search-highlight-text: var(--gf-ink);
+}
+
+:root:not(.dark) .VPLocalSearchBox .backdrop {
+    background: rgba(20, 10, 30, 0.24);
+}
+
+:root:not(.dark) .VPLocalSearchBox .shell {
+    border-color: var(--gf-line-strong);
+    box-shadow: 0 24px 70px rgba(20, 10, 30, 0.16);
+}
+
+:root:not(.dark) .VPLocalSearchBox .search-bar {
+    border-color: var(--gf-line-strong);
+}
+
+:root:not(.dark) .VPLocalSearchBox .search-bar:focus-within {
+    border-color: var(--gf-accent);
+}
+
+:root:not(.dark) .VPLocalSearchBox .search-keyboard-shortcuts kbd {
+    border-color: var(--gf-line-strong);
+    background: var(--gf-ground-alt);
+    box-shadow: inset 0 -1px 0 var(--gf-line);
+}
+
 /* 404: forge-toned not-found with paths back. */
 .gf-notfound {
     display: flex;
