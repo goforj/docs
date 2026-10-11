@@ -1259,8 +1259,10 @@ const STRUCTURAL_CHROMA_MAX = 24
 const structuralLstar = (l) => 34 + (l * 0.3)
 const STRUCTURAL_INK_LIGHT = '#FFFFFF'
 const RUNTIME_BASE_LIGHT = '#CCD1D6'
-const CORE_LIBRARIES_BASE_LIGHT = '#397C80'
-const CORE_LIBRARIES_INK_LIGHT = '#FFFFFF'
+const CORE_LIBRARIES_BASE_LIGHT = '#BDD3D4'
+const LABEL_BLOCK_INK_LIGHT = '#39424B'
+const LABEL_BLOCK_BASE_LIGHT = '#C7CFD6'
+const LABEL_BLOCK_IDS = new Set(GROUP_CONFIG.flatMap((group) => [group.id, ...(group.subgroups || []).map((subgroup) => subgroup.id)]))
 const ASSEMBLY_RESULT_BASE_LIGHT = '#FFD785'
 const ASSEMBLY_RESULT_BASE_DARK = '#FFD18A'
 
@@ -1314,6 +1316,8 @@ function faceBase(color, itemID = '') {
      chroma excludes it from the neutral conversion. It still owns a large
      shelf face and needs an explicit light counterpart of the same hue. */
   if (itemID === 'backend-core-libraries') return CORE_LIBRARIES_BASE_LIGHT
+  if (LABEL_BLOCK_IDS.has(itemID) || itemID.startsWith('assembly-input')) return LABEL_BLOCK_BASE_LIGHT
+  if (itemID === 'lower-shelf') return '#D2D8DE'
   /* Neutral materials keep the original face shading and lightness order. */
   if (!isStructural(color)) return color
   if (itemID === 'runtime') return RUNTIME_BASE_LIGHT
@@ -1323,14 +1327,14 @@ function faceBase(color, itemID = '') {
   return atLstar('#000000', structuralLstar(lstarOf(rgb)))
 }
 
-/* Labels and glyphs share white ink on the graphite category blocks. */
+/* Dark ink keeps the pale support blocks legible without changing vendor glyphs. */
 function faceInk(item) {
-  if (!isDark.value && item?.id === 'backend-core-libraries') return CORE_LIBRARIES_INK_LIGHT
+  if (!isDark.value && LABEL_BLOCK_IDS.has(item?.id)) return LABEL_BLOCK_INK_LIGHT
   if (isDark.value || !item || !isStructural(item.color)) return item?.textColor
   return STRUCTURAL_INK_LIGHT
 }
 function glyphInk(item) {
-  if (!isDark.value && item?.id === 'backend-core-libraries') return CORE_LIBRARIES_INK_LIGHT
+  if (!isDark.value && LABEL_BLOCK_IDS.has(item?.id)) return LABEL_BLOCK_INK_LIGHT
   if (isDark.value || !item || !isStructural(item.color)) return item?.iconColor || item?.textColor
   return STRUCTURAL_INK_LIGHT
 }
@@ -1811,7 +1815,7 @@ function adjustColor(color, amount) {
                         </template>
                         <template v-else-if="item.label && !item.frontIcon">
                           <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="faceInk(item)" :font-size="item.topLabelSize || 13" class="iso-label iso-label--category">{{ item.topLabel }}</text>
-                          <text text-anchor="middle" :fill="faceInk(item)" font-weight="800" :font-size="item.labelSize || 14" class="iso-label">{{ item.label }}</text>
+                          <text text-anchor="middle" :fill="faceInk(item)" font-weight="700" :font-size="item.labelSize || 14" class="iso-label">{{ item.label }}</text>
                           <text v-if="item.highlight" y="28" text-anchor="middle" :fill="faceInk(item)" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
                         </template>
                       </g>
@@ -2423,7 +2427,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   user-select: none;
   pointer-events: none;
   font-family: var(--gf-font-body);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.055em;
   text-transform: uppercase;
 }
