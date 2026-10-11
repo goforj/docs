@@ -421,13 +421,9 @@ func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 ```go
 // Recent caches the ten newest photos for five minutes.
 func (f *Feed) Recent(ctx context.Context) ([]Photo, error) {
-	return f.cache.WithContext(ctx).
-		Remember("photos:recent", 5*time.Minute, func() ([]Photo, error) {
-			var photos []Photo
-			err := f.db.WithContext(ctx).
-				Order("created_at desc").Limit(10).Find(&photos).Error
-			return photos, err
-		})
+	return f.cache.WithContext(ctx).Remember("photos:recent", 5*time.Minute, func() ([]Photo, error) {
+		return f.photos.Recent(ctx, 10)
+	})
 }
 ```
 
@@ -529,6 +525,7 @@ func (c *ShowCmd) Run(ctx context.Context) error {
 		return err
 	}
 	fmt.Println(photo.Path)
+	// photos/42.jpg
 	return nil
 }
 ```
