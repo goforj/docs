@@ -1312,6 +1312,7 @@ function faceBase(color, itemID = '') {
     return isDark.value ? ASSEMBLY_RESULT_BASE_DARK : ASSEMBLY_RESULT_BASE_LIGHT
   }
   if (isDark.value) return color
+  if (itemID === 'ai-copilot') return '#8998A6'
   /* Core Libraries is intentionally teal rather than structural grey, so its
      chroma excludes it from the neutral conversion. It still owns a large
      shelf face and needs an explicit light counterpart of the same hue. */
