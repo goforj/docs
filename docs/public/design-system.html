@@ -88,8 +88,8 @@ html:not(.dark) {
 html:not(.dark) .gal .why,
 html:not(.dark) .pair .why,
 html:not(.dark) .gal figcaption {
-  --gf-ink-2: #5F5868;
-  --gf-ink-3: #867E90;
+  --gf-ink-2: #59636E;
+  --gf-ink-3: #6E7781;
   color: var(--gf-ink-2);
 }
 
@@ -2114,12 +2114,15 @@ table.ds td.mono, table.ds td .mono { font-family: var(--gf-font-mono); font-siz
     ["Ink muted","--gf-ink-2","body"],
     ["Hairline","--gf-line","borders"]]'></div>
 
-  <h3>Planes invert, the relationships do not</h3>
+  <h3>Quiet surfaces in light mode</h3>
   <p>
     In dark mode the reading column steps <em>up</em> from the canvas and code
     cuts back <em>down</em>. In light mode the page is already at the ceiling,
-    so the column stays at white and everything else steps down instead. The
-    directions flip; the ΔL* gaps stay comparable.
+    so the reading column and chrome stay white. Flat neutral gray code wells
+    and muted surfaces provide separation without a violet tint or inset shadow.
+    Ember accents and syntax colours carry the brand. Ambient warmth is localised:
+    <code>--gf-hero-aura</code> sits behind the forge, and
+    <code>--gf-example-aura</code> supplies a faint orange wash without yellow.
   </p>
   <div data-planes='["--gf-ground",[
     ["Canvas / chrome","--gf-ground-alt"],

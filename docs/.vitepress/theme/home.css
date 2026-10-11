@@ -96,15 +96,7 @@
 }
 
 .gf-home .gf-home-swap {
-    background:
-        radial-gradient(ellipse 46% 330px at 78% 180px, rgb(255 83 38 / 9%), transparent 80%),
-        radial-gradient(ellipse 30% 240px at 62% 290px, rgb(255 153 65 / 5%), transparent 85%);
-}
-
-.dark .gf-home .gf-home-swap {
-    background:
-        radial-gradient(ellipse 46% 330px at 78% 180px, rgb(255 83 38 / 13%), transparent 80%),
-        radial-gradient(ellipse 30% 240px at 62% 290px, rgb(255 153 65 / 6%), transparent 85%);
+    background: var(--gf-example-aura);
 }
 
 .gf-home .gf-home-swap__grid {

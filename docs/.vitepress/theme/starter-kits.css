@@ -1,12 +1,12 @@
 /* Starter showcase: square structural rails and restrained app previews. */
 html:not(.dark) body:has(.gf-kits) {
     --vp-c-bg: #FFFFFF;
-    --vp-c-bg-alt: #F7F5F9;
+    --vp-c-bg-alt: #F6F8FA;
     --gf-ground-deep: #FFFFFF;
     --gf-ground: #FFFFFF;
-    --gf-ground-alt: #F7F5F9;
-    --gf-surface: #FAF8FC;
-    --gf-surface-2: #F5F2F8;
+    --gf-ground-alt: #F6F8FA;
+    --gf-surface: #FFFFFF;
+    --gf-surface-2: #F0F2F4;
 }
 .VPDoc:has(.gf-kits) { background: var(--gf-ground-deep); }
 .gf-starter-page.gf-kits {

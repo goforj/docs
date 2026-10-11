@@ -4550,6 +4550,10 @@ html[data-gf-motion='on'] .VPDoc .vp-doc details.details[open] > *:not(summary) 
        rather than transcribed, which put ground-alt, surface,
        surface-2 and line-strong all slightly off the design.
        The prototype is the source of truth — do not recompute. */
+    --gf-hero-aura: radial-gradient(58% 46% at 68% -5%, rgba(255, 94, 58, 0.18), transparent 70%);
+    --gf-example-aura:
+        radial-gradient(ellipse 46% 330px at 78% 180px, rgb(255 83 38 / 13%), transparent 80%),
+        radial-gradient(ellipse 30% 240px at 62% 290px, rgb(255 153 65 / 6%), transparent 85%);
     --gf-ground-deep: #0C0A0E;     /* landing + code well     */
     --gf-ground: #1A1620;          /* docs page               */
     --gf-ground-alt: #1D1923;      /* sidebar, nav, callouts  */
@@ -5230,46 +5234,30 @@ html:not(.dark) {
     --gf-nav-soft: rgba(143, 93, 0, 0.08);
     --gf-nav-line: rgba(143, 93, 0, 0.26);
 
-    /* The plane stack, mirrored. ground-deep, ground and surface were all
-       #FFFFFF — three planes collapsed onto one value, which left light mode
-       with no plane stack at all and made the whole ΔL* argument vanish the
-       moment you flipped the toggle.
+    /* Light-mode warmth stays close to the illustration and examples. */
+    --gf-hero-aura: radial-gradient(ellipse 32% 38% at 78% 30%, rgb(255 83 38 / 6%), transparent 78%);
+    --gf-example-aura: radial-gradient(ellipse 38% 240px at 78% 180px, rgb(255 83 38 / 3.5%), transparent 80%);
 
-       Direction inverts, relationships hold: the reading column is the
-       ceiling and everything else steps DOWN from it, where in dark mode the
-       column steps UP from a near-black canvas.
-
-         ground        #FFFFFF  L* 100.0   reading column   — the ceiling
-         surface       #FAF8FC  L*  98.2   cards            −1.8, hairline does the rest
-         ground-alt    #F7F5F9  L*  96.8   sidebar, nav, callouts
-         surface-2     #F5F2F8  L*  96.0   second surface
-         ground-deep   #F2EFF5  L*  94.8   landing canvas   −5.2
-         code-well     #F2EFF5  L*  94.8   code             −5.2, same plane as the canvas
-
-       ΔL* column→well is 5.2 against dark mode's 5.16, and code still lands
-       back on exactly the canvas plane — the property the dark stack has. */
-    --gf-ground-deep: #F2EFF5;
+    /* Light surfaces use neutral grays so large panels stay quiet.
+       White chrome frames a flat code surface; borders provide separation. */
+    --gf-ground-deep: #F6F8FA;
     --gf-ground: #FFFFFF;
-    --gf-ground-alt: #F7F5F9;
-    --gf-surface: #FAF8FC;
-    --gf-surface-2: #F5F2F8;
-    --gf-line: #E6E2EC;
-    --gf-line-strong: #CEC7D8;
+    --gf-ground-alt: #F6F8FA;
+    --gf-surface: #FFFFFF;
+    --gf-surface-2: #F0F2F4;
+    --gf-line: #DFE3E8;
+    --gf-line-strong: #C8CFD7;
 
-    /* Light already recesses: the well sits BELOW a white page,
-       and the chrome sits between the two, nearer the page. */
-    --gf-code-well: #F2EFF5;
-    --gf-code-chrome: #F7F5F9;
+    --gf-code-well: #F6F8FA;
+    --gf-code-chrome: #FFFFFF;
 
-    --gf-ink: #0C0A0E;
-    --gf-ink-2: #5F5868;
-    --gf-ink-3: #867E90;
+    --gf-ink: #1F2328;
+    --gf-ink-2: #59636E;
+    --gf-ink-3: #6E7781;
 
-    --gf-code-bg: linear-gradient(180deg, #F4F1F7, #EFEBF3);
+    --gf-code-bg: var(--gf-code-well);
     --gf-code-border: var(--gf-line);
-    --gf-code-shadow:
-        inset 0 2px 5px -3px rgba(20, 10, 30, 0.16),
-        inset 0 1px 0 rgba(20, 10, 30, 0.06);
+    --gf-code-shadow: none;
     --gf-code-lang: var(--gf-ink-2);
     --gf-code-line-gutter-bg: rgba(20, 10, 30, 0.018);
     --gf-code-line-gutter-border: rgba(20, 10, 30, 0.07);
@@ -5347,16 +5335,16 @@ html:not(.dark) .vp-doc .line-numbers-wrapper { background-color: rgba(20, 10, 3
 html:not(.dark) .gf-home,
 html:not(.dark) body:has(.gf-home) {
     --vp-c-bg: #FFFFFF;
-    --vp-c-bg-alt: #F7F5F9;
+    --vp-c-bg-alt: #F6F8FA;
     /* The dark rule above also overrides the plane tokens, and this rule
        used to leave them alone — so ground-alt, surface and surface-2 stayed
        at their near-black landing values and the poster rendered dark cards
        on a white page. Hand them all back to the light stack. */
     --gf-ground-deep: #FFFFFF;
     --gf-ground: #FFFFFF;
-    --gf-ground-alt: #F7F5F9;
-    --gf-surface: #FAF8FC;
-    --gf-surface-2: #F5F2F8;
+    --gf-ground-alt: #F6F8FA;
+    --gf-surface: #FFFFFF;
+    --gf-surface-2: #F0F2F4;
     background-color: #FFFFFF;
 }
 

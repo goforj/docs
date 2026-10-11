@@ -1924,12 +1924,8 @@ function adjustColor(color, amount) {
   width: 100%;
   padding: 1.85rem 2rem 0;
   overflow: hidden;
-  /* Temper's --glow token geometry, verbatim from the prototype:
-     top-anchored ambient heat over the whole hero, not a bloom
-     centred on the illustration. The old pair of gradients sat at
-     76%/32% and 66%/42%, which stacked warm light directly behind
-     the tower — the warmest object on the page already. */
-  background: radial-gradient(58% 46% at 68% -5%, rgba(255, 94, 58, 0.18), transparent 70%);
+  /* The shared aura token gives each theme its own warmth and placement. */
+  background: var(--gf-hero-aura);
 }
 .gf-home-hero::before {
   content: '';
