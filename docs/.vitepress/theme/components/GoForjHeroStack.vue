@@ -590,7 +590,7 @@ const LAYOUT = {
      where the content is. */
   coreHeight: 1.4,
   platformHeight: 0.1,
-  rearShelfInsetX: 0.12,
+  rearShelfInsetX: 0.35,
   rearShelfDepth: 1.34,
   rearShelfYOffset: -1.22,
   rearShelfLift: 1.72,
@@ -600,17 +600,17 @@ const LAYOUT = {
   lowerShelfYOffset: -0.54,
   lowerShelfLift: 0.58,
   lowerShelfHeight: 0.14,
-  rearSupportInsetX: 0.16,
+  rearSupportInsetX: 0.39,
   rearSupportDepth: 0.28,
   groupGap: 0.3,
   groupPaddingX: 0.14,
   groupPaddingY: 0.08,
   groupDepth: 1.02,
-  groupHeight: 0.58,
+  groupHeight: 0.64,
   subgroupGap: 0.18,
   subgroupPaddingX: 0.12,
   subgroupDepth: 0.9,
-  subgroupHeight: 0.52,
+  subgroupHeight: 0.58,
   childGap: 0.1,
   childSize: 0.74,
   childHeight: 0.84,
@@ -679,7 +679,8 @@ const scene = computed(() => {
         0,
         ...rowCounts.map((rowCount) => rowCount * childMetrics.size + Math.max(0, rowCount - 1) * childMetrics.gap)
       )
-      const width = Math.max(subgroupChildSpan, childMetrics.size * 1.5) + (LAYOUT.subgroupPaddingX * 2)
+      const labelPadding = subgroup.id === 'backend-core-libraries' ? 0.08 : 0
+      const width = Math.max(subgroupChildSpan, childMetrics.size * 1.5) + ((LAYOUT.subgroupPaddingX + labelPadding) * 2)
       return {
         ...subgroup,
         childMetrics,
@@ -894,7 +895,7 @@ const scene = computed(() => {
         title: group.title,
         href: group.href,
         interactionZone,
-        labelSize: group.id === 'ai-agents' ? 12 : 10,
+        labelSize: group.id === 'ai-agents' ? 15 : 13,
         iconScale: 0.72,
         highlight: '',
         highlightSize: 0,
@@ -924,7 +925,7 @@ const scene = computed(() => {
             title: subgroup.title,
             href: subgroup.href,
             interactionZone,
-            labelSize: 9,
+            labelSize: 12,
             iconScale: 0.64,
             x: subgroupCursorX,
             y: subgroupY,
@@ -1250,51 +1251,17 @@ const MATRIX_DOWN_RIGHT = `matrix(0.866, 0.5, 0, 1, 0, 0)`
 const MATRIX_DOWN_LEFT = `matrix(0.866, -0.5, 0, 1, 0, 0)`
 const MATRIX_TOP = `matrix(0.866, 0.5, -0.866, 0.5, 0, 0)`
 
-/* ============================================================
-   STRUCTURAL NEUTRALS IN LIGHT MODE
-   ------------------------------------------------------------
-   The tower is two kinds of colour. The TILES carry vendor
-   identity — saturated, and correct on any ground. The
-   STRUCTURE (plinth, shelves, supports) is the "neither" role:
-   low-chroma violet-grey, chosen to read as an object standing
-   on a near-black canvas.
-
-   On white that structure is what fails. The plinth's front-left
-   face is the base colour minus 45 per channel, so #332A40 lands
-   near black and the composition gets a hard black band under it
-   — the illustration reads as a hole punched in the page rather
-   than an object sitting on it.
-
-   The fix lifts structure by a fixed +10 L* in light mode and
-   leaves the tiles untouched. Two constraints set that number:
-
-     · it has to survive the -45 face shading and still be a
-       violet-grey rather than black, and
-     · the shelf labels are white, so no structural surface may
-       go above about L* 52 or the labels drop under 4.5:1.
-
-   Chroma is the discriminator — max minus min channel. Every
-   structural value sits under 24 (#332A40 is 22, #68616E is 13);
-   every tile is far above it (#42b883 is 118). So the rule needs
-   no list to maintain, and a new tile cannot accidentally opt in.
-   ============================================================ */
+/* Light structure keeps the original lightness ordering, but uses neutral
+   gray materials so the shelves and plinth belong to the same palette.
+   Saturated framework tiles retain their identity colours. */
 const STRUCTURAL_CHROMA_MAX = 24
 
-/* Light-mode structure is a COMPRESSION, not an offset: L* -> 55 + (L* / 2).
-   A flat lift kept the plinth at L* 28, still a dark band on white; the
-   compression maps the whole structural range (L* 18-48) into 64-79, so the
-   tower becomes a pale violet-grey model with the shading still carrying the
-   form. Ordering is preserved exactly, which is what keeps the isometric
-   read intact — the top face is still lightest, front-left still darkest.
-
-   The consequence is that white labels no longer work on structure, so
-   structural ink flips with it. Tiles are untouched and keep theirs. */
-const structuralLstar = (l) => 55 + (l * 0.5)
-const STRUCTURAL_INK_LIGHT = '#221C2B'
-const RUNTIME_BASE_LIGHT = '#C9BBB2'
-const CORE_LIBRARIES_BASE_LIGHT = '#8FD8D4'
-const CORE_LIBRARIES_INK_LIGHT = '#123F43'
-const ASSEMBLY_RESULT_BASE_LIGHT = '#FFE0A6'
+const structuralLstar = (l) => 34 + (l * 0.3)
+const STRUCTURAL_INK_LIGHT = '#FFFFFF'
+const RUNTIME_BASE_LIGHT = '#CCD1D6'
+const CORE_LIBRARIES_BASE_LIGHT = '#397C80'
+const CORE_LIBRARIES_INK_LIGHT = '#FFFFFF'
+const ASSEMBLY_RESULT_BASE_LIGHT = '#FFD785'
 const ASSEMBLY_RESULT_BASE_DARK = '#FFD18A'
 
 function isStructural(hex) {
@@ -1347,18 +1314,16 @@ function faceBase(color, itemID = '') {
      chroma excludes it from the neutral conversion. It still owns a large
      shelf face and needs an explicit light counterpart of the same hue. */
   if (itemID === 'backend-core-libraries') return CORE_LIBRARIES_BASE_LIGHT
-  /* The output is the hottest object on the forge. In light mode its orange
-     base cannot outshine white, so the material shifts toward heated ivory
-     while its shaded faces preserve the cube's volume. */
+  /* Neutral materials keep the original face shading and lightness order. */
   if (!isStructural(color)) return color
   if (itemID === 'runtime') return RUNTIME_BASE_LIGHT
+  if (itemID === 'ground' || itemID === 'platform-shelf') return '#F2F5F7'
   const c = color.replace('#', '')
   const rgb = [0, 2, 4].map((i) => parseInt(c.substring(i, i + 2), 16))
-  return atLstar(color, structuralLstar(lstarOf(rgb)))
+  return atLstar('#000000', structuralLstar(lstarOf(rgb)))
 }
 
-/* Ink follows the surface it sits on. Only structural surfaces move, so only
-   their labels flip; a tile's white glyph is still white. */
+/* Labels and glyphs share white ink on the graphite category blocks. */
 function faceInk(item) {
   if (!isDark.value && item?.id === 'backend-core-libraries') return CORE_LIBRARIES_INK_LIGHT
   if (isDark.value || !item || !isStructural(item.color)) return item?.textColor
@@ -1381,7 +1346,7 @@ function adjustColor(color, amount) {
 </script>
 
 <template>
-  <div class="gf-home-hero">
+  <div class="gf-home-hero" :class="{ 'gf-home-hero--light': !isDark }">
     <div class="gf-hero-container">
       <div class="gf-hero-content" :class="{ 'is-visible': isMounted }">
         <p class="gf-hero-audience">For gophers and agents</p>
@@ -1462,14 +1427,10 @@ function adjustColor(color, amount) {
                 <stop offset="100%" :stop-color="adjustColor(faceBase(item.color, item.id), -45)" />
               </linearGradient>
             </template>
-<!-- Ambient bloom. Dark mode wants heat spilling off the forge onto a
-                 near-black canvas at high alpha. On white the same alphas
-                 read as a pink haze rather than as light, because there is
-                 nothing darker for the glow to be brighter THAN — so light
-                 mode keeps the hue and roughly halves it. -->
+            <!-- Light mode keeps ambient heat faint so neutral materials stay clear. -->
             <radialGradient id="hero-ambient" cx="50%" cy="45%" r="60%">
-              <stop offset="0%" stop-color="#FF5E3A" :stop-opacity="isDark ? 0.46 : 0.22" />
-              <stop offset="52%" stop-color="#FF5E3A" :stop-opacity="isDark ? 0.24 : 0.11" />
+              <stop offset="0%" stop-color="#FF5E3A" :stop-opacity="isDark ? 0.46 : 0.06" />
+              <stop offset="52%" stop-color="#FF5E3A" :stop-opacity="isDark ? 0.24 : 0.025" />
               <stop offset="100%" :stop-color="isDark ? '#1C1524' : '#FFFFFF'" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1481,11 +1442,18 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
             </linearGradient>
             <linearGradient id="forgeMetal" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#ffb45e" />
-              <stop offset="22%" stop-color="#ff7a2a" />
-              <stop offset="55%" stop-color="#c5341c" />
-              <stop offset="100%" stop-color="#4a0f0f" />
+              <stop offset="0%" :stop-color="isDark ? '#ffb45e' : '#F4F6F8'" />
+              <stop offset="22%" :stop-color="isDark ? '#ff7a2a' : '#DDE4EA'" />
+              <stop offset="55%" :stop-color="isDark ? '#c5341c' : '#C9D3DB'" />
+              <stop offset="100%" :stop-color="isDark ? '#4a0f0f' : '#B7C3CD'" />
             </linearGradient>
+            <!-- Pale gold blends into copper so heat reads as part of the material. -->
+            <radialGradient id="forge-light-work-heat" cx="47%" cy="43%" r="48%">
+              <stop offset="0%" stop-color="#FFF2C6" stop-opacity="0.95" />
+              <stop offset="28%" stop-color="#FFE2A3" stop-opacity="0.72" />
+              <stop offset="62%" stop-color="#F3CD97" stop-opacity="0.28" />
+              <stop offset="100%" stop-color="#F3CD97" stop-opacity="0" />
+            </radialGradient>
             <radialGradient id="forgeHeat" cx="50%" cy="30%" r="60%">
               <stop offset="0%" stop-color="#ffe0a6" stop-opacity="0.62" />
               <stop offset="20%" stop-color="#ffb45e" stop-opacity="0.4" />
@@ -1530,19 +1498,19 @@ function adjustColor(color, amount) {
                  vignette rather than a hot plate, and sent the far end of
                  the slab to near-black for no reason an object would. -->
             <linearGradient id="forge-core-top" x1="10%" y1="10%" x2="90%" y2="90%">
-              <stop offset="0%" :stop-color="isDark ? '#ffe8b8' : '#fff4d8'" />
-              <stop offset="58%" :stop-color="isDark ? '#ffb764' : '#ffd08a'" />
-              <stop offset="100%" :stop-color="isDark ? '#f06a32' : '#ff9b4a'" />
+              <stop offset="0%" :stop-color="isDark ? '#ffe8b8' : '#F3D7B5'" />
+              <stop offset="58%" :stop-color="isDark ? '#ffb764' : '#DFA77D'" />
+              <stop offset="100%" :stop-color="isDark ? '#f06a32' : '#C98661'" />
             </linearGradient>
             <linearGradient id="forge-core-right" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" :stop-color="isDark ? '#b92b19' : '#d96844'" />
-              <stop offset="55%" :stop-color="isDark ? '#781710' : '#bf452e'" />
-              <stop offset="100%" :stop-color="isDark ? '#43100f' : '#a13225'" />
+              <stop offset="0%" :stop-color="isDark ? '#b92b19' : '#DEA67B'" />
+              <stop offset="55%" :stop-color="isDark ? '#781710' : '#C18A67'" />
+              <stop offset="100%" :stop-color="isDark ? '#43100f' : '#A97458'" />
             </linearGradient>
             <linearGradient id="forge-core-left" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" :stop-color="isDark ? '#781710' : '#c65a3a'" />
-              <stop offset="55%" :stop-color="isDark ? '#4e1411' : '#aa3c2a'" />
-              <stop offset="100%" :stop-color="isDark ? '#2a0d0d' : '#8c2b22'" />
+              <stop offset="0%" :stop-color="isDark ? '#781710' : '#C78E68'" />
+              <stop offset="55%" :stop-color="isDark ? '#4e1411' : '#AD7657'" />
+              <stop offset="100%" :stop-color="isDark ? '#2a0d0d' : '#946249'" />
             </linearGradient>
             <radialGradient id="forge-underglow" cx="50%" cy="56%" r="55%">
               <stop offset="0%" stop-color="#ff934f" stop-opacity="0.34" />
@@ -1589,34 +1557,34 @@ function adjustColor(color, amount) {
               <stop offset="100%" stop-color="#ff7a2a" stop-opacity="0" />
             </radialGradient>
             <linearGradient id="steel-shelf-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" :stop-color="isDark ? '#6D6574' : '#E4E0E8'" :stop-opacity="isDark ? 0.72 : 0.96" />
-              <stop offset="40%" :stop-color="isDark ? '#48434E' : '#CBC5D2'" :stop-opacity="isDark ? 0.82 : 0.98" />
-              <stop offset="100%" :stop-color="isDark ? '#2B272F' : '#ACA4B5'" :stop-opacity="isDark ? 0.9 : 1" />
+              <stop offset="0%" :stop-color="isDark ? '#6D6574' : '#E6EAEE'" :stop-opacity="isDark ? 0.72 : 0.96" />
+              <stop offset="40%" :stop-color="isDark ? '#48434E' : '#D2D8DE'" :stop-opacity="isDark ? 0.82 : 0.98" />
+              <stop offset="100%" :stop-color="isDark ? '#2B272F' : '#B4BCC4'" :stop-opacity="isDark ? 0.9 : 1" />
             </linearGradient>
             <linearGradient id="steel-shelf-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" :stop-color="isDark ? '#3A353F' : '#B8B0C1'" />
-              <stop offset="100%" :stop-color="isDark ? '#1D1921' : '#91889D'" />
+              <stop offset="0%" :stop-color="isDark ? '#3A353F' : '#B8C0C8'" />
+              <stop offset="100%" :stop-color="isDark ? '#1D1921' : '#939DA7'" />
             </linearGradient>
             <linearGradient id="steel-shelf-brush" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" :stop-color="isDark ? '#D6D0DC' : '#FFFFFF'" :stop-opacity="isDark ? 0.02 : 0.08" />
               <stop offset="35%" :stop-color="isDark ? '#E8E6EA' : '#FFFFFF'" :stop-opacity="isDark ? 0.1 : 0.2" />
-              <stop offset="55%" :stop-color="isDark ? '#A6A0AB' : '#766E80'" :stop-opacity="isDark ? 0.04 : 0.05" />
+              <stop offset="55%" :stop-color="isDark ? '#A6A0AB' : '#687480'" :stop-opacity="isDark ? 0.04 : 0.05" />
               <stop offset="100%" :stop-color="isDark ? '#FFFFFF' : '#FFFFFF'" :stop-opacity="isDark ? 0.01 : 0.04" />
             </linearGradient>
             <linearGradient id="forge-support-top" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" :stop-color="isDark ? '#6D6574' : '#F1EBE7'" :stop-opacity="isDark ? 0.72 : 0.98" />
-              <stop offset="40%" :stop-color="isDark ? '#48434E' : '#E1D7D1'" :stop-opacity="isDark ? 0.82 : 1" />
-              <stop offset="100%" :stop-color="isDark ? '#2B272F' : '#CFC2BA'" :stop-opacity="isDark ? 0.9 : 1" />
+              <stop offset="0%" :stop-color="isDark ? '#6D6574' : '#E6EAEE'" :stop-opacity="isDark ? 0.72 : 0.98" />
+              <stop offset="40%" :stop-color="isDark ? '#48434E' : '#D2D8DE'" :stop-opacity="isDark ? 0.82 : 1" />
+              <stop offset="100%" :stop-color="isDark ? '#2B272F' : '#B4BCC4'" :stop-opacity="isDark ? 0.9 : 1" />
             </linearGradient>
             <linearGradient id="forge-support-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" :stop-color="isDark ? '#3A353F' : '#D7CAC3'" />
-              <stop offset="100%" :stop-color="isDark ? '#1D1921' : '#BDAEA6'" />
+              <stop offset="0%" :stop-color="isDark ? '#3A353F' : '#B8C0C8'" />
+              <stop offset="100%" :stop-color="isDark ? '#1D1921' : '#939DA7'" />
             </linearGradient>
           </defs>
 
           <ellipse cx="438" cy="404" rx="214" ry="178" fill="url(#hero-ambient)" opacity="0.72" />
-          <ellipse cx="396" cy="526" rx="212" ry="92" fill="url(#forge-underglow)" opacity="0.52" />
-          <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" opacity="0.34" />
+          <ellipse cx="396" cy="526" rx="212" ry="92" fill="url(#forge-underglow)" :opacity="isDark ? 0.52 : 0.06" />
+          <rect x="298" y="180" width="190" height="360" rx="90" fill="url(#forge-rise-column)" :opacity="isDark ? 0.34 : 0.04" />
 
           <g class="gf-iso-group">
             <template v-for="item in scene.tower" :key="item.id">
@@ -1671,7 +1639,9 @@ function adjustColor(color, amount) {
                       :stroke-width="item.id === 'platform-shelf' ? 2.2 : 1.5"
                     />
                     <template v-if="item.id === 'platform-shelf'">
-                      <path class="gf-forge-heat" :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" />
+                      <g :opacity="isDark ? 1 : 0.10">
+                        <path class="gf-forge-heat" :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" />
+                      </g>
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeEdge)" opacity="0.5" />
                     </template>
                   </template>
@@ -1680,8 +1650,8 @@ function adjustColor(color, amount) {
                     <path :d="getFacePath(getBlockGeom(item).frontRight)" :fill="item.id === 'core' ? 'url(#forge-core-right)' : item.id === 'rear-support' ? 'url(#forge-support-side)' : item.id === 'rear-shelf' ? 'url(#steel-shelf-side)' : `url(#grad-fr-${item.id})`" />
                     <path :d="getFacePath(getBlockGeom(item).top)" :fill="item.id === 'core' ? 'url(#forge-core-top)' : item.id === 'rear-support' ? 'url(#forge-support-top)' : item.id === 'rear-shelf' ? 'url(#steel-shelf-top)' : `url(#grad-top-${item.id})`" />
                     <template v-if="item.id === 'core'">
-                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forgeSideHeatLeft)" />
-                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forgeSideHeatRight)" />
+                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#forgeSideHeatLeft)" :opacity="isDark ? 1 : 0.12" />
+                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#forgeSideHeatRight)" :opacity="isDark ? 1 : 0.12" />
                       <path :d="getTopEdgeStripPath(getBlockGeom(item).frontLeft)" fill="#ffd9a0" opacity="0.22" />
                       <path :d="getTopEdgeStripPath(getBlockGeom(item).frontRight)" fill="#ffd9a0" opacity="0.26" />
                     </template>
@@ -1702,14 +1672,19 @@ function adjustColor(color, amount) {
                       <path :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-bounce-top)" :opacity="Math.max(0.06, getForgeBounceOpacity(item) - 0.05)" />
                     </template>
                     <template v-if="isAssemblyResult(item)">
-                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#assembly-result-face-heat)" />
-                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#assembly-result-face-heat)" />
-                      <path class="gf-result-heat" :d="getFacePath(getBlockGeom(item).top)" fill="url(#assembly-result-top-heat)" />
+                      <path :d="getFacePath(getBlockGeom(item).frontLeft)" fill="url(#assembly-result-face-heat)" :opacity="isDark ? 1 : 0.25" />
+                      <path :d="getFacePath(getBlockGeom(item).frontRight)" fill="url(#assembly-result-face-heat)" :opacity="isDark ? 1 : 0.25" />
+                      <g :opacity="isDark ? 1 : 0.8">
+                        <path class="gf-result-heat" :d="getFacePath(getBlockGeom(item).top)" fill="url(#assembly-result-top-heat)" />
+                      </g>
                       <path :d="getTopEdgeStripPath(getBlockGeom(item).frontLeft)" fill="#ffe0a6" opacity="0.34" />
                       <path :d="getTopEdgeStripPath(getBlockGeom(item).frontRight)" fill="#ffe0a6" opacity="0.38" />
                     </template>
                     <template v-if="item.id === 'core'">
-                      <path class="gf-forge-heat" :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" opacity="0.82" />
+                      <path v-if="!isDark" :d="getFacePath(getBlockGeom(item).top)" fill="url(#forge-light-work-heat)" />
+                      <g :opacity="isDark ? 1 : 0.12">
+                        <path class="gf-forge-heat" :d="getFacePath(getBlockGeom(item).top)" fill="url(#forgeHeat)" opacity="0.82" />
+                      </g>
                     </template>
                     <template v-if="item.id === 'assembly-input-right'">
                       <ellipse
@@ -1835,8 +1810,8 @@ function adjustColor(color, amount) {
                            />
                         </template>
                         <template v-else-if="item.label && !item.frontIcon">
-                          <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="faceInk(item)" :font-size="item.topLabelSize || 10" class="iso-label iso-label--category">{{ item.topLabel }}</text>
-                          <text text-anchor="middle" :fill="faceInk(item)" font-weight="800" :font-size="item.labelSize || 11" class="iso-label">{{ item.label }}</text>
+                          <text v-if="item.topLabel" y="-14" text-anchor="middle" :fill="faceInk(item)" :font-size="item.topLabelSize || 13" class="iso-label iso-label--category">{{ item.topLabel }}</text>
+                          <text text-anchor="middle" :fill="faceInk(item)" font-weight="800" :font-size="item.labelSize || 14" class="iso-label">{{ item.label }}</text>
                           <text v-if="item.highlight" y="28" text-anchor="middle" :fill="faceInk(item)" font-weight="900" :font-size="item.highlightSize || (item.id === 'core' ? 42 : 28)" class="iso-highlight">{{ item.highlight }}</text>
                         </template>
                       </g>
@@ -2447,9 +2422,16 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 .iso-label {
   user-select: none;
   pointer-events: none;
-  letter-spacing: 0.14em;
+  font-family: var(--gf-font-body);
+  font-weight: 800;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
+.gf-home-hero--light .iso-stamp__face { fill: #80533E; }
+.gf-home-hero--light .iso-stamp__depth { fill: #684130; }
+.gf-home-hero--light .iso-stamp__cut { stroke: #684130; }
+.gf-home-hero--light .iso-stamp__shadow { fill: #684130; }
+.gf-home-hero--light .iso-stamp__highlight { fill: #E9C5A3; }
 .iso-highlight {
   user-select: none;
   pointer-events: none;
@@ -2460,7 +2442,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
 }
 .iso-templ-logo {
   fill: currentColor;
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 900;
   letter-spacing: 0;
   pointer-events: none;
@@ -2468,7 +2450,7 @@ html[data-gf-motion='reduced'] .gf-loop-spark {
   user-select: none;
 }
 .iso-label--core-kicker {
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.24em;
   opacity: 0.82;
 }
