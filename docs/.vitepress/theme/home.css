@@ -686,6 +686,7 @@
     min-width: 0;
 }
 .gf-home .gf-home-gallery figure { margin: 0; background: #090909; }
+:root:not(.dark) .gf-home .gf-home-gallery figure { background: #fff; }
 .gf-home .gf-home-gallery__signin {
     grid-row: 1 / 3;
     display: flex;

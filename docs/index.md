@@ -17,9 +17,6 @@ import RuntimeTopology from './.vitepress/theme/components/RuntimeTopology.vue'
 import ProjectAppsDiagram from './.vitepress/theme/components/ProjectAppsDiagram.vue'
 import DevTerminalPreview from './.vitepress/theme/components/DevTerminalPreview.vue'
 import proofStats from './.vitepress/data/proof-stats.json'
-import dashboardPreview from './assets/starter-kits/app-dashboard-shell.png'
-import signinPreview from './assets/starter-kits/account-login.png'
-import settingsPreview from './assets/starter-kits/account-profile-settings.png'
 
 // Proof band numbers are generated, not written. See bin/collect-proof-stats.mjs
 // for methodology.
@@ -220,9 +217,9 @@ function onSwapTabKeydown(event) {
 }
 
 const STARTER_VIEWS = [
-  { id: 'signin', src: signinPreview, alt: 'Vue starter kit sign-in page with email and password fields', width: 1148, height: 1492 },
-  { id: 'dashboard', src: dashboardPreview, alt: 'Vue starter kit dashboard with navigation and application components', width: 2992, height: 1876 },
-  { id: 'settings', src: settingsPreview, alt: 'Vue starter kit profile settings with name and email fields', width: 1248, height: 1000 }
+  { id: 'signin', name: 'account-login', alt: 'Vue starter kit sign-in page with email and password fields', width: 1148, height: 1492 },
+  { id: 'dashboard', name: 'app-dashboard-shell', alt: 'Vue starter kit dashboard with navigation and application components', width: 2992, height: 1876 },
+  { id: 'settings', name: 'account-profile-settings', alt: 'Vue starter kit profile settings with name and email fields', width: 1248, height: 1000 }
 ]
 
 const CAPABILITIES = [
@@ -619,7 +616,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 </div>
 <div class="gf-home-gallery" data-reveal>
 <figure v-for="view in STARTER_VIEWS" :key="view.id" class="gf-home-frontend__preview" :class="`gf-home-gallery__${view.id}`">
-<img :src="view.src" :alt="view.alt" loading="lazy" decoding="async" :width="view.width" :height="view.height">
+<StarterKitImage :name="view.name" :alt="view.alt" loading="lazy" decoding="async" :width="view.width" :height="view.height" />
 </figure>
 </div>
 </div>

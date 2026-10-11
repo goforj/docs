@@ -3,6 +3,7 @@ import { useData, useRoute } from 'vitepress'
 import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
+import StarterKitImage from './components/StarterKitImage.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
 import StarterKitOptions from './components/StarterKitOptions.vue'
 import SitePreview from './components/SitePreview.vue'
@@ -715,6 +716,7 @@ export default {
   enhanceApp(ctx) {
     DefaultTheme.enhanceApp?.(ctx)
     initRefreshScrollRestoration()
+    ctx.app.component('StarterKitImage', StarterKitImage)
     ctx.app.component('StarterKitHeroScreens', StarterKitHeroScreens)
     ctx.app.component('StarterKitOptions', StarterKitOptions)
     ctx.app.component('SitePreview', SitePreview)

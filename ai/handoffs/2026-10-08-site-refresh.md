@@ -162,3 +162,13 @@ Temporary preview `/tmp/goforj-favicon-tile-preview.png` shows 16px icons in dar
 - Final favicon tile export was inspected visually; the earlier fallback links were browser-checked for 200 responses. A full post-tile build was not run before this handoff.
 - Use normal-motion browser checks for reveal bugs. Reduced-motion-only checks can hide the issue. For static layout captures, an injected rule making `[data-reveal]` visible is useful, but never treat that as proof of real animation behavior.
 - `git diff --check` was run after edits. Review status again before committing the handoff.
+
+## Light Starter Previews, 2026-10-11
+
+All twenty starter assets now have matching `-light.png` variants. `StarterKitImage.vue` selects an imported asset URL using VitePress `isDark`. It renders one image and forwards alt text, dimensions, loading, and other attributes, preserving the existing layout and image lightbox. Both the landing gallery and starter kits page use it. Keep the original filenames for dark captures.
+
+Repeat captures with `node scripts/capture-starter-light.mjs`. This expects a real Vue starter with authentication and the component library, served at `http://localhost:5195`. Override with `STARTER_PREVIEW_URL`; optional `STARTER_PREVIEW_USERNAME` and `STARTER_PREVIEW_PASSWORD` are process-local. Never save credentials in the script. Defaults target the starter's local bootstrap account.
+
+This pass rendered `/tmp/goforj-light-starter` from the current framework CLI with components `[cli, auth, web_api, web_ui, database_sqlite, cache, events, storage, mail, jobs, scheduler]`, `starter_kit: vue`, and `starter_kit_options.component_library: true`. Build the CLI from sibling source, then run its `render`, `build`, and `migrate` commands in the temporary Project. `migrate` takes no `up` argument. Set both `API_HTTP_PORT=5194` and `APP_URL=http://localhost:5194` in the temporary environment before starting `bin/app app`; the frontend proxy follows `APP_URL`. Install frontend dependencies in `cmd/app/frontend` and run `npm run dev -- --host 127.0.0.1 --port 5195`.
+
+The script uses 1496 x 938 at 2x, with matching 574 x 746 account crops and 624 x 500 settings crops. Password recovery is submitted through the real UI, and overlay examples are opened through their actual buttons. It forces the starter's own light preference, waits for fonts, and avoids focus rings except in the explicitly focused login capture. It closes its browser; stop the temporary frontend and backend processes separately after capture.

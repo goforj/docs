@@ -73,6 +73,7 @@ html:not(.dark) body:has(.gf-kits) {
 /* Clip the image layer while the section markers remain outside the frame. */
 .gf-kits .gf-kits-tucked { clip-path: inset(-4px -100vmax 0); }
 .gf-kits .gf-kits-panel { margin: 0; min-width: 0; overflow: hidden; border: 1px solid var(--gf-line); border-radius: 8px; background: #090909; box-shadow: none; }
+:root:not(.dark) .gf-kits .gf-kits-panel { background: #fff; }
 .gf-kits .gf-kits-preview { margin-bottom: -70px; border-radius: 8px 8px 0 0; }
 .gf-kits .gf-kits-panel figcaption { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .gf-kits .gf-kits-panel img { display: block; width: 100%; height: auto; margin: 0; border-radius: 0; }
