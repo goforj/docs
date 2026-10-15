@@ -1034,7 +1034,8 @@ figure:hover > svg { transform: translateY(-1px); }
 
 </div>
 
-<script>
+<script type="module">
+import { GOFORJ_OUTER, GOFORJ_COUNTER, PRODUCT_ICON_RADIUS, productTile } from './assets/goforj-marks.js';
 /* ==================================================================
    FROZEN BASE — copied verbatim from v1. Do not edit.
 
@@ -1044,8 +1045,8 @@ figure:hover > svg { transform: translateY(-1px); }
    onto a true isometric axis (30 / 150 / 90 degrees) and the corners
    re-intersected.
    ================================================================== */
-const MARK_OUTER = 'M40.59 0.0 L0.0 25.06 L0.0 74.9 L42.26 100.0 L84.01 75.99 L83.8 29.98 L74.4 24.17 L80.24 21.88 L65.47 12.52 L56.15 18.37 L56.35 9.94 Z';
-const MARK_HOLE  = 'M40.43 17.78 L40.01 22.31 L43.43 24.33 L23.04 36.46 L22.84 60.81 L39.59 71.96 L39.39 45.17 L60.37 32.81 L67.34 37.11 L45.67 50.2 L45.67 62.45 L47.88 63.68 L68.09 51.93 L67.88 65.78 L41.93 81.28 L16.13 65.18 L16.13 32.2 Z';
+const MARK_OUTER = GOFORJ_OUTER;
+const MARK_HOLE = GOFORJ_COUNTER;
 const MARK_VB    = '-6 -6 112 112';
 
 /* ================= END FROZEN BASE ================= */
@@ -1426,7 +1427,7 @@ function rCounter(size, P, o = {}) {
   sizes, and an app icon is not a component — a fixed 8px on a 512px
   icon would read as a square.
 */
-const ICON_RADIUS = 0.2237;
+const ICON_RADIUS = PRODUCT_ICON_RADIUS;
 
 /*
   The glyph as it sits on a plate. `seam` re-cuts the cube's interior
@@ -1482,30 +1483,14 @@ function rAvatar(size, P, o = {}) {
    icon, but rebuilds it on the shared plate instead of importing a
    raster treatment that cannot participate in palette or size tests. */
 function rHarborTile(size, P, o = {}) {
-  const plate = o.plate || P.accent;
-  const glyph = o.fill || P.deep;
-  return svgOpen(size, '0 0 100 100', o.label) +
-    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
-    `<g fill="none" stroke="${glyph}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">` +
-      `<circle cx="50" cy="24" r="8"/>` +
-      `<path d="M50 32V84M34 45H66M19 62C22 78 34 87 50 87S78 78 81 62M19 62L29 67M81 62L71 67"/>` +
-    `</g></svg>`;
+  return productTile('harbor', size, P, o);
 }
 
 /* Ship is intentionally a concept study: a mast, two sails, and one
    weighted hull reduced to filled shapes that survive beside an
    anchor at 32px. It shares Harbor's system, not Harbor's symbol. */
 function rShipTile(size, P, o = {}) {
-  const plate = o.plate || P.accent;
-  const glyph = o.fill || P.deep;
-  return svgOpen(size, '0 0 100 100', o.label) +
-    `<rect width="100" height="100" rx="${100 * (o.radius ?? ICON_RADIUS)}" fill="${plate}"/>` +
-    `<g fill="${glyph}">` +
-      `<path d="M47 16H53V58H47Z"/>` +
-      `<path d="M43 27V54H23Z"/>` +
-      `<path d="M57 24V54H79Z"/>` +
-      `<path d="M17 59H83L76 76C73 84 66 88 57 88H43C34 88 27 84 24 76Z"/>` +
-    `</g></svg>`;
+  return productTile('ship', size, P, o);
 }
 
 /* Lighthouse is the observability surface, so the symbol has to mean

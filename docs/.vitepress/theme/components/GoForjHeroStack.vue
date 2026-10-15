@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter, useData } from 'vitepress'
 import { lucideIconBodies, simpleIconBodies } from 'virtual:goforj-icons'
+import { GROUP_CONFIG, BRAND_ICON_KEYS } from './goforj-hero-catalog.js'
 
 const props = defineProps({
   staticPreview: {
@@ -141,13 +142,10 @@ const onNarrowChange = (event) => {
   isNarrow.value = event.matches
 }
 
-// Pointer parallax, hover tooltip, and strike state.
-const parallax = ref({ x: 0, y: 0 })
+// Hover tooltip and strike state.
 const tooltipPos = ref({ x: 0, y: 0 })
 const strikeActive = ref(false)
 const graphicEl = ref(null)
-let parallaxTarget = { x: 0, y: 0 }
-let parallaxRaf = 0
 let strikeTimer = 0
 
 function isMotionReduced() {
@@ -165,11 +163,6 @@ function syncMotionPreference() {
     return
   }
   motionReduced.value = isMotionReduced()
-  if (!motionReduced.value) return
-  parallaxTarget = { x: 0, y: 0 }
-  parallax.value = { x: 0, y: 0 }
-  if (parallaxRaf) cancelAnimationFrame(parallaxRaf)
-  parallaxRaf = 0
 }
 
 const animateIntro = computed(() => isMounted.value && !motionReduced.value)
@@ -269,39 +262,9 @@ function onBlockBlur() {
   hoveredBlock.value = null
 }
 
-function stepParallax() {
-  const dx = parallaxTarget.x - parallax.value.x
-  const dy = parallaxTarget.y - parallax.value.y
-  if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
-    parallax.value = { x: parallaxTarget.x, y: parallaxTarget.y }
-    parallaxRaf = 0
-    return
-  }
-  parallax.value = {
-    x: parallax.value.x + dx * 0.09,
-    y: parallax.value.y + dy * 0.09
-  }
-  parallaxRaf = requestAnimationFrame(stepParallax)
-}
-
-function ensureParallaxTick() {
-  if (!parallaxRaf) parallaxRaf = requestAnimationFrame(stepParallax)
-}
-
 function onGraphicMove(event) {
   const rect = event.currentTarget.getBoundingClientRect()
   tooltipPos.value = { x: event.clientX - rect.left, y: event.clientY - rect.top }
-  if (isMotionReduced()) return
-  parallaxTarget = {
-    x: ((event.clientX - rect.left) / rect.width - 0.5) * 14,
-    y: ((event.clientY - rect.top) / rect.height - 0.5) * 9
-  }
-  ensureParallaxTick()
-}
-
-function onGraphicLeave() {
-  parallaxTarget = { x: 0, y: 0 }
-  ensureParallaxTick()
 }
 
 onMounted(() => {
@@ -342,8 +305,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (parallaxRaf) cancelAnimationFrame(parallaxRaf)
-  parallaxRaf = 0
   if (mountTimer) window.clearTimeout(mountTimer)
   if (installCopyTimer) window.clearTimeout(installCopyTimer)
   if (strikeTimer) window.clearTimeout(strikeTimer)
@@ -368,216 +329,6 @@ const ICONS = {
   brain: "M9 3c-2.76 0-5 2.24-5 5 0 1.3.5 2.48 1.32 3.37C5.11 11.8 5 12.39 5 13v1c0 .55.45 1 1 1h1v2c0 1.1.9 2 2 2h2v-4H9v-2.4c-.88-.38-1.5-1.26-1.5-2.3 0-1.38 1.12-2.5 2.5-2.5.56 0 1.07.18 1.48.49A3.98 3.98 0 0 1 15 6c0-1.66-1.34-3-3-3-.74 0-1.41.27-1.93.71C9.77 3.25 9.4 3 9 3zm6 4c2.76 0 5 2.24 5 5 0 1.8-.95 3.38-2.38 4.26-.39.24-.62.67-.62 1.13V19h-5v-4h1.5c1.38 0 2.5-1.12 2.5-2.5 0-1.04-.62-1.92-1.5-2.3V8h.5c1.1 0 2-.9 2-2s-.9-2-2-2z"
 }
 
-const BRAND_ICON_KEYS = {
-  vue: 'vuedotjs',
-  react: 'react',
-  openai: 'openai',
-  anthropic: 'anthropic',
-  claude: 'claude',
-  gemini: 'googlegemini',
-  copilot: 'githubcopilot',
-  redis: 'redis',
-  nats: 'natsdotio',
-  jetstream: 'natsdotio',
-  kafka: 'apachekafka',
-  rabbitmq: 'rabbitmq',
-  sqs: 'amazonsqs',
-  sns: 'buffer',
-  sqlite: 'sqlite',
-  postgres: 'postgresql',
-  mysql: 'mariadb',
-  dynamodb: 'amazondynamodb',
-  s3: 'files',
-  gcs: 'googlecloud',
-  dropbox: 'dropbox',
-  rclone: 'rclone',
-  ftp: 'filezilla',
-  sftp: 'gnubash',
-  local: 'files',
-  memory: 'buffer',
-  file: 'files',
-  memcached: 'buffer',
-  ollama: 'ollama'
-}
-
-/* ============================================================
-   TILE PALETTE
-   ------------------------------------------------------------
-   Every tile whose vendor identity is cool used to be blue, and
-   a bulk sweep flattened all of them onto the action orange
-   (#FF5E3A). Twenty-two tiles ended up sharing one hex, which
-   cost the tower its readability and turned the action colour
-   into decoration — precisely the erosion the design handoff's
-   closing caution warns about.
-
-   The fix follows the Ember syntax palette's thesis rather than
-   inventing a new one: WARM-DOMINANT, WITH A SINGLE COOL ANCHOR.
-   Ember anchors on --s-type #9BD7C4; COOL_* is that mint carried
-   down to tile weight, where a white glyph still reads (~2.4:1
-   at the light end, matching the untouched #42b883 Vue tile).
-   Five steps so neighbouring tiles in a row never share a value.
-
-   Warm secondaries come from Ember's --s-func (#FFC24D) and
-   --s-string (#D9CE7A), same treatment.
-
-   Rule: --gf-accent stays reserved for GoForj's own primitives
-   (Env, Local Storage). Vendors carry a hue of their own.
-   ============================================================ */
-const COOL_1 = '#4FB8A6'
-const COOL_2 = '#2F9A8B'
-const COOL_3 = '#2A8A93'
-const COOL_4 = '#2E7A8E'
-const COOL_5 = '#2C6478'
-const GOLD = '#C98F2B'
-const KHAKI = '#9E9440'
-
-const GROUP_CONFIG = [
-  {
-    id: 'frontend',
-    label: 'FRONTEND',
-    icon: 'app-window',
-    color: '#5B5562',
-    summary: 'UI surfaces and client delivery',
-    title: 'Frontend choices',
-    href: '/frontend/',
-    row: 'front',
-    children: [
-      { id: 'frontend-vue', icon: 'vue', color: '#42b883', textColor: '#ffffff', iconColor: '#ffffff', title: 'Vue', href: 'https://vuejs.org/' },
-      { id: 'frontend-react', icon: 'react', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'React', href: 'https://react.dev/' },
-      { id: 'frontend-templ', icon: 'templ', color: '#f97316', textColor: '#ffffff', iconColor: '#ffffff', title: 'templ', href: 'https://templ.guide/' }
-    ]
-  },
-    {
-    id: 'infrastructure',
-    label: 'BACKEND',
-    icon: 'server',
-    color: '#68616E',
-    summary: 'Queue, events, cache, and storage backends',
-    title: 'Backend libraries and infrastructure',
-    href: '/drivers',
-    row: 'back',
-    subgroups: [
-      {
-        id: 'backend-core-libraries',
-        label: 'CORE LIBRARIES',
-        icon: 'package-2',
-        color: '#0ea5a4',
-        title: 'Core libraries',
-        href: '/libraries/',
-        children: [
-          { id: 'core-collections', icon: 'blocks', color: '#14b8a6', textColor: '#ffffff', iconColor: '#ffffff', title: 'Collections', href: '/collection' },
-          { id: 'core-strings', icon: 'whole-word', color: '#2dd4bf', textColor: '#ffffff', iconColor: '#ffffff', title: 'Strings', href: '/strings' },
-          { id: 'core-httpx', icon: 'globe', color: '#22c55e', textColor: '#ffffff', iconColor: '#ffffff', title: 'HTTPX', href: '/httpx' },
-          { id: 'core-env', icon: 'shield-check', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Env', href: '/env' },
-          { id: 'core-crypt', icon: 'key-round', color: GOLD, textColor: '#ffffff', iconColor: '#ffffff', title: 'Crypt', href: '/crypt' },
-          { id: 'core-console', icon: 'terminal', color: KHAKI, textColor: '#ffffff', iconColor: '#ffffff', title: 'Console', href: '/console' }
-        ]
-      },
-      {
-        id: 'backend-queue',
-        label: 'QUEUE',
-        icon: 'rows-3',
-        color: '#776D82',
-        title: 'Queue library',
-        href: '/queue',
-        children: [
-          { id: 'queue-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Queue', href: 'https://redis.io/' },
-          { id: 'queue-rabbitmq', icon: 'rabbitmq', color: '#ff6600', textColor: '#ffffff', iconColor: '#ffffff', title: 'RabbitMQ Queue', href: 'https://www.rabbitmq.com/' },
-          { id: 'queue-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Queue', href: 'https://nats.io/' },
-          { id: 'queue-sqs', icon: 'sqs', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SQS Queue', href: 'https://aws.amazon.com/sqs/' },
-          { id: 'queue-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Queue', href: 'https://www.postgresql.org/' },
-          { id: 'queue-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Queue', href: 'https://mariadb.org/' },
-          { id: 'queue-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Queue', href: 'https://sqlite.org/' }
-        ]
-      },
-      {
-        id: 'backend-events',
-        label: 'EVENTS',
-        icon: 'git-branch',
-        color: '#685E72',
-        title: 'Events library',
-        href: '/events',
-        children: [
-          { id: 'events-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Events', href: 'https://nats.io/' },
-          { id: 'events-jetstream', icon: 'jetstream', color: COOL_1, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS JetStream Events', href: 'https://docs.nats.io/nats-concepts/jetstream' },
-          { id: 'events-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Events', href: 'https://redis.io/' },
-          { id: 'events-kafka', icon: 'kafka', color: '#231f20', textColor: '#ffffff', iconColor: '#ffffff', title: 'Kafka Events', href: 'https://kafka.apache.org/' },
-          { id: 'events-sns', icon: 'sns', color: '#ff9900', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon SNS Events', href: 'https://aws.amazon.com/sns/' },
-          { id: 'events-gcppubsub', icon: 'gcs', color: COOL_4, textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Pub/Sub Events', href: 'https://cloud.google.com/pubsub' }
-        ]
-      },
-      {
-        id: 'backend-storage',
-        label: 'STORAGE',
-        icon: 'hard-drive',
-        color: '#57505E',
-        title: 'Storage library',
-        href: '/storage',
-        children: [
-          { id: 'storage-local', icon: 'local', color: '#FF5E3A', textColor: '#ffffff', iconColor: '#ffffff', title: 'Local Storage', href: '/storage' },
-          { id: 'storage-memory', icon: 'memory', color: '#766D7E', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Storage', href: '/storage' },
-          { id: 'storage-redis', icon: 'redis', color: '#cb3837', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Storage', href: 'https://redis.io/' },
-          { id: 'storage-ftp', icon: 'ftp', color: '#ff8c00', textColor: '#ffffff', iconColor: '#ffffff', title: 'FTP Storage', href: 'https://filezilla-project.org/' },
-          { id: 'storage-sftp', icon: 'sftp', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'SFTP Storage', href: 'https://www.openssh.com/' },
-          { id: 'storage-s3', icon: 's3', color: '#569a31', textColor: '#ffffff', iconColor: '#ffffff', title: 'Amazon S3 Storage', href: 'https://aws.amazon.com/s3/' },
-          { id: 'storage-gcs', icon: 'gcs', color: COOL_4, textColor: '#ffffff', iconColor: '#ffffff', title: 'Google Cloud Storage', href: 'https://cloud.google.com/storage' },
-          { id: 'storage-dropbox', icon: 'dropbox', color: COOL_5, textColor: '#ffffff', iconColor: '#ffffff', title: 'Dropbox Storage', href: 'https://www.dropbox.com/developers' },
-          { id: 'storage-rclone', icon: 'rclone', color: COOL_1, textColor: '#ffffff', iconColor: '#ffffff', title: 'Rclone Storage', href: 'https://rclone.org/' }
-        ]
-      },
-      {
-        id: 'backend-database',
-        label: 'DATABASE',
-        icon: 'database',
-        color: '#6D6574',
-        title: 'Database backends',
-        href: '/drivers',
-        childMetrics: { size: 0.36, gap: 0.06, height: 0.44, scale: 0.35, columns: 3, rowOffsetY: 0, rowLiftFactor: 1.02, rowInsetX: 0 },
-        children: [
-          { id: 'database-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB', href: 'https://mariadb.org/' },
-          { id: 'database-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres', href: 'https://www.postgresql.org/' },
-          { id: 'database-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite', href: 'https://sqlite.org/' }
-        ]
-      },
-      {
-        id: 'backend-cache',
-        label: 'CACHE',
-        icon: 'database-zap',
-        color: '#584F61',
-        title: 'Cache library',
-        href: '/cache',
-        children: [
-          { id: 'cache-file', icon: 'file', color: GOLD, textColor: '#ffffff', iconColor: '#ffffff', title: 'File Cache', href: '/cache' },
-          { id: 'cache-memory', icon: 'memory', color: '#5c5c5c', textColor: '#ffffff', iconColor: '#ffffff', title: 'Memory Cache', href: '/cache' },
-          { id: 'cache-memcached', icon: 'memcached', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'Memcached Cache', href: 'https://memcached.org/' },
-          { id: 'cache-redis', icon: 'redis', color: '#dc382d', textColor: '#ffffff', iconColor: '#ffffff', title: 'Redis Cache', href: 'https://redis.io/' },
-          { id: 'cache-nats', icon: 'nats', color: COOL_2, textColor: '#ffffff', iconColor: '#ffffff', title: 'NATS Cache', href: 'https://nats.io/' },
-          { id: 'cache-sqlite', icon: 'sqlite', color: '#2B183F', textColor: '#ffffff', iconColor: '#ffffff', title: 'SQLite Cache', href: 'https://sqlite.org/' },
-          { id: 'cache-postgres', icon: 'postgres', color: '#62487C', textColor: '#ffffff', iconColor: '#ffffff', title: 'Postgres Cache', href: 'https://www.postgresql.org/' },
-          { id: 'cache-mysql', icon: 'mysql', color: '#72598C', textColor: '#ffffff', iconColor: '#ffffff', title: 'MariaDB Cache', href: 'https://mariadb.org/' },
-          { id: 'cache-dynamodb', icon: 'dynamodb', color: COOL_5, textColor: '#ffffff', iconColor: '#ffffff', title: 'DynamoDB Cache', href: 'https://aws.amazon.com/dynamodb/' }
-        ]
-      }
-    ],
-    children: []
-  },
-  {
-    id: 'ai-agents',
-    label: 'ATLAS',
-    icon: 'brain-circuit',
-    color: '#665F6D',
-    summary: 'Local guidance, skills, and MCP context for coding agents',
-    title: 'Atlas coding-agent support',
-    href: '/developer-tools/atlas',
-    row: 'front',
-    children: [
-      { id: 'ai-openai', icon: 'openai', color: '#10a37f', textColor: '#ffffff', iconColor: '#ffffff', title: 'Codex' },
-      { id: 'ai-claude', icon: 'claude', color: '#d97757', textColor: '#ffffff', iconColor: '#ffffff', title: 'Claude Code' },
-      { id: 'ai-gemini', icon: 'gemini', color: COOL_3, textColor: '#ffffff', iconColor: '#ffffff', title: 'Gemini CLI' },
-      { id: 'ai-copilot', icon: 'copilot', color: '#2A262D', textColor: '#ffffff', iconColor: '#ffffff', title: 'GitHub Copilot' }
-    ]
-  }
-]
 
 const LAYOUT = {
   originX: 0.42,
@@ -1396,7 +1147,6 @@ function adjustColor(color, amount) {
         class="gf-hero-graphic"
         :class="{ 'is-visible': isMounted }"
         @mousemove="onGraphicMove"
-        @mouseleave="onGraphicLeave"
       >
         <svg
           class="gf-hero-svg"
@@ -1404,7 +1154,6 @@ function adjustColor(color, amount) {
           :viewBox="heroViewBox"
           preserveAspectRatio="xMidYMid meet"
           aria-labelledby="gf-forge-title gf-forge-description"
-          :style="{ transform: `translate3d(${parallax.x.toFixed(2)}px, ${parallax.y.toFixed(2)}px, 0)` }"
         >
           <title id="gf-forge-title">The GoForj application forge</title>
           <desc id="gf-forge-description">One GoForj App composes frontend choices, libraries, infrastructure drivers, Atlas coding-agent support, and explicit Runtimes into Go source you own.</desc>

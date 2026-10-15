@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import release from './data/release.json'
 
 const lucideIconKeys = [
@@ -24,7 +25,8 @@ const lucideIconKeys = [
   'server',
   'shield-check',
   'terminal',
-  'whole-word'
+  'whole-word',
+  'zap'
 ]
 
 const simpleIconKeys = [
@@ -35,6 +37,10 @@ const simpleIconKeys = [
   'claude',
   'googlegemini',
   'githubcopilot',
+  'resend',
+  'mailgun',
+  'sendgrid',
+  'amazonsimpleemailservice',
   'redis',
   'natsdotio',
   'apachekafka',
@@ -65,9 +71,15 @@ const iconSubset = (source: IconCollection, keys: string[]) => Object.fromEntrie
 const iconSubsetPlugin = {
   name: 'goforj-icon-subset',
   resolveId(id: string) {
+    if (id === 'virtual:goforj-marks') return '\0virtual:goforj-marks'
     return id === 'virtual:goforj-icons' ? '\0virtual:goforj-icons' : undefined
   },
   load(id: string) {
+    if (id === '\0virtual:goforj-marks') {
+      const source = new URL('../public/assets/goforj-marks.js', import.meta.url)
+      this.addWatchFile(fileURLToPath(source))
+      return fs.readFileSync(source, 'utf8')
+    }
     if (id !== '\0virtual:goforj-icons') return undefined
 
     const lucide = JSON.parse(fs.readFileSync(new URL('../node_modules/@iconify-json/lucide/icons.json', import.meta.url), 'utf8')) as IconCollection
@@ -1138,6 +1150,9 @@ export default defineConfig({
   // the entire html:not(.dark) token layer was dead code.
   appearance: 'dark',
   vite: {
+    server: {
+      allowedHosts: ['.trycloudflare.com']
+    },
     plugins: [iconSubsetPlugin],
     build: {
       // The generated local-search index is intentionally the largest chunk; this budget still flags growth beyond the current corpus.
