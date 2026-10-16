@@ -59,10 +59,6 @@ A dated export filename avoids reusing an old cached social image URL. If changi
 
 The homepage and starter-kit frontmatter override the default social image. Updating only `socialImage` leaves those pages on their old preview.
 
-Keep Twitter `summary_large_image` and Open Graph metadata aligned on the same image. The October 16 Slack investigation tested placing Twitter metadata first, following Slack's older published guidance, but fresh posted messages still displayed compact thumbnails. Tag order is not a verified fix. Correct generated tags alone do not prove Slack rendered a large card; confirm the result in a fresh posted Slack message or its authenticated unfurl debugger before claiming that behavior is fixed.
-
-The noindex page `/unfurl/slack-photo.html` isolates oEmbed photo discovery from homepage metadata. Its static descriptor, `/unfurl/foundry-photo.json`, is a diagnostic fixture, not a general oEmbed endpoint: it cannot negotiate requested maximum dimensions. Use it to establish whether Slack displays a photo differently before considering a production integration. Keep the homepage and working Discord card unchanged during this experiment.
-
 ## Preserve Originals
 
 Keep these existing originals intact, alongside the Foundry versions:
