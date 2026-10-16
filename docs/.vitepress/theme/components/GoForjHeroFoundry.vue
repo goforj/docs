@@ -279,6 +279,10 @@ onBeforeUnmount(() => {
   .foundry__controls > span { display:none; }
 }
 @media (max-width:800px) {
+  /* The stacked homepage follows its content instead of stretching across a portrait viewport. */
+  .foundry--home,.foundry--home:has(.foundry__details.is-revealed) { height:auto; min-height:0; }
+  .foundry--home .foundry__hero { grid-template-rows:auto auto; }
+  .foundry--home .foundry__world { height:clamp(260px,70vw,480px); min-height:0; }
   .foundry__hero { grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); }
   .foundry__sidebar { grid-column:1; grid-row:1; padding:16px 20px 0; align-self:start; }
   .foundry__eyebrow { font-size:7px; margin-bottom:8px; }
