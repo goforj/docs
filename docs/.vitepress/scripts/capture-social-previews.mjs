@@ -7,7 +7,7 @@ const origin = process.argv.slice(2).find(argument => /^https?:/.test(argument))
 const refreshArt = process.argv.includes('--refresh-art')
 const captures = [
   { route: '/site-preview', selector: '.gf-foundry-preview', width: 1200, height: 630, scale: 2, output: 'public/assets/goforj-og-20261016.png' },
-  { route: '/twitter-banner.html', selector: '.banner', width: 1500, height: 500, scale: 1, output: 'public/twitter-banner.png' }
+  { route: '/twitter-banner.html', selector: '.banner', width: 1500, height: 500, scale: 2, output: 'public/twitter-banner.png' }
 ]
 const browser = await chromium.launch({ channel: 'chrome', headless: true, args: refreshArt ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [] })
 try {

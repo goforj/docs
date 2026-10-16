@@ -1,12 +1,12 @@
 import { BUILDING_BLOCK_FAMILIES } from './goforj-hero-catalog.js'
 
 export const FOUNDRY_RESOURCES = [
-  { id: 'database', localDriver: 'database-sqlite', productionDriver: 'database-postgres', label: 'Database', color: '#a7a0cb', local: 'SQLite', production: 'Postgres', copy: 'Your data. Your choice of database.' },
-  { id: 'queue', localDriver: 'queue-workerpool', productionDriver: 'queue-redis', label: 'Queue', color: '#d5b77c', local: 'Workerpool', production: 'Redis', copy: 'Background work, with explicit workers and retries.' },
-  { id: 'events', localDriver: 'events-inproc', productionDriver: 'events-nats', label: 'Events', color: '#81b9b1', local: 'In-process', production: 'NATS', copy: 'Typed events, with local or distributed fan-out.' },
-  { id: 'storage', localDriver: 'storage-local', productionDriver: 'storage-s3', label: 'Storage', color: '#81acbf', local: 'Local disk', production: 'S3', copy: 'Named disks, from your filesystem to object storage.' },
-  { id: 'cache', localDriver: 'cache-memory', productionDriver: 'cache-redis', label: 'Cache', color: '#b9bd8c', local: 'Memory', production: 'Redis', copy: 'Temporary data behind a swappable store.' },
-  { id: 'mail', localDriver: 'mail-log', productionDriver: 'mail-smtp', label: 'Mail', color: '#d29d83', local: 'Log', production: 'SMTP', copy: 'Develop with logged mail. Deliver through your provider.' }
+  { id: 'database', label: 'Database', color: '#a7a0cb', copy: 'Your data. Your choice of database.' },
+  { id: 'queue', label: 'Queue', color: '#d5b77c', copy: 'Background work, with explicit workers and retries.' },
+  { id: 'events', label: 'Events', color: '#81b9b1', copy: 'Typed events, with local or distributed fan-out.' },
+  { id: 'storage', label: 'Storage', color: '#81acbf', copy: 'Named disks, from your filesystem to object storage.' },
+  { id: 'cache', label: 'Cache', color: '#b9bd8c', copy: 'Temporary data behind a swappable store.' },
+  { id: 'mail', label: 'Mail', color: '#d29d83', copy: 'Develop with logged mail. Deliver through your provider.' }
 ]
 
 export const FOUNDRY_AREAS = [

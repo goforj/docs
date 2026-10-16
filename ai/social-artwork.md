@@ -15,10 +15,10 @@ Paths below are relative to the repository root.
 | Foundry scene | `docs/.vitepress/theme/components/goforj-foundry-scene.js`, `GoForjHeroFoundry.vue` | `/hero-foundry` |
 | Shared transparent artwork | Capture script with `--refresh-art` | `docs/public/assets/foundry-social.png`, 3000 by 2490 |
 | Social preview | `docs/.vitepress/theme/components/SitePreview.vue` | `/site-preview`; `docs/public/assets/goforj-og-20261016.png`, 2400 by 1260 |
-| Profile banner | `docs/public/twitter-banner.html` | `docs/public/twitter-banner.png`, 1500 by 500 |
+| Profile banner | `docs/public/twitter-banner.html` | `docs/public/twitter-banner.png`, 3000 by 1000 |
 | Comparison page | `docs/public/social-preview-comparison.html` | `/social-preview-comparison.html` |
 
-The social preview uses a 1200 by 630 CSS viewport captured at device scale factor 2. Its larger physical export is deliberate: a 1200px PNG looked soft when enlarged. The banner keeps its standard 1500 by 500 export. The shared artwork is rendered directly at high resolution rather than enlarged from a smaller screenshot.
+The social preview uses a 1200 by 630 CSS viewport captured at device scale factor 2. Its larger physical export is deliberate: a 1200px PNG looked soft when enlarged. The banner uses a 1500 by 500 CSS viewport at device scale factor 2, exporting 3000 by 1000 pixels with the same composition and aspect ratio. Keep both exports at 2x so fine illustration edges and text have enough detail on high-density displays. The shared artwork is rendered directly at high resolution rather than enlarged from a smaller screenshot.
 
 ## Capture
 

@@ -11,7 +11,6 @@ const selected = ref('runtimes')
 const hovered = ref(null)
 const detailsVisible = ref(false)
 const reduced = ref(false)
-const environment = ref('local')
 const hoveredDriver = ref(null)
 const focusedDriver = ref(null)
 const exploded = ref(false)
@@ -31,9 +30,8 @@ async function copyInstall() {
 const modules = [...FOUNDRY_AREAS, ...FOUNDRY_RESOURCES]
 const active = computed(() => modules.find(item => item.id === selected.value))
 const choices = computed(() => FOUNDRY_CHOICES[selected.value])
-const driverPreview = computed(() => active.value.local
-  ? hoveredDriver.value || focusedDriver.value || choices.value.find(choice => choice.id === active.value[`${environment.value}Driver`])
-  : null)
+const isResource = computed(() => FOUNDRY_RESOURCES.some(item => item.id === selected.value))
+const driverPreview = computed(() => isResource.value ? hoveredDriver.value || focusedDriver.value : null)
 // syncDriverPreview uses the catalog's existing identity and leaves documentation links intact.
 function syncDriverPreview() {
   const choice = driverPreview.value
@@ -87,7 +85,6 @@ watch(selected, value => {
   focusedDriver.value = null
   scene?.setSelected(value)
 })
-watch(environment, () => { hoveredDriver.value = null; focusedDriver.value = null })
 watch([selected, driverPreview], syncDriverPreview, { flush: 'post' })
 watch([detailsVisible, hovered], ([details, hover]) => scene?.setInspecting(details || Boolean(hover)))
 watch(exploded, value => scene?.setOpen(value))
@@ -157,13 +154,12 @@ onBeforeUnmount(() => {
               <div class="foundry__area-picker"><select v-model="selected" aria-label="Explore a framework area"><option v-for="item in FOUNDRY_AREAS" :key="item.id" :value="item.id">{{ item.sceneLabel || item.label }}</option><optgroup label="Infrastructure drivers"><option v-for="item in FOUNDRY_RESOURCES" :key="item.id" :value="item.id">{{ item.label }}</option></optgroup></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div>
               <h2 class="foundry__sr-only">{{ active.label }}</h2>
               <p aria-live="polite" aria-atomic="true">{{ active.copy }}</p>
-              <div v-if="active.local" class="foundry__environment" role="group" aria-label="Example driver configuration"><button v-for="mode in ['local', 'production']" :key="mode" :aria-pressed="environment === mode" @click="environment = mode">{{ mode }}</button></div>
             </div>
             <div class="foundry__catalog">
               <div class="foundry__drivers">
-                <component :is="choice.resource ? 'button' : 'a'" v-for="choice in choices" :key="choice.id" :href="choice.resource ? undefined : choice.href" :aria-label="choice.title" :class="{ 'is-previewed': active.local && driverPreview?.id === choice.id }" @pointerenter="active.local && $event.pointerType === 'mouse' && (hoveredDriver = choice)" @pointerleave="hoveredDriver = null" @focus="active.local && (focusedDriver = choice)" @blur="focusedDriver = null" @click="choice.resource && (selected = choice.id)"><svg viewBox="0 0 24 24" aria-hidden="true" :class="{ 'is-outline': !simpleIconBodies[BRAND_ICON_KEYS[choice.icon] || choice.icon] }" :style="{ color: `color-mix(in srgb, ${choice.color} 75%, var(--gf-ink))` }" v-html="simpleIconBodies[BRAND_ICON_KEYS[choice.icon] || choice.icon] || lucideIconBodies[choice.icon] || lucideIconBodies['database']"/><span>{{ choice.title.replace(` ${active.label}`, '') }}</span><span class="foundry__driver-arrow" aria-hidden="true">↗</span></component>
+                <component :is="choice.resource ? 'button' : 'a'" v-for="choice in choices" :key="choice.id" :href="choice.resource ? undefined : choice.href" :aria-label="choice.title" :class="{ 'is-previewed': isResource && driverPreview?.id === choice.id }" @pointerenter="isResource && $event.pointerType === 'mouse' && (hoveredDriver = choice)" @pointerleave="hoveredDriver = null" @focus="isResource && (focusedDriver = choice)" @blur="focusedDriver = null" @click="choice.resource && (selected = choice.id)"><svg viewBox="0 0 24 24" aria-hidden="true" :class="{ 'is-outline': !simpleIconBodies[BRAND_ICON_KEYS[choice.icon] || choice.icon] }" :style="{ color: `color-mix(in srgb, ${choice.color} 75%, var(--gf-ink))` }" v-html="simpleIconBodies[BRAND_ICON_KEYS[choice.icon] || choice.icon] || lucideIconBodies[choice.icon] || lucideIconBodies['database']"/><span>{{ choice.title.replace(` ${active.label}`, '') }}</span><span class="foundry__driver-arrow" aria-hidden="true">↗</span></component>
               </div>
-              <button v-if="active.local" class="foundry__all-drivers" @click="selected = 'infrastructure'">← All infrastructure</button>
+              <button v-if="isResource" class="foundry__all-drivers" @click="selected = 'infrastructure'">← All infrastructure</button>
             </div>
           </div>
         </section>
@@ -240,9 +236,6 @@ onBeforeUnmount(() => {
 .foundry__area-picker svg { position:absolute; right:0; top:8px; pointer-events:none; color:var(--gf-ink-3); }
 .foundry__detail-body { display:grid; grid-template-columns:minmax(0, .8fr) minmax(0, 1.2fr); gap:24px; align-items:start; }
 .foundry__explanation p { font-size:15px; line-height:1.55; color:var(--gf-ink-2); margin:0; }
-.foundry__environment { display:inline-flex; gap:3px; padding:2px; margin-top:10px; border:1px solid var(--gf-line); border-radius:4px; }
-.foundry__environment button { font:12px var(--gf-font-mono,monospace); text-transform:capitalize; padding:6px 10px; border-radius:2px; color:var(--gf-ink-3); }
-.foundry__environment button[aria-pressed='true'] { color:var(--gf-ink); background:var(--gf-line); }
 .foundry__catalog { min-width:0; margin:0; padding:0; }
 .foundry__all-drivers { margin-top:10px; color:var(--gf-ink-2); font-size:12px; }
 .foundry__all-drivers:hover { color:var(--gf-accent); }
@@ -308,7 +301,6 @@ onBeforeUnmount(() => {
   .foundry__labels button { font-size:8px; padding:4px; }
   .foundry__labels button[aria-pressed='false'] { display:none; }
   .foundry__explanation p { font-size:14px; line-height:1.55; }
-  .foundry__environment { margin-top:7px; }
   .foundry__drivers :is(a,button) { padding:7px 3px; gap:7px; font-size:13px; }
   .foundry__drivers svg { width:16px; height:16px; }
   .foundry__driver-arrow { display:none; }
