@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "type": "photo",
+  "provider_name": "GoForj",
+  "provider_url": "https://goforj.dev/",
+  "title": "GoForj - The composable stack for building with Go",
+  "url": "https://goforj.dev/assets/goforj-og-20261016.png",
+  "width": 2400,
+  "height": 1260,
+  "cache_age": 300
+}
