@@ -1,22 +1,22 @@
 import { BUILDING_BLOCK_FAMILIES } from './goforj-hero-catalog.js'
 
 export const FOUNDRY_RESOURCES = [
-  { id: 'database', label: 'Database', color: '#a7a0cb', local: 'SQLite', production: 'Postgres', copy: 'Your data. Your choice of database.' },
-  { id: 'queue', label: 'Queue', color: '#d5b77c', local: 'Workerpool', production: 'Redis', copy: 'Background work, with explicit workers and retries.' },
-  { id: 'events', label: 'Events', color: '#81b9b1', local: 'In-process', production: 'NATS', copy: 'Typed events, with local or distributed fan-out.' },
-  { id: 'storage', label: 'Storage', color: '#81acbf', local: 'Local disk', production: 'S3', copy: 'Named disks, from your filesystem to object storage.' },
-  { id: 'cache', label: 'Cache', color: '#b9bd8c', local: 'Memory', production: 'Redis', copy: 'Temporary data behind a swappable store.' },
-  { id: 'mail', label: 'Mail', color: '#d29d83', local: 'Log', production: 'SMTP', copy: 'Develop with logged mail. Deliver through your provider.' }
+  { id: 'database', localDriver: 'database-sqlite', productionDriver: 'database-postgres', label: 'Database', color: '#a7a0cb', local: 'SQLite', production: 'Postgres', copy: 'Your data. Your choice of database.' },
+  { id: 'queue', localDriver: 'queue-workerpool', productionDriver: 'queue-redis', label: 'Queue', color: '#d5b77c', local: 'Workerpool', production: 'Redis', copy: 'Background work, with explicit workers and retries.' },
+  { id: 'events', localDriver: 'events-inproc', productionDriver: 'events-nats', label: 'Events', color: '#81b9b1', local: 'In-process', production: 'NATS', copy: 'Typed events, with local or distributed fan-out.' },
+  { id: 'storage', localDriver: 'storage-local', productionDriver: 'storage-s3', label: 'Storage', color: '#81acbf', local: 'Local disk', production: 'S3', copy: 'Named disks, from your filesystem to object storage.' },
+  { id: 'cache', localDriver: 'cache-memory', productionDriver: 'cache-redis', label: 'Cache', color: '#b9bd8c', local: 'Memory', production: 'Redis', copy: 'Temporary data behind a swappable store.' },
+  { id: 'mail', localDriver: 'mail-log', productionDriver: 'mail-smtp', label: 'Mail', color: '#d29d83', local: 'Log', production: 'SMTP', copy: 'Develop with logged mail. Deliver through your provider.' }
 ]
 
 export const FOUNDRY_AREAS = [
-  { id: 'atlas', label: 'Atlas', sceneLabel: 'Atlas · Agent tooling', color: '#bc9aaf', x: 1.45, z: 2.55, copy: 'First-class agent support for Codex, Claude Code, Gemini CLI, and GitHub Copilot. Project guidance, skills, and local MCP context.', noun: 'FIRST-CLASS AGENT TOOLING', context: 'GUIDANCE · SKILLS · LOCAL MCP' },
-  { id: 'frontend', label: 'Frontend', color: '#76bba0', x: -1.55, z: 2.55, copy: 'Vue, React, or templ. Start with an app shell you own, then make it yours.', noun: 'FRONTEND CHOICES', context: 'YOUR UI · YOUR SOURCE' },
+  { id: 'atlas', label: 'Atlas', sceneLabel: 'Atlas · Agent tooling', color: '#bc9aaf', x: 2.45, z: 2.65, copy: 'First-class agent support for Codex, Claude Code, Gemini CLI, and GitHub Copilot. Project guidance, skills, and local MCP context.', noun: 'FIRST-CLASS AGENT TOOLING', context: 'GUIDANCE · SKILLS · LOCAL MCP' },
+  { id: 'frontend', label: 'Frontend', color: '#76bba0', x: -3.15, z: 2.65, copy: 'Vue, React, or templ. Start with an app shell you own, then make it yours.', noun: 'FRONTEND CHOICES', context: 'YOUR UI · YOUR SOURCE' },
   { id: 'libraries', label: 'Libraries', color: '#82b8b2', x: 2.45, z: -2.6, copy: 'Use first-party Go libraries inside your app or independently. Small packages, explicit contracts.', noun: 'CORE LIBRARIES', context: 'USE WITH OR WITHOUT GOFORJ' },
-  { id: 'runtimes', label: 'Runtimes', sceneLabel: 'Runtimes', color: '#f39266', x: 2.65, z: 1.2, copy: 'HTTP, workers, schedules, and CLI commands. Run them together or as separate processes, with explicit wiring and lifecycle.', noun: 'APPLICATION RUNTIMES', context: 'ONE APP · MULTIPLE PROCESS ROLES' },
-  { id: 'infrastructure', label: 'Drivers', sceneLabel: 'Infrastructure', color: '#aba3c7', x: -2.65, z: .1, copy: 'Six infrastructure libraries with interchangeable backends. Start local, then choose the drivers your deployment needs.', noun: 'INFRASTRUCTURE LIBRARIES', context: 'SWAP DRIVERS · KEEP YOUR LOGIC' },
+  { id: 'runtimes', label: 'Runtimes', sceneLabel: 'Runtimes', color: '#f39266', x: 3, z: .85, copy: 'HTTP, workers, schedules, and CLI commands. Run them together or as separate processes, with explicit wiring and lifecycle.', noun: 'APPLICATION RUNTIMES', context: 'ONE APP · MULTIPLE PROCESS ROLES' },
+  { id: 'infrastructure', label: 'Drivers', sceneLabel: 'Infrastructure', color: '#aba3c7', x: -2.5, z: .75, copy: 'Six infrastructure libraries with interchangeable backends. Start local, then choose the drivers your deployment needs.', noun: 'INFRASTRUCTURE LIBRARIES', context: 'SWAP DRIVERS · KEEP YOUR LOGIC' },
   { id: 'lighthouse', label: 'Lighthouse', color: '#90c9c4', x: 3, z: -.65, copy: 'See inside your running app: requests, jobs, logs, routes, resources, and runtime state in one operator UI.', noun: 'RUNTIME VISIBILITY', context: 'UNDERSTAND WHAT YOUR APP IS DOING' },
-  { id: 'development', label: 'Dev tools', sceneLabel: 'Developer tools', color: '#d4bc80', x: -3.3, z: -1.7, copy: 'A coordinated development loop, scaffolding, compile-time wiring, and an API index. Work in ordinary Go source.', noun: 'DEVELOPER WORKFLOW', context: 'BUILD · WIRE · RUN · REPEAT' },
+  { id: 'development', label: 'Dev tools', sceneLabel: 'Developer tools', color: '#d4bc80', x: -3.35, z: -1.1, copy: 'A coordinated development loop, scaffolding, compile-time wiring, and an API index. Work in ordinary Go source.', noun: 'DEVELOPER WORKFLOW', context: 'BUILD · WIRE · RUN · REPEAT' },
   { id: 'auth', label: 'Auth', color: '#a1b88b', x: .25, z: -2.65, copy: 'App-owned authentication, sessions, cookies, and OAuth integration. Clear ownership from the UI to the backend.', noun: 'AUTHENTICATION', context: 'APPLICATION CODE YOU CAN READ' }
 ]
 

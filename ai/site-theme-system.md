@@ -39,6 +39,14 @@ The landing page uses `docs/assets/lighthouse/request-inspect.png`, captured on 
 
 `docs/starter-kits.md` follows the landing page frame: straight full-width rails, square orange intersection markers, and rounded app previews. Hero and component screenshots extend below their blocks and clip at the following rail. `StarterKitOptions.vue` lists rendering choices once and copies the documented `forj new` command. Keep account screenshots captioned as Vue previews, and preserve the distinction between Vue/React authentication and the templ account pages.
 
+## Article Page Actions
+
+`PageActions.vue` adds a split copy button and menu through the `doc-before` layout slot, after the existing library repository header. It overlays the upper-right corner of the article without shifting content. On library pages it sits below the repository link. On narrow screens, the copy label remains accessible but is visually hidden to leave room for the title. It appears on normal articles and library pages; pages with `sidebar: false` omit it. The `noAutoTitle` setting does not hide page actions. The menu supports arrow keys, Home, End, Escape, outside clicks, and focus dismissal.
+
+Individual Markdown exports live at `/markdown/<public-page-path>.md`, including rewritten library routes such as `/markdown/web.md` and section indexes such as `/markdown/core/index.md`. The VitePress configuration generates these files during `buildEnd` and serves them through development middleware. `page-markdown.mjs` strips frontmatter and page scripts/styles while preserving fenced examples. Release tokens resolve before export. Update the source Markdown or generator, never the built exports.
+
+ChatGPT and Claude links prefill a prompt containing the public canonical URL and Markdown URL. They rely on the external assistant to retrieve the published page. Local clipboard and Markdown viewing work before deployment. Clipboard writes use a promised `ClipboardItem` where available to preserve Safari's user-gesture requirement, with visible success and failure feedback. Run `npm run test:page-markdown` for focused export checks.
+
 ## Critical Scoping Rule
 
 The home layout (`layout: home`) ALSO renders markdown inside `.vp-doc`. Any rule written against bare `.vp-doc` leaks onto the landing page. All docs-content styling (tables, link underlines) must be scoped to `.VPDoc .vp-doc ...`, which only the docs layout has.

@@ -8,7 +8,7 @@ repoUrl: https://github.com/goforj/atlas
 # GoForj Atlas {#goforj-atlas}
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/goforj/atlas/main/docs/assets/banner-v2.png" alt="GoForj Atlas — a map for your coding agent">
+  <img src="https://raw.githubusercontent.com/goforj/atlas/main/docs/assets/banner.png" alt="Atlas Banner">
 </p>
 
 Agent-native project navigation and MCP tooling for GoForj.
@@ -22,13 +22,13 @@ Users should normally reach Atlas through the GoForj CLI:
 
 ```bash
 forj atlas:install
+forj atlas:update
 forj atlas:mcp
 ```
 
 This repository contains the reusable Atlas library. The GoForj CLI exposes it
 through `forj atlas:*` commands so projects do not need to install a separate
-binary. For installation and daily use in a rendered GoForj Project, use the
-[Atlas framework guide](https://goforj.dev/developer-tools/atlas).
+binary.
 
 ## What Atlas Provides {#what-atlas-provides}
 
@@ -41,6 +41,26 @@ Atlas gives local agents a framework-aware view of a GoForj project:
 - version-aware docs search and section reads
 - safe database, log, browser, URL, and metrics inspection hooks
 
+## Project Integration {#project-integration}
+
+Atlas keeps the selected agents, enabled surfaces, and generated-file ownership
+in `.goforj/atlas.json`. Native files such as `AGENTS.md`, `.agents/skills`, and
+`.codex/config.toml` are projections written only for the selected agents so the
+tools can discover them without manual setup.
+
+A normal update follows the committed selection instead of re-detecting every
+agent installed on the machine:
+
+```bash
+forj atlas:update
+```
+
+Use `forj atlas:update --discover` when the project should deliberately switch
+to the preferred locally installed agent. Explicit `--agent` and
+`--all-agents` selections remain available for projects that intentionally use
+more than one agent. Atlas removes only its owned blocks, MCP entries, and
+generated skill files when an agent or surface is deselected.
+
 ## Safety Model {#safety-model}
 
 Atlas starts read-only. It does not expose arbitrary shell execution or
@@ -50,8 +70,53 @@ When source scaffolding is needed, agents should use normal GoForj commands:
 
 ```bash
 forj make:controller users
-forj admin make:job reconcile-refunds
+forj marketplace make:job sync-catalog
 ```
+
+## Live Agent Evaluation {#live-agent-evaluation}
+
+Atlas includes a diagnostic harness for measuring how fresh coding agents turn
+natural requests into working, maintainable GoForj Projects. The promoted
+portfolio can compare four cumulative guidance profiles: no framework
+guidance, `AGENTS.md`, recommended skills, and Atlas MCP. Start with the
+smallest adjacent smoke comparison that answers the question instead of paying
+for the complete portfolio:
+
+```bash
+make -C /path/to/clean/goforj eval-runner EVAL_RUNNER=/tmp/forj-eval
+
+openssl rand -out /tmp/goforj-eval-artifact.key -hex 32
+chmod 600 /tmp/goforj-eval-artifact.key
+
+/tmp/forj-eval atlas:eval suite core \
+  --tier smoke \
+  --control agents \
+  --treatment agents-skills \
+  --model <model> \
+  --workers 4 \
+  --trials 1 \
+  --credential /path/to/disposable-auth.json \
+  --artifact-key /tmp/goforj-eval-artifact.key \
+  --artifacts /tmp/goforj-eval-artifacts
+```
+
+The credential must be disposable, revocable, and restricted to this
+diagnostic; the current unconfined backend cannot keep file-backed provider
+authority secret from candidate processes. Keep the artifact key outside the
+artifact directory; it authenticates retained evidence and should remain
+readable only by the evaluation operator. The command retains redacted
+evidence with post-run integrity checks and verifies the final Project after
+the agent session. Missing supervisor-grade isolation and observation keep
+top-level outcomes ineligible rather than promoting local diagnostics to an
+authoritative claim. See [the implementation plan](https://github.com/goforj/atlas/blob/main/docs/live-agent-evaluation-plan.md)
+and [Codex adapter qualification](https://github.com/goforj/atlas/blob/main/docs/codex-adapter-feasibility.md) for the
+boundary and release sequence.
+
+Maintainers resuming evaluation work should begin with the implementation
+plan's **Maintainer Handoff**, then read GoForj's
+[maintainer guide](https://github.com/goforj/goforj/blob/main/docs/maintainer/atlas-live-evaluations.md)
+and [recorded benchmark](https://github.com/goforj/goforj/blob/main/docs/maintainer/atlas-evaluation-benchmark.md)
+before interpreting pass rates or starting provider sessions.
 
 ## Development {#development}
 

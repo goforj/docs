@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import release from './data/release.json'
+import { pageMarkdown, markdownPath } from './page-markdown.mjs'
 
 const lucideIconKeys = [
   'activity',
@@ -506,6 +507,32 @@ const llmsPageUrl = (rel: string): string => {
   return pageUrl(rewritten)
 }
 
+// pageMarkdownPlugin serves the same exports in development that the build writes to disk.
+const pageMarkdownPlugin = {
+  name: 'goforj-page-markdown',
+  configureServer(server) {
+    const docsRoot = fileURLToPath(new URL('..', import.meta.url))
+    server.middlewares.use((req, res, next) => {
+      const pathname = new URL(req.url || '/', 'http://localhost').pathname
+      if (!pathname.startsWith('/markdown/')) return next()
+      const files = collectMarkdownFiles(docsRoot)
+      const source = files.find((rel) => `/${markdownPath(libraryRewrites[rel] || rel)}` === pathname)
+      if (!source) return next()
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+      res.end(pageMarkdown(expandReleaseTokens(fs.readFileSync(path.join(docsRoot, source), 'utf8'))))
+    })
+  }
+}
+
+// generatePageMarkdown publishes individual pages without coupling clipboard use to rendered HTML.
+function generatePageMarkdown(siteConfig: { srcDir: string; outDir: string }) {
+  for (const rel of collectMarkdownFiles(siteConfig.srcDir)) {
+    const output = path.join(siteConfig.outDir, markdownPath(libraryRewrites[rel] || rel))
+    fs.mkdirSync(path.dirname(output), { recursive: true })
+    fs.writeFileSync(output, pageMarkdown(expandReleaseTokens(fs.readFileSync(path.join(siteConfig.srcDir, rel), 'utf8'))))
+  }
+}
+
 async function generateLlmsFiles(siteConfig: { srcDir: string; outDir: string }) {
   const files = collectMarkdownFiles(siteConfig.srcDir)
     .filter((rel) => rel !== 'index.md')
@@ -771,6 +798,7 @@ function validateConsolidatedPageRedirects(outDir: string) {
 // finishBuild produces the machine-readable corpus and compatibility routes from one finalized page graph.
 async function finishBuild(siteConfig: { srcDir: string; outDir: string }) {
   await generateLlmsFiles(siteConfig)
+  generatePageMarkdown(siteConfig)
   generateConsolidatedPageRedirects(siteConfig.outDir)
   validateConsolidatedPageRedirects(siteConfig.outDir)
 }
@@ -1149,11 +1177,17 @@ export default defineConfig({
   // can switch. 'force-dark' pinned .dark on <html> permanently, which meant
   // the entire html:not(.dark) token layer was dead code.
   appearance: 'dark',
+  transformPageData(pageData) {
+    const relativePath = libraryRewrites[pageData.filePath] || pageData.filePath
+    return { markdownUrl: `/${markdownPath(relativePath)}`, canonicalUrl: pageUrl(relativePath) }
+  },
   vite: {
     server: {
-      allowedHosts: ['.trycloudflare.com']
+      allowedHosts: ['.trycloudflare.com'],
+      // Built Markdown exports must not enter the development search watcher.
+      watch: { ignored: ['**/.vitepress/dist/**'] }
     },
-    plugins: [iconSubsetPlugin],
+    plugins: [iconSubsetPlugin, pageMarkdownPlugin],
     build: {
       // The generated local-search index is intentionally the largest chunk; this budget still flags growth beyond the current corpus.
       chunkSizeWarningLimit: 1600

@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import { useData, useRoute } from 'vitepress'
 import { h, nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import LibraryRepoHeader from './components/LibraryRepoHeader.vue'
+import PageActions from './components/PageActions.vue'
 import ApiIndexJump from './components/ApiIndexJump.vue'
 import StarterKitImage from './components/StarterKitImage.vue'
 import StarterKitHeroScreens from './components/StarterKitHeroScreens.vue'
@@ -25,6 +26,7 @@ import './starter-kits.css'
    layout shift for bytes on secondary pages. It is the wrong trade for
    a hero. */
 import GoForjHeroStack from './components/GoForjHeroStack.vue'
+import GoForjHeroFoundry from './components/GoForjHeroFoundry.vue'
 
 
 const LIGHTBOX_KEY = '__goforjLightboxState'
@@ -724,7 +726,7 @@ export default {
     ctx.app.component('MakeCommandTabs', MakeCommandTabs)
   },
   Layout: () => {
-    const { theme } = useData()
+    const { theme, frontmatter } = useData()
     const docsVersion = theme.value.docsVersion || 'Unreleased'
 
     return h(DefaultTheme.Layout, null, {
@@ -738,8 +740,10 @@ export default {
         ])
       ]),
       'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
-      'home-hero-before': () => h(GoForjHeroStack),
-      'doc-before': () => h(LibraryRepoHeader),
+      'home-hero-before': () => frontmatter.value.heroVariant === 'original'
+        ? h(GoForjHeroStack)
+        : h(GoForjHeroFoundry, { standalone: false }),
+      'doc-before': () => [h(LibraryRepoHeader), h(PageActions)],
       'layout-bottom': () => h(ApiIndexJump)
     })
   },

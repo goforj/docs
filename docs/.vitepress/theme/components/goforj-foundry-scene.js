@@ -55,7 +55,7 @@ function createReferenceMarkGeometry(paths) {
 }
 
 // createFoundryScene builds a small manufactured world around the app's shared core.
-export function createFoundryScene(host, { modules, resources, dark, onSelect, onLabels, getInsets }) {
+export function createFoundryScene(host, { modules, resources, dark, onSelect, onHover, onLabels, getInsets }) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.shadowMap.enabled = true
@@ -82,6 +82,8 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   let width = 1, height = 1, frame = 0, elapsed = 0, previous = 0
   let motion = true, paused = false, open = false, selected = 'runtimes', visible = true, disposed = false
   let lastLabels = ''
+  let inspecting = false, inspectionWeight = 0
+  let driverPreview = null
 
   // finish keeps reflections soft enough to read as ceramic and machined metal.
   function finish(color, metalness = .25, roughness = .3, extra = {}) {
@@ -89,12 +91,15 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     materialSet.add(material)
     return material
   }
-  const ivory = finish('#d7d5cf', .35, .3)
-  const white = finish('#e9e4d8', .18, .3)
+  const ivory = finish('#cecec8', .30, .38)
+  const white = finish('#dcdcd3', .18, .38)
   const steel = finish('#adb6bf', .85, .25)
   const graphite = finish('#24282e', .65, .28)
   const charcoal = finish('#41464e', .55, .34)
   const copper = finish('#cf7342', .78, .25)
+  const porcelain = finish('#c6c7c1', .18, .46)
+  const assemblyLamp = finish('#e7bb85', .25, .3, { emissive: '#ffb468', emissiveIntensity: .4 })
+  const deliveryLamp = finish('#80bca7', .2, .3, { emissive: '#80d4af', emissiveIntensity: .18 })
   const orange = finish('#f36335', .35, .28)
   const brandFace = new THREE.MeshBasicMaterial({ color: '#ff6738', toneMapped: false, side: THREE.DoubleSide })
   materialSet.add(brandFace)
@@ -124,6 +129,47 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     mesh(new THREE.TubeGeometry(curve, 36, radius, 8, false), material, [0, 0, 0], parent)
     return curve
   }
+  // trace rounds deliberate right-angle channels without the overshoot of a spline.
+  function trace(points, draw = true) {
+    const vertices = points.map(point => new THREE.Vector3(...point))
+    const path = new THREE.CurvePath()
+    let previous = vertices[0]
+    for (let index = 1; index < vertices.length - 1; index++) {
+      const corner = vertices[index]
+      const radius = Math.min(.10, corner.distanceTo(previous) / 3, corner.distanceTo(vertices[index + 1]) / 3)
+      const entry = corner.clone().add(previous.clone().sub(corner).normalize().multiplyScalar(radius))
+      const exit = corner.clone().add(vertices[index + 1].clone().sub(corner).normalize().multiplyScalar(radius))
+      path.add(new THREE.LineCurve3(previous, entry))
+      path.add(new THREE.QuadraticBezierCurve3(entry, corner, exit))
+      previous = exit
+    }
+    path.add(new THREE.LineCurve3(previous, vertices[vertices.length - 1]))
+    if (draw) {
+      mesh(new THREE.TubeGeometry(path, 64, .026, 8, false), graphite)
+      mesh(new THREE.TubeGeometry(path, 64, .012, 8, false), copper, [0, .015, 0])
+    }
+    return path
+  }
+  // selectionLight pairs the physical outline with a continuous route to the app core.
+  function selectionLight(width, depth, y, parent, color) {
+    const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, toneMapped: false })
+    materialSet.add(material)
+    const x = width / 2, z = depth / 2
+    const path = trace([[-x, y, -z], [x, y, -z], [x, y, z], [-x, y, z], [-x, y, -z]], false)
+    const outline = mesh(new THREE.TubeGeometry(path, 80, .016, 8, false), material, [0, 0, 0], parent)
+    outline.castShadow = false
+    outline.receiveShadow = false
+    return material
+  }
+  // routeLight follows the same path as the copper instead of drawing an unrelated overlay.
+  function routeLight(curve, color) {
+    const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, toneMapped: false })
+    materialSet.add(material)
+    const route = mesh(new THREE.TubeGeometry(curve, 80, .019, 8, false), material, [0, .016, 0])
+    route.castShadow = false
+    route.receiveShadow = false
+    return material
+  }
   // ring adds the thin metallic trims of the core's machined housing.
   function ring(radius, thickness, material, y, parent = assembly) {
     const result = mesh(new THREE.TorusGeometry(radius, thickness, 12, 96), material, [0, y, 0], parent)
@@ -152,8 +198,8 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     return object
   }
 
-  scene.add(new THREE.HemisphereLight('#e5efff', '#8b6d55', 2.1))
-  const key = new THREE.DirectionalLight('#fff2df', 3.2)
+  scene.add(new THREE.HemisphereLight('#e5efff', '#8b6d55', 1.9))
+  const key = new THREE.DirectionalLight('#fff2df', 2.8)
   key.position.set(-4, 9, 6)
   key.castShadow = true
   key.shadow.mapSize.set(2048, 2048)
@@ -162,7 +208,7 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   key.shadow.bias = -.00015
   key.shadow.radius = 4
   scene.add(key)
-  const rim = new THREE.DirectionalLight('#c6e6ff', 2.2)
+  const rim = new THREE.DirectionalLight('#c6e6ff', 1.25)
   rim.position.set(5, 5, -6)
   scene.add(rim)
   const coreLight = new THREE.PointLight('#fff1e5', 8, 6, 2)
@@ -184,19 +230,27 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     cylinder(.045, .012, graphite, [x, .211, z])
     box(.055, .004, .008, steel, [x, .219, z], assembly, .001)
   }
-  print('GOFORJ / APPLICATION WORKSHOP', '#989c9e', [-1.6, .21, 3.06], 2.1)
-  print('CODE YOU OWN', '#c9a485', [2.5, .21, 3.06], 1.15)
   ring(1.28, .025, copper, .23)
   cylinder(1.19, .16, graphite, [0, .25, 0])
   cylinder(1.11, .16, steel, [0, .40, 0])
   cylinder(1.03, .24, charcoal, [0, .59, 0])
-  for (let n = 0; n < 36; n++) {
-    const angle = n / 36 * Math.PI * 2
+  for (let n = 0; n < 28; n++) {
+    const angle = n / 28 * Math.PI * 2
     const fin = box(.035, .27, .15, steel, [Math.cos(angle) * 1.02, .59, Math.sin(angle) * 1.02])
     fin.rotation.y = -angle
   }
-  ring(1.05, .025, amber, .74)
-  cylinder(1.09, .07, ivory, [0, .80, 0])
+  ring(1.05, .022, assemblyLamp, .74)
+  cylinder(1.06, .065, porcelain, [0, .80, 0])
+
+  // The dark outlet joins the core's housing to the transfer bed at the app's actual height.
+  box(.62, .40, .075, graphite, [0, .50, 1.09], assembly, .018)
+  for (const x of [-.34, .34]) {
+    box(.065, .46, .11, steel, [x, .50, 1.09], assembly, .015)
+    box(.012, .32, .012, assemblyLamp, [x * .87, .50, 1.135], assembly, .003)
+  }
+  box(.74, .055, .13, steel, [0, .755, 1.09], assembly, .012)
+  box(.74, .035, .13, steel, [0, .285, 1.09], assembly, .008)
+  box(.57, .04, .43, graphite, [0, .27, 1.31], assembly, .008)
 
   const crown = new THREE.Group()
   assembly.add(crown)
@@ -208,7 +262,6 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     cylinder(.035, .35, steel, [x, .98, z])
     cylinder(.065, .045, copper, [x, .85, z])
   }
-  print('GOFORJ / APP CORE', '#aca8a0', [0, 1.295, .55], 1.05, crown)
 
   const logo = new THREE.Group()
   logo.position.set(0, 1.35, .08)
@@ -219,6 +272,16 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   brandFace.side = THREE.FrontSide
   const markSide = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false })
   materialSet.add(markSide)
+  // A contour-cut backing stops the rear deck from visually slicing through the neon sign.
+  const backingPaths = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${MARK.slice(0, MARK.indexOf('ZM') + 1)}"/></svg>`).paths
+  const signBacking = finish('#151b23', .18, .55)
+  for (const path of backingPaths) for (const shape of SVGLoader.createShapes(path)) {
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth: .65, bevelEnabled: true, bevelSize: .30, bevelThickness: .25, bevelSegments: 2 })
+    geometry.translate(-42.005, -100, 2)
+    const backing = mesh(geometry, signBacking, [0, 0, 0], logo)
+    backing.castShadow = false
+    backing.layers.enable(2)
+  }
   const signBody = mesh(createReferenceMarkGeometry(paths), [brandFace, markSide], [0, 0, 0], logo)
   signBody.layers.enable(2)
 
@@ -256,9 +319,12 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   const glow = cylinder(.49, .012, amber, [0, 1.32, 0], crown)
   glow.material = amber
 
-  resources.forEach((item, index) => {
-    const x = -3.08 + index % 2 * .85
-    const z = -.68 + Math.floor(index / 2) * .80
+  trace([[-1.38, .225, 1.57], [-1.38, .225, 0], [-1.23, .225, 0]])
+  const resourceOrder = ['database', 'cache', 'events', 'storage', 'queue', 'mail']
+  resources.forEach(item => {
+    const slot = resourceOrder.indexOf(item.id)
+    const x = -2.93 + slot % 2 * .85
+    const z = -.03 + Math.floor(slot / 2) * .80
     const station = new THREE.Group()
     station.position.set(x, .32, z)
     station.scale.setScalar(.63)
@@ -273,7 +339,6 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     for (const a of [-.34, .34]) for (const b of [-.34, .34]) {
       cylinder(.025, .008, steel, [a, .254, b], station)
     }
-    print(item.label.toUpperCase(), '#686967', [0, .251, .37], .72, station)
     const indicator = box(.33, .025, .025, inlay, [0, .19, .475], station)
     if (item.id === 'database') {
       for (const y of [.34, .46, .58]) { cylinder(.28, .095, steel, [0, y, -.03], station); cylinder(.275, .018, pigment, [0, y - .057, -.03], station) }
@@ -313,12 +378,13 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
       }
       tube([[-.27,.50,-.16],[0,.50,.05],[.27,.50,-.16]], copper,.012,station)
     }
-    const from = [x + .32, .25, z], to = [-1.18, .25, z * .25]
-    tube([from, [(from[0]+to[0])/2, .225, (from[2]+to[2])/2], to], copper, .025)
+    const from = [x + .32, .225, z]
+    trace([from, [-1.38, .225, z]])
+    const curve = trace([from, [-1.38, .225, z], [-1.38, .225, 0], [-1.23, .225, 0]], false)
     const signal = mesh(new THREE.SphereGeometry(.035, 12, 12), inlay, from)
-    signals.push({ id: item.id, object: signal, from: new THREE.Vector3(...from), to: new THREE.Vector3(...to), index })
+    signals.push({ id: item.id, object: signal, curve, color: item.color, light: routeLight(curve, item.color), weight: 0 })
     targets.push(...station.children.filter(child => child.isMesh))
-    stations.push({ item, resource: true, group: station, indicator, inlay, label: new THREE.Vector3(x, .5, z) })
+    stations.push({ item, resource: true, group: station, indicator, inlay, pigment, outline: selectionLight(.94, .89, .252, station, item.color), weight: 0, label: new THREE.Vector3(x, .5, z) })
   })
 
   // vendorMark carries the established vendor identities onto the physical frontend and agent panels.
@@ -339,12 +405,52 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
       mark.castShadow = false
     }
   }
+  // screenReflection adds one broad, quiet glass highlight rather than animated glare.
+  function screenReflection(width, height, position, parent) {
+    const geometry = new THREE.BufferGeometry()
+    const left = -width / 2, top = height / 2
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([
+      left, top, 0, left + width * .30, top, 0, left, -height * .12, 0,
+      left + width * .30, top, 0, left + width * .12, -height / 2, 0, left, -height * .12, 0
+    ], 3))
+    const material = new THREE.MeshBasicMaterial({ color: '#e7f4ff', transparent: true, opacity: .075, depthWrite: false, toneMapped: false, side: THREE.DoubleSide })
+    materialSet.add(material)
+    const reflection = mesh(geometry, material, position, parent)
+    reflection.castShadow = false
+    reflection.receiveShadow = false
+  }
   const symbolWhite = new THREE.MeshBasicMaterial({ color: '#f2eee5', side: THREE.DoubleSide, toneMapped: false })
   materialSet.add(symbolWhite)
   const panelTeal = finish('#5b9994', .3, .35)
   const panelLavender = finish('#a38fa9', .3, .35)
   const panelGold = finish('#c4aa65', .3, .35)
-  modules.forEach((item, index) => {
+  const lighthouseSweep = new THREE.Group()
+  const sweepGeometry = new THREE.BufferGeometry()
+  const sweepVertices = [], sweepColors = []
+  for (let index = 0; index < 12; index++) {
+    const start = -.10 + index / 12 * .20, end = -.10 + (index + 1) / 12 * .20
+    sweepVertices.push(0, 0, 0, -3.3 * Math.cos(start), 0, 3.3 * Math.sin(start), -3.3 * Math.cos(end), 0, 3.3 * Math.sin(end))
+    sweepColors.push(1, 1, 1, .05, .05, .05, .05, .05, .05)
+  }
+  sweepGeometry.setAttribute('position', new THREE.Float32BufferAttribute(sweepVertices, 3))
+  sweepGeometry.setAttribute('color', new THREE.Float32BufferAttribute(sweepColors, 3))
+  const sweepMaterial = new THREE.MeshBasicMaterial({ color: '#a2dfd5', vertexColors: true, transparent: true, opacity: .055,
+    side: THREE.DoubleSide, depthWrite: false, toneMapped: false })
+  materialSet.add(sweepMaterial)
+  const sweep = mesh(sweepGeometry, sweepMaterial, [0, -.003, 0], lighthouseSweep)
+  sweep.castShadow = false
+  sweep.receiveShadow = false
+
+  const moduleRoutes = {
+    frontend: [[-2.45, 2.65], [-1.50, 2.65], [-1.50, 1.92], [-.85, 1.92], [-.85, .85]],
+    atlas: [[1.72, 2.65], [1.55, 2.65], [1.55, 1.95], [.85, 1.95], [.85, .85]],
+    runtimes: [[2.15, .85], [1.70, .85], [1.70, .55], [1.10, .55]],
+    lighthouse: [[2.30, -.65], [1.70, -.65], [1.70, -.35], [1.18, -.35]],
+    libraries: [[2.45, -2.02], [2.45, -1.65], [.85, -1.65], [.85, -.85]],
+    auth: [[.25, -2.07], [.25, -1.65], [0, -1.65], [0, -1.23]],
+    development: [[-2.65, -1.1], [-1.70, -1.1], [-1.70, -.55], [-1.10, -.55]]
+  }
+  modules.forEach(item => {
     const group = new THREE.Group()
     group.position.set(item.x, .23, item.z)
     group.userData.capability = item.id
@@ -371,7 +477,7 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
       vendorMark('vuedotjs', [-.37, .83, -.108], .18, group)
       vendorMark('react', [0, .83, -.108], .19, group)
       print('templ', '#fff5e5', [.37, .83, -.108], .27, group, true)
-      print('YOUR FRONTEND', '#777a78', [0, .149, .39], .95, group)
+      screenReflection(1.11, .72, [0, .83, -.09], group)
     } else if (item.id === 'atlas') {
       const agentConsole = new THREE.Group()
       agentConsole.position.set(0, .19, -.08)
@@ -386,10 +492,10 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
         vendorMark(['openai', 'claude', 'googlegemini', 'githubcopilot'][n], [x, .60, .09], .18, agentConsole)
       }
       print('GUIDANCE / SKILLS / MCP', '#b9c8c1', [0, .34, .075], 1.05, agentConsole, true)
+      screenReflection(1.19, .82, [0, .57, .10], agentConsole)
       for (const x of [-.46, .46]) box(.04, .28, .04, copper, [x, .23, -.12], group)
       box(1.20, .035, .30, steel, [0, .19, .28], group)
       for (let n = 0; n < 6; n++) box(.10, .009, .09, graphite, [-.43 + n * .17, .213, .28], group, .002)
-      print('ATLAS / AGENT TOOLING', '#777a78', [0, .149, .46], 1.18, group)
     } else if (item.id === 'libraries') {
       for (let n = 0; n < 5; n++) {
         const x = -.44 + n * .22
@@ -397,7 +503,6 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
         box(.17, h, .51, [panelTeal, pigment, copper, panelGold, panelTeal][n % 5], [x, .16 + h / 2, 0], group)
         for (const y of [.22, h + .09]) box(.12, .014, .015, white, [x, y, .264], group)
       }
-      print('STANDALONE GO LIBRARIES', '#777a78', [0, .149, .41], 1.1, group)
     } else if (item.id === 'runtimes') {
       for (let n = 0; n < 4; n++) {
         const x = -.54 + n * .36
@@ -407,8 +512,8 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
         print(['HTTP','JOBS','SCHED','CLI'][n], '#f4efe5', [x, .34, .32], .23, group, true)
         cylinder(.018, .01, inlay, [x, .765, 0], group)
       }
-      print('ONE APP / EXPLICIT WIRING', '#777a78', [0, .149, .43], 1.34, group)
     } else if (item.id === 'lighthouse') {
+      group.add(lighthouseSweep)
       cylinder(.31, .12, graphite, [0, .20, 0], group)
       mesh(new THREE.CylinderGeometry(.13, .24, 1.02, 32), white, [0, .76, 0], group)
       for (const x of [-.16, .16]) for (const z of [-.16, .16]) box(.018, .28, .018, steel, [x, 1.41, z], group)
@@ -428,6 +533,7 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
       box(1.11, .69, .05, steel, [0, .33, 0], screen)
       box(1.02, .60, .012, graphite, [0, .33, .033], screen)
       print('> forj dev', '#e9b578', [0, .44, .043], .85, screen, true)
+      screenReflection(1.02, .60, [0, .33, .053], screen)
       for (let n = 0; n < 3; n++) box(.65 - n * .12, .017, .009, panelTeal, [-.1, .29 - n * .065, .044], screen)
       for (let row = 0; row < 3; row++) for (let key = 0; key < 8; key++) box(.09, .01, .06, graphite, [-.4 + key * .115, .24, .01 + row * .085], group, .002)
     } else if (item.id === 'auth') {
@@ -438,32 +544,191 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
       mesh(new THREE.CircleGeometry(.075, 24), graphite, [0,.77,.085], group)
       box(.045,.14,.012,graphite,[0,.67,.09],group)
       cylinder(.35,.035,steel,[0,.18,0],group)
-      print('AUTH / SESSIONS', '#777a78', [0,.149,.40], 1.02, group)
     }
     if (item.id !== 'infrastructure') {
-      const from = new THREE.Vector3(item.x * .78, .225, item.z * .78)
-      const to = new THREE.Vector3(item.x * .34, .225, item.z * .34)
-      tube([from.toArray(), [from.x, .225, to.z], to.toArray()], copper, .018)
-      const pulse = mesh(new THREE.SphereGeometry(.032,12,12), inlay, from.toArray())
-      signals.push({ id:item.id, object:pulse, from, to, index:index + 6 })
+      const points = moduleRoutes[item.id].map(([x, z]) => [x, .225, z])
+      const curve = trace(points)
+      const pulse = mesh(new THREE.SphereGeometry(.032, 12, 12), inlay, points[0])
+      signals.push({ id: item.id, object: pulse, curve, color: item.color, light: routeLight(curve, item.color), weight: 0 })
     }
-    group.traverse(child => { if (child.isMesh) targets.push(child) })
-    stations.push({ item, group, inlay, indicator, label:new THREE.Vector3(item.x * 1.13, .35, item.z * 1.13) })
+    group.traverse(child => { if (child.isMesh && child !== sweep) targets.push(child) })
+    stations.push({ item, group, inlay, indicator, outline: selectionLight(w - .14, d - .14, isInfrastructure ? .058 : .147, group, item.color), weight: 0, label:new THREE.Vector3(item.x * 1.13, .35, item.z * 1.13) })
   })
 
-  // The outgoing app follows one visible belt from the shared core to the edge.
+  // Separate finishes let inspection quiet the other modules without changing the shared core or board.
+  for (const station of stations) {
+    const finishes = new Map()
+    station.group.traverse(object => {
+      if (!object.isMesh || object === sweep) return
+      const localFinish = original => {
+        if (original === station.inlay || original === station.outline || !original.color) return original
+        if (!finishes.has(original)) {
+          const material = original.clone()
+          materialSet.add(material)
+          finishes.set(original, { material, color: original.color.clone(), original })
+        }
+        return finishes.get(original).material
+      }
+      object.material = Array.isArray(object.material) ? object.material.map(localFinish) : localFinish(object.material)
+    })
+    station.finishes = [...finishes.values()]
+  }
+
+  const driverBadge = new THREE.Group()
+  driverBadge.visible = false
+  const driverBadgeFace = finish('#766d7e', .25, .35)
+  box(.40, .34, .035, driverBadgeFace, [0, .49, .45], driverBadge, .025)
+  box(.44, .025, .10, steel, [0, .31, .43], driverBadge, .006)
+  const driverGlyph = new THREE.Group()
+  driverGlyph.position.set(0, .49, .47)
+  driverGlyph.scale.set(.0105, -.0105, .0105)
+  driverBadge.add(driverGlyph)
+  const driverGlyphMaterial = new THREE.MeshBasicMaterial({ color: '#f5f1e8', side: THREE.DoubleSide, toneMapped: false })
+  materialSet.add(driverGlyphMaterial)
+  const driverGlyphCache = new Map()
+  // setDriverPreview swaps a small physical adapter badge while preserving the resource's hardware silhouette.
+  function setDriverPreview(resourceId, choice) {
+    if (!choice) {
+      driverPreview = null
+      driverBadge.visible = false
+      return
+    }
+    if (driverPreview?.resourceId === resourceId && driverPreview.choice.id === choice.id) return
+    const station = stations.find(item => item.resource && item.item.id === resourceId)
+    station.group.add(driverBadge)
+    driverBadge.visible = true
+    driverBadgeFace.color.set(choice.color)
+    driverGlyph.clear()
+    if (!driverGlyphCache.has(choice.icon)) {
+      const geometries = []
+      const paths = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${choice.svg.replaceAll('currentColor', '#fff')}</svg>`).paths
+      for (const path of paths) {
+        const style = path.userData.style
+        if (style.fill && style.fill !== 'none') {
+          for (const shape of SVGLoader.createShapes(path)) geometries.push(new THREE.ShapeGeometry(shape))
+        }
+        if (style.stroke && style.stroke !== 'none') {
+          for (const contour of path.subPaths) {
+            const geometry = SVGLoader.pointsToStroke(contour.getPoints(), style, 6)
+            if (geometry) geometries.push(geometry)
+          }
+        }
+      }
+      for (const geometry of geometries) { geometry.translate(-12, -12, 0); geometrySet.add(geometry) }
+      driverGlyphCache.set(choice.icon, geometries)
+    }
+    for (const geometry of driverGlyphCache.get(choice.icon)) {
+      const glyph = mesh(geometry, driverGlyphMaterial, [0, 0, 0], driverGlyph)
+      glyph.castShadow = false
+      glyph.receiveShadow = false
+    }
+    driverPreview = { resourceId, choice, color: new THREE.Color(choice.color), lightColor: new THREE.Color(choice.color).lerp(new THREE.Color('#f5f1e8'), .35) }
+  }
+
+  // The belt ends in a fitted receiving bay so the app has a visible destination.
   box(.57, .06, 1.46, graphite, [0, .25, 2.12])
-  for (let n = 0; n < 13; n++) {
+  for (let n = 0; n < 14; n++) {
     const roller = mesh(new THREE.CylinderGeometry(.025, .025, .47, 12), steel, [0, .29, 1.52 + n * .10])
     roller.rotation.z = Math.PI / 2
   }
   for (const x of [-.29, .29]) box(.026, .025, 1.5, copper, [x, .30, 2.12])
+  box(.78, .055, .70, graphite, [0, .255, 2.96])
+  box(.62, .012, .54, charcoal, [0, .29, 2.96])
+  for (const x of [-.36, .36]) {
+    box(.045, .10, .70, steel, [x, .30, 2.96])
+    box(.018, .012, .57, copper, [x, .358, 2.96])
+  }
+  box(.74, .06, .045, steel, [0, .30, 3.29])
+  box(.14, .08, .16, graphite, [.47, .27, 3.12])
+  cylinder(.035, .016, deliveryLamp, [.47, .319, 3.12])
+  box(.20, .012, .012, deliveryLamp, [0, .337, 3.317])
+
   const output = new THREE.Group()
-  output.position.set(0, 0, 2.84)
+  output.position.set(0, 0, 2.96)
   assembly.add(output)
-  box(.44, .34, .36, orange, [0, .49, 0], output)
-  for (const x of [-.16, -.08, 0, .08, .16]) box(.012, .26, .01, copper, [x, .49, .186], output)
-  print('APP', '#ffe5c4', [0, .49, .193], .32, output, true)
+  const outputMaterials = [orange, copper, steel, graphite].map(material => {
+    const copy = material.clone()
+    copy.transparent = true
+    materialSet.add(copy)
+    return copy
+  })
+  box(.44, .34, .36, outputMaterials[0], [0, .49, 0], output)
+  for (const x of [-.16, -.08, 0, .08, .16]) box(.012, .26, .01, outputMaterials[1], [x, .49, .186], output)
+  box(.46, .022, .38, outputMaterials[2], [0, .325, 0], output, .008)
+  box(.40, .018, .32, outputMaterials[3], [0, .665, 0], output, .008)
+  for (const x of [-.209, .209]) box(.022, .30, .025, outputMaterials[2], [x, .49, .174], output, .004)
+  box(.195, .205, .012, outputMaterials[3], [0, .49, .199], output, .015)
+  const outputMarkMaterial = new THREE.MeshBasicMaterial({ color: '#f5eee0', transparent: true, toneMapped: false, side: THREE.DoubleSide })
+  materialSet.add(outputMarkMaterial)
+  outputMaterials.push(outputMarkMaterial)
+  const outputMarkPaths = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${MARK}" fill="#fff"/></svg>`).paths
+  for (const path of outputMarkPaths) for (const shape of SVGLoader.createShapes(path)) {
+    const geometry = new THREE.ShapeGeometry(shape)
+    geometry.translate(-42.005, -50, 0)
+    const mark = mesh(geometry, outputMarkMaterial, [0, .49, .207], output)
+    mark.scale.set(.0015, -.0015, .0015)
+    mark.castShadow = false
+    mark.receiveShadow = false
+  }
+
+  const finishTarget = new THREE.Color()
+
+  // updateAssembly connects incoming capabilities, composition, transport, and delivery in one quiet cycle.
+  function updateAssembly(delta) {
+    const groups = [['atlas', 'frontend', 'database'], ['runtimes', 'cache', 'auth'], ['libraries', 'development', 'lighthouse']]
+    const time = motion ? elapsed % 12 : 8.5
+    const inputs = [...new Set([...groups[Math.floor(elapsed / 12) % groups.length], selected])]
+    const charge = THREE.MathUtils.smoothstep(time, 2.5, 3.5) * (1 - THREE.MathUtils.smoothstep(time, 4.2, 5.1))
+    const smoothing = motion && !paused ? delta : 1
+    inspectionWeight = THREE.MathUtils.damp(inspectionWeight, inspecting ? 1 : 0, 6, smoothing)
+    for (const signal of signals) {
+      const active = signal.id === selected || (selected === 'infrastructure' && resources.some(item => item.id === signal.id))
+      signal.weight = THREE.MathUtils.damp(signal.weight, active ? 1 : 0, 9, smoothing)
+      const driverColor = driverPreview?.resourceId === signal.id ? driverPreview.lightColor : null
+      signal.light.color.set(driverColor || signal.color)
+      signal.light.opacity = signal.weight * (.30 + .65 * inspectionWeight)
+      const order = inputs.indexOf(signal.id)
+      const progress = (time - .25 - order * .35) / 1.35
+      signal.object.visible = motion && order >= 0 && progress >= 0 && progress <= 1
+      if (signal.object.visible) {
+        signal.curve.getPointAt(progress, signal.object.position)
+        signal.object.position.y += .015
+      }
+    }
+    for (const station of stations) {
+      const order = inputs.indexOf(station.item.id)
+      const pulse = motion && order >= 0 ? Math.sin(Math.PI * THREE.MathUtils.clamp((time - .25 - order * .35) / 1.35, 0, 1)) : 0
+      const active = station.item.id === selected || (selected === 'infrastructure' && station.resource)
+      station.weight = THREE.MathUtils.damp(station.weight, active ? 1 : 0, 9, smoothing)
+      station.outline.opacity = station.weight * (.30 + .65 * inspectionWeight)
+      const brightness = 1 - inspectionWeight * (1 - station.weight) * .32
+      const driverColor = driverPreview?.resourceId === station.item.id ? driverPreview.color : null
+      station.outline.color.set(driverColor ? driverPreview.lightColor : station.item.color)
+      station.inlay.color.set(driverColor || station.item.color)
+      station.inlay.emissive.set(driverColor ? driverPreview.lightColor : station.item.color)
+      for (const finish of station.finishes) {
+        const color = driverColor && finish.original === station.pigment ? driverColor : finish.color
+        if (motion && !paused) finish.material.color.lerp(finishTarget.copy(color).multiplyScalar(brightness), 1 - Math.exp(-delta * 10))
+        else finish.material.color.copy(color).multiplyScalar(brightness)
+      }
+      station.inlay.emissiveIntensity = .12 + station.weight * .85 + pulse * .9
+    }
+    const forming = THREE.MathUtils.smoothstep(time, 3.4, 4.3)
+    const emergence = THREE.MathUtils.smoothstep(time, 3.9, 4.9)
+    const transport = THREE.MathUtils.smoothstep(time, 4.9, 7.8)
+    const opacity = forming * (1 - THREE.MathUtils.smoothstep(time, 10.3, 11.1))
+    output.visible = opacity > .001
+    output.position.z = THREE.MathUtils.lerp(1.10, 1.48, emergence) + (2.96 - 1.48) * transport
+    output.scale.setScalar(.82 + .18 * forming)
+    const arrival = time - 7.8
+    output.position.y = motion && arrival > 0 && arrival < .7 ? -Math.sin(arrival / .7 * Math.PI) * .018 : 0
+    lighthouseSweep.visible = motion
+    lighthouseSweep.rotation.y = .55 + Math.sin(elapsed * .22) * .45
+    for (const material of outputMaterials) material.opacity = opacity
+    deliveryLamp.emissiveIntensity = .18 + (1.6 + (motion && arrival >= 0 ? Math.exp(-arrival * 5) : 0)) * THREE.MathUtils.smoothstep(time, 7.6, 8) * (1 - THREE.MathUtils.smoothstep(time, 10.3, 11.1))
+    assemblyLamp.emissiveIntensity = .4 + charge * 1.5
+    coreLight.intensity = 5 + charge * 2.2
+  }
 
   // setTheme keeps the object lit consistently while changing the backdrop's contact shadow.
   function setTheme(isDark) {
@@ -471,8 +736,9 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     brandFace.color.set(brandColor || '#ff5e3a')
     markSide.color.copy(brandFace.color)
     bloomPass.strength = isDark ? 1.2 : .75
-    groundMaterial.opacity = isDark ? .17 : .12
-    scene.environmentIntensity = isDark ? .55 : .7
+    groundMaterial.opacity = isDark ? .13 : .09
+    sweepMaterial.opacity = isDark ? .11 : .055
+    scene.environmentIntensity = isDark ? .50 : .64
     renderer.toneMappingExposure = isDark ? 1.12 : 1.25
   }
   // setSelected adds a quiet lamp rather than changing every material on hover.
@@ -494,12 +760,16 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   // move previews the pointed module while keeping the composition stationary.
   function move(event) {
     const id = hit(event)
+    onHover(id || null)
     host.style.cursor = id ? 'pointer' : 'default'
     if (id && event.pointerType === 'mouse') onSelect(id, false)
   }
+  // leave dismisses the readable hover label without changing the selected detail.
+  function leave() { onHover(null); host.style.cursor = 'default' }
   // click supports touch selection of the same physical components.
   function click(event) { const id = hit(event); if (id) onSelect(id, true) }
   host.addEventListener('pointermove', move)
+  host.addEventListener('pointerleave', leave)
   host.addEventListener('click', click)
 
   // layout projects labels from actual module positions after resizing.
@@ -599,7 +869,7 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     const halfWidth = width / scale / 2, halfHeight = height / scale / 2
     const centerX = center.x + (inset.right - inset.left) / (2 * scale)
     // Width-limited scenes sit directly below the explanation instead of centering in unused height.
-    const spareHeight = width > 800 ? Math.max(0, availableHeight - size.y * scale) : 0
+    const spareHeight = !inset.center && width > 800 ? Math.max(0, availableHeight - size.y * scale) : 0
     const centerY = center.y + (inset.top - inset.bottom - spareHeight) / (2 * scale)
     camera.left = centerX - halfWidth; camera.right = centerX + halfWidth
     camera.top = centerY + halfHeight; camera.bottom = centerY - halfHeight
@@ -615,7 +885,7 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   function render(time) {
     if (disposed) return
     frame = requestAnimationFrame(render)
-    const delta = previous ? Math.min((time - previous) / 1000, .05) : 0
+    const delta = previous ? Math.min((time - previous) / 1000, .10) : 0
     previous = time
     if (!visible || document.hidden) return
     if (motion && !paused) elapsed += delta
@@ -623,16 +893,11 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
     if (!paused) {
       crown.position.y = motion ? THREE.MathUtils.damp(crown.position.y, target, 5, delta) : target
     }
-    for (const signal of signals) {
-      const t = (elapsed * .24 + signal.index / 6) % 1
-      signal.object.position.lerpVectors(signal.from, signal.to, t)
-      signal.object.visible = signal.id === selected || (selected === 'infrastructure' && resources.some(item => item.id === signal.id))
-    }
-    if (!paused) {
-      const journey = Math.min((elapsed % 9) / 4.5, 1)
-      output.position.z = motion ? 1.42 + journey * 1.42 : 2.84
-    }
-    coreLight.intensity = 7 + (motion && !paused ? Math.sin(elapsed * 1.4) * .5 : 0)
+    // Only the sign floats, leaving its pedestal and lighting anchored to the workbench.
+    const signLift = motion && !inspecting ? .035 * (1 - Math.cos(elapsed * Math.PI * 2 / 7.5)) : 0
+    if (!motion) logo.position.y = 1.35
+    else if (!paused) logo.position.y = THREE.MathUtils.damp(logo.position.y, 1.35 + signLift, 5, delta)
+    updateAssembly(delta)
     layout()
     draw()
   }
@@ -641,15 +906,17 @@ export function createFoundryScene(host, { modules, resources, dark, onSelect, o
   resize()
   frame = requestAnimationFrame(render)
   return {
-    setTheme, setSelected,
+    setTheme, setSelected, setDriverPreview,
+    setInspecting(value) { inspecting = value },
     setMotion(value) { motion = value },
     setPaused(value) { paused = value },
-    setOpen(value) { open = value; resize() },
+    setOpen(value) { open = value; if (paused || !motion) crown.position.y = open ? .65 : 0; resize() },
     dispose() {
       disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect(); intersection.disconnect()
       host.removeEventListener('pointermove', move)
+      host.removeEventListener('pointerleave', leave)
       host.removeEventListener('click', click)
       for (const geometry of geometrySet) geometry.dispose()
       for (const material of materialSet) material.dispose()
