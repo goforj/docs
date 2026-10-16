@@ -59,6 +59,8 @@ A dated export filename avoids reusing an old cached social image URL. If changi
 
 The homepage and starter-kit frontmatter override the default social image. Updating only `socialImage` leaves those pages on their old preview.
 
+Emit the Twitter `summary_large_image` block before Open Graph metadata. Slack's published unfurl guidance describes choosing the first metadata format it encounters. Both formats must still describe the same image. Correct generated tags alone do not prove Slack rendered a large card; confirm the result in a fresh posted Slack message or its authenticated unfurl debugger before claiming that behavior is fixed.
+
 ## Preserve Originals
 
 Keep these existing originals intact, alongside the Foundry versions:

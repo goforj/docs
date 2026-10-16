@@ -55,3 +55,13 @@ for (const name of libraryFiles) {
     assert.equal(metaContent(html, 'name', 'twitter:image'), expectedLogo)
   })
 }
+
+for (const page of ['index.html', 'strings.html']) {
+  test(`${page} advertises a large-image card before Open Graph metadata`, () => {
+    const html = fs.readFileSync(path.join(distRoot, page), 'utf8')
+    const socialTags = [...html.matchAll(/<meta\b[^>]*(?:name|property)="(?:twitter:|og:)[^"]*"[^>]*>/gi)]
+    assert.ok(socialTags.length, `${page} must include social metadata`)
+    assert.equal(metaContent(socialTags[0][0], 'name', 'twitter:card'), 'summary_large_image')
+    assert.equal(metaContent(html, 'name', 'twitter:image'), metaContent(html, 'property', 'og:image'))
+  })
+}

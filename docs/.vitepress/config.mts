@@ -1310,18 +1310,19 @@ export default defineConfig({
     return [
       ['link', { rel: 'canonical', href: pageUrl(page) }],
       ...(preloadImage ? [['link', { rel: 'preload', as: 'image', href: preloadImage, fetchpriority: 'high' }]] : []),
+      // Slack documents choosing the first social metadata format it encounters.
+      ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+      ['meta', { name: 'twitter:title', content: socialTitle }],
+      ['meta', { name: 'twitter:description', content: socialDescription }],
+      ['meta', { name: 'twitter:image', content: socialImageUrl }],
+      ['meta', { name: 'twitter:image:alt', content: socialImageAlt }],
       ['meta', { property: 'og:type', content: 'website' }],
       ['meta', { property: 'og:site_name', content: 'GoForj' }],
       ['meta', { property: 'og:title', content: socialTitle }],
       ['meta', { property: 'og:description', content: socialDescription }],
       ['meta', { property: 'og:url', content: pageUrl(page) }],
       ...imageHead,
-      ['meta', { property: 'og:image:alt', content: socialImageAlt }],
-      ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-      ['meta', { name: 'twitter:title', content: socialTitle }],
-      ['meta', { name: 'twitter:description', content: socialDescription }],
-      ['meta', { name: 'twitter:image', content: socialImageUrl }],
-      ['meta', { name: 'twitter:image:alt', content: socialImageAlt }]
+      ['meta', { property: 'og:image:alt', content: socialImageAlt }]
     ]
   },
 
