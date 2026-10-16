@@ -8,6 +8,10 @@ Use it before writing or revising public docs so source context is loaded delibe
 
 ## Primary Context Sources
 
+### Social Artwork and Preview Captures
+
+Read `ai/social-artwork.md` for banner and Open Graph updates, transparent Foundry captures, preserved originals, and metadata paths. Read `ai/site-theme-system.md` when the task also changes theme or hero behavior.
+
 ### General Context
 
 Read:

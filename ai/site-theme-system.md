@@ -39,6 +39,10 @@ The landing page uses `docs/assets/lighthouse/request-inspect.png`, captured on 
 
 `docs/starter-kits.md` follows the landing page frame: straight full-width rails, square orange intersection markers, and rounded app previews. Hero and component screenshots extend below their blocks and clip at the following rail. `StarterKitOptions.vue` lists rendering choices once and copies the documented `forj new` command. Keep account screenshots captioned as Vue previews, and preserve the distinction between Vue/React authentication and the templ account pages.
 
+## Social Artwork
+
+Read [Foundry Social Artwork](social-artwork.md) before updating link previews or profile banners. It owns the source/export map, capture commands, resolution and transparency requirements, preserved originals, and metadata consumers. `SitePreview.vue` and `public/twitter-banner.html` compose the current Foundry artwork; `/social-preview-comparison.html` shows it beside the originals.
+
 ## Article Page Actions
 
 `PageActions.vue` adds a split copy button and menu through the `doc-before` layout slot, after the existing library repository header. It overlays the upper-right corner of the article without shifting content. On library pages it sits below the repository link. On narrow screens, the copy label remains accessible but is visually hidden to leave room for the title. It appears on normal articles and library pages; pages with `sidebar: false` omit it. The `noAutoTitle` setting does not hide page actions. The menu supports arrow keys, Home, End, Escape, outside clicks, and focus dismissal.

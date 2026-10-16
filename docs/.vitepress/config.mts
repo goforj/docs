@@ -210,7 +210,7 @@ const siteUrl = (process.env.SITE_URL || 'https://goforj.dev').replace(/\/+$/, '
 const siteDescription = 'The composable stack for building with Go. Build Go applications with one cohesive application model, explicit wiring, local-first drivers, and production-ready primitives.'
 const docsVersion = 'Unreleased'
 const faviconVersion = '20261008-2'
-const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20260731.png`
+const socialImage = process.env.SOCIAL_IMAGE_URL || `${siteUrl}/assets/goforj-og-20261016.png`
 const socialIcon = process.env.SOCIAL_ICON_URL || `${siteUrl}/apple-touch-icon.png?v=${faviconVersion}`
 const faviconHref = (path: string) => `${path}?v=${faviconVersion}`
 const analyticsHead = (isProd && gaMeasurementId)
@@ -324,7 +324,7 @@ const deriveImage = (content: string, page: string) => {
     }
   }
 
-  return { url: socialImage, alt: 'GoForj — the composable stack for building with Go', width: 1200, height: 630 }
+  return { url: socialImage, alt: 'GoForj, the composable stack for building with Go', width: 2400, height: 1260 }
 }
 
 const resolvePageSocialMetadata = (context: { page: string; description: string; content: string; pageData: { frontmatter?: Record<string, unknown> } }) => {

@@ -77,20 +77,14 @@
       mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.88), transparent 82%);
     }
 
-    .banner::after {
-      content: '';
+    .foundry-art {
       position: absolute;
-      z-index: -1;
-      right: 6.5%;
-      top: 50%;
-      width: 28%;
-      aspect-ratio: 1;
-      translate: 0 -50%;
-      background-image: var(--mark);
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      filter: drop-shadow(0 34px 72px color-mix(in srgb, var(--accent) 22%, transparent));
+      right: 3%;
+      top: -20%;
+      width: 55%;
+      height: 140%;
+      object-fit: contain;
+      pointer-events: none;
     }
 
     .brand {
@@ -118,14 +112,14 @@
       position: absolute;
       left: 11%;
       top: 47%;
-      width: 54%;
+      width: 40%;
       translate: 0 -50%;
     }
 
     h1 {
-      max-width: 13ch;
+      max-width: 14ch;
       margin: 0;
-      font-size: clamp(36px, 4.25vw, 68px);
+      font-size: clamp(36px, 3.8vw, 62px);
       font-weight: 700;
       line-height: 0.95;
       letter-spacing: -0.06em;
@@ -168,6 +162,8 @@
     <div class="message">
       <h1>The composable stack for <em>building with Go</em></h1>
     </div>
+
+    <img class="foundry-art" src="/assets/foundry-social.png" alt="GoForj Foundry application workbench">
 
     <p class="url">goforj.dev</p>
   </main>
