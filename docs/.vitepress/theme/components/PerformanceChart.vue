@@ -82,30 +82,36 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
     <footer>
       <p>{{ note }}</p>
       <p class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? 'Bars show medians; whiskers show the observed range of seven runs.' : 'Throughput is calculated from the recorded time per operation.' }}</p>
-      <div v-if="missing.length" class="bench-missing"><span>Not in this snapshot</span><span v-for="row in missing" :key="row.id"><PerformanceLogo :id="row.id" />{{ row.label }}</span></div>
+      <div v-if="missing.length" class="bench-missing">
+        <span class="bench-missing-title">Not in this snapshot</span>
+        <div v-for="row in missing" :key="row.id" class="bench-missing-driver">
+          <span><PerformanceLogo :id="row.id" />{{ row.label }}</span>
+          <p>{{ row.reason }}</p>
+        </div>
+      </div>
     </footer>
   </article>
 </template>
 <style scoped>
-.bench-chart { min-width: 0; padding: 28px; border: 1px solid var(--gf-line); border-radius: 14px; background: var(--gf-ground); scroll-margin-top: 90px; }
-.bench-chart > header { display:flex; justify-content:space-between; align-items:start; gap:20px; margin-bottom:26px; }
-.bench-chart-heading { display:flex; align-items:center; gap:18px; min-width:0; }
-.bench-library-logo { width:96px; height:96px; object-fit:contain; flex-shrink:0; }
+.bench-chart { min-width: 0; padding: 22px; border: 1px solid var(--gf-line); border-radius: 14px; background: var(--gf-ground); scroll-margin-top: 90px; }
+.bench-chart > header { display:flex; justify-content:space-between; align-items:start; gap:20px; margin-bottom:16px; }
+.bench-chart-heading { display:flex; align-items:center; gap:14px; min-width:0; }
+.bench-library-logo { width:80px; height:80px; object-fit:contain; flex-shrink:0; }
 .bench-chart-category { font:9px var(--gf-font-mono); letter-spacing:.08em; color:var(--gf-ink-2); }
-.bench-chart h2 { font:500 30px var(--gf-font-display); letter-spacing:-.04em; color:var(--gf-ink); margin:8px 0 0; border:0; padding:0; }
-.bench-chart-heading p { font:11px var(--gf-font-mono); color:var(--gf-ink-2); margin:8px 0 0; }
-.bench-chart-meta { display:flex; align-items:end; flex-direction:column; gap:12px; font:10px var(--gf-font-mono); color:var(--gf-ink-2); }
+.bench-chart h2 { font:500 30px var(--gf-font-display); letter-spacing:-.04em; color:var(--gf-ink); margin:5px 0 0; border:0; padding:0; }
+.bench-chart-heading p { font:11px var(--gf-font-mono); color:var(--gf-ink-2); margin:5px 0 0; }
+.bench-chart-meta { display:flex; align-items:end; flex-direction:column; gap:8px; font:10px var(--gf-font-mono); color:var(--gf-ink-2); }
 .bench-chart-meta a { color:var(--gf-nav); text-decoration:none; }
 .bench-page .bench-chart .bench-table { display:table; width:100%; margin:0; border-collapse:collapse; table-layout:fixed; font-size:12px; overflow:visible; border:0; border-radius:0; box-shadow:none; background:transparent; }
-.bench-page .bench-chart .bench-table th,.bench-page .bench-chart .bench-table td { text-transform:none; letter-spacing:normal; background:transparent; border:0; border-radius:0; box-shadow:none; font-size:12px; font-weight:400; text-align:left; padding:12px 20px; }
+.bench-page .bench-chart .bench-table th,.bench-page .bench-chart .bench-table td { text-transform:none; letter-spacing:normal; background:transparent; border:0; border-radius:0; box-shadow:none; font-size:12px; font-weight:400; text-align:left; padding:8px 16px; }
 .bench-page .bench-chart .bench-table th:first-child { width:190px; padding-left:0; }
 .bench-page .bench-chart .bench-table th:last-child,.bench-page .bench-chart .bench-table td:last-child { padding-right:0; }
-.bench-page .bench-chart .bench-table thead th { vertical-align:top; color:var(--gf-ink-2); font-weight:400; padding-top:0; padding-bottom:16px; }
+.bench-page .bench-chart .bench-table thead th { vertical-align:top; color:var(--gf-ink-2); font-weight:400; padding-top:0; padding-bottom:10px; }
 .bench-page .bench-chart .bench-table thead strong { display:block; color:var(--gf-ink); font-size:12px; font-weight:500; }
 .bench-page .bench-chart .bench-table thead th > span:not(.bench-column-title) { display:block; margin-top:3px; font-size:10px; }
 .bench-metric-icon { width:16px; height:16px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:1.65; stroke-linecap:round; stroke-linejoin:round; color:var(--gf-ink-2); }
 .bench-page .bench-chart .bench-table thead .bench-column-title { display:flex; align-items:center; gap:8px; }
-.bench-axis { display:flex; justify-content:space-between; gap:8px; font:8px var(--gf-font-mono); margin-top:15px; color:var(--gf-ink-2); }
+.bench-axis { display:flex; justify-content:space-between; gap:8px; font:8px var(--gf-font-mono); margin-top:10px; color:var(--gf-ink-2); }
 .bench-page .bench-chart .bench-table tbody tr { background:transparent; border:0; border-top:1px solid var(--gf-line); }
 .bench-page .bench-chart .bench-table tbody tr:nth-child(2n) td { background:transparent; }
 .bench-page .bench-chart .bench-table thead tr { border:0; background:transparent; }
@@ -115,22 +121,24 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-row th .bench-logo { margin-right:9px; vertical-align:middle; }
 .bench-row td > strong { display:block; font:11px var(--gf-font-mono); color:var(--gf-ink); margin-bottom:6px; }
 .bench-row.is-forj th { color:var(--gf-accent-hi); font-weight:600; }
-.bench-track { height:14px; position:relative; display:block; }
-.bench-gridline { position:absolute; top:0; bottom:0; border-left:1px solid var(--gf-line-strong); opacity:.7; }
-.bench-bar { position:absolute; left:0; top:4px; height:6px; background:linear-gradient(90deg,color-mix(in srgb,var(--driver-color) 25%,transparent),color-mix(in srgb,var(--driver-color) 85%,transparent)); border-radius:2px; }
-.bench-dot { position:absolute; top:4px; height:6px; width:2px; background:var(--driver-color); transform:translateX(-50%); }
-.bench-range { position:absolute; top:0; height:14px; border-left:1px solid var(--driver-color); border-right:1px solid var(--driver-color); background:color-mix(in srgb,var(--driver-color) 10%,transparent); }
+.bench-track { height:20px; position:relative; display:block; }
+.bench-gridline { position:absolute; top:2px; bottom:2px; border-left:1px solid var(--gf-line-strong); opacity:.7; }
+.bench-bar { position:absolute; left:0; top:5px; height:10px; background:linear-gradient(90deg,color-mix(in srgb,var(--driver-color) 50%,transparent),var(--driver-color)); border-radius:3px; box-shadow:inset 0 1px 0 color-mix(in srgb,var(--driver-color) 70%,white 30%); }
+.bench-dot { position:absolute; top:5px; height:10px; width:3px; border-radius:2px; background:var(--driver-color); transform:translateX(-50%); }
+.bench-range { position:absolute; top:1px; height:18px; border-left:1px solid var(--driver-color); border-right:1px solid var(--driver-color); background:color-mix(in srgb,var(--driver-color) 10%,transparent); }
 .bench-mobile-label { display:none; }
-.bench-chart footer { border-top:1px solid var(--gf-line); padding-top:16px; margin-top:8px; }
+.bench-chart footer { border-top:1px solid var(--gf-line); padding-top:12px; margin-top:6px; }
 .bench-chart footer p { font-size:11px; line-height:1.8; color:var(--gf-ink-2); margin:0; max-width:100ch; }
 .bench-chart footer .bench-scale-note { font-size:10px; margin-top:8px; }
-.bench-missing { display:flex; flex-wrap:wrap; align-items:center; gap:10px 18px; margin-top:18px; font-size:10px; color:var(--gf-ink-2); }
-.bench-missing > span { display:flex; align-items:center; gap:5px; }
-.bench-missing > span:first-child { margin-right:auto; font:9px var(--gf-font-mono); }
+.bench-missing { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:14px; font-size:10px; color:var(--gf-ink-2); }
+.bench-missing-title { font:9px var(--gf-font-mono); }
+.bench-missing-driver { display:flex; align-items:center; flex-wrap:wrap; gap:4px 12px; }
+.bench-missing-driver > span { display:flex; align-items:center; gap:5px; white-space:nowrap; }
+.bench-chart footer .bench-missing-driver p { margin:0; font-size:10px; max-width:80ch; }
 .bench-noop { border-top:1px dashed var(--gf-line-strong); margin-top:12px; padding-top:12px; }
 .bench-noop p { font:9px var(--gf-font-mono); color:var(--gf-ink-2); margin:0 0 12px; }
 .bench-noop-row { display:grid; grid-template-columns:190px repeat(4,minmax(0,1fr)); gap:0; align-items:center; }
-.bench-noop-row > span { padding:0 20px; display:flex; flex-direction:column; gap:4px; }
+.bench-noop-row > span { padding:0 16px; display:flex; flex-direction:column; gap:4px; }
 .bench-noop-row > span:first-child { padding-left:0; flex-direction:row; align-items:center; font-size:12px; }
 .bench-noop-row small { font-size:9px; color:var(--gf-ink-2); }
 .bench-noop-row strong { font:11px var(--gf-font-mono); color:var(--gf-ink); }
@@ -143,10 +151,10 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
  .bench-chart-category { font-size:7px; }
  .bench-chart-heading p { font-size:9px; }
  .bench-chart-meta { font-size:8px; gap:8px; }
- .bench-chart > header { gap:8px; margin-bottom:20px; }
+ .bench-chart > header { gap:8px; margin-bottom:14px; }
  .bench-page .bench-chart .bench-table,.bench-page .bench-chart .bench-table tbody { display:block; }
  .bench-page .bench-chart .bench-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
- .bench-page .bench-chart .bench-table .bench-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 22px; padding:16px 0; }
+ .bench-page .bench-chart .bench-table .bench-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 22px; padding:12px 0; }
  .bench-page .bench-chart .bench-table .bench-row th { grid-column:1/-1; width:auto; padding:0; font-size:12px; }
  .bench-page .bench-chart .bench-table .bench-row td { padding:0; }
  .bench-mobile-label { display:flex; align-items:center; gap:5px; font-size:9px; color:var(--gf-ink-2); margin-bottom:4px; }

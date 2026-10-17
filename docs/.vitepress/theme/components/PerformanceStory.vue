@@ -35,6 +35,14 @@ const info = {
     note: 'Read a previously written object. rclone is measured with a local filesystem remote.',
   },
 }
+const missingReasons = {
+  cache: {
+    null: 'No-op driver; not included in the seeded-read benchmark.',
+    dynamodb: 'Intentionally omitted: DynamoDB Local timings do not represent real AWS latency.',
+  },
+  events: { null: 'No-op driver; not included in the publish-and-deliver benchmark.' },
+  storage: { dropbox: 'No local emulator or container fixture is configured for Dropbox in this benchmark suite.' },
+}
 const charts = computed(() =>
   Object.entries(info).map(([id, meta]) => ({
     id,
@@ -42,7 +50,8 @@ const charts = computed(() =>
     rows: evidence.driverStories.find((s) => s.id === id).rows,
     missing: evidence.driverCoverage
       .find((f) => f.id === id)
-      .drivers.filter((d) => !d.results.length),
+      .drivers.filter((d) => !d.results.length)
+      .map((driver) => ({ ...driver, reason: missingReasons[id][driver.id] })),
   })),
 )
 const workloads = {
@@ -194,8 +203,8 @@ const source = (id) => {
 }
 .bench-page-header,
 .bench-content {
-  max-width: 1360px;
-  padding-inline: 40px;
+  max-width: 1600px;
+  padding-inline: 28px;
   margin-inline: auto;
 }
 .bench-page-header {
@@ -296,7 +305,7 @@ const source = (id) => {
 .bench-gallery {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 .bench-http {
   scroll-margin-top: 90px;
