@@ -2,13 +2,13 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import evidence from '../../data/performance-stats.json'
 import PerformanceChart from './PerformanceChart.vue'
-import PerformanceLogo from './PerformanceLogo.vue'
 import cacheLogo from '../../../assets/performance/cache-logo.png'
 import queueLogo from '../../../assets/performance/queue-logo.png'
 import eventsLogo from '../../../assets/performance/events-logo.png'
 import storageLogo from '../../../assets/performance/storage-logo.png'
 import webLogo from '../../../assets/performance/web-logo.png'
 import mailLogo from '../../../assets/performance/mail-logo.png'
+const environmentFor = metadata => `${metadata.go_version.replace('go version ', '')} · ${metadata.cpu} · GOMAXPROCS=${metadata.gomaxprocs} · ${metadata.sample_count} samples × ${metadata.benchmark_time}`
 const info = {
   cache: {
     logo: cacheLogo,
@@ -34,6 +34,20 @@ const info = {
     operation: 'Get small object',
     note: 'Read a previously written object. rclone is measured with a local filesystem remote.',
   },
+  mail: {
+    logo: mailLogo,
+    title: 'Mail',
+    operation: 'Client send return · one recipient + 4 KiB attachment',
+    note: 'Local client costs, not real provider latency or inbox delivery. API drivers use HTTP acceptance fixtures in separate processes without TLS; SMTP uses Mailpit. Log writes to io.Discard; Fake resets every 128 sends.',
+    environment: environmentFor(evidence.mail.metadata),
+  },
+  database: {
+    logo: '/favicon.svg',
+    title: 'Database',
+    operation: 'Read one row by primary key · GORM',
+    note: 'Warm lookups across 1,000 rows with one pooled connection and GoForj database defaults. MySQL and PostgreSQL use local containers; SQLite uses a temporary file. Measures the GORM operation, without generated-app instrumentation.',
+    environment: environmentFor(evidence.local.metadata),
+  },
 }
 const missingReasons = {
   cache: {
@@ -55,26 +69,20 @@ const charts = computed(() =>
   })),
 )
 const workloads = {
-  path_param_json: 'Path parameter + JSON',
-  static_text: 'Static text response',
-  middleware_chain: 'Middleware chain',
-  live_plain_text: 'HTTP/1.1 loopback',
+  path_param_json: 'Read an ID from the URL',
+  static_text: 'Return a text response',
+  middleware_chain: 'Run request middleware',
 }
 const httpCharts = computed(() => Object.entries(workloads).map(([id, title]) => ({
   id: `http-${id}`,
   title,
-  operation: id === 'live_plain_text' ? 'Live HTTP over one connection' : 'In-process handler dispatch',
+  operation: { path_param_json: 'Return the ID in a JSON response', static_text: 'Return fixed text without middleware', middleware_chain: 'Set request state, add a header, validate the request' }[id],
   rows: evidence.web.scenarios.find(s => s.id === id).rows.map(row => ({...row, driver: row.framework, value: row.nsOp, kind: 'router'})),
-  note: id === 'live_plain_text'
-    ? 'Warm HTTP/1.1 loopback over one connection. Socket and HTTP work are included. Small differences are not reliable rankings.'
-    : 'The same router workload without a socket, network, or application business logic.',
+  note: 'The same in-process router workload, without a socket, network, or application business logic.',
 })))
-const unmeasured = computed(() =>
-  ['mail', 'database'].map((id) => evidence.driverCoverage.find((f) => f.id === id)),
-)
 const source = (id) => {
   const s = evidence.sources.find((s) => s.repo === id)
-  return `https://github.com/goforj/${id}/blob/${s.revision}/${s.path}`
+  return `https://github.com/${s.repository || `goforj/${id}`}/blob/${s.revision}/${s.path}`
 }
 const activeBenchmark = ref('')
 let scrollFrame = 0
@@ -110,7 +118,7 @@ onMounted(async () => {
   await new Promise(window.requestAnimationFrame)
   if (disposed) return
   const initialHash = window.location.hash
-  benchmarkSections = [...document.querySelectorAll('.bench-chart[id], #bench-http, #bench-other')]
+  benchmarkSections = [...document.querySelectorAll('.bench-chart[id], #bench-http')]
   const initial = benchmarkSections.find(section => `#${section.id}` === initialHash)
   if (initial) initial.scrollIntoView({ behavior: 'instant', block: 'start' })
   window.addEventListener('scroll', scheduleBenchmarkLink, { passive: true })
@@ -138,19 +146,14 @@ onBeforeUnmount(() => {
         benchmarks behind every result.
       </p>
       <nav aria-label="Benchmark primitives">
+        <a href="#bench-http" :aria-current="activeBenchmark.startsWith('bench-http') ? 'location' : undefined">
+          <img :src="webLogo" alt="" width="40" height="40" />
+          <span class="bench-nav-label"><strong>HTTP</strong><small>7 routers · 3 workloads</small></span>
+          <span class="bench-nav-arrow" aria-hidden="true">↓</span>
+        </a>
         <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`" :aria-current="activeBenchmark === `bench-${chart.id}` ? 'location' : undefined">
           <img :src="chart.logo" alt="" width="40" height="40" />
           <span class="bench-nav-label"><strong>{{ chart.title }}</strong><small>{{ chart.rows.filter(r => r.kind !== 'noop').length }} driver results</small></span>
-          <span class="bench-nav-arrow" aria-hidden="true">↓</span>
-        </a>
-        <a href="#bench-http" :aria-current="activeBenchmark.startsWith('bench-http') ? 'location' : undefined">
-          <img :src="webLogo" alt="" width="40" height="40" />
-          <span class="bench-nav-label"><strong>HTTP</strong><small>7 routers · 4 workloads</small></span>
-          <span class="bench-nav-arrow" aria-hidden="true">↓</span>
-        </a>
-        <a href="#bench-other" :aria-current="activeBenchmark === 'bench-other' ? 'location' : undefined">
-          <img :src="mailLogo" alt="" width="40" height="40" />
-          <span class="bench-nav-label"><strong>Mail &amp; database</strong><small>Coverage gaps</small></span>
           <span class="bench-nav-arrow" aria-hidden="true">↓</span>
         </a>
       </nav>
@@ -160,17 +163,9 @@ onBeforeUnmount(() => {
         <span>Compare the cost of each option.</span>
         <p>Compare drivers within each chart. Each primitive measures its own operation.</p>
       </div>
-      <div class="bench-gallery">
-        <PerformanceChart
-          v-for="chart in charts"
-          :key="chart.id"
-          v-bind="chart"
-          :source="source(chart.id)"
-        />
-      </div>
       <section id="bench-http" class="bench-http">
         <div class="bench-http-heading">
-          <div><p>HTTP BENCHMARKS</p><h2><a class="bench-section-link" href="#bench-http">Every workload. Every router.<span aria-hidden="true">#</span></a></h2></div>
+          <div><p>HTTP BENCHMARKS</p><h2><a class="bench-section-link" href="#bench-http">Compare HTTP routers.<span aria-hidden="true">#</span></a></h2></div>
         </div>
         <div class="bench-gallery">
           <PerformanceChart
@@ -191,24 +186,14 @@ onBeforeUnmount(() => {
           {{ evidence.web.metadata.benchmark_time }} each
         </p>
       </section>
-      <section id="bench-other" class="bench-other">
-        <header>
-          <h2><a class="bench-section-link" href="#bench-other">Drivers awaiting measurements<span aria-hidden="true">#</span></a></h2>
-          <p>Mail delivery and database queries have no comparable snapshots in this dataset.</p>
-        </header>
-        <div class="bench-other-grid">
-          <article v-for="family in unmeasured" :key="family.id">
-            <img v-if="family.id === 'mail'" class="bench-mail-logo" :src="mailLogo" alt="Mail README logo" width="80" height="80" />
-            <h3>{{ family.id === 'mail' ? 'Mail' : 'Database' }}</h3>
-            <span>No benchmark snapshot</span>
-            <div>
-              <span v-for="driver in family.drivers" :key="driver.id"
-                ><PerformanceLogo :id="driver.id" />{{ driver.label }}</span
-              >
-            </div>
-          </article>
-        </div>
-      </section>
+      <div class="bench-gallery">
+        <PerformanceChart
+          v-for="chart in charts"
+          :key="chart.id"
+          v-bind="chart"
+          :source="source(chart.id)"
+        />
+      </div>
       <footer class="bench-page-footer">
         <p>
           These results describe library harnesses and local service fixtures. Measure your own
@@ -305,7 +290,7 @@ onBeforeUnmount(() => {
 }
 .bench-page-header > nav {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
   margin-top: 26px;
 }
@@ -358,7 +343,8 @@ onBeforeUnmount(() => {
 }
 .bench-http {
   scroll-margin-top: 90px;
-  margin-top: 50px;
+  margin-top: 0;
+  margin-bottom: 28px;
 }
 .bench-http-heading {
   display: flex;
@@ -388,76 +374,6 @@ onBeforeUnmount(() => {
   color: var(--gf-ink-2);
   margin: 15px 0 0;
 }
-.bench-other {
-  margin-top: 45px;
-  padding-top: 28px;
-  border-top: 1px solid var(--gf-line-strong);
-  scroll-margin-top: 140px;
-}
-.bench-other > header h2 {
-  font: 500 20px var(--gf-font-display);
-  letter-spacing: -0.025em;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: var(--gf-ink);
-}
-.bench-other > header > p {
-  font-size: 11px;
-  line-height: 1.8;
-  color: var(--gf-ink-2);
-  margin: 10px 0 20px;
-}
-.bench-other-grid {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 24px;
-}
-.bench-other-grid > article {
-  padding: 20px;
-  border: 1px solid var(--gf-line);
-  border-radius: 8px;
-}
-.bench-mail-logo {
-  float: right;
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-}
-.bench-other-grid h3 {
-  font: 500 15px var(--gf-font-display);
-  display: inline;
-  margin: 0;
-  color: var(--gf-ink);
-}
-.bench-other-grid > article > span {
-  font: 8px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  margin-left: 15px;
-}
-.bench-other-grid > article > div {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-.bench-other-grid > article > div > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 10px;
-  color: var(--gf-ink-2);
-}
-.bench-other :deep(.bench-logo) {
-  width: 20px;
-  height: 20px;
-  color: var(--gf-ink-2);
-}
-.bench-other :deep(.bench-logo svg),
-.bench-other :deep(.bench-logo img) {
-  width: 18px;
-  height: 18px;
-}
 .bench-page-footer {
   border-top: 1px solid var(--gf-line-strong);
   margin-top: 35px;
@@ -480,8 +396,8 @@ onBeforeUnmount(() => {
   text-decoration: none;
   white-space: nowrap;
 }
-@media (max-width: 1100px) {
-  .bench-page-header > nav { grid-template-columns:repeat(3,minmax(0,1fr)); }
+@media (max-width: 1200px) {
+  .bench-page-header > nav { grid-template-columns:repeat(4,minmax(0,1fr)); }
 }
 @media (max-width: 1000px) {
   .bench-page-header,
@@ -500,9 +416,6 @@ onBeforeUnmount(() => {
   .bench-page-footer > p {
     width: 100%;
     max-width: none;
-  }
-  .bench-other-grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 @media (max-width: 800px) {
@@ -526,9 +439,6 @@ onBeforeUnmount(() => {
   }
 
 
-  .bench-other-grid {
-    grid-template-columns: 1fr;
-  }
 }
 @media (max-width: 520px) {
   .bench-page-header,
@@ -553,6 +463,7 @@ onBeforeUnmount(() => {
   .bench-nav-label strong { font-size:12px; }
   .bench-nav-label small { font-size:8px; }
   .bench-nav-arrow { display:none; }
+  .bench-page-header nav > a:last-child { grid-column:1 / -1; }
 
   .bench-reading {
     font-size: 9px;
@@ -574,21 +485,6 @@ onBeforeUnmount(() => {
 
   .bench-http-environment {
     font-size: 8px;
-  }
-  .bench-other > header h2 {
-    font-size: 19px;
-  }
-  .bench-other > header > p {
-    font-size: 10px;
-  }
-  .bench-other-grid > article {
-    padding: 18px;
-  }
-  .bench-other-grid > article > div {
-    gap: 15px;
-  }
-  .bench-other-grid > article > div > span {
-    font-size: 9px;
   }
   .bench-page-footer {
     gap: 18px;

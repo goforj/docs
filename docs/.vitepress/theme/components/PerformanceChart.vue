@@ -14,6 +14,7 @@ const props = defineProps({
   source: { type: String, required: true },
   note: { type: String, required: true },
   http: { type: Boolean, default: false },
+  environment: { type: String, default: '' },
 })
 const metrics = [
   { id: 'time', icon: 'clock', title: 'Time / op', direction: 'Lower is faster', log: true },
@@ -21,6 +22,7 @@ const metrics = [
   { id: 'allocs', icon: 'blocks', title: 'Allocs / op', direction: 'Lower uses less', log: false },
   { id: 'bytes', icon: 'hard-drive', title: 'Bytes / op', direction: 'Lower uses less', log: false },
 ]
+const sampled = computed(() => props.rows.some(row => row.latencySamples))
 const active = computed(() => props.rows.filter(r => r.kind !== 'noop').sort((a,b) => a.value - b.value))
 const noop = computed(() => props.rows.filter(r => r.kind === 'noop'))
 const samples = (row, metric) => metric === 'time' ? row.latencySamples : metric === 'ops' ? row.throughputSamples : null
@@ -36,7 +38,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
   <article class="bench-chart" :aria-label="`${title} performance chart`" :id="`bench-${id}`">
     <header>
       <div class="bench-chart-heading">
-        <img class="bench-library-logo" :src="logo" :alt="`${http ? 'Web' : title} README logo`" width="96" height="96" />
+        <img class="bench-library-logo" :src="logo" :alt="`${http ? 'Web' : title} logo`" width="96" height="96" />
         <div>
           <h2><a class="bench-heading-link" :href="`#bench-${id}`">{{ title }}<span aria-hidden="true">#</span></a></h2>
           <p>{{ operation }}</p>
@@ -79,7 +81,8 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
       </div>
     </div>
     <footer>
-      <p>{{ note }} <span class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? 'Bars show medians; whiskers show the observed range of seven runs.' : 'Throughput is calculated from the recorded time per operation.' }}</span></p>
+      <p>{{ note }} <span class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? '' : 'Throughput is calculated from the recorded time per operation.' }} {{ sampled ? 'Bars show medians; whiskers show the observed range of seven runs.' : '' }}</span></p>
+      <p v-if="environment" class="bench-environment">{{ environment }}</p>
       <div v-if="missing.length" class="bench-missing">
         <span class="bench-missing-title">Not in this snapshot</span>
         <div v-for="row in missing" :key="row.id" class="bench-missing-driver">
@@ -129,6 +132,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-mobile-label { display:none; }
 .bench-chart footer { border-top:1px solid var(--gf-line); padding-top:8px; margin-top:0; }
 .bench-chart footer p { font-size:10px; line-height:1.6; color:var(--gf-ink-2); margin:0; }
+.bench-chart footer .bench-environment { font:9px/1.6 var(--gf-font-mono); margin-top:8px; }
 .bench-missing { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:14px; font-size:10px; color:var(--gf-ink-2); }
 .bench-missing-title { font:9px var(--gf-font-mono); }
 .bench-missing-driver { display:flex; align-items:center; flex-wrap:wrap; gap:4px 12px; }

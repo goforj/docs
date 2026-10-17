@@ -334,6 +334,306 @@
           "kind": "service"
         }
       ]
+    },
+    {
+      "id": "mail",
+      "title": "Mail client send",
+      "operation": "Send",
+      "rows": [
+        {
+          "driver": "smtp",
+          "label": "SMTP",
+          "value": 3714930,
+          "bytes": 58850,
+          "allocs": 316,
+          "latencySamples": [
+            3567403,
+            3947375,
+            3575162,
+            3805992,
+            3714930,
+            3745630,
+            3700719
+          ],
+          "throughputSamples": [
+            280.3159609385315,
+            253.3329111118148,
+            279.70760485818545,
+            262.7435895819014,
+            269.1840761467915,
+            266.9777847785286,
+            270.2177603865627
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "resend",
+          "label": "Resend",
+          "value": 52992,
+          "bytes": 33298,
+          "allocs": 113,
+          "latencySamples": [
+            51732,
+            52708,
+            53751,
+            54025,
+            52551,
+            53575,
+            52992
+          ],
+          "throughputSamples": [
+            19330.395113276114,
+            18972.45199969644,
+            18604.305036185375,
+            18509.949097639983,
+            19029.13360354703,
+            18665.422305179654,
+            18870.772946859903
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "postmark",
+          "label": "Postmark",
+          "value": 53520,
+          "bytes": 33426,
+          "allocs": 116,
+          "latencySamples": [
+            54051,
+            54174,
+            53770,
+            52882,
+            53404,
+            52763,
+            53520
+          ],
+          "throughputSamples": [
+            18501.045309059962,
+            18459.03939159006,
+            18597.731076808628,
+            18910.026095836012,
+            18725.189124410157,
+            18952.67517010026,
+            18684.60388639761
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "mailgun",
+          "label": "Mailgun",
+          "value": 48045,
+          "bytes": 27414,
+          "allocs": 223,
+          "latencySamples": [
+            48045,
+            47279,
+            47314,
+            48155,
+            46783,
+            49675,
+            49042
+          ],
+          "throughputSamples": [
+            20813.82037673015,
+            21151.03957359504,
+            21135.393329669867,
+            20766.275568476794,
+            21375.28589444884,
+            20130.850528434825,
+            20390.685534847682
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "sendgrid",
+          "label": "SendGrid",
+          "value": 53596,
+          "bytes": 32911,
+          "allocs": 103,
+          "latencySamples": [
+            52408,
+            52772,
+            55272,
+            53596,
+            53653,
+            54576,
+            53589
+          ],
+          "throughputSamples": [
+            19081.05632727828,
+            18949.44288637914,
+            18092.343320306845,
+            18658.108814090603,
+            18638.286768680224,
+            18323.072412782174,
+            18660.54600757618
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "ses",
+          "label": "SES",
+          "value": 103716,
+          "bytes": 106222,
+          "allocs": 610,
+          "latencySamples": [
+            105834,
+            101322,
+            101637,
+            103323,
+            108365,
+            103716,
+            104116
+          ],
+          "throughputSamples": [
+            9448.759377893683,
+            9869.524881072226,
+            9838.936607731437,
+            9678.387193558065,
+            9228.07179439856,
+            9641.713911064831,
+            9604.671712320873
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "log",
+          "label": "Log",
+          "value": 3885,
+          "bytes": 10192,
+          "allocs": 34,
+          "latencySamples": [
+            3885,
+            3917,
+            4423,
+            3896,
+            3762,
+            3865,
+            3791
+          ],
+          "throughputSamples": [
+            257400.2574002574,
+            255297.4214960429,
+            226090.88853719196,
+            256673.5112936345,
+            265816.0552897395,
+            258732.21216041397,
+            263782.6431020839
+          ],
+          "kind": "process"
+        },
+        {
+          "driver": "fake",
+          "label": "Fake",
+          "value": 2686,
+          "bytes": 9450,
+          "allocs": 30,
+          "latencySamples": [
+            2640,
+            2579,
+            2740,
+            2628,
+            2686,
+            2737,
+            2750
+          ],
+          "throughputSamples": [
+            378787.8787878788,
+            387747.188832881,
+            364963.503649635,
+            380517.503805175,
+            372300.81906180194,
+            365363.5367190354,
+            363636.36363636365
+          ],
+          "kind": "process"
+        }
+      ]
+    },
+    {
+      "id": "database",
+      "title": "GORM indexed reads",
+      "operation": "First",
+      "rows": [
+        {
+          "driver": "mysql",
+          "label": "MySQL",
+          "value": 189739,
+          "bytes": 4236,
+          "allocs": 68,
+          "latencySamples": [
+            190151,
+            189739,
+            201508,
+            193176,
+            184469,
+            182578,
+            189643
+          ],
+          "throughputSamples": [
+            5258.978390857792,
+            5270.397756918715,
+            4962.582130734264,
+            5176.626496045057,
+            5420.965040196455,
+            5477.111152493729,
+            5273.0657076717835
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "postgres",
+          "label": "PostgreSQL",
+          "value": 103113,
+          "bytes": 4356,
+          "allocs": 69,
+          "latencySamples": [
+            108136,
+            100659,
+            100670,
+            118005,
+            106147,
+            102054,
+            103113
+          ],
+          "throughputSamples": [
+            9247.614115558186,
+            9934.531437824735,
+            9933.445912387007,
+            8474.217194186687,
+            9420.897434689628,
+            9798.734003566738,
+            9698.098202942403
+          ],
+          "kind": "service"
+        },
+        {
+          "driver": "sqlite",
+          "label": "SQLite",
+          "value": 11505,
+          "bytes": 4330,
+          "allocs": 66,
+          "latencySamples": [
+            11466,
+            11581,
+            12004,
+            11731,
+            11256,
+            11277,
+            11505
+          ],
+          "throughputSamples": [
+            87214.37292865865,
+            86348.32915983076,
+            83305.56481172942,
+            85244.22470377632,
+            88841.50675195451,
+            88676.06632969761,
+            86918.7309865276
+          ],
+          "kind": "local"
+        }
+      ]
     }
   ],
   "web": {
@@ -1160,6 +1460,97 @@
       }
     ]
   },
+  "local": {
+    "metadata": {
+      "captured_at": "2026-10-17T21:52:09.311Z",
+      "go_version": "go version go1.27.2 darwin/arm64",
+      "goos": "darwin",
+      "goarch": "arm64",
+      "cpu": "Apple M4 Max",
+      "gomaxprocs": 1,
+      "sample_count": 7,
+      "benchmark_time": "1s",
+      "packages": {
+        "gorm": "v1.30.0",
+        "mysql_driver": "v1.6.0",
+        "postgres_driver": "v1.6.0",
+        "sqlite_driver": "github.com/glebarez/sqlite v1.11.0"
+      },
+      "fixtures": [
+        {
+          "image": "mysql:8.4",
+          "digest": "sha256:1bd43bad43e0de5959b98c4404e987046de21cd85b9e725849208db6539d3c2d"
+        },
+        {
+          "image": "postgres:16-alpine",
+          "digest": "sha256:ef738a34a8651d11b2bace81c55c7e2187f786b484add6c83070884340074368"
+        }
+      ],
+      "harness_sha256": {
+        "database_test.go": "73fa6c5c5e5c1b28f14679a91f8c8d373e0b6d4a3189271455e48c89a80da0df",
+        "go.mod": "911cd9cb816fb8e7da2d209def9b24500562bbbfc090806cb57b19af3e7ab2cb",
+        "go.sum": "77894ded823fd6ec8c4fba45dbbd23eba246b79320df3310f600b9aa0d59d46e",
+        "run.mjs": "1941492ccbbbf4fc9ba0f842322618a4b7a59f32841612e6bf674cd0ab12a029"
+      },
+      "database": "Warm primary-key reads cycling over 1,000 seeded rows through GORM with GoForj database defaults and one pooled connection. MySQL and PostgreSQL run in local Docker containers; SQLite is a temporary file using the pure-Go driver. Migration, seeding, startup, and connection warmup are outside the timer. These are GORM operation fixtures, not a complete generated application or production database comparison."
+    }
+  },
+  "mail": {
+    "metadata": {
+      "captured_at": "2026-10-17T21:51:03.800Z",
+      "go_version": "go version go1.27.2 darwin/arm64",
+      "goos": "darwin",
+      "goarch": "arm64",
+      "cpu": "Apple M4 Max",
+      "gomaxprocs": 1,
+      "sample_count": 7,
+      "benchmark_time": "1s",
+      "library_revision": "e8966fb5fc0231f45a0d16f038f04f6173603a38",
+      "packages": {
+        "mail": "local repository source",
+        "mailses": "local sibling module"
+      },
+      "fixtures": [
+        {
+          "image": "axllent/mailpit:v1.30.4",
+          "digest": "sha256:e53be71ed6c815012c556aeece6b6446451a84f3e128ce4e7461143d733a4c40"
+        }
+      ],
+      "harness_sha256": {
+        "mail_test.go": "d8f20bf97e47c482f535cf8b19b2a431249ce8f5e3d77c6efd1810f67cb6ac1a",
+        "fixture_test.go": "0e4162f13ebe94f3d32edc10b7a72be9af326f07ee34e15b7a91db4e8a843c24",
+        "go.mod": "932d8dd617ad84ce118fc5d742174773f0d570d93ea0b7c1382e46d7cff58e76",
+        "go.sum": "fd2c7188fe9a6a402783d654a31148f57bcc7b24bf546bee52d346a6c4b6024f",
+        "run.mjs": "3615df8d8b418995e87a2fb2313618c2512a77dc9304b9d70c8bea020adc02a9",
+        "../../builder.go": "0ca27c8ae2603cb018bdfb96fb9200decbf1e5366bf40762bd48b5752d787ce8",
+        "../../doc.go": "5f6064c953209f0e5fd855bc26f23d8afa1242e5a74b6ce3151699d0bbf8ef16",
+        "../../go.mod": "011b3f59c890368174b48db93e652e69dcf4f482d57da6aff55a11756e6176ec",
+        "../../go.sum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "../../internal/mailhttp/http.go": "b670648fd79ac40a676720f827df65c1736f11f2ccde0a6859274ac1d65a559e",
+        "../../mailfake/doc.go": "e4da99b9d6a687ae0d37472600632cc6f10e67a5e8b8f858e7ebb27b155f9e99",
+        "../../mailfake/fake.go": "0f62008a1373b8f8d8d91ad295d8747d59208047669856d8ebba501a4286c6be",
+        "../../maillog/doc.go": "ed99f39cafa1c101c61e062dcda0eaa1415488c4451bd6cb45e14231f75478c3",
+        "../../maillog/log.go": "c3c0d486911700dc4e83b271416876f4a601e57cda5b787851f41bd2e34642a2",
+        "../../mailmailgun/doc.go": "5415811de897668a9d126644668b0b80123d0009605fda1ca693f5aaa7e83d4e",
+        "../../mailmailgun/mailgun.go": "335f7873d1599a760c280e40fd96ab73e43b78514bb888077de3af3b414c65eb",
+        "../../mailpostmark/doc.go": "e0f297ee109fc5a62dcf73c9f69d49ac90fa1944adbfc7b1f28b2762cc483592",
+        "../../mailpostmark/postmark.go": "254c19833bd1da86e7d4f28df671169e0d3d732ec6a737ee837fa25232098187",
+        "../../mailresend/doc.go": "fab3b68ad5baa1a14c1cd0f8dee825c2973600d96f4afe6fddd97b0230a1b895",
+        "../../mailresend/resend.go": "d0c1d4fac4a6a475d899703668a46fc66d88ae54db3328e0dc01ac3f63cdd182",
+        "../../mailsendgrid/doc.go": "d0e8bf94f0e30a31ce07370aa239ec7ef814b1e9f1ee414f0cfcd9b2b1630acf",
+        "../../mailsendgrid/sendgrid.go": "febe1669755a32ac22bea20e68a551ff712770a9e265c05a00384e9c7430b90f",
+        "../../mailses/doc.go": "03e3c6dbd7379e94a068489c65c669d7d341083b60a0314ba34e951f1c84e136",
+        "../../mailses/go.mod": "fa3f9ebb690600f63a65781200114d3a7156e0b7d17a10dfd78a82e37d35888d",
+        "../../mailses/go.sum": "d450e275b85a82ffabfce70a1a8a84cc5c486c3c01cb61087259661047368d3a",
+        "../../mailses/ses.go": "7593a87f6992da5599dd7cb0097048ef0722945a0c2ea0324af9435a9db3bc2e",
+        "../../mailsmtp/doc.go": "cb459c0284b67942cb0cd9e154c66a86b3046a98d397fd4dc11116f72ba9dcdc",
+        "../../mailsmtp/smtp.go": "a28a0e226b9594a4b9795b031db21a90022f95f762da74f4bacebb0dc833f9ab",
+        "../../manager.go": "eb0b267b1a889de508b1d7c0c20e2e3c201ce2353793e41a1dd3df62ba8d1fd2",
+        "../../message.go": "c3cac4cd54deb0610fdaa249b7524a0cb28f357a77639171a494607969bffeb2"
+      },
+      "mail": "Client send return for one recipient, text and HTML bodies, and a 4 KiB attachment. SMTP uses local plaintext Mailpit. Provider API drivers use local HTTP acceptance fixtures in separate processes with reused connections, no TLS, and dummy credentials. SES includes SDK signing. Log writes JSON to io.Discard; Fake resets every 128 sends, with reset cost included. No real provider calls or inbox delivery."
+    }
+  },
   "driverCoverage": [
     {
       "id": "queue",
@@ -1677,42 +2068,258 @@
         {
           "id": "smtp",
           "label": "SMTP",
-          "results": []
+          "results": [
+            {
+              "driver": "smtp",
+              "label": "SMTP",
+              "value": 3714930,
+              "bytes": 58850,
+              "allocs": 316,
+              "latencySamples": [
+                3567403,
+                3947375,
+                3575162,
+                3805992,
+                3714930,
+                3745630,
+                3700719
+              ],
+              "throughputSamples": [
+                280.3159609385315,
+                253.3329111118148,
+                279.70760485818545,
+                262.7435895819014,
+                269.1840761467915,
+                266.9777847785286,
+                270.2177603865627
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "resend",
           "label": "Resend",
-          "results": []
+          "results": [
+            {
+              "driver": "resend",
+              "label": "Resend",
+              "value": 52992,
+              "bytes": 33298,
+              "allocs": 113,
+              "latencySamples": [
+                51732,
+                52708,
+                53751,
+                54025,
+                52551,
+                53575,
+                52992
+              ],
+              "throughputSamples": [
+                19330.395113276114,
+                18972.45199969644,
+                18604.305036185375,
+                18509.949097639983,
+                19029.13360354703,
+                18665.422305179654,
+                18870.772946859903
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "postmark",
           "label": "Postmark",
-          "results": []
+          "results": [
+            {
+              "driver": "postmark",
+              "label": "Postmark",
+              "value": 53520,
+              "bytes": 33426,
+              "allocs": 116,
+              "latencySamples": [
+                54051,
+                54174,
+                53770,
+                52882,
+                53404,
+                52763,
+                53520
+              ],
+              "throughputSamples": [
+                18501.045309059962,
+                18459.03939159006,
+                18597.731076808628,
+                18910.026095836012,
+                18725.189124410157,
+                18952.67517010026,
+                18684.60388639761
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "mailgun",
           "label": "Mailgun",
-          "results": []
+          "results": [
+            {
+              "driver": "mailgun",
+              "label": "Mailgun",
+              "value": 48045,
+              "bytes": 27414,
+              "allocs": 223,
+              "latencySamples": [
+                48045,
+                47279,
+                47314,
+                48155,
+                46783,
+                49675,
+                49042
+              ],
+              "throughputSamples": [
+                20813.82037673015,
+                21151.03957359504,
+                21135.393329669867,
+                20766.275568476794,
+                21375.28589444884,
+                20130.850528434825,
+                20390.685534847682
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "sendgrid",
           "label": "SendGrid",
-          "results": []
+          "results": [
+            {
+              "driver": "sendgrid",
+              "label": "SendGrid",
+              "value": 53596,
+              "bytes": 32911,
+              "allocs": 103,
+              "latencySamples": [
+                52408,
+                52772,
+                55272,
+                53596,
+                53653,
+                54576,
+                53589
+              ],
+              "throughputSamples": [
+                19081.05632727828,
+                18949.44288637914,
+                18092.343320306845,
+                18658.108814090603,
+                18638.286768680224,
+                18323.072412782174,
+                18660.54600757618
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "ses",
           "label": "SES",
-          "results": []
+          "results": [
+            {
+              "driver": "ses",
+              "label": "SES",
+              "value": 103716,
+              "bytes": 106222,
+              "allocs": 610,
+              "latencySamples": [
+                105834,
+                101322,
+                101637,
+                103323,
+                108365,
+                103716,
+                104116
+              ],
+              "throughputSamples": [
+                9448.759377893683,
+                9869.524881072226,
+                9838.936607731437,
+                9678.387193558065,
+                9228.07179439856,
+                9641.713911064831,
+                9604.671712320873
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "log",
           "label": "Log",
-          "results": []
+          "results": [
+            {
+              "driver": "log",
+              "label": "Log",
+              "value": 3885,
+              "bytes": 10192,
+              "allocs": 34,
+              "latencySamples": [
+                3885,
+                3917,
+                4423,
+                3896,
+                3762,
+                3865,
+                3791
+              ],
+              "throughputSamples": [
+                257400.2574002574,
+                255297.4214960429,
+                226090.88853719196,
+                256673.5112936345,
+                265816.0552897395,
+                258732.21216041397,
+                263782.6431020839
+              ],
+              "kind": "process"
+            }
+          ]
         },
         {
           "id": "fake",
           "label": "Fake",
-          "results": []
+          "results": [
+            {
+              "driver": "fake",
+              "label": "Fake",
+              "value": 2686,
+              "bytes": 9450,
+              "allocs": 30,
+              "latencySamples": [
+                2640,
+                2579,
+                2740,
+                2628,
+                2686,
+                2737,
+                2750
+              ],
+              "throughputSamples": [
+                378787.8787878788,
+                387747.188832881,
+                364963.503649635,
+                380517.503805175,
+                372300.81906180194,
+                365363.5367190354,
+                363636.36363636365
+              ],
+              "kind": "process"
+            }
+          ]
         }
       ]
     },
@@ -1722,17 +2329,98 @@
         {
           "id": "mysql",
           "label": "MySQL",
-          "results": []
+          "results": [
+            {
+              "driver": "mysql",
+              "label": "MySQL",
+              "value": 189739,
+              "bytes": 4236,
+              "allocs": 68,
+              "latencySamples": [
+                190151,
+                189739,
+                201508,
+                193176,
+                184469,
+                182578,
+                189643
+              ],
+              "throughputSamples": [
+                5258.978390857792,
+                5270.397756918715,
+                4962.582130734264,
+                5176.626496045057,
+                5420.965040196455,
+                5477.111152493729,
+                5273.0657076717835
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "postgres",
           "label": "PostgreSQL",
-          "results": []
+          "results": [
+            {
+              "driver": "postgres",
+              "label": "PostgreSQL",
+              "value": 103113,
+              "bytes": 4356,
+              "allocs": 69,
+              "latencySamples": [
+                108136,
+                100659,
+                100670,
+                118005,
+                106147,
+                102054,
+                103113
+              ],
+              "throughputSamples": [
+                9247.614115558186,
+                9934.531437824735,
+                9933.445912387007,
+                8474.217194186687,
+                9420.897434689628,
+                9798.734003566738,
+                9698.098202942403
+              ],
+              "kind": "service"
+            }
+          ]
         },
         {
           "id": "sqlite",
           "label": "SQLite",
-          "results": []
+          "results": [
+            {
+              "driver": "sqlite",
+              "label": "SQLite",
+              "value": 11505,
+              "bytes": 4330,
+              "allocs": 66,
+              "latencySamples": [
+                11466,
+                11581,
+                12004,
+                11731,
+                11256,
+                11277,
+                11505
+              ],
+              "throughputSamples": [
+                87214.37292865865,
+                86348.32915983076,
+                83305.56481172942,
+                85244.22470377632,
+                88841.50675195451,
+                88676.06632969761,
+                86918.7309865276
+              ],
+              "kind": "local"
+            }
+          ]
         }
       ]
     }
@@ -1813,6 +2501,19 @@
       "path": "docs/bench/benchmarks_rows.json",
       "revision": "8ae67c788fbf8c8ac3c0d0c6ca73d5df221b3b2e",
       "sha256": "2f4567eaef1f4246c60ed735e112172abb9c16e231c931b05c0a3281747f1eea"
+    },
+    {
+      "repo": "mail",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "3e74fd83b33b561886f735e7bde9c77740c97770",
+      "sha256": "270069e8979b0f72aa02fc8c692007adce4cb3f07df25eb5d540647e7a79230e"
+    },
+    {
+      "repo": "database",
+      "repository": "goforj/docs",
+      "path": "benchmarks/results.json",
+      "revision": "3a7dff8fdbec303f4a6b7042150c1f08586ff6fb",
+      "sha256": "98ba8e1ce082a6fa874647b49ed7c39e24f728e7b98ffcf2d5fdda66e4bc8460"
     }
   ]
 }

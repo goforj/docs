@@ -70,6 +70,12 @@ const eventsRaw = readJSON(benchmarkFile('events'))
 const storageRaw = readJSON(benchmarkFile('storage'))
 const webRaw = readJSON(benchmarkFile('web'))
 const proof = readJSON(proofFile)
+const localRaw = readJSON(path.join(docsRoot, 'benchmarks', 'results.json'))
+const mailRaw = readJSON(benchmarkFile('mail'))
+for (const [file, expected] of Object.entries(localRaw.metadata.harness_sha256)) {
+  const actual = crypto.createHash('sha256').update(fs.readFileSync(path.join(docsRoot, 'benchmarks', file))).digest('hex')
+  if (actual !== expected) throw new Error(`local benchmark source changed: ${file}; rerun benchmarks/run.mjs`)
+}
 
 const cacheRows = required(cacheRaw.get_bytes, 'cache get_bytes').map((row) => ({
   driver: row.Driver === 'nats_bucket_ttl' ? 'nats' : row.Driver.replace(/^sql_/, ''),
@@ -139,6 +145,36 @@ const webScenarios = ['live_plain_text', 'static_text', 'path_param_json', 'midd
   }
 })
 
+// localRows summarizes the seven recorded samples for each supported driver.
+const localRows = (family) => proof.drivers[family].map((driver) => {
+  const raw = family === 'mail' ? mailRaw : localRaw
+  const rows = raw.samples.filter((row) => row.family === family && row.driver === driver)
+  if (rows.length !== 7) throw new Error(`expected seven benchmark samples: ${family}/${driver}`)
+  return {
+    driver,
+    label: title(driver),
+    value: median(rows.map((row) => row.ns_op)),
+    bytes: median(rows.map((row) => row.bytes_op)),
+    allocs: median(rows.map((row) => row.allocs_op)),
+    latencySamples: rows.map((row) => row.ns_op),
+    throughputSamples: rows.map((row) => 1e9 / row.ns_op),
+    kind: ['fake', 'log'].includes(driver) ? 'process' : driver === 'sqlite' ? 'local' : 'service'
+  }
+})
+const mailRows = localRows('mail')
+const databaseRows = localRows('database')
+
+// localSource links to the committed artifact with the exact measured harness fingerprints.
+const localSource = (repo) => {
+  const relative = 'benchmarks/results.json'
+  const revision = execFileSync('git', ['-C', docsRoot, 'log', '-1', '--format=%H', '--', relative], { encoding: 'utf8' }).trim()
+  if (!revision) throw new Error('commit the local benchmark artifact before collecting performance data')
+  return {
+    repo, repository: 'goforj/docs', path: relative, revision,
+    sha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(docsRoot, relative))).digest('hex')
+  }
+}
+
 const findRow = (rows, label) => required(rows.find((row) => row.label === label), label)
 
 const stats = {
@@ -154,14 +190,18 @@ const stats = {
     { id: 'cache', title: 'Cache reads', operation: 'GetBytes', rows: cacheRows },
     { id: 'queue', title: 'Queue dispatch', operation: 'Queue', rows: queueRows },
     { id: 'events', title: 'Event round trips', operation: 'Publish + handle', rows: eventRows },
-    { id: 'storage', title: 'Small-file reads', operation: 'Get', rows: storageRows }
+    { id: 'storage', title: 'Small-file reads', operation: 'Get', rows: storageRows },
+    { id: 'mail', title: 'Mail client send', operation: 'Send', rows: mailRows },
+    { id: 'database', title: 'GORM indexed reads', operation: 'First', rows: databaseRows }
   ],
   web: {
     metadata: webRaw.metadata,
     scenarios: webScenarios
   },
+  local: { metadata: localRaw.metadata },
+  mail: { metadata: mailRaw.metadata },
   driverCoverage: Object.entries(proof.drivers).map(([id, drivers]) => {
-    const measured = { cache: cacheRows, queue: queueRows, events: eventRows, storage: storageRows }[id] || []
+    const measured = { cache: cacheRows, queue: queueRows, events: eventRows, storage: storageRows, mail: mailRows, database: databaseRows }[id] || []
     return {
       id,
       drivers: drivers.map((driver) => ({
@@ -174,7 +214,7 @@ const stats = {
   benchmarkLibraries: proof.repos
     .filter((repo) => repo.benchmarks > 0)
     .map((repo) => ({ repo: repo.repo, benchmarks: repo.benchmarks })),
-  sources: ['cache', 'events', 'queue', 'storage', 'web'].map(source)
+  sources: [...['cache', 'events', 'queue', 'storage', 'web', 'mail'].map(source), localSource('database')]
 }
 
 const output = JSON.stringify(stats, null, 2) + '\n'
