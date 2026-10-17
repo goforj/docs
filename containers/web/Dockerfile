@@ -16,7 +16,7 @@ RUN --mount=type=cache,id=goforj-docs-temp,target=/tmp/goforj-docs \
   --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
   cd backend && go run . docs:generate
 
-FROM node:20-bookworm-slim AS docs-build
+FROM node:24-bookworm-slim AS docs-build
 ARG GA_MEASUREMENT_ID
 ENV GA_MEASUREMENT_ID=${GA_MEASUREMENT_ID}
 ENV GOTOOLCHAIN=auto

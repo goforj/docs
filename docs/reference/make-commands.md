@@ -865,6 +865,16 @@ forj make:model invoices --package billing
 
 The positional argument is the exact name of an existing table. The generator inspects `invoices` through the default database connection, so that connection must be available. It does not create or migrate the table, and `make:model` does not select a named connection. The generated Go type and filename are singularized from the inspected table name; when an exact table is missing, the command may suggest an existing singular or plural variant. Models use `--package` rather than `-d` because their placement follows database table ownership.
 
+By default, `make:model` reads relationship declarations from `.db-relationships.yaml`. Use `--config <path>` to read a different file. The generator validates the referenced table columns and join keys against the database schema before writing the model.
+
+```yaml
+users:
+  - "1-many id->posts:user_id"
+  - "many-many id->roles:id via user_roles:user_id:role_id"
+```
+
+These declarations add relationship fields to the generated model. Generate the referenced models in the same package so their Go types are available.
+
 ```bash
 forj make:model invoices --package billing --remove
 ```
