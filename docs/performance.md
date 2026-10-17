@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: Explore measured GoForj performance, compare local and service-backed drivers, and inspect HTTP routing overhead against net/http.
+description: Explore the cost of a process boundary with an interactive latency lens, source-backed driver benchmarks, and HTTP comparisons against net/http.
 sidebar: false
 aside: false
 noAutoTitle: true

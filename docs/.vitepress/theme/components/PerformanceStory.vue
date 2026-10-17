@@ -1,10 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 import evidence from '../../data/performance-stats.json'
-import PerformanceArchitecture from './PerformanceArchitecture.vue'
+import PerformanceLens from './PerformanceLens.vue'
 
 const selectedSuite = ref('cache')
-const selectedBoundary = ref('local')
 const selectedRow = ref('Memory')
 const selectedHTTP = ref('live_plain_text')
 const suites = {
@@ -109,221 +108,255 @@ const httpMax = computed(() => {
   return Math.ceil(maximum / step) * step
 })
 const httpTicks = computed(() => Array.from({ length: 5 }, (_, i) => (httpMax.value / 4) * i))
-const totalRows = evidence.driverStories.reduce((sum, s) => sum + s.rows.length, 0)
-const architectureResources = computed(() =>
-  Object.entries(suites).map(([id, item]) => ({
-    id,
-    ...item,
-    local: evidence.driverStories.find((s) => s.id === id).rows.find((r) => r.label === item.local),
-    service: evidence.driverStories
-      .find((s) => s.id === id)
-      .rows.find((r) => r.label === item.service),
-  })),
+const service = computed(() => story.value.rows.find((row) => row.label === suite.value.service))
+const ratio = computed(() =>
+  Math.round(service.value.value / local.value.value).toLocaleString('en-US'),
 )
 </script>
 
 <template>
-  <main class="pf">
-    <section class="pf-hero pf-rail">
-      <div class="pf-hero-heading">
+  <main class="ps">
+    <section class="ps-opening ps-rail">
+      <div class="ps-eyebrow">
+        <span class="ps-brand-mark" aria-hidden="true">◇</span> GOFORJ / PERFORMANCE
+        <span class="ps-edition">THE MEASURED EDITION</span>
+      </div>
+      <h1>Every boundary<br />has a <em>price.</em></h1>
+      <div class="ps-opening-bottom">
+        <p>Pay for the ones<br />your application needs.</p>
         <div>
-          <p class="pf-kicker">
-            <span class="pf-mark" aria-hidden="true"></span> GoForj / Performance by architecture
-          </p>
-          <h1>Fast starts with<br /><em>less distance.</em></h1>
-        </div>
-        <div class="pf-hero-intro">
-          <p class="pf-lead">
-            Start with one app, local drivers, and no supporting services. Move to shared
-            infrastructure when the workload needs it. Your services keep the same library
-            contracts.
-          </p>
-          <p>
-            Performance changes with the boundary. So do coordination, persistence, and delivery
-            guarantees.
-          </p>
-          <a href="#compare">Explore the measurements <span aria-hidden="true">↓</span></a>
+          Start with local drivers. Add infrastructure for shared state, independent workers, or
+          different delivery guarantees. Keep your application behind the same library contracts.<a
+            href="#latency"
+            >See what a boundary costs <span>↓</span></a
+          >
         </div>
       </div>
-      <PerformanceArchitecture
-        v-model:mode="selectedBoundary"
-        :selected="selectedSuite"
-        :resources="architectureResources"
-        @select="changeSuite"
-      />
+      <div class="ps-orbit" aria-hidden="true">
+        <svg viewBox="0 0 750 650" fill="none">
+          <defs>
+            <linearGradient id="ps-orbit-color">
+              <stop stop-color="var(--gf-accent)" stop-opacity="0" />
+              <stop offset=".5" stop-color="var(--gf-accent-hi)" />
+              <stop offset="1" stop-color="var(--gf-nav)" stop-opacity=".12" />
+            </linearGradient>
+          </defs>
+          <g transform="translate(375 325) rotate(-32)">
+            <ellipse
+              v-for="i in 19"
+              :key="i"
+              :rx="80 + i * 12"
+              :ry="35 + i * 8"
+              stroke="url(#ps-orbit-color)"
+              :stroke-width="i === 10 ? 2 : 0.65"
+            />
+            <path d="M-325 0H325" stroke="var(--gf-line-strong)" />
+            <path d="M0-220V220" stroke="var(--gf-line-strong)" />
+            <rect
+              x="-22"
+              y="-22"
+              width="44"
+              height="44"
+              fill="var(--gf-ground-deep)"
+              stroke="var(--gf-accent)"
+            />
+            <path
+              d="m-12-5 12-7 12 7v15l-12 7-12-7V-5Zm0 0L0 2l12-7M0 2v15"
+              stroke="var(--gf-accent-hi)"
+              stroke-width="1.5"
+            />
+          </g>
+          <circle cx="606" cy="182" r="4" fill="var(--gf-nav)" />
+          <circle cx="175" cy="428" r="3" fill="var(--gf-accent)" /></svg
+        ><span>APPLICATION → DRIVER → INFRASTRUCTURE</span>
+      </div>
     </section>
+    <nav class="ps-chapters ps-rail" aria-label="Performance chapters">
+      <a href="#latency"><span>01</span> Feel the difference</a
+      ><a href="#drivers"><span>02</span> Inspect the tradeoff</a
+      ><a href="#http"><span>03</span> Follow the request</a
+      ><a href="#evidence"><span>04</span> Check the evidence</a>
+    </nav>
 
-    <section id="compare" class="pf-section pf-rail">
-      <header class="pf-section-head">
+    <section id="latency" class="ps-section ps-rail">
+      <div class="ps-heading">
         <div>
-          <p class="pf-kicker">02 / The cost of a boundary</p>
-          <h2>Same operation.<br />Different distance.</h2>
+          <p class="ps-kicker">01 / A CLOSER LOOK AT TIME</p>
+          <h2>Small numbers.<br /><em>Very different work.</em></h2>
         </div>
         <p>
-          Network calls, filesystem access, serialization, and delivery guarantees change the work a
-          driver does. Compare the measured cost inside one library, then choose the behavior your
-          app needs.
+          A nanosecond is hard to picture. Put two operations on the same clock and the difference
+          becomes visible. Zoom in. Zoom out. Replay the recorded timings.
         </p>
-      </header>
-      <div class="pf-explorer">
-        <div class="pf-explorer-tabs" role="group" aria-label="Driver measurements">
-          <button
-            v-for="(item, id) in suites"
-            :key="id"
-            :aria-pressed="selectedSuite === id"
-            @click="changeSuite(id)"
-          >
-            <span>0{{ Object.keys(suites).indexOf(id) + 1 }}</span
-            >{{ item.name
-            }}<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path :d="item.icon" /></svg>
-          </button>
+      </div>
+      <div class="ps-operation-tabs" role="group" aria-label="Choose an operation">
+        <button
+          v-for="(item, id) in suites"
+          :key="id"
+          :aria-pressed="selectedSuite === id"
+          @click="changeSuite(id)"
+        >
+          <span>0{{ Object.keys(suites).indexOf(id) + 1 }}</span
+          ><strong>{{ item.name }}</strong
+          ><small>{{ item.operation }}</small
+          ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path :d="item.icon" /></svg>
+        </button>
+      </div>
+      <PerformanceLens
+        :local="local"
+        :service="service"
+        :operation="suite.operation"
+        :local-config="suite.localConfig"
+        :service-config="suite.serviceConfig"
+      />
+      <div class="ps-takeaway">
+        <div>
+          <span class="ps-kicker">IN THIS RECORDED COMPARISON</span
+          ><strong>{{ ratio }}<span>×</span></strong>
+          <p>
+            the time per operation<br /><span
+              >{{ service.label }} compared with {{ local.label }}</span
+            >
+          </p>
         </div>
-        <div class="pf-explorer-body">
-          <div class="pf-chart">
-            <div class="pf-chart-title">
-              <div>
-                <h3>{{ suite.operation }}</h3>
-                <p>Time per operation · lower is faster</p>
-              </div>
-              <span class="pf-scale-label">LOG SCALE</span>
-            </div>
-            <div class="pf-axis" aria-hidden="true">
-              <div>
-                <span
-                  v-for="(tick, i) in decades"
-                  :key="tick"
-                  :class="{ 'is-first': i === 0, 'is-last': i === decades.length - 1 }"
-                  :style="{ left: `${position(tick)}%` }"
-                  >{{ time(tick) }}</span
-                >
-              </div>
-            </div>
-            <div
-              class="pf-chart-rows"
-              role="group"
-              :aria-label="`${suite.name} driver latency; select a row for details`"
-            >
-              <button
-                v-for="row in rows"
-                :key="row.label"
-                class="pf-chart-row"
-                :class="[`pf-kind--${row.kind}`, { 'is-selected': detail.label === row.label }]"
-                :aria-pressed="detail.label === row.label"
-                @click="selectedRow = row.label"
-              >
-                <span class="pf-row-name">{{ row.label }}</span
-                ><span class="pf-row-track" aria-hidden="true"
-                  ><i
-                    v-for="tick in decades"
-                    :key="tick"
-                    class="pf-gridline"
-                    :style="{ left: `${position(tick)}%` }"
-                  ></i
-                  ><span class="pf-row-line" :style="{ width: `${position(row.value)}%` }"></span
-                  ><span
-                    class="pf-row-dot"
-                    :style="{ left: `${position(row.value)}%` }"
-                  ></span></span
-                ><strong>{{ time(row.value) }}</strong>
-              </button>
-            </div>
-            <div class="pf-chart-legend">
-              <span class="pf-kind--process"><i></i>In process</span
-              ><span class="pf-kind--local"><i></i>Host-local</span
-              ><span class="pf-kind--service"><i></i>Service boundary</span>
-            </div>
-            <p class="pf-measure-note">
-              Each grid interval is 10×. These are local harness results, including container or
-              emulator fixtures for service drivers.
-            </p>
-          </div>
-          <aside class="pf-detail" aria-live="polite" aria-atomic="true">
-            <span class="pf-mono">Selected measurement</span>
-            <h3>{{ detail.label }}</h3>
-            <span class="pf-detail-kind" :class="`pf-kind--${detail.kind}`"
-              ><i></i>{{ category(detail.kind) }}</span
-            >
-            <div class="pf-detail-time">
-              <strong>{{ latency(detail.value).number }}</strong
-              ><span>{{ latency(detail.value).unit }} / op</span>
-            </div>
-            <dl>
-              <div>
-                <dt>Allocations / op</dt>
-                <dd>{{ number(detail.allocs) }}</dd>
-              </div>
-              <div>
-                <dt>Bytes / op</dt>
-                <dd>{{ number(detail.bytes) }}</dd>
-              </div>
-            </dl>
-            <p>{{ suite.measurement }}</p>
-            <a :href="sourceURL(source)" target="_blank" rel="noopener noreferrer"
-              >{{ selectedSuite }}/{{ source.revision.slice(0, 8) }} ↗</a
-            >
-          </aside>
-        </div>
-        <div class="pf-contract-note">
-          <span class="pf-kicker">What changes</span>
+        <div>
+          <h3>That extra work buys something.</h3>
           <p>{{ suite.limit }}</p>
-          <a href="/drivers">Driver capabilities ↗</a>
+          <p class="ps-small">
+            {{ suite.measurement }} These local harness results describe the fixture, not your
+            production network.
+          </p>
+          <a href="/drivers">Choose the guarantees your app needs ↗</a>
         </div>
       </div>
     </section>
 
-    <section id="http" class="pf-section pf-http pf-rail">
-      <header class="pf-section-head">
+    <section id="drivers" class="ps-section ps-rail ps-drivers">
+      <div class="ps-heading">
         <div>
-          <p class="pf-kicker">03 / HTTP routing overhead</p>
-          <h2>Stay close to<br /><code>net/http.</code></h2>
+          <p class="ps-kicker">02 / NOTHING HIDDEN IN THE AVERAGE</p>
+          <h2>Open the<br /><em>whole picture.</em></h2>
+        </div>
+        <p>
+          Every measured driver in the selected library. Select a row to see its allocation cost and
+          exact source. Compare within a suite: each one measures a different operation.
+        </p>
+      </div>
+      <div class="ps-driver-toolbar">
+        <label for="ps-library">LIBRARY</label
+        ><select id="ps-library" :value="selectedSuite" @change="changeSuite($event.target.value)">
+          <option v-for="(item, id) in suites" :key="id" :value="id">
+            {{ item.name }} / {{ item.operation }}
+          </option></select
+        ><span>Time per operation · lower is faster</span>
+      </div>
+      <div class="ps-driver-layout">
+        <div class="ps-driver-plot">
+          <div class="ps-log-axis" aria-hidden="true">
+            <span v-for="tick in decades" :key="tick" :style="{ left: `${position(tick)}%` }">{{
+              time(tick)
+            }}</span>
+          </div>
+          <div role="group" :aria-label="`${suite.name} driver measurements`">
+            <button
+              v-for="row in rows"
+              :key="row.label"
+              class="ps-driver-row"
+              :class="[`ps-kind--${row.kind}`, { 'is-selected': detail.label === row.label }]"
+              :aria-pressed="detail.label === row.label"
+              @click="selectedRow = row.label"
+            >
+              <span>{{ row.label }}</span>
+              <div class="ps-driver-track" aria-hidden="true">
+                <i v-for="tick in decades" :key="tick" :style="{ left: `${position(tick)}%` }"></i
+                ><b :style="{ width: `${position(row.value)}%` }"></b
+                ><em :style="{ left: `${position(row.value)}%` }"></em>
+              </div>
+              <strong>{{ time(row.value) }}</strong>
+            </button>
+          </div>
+          <div class="ps-legend">
+            <span class="ps-kind--process"><i></i>In process</span
+            ><span class="ps-kind--local"><i></i>Host-local</span
+            ><span class="ps-kind--service"><i></i>Service boundary</span>
+          </div>
+          <p class="ps-chart-note">
+            Logarithmic time axis. Each grid interval is 10×. Service fixtures run in local
+            containers or emulators.
+          </p>
+        </div>
+        <aside class="ps-inspect" aria-live="polite" aria-atomic="true">
+          <p class="ps-kicker">UNDER THE LENS</p>
+          <h3>{{ detail.label }}</h3>
+          <span class="ps-inspect-kind">{{ category(detail.kind) }}</span>
+          <div class="ps-inspect-value">
+            {{ latency(detail.value).number }}<span>{{ latency(detail.value).unit }} / op</span>
+          </div>
+          <dl>
+            <div>
+              <dt>Allocations / op</dt>
+              <dd>{{ number(detail.allocs) }}</dd>
+            </div>
+            <div>
+              <dt>Bytes / op</dt>
+              <dd>{{ number(detail.bytes) }}</dd>
+            </div>
+          </dl>
+          <p>{{ suite.measurement }}</p>
+          <a :href="sourceURL(source)" target="_blank" rel="noopener noreferrer"
+            >{{ selectedSuite }}/{{ source.revision.slice(0, 8) }} ↗</a
+          >
+        </aside>
+      </div>
+    </section>
+
+    <section id="http" class="ps-section ps-rail ps-http">
+      <div class="ps-heading">
+        <div>
+          <p class="ps-kicker">03 / THE HTTP PATH</p>
+          <h2>Your framework<br />shouldn't be<br /><em>the workload.</em></h2>
         </div>
         <div>
           <p>
-            The Web library comparison puts GoForj's HTTP routing in the same harness as other Go
-            routers. Switch scenarios to separate socket overhead from in-process dispatch.
+            GoForj Web measured beside <code>net/http</code> and other Go routers. One harness. Four
+            workloads. Every result included.
           </p>
-          <p class="pf-small">
-            These are Web library measurements, not a full generated app with database queries,
-            authentication, and business logic.
+          <p class="ps-small">
+            These measure the Web library, not a complete generated application with database
+            queries, authentication, and business logic.
           </p>
         </div>
-      </header>
-      <div class="pf-http-layout">
-        <div class="pf-http-summary">
-          <label for="pf-http-scenario" class="pf-mono">Choose a workload</label
-          ><select id="pf-http-scenario" v-model="selectedHTTP">
+      </div>
+      <div class="ps-http-layout">
+        <div class="ps-http-readout">
+          <label for="ps-http-scenario">CHOOSE THE WORKLOAD</label
+          ><select id="ps-http-scenario" v-model="selectedHTTP">
             <option v-for="s in evidence.web.scenarios" :key="s.id" :value="s.id">
               {{ httpNames[s.id] }}
-            </option>
-          </select>
-          <div class="pf-http-number">
-            <span>GoForj Web</span
-            ><strong
-              >{{ rate(httpGoForj.throughput)
-              }}<small>{{
-                selectedHTTP === 'live_plain_text' ? 'requests / sec' : 'operations / sec'
-              }}</small></strong
-            >
-          </div>
-          <div class="pf-http-reference">
-            <span>net/http in the same case</span
-            ><strong>{{ rate(httpStandard.throughput) }} / sec</strong>
+            </option></select
+          ><span class="ps-http-brand">GOFORJ WEB</span
+          ><strong>{{ rate(httpGoForj.throughput) }}</strong
+          ><span
+            >{{ selectedHTTP === 'live_plain_text' ? 'requests' : 'operations' }} per second</span
+          >
+          <div class="ps-http-baseline">
+            <span>net/http, same workload</span><b>{{ rate(httpStandard.throughput) }} / sec</b>
           </div>
           <p>
             {{
               selectedHTTP === 'live_plain_text'
                 ? 'Warm HTTP/1.1 loopback over a single connection. Socket and HTTP work dominate this result.'
-                : 'In-process handler dispatch. No socket, real network, or application workload is included.'
+                : 'In-process handler dispatch. No socket, network, or application workload is included.'
             }}
           </p>
-          <p class="pf-small">
+          <p>
             Median of {{ evidence.web.metadata.sample_count }} samples ×
             {{ evidence.web.metadata.benchmark_time }} each. Small differences are not reliable
             rankings.
           </p>
         </div>
-        <div class="pf-http-chart">
-          <div class="pf-http-axis" aria-hidden="true">
+        <div class="ps-http-plot">
+          <div class="ps-http-axis" aria-hidden="true">
             <span v-for="(tick, i) in httpTicks" :key="tick" :style="{ left: `${i * 25}%` }">{{
               tick === 0 ? '0' : rate(tick)
             }}</span>
@@ -331,19 +364,19 @@ const architectureResources = computed(() =>
           <div
             v-for="row in httpRows"
             :key="row.framework"
-            class="pf-http-row"
+            class="ps-http-row"
             :class="{ 'is-goforj': row.framework === 'goforj_web' }"
           >
-            <div class="pf-http-row-title">
+            <div>
               <strong>{{ row.label }}</strong
               ><span>{{ number(row.allocs) }} allocs / op</span>
             </div>
-            <div class="pf-http-track">
-              <span :style="{ width: `${(row.throughput / httpMax) * 100}%` }"></span>
+            <div class="ps-http-track">
+              <i :style="{ width: `${(row.throughput / httpMax) * 100}%` }"></i>
             </div>
-            <strong class="pf-http-rate">{{ rate(row.throughput) }}</strong>
+            <b>{{ rate(row.throughput) }}</b>
           </div>
-          <p class="pf-measure-note">
+          <p class="ps-chart-note">
             Linear throughput scale · higher is faster ·
             {{ selectedHTTP === 'live_plain_text' ? 'requests' : 'operations' }} / second
           </p>
@@ -351,20 +384,20 @@ const architectureResources = computed(() =>
       </div>
     </section>
 
-    <section id="methodology" class="pf-section pf-method pf-rail">
-      <header class="pf-section-head">
+    <section id="evidence" class="ps-section ps-rail">
+      <div class="ps-heading">
         <div>
-          <p class="pf-kicker">04 / Check the evidence</p>
-          <h2>Numbers you<br />can trace.</h2>
+          <p class="ps-kicker">04 / SHOW YOUR WORK</p>
+          <h2>Don't take<br /><em>our word for it.</em></h2>
         </div>
         <p>
-          Five committed benchmark snapshots feed this page. Each retains a source revision and
-          content hash. Open the source to inspect the fixture, result, and measurement conditions.
+          Five committed benchmark snapshots. Exact revisions. Content hashes. Open the artifacts
+          and inspect what ran, what was measured, and what the numbers mean.
         </p>
-      </header>
-      <div class="pf-method-layout">
-        <div class="pf-conditions">
-          <h3>The HTTP environment</h3>
+      </div>
+      <div class="ps-evidence-layout">
+        <div class="ps-environment">
+          <span class="ps-kicker">HTTP HARNESS</span>
           <dl>
             <div>
               <dt>Go</dt>
@@ -387,25 +420,24 @@ const architectureResources = computed(() =>
             </div>
           </dl>
           <p>
-            Driver suites have their own fixtures and run conditions. Compare within a suite, not by
-            adding up results across libraries.
+            Driver suites retain their own fixtures and run conditions. Results are not combined
+            across libraries.
           </p>
-          <a href="/operations/performance-benchmarks">Run a workload against your app ↗</a>
         </div>
-        <div class="pf-source-list">
+        <div class="ps-sources">
           <a
-            v-for="s in evidence.sources"
+            v-for="(s, i) in evidence.sources"
             :key="s.repo"
             :href="sourceURL(s)"
             target="_blank"
             rel="noopener noreferrer"
-            ><span class="pf-source-name">{{ s.repo }}</span
-            ><span class="pf-source-path">{{ s.path }}</span
+            ><span>0{{ i + 1 }}</span
+            ><strong>{{ s.repo }}</strong
             ><code>{{ s.revision.slice(0, 8) }}</code
-            ><span aria-hidden="true">↗</span></a
+            ><span>↗</span></a
           >
           <details>
-            <summary>View source fingerprints</summary>
+            <summary>Inspect artifact fingerprints</summary>
             <div v-for="s in evidence.sources" :key="s.repo">
               <strong>{{ s.repo }}</strong
               ><code>{{ s.sha256 }}</code>
@@ -413,1054 +445,1076 @@ const architectureResources = computed(() =>
           </details>
         </div>
       </div>
-      <div class="pf-limits">
-        <span class="pf-mono">What this does not measure</span>
+      <div class="ps-caveat">
+        <span>THE PART ONLY YOU CAN MEASURE</span>
         <p>
-          Your production network, service configuration, workload mix, payload sizes, contention,
-          and durability requirements. Use these results to understand boundaries and spot
-          regressions, then measure your app under representative load.
+          Your production network, service configuration, payloads, contention, and durability
+          requirements. Use these results to understand the boundaries. Then run a representative
+          workload against your app.
         </p>
+        <a href="/operations/performance-benchmarks">Measure your application ↗</a>
       </div>
     </section>
-    <section class="pf-closing pf-rail">
-      <div>
-        <p class="pf-kicker">Build local. Add infrastructure deliberately.</p>
-        <h2>Keep the code.<br />Move the boundary.</h2>
-      </div>
+    <section class="ps-closing ps-rail">
+      <p class="ps-kicker">LESS INFRASTRUCTURE UNTIL YOU NEED MORE</p>
+      <h2>Start close.<br /><em>Go further.</em></h2>
       <div>
         <p>
-          Choose shared state, durable delivery, or independent workers when you need them. Keep
-          business logic behind the same contracts, and review the guarantees of each driver.
+          One application model. Local implementations to start. Infrastructure when the work calls
+          for it.
         </p>
-        <div class="pf-actions">
-          <a class="pf-primary" href="/getting-started/quickstart"
-            >Get started <span aria-hidden="true">↗</span></a
-          ><a href="/drivers">Explore the drivers ↗</a>
-        </div>
+        <a class="ps-cta" href="/getting-started/quickstart">Build your first app <span>↗</span></a
+        ><a href="/drivers">Explore the drivers ↗</a>
       </div>
     </section>
   </main>
 </template>
-
 <style scoped>
-:global(.VPDoc:has(.pf)) {
+:global(.VPDoc:has(.ps)) {
   padding: 0 !important;
 }
-:global(.VPDoc:has(.pf) .container),
-:global(.VPDoc:has(.pf) .content),
-:global(.VPDoc:has(.pf) .content-container),
-:global(.VPDoc:has(.pf) .main),
-:global(.VPDoc:has(.pf) .vp-doc) {
+:global(.VPDoc:has(.ps) .container),
+:global(.VPDoc:has(.ps) .content),
+:global(.VPDoc:has(.ps) .content-container),
+:global(.VPDoc:has(.ps) .main),
+:global(.VPDoc:has(.ps) .vp-doc) {
   width: 100% !important;
   max-width: none !important;
 }
-:global(.VPDoc:has(.pf) .container),
-:global(.VPDoc:has(.pf) .content) {
+:global(.VPDoc:has(.ps) .container),
+:global(.VPDoc:has(.ps) .content) {
   padding: 0 !important;
 }
-:global(.VPDoc:has(.pf) .VPDocFooter) {
+:global(.VPDoc:has(.ps) .VPDocFooter) {
   display: none;
 }
-.pf {
-  --pf-process: var(--gf-nav);
-  --pf-local: #8ebfae;
-  --pf-service: #a89bd4;
+.ps {
+  --ps-process: var(--gf-nav);
+  --ps-local: #8ebfae;
+  --ps-service: #b5a2dd;
   background: var(--gf-ground-deep);
   color: var(--gf-ink);
   font-family: var(--gf-font-body);
   overflow: clip;
 }
-:global(html:not(.dark)) .pf {
-  --pf-local: #28745c;
-  --pf-service: #735298;
+:global(html:not(.dark)) .ps {
+  --ps-local: #28745c;
+  --ps-service: #735298;
 }
-.pf *,
-.pf *::before,
-.pf *::after {
+.ps *,
+.ps *::before,
+.ps *::after {
   box-sizing: border-box;
 }
-.pf h1,
-.pf h2,
-.pf h3,
-.pf p {
+.ps h1,
+.ps h2,
+.ps h3,
+.ps p {
   margin: 0;
   padding: 0;
   border: 0;
 }
-.pf h1,
-.pf h2,
-.pf h3 {
-  color: var(--gf-ink);
+.ps h1,
+.ps h2,
+.ps h3 {
   font-family: var(--gf-font-display);
+  color: var(--gf-ink);
 }
-.pf a {
+.ps a {
   text-decoration: none;
+  color: var(--gf-nav);
 }
-.pf button,
-.pf select {
+.ps button,
+.ps select {
   font: inherit;
 }
-.pf button {
-  cursor: pointer;
-}
-.pf a:focus-visible,
-.pf button:focus-visible,
-.pf select:focus-visible,
-.pf summary:focus-visible {
+.ps a:focus-visible,
+.ps button:focus-visible,
+.ps select:focus-visible,
+.ps summary:focus-visible {
   outline: 2px solid var(--gf-nav);
   outline-offset: 5px;
 }
-.pf-rail {
-  position: relative;
-  border-bottom: 1px solid var(--gf-line);
-  padding-inline: max(28px, calc((100vw - 1240px) / 2));
+.ps em {
+  font-style: normal;
+  color: var(--gf-accent-hi);
 }
-.pf-rail::after {
+.ps code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+.ps-rail {
+  position: relative;
+  padding-inline: max(28px, calc((100vw - 1240px) / 2));
+  border-bottom: 1px solid var(--gf-line);
+}
+.ps-rail::after {
   position: absolute;
   content: '';
   width: 5px;
   height: 5px;
   background: var(--gf-accent);
   bottom: -3px;
-  left: max(24px, calc((100vw - 1260px) / 2));
+  left: max(25px, calc((100vw - 1246px) / 2));
 }
-.pf-kicker,
-.pf-mono {
-  font: 500 10px/1.5 var(--gf-font-mono);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+.ps-kicker {
+  font: 10px/1.6 var(--gf-font-mono);
+  letter-spacing: 0.08em;
+  color: var(--gf-reference);
 }
-.pf-kicker {
-  color: var(--gf-nav);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.pf-mark {
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--gf-accent);
-  transform: rotate(45deg);
-}
-.pf-hero {
-  display: block;
-  padding-top: 55px;
-  padding-bottom: 0;
+.ps-opening {
+  position: relative;
+  isolation: isolate;
+  padding-top: 48px;
+  padding-bottom: 62px;
+  min-height: 740px;
+  overflow: hidden;
   background: radial-gradient(
-    ellipse 50% 70% at 78% 10%,
-    color-mix(in srgb, var(--gf-accent) 7%, transparent),
-    transparent 80%
+    ellipse at 80% 50%,
+    color-mix(in srgb, var(--gf-accent) 6%, transparent),
+    transparent 65%
   );
 }
-.pf-hero h1 {
-  font-size: clamp(60px, 6.3vw, 88px);
-  line-height: 1.02;
-  font-weight: 600;
-  letter-spacing: -0.065em;
-  margin-top: 24px;
+.ps-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 10px var(--gf-font-mono);
+  letter-spacing: 0.08em;
+  color: var(--gf-reference);
 }
-.pf-hero h1 em {
+.ps-brand-mark {
+  font-size: 22px;
+  color: var(--gf-accent);
+}
+.ps-edition {
+  margin-left: auto;
+  color: var(--gf-ink-2);
+  font-size: 9px;
+}
+.ps-opening h1 {
+  font-size: clamp(90px, 9.9vw, 146px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.075em;
+  margin-top: 60px;
+  max-width: 950px;
+  position: relative;
+  z-index: 1;
+}
+.ps-opening h1 em {
   color: var(--gf-accent-hi);
-  font-style: normal;
 }
-.pf-lead {
-  margin-top: 27px !important;
-  max-width: 450px;
-  font-size: 16px;
-  line-height: 1.8;
+.ps-opening-bottom {
+  display: flex;
+  gap: 80px;
+  align-items: start;
+  margin-top: 45px;
+  position: relative;
+  z-index: 1;
+  max-width: 780px;
+}
+.ps-opening-bottom > p {
+  font: 500 26px/1.25 var(--gf-font-display);
+  letter-spacing: -0.04em;
+  min-width: 250px;
+}
+.ps-opening-bottom > div {
+  max-width: 380px;
+  font-size: 13px;
+  line-height: 1.9;
   color: var(--gf-ink-2);
 }
-.pf-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
-  margin-top: 28px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.pf-actions a {
+.ps-opening-bottom a {
+  display: block;
+  margin-top: 20px;
+  font-size: 11px;
   color: var(--gf-nav);
-  white-space: nowrap;
 }
-.pf-actions a.pf-primary {
-  display: inline-flex;
+.ps-opening-bottom a span {
+  margin-left: 20px;
+}
+.ps-orbit {
+  position: absolute;
+  width: 750px;
+  right: -140px;
+  top: 125px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.ps-orbit svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.ps-orbit > span {
+  position: absolute;
+  bottom: 70px;
+  left: 220px;
+  font: 8px var(--gf-font-mono);
+  letter-spacing: 0.12em;
+  color: var(--gf-ink-2);
+  transform: rotate(-32deg);
+}
+.ps-chapters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-block: 22px;
+  gap: 20px;
+}
+.ps-chapters a {
+  font-size: 11px;
+  color: var(--gf-ink-2);
+  display: flex;
+  gap: 15px;
   align-items: center;
-  justify-content: center;
-  gap: 28px;
-  background: var(--gf-accent);
-  color: var(--gf-on-accent);
-  padding: 13px 17px;
-  border-radius: 6px;
 }
-.pf-actions a:hover {
-  filter: brightness(1.12);
+.ps-chapters a:hover {
+  color: var(--gf-ink);
 }
-.pf-explorer-tabs svg {
+.ps-chapters a span {
+  font: 10px var(--gf-font-mono);
+  color: var(--gf-accent-hi);
+}
+.ps-section {
+  padding-top: 100px;
+  padding-bottom: 90px;
+  scroll-margin-top: 70px;
+}
+.ps-heading {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 90px;
+  align-items: end;
+  margin-bottom: 45px;
+}
+.ps-heading h2 {
+  font-size: clamp(46px, 4.9vw, 70px);
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+  font-weight: 500;
+  margin-top: 22px;
+}
+.ps-heading > p,
+.ps-heading > div > p:not(.ps-kicker) {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--gf-ink-2);
+  max-width: 420px;
+}
+.ps-heading .ps-small {
+  font-size: 11px !important;
+  margin-top: 16px !important;
+}
+.ps-small {
+  font-size: 11px !important;
+  line-height: 1.85 !important;
+  color: var(--gf-ink-2);
+}
+.ps-operation-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 50px 0 32px;
+  border-top: 1px solid var(--gf-line-strong);
+  border-bottom: 1px solid var(--gf-line-strong);
+}
+.ps-operation-tabs button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 25px 1fr;
+  gap: 6px;
+  padding: 24px 20px;
+  text-align: left;
+  border-right: 1px solid var(--gf-line);
+  cursor: pointer;
+  border-top: 2px solid transparent;
+  margin-top: -1px;
+}
+.ps-operation-tabs button:first-child {
+  padding-left: 0;
+}
+.ps-operation-tabs button:last-child {
+  border-right: 0;
+}
+.ps-operation-tabs button[aria-pressed='true'] {
+  border-top-color: var(--gf-accent);
+  background: linear-gradient(color-mix(in srgb, var(--gf-accent) 6%, transparent), transparent);
+}
+.ps-operation-tabs button > span {
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  padding-top: 5px;
+}
+.ps-operation-tabs strong {
+  font: 500 18px var(--gf-font-display);
+}
+.ps-operation-tabs small {
+  grid-column: 2;
+  font: 9px/1.5 var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-operation-tabs svg {
+  position: absolute;
+  right: 20px;
+  top: 27px;
   width: 18px;
   height: 18px;
-  stroke: currentColor;
-  stroke-width: 1.4;
+  stroke: var(--gf-ink-2);
+  stroke-width: 1.2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.pf-section {
-  padding-block: 76px;
-  scroll-margin-top: 100px;
+.ps-operation-tabs button[aria-pressed='true'] svg {
+  stroke: var(--gf-accent-hi);
 }
-.pf-section-head {
+.ps-takeaway {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 70px;
-  align-items: end;
-  margin-bottom: 38px;
-}
-.pf-section h2,
-.pf-closing h2 {
-  font-size: clamp(36px, 4vw, 55px);
-  font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 1.1;
-  margin-top: 18px;
-}
-.pf-section-head > p,
-.pf-section-head > div > p:not(.pf-kicker) {
-  max-width: 480px;
-  color: var(--gf-ink-2);
-  font-size: 14px;
-  line-height: 1.8;
-}
-.pf-section-head .pf-small {
-  margin-top: 10px !important;
-  font-size: 11px !important;
-}
-.pf-explorer {
-  border: 1px solid var(--gf-line-strong);
-  border-radius: 14px;
-  overflow: hidden;
-}
-.pf-explorer-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid var(--gf-line);
-}
-.pf-explorer-tabs button {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  border-right: 1px solid var(--gf-line);
-  padding: 20px 24px;
-  color: var(--gf-ink-2);
-  font-size: 14px;
-  border-bottom: 2px solid transparent;
-}
-.pf-explorer-tabs button:last-child {
-  border-right: 0;
-}
-.pf-explorer-tabs button > span {
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.pf-explorer-tabs button svg {
-  margin-left: auto;
-}
-.pf-explorer-tabs button[aria-pressed='true'] {
-  border-bottom-color: var(--gf-accent);
-  color: var(--gf-ink);
-  background: var(--gf-nav-soft);
-}
-.pf-explorer-tabs button[aria-pressed='true'] svg {
-  color: var(--gf-nav);
-}
-.pf-explorer-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-}
-.pf-chart {
-  min-width: 0;
-  padding: 25px 25px 22px;
-}
-.pf-chart-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  gap: 12px;
-}
-.pf-chart-title h3 {
-  font: 500 17px var(--gf-font-display);
-  letter-spacing: -0.02em;
-}
-.pf-chart-title p {
-  color: var(--gf-ink-2);
-  font: 9px var(--gf-font-mono);
-  margin-top: 7px;
-}
-.pf-scale-label {
-  color: var(--gf-ink-2);
-  border: 1px solid var(--gf-line);
-  border-radius: 4px;
-  padding: 4px 6px;
-  font: 8px var(--gf-font-mono);
-}
-.pf-axis {
-  padding: 0 91px 0 126px;
-  height: 38px;
-  margin-top: 15px;
-}
-.pf-axis > div {
-  position: relative;
-  height: 100%;
-}
-.pf-axis span {
-  position: absolute;
-  bottom: 8px;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  color: var(--gf-ink-2);
-  font: 8px var(--gf-font-mono);
-}
-.pf-axis span.is-first {
-  transform: none;
-}
-.pf-axis span.is-last {
-  transform: translateX(-100%);
-}
-.pf-chart-row {
-  display: grid;
-  grid-template-columns: 115px minmax(0, 1fr) 80px;
-  align-items: center;
-  gap: 11px;
-  width: 100%;
-  min-height: 43px;
-  text-align: left;
-  padding: 0;
-  border-top: 1px solid color-mix(in srgb, var(--gf-line) 55%, transparent);
-}
-.pf-chart-row.is-selected {
-  background: var(--gf-nav-soft);
-}
-.pf-chart-row:hover {
-  background: color-mix(in srgb, var(--gf-surface) 60%, transparent);
-}
-.pf-row-name {
-  font-size: 11px;
-  padding-left: 8px;
-  color: var(--gf-ink-2);
-}
-.pf-chart-row.is-selected .pf-row-name {
-  color: var(--gf-ink);
-}
-.pf-chart-row > strong {
-  font: 10px var(--gf-font-mono);
-  text-align: right;
-  padding-right: 5px;
-  color: var(--gf-ink);
-  white-space: nowrap;
-}
-.pf-row-track {
-  position: relative;
-  height: 43px;
-}
-.pf-gridline {
-  position: absolute;
-  inset-block: 0;
-  width: 1px;
-  border-left: 1px dashed var(--gf-line);
-}
-.pf-row-line {
-  position: absolute;
-  height: 2px;
-  left: 0;
-  top: 21px;
-  opacity: 0.4;
-  background: var(--pf-kind);
-}
-.pf-row-dot {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  top: 18.5px;
-  transform: translateX(-50%);
-  background: var(--pf-kind);
-  box-shadow: 0 0 0 3px var(--gf-code-well);
-}
-.pf-chart-row.is-selected .pf-row-dot {
-  width: 9px;
-  height: 9px;
-  top: 17.5px;
-  outline: 1px solid var(--pf-kind);
-  outline-offset: 3px;
-}
-.pf-kind--process {
-  --pf-kind: var(--pf-process);
-}
-.pf-kind--local {
-  --pf-kind: var(--pf-local);
-}
-.pf-kind--service {
-  --pf-kind: var(--pf-service);
-}
-.pf-chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 23px;
-}
-.pf-chart-legend > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--gf-ink-2);
-  font: 9px var(--gf-font-mono);
-}
-.pf-chart-legend i,
-.pf-detail-kind i {
-  width: 5px;
-  height: 5px;
-  background: var(--pf-kind);
-  border-radius: 50%;
-}
-.pf-measure-note {
-  font: 10px/1.75 var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  margin-top: 16px !important;
-}
-.pf-detail {
-  padding: 27px 25px;
-  border-left: 1px solid var(--gf-line);
-  background: var(--gf-code-chrome);
-}
-.pf-detail > .pf-mono {
-  font-size: 8px;
-  color: var(--gf-ink-2);
-}
-.pf-detail h3 {
-  font: 500 27px var(--gf-font-display);
-  margin-top: 16px;
-  letter-spacing: -0.04em;
-}
-.pf-detail-kind {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  margin-top: 10px;
-}
-.pf-detail-time {
-  display: flex;
-  align-items: baseline;
-  gap: 9px;
-  margin-block: 24px;
-}
-.pf-detail-time strong {
-  font: 500 46px var(--gf-font-display);
-  letter-spacing: -0.055em;
-}
-.pf-detail-time > span {
-  color: var(--gf-ink-2);
-  font: 10px var(--gf-font-mono);
-}
-.pf dl {
-  margin: 0;
-}
-.pf dl > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 0;
-  border-top: 1px solid var(--gf-line);
-  font: 10px/1.5 var(--gf-font-mono);
-}
-.pf dt {
-  color: var(--gf-ink-2);
-}
-.pf dd {
-  margin: 0;
-  color: var(--gf-ink);
-}
-.pf-detail > p {
-  color: var(--gf-ink-2);
-  font-size: 11px;
-  line-height: 1.8;
-  margin-top: 20px;
-}
-.pf-detail > a {
-  display: inline-block;
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-nav);
-  margin-top: 16px;
-}
-.pf-contract-note {
-  display: grid;
-  grid-template-columns: 100px 1fr auto;
-  gap: 20px;
-  align-items: center;
-  border-top: 1px solid var(--gf-line);
-  padding: 19px 24px;
-  background: color-mix(in srgb, var(--gf-ground-alt) 45%, transparent);
-}
-.pf-contract-note .pf-kicker {
-  font-size: 8px;
-}
-.pf-contract-note p {
-  font-size: 11px;
-  line-height: 1.8;
-  color: var(--gf-ink-2);
-}
-.pf-contract-note a {
-  font-size: 10px;
-  color: var(--gf-nav);
-  white-space: nowrap;
-}
-.pf-http {
-  background: var(--gf-code-chrome);
-}
-.pf-http h2 code {
-  font-family: var(--gf-font-mono);
-  font-size: 0.87em;
-  background: none;
-  padding: 0;
-  color: var(--gf-reference);
-}
-.pf-http-layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 80px;
-}
-.pf-http-summary select {
-  display: block;
-  width: 100%;
-  padding: 12px 32px 12px 12px;
-  appearance: auto;
-  background: var(--gf-ground-alt);
-  color: var(--gf-ink);
-  border: 1px solid var(--gf-line-strong);
-  border-radius: 6px;
-  margin-top: 12px;
-  font-size: 11px;
-}
-.pf-http-summary > .pf-mono {
-  color: var(--gf-ink-2);
-  font-size: 9px;
-}
-.pf-http-number {
-  margin-top: 28px;
-}
-.pf-http-number > span {
-  font: 10px var(--gf-font-mono);
-  color: var(--gf-nav);
-}
-.pf-http-number strong {
-  display: block;
-  font: 500 65px/1 var(--gf-font-display);
-  letter-spacing: -0.06em;
-  margin-top: 10px;
-}
-.pf-http-number small {
-  display: block;
-  color: var(--gf-ink-2);
-  font: 10px/1.6 var(--gf-font-mono);
-  margin-top: 8px;
-  letter-spacing: 0;
-}
-.pf-http-reference {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  font: 10px var(--gf-font-mono);
-  border-block: 1px solid var(--gf-line);
-  padding-block: 15px;
-  margin-top: 24px;
-}
-.pf-http-reference span {
-  color: var(--gf-ink-2);
-}
-.pf-http-summary > p {
-  font-size: 12px;
-  line-height: 1.8;
-  color: var(--gf-ink-2);
-  margin-top: 18px;
-}
-.pf-http-summary > p.pf-small {
-  font-size: 10px;
-}
-.pf-http-chart {
-  padding-top: 24px;
-  min-width: 0;
-}
-.pf-http-axis {
-  height: 24px;
-  position: relative;
-  margin: 0 64px 0 145px;
-}
-.pf-http-axis span {
-  position: absolute;
-  transform: translateX(-50%);
-  color: var(--gf-ink-2);
-  font: 8px var(--gf-font-mono);
-  white-space: nowrap;
-}
-.pf-http-axis span:first-child {
-  transform: none;
-}
-.pf-http-axis span:last-child {
-  transform: translateX(-100%);
-}
-.pf-http-row {
-  display: grid;
-  grid-template-columns: 130px minmax(0, 1fr) 50px;
-  gap: 15px;
-  align-items: center;
-  min-height: 55px;
-  border-top: 1px solid var(--gf-line);
-}
-.pf-http-row-title strong {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--gf-ink-2);
-}
-.pf-http-row-title span {
-  font: 8px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.pf-http-track {
-  height: 5px;
-  background: var(--gf-line);
-}
-.pf-http-track > span {
-  display: block;
-  height: 100%;
-  background: var(--gf-ink-3);
-}
-.pf-http-rate {
-  font: 10px var(--gf-font-mono);
-  text-align: right;
-  color: var(--gf-ink-2);
-}
-.pf-http-row.is-goforj .pf-http-row-title strong,
-.pf-http-row.is-goforj .pf-http-rate {
-  color: var(--gf-nav);
-}
-.pf-http-row.is-goforj .pf-http-track > span {
-  background: var(--gf-accent);
-  box-shadow: 0 0 18px var(--gf-accent-soft);
-}
-.pf-http-chart > .pf-measure-note {
-  margin-top: 24px !important;
-}
-.pf-method-layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 80px;
-}
-.pf-conditions h3 {
-  font: 500 16px var(--gf-font-display);
-  margin-bottom: 20px;
-}
-.pf-conditions p {
-  color: var(--gf-ink-2);
-  font-size: 11px;
-  line-height: 1.8;
-  margin-top: 20px;
-}
-.pf-conditions > a {
-  display: inline-block;
-  color: var(--gf-nav);
-  font-size: 10px;
-  margin-top: 16px;
-}
-.pf-source-list {
-  min-width: 0;
-}
-.pf-source-list > a {
-  display: grid;
-  grid-template-columns: 75px 1fr 66px 12px;
-  gap: 15px;
-  padding: 18px 0;
-  align-items: center;
-  border-bottom: 1px solid var(--gf-line);
-}
-.pf-source-name {
-  color: var(--gf-ink);
-  font: 500 13px var(--gf-font-display);
-  text-transform: capitalize;
-}
-.pf-source-path {
-  color: var(--gf-ink-2);
-  font: 9px var(--gf-font-mono);
-}
-.pf-source-list a code {
-  color: var(--gf-reference);
-  padding: 0;
-  background: none;
-  font-size: 9px;
-}
-.pf-source-list a > span:last-child {
-  color: var(--gf-nav);
-}
-.pf-source-list details {
-  margin-top: 18px;
-}
-.pf-source-list summary {
-  color: var(--gf-ink-2);
-  font: 10px var(--gf-font-mono);
-  cursor: pointer;
-}
-.pf-source-list details > div {
-  margin-top: 16px;
-}
-.pf-source-list details strong {
-  font: 10px var(--gf-font-mono);
-}
-.pf-source-list details code {
-  display: block;
-  overflow-wrap: anywhere;
-  font-size: 9px;
-  background: none;
-  padding: 5px 0;
-  color: var(--gf-ink-2);
-}
-.pf-limits {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 80px;
-  padding-top: 30px;
+  gap: 100px;
+  padding-top: 65px;
   margin-top: 35px;
   border-top: 1px solid var(--gf-line);
 }
-.pf-limits > span {
-  color: var(--gf-nav);
-  font-size: 9px;
+.ps-takeaway > div:first-child > strong {
+  display: block;
+  font: 500 clamp(85px, 11vw, 154px) / 1.1 var(--gf-font-display);
+  letter-spacing: -0.08em;
+  color: var(--gf-accent-hi);
+  margin-top: 12px;
 }
-.pf-limits p {
+.ps-takeaway > div:first-child > strong > span {
+  font-size: 0.45em;
+  margin-left: 10px;
+}
+.ps-takeaway > div:first-child > p {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.ps-takeaway > div:first-child > p > span {
+  font: 10px var(--gf-font-mono);
   color: var(--gf-ink-2);
-  font-size: 11px;
-  line-height: 1.8;
 }
-.pf-closing {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 70px;
-  align-items: center;
-  padding-block: 65px;
+.ps-takeaway > div:last-child {
+  padding-top: 30px;
 }
-.pf-closing h2 {
-  margin-top: 15px;
-  font-size: 46px;
+.ps-takeaway h3 {
+  font-size: 26px;
+  letter-spacing: -0.035em;
+  font-weight: 500;
 }
-.pf-closing > div > p:not(.pf-kicker) {
-  font-size: 13px;
+.ps-takeaway > div:last-child p {
+  color: var(--gf-ink-2);
+  font-size: 14px;
   line-height: 1.9;
-  max-width: 480px;
+  margin-top: 20px;
+}
+.ps-takeaway a {
+  font-size: 11px;
+  display: inline-block;
+  margin-top: 22px;
+}
+.ps-drivers {
+  background: var(--gf-ground-alt);
+}
+.ps-driver-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-block: 20px;
+  border-block: 1px solid var(--gf-line-strong);
+}
+.ps-driver-toolbar label,
+.ps-http-readout label {
+  font: 9px var(--gf-font-mono);
   color: var(--gf-ink-2);
 }
-
-.pf-hero-heading {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 65px;
-  align-items: end;
+.ps select {
+  border: 1px solid var(--gf-line-strong);
+  border-radius: 4px;
+  padding: 10px 36px 10px 12px;
+  color: var(--gf-ink);
+  background: var(--gf-ground-deep);
+  font-size: 12px;
+  max-width: 100%;
 }
-.pf-hero-intro {
+.ps-driver-toolbar > span {
+  margin-left: auto;
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-driver-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 45px;
+  padding-top: 35px;
+}
+.ps-driver-plot {
+  min-width: 0;
+}
+.ps-log-axis {
+  position: relative;
+  height: 30px;
+  margin-left: 145px;
+  margin-right: 85px;
+  font: 8px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-log-axis > span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.ps-log-axis > span:first-child {
+  transform: none;
+}
+.ps-log-axis > span:last-child {
+  transform: translateX(-100%);
+}
+.ps-driver-row {
+  display: grid;
+  grid-template-columns: 135px 1fr 75px;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+  text-align: left;
+  padding: 12px 0;
+  border-block: 1px solid transparent;
+  cursor: pointer;
+  --dot: var(--ps-service);
+}
+.ps-driver-row:hover {
+  background: color-mix(in srgb, var(--gf-ink) 3%, transparent);
+}
+.ps-kind--process {
+  --dot: var(--ps-process);
+}
+.ps-kind--local {
+  --dot: var(--ps-local);
+}
+.ps-kind--service {
+  --dot: var(--ps-service);
+}
+.ps-driver-row.is-selected {
+  background: color-mix(in srgb, var(--dot) 8%, transparent);
+  border-block-color: color-mix(in srgb, var(--dot) 15%, transparent);
+}
+.ps-driver-row > span {
+  font-size: 11px;
+  padding-left: 10px;
+}
+.ps-driver-row > strong {
+  font: 10px var(--gf-font-mono);
+  text-align: right;
+  padding-right: 6px;
+}
+.ps-driver-track {
+  position: relative;
+  height: 22px;
+}
+.ps-driver-track > i {
+  position: absolute;
+  top: -15px;
+  bottom: -15px;
+  border-left: 1px solid var(--gf-line-strong);
+  opacity: 0.6;
+}
+.ps-driver-track > b {
+  position: absolute;
+  top: 11px;
+  left: 0;
+  height: 1px;
+  background: var(--dot);
+  opacity: 0.5;
+}
+.ps-driver-track > em {
+  position: absolute;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background: var(--dot);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.is-selected .ps-driver-track > em {
+  outline: 1px solid var(--dot);
+  outline-offset: 4px;
+}
+.ps-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 25px;
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ps-legend i {
+  width: 4px;
+  height: 4px;
+  background: var(--dot);
+  border-radius: 50%;
+}
+.ps-chart-note {
+  font: 9px/1.8 var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  margin-top: 18px !important;
+}
+.ps-inspect {
+  border-left: 1px solid var(--gf-line-strong);
+  padding: 0 0 0 30px;
+}
+.ps-inspect h3 {
+  font-size: 25px;
+  letter-spacing: -0.04em;
+  font-weight: 500;
+  margin-top: 18px;
+}
+.ps-inspect-kind {
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  display: block;
+  margin-top: 6px;
+}
+.ps-inspect-value {
+  font: 500 58px/1.1 var(--gf-font-display);
+  letter-spacing: -0.065em;
+  margin: 30px 0;
+}
+.ps-inspect-value > span {
+  font: 11px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  letter-spacing: 0;
+  margin-left: 8px;
+}
+.ps dl {
+  margin: 0;
+}
+.ps dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid var(--gf-line-strong);
+  padding: 12px 0;
+  font: 10px var(--gf-font-mono);
+}
+.ps dt {
+  color: var(--gf-ink-2);
+}
+.ps dd {
+  margin: 0;
+}
+.ps-inspect > p:not(.ps-kicker) {
+  font-size: 11px;
+  line-height: 1.85;
+  color: var(--gf-ink-2);
+  margin-top: 20px;
+}
+.ps-inspect > a {
+  display: block;
+  font: 9px var(--gf-font-mono);
+  margin-top: 20px;
+}
+.ps-http {
+  background: radial-gradient(
+    ellipse at 0 20%,
+    color-mix(in srgb, var(--gf-accent) 5%, transparent),
+    transparent 60%
+  );
+}
+.ps-http-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 100px;
+  padding-top: 20px;
+}
+.ps-http-readout > label {
+  display: block;
+  margin-bottom: 12px;
+}
+.ps-http-readout > select {
+  width: 100%;
+}
+.ps-http-brand {
+  display: block;
+  margin-top: 40px;
+  font: 10px var(--gf-font-mono);
+  color: var(--gf-accent-hi);
+}
+.ps-http-readout > strong {
+  display: block;
+  font: 500 112px/1.1 var(--gf-font-display);
+  letter-spacing: -0.085em;
+  margin-top: 10px;
+}
+.ps-http-readout > span:last-of-type {
+  font: 11px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-http-baseline {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-block: 1px solid var(--gf-line);
+  padding: 18px 0;
+  margin-top: 30px;
+  font: 10px var(--gf-font-mono);
+}
+.ps-http-baseline > span {
+  color: var(--gf-ink-2);
+}
+.ps-http-readout > p {
+  font-size: 11px;
+  line-height: 1.9;
+  color: var(--gf-ink-2);
+  margin-top: 20px;
+}
+.ps-http-plot {
+  padding-top: 15px;
+  min-width: 0;
+}
+.ps-http-axis {
+  height: 30px;
+  position: relative;
+  margin-left: 140px;
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-http-axis span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+.ps-http-axis span:first-child {
+  transform: none;
+}
+.ps-http-axis span:last-child {
+  transform: translateX(-100%);
+}
+.ps-http-row {
+  display: grid;
+  grid-template-columns: 125px 1fr;
+  gap: 10px 15px;
+  position: relative;
+  align-items: center;
+  border-top: 1px solid var(--gf-line);
+  padding: 23px 0;
+}
+.ps-http-row > div:first-child > strong {
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+}
+.ps-http-row > div:first-child > span {
+  font: 8px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  display: block;
+  margin-top: 6px;
+}
+.ps-http-track {
+  height: 3px;
+  background: var(--gf-line-strong);
+  position: relative;
+}
+.ps-http-track > i {
+  display: block;
+  height: 3px;
+  background: var(--gf-ink-3);
+}
+.ps-http-row > b {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-http-row.is-goforj {
+  color: var(--gf-accent-hi);
+}
+.ps-http-row.is-goforj .ps-http-track > i {
+  background: var(--gf-accent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--gf-accent) 25%, transparent);
+}
+.ps-http-row.is-goforj > b {
+  color: var(--gf-accent-hi);
+}
+.ps-evidence-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 100px;
+  margin-top: 60px;
+}
+.ps-environment dl {
+  margin-top: 15px;
+}
+.ps-environment > p {
+  font-size: 11px;
+  line-height: 1.85;
+  color: var(--gf-ink-2);
+  margin-top: 20px;
+}
+.ps-sources > a {
+  display: grid;
+  grid-template-columns: 40px 1fr 100px 20px;
+  gap: 15px;
+  align-items: center;
+  border-top: 1px solid var(--gf-line-strong);
+  padding: 22px 0;
+}
+.ps-sources > a > span:first-child {
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-sources > a > strong {
+  font: 500 20px var(--gf-font-display);
+  color: var(--gf-ink);
+}
+.ps-sources > a > code {
+  font: 10px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-sources details {
+  margin-top: 20px;
+  font: 10px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.ps-sources summary {
+  cursor: pointer;
+  padding-block: 12px;
+}
+.ps-sources details > div {
+  padding: 15px 0;
+  border-top: 1px solid var(--gf-line);
+}
+.ps-sources details code {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 9px;
+  line-height: 1.8;
+  margin-top: 7px;
+}
+.ps-caveat {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 20px 100px;
+  margin-top: 60px;
+  padding-top: 25px;
+  border-top: 1px solid var(--gf-line);
+}
+.ps-caveat > span {
+  font: 9px/1.8 var(--gf-font-mono);
+  color: var(--gf-reference);
+}
+.ps-caveat > p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--gf-ink-2);
+}
+.ps-caveat > a {
+  grid-column: 2;
+  font-size: 11px;
+}
+.ps-closing {
+  padding-block: 80px 90px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px 90px;
+  background: var(--gf-ground-alt);
+}
+.ps-closing > .ps-kicker {
+  grid-column: 1/-1;
+}
+.ps-closing h2 {
+  font: 500 clamp(70px, 8vw, 116px) / 0.98 var(--gf-font-display);
+  letter-spacing: -0.075em;
+}
+.ps-closing > div {
+  align-self: end;
   padding-bottom: 5px;
 }
-.pf-hero-intro .pf-lead {
+.ps-closing > div > p {
   font-size: 15px;
-  line-height: 1.85;
-  margin-top: 0 !important;
-}
-.pf-hero-intro > p:not(.pf-lead) {
+  line-height: 1.9;
   color: var(--gf-ink-2);
-  font-size: 12px;
-  line-height: 1.85;
-  margin-top: 15px;
+  max-width: 360px;
 }
-.pf-hero-intro > a {
+.ps-closing > div > a {
   display: inline-block;
-  margin-top: 20px;
+  font-size: 11px;
+  margin-top: 28px;
+}
+.ps-closing .ps-cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--gf-accent);
+  color: var(--gf-on-accent);
+  border-radius: 5px;
+  padding: 17px 20px;
+  max-width: 280px;
   font-size: 12px;
-  color: var(--gf-nav);
-}
-.pf-hero-intro > a span {
-  margin-left: 20px;
-}
-@media (prefers-reduced-motion: no-preference) {
-  :global(html:not([data-gf-motion='reduced'])) .pf-row-dot,
-  :global(html:not([data-gf-motion='reduced'])) .pf-row-line {
-    transition:
-      left 0.25s,
-      width 0.25s;
-  }
-}
-:global(html[data-gf-motion='on']) .pf-row-dot,
-:global(html[data-gf-motion='on']) .pf-row-line {
-  transition:
-    left 0.25s,
-    width 0.25s;
+  font-weight: 600;
 }
 @media (max-width: 1100px) {
-  .pf-hero {
-    gap: 30px;
+  .ps-orbit {
+    right: -280px;
+    opacity: 0.45;
   }
-  .pf-hero h1 {
-    font-size: 65px;
+  .ps-opening h1 {
+    font-size: 112px;
   }
-  .pf-explorer-body {
-    grid-template-columns: minmax(0, 1fr) 240px;
+  .ps-heading {
+    gap: 40px;
   }
-  .pf-http-layout,
-  .pf-method-layout,
-  .pf-limits {
-    gap: 45px;
+  .ps-http-layout,
+  .ps-evidence-layout,
+  .ps-caveat {
+    gap: 50px;
     grid-template-columns: 270px 1fr;
   }
-  .pf-explorer-tabs button {
-    padding: 18px;
-  }
-  .pf-source-path {
-    display: none;
-  }
-  .pf-source-list > a {
-    grid-template-columns: 1fr 80px 12px;
-  }
-}
-@media (max-width: 800px) {
-  .pf-hero {
-    grid-template-columns: 1fr;
-    padding-top: 42px;
-    padding-bottom: 40px;
-  }
-  .pf-hero h1 {
-    font-size: 64px;
-  }
-  .pf-lead {
-    max-width: 540px;
-  }
-  .pf-section {
-    padding-block: 48px;
-  }
-  .pf-section-head {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  .pf-section-head > p,
-  .pf-section-head > div > p:not(.pf-kicker) {
-    max-width: 600px;
-  }
-  .pf-explorer-body {
-    grid-template-columns: 1fr;
-  }
-  .pf-detail {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 30px;
-    padding: 25px;
-    border-left: 0;
-    border-top: 1px solid var(--gf-line);
-  }
-  .pf-detail > .pf-mono,
-  .pf-detail > p,
-  .pf-detail > a {
-    grid-column: 1 / -1;
-  }
-  .pf-detail > h3,
-  .pf-detail > .pf-detail-kind {
-    grid-column: 1;
-  }
-  .pf-detail-time {
-    grid-column: 2;
-    grid-row: 2 / 4;
-    margin: 15px 0 0;
-  }
-  .pf-detail dl {
-    grid-column: 1 / -1;
-    margin-top: 20px;
-  }
-  .pf-detail-time strong {
-    font-size: 40px;
-  }
-  .pf-contract-note {
-    grid-template-columns: 1fr;
-    gap: 9px;
-  }
-  .pf-http-layout,
-  .pf-method-layout,
-  .pf-limits {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-  .pf-http-summary {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 35px;
-  }
-  .pf-http-summary > label,
-  .pf-http-summary > select,
-  .pf-http-summary > p {
-    grid-column: 1 / -1;
-  }
-  .pf-http-reference {
-    display: block;
-    align-self: center;
-  }
-  .pf-http-reference strong {
-    display: block;
-    margin-top: 10px;
-  }
-  .pf-http-chart {
-    padding-top: 5px;
-  }
-  .pf-source-path {
-    display: inline;
-  }
-  .pf-source-list > a {
-    grid-template-columns: 75px 1fr 66px 12px;
-  }
-  .pf-closing {
-    grid-template-columns: 1fr;
+  .ps-driver-layout {
+    grid-template-columns: 1fr 230px;
     gap: 25px;
-    padding-block: 45px;
   }
-}
-@media (max-width: 480px) {
-  .pf-rail {
-    padding-inline: 20px;
+  .ps-driver-row {
+    grid-template-columns: 110px 1fr 70px;
   }
-  .pf-rail::after {
-    left: 17px;
+  .ps-log-axis {
+    margin-left: 120px;
+    margin-right: 80px;
   }
-  .pf-hero h1 {
-    font-size: 55px;
-  }
-  .pf-lead {
-    font-size: 14px;
-  }
-  .pf-hero .pf-actions {
-    gap: 18px;
-    font-size: 11px;
-  }
-  .pf-hero .pf-primary {
-    gap: 15px;
-  }
-  .pf-section h2 {
-    font-size: 38px;
-  }
-  .pf-explorer-tabs button {
-    font-size: 12px;
-    gap: 6px;
-    padding: 15px 10px;
-  }
-  .pf-explorer-tabs button > span {
-    font-size: 8px;
-  }
-  .pf-explorer-tabs svg {
+  .ps-operation-tabs svg {
     display: none;
   }
-  .pf-chart {
-    padding: 20px 12px;
+  .ps-inspect {
+    padding-left: 20px;
   }
-  .pf-chart-row {
-    grid-template-columns: 88px minmax(0, 1fr) 65px;
-    gap: 7px;
-    min-height: 45px;
+  .ps-inspect-value {
+    font-size: 48px;
   }
-  .pf-row-name {
+}
+@media (max-width: 760px) {
+  .ps-rail {
+    padding-inline: 24px;
+  }
+  .ps-opening {
+    padding-top: 30px;
+    min-height: 0;
+    padding-bottom: 45px;
+  }
+  .ps-edition {
+    display: none;
+  }
+  .ps-opening h1 {
+    font-size: clamp(65px, 12vw, 90px);
+    margin-top: 40px;
+  }
+  .ps-opening-bottom {
+    display: block;
+    margin-top: 30px;
+  }
+  .ps-opening-bottom > p {
+    font-size: 25px;
+  }
+  .ps-opening-bottom > div {
+    margin-top: 22px;
+    max-width: 330px;
+    font-size: 12px;
+  }
+  .ps-orbit {
+    width: 480px;
+    right: -300px;
+    top: 110px;
+    opacity: 0.25;
+  }
+  .ps-chapters {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 12px;
+  }
+  .ps-chapters a {
     font-size: 10px;
-    padding-left: 4px;
-  }
-  .pf-chart-row > strong {
-    font-size: 9px;
-  }
-  .pf-axis {
-    padding-left: 95px;
-    padding-right: 72px;
-  }
-  .pf-axis span {
-    font-size: 7px;
-  }
-  .pf-axis span:nth-child(even):not(:last-child) {
-    visibility: hidden;
-  }
-  .pf-chart-title h3 {
-    font-size: 15px;
-  }
-  .pf-chart-legend {
-    gap: 12px;
-  }
-  .pf-chart-legend > span {
-    font-size: 8px;
-  }
-  .pf-detail {
-    padding: 22px 18px;
-  }
-  .pf-http-summary {
-    column-gap: 20px;
-  }
-  .pf-http-number strong {
-    font-size: 54px;
-  }
-  .pf-http-reference {
-    font-size: 9px;
-  }
-  .pf-http-row {
-    grid-template-columns: 96px minmax(0, 1fr) 45px;
     gap: 10px;
   }
-  .pf-http-row-title strong {
-    font-size: 10px;
+  .ps-section {
+    padding-block: 60px;
   }
-  .pf-http-row-title span {
+  .ps-heading {
+    display: block;
+    margin-bottom: 30px;
+  }
+  .ps-heading h2 {
+    font-size: 48px;
+  }
+  .ps-heading > p,
+  .ps-heading > div:last-child:not(:first-child) {
+    margin-top: 25px;
+  }
+  .ps-heading > p,
+  .ps-heading > div > p:not(.ps-kicker) {
+    font-size: 13px;
+  }
+  .ps-operation-tabs {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 30px;
+  }
+  .ps-operation-tabs button {
+    padding: 20px 12px;
+    border-bottom: 1px solid var(--gf-line);
+  }
+  .ps-operation-tabs button:first-child {
+    padding-left: 12px;
+  }
+  .ps-operation-tabs button:nth-child(even) {
+    border-right: 0;
+  }
+  .ps-operation-tabs strong {
+    font-size: 17px;
+  }
+  .ps-operation-tabs small {
+    font-size: 8px;
+  }
+  .ps-takeaway {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 40px;
+  }
+  .ps-takeaway > div:first-child > strong {
+    font-size: 110px;
+  }
+  .ps-takeaway > div:last-child {
+    padding-top: 15px;
+  }
+  .ps-takeaway h3 {
+    font-size: 24px;
+  }
+  .ps-takeaway > div:last-child p {
+    font-size: 13px;
+  }
+  .ps-driver-toolbar {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ps-driver-toolbar > span {
+    margin-left: 0;
+    width: 100%;
+    font-size: 8px;
+  }
+  .ps-driver-layout {
+    display: block;
+    padding-top: 25px;
+  }
+  .ps-driver-row {
+    grid-template-columns: 95px 1fr 65px;
+    gap: 6px;
+  }
+  .ps-driver-row > span {
+    font-size: 9px;
+    padding-left: 5px;
+  }
+  .ps-driver-row > strong {
+    font-size: 8px;
+    padding-right: 3px;
+  }
+  .ps-log-axis {
+    margin-left: 101px;
+    margin-right: 71px;
+    font-size: 6px;
+  }
+  .ps-legend {
+    font-size: 7px;
+    gap: 12px;
+  }
+  .ps-chart-note {
+    font-size: 8px;
+  }
+  .ps-inspect {
+    border-left: 0;
+    border-top: 1px solid var(--gf-line-strong);
+    padding: 25px 0 0;
+    margin-top: 30px;
+  }
+  .ps-inspect-value {
+    font-size: 60px;
+    margin-block: 20px;
+  }
+  .ps-http-layout,
+  .ps-evidence-layout {
+    display: block;
+    padding-top: 0;
+  }
+  .ps-http-readout > select {
+    max-width: 320px;
+  }
+  .ps-http-brand {
+    margin-top: 30px;
+  }
+  .ps-http-readout > strong {
+    font-size: 100px;
+  }
+  .ps-http-plot {
+    margin-top: 45px;
+  }
+  .ps-http-row {
+    grid-template-columns: 100px 1fr;
+    gap: 10px;
+  }
+  .ps-http-axis {
+    margin-left: 110px;
+    font-size: 8px;
+  }
+  .ps-http-row > div:first-child > strong {
+    font-size: 11px;
+  }
+  .ps-http-row > div:first-child > span {
     font-size: 7px;
   }
-  .pf-http-rate {
+  .ps-sources {
+    margin-top: 35px;
+  }
+  .ps-sources > a {
+    grid-template-columns: 25px 1fr 75px 15px;
+    gap: 10px;
+  }
+  .ps-sources > a > strong {
+    font-size: 18px;
+  }
+  .ps-sources > a > code {
     font-size: 9px;
   }
-  .pf-http-axis {
-    margin-left: 106px;
-    margin-right: 55px;
+  .ps-caveat {
+    display: block;
+    margin-top: 40px;
+    padding-top: 20px;
   }
-  .pf-http-axis span {
-    font-size: 7px;
+  .ps-caveat > p {
+    margin-top: 15px;
   }
-  .pf-source-path {
-    display: none;
+  .ps-caveat > a {
+    display: inline-block;
+    margin-top: 20px;
   }
-  .pf-source-list > a {
-    grid-template-columns: 1fr 80px 12px;
+  .ps-closing {
+    display: block;
+    padding-block: 55px 65px;
   }
-  .pf-closing h2 {
-    font-size: 38px;
+  .ps-closing h2 {
+    font-size: 76px;
+    margin-top: 25px;
   }
-}
-
-@media (max-width: 800px) {
-  .pf-hero {
-    padding-bottom: 0;
+  .ps-closing > div {
+    margin-top: 30px;
   }
-  .pf-hero-heading {
-    grid-template-columns: 1fr;
-    gap: 25px;
+  .ps-closing > div > p {
+    font-size: 13px;
   }
-  .pf-hero h1 {
-    font-size: 64px;
+  .ps-kicker {
+    font-size: 9px;
   }
-  .pf-hero-intro {
-    max-width: 560px;
-  }
-}
-@media (max-width: 480px) {
-  .pf-hero {
-    padding-top: 32px;
-  }
-  .pf-hero h1 {
-    font-size: 54px;
-  }
-  .pf-hero-intro .pf-lead {
-    font-size: 14px;
+  .ps-eyebrow {
+    font-size: 9px;
   }
 }
 </style>
