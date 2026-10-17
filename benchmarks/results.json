@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "captured_at": "2026-10-17T21:58:46.593Z",
+    "captured_at": "2026-10-17T22:05:23.947Z",
     "go_version": "go version go1.27.2 darwin/arm64",
     "goos": "darwin",
     "goarch": "arm64",
@@ -27,8 +27,8 @@
     ],
     "harness_sha256": {
       "database_test.go": "73fa6c5c5e5c1b28f14679a91f8c8d373e0b6d4a3189271455e48c89a80da0df",
-      "go.mod": "730695ffc3f110e2d420013dbff12156a26dde008bb2688b48ed2961909285f4",
-      "go.sum": "2c7696199ebd9a8a9cff08504dd705ad2fd1bac3d390601423431be7837b2009",
+      "go.mod": "1bfb90b4de873aec0e1cfd90e3a5d0e4fc710915a1b323efb101c51941a90a38",
+      "go.sum": "1a4cdd04115c66942b84c75d2fedb0bd82dc607de38de52196171c030805011b",
       "run.mjs": "efab5fdd2516b689711a38f2186a0dd2eae772e8a28ccbcafcd6496310a48563"
     },
     "database": "Warm primary-key reads cycling over 1,000 seeded rows through GORM with GoForj database defaults and one pooled connection. MySQL and PostgreSQL run in local Docker containers; SQLite is a temporary file using the pure-Go driver. Migration, seeding, startup, and connection warmup are outside the timer. These are GORM operation fixtures, not a complete generated application or production database comparison."
@@ -37,72 +37,64 @@
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 6297,
-      "ns_op": 189909,
+      "iterations": 6250,
+      "ns_op": 191345,
       "bytes_op": 4237,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7588,
-      "ns_op": 184491,
+      "iterations": 6276,
+      "ns_op": 187311,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7560,
-      "ns_op": 187481,
+      "iterations": 7776,
+      "ns_op": 186702,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7972,
-      "ns_op": 190051,
+      "iterations": 6962,
+      "ns_op": 188104,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7528,
-      "ns_op": 267311,
+      "iterations": 7962,
+      "ns_op": 189266,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 3378,
-      "ns_op": 375239,
+      "iterations": 6870,
+      "ns_op": 187648,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 8020,
-      "ns_op": 187132,
+      "iterations": 8125,
+      "ns_op": 188934,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "postgres",
-      "iterations": 10000,
-      "ns_op": 100110,
-      "bytes_op": 4324,
-      "allocs_op": 65
-    },
-    {
-      "family": "database",
-      "driver": "postgres",
-      "iterations": 12175,
-      "ns_op": 99802,
+      "iterations": 12090,
+      "ns_op": 99535,
       "bytes_op": 4324,
       "allocs_op": 65
     },
@@ -110,7 +102,7 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 104505,
+      "ns_op": 112619,
       "bytes_op": 4324,
       "allocs_op": 65
     },
@@ -118,7 +110,7 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 104532,
+      "ns_op": 119528,
       "bytes_op": 4324,
       "allocs_op": 65
     },
@@ -126,79 +118,87 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 100715,
+      "ns_op": 124821,
       "bytes_op": 4324,
       "allocs_op": 65
     },
     {
       "family": "database",
       "driver": "postgres",
-      "iterations": 12685,
-      "ns_op": 96606,
+      "iterations": 10000,
+      "ns_op": 124906,
       "bytes_op": 4324,
       "allocs_op": 65
     },
     {
       "family": "database",
       "driver": "postgres",
-      "iterations": 12385,
-      "ns_op": 94942,
+      "iterations": 10000,
+      "ns_op": 110873,
+      "bytes_op": 4324,
+      "allocs_op": 65
+    },
+    {
+      "family": "database",
+      "driver": "postgres",
+      "iterations": 10000,
+      "ns_op": 117754,
       "bytes_op": 4324,
       "allocs_op": 65
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 97579,
-      "ns_op": 11747,
+      "iterations": 107144,
+      "ns_op": 11111,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 104023,
-      "ns_op": 11649,
+      "iterations": 107074,
+      "ns_op": 11028,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 106030,
-      "ns_op": 11173,
+      "iterations": 107950,
+      "ns_op": 11047,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 100033,
-      "ns_op": 12186,
+      "iterations": 109023,
+      "ns_op": 11058,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 100628,
-      "ns_op": 11461,
+      "iterations": 108781,
+      "ns_op": 11117,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 105813,
-      "ns_op": 11436,
+      "iterations": 108652,
+      "ns_op": 11026,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 102085,
-      "ns_op": 11243,
+      "iterations": 108201,
+      "ns_op": 11005,
       "bytes_op": 4330,
       "allocs_op": 66
     }
