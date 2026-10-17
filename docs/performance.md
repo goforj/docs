@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: Compare GoForj driver and HTTP performance with charts for latency, throughput, allocations, and bytes per operation.
+description: Choose GoForj drivers and HTTP components using measured latency, throughput, and memory costs, with source benchmarks behind every result.
 sidebar: false
 aside: false
 noAutoTitle: true

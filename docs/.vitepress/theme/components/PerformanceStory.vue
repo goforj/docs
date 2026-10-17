@@ -131,10 +131,11 @@ onBeforeUnmount(() => {
       <div class="bench-page-brand">
         <img src="/favicon.svg" alt="" width="25" height="25" /><span>GOFORJ / BENCHMARKS</span>
       </div>
-      <h1>Performance, <em>by driver.</em></h1>
+      <h1>Hard numbers. <em>Better app decisions.</em></h1>
       <p>
-        Cache reads, queue dispatch, event delivery, object storage, and HTTP routing. Every
-        recorded result, with the drivers and conditions behind it.
+        Compare the latency, throughput, and memory costs of GoForj drivers and HTTP routers
+        before choosing what runs in your app. See the tradeoffs side by side, with source
+        benchmarks behind every result.
       </p>
       <nav aria-label="Benchmark primitives">
         <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`" :aria-current="activeBenchmark === `bench-${chart.id}` ? 'location' : undefined"
@@ -149,7 +150,7 @@ onBeforeUnmount(() => {
     </header>
     <div class="bench-content">
       <div class="bench-reading">
-        <span>Every metric. Every recorded driver.</span>
+        <span>Compare the cost of each option.</span>
         <p>Compare drivers within each chart. Each primitive measures its own operation.</p>
       </div>
       <div class="bench-gallery">
@@ -289,7 +290,7 @@ onBeforeUnmount(() => {
   color: var(--gf-accent-hi);
 }
 .bench-page-header > p {
-  max-width: 690px;
+  max-width: 800px;
   font-size: 14px;
   line-height: 1.85;
   color: var(--gf-ink-2);
