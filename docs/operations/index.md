@@ -19,6 +19,7 @@ Use these guides when you need to run, split, observe, deploy, or recover an App
 | Configure probes | [Health and Readiness](/operations/health-readiness) |
 | Investigate runtime behavior | [Logging](/operations/logging), [Metrics](/operations/metrics), and [Inspects](/operations/inspects) |
 | Use the operator interface | [Lighthouse](/operations/lighthouse) |
+| Compare HTTP and infrastructure performance safely | [Performance Benchmarks](/operations/performance-benchmarks) |
 | Protect and recover durable state | [Backup and Restore](/operations/backups) |
 | Build, roll out, verify, and roll back a release | [Deploy an App](/operations/deployment-basics) |
 
