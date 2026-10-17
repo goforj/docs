@@ -138,14 +138,21 @@ onBeforeUnmount(() => {
         benchmarks behind every result.
       </p>
       <nav aria-label="Benchmark primitives">
-        <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`" :aria-current="activeBenchmark === `bench-${chart.id}` ? 'location' : undefined"
-          >{{ chart.title }}
-          <span>{{ chart.rows.filter((r) => r.kind !== 'noop').length }}</span></a
-        ><a href="#bench-http"
-          >HTTP <span>7</span></a
-        ><a class="bench-nav-pending" href="#bench-other"
-          >Mail &amp; database <span>Unmeasured</span></a
-        >
+        <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`" :aria-current="activeBenchmark === `bench-${chart.id}` ? 'location' : undefined">
+          <img :src="chart.logo" alt="" width="40" height="40" />
+          <span class="bench-nav-label"><strong>{{ chart.title }}</strong><small>{{ chart.rows.filter(r => r.kind !== 'noop').length }} driver results</small></span>
+          <span class="bench-nav-arrow" aria-hidden="true">↓</span>
+        </a>
+        <a href="#bench-http" :aria-current="activeBenchmark.startsWith('bench-http') ? 'location' : undefined">
+          <img :src="webLogo" alt="" width="40" height="40" />
+          <span class="bench-nav-label"><strong>HTTP</strong><small>7 routers · 4 workloads</small></span>
+          <span class="bench-nav-arrow" aria-hidden="true">↓</span>
+        </a>
+        <a href="#bench-other" :aria-current="activeBenchmark === 'bench-other' ? 'location' : undefined">
+          <img :src="mailLogo" alt="" width="40" height="40" />
+          <span class="bench-nav-label"><strong>Mail &amp; database</strong><small>Coverage gaps</small></span>
+          <span class="bench-nav-arrow" aria-hidden="true">↓</span>
+        </a>
       </nav>
     </header>
     <div class="bench-content">
@@ -297,45 +304,35 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 .bench-page-header > nav {
-  display: flex;
-  gap: 25px;
-  flex-wrap: wrap;
-  margin-top: 28px;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 26px;
 }
 .bench-page-header nav > a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: var(--gf-ink-2);
-  text-decoration: none;
-}
-.bench-page-header nav > a:hover {
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  background: var(--gf-ground);
+  border: 1px solid var(--gf-line);
+  border-radius: 10px;
   color: var(--gf-ink);
+  text-decoration: none;
+  transition: border-color .15s, background-color .15s;
 }
-.bench-page-header nav span {
-  font: 8px var(--gf-font-mono);
-  color: var(--gf-ink-3);
+.bench-page-header nav > a:hover,
+.bench-page-header nav > a[aria-current='location'] {
+  border-color: var(--gf-accent-hi);
+  background: var(--gf-ground-alt);
 }
-.bench-page-header nav > a.bench-nav-pending {
-  margin-left: auto;
-  font-size: 10px;
-}
-.bench-nav-pending > span {
-  padding: 4px 6px;
-  border: 1px solid var(--gf-line-strong);
-  border-radius: 3px;
-  font-size: 7px;
-}
-
-
-
-
-
-
-
-
+.bench-page-header nav > a > img { width:40px; height:40px; object-fit:contain; flex-shrink:0; margin:0; }
+.bench-nav-label { min-width:0; }
+.bench-nav-label strong { display:block; font:500 14px var(--gf-font-display); line-height:1.35; }
+.bench-nav-label small { display:block; margin-top:4px; font:9px var(--gf-font-body); line-height:1.4; color:var(--gf-ink-2); }
+.bench-nav-arrow { margin-left:auto; font:14px var(--gf-font-mono); color:var(--gf-ink-3); }
+.bench-page-header nav > a:hover .bench-nav-arrow { color:var(--gf-accent-hi); }
 
 .bench-reading {
   display: flex;
@@ -483,6 +480,9 @@ onBeforeUnmount(() => {
   text-decoration: none;
   white-space: nowrap;
 }
+@media (max-width: 1100px) {
+  .bench-page-header > nav { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
 @media (max-width: 1000px) {
   .bench-page-header,
   .bench-content {
@@ -518,9 +518,6 @@ onBeforeUnmount(() => {
     max-width: none;
     margin-top: 8px;
   }
-  .bench-page-header nav > a.bench-nav-pending {
-    margin-left: 0;
-  }
   .bench-http-heading {
     align-items: start;
   }
@@ -550,22 +547,12 @@ onBeforeUnmount(() => {
   .bench-page-header > p {
     font-size: 12px;
   }
-  .bench-page-header > nav {
-    gap: 15px 20px;
-    margin-top: 22px;
-  }
-  .bench-page-header nav > a {
-    font-size: 10px;
-  }
-  .bench-page-header nav > a.bench-nav-pending {
-    width: 100%;
-    font-size: 9px;
-  }
-
-
-
-
-
+  .bench-page-header > nav { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:22px; }
+  .bench-page-header nav > a { gap:8px; padding:10px; }
+  .bench-page-header nav > a > img { width:32px; height:32px; }
+  .bench-nav-label strong { font-size:12px; }
+  .bench-nav-label small { font-size:8px; }
+  .bench-nav-arrow { display:none; }
 
   .bench-reading {
     font-size: 9px;
