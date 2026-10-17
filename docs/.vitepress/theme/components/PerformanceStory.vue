@@ -1,780 +1,555 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import evidence from '../../data/performance-stats.json'
-import PerformanceLens from './PerformanceLens.vue'
-import PerformanceHTTP from './PerformanceHTTP.vue'
-import PerformanceDrivers from './PerformanceDrivers.vue'
-
-const selectedSuite = ref('cache')
-const suites = {
+import PerformanceChart from './PerformanceChart.vue'
+import PerformanceLogo from './PerformanceLogo.vue'
+import cacheLogo from '../../../assets/performance/cache-logo.png'
+import queueLogo from '../../../assets/performance/queue-logo.png'
+import eventsLogo from '../../../assets/performance/events-logo.png'
+import storageLogo from '../../../assets/performance/storage-logo.png'
+import webLogo from '../../../assets/performance/web-logo.png'
+import mailLogo from '../../../assets/performance/mail-logo.png'
+const info = {
   cache: {
-    name: 'Cache',
+    logo: cacheLogo,
+    title: 'Cache',
     operation: 'GetBytes',
-    local: 'Memory',
-    service: 'Redis',
-    localConfig: 'CACHE_DRIVER=memory',
-    serviceConfig: 'CACHE_DRIVER=redis',
-    limit: 'Memory belongs to one process. Redis adds a network boundary and shared state.',
-    measurement: 'A seeded byte-value read. The result includes the selected driver call.',
-    icon: 'M5 5h14v5H5z M5 14h14v5H5z M8 8h1 M8 17h1',
+    note: 'Seeded byte-value reads. NATS KV + TTL is a second configuration of the NATS driver.',
   },
   queue: {
-    name: 'Queue',
+    logo: queueLogo,
+    title: 'Queue',
     operation: 'Dispatch return',
-    local: 'Worker pool',
-    service: 'RabbitMQ',
-    localConfig: 'QUEUE_DRIVER=workerpool',
-    serviceConfig: 'QUEUE_DRIVER=rabbitmq',
-    limit:
-      'The worker pool runs in this process. A broker lets workers live elsewhere; retries and delivery semantics still depend on the driver and configuration.',
-    measurement:
-      'Producer-side dispatch return, not job completion. Core NATS publish return is an ephemeral boundary, not a durable broker acknowledgement.',
-    icon: 'M4 6h11 M4 12h11 M4 18h11 M17 9l3 3-3 3',
+    note: 'Producer-side dispatch return, not job completion. Core NATS publish return is not durable acknowledgement.',
   },
   events: {
-    name: 'Events',
+    logo: eventsLogo,
+    title: 'Events',
     operation: 'Publish + handler delivery',
-    local: 'Synchronous',
-    service: 'NATS',
-    localConfig: 'EVENTS_DRIVER=inproc',
-    serviceConfig: 'EVENTS_DRIVER=nats',
-    limit:
-      'Local handlers share a process. Core NATS crosses that boundary without promising durable delivery; use a durable driver when that is required.',
-    measurement:
-      'Publish plus observed handler delivery. This includes the round trip, unlike the queue dispatch suite.',
-    icon: 'M12 9v6 M9 12h6 M5 5l3 3 M16 16l3 3 M5 19l3-3 M16 8l3-3',
+    note: 'Publish plus observed handler delivery, including the service round trip.',
   },
   storage: {
-    name: 'Storage',
+    logo: storageLogo,
+    title: 'Storage',
     operation: 'Get small object',
-    local: 'Local',
-    service: 'S3',
-    localConfig: 'STORAGE_PUBLIC_DRIVER=local',
-    serviceConfig: 'STORAGE_PUBLIC_DRIVER=s3',
-    limit:
-      'Local files belong to a host. S3 adds a service boundary. Check driver capabilities and object semantics.',
-    measurement:
-      'Read a previously written small object. Service fixtures use local containers or emulators.',
-    icon: 'M4 7l8-4 8 4-8 4z M4 7v10l8 4 8-4V7 M12 11v10',
+    note: 'Read a previously written object. rclone is measured with a local filesystem remote.',
   },
 }
-const suite = computed(() => suites[selectedSuite.value])
-const story = computed(() => evidence.driverStories.find((s) => s.id === selectedSuite.value))
-const local = computed(() => story.value.rows.find((r) => r.label === suite.value.local))
-const sourceURL = (s) => `https://github.com/goforj/${s.repo}/blob/${s.revision}/${s.path}`
-const changeSuite = (id) => {
-  selectedSuite.value = id
-}
-const service = computed(() => story.value.rows.find((row) => row.label === suite.value.service))
-const ratio = computed(() =>
-  Math.round(service.value.value / local.value.value).toLocaleString('en-US'),
+const charts = computed(() =>
+  Object.entries(info).map(([id, meta]) => ({
+    id,
+    ...meta,
+    rows: evidence.driverStories.find((s) => s.id === id).rows,
+    missing: evidence.driverCoverage
+      .find((f) => f.id === id)
+      .drivers.filter((d) => !d.results.length),
+  })),
 )
+const workloads = {
+  path_param_json: 'Path parameter + JSON',
+  static_text: 'Static text response',
+  middleware_chain: 'Middleware chain',
+  live_plain_text: 'HTTP/1.1 loopback',
+}
+const httpCharts = computed(() => Object.entries(workloads).map(([id, title]) => ({
+  id: `http-${id}`,
+  title,
+  operation: id === 'live_plain_text' ? 'Live HTTP over one connection' : 'In-process handler dispatch',
+  rows: evidence.web.scenarios.find(s => s.id === id).rows.map(row => ({...row, driver: row.framework, value: row.nsOp, kind: 'router'})),
+  note: id === 'live_plain_text'
+    ? 'Warm HTTP/1.1 loopback over one connection. Socket and HTTP work are included. Small differences are not reliable rankings.'
+    : 'The same router workload without a socket, network, or application business logic.',
+})))
+const unmeasured = computed(() =>
+  ['mail', 'database'].map((id) => evidence.driverCoverage.find((f) => f.id === id)),
+)
+const source = (id) => {
+  const s = evidence.sources.find((s) => s.repo === id)
+  return `https://github.com/goforj/${id}/blob/${s.revision}/${s.path}`
+}
 </script>
-
 <template>
-  <main class="ps">
-    <section class="ps-opening ps-rail">
-      <div class="ps-eyebrow">
-        <span class="ps-brand-mark" aria-hidden="true">◇</span> GOFORJ / PERFORMANCE
-        <span class="ps-edition">THE MEASURED EDITION</span>
+  <main class="bench-page">
+    <header class="bench-page-header">
+      <div class="bench-page-brand">
+        <img src="/favicon.svg" alt="" width="25" height="25" /><span>GOFORJ / BENCHMARKS</span>
       </div>
-      <h1>Every boundary<br />has a <em>price.</em></h1>
-      <div class="ps-opening-bottom">
-        <p>Pay for the ones<br />your application needs.</p>
-        <div>
-          Start with local drivers. Add infrastructure for shared state, independent workers, or
-          different delivery guarantees. Keep your application behind the same library contracts.<a
-            href="#latency"
-            >See what a boundary costs <span>↓</span></a
-          >
-        </div>
-      </div>
-      <div class="ps-orbit" aria-hidden="true">
-        <svg viewBox="0 0 750 650" fill="none">
-          <defs>
-            <linearGradient id="ps-orbit-color">
-              <stop stop-color="var(--gf-accent)" stop-opacity="0" />
-              <stop offset=".5" stop-color="var(--gf-accent-hi)" />
-              <stop offset="1" stop-color="var(--gf-nav)" stop-opacity=".12" />
-            </linearGradient>
-          </defs>
-          <g transform="translate(375 325) rotate(-32)">
-            <ellipse
-              v-for="i in 19"
-              :key="i"
-              :rx="80 + i * 12"
-              :ry="35 + i * 8"
-              stroke="url(#ps-orbit-color)"
-              :stroke-width="i === 10 ? 2 : 0.65"
-            />
-            <path d="M-325 0H325" stroke="var(--gf-line-strong)" />
-            <path d="M0-220V220" stroke="var(--gf-line-strong)" />
-            <rect
-              x="-22"
-              y="-22"
-              width="44"
-              height="44"
-              fill="var(--gf-ground-deep)"
-              stroke="var(--gf-accent)"
-            />
-            <path
-              d="m-12-5 12-7 12 7v15l-12 7-12-7V-5Zm0 0L0 2l12-7M0 2v15"
-              stroke="var(--gf-accent-hi)"
-              stroke-width="1.5"
-            />
-          </g>
-          <circle cx="606" cy="182" r="4" fill="var(--gf-nav)" />
-          <circle cx="175" cy="428" r="3" fill="var(--gf-accent)" /></svg
-        ><span>APPLICATION → DRIVER → INFRASTRUCTURE</span>
-      </div>
-    </section>
-    <nav class="ps-chapters ps-rail" aria-label="Performance chapters">
-      <a href="#latency"><span>01</span> Feel the difference</a
-      ><a href="#drivers"><span>02</span> Inspect the tradeoff</a
-      ><a href="#http"><span>03</span> Follow the request</a>
-    </nav>
-
-    <section id="latency" class="ps-section ps-rail">
-      <div class="ps-heading">
-        <div>
-          <p class="ps-kicker">01 / A CLOSER LOOK AT TIME</p>
-          <h2>Small numbers.<br /><em>Very different work.</em></h2>
-        </div>
-        <p>
-          A nanosecond is hard to picture. Put two operations on the same clock and the difference
-          becomes visible. Zoom in. Zoom out. Replay the recorded timings.
-        </p>
-      </div>
-      <div class="ps-operation-tabs" role="group" aria-label="Choose an operation">
-        <button
-          v-for="(item, id) in suites"
-          :key="id"
-          :aria-pressed="selectedSuite === id"
-          @click="changeSuite(id)"
+      <h1>Performance, <em>by driver.</em></h1>
+      <p>
+        Cache reads, queue dispatch, event delivery, object storage, and HTTP routing. Every
+        recorded result, with the drivers and conditions behind it.
+      </p>
+      <nav aria-label="Benchmark primitives">
+        <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`"
+          >{{ chart.title }}
+          <span>{{ chart.rows.filter((r) => r.kind !== 'noop').length }}</span></a
+        ><a href="#bench-http"
+          >HTTP <span>7</span></a
+        ><a class="bench-nav-pending" href="#bench-other"
+          >Mail &amp; database <span>Unmeasured</span></a
         >
-          <span>0{{ Object.keys(suites).indexOf(id) + 1 }}</span
-          ><strong>{{ item.name }}</strong
-          ><small>{{ item.operation }}</small
-          ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path :d="item.icon" /></svg>
-        </button>
+      </nav>
+    </header>
+    <div class="bench-content">
+      <div class="bench-reading">
+        <span>Every metric. Every recorded driver.</span>
+        <p>Compare drivers within each chart. Each primitive measures its own operation.</p>
       </div>
-      <PerformanceLens
-        :local="local"
-        :service="service"
-        :operation="suite.operation"
-        :local-config="suite.localConfig"
-        :service-config="suite.serviceConfig"
-      />
-      <div class="ps-takeaway">
-        <div>
-          <span class="ps-kicker">IN THIS RECORDED COMPARISON</span
-          ><strong>{{ ratio }}<span>×</span></strong>
-          <p>
-            the time per operation<br /><span
-              >{{ service.label }} compared with {{ local.label }}</span
-            >
-          </p>
-        </div>
-        <div>
-          <h3>That extra work buys something.</h3>
-          <p>{{ suite.limit }}</p>
-          <p class="ps-small">
-            {{ suite.measurement }} These local harness results describe the fixture, not your
-            production network.
-          </p>
-          <a href="/drivers">Choose the guarantees your app needs ↗</a>
-        </div>
+      <div class="bench-gallery">
+        <PerformanceChart
+          v-for="chart in charts"
+          :key="chart.id"
+          v-bind="chart"
+          :source="source(chart.id)"
+        />
       </div>
-    </section>
-
-    <section id="drivers" class="ps-section ps-rail ps-drivers">
-      <div class="ps-heading">
-        <div>
-          <p class="ps-kicker">02 / THE DRIVER PROFILES</p>
-          <h2>Find your driver.<br /><em>See the tradeoff.</em></h2>
+      <section id="bench-http" class="bench-http">
+        <div class="bench-http-heading">
+          <div><p>HTTP BENCHMARKS</p><h2>Every workload. Every router.</h2></div>
         </div>
-        <p>
-          Every recorded result across cache, queue, events, and storage. Start with time, then
-          compare allocation and memory costs. Each column measures one operation.
+        <div class="bench-gallery">
+          <PerformanceChart
+            v-for="chart in httpCharts"
+            :key="chart.id"
+            v-bind="chart"
+            :logo="webLogo"
+            :source="source('web')"
+            http
+          />
+        </div>
+        <p class="bench-http-environment">
+          {{ evidence.web.metadata.go_version }} · {{ evidence.web.metadata.goos }}/{{
+            evidence.web.metadata.goarch
+          }}
+          · GOMAXPROCS={{ evidence.web.metadata.gomaxprocs }} ·
+          {{ evidence.web.metadata.sample_count }} samples ×
+          {{ evidence.web.metadata.benchmark_time }} each
         </p>
-      </div>
-      <PerformanceDrivers :coverage="evidence.driverCoverage" :sources="evidence.sources" />
-    </section>
-
-    <section id="http" class="ps-section ps-rail ps-http">
-      <div class="ps-heading">
-        <div>
-          <p class="ps-kicker">03 / THE HTTP PATH</p>
-          <h2>Your framework<br />shouldn't be<br /><em>the workload.</em></h2>
+      </section>
+      <section id="bench-other" class="bench-other">
+        <header>
+          <h2>Drivers awaiting measurements</h2>
+          <p>Mail delivery and database queries have no comparable snapshots in this dataset.</p>
+        </header>
+        <div class="bench-other-grid">
+          <article v-for="family in unmeasured" :key="family.id">
+            <img v-if="family.id === 'mail'" class="bench-mail-logo" :src="mailLogo" alt="Mail README logo" width="80" height="80" />
+            <h3>{{ family.id === 'mail' ? 'Mail' : 'Database' }}</h3>
+            <span>No benchmark snapshot</span>
+            <div>
+              <span v-for="driver in family.drivers" :key="driver.id"
+                ><PerformanceLogo :id="driver.id" />{{ driver.label }}</span
+              >
+            </div>
+          </article>
         </div>
-        <div>
-          <p>
-            GoForj Web measured beside <code>net/http</code> and other Go routers. One harness. Four
-            workloads. Every result included.
-          </p>
-          <p class="ps-small">
-            These measure the Web library, not a complete generated application with database
-            queries, authentication, and business logic.
-          </p>
-        </div>
-      </div>
-      <PerformanceHTTP
-        :web="evidence.web"
-        :source="sourceURL(evidence.sources.find((s) => s.repo === 'web'))"
-      />
-    </section>
-
-    <section class="ps-closing ps-rail">
-      <p class="ps-kicker">LESS INFRASTRUCTURE UNTIL YOU NEED MORE</p>
-      <h2>Start close.<br /><em>Go further.</em></h2>
-      <div>
+      </section>
+      <footer class="bench-page-footer">
         <p>
-          One application model. Local implementations to start. Infrastructure when the work calls
-          for it.
+          These results describe library harnesses and local service fixtures. Measure your own
+          payloads, network, concurrency, and delivery requirements before making capacity
+          decisions.
         </p>
-        <a class="ps-cta" href="/getting-started/quickstart">Build your first app <span>↗</span></a
-        ><a href="/drivers">Explore the drivers ↗</a>
-      </div>
-    </section>
+        <a href="/operations/performance-benchmarks"
+          >Benchmark your app in Lighthouse <span>↗</span></a
+        ><a href="/drivers">Driver capabilities ↗</a>
+      </footer>
+    </div>
   </main>
 </template>
 <style scoped>
-:global(.VPDoc:has(.ps)) {
+:global(.VPDoc:has(.bench-page)) {
   padding: 0 !important;
 }
-:global(.VPDoc:has(.ps) .container),
-:global(.VPDoc:has(.ps) .content),
-:global(.VPDoc:has(.ps) .content-container),
-:global(.VPDoc:has(.ps) .main),
-:global(.VPDoc:has(.ps) .vp-doc) {
+:global(.VPDoc:has(.bench-page) .container),
+:global(.VPDoc:has(.bench-page) .content),
+:global(.VPDoc:has(.bench-page) .content-container),
+:global(.VPDoc:has(.bench-page) .main),
+:global(.VPDoc:has(.bench-page) .vp-doc) {
   width: 100% !important;
   max-width: none !important;
 }
-:global(.VPDoc:has(.ps) .container),
-:global(.VPDoc:has(.ps) .content) {
+:global(.VPDoc:has(.bench-page) .container),
+:global(.VPDoc:has(.bench-page) .content) {
   padding: 0 !important;
 }
-:global(.VPDoc:has(.ps) .VPDocFooter) {
+:global(.VPDoc:has(.bench-page) .VPDocFooter) {
   display: none;
 }
-.ps {
-  --ps-process: var(--gf-nav);
-  --ps-local: #8ebfae;
-  --ps-service: #b5a2dd;
+.bench-page {
   background: var(--gf-ground-deep);
   color: var(--gf-ink);
   font-family: var(--gf-font-body);
-  overflow: clip;
+  min-height: 100vh;
 }
-:global(html:not(.dark)) .ps {
-  --ps-local: #28745c;
-  --ps-service: #735298;
-}
-.ps *,
-.ps *::before,
-.ps *::after {
+.bench-page :deep(*) {
   box-sizing: border-box;
 }
-.ps h1,
-.ps h2,
-.ps h3,
-.ps p {
+.bench-page :deep(button:focus-visible),
+.bench-page :deep(a:focus-visible),
+.bench-page :deep(select:focus-visible),
+.bench-page :deep(summary:focus-visible) {
+  outline: 2px solid var(--gf-nav);
+  outline-offset: 4px;
+}
+.bench-page-header,
+.bench-content {
+  max-width: 1360px;
+  padding-inline: 40px;
+  margin-inline: auto;
+}
+.bench-page-header {
+  padding-top: 50px;
+  padding-bottom: 28px;
+}
+.bench-page-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 9px var(--gf-font-mono);
+  letter-spacing: 0.08em;
+  color: var(--gf-reference);
+}
+.bench-page-brand > img {
+  display: block;
   margin: 0;
+  width: 25px;
+  height: 25px;
+}
+.bench-page h1 {
+  font: 500 clamp(38px, 4.4vw, 61px) / 1.12 var(--gf-font-display);
+  letter-spacing: -0.055em;
+  margin: 24px 0 18px;
   padding: 0;
   border: 0;
-}
-.ps h1,
-.ps h2,
-.ps h3 {
-  font-family: var(--gf-font-display);
   color: var(--gf-ink);
 }
-.ps a {
-  text-decoration: none;
-  color: var(--gf-nav);
-}
-.ps button,
-.ps select {
-  font: inherit;
-}
-.ps a:focus-visible,
-.ps button:focus-visible,
-.ps select:focus-visible,
-.ps summary:focus-visible {
-  outline: 2px solid var(--gf-nav);
-  outline-offset: 5px;
-}
-.ps em {
+.bench-page h1 > em {
   font-style: normal;
   color: var(--gf-accent-hi);
 }
-.ps code {
-  background: none;
-  padding: 0;
-  color: inherit;
-}
-.ps-rail {
-  position: relative;
-  padding-inline: max(28px, calc((100vw - 1240px) / 2));
-  border-bottom: 1px solid var(--gf-line);
-}
-.ps-rail::after {
-  position: absolute;
-  content: '';
-  width: 5px;
-  height: 5px;
-  background: var(--gf-accent);
-  bottom: -3px;
-  left: max(25px, calc((100vw - 1246px) / 2));
-}
-.ps-kicker {
-  font: 10px/1.6 var(--gf-font-mono);
-  letter-spacing: 0.08em;
-  color: var(--gf-reference);
-}
-.ps-opening {
-  position: relative;
-  isolation: isolate;
-  padding-top: 48px;
-  padding-bottom: 62px;
-  min-height: 740px;
-  overflow: hidden;
-  background: radial-gradient(
-    ellipse at 80% 50%,
-    color-mix(in srgb, var(--gf-accent) 6%, transparent),
-    transparent 65%
-  );
-}
-.ps-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font: 10px var(--gf-font-mono);
-  letter-spacing: 0.08em;
-  color: var(--gf-reference);
-}
-.ps-brand-mark {
-  font-size: 22px;
-  color: var(--gf-accent);
-}
-.ps-edition {
-  margin-left: auto;
-  color: var(--gf-ink-2);
-  font-size: 9px;
-}
-.ps-opening h1 {
-  font-size: clamp(90px, 9.9vw, 146px);
-  font-weight: 500;
-  line-height: 0.98;
-  letter-spacing: -0.075em;
-  margin-top: 60px;
-  max-width: 950px;
-  position: relative;
-  z-index: 1;
-}
-.ps-opening h1 em {
-  color: var(--gf-accent-hi);
-}
-.ps-opening-bottom {
-  display: flex;
-  gap: 80px;
-  align-items: start;
-  margin-top: 45px;
-  position: relative;
-  z-index: 1;
-  max-width: 780px;
-}
-.ps-opening-bottom > p {
-  font: 500 26px/1.25 var(--gf-font-display);
-  letter-spacing: -0.04em;
-  min-width: 250px;
-}
-.ps-opening-bottom > div {
-  max-width: 380px;
-  font-size: 13px;
-  line-height: 1.9;
-  color: var(--gf-ink-2);
-}
-.ps-opening-bottom a {
-  display: block;
-  margin-top: 20px;
-  font-size: 11px;
-  color: var(--gf-nav);
-}
-.ps-opening-bottom a span {
-  margin-left: 20px;
-}
-.ps-orbit {
-  position: absolute;
-  width: 750px;
-  right: -140px;
-  top: 125px;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.7;
-}
-.ps-orbit svg {
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-.ps-orbit > span {
-  position: absolute;
-  bottom: 70px;
-  left: 220px;
-  font: 8px var(--gf-font-mono);
-  letter-spacing: 0.12em;
-  color: var(--gf-ink-2);
-  transform: rotate(-32deg);
-}
-.ps-chapters {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding-block: 22px;
-  gap: 20px;
-}
-.ps-chapters a {
-  font-size: 11px;
-  color: var(--gf-ink-2);
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-.ps-chapters a:hover {
-  color: var(--gf-ink);
-}
-.ps-chapters a span {
-  font: 10px var(--gf-font-mono);
-  color: var(--gf-accent-hi);
-}
-.ps-section {
-  padding-top: 100px;
-  padding-bottom: 90px;
-  scroll-margin-top: 70px;
-}
-.ps-heading {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 90px;
-  align-items: end;
-  margin-bottom: 45px;
-}
-.ps-heading h2 {
-  font-size: clamp(46px, 4.9vw, 70px);
-  line-height: 1.05;
-  letter-spacing: -0.06em;
-  font-weight: 500;
-  margin-top: 22px;
-}
-.ps-heading > p,
-.ps-heading > div > p:not(.ps-kicker) {
+.bench-page-header > p {
+  max-width: 690px;
   font-size: 14px;
-  line-height: 1.9;
+  line-height: 1.85;
   color: var(--gf-ink-2);
-  max-width: 420px;
+  margin: 0;
 }
-.ps-heading .ps-small {
-  font-size: 11px !important;
-  margin-top: 16px !important;
-}
-.ps-small {
-  font-size: 11px !important;
-  line-height: 1.85 !important;
-  color: var(--gf-ink-2);
-}
-.ps-operation-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 50px 0 32px;
-  border-top: 1px solid var(--gf-line-strong);
-  border-bottom: 1px solid var(--gf-line-strong);
-}
-.ps-operation-tabs button {
-  position: relative;
-  display: grid;
-  grid-template-columns: 25px 1fr;
-  gap: 6px;
-  padding: 24px 20px;
-  text-align: left;
-  border-right: 1px solid var(--gf-line);
-  cursor: pointer;
-  border-top: 2px solid transparent;
-  margin-top: -1px;
-}
-.ps-operation-tabs button:first-child {
-  padding-left: 0;
-}
-.ps-operation-tabs button:last-child {
-  border-right: 0;
-}
-.ps-operation-tabs button[aria-pressed='true'] {
-  border-top-color: var(--gf-accent);
-  background: linear-gradient(color-mix(in srgb, var(--gf-accent) 6%, transparent), transparent);
-}
-.ps-operation-tabs button > span {
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  padding-top: 5px;
-}
-.ps-operation-tabs strong {
-  font: 500 18px var(--gf-font-display);
-}
-.ps-operation-tabs small {
-  grid-column: 2;
-  font: 9px/1.5 var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-operation-tabs svg {
-  position: absolute;
-  right: 20px;
-  top: 27px;
-  width: 18px;
-  height: 18px;
-  stroke: var(--gf-ink-2);
-  stroke-width: 1.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.ps-operation-tabs button[aria-pressed='true'] svg {
-  stroke: var(--gf-accent-hi);
-}
-.ps-takeaway {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 100px;
-  padding-top: 65px;
-  margin-top: 35px;
-  border-top: 1px solid var(--gf-line);
-}
-.ps-takeaway > div:first-child > strong {
-  display: block;
-  font: 500 clamp(85px, 11vw, 154px) / 1.1 var(--gf-font-display);
-  letter-spacing: -0.08em;
-  color: var(--gf-accent-hi);
-  margin-top: 12px;
-}
-.ps-takeaway > div:first-child > strong > span {
-  font-size: 0.45em;
-  margin-left: 10px;
-}
-.ps-takeaway > div:first-child > p {
-  font-size: 15px;
-  line-height: 1.7;
-}
-.ps-takeaway > div:first-child > p > span {
-  font: 10px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-takeaway > div:last-child {
-  padding-top: 30px;
-}
-.ps-takeaway h3 {
-  font-size: 26px;
-  letter-spacing: -0.035em;
-  font-weight: 500;
-}
-.ps-takeaway > div:last-child p {
-  color: var(--gf-ink-2);
-  font-size: 14px;
-  line-height: 1.9;
-  margin-top: 20px;
-}
-.ps-takeaway a {
-  font-size: 11px;
-  display: inline-block;
-  margin-top: 22px;
-}
-.ps-drivers {
-  background: var(--gf-ground-alt);
-}
-.ps select {
-  border: 1px solid var(--gf-line-strong);
-  border-radius: 4px;
-  padding: 10px 36px 10px 12px;
-  color: var(--gf-ink);
-  background: var(--gf-ground-deep);
-  font-size: 12px;
-  max-width: 100%;
-}
-.ps-http {
-  background: radial-gradient(
-    ellipse at 0 20%,
-    color-mix(in srgb, var(--gf-accent) 5%, transparent),
-    transparent 60%
-  );
-}
-.ps-closing {
-  padding-block: 80px 90px;
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 20px 90px;
-  background: var(--gf-ground-alt);
-}
-.ps-closing > .ps-kicker {
-  grid-column: 1/-1;
-}
-.ps-closing h2 {
-  font: 500 clamp(70px, 8vw, 116px) / 0.98 var(--gf-font-display);
-  letter-spacing: -0.075em;
-}
-.ps-closing > div {
-  align-self: end;
-  padding-bottom: 5px;
-}
-.ps-closing > div > p {
-  font-size: 15px;
-  line-height: 1.9;
-  color: var(--gf-ink-2);
-  max-width: 360px;
-}
-.ps-closing > div > a {
-  display: inline-block;
-  font-size: 11px;
+.bench-page-header > nav {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
   margin-top: 28px;
+  align-items: center;
 }
-.ps-closing .ps-cta {
+.bench-page-header nav > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--gf-ink-2);
+  text-decoration: none;
+}
+.bench-page-header nav > a:hover {
+  color: var(--gf-ink);
+}
+.bench-page-header nav span {
+  font: 8px var(--gf-font-mono);
+  color: var(--gf-ink-3);
+}
+.bench-page-header nav > a.bench-nav-pending {
+  margin-left: auto;
+  font-size: 10px;
+}
+.bench-nav-pending > span {
+  padding: 4px 6px;
+  border: 1px solid var(--gf-line-strong);
+  border-radius: 3px;
+  font-size: 7px;
+}
+
+
+
+
+
+
+
+
+
+.bench-reading {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 22px 0;
+  font-size: 10px;
+  color: var(--gf-ink-2);
+  line-height: 1.8;
+}
+.bench-reading > span {
+  font: 9px/1.8 var(--gf-font-mono);
+}
+.bench-reading > p {
+  margin: 0;
+  max-width: 570px;
+  text-align: right;
+}
+.bench-gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+.bench-http {
+  scroll-margin-top: 90px;
+  margin-top: 50px;
+}
+.bench-http-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--gf-accent);
-  color: var(--gf-on-accent);
-  border-radius: 5px;
-  padding: 17px 20px;
-  max-width: 280px;
-  font-size: 12px;
-  font-weight: 600;
+  gap: 30px;
+  margin-bottom: 22px;
 }
-@media (max-width: 1100px) {
-  .ps-orbit {
-    right: -280px;
-    opacity: 0.45;
-  }
-  .ps-opening h1 {
-    font-size: 112px;
-  }
-  .ps-heading {
-    gap: 40px;
-  }
-  .ps-operation-tabs svg {
-    display: none;
-  }
+.bench-http-heading > div > p {
+  font: 8px var(--gf-font-mono);
+  color: var(--gf-reference);
+  letter-spacing: 0.06em;
+  margin: 0 0 10px;
 }
-@media (max-width: 760px) {
-  .ps-rail {
+.bench-http-heading h2 {
+  font: 500 27px var(--gf-font-display);
+  letter-spacing: -0.04em;
+  margin: 0;
+  color: var(--gf-ink);
+  padding: 0;
+  border: 0;
+}
+
+
+.bench-http-environment {
+  font: 9px/1.9 var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  margin: 15px 0 0;
+}
+.bench-other {
+  margin-top: 45px;
+  padding-top: 28px;
+  border-top: 1px solid var(--gf-line-strong);
+  scroll-margin-top: 140px;
+}
+.bench-other > header h2 {
+  font: 500 20px var(--gf-font-display);
+  letter-spacing: -0.025em;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--gf-ink);
+}
+.bench-other > header > p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--gf-ink-2);
+  margin: 10px 0 20px;
+}
+.bench-other-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+}
+.bench-other-grid > article {
+  padding: 20px;
+  border: 1px solid var(--gf-line);
+  border-radius: 8px;
+}
+.bench-mail-logo {
+  float: right;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+.bench-other-grid h3 {
+  font: 500 15px var(--gf-font-display);
+  display: inline;
+  margin: 0;
+  color: var(--gf-ink);
+}
+.bench-other-grid > article > span {
+  font: 8px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  margin-left: 15px;
+}
+.bench-other-grid > article > div {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.bench-other-grid > article > div > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  color: var(--gf-ink-2);
+}
+.bench-other :deep(.bench-logo) {
+  width: 20px;
+  height: 20px;
+  color: var(--gf-ink-2);
+}
+.bench-other :deep(.bench-logo svg),
+.bench-other :deep(.bench-logo img) {
+  width: 18px;
+  height: 18px;
+}
+.bench-page-footer {
+  border-top: 1px solid var(--gf-line-strong);
+  margin-top: 35px;
+  padding: 25px 0 45px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+.bench-page-footer > p {
+  font-size: 10px;
+  line-height: 1.9;
+  color: var(--gf-ink-2);
+  margin: 0;
+  max-width: 620px;
+  margin-right: auto;
+}
+.bench-page-footer > a {
+  font-size: 10px;
+  color: var(--gf-nav);
+  text-decoration: none;
+  white-space: nowrap;
+}
+@media (max-width: 1000px) {
+  .bench-page-header,
+  .bench-content {
     padding-inline: 24px;
   }
-  .ps-opening {
-    padding-top: 30px;
-    min-height: 0;
-    padding-bottom: 45px;
+  .bench-gallery {
+    gap: 18px;
   }
-  .ps-edition {
-    display: none;
+  .bench-reading > p {
+    max-width: 420px;
   }
-  .ps-opening h1 {
-    font-size: clamp(65px, 12vw, 90px);
-    margin-top: 40px;
+  .bench-page-footer {
+    flex-wrap: wrap;
   }
-  .ps-opening-bottom {
-    display: block;
-    margin-top: 30px;
+  .bench-page-footer > p {
+    width: 100%;
+    max-width: none;
   }
-  .ps-opening-bottom > p {
-    font-size: 25px;
-  }
-  .ps-opening-bottom > div {
-    margin-top: 22px;
-    max-width: 330px;
-    font-size: 12px;
-  }
-  .ps-orbit {
-    width: 480px;
-    right: -300px;
-    top: 110px;
-    opacity: 0.25;
-  }
-  .ps-chapters {
+  .bench-other-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 20px 12px;
   }
-  .ps-chapters a {
-    font-size: 10px;
-    gap: 10px;
-  }
-  .ps-section {
-    padding-block: 60px;
-  }
-  .ps-heading {
-    display: block;
-    margin-bottom: 30px;
-  }
-  .ps-heading h2 {
-    font-size: 48px;
-  }
-  .ps-heading > p,
-  .ps-heading > div:last-child:not(:first-child) {
-    margin-top: 25px;
-  }
-  .ps-heading > p,
-  .ps-heading > div > p:not(.ps-kicker) {
-    font-size: 13px;
-  }
-  .ps-operation-tabs {
-    grid-template-columns: 1fr 1fr;
-    margin-top: 30px;
-  }
-  .ps-operation-tabs button {
-    padding: 20px 12px;
-    border-bottom: 1px solid var(--gf-line);
-  }
-  .ps-operation-tabs button:first-child {
-    padding-left: 12px;
-  }
-  .ps-operation-tabs button:nth-child(even) {
-    border-right: 0;
-  }
-  .ps-operation-tabs strong {
-    font-size: 17px;
-  }
-  .ps-operation-tabs small {
-    font-size: 8px;
-  }
-  .ps-takeaway {
+}
+@media (max-width: 800px) {
+  .bench-gallery {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding-top: 40px;
   }
-  .ps-takeaway > div:first-child > strong {
-    font-size: 110px;
+  .bench-reading {
+    gap: 15px;
+    display: block;
   }
-  .ps-takeaway > div:last-child {
-    padding-top: 15px;
+  .bench-reading > p {
+    text-align: left;
+    max-width: none;
+    margin-top: 8px;
   }
-  .ps-takeaway h3 {
+  .bench-page-header nav > a.bench-nav-pending {
+    margin-left: 0;
+  }
+  .bench-http-heading {
+    align-items: start;
+  }
+  .bench-http-heading h2 {
     font-size: 24px;
   }
-  .ps-takeaway > div:last-child p {
-    font-size: 13px;
+
+
+  .bench-other-grid {
+    grid-template-columns: 1fr;
   }
-  .ps-closing {
+}
+@media (max-width: 520px) {
+  .bench-page-header,
+  .bench-content {
+    padding-inline: 18px;
+  }
+  .bench-page-header {
+    padding-top: 28px;
+    padding-bottom: 23px;
+  }
+  .bench-page h1 {
+    font-size: 39px;
+    line-height: 1.12;
+    margin-top: 22px;
+  }
+  .bench-page-header > p {
+    font-size: 12px;
+  }
+  .bench-page-header > nav {
+    gap: 15px 20px;
+    margin-top: 22px;
+  }
+  .bench-page-header nav > a {
+    font-size: 10px;
+  }
+  .bench-page-header nav > a.bench-nav-pending {
+    width: 100%;
+    font-size: 9px;
+  }
+
+
+
+
+
+
+  .bench-reading {
+    font-size: 9px;
+    padding-block: 18px;
+  }
+  .bench-reading > span {
+    font-size: 8px;
+  }
+  .bench-http {
+    margin-top: 35px;
+  }
+  .bench-http-heading {
     display: block;
-    padding-block: 55px 65px;
   }
-  .ps-closing h2 {
-    font-size: 76px;
-    margin-top: 25px;
+  .bench-http-heading h2 {
+    font-size: 25px;
   }
-  .ps-closing > div {
-    margin-top: 30px;
+
+
+  .bench-http-environment {
+    font-size: 8px;
   }
-  .ps-closing > div > p {
-    font-size: 13px;
+  .bench-other > header h2 {
+    font-size: 19px;
   }
-  .ps-kicker {
+  .bench-other > header > p {
+    font-size: 10px;
+  }
+  .bench-other-grid > article {
+    padding: 18px;
+  }
+  .bench-other-grid > article > div {
+    gap: 15px;
+  }
+  .bench-other-grid > article > div > span {
     font-size: 9px;
   }
-  .ps-eyebrow {
-    font-size: 9px;
+  .bench-page-footer {
+    gap: 18px;
+  }
+  .bench-page-footer > p {
+    font-size: 10px;
+  }
+  .bench-page-footer > a {
+    font-size: 10px;
   }
 }
 </style>

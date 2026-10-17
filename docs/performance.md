@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: Explore the cost of a process boundary with an interactive latency lens, source-backed driver benchmarks, and HTTP comparisons against net/http.
+description: Compare GoForj driver and HTTP performance with charts for latency, throughput, allocations, and bytes per operation.
 sidebar: false
 aside: false
 noAutoTitle: true

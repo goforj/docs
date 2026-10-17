@@ -1,0 +1,59 @@
+[
+  {
+    "file": "chi.png",
+    "project": "https://github.com/go-chi",
+    "source": "https://avatars.githubusercontent.com/u/29575368?v=4?s=96"
+  },
+  {
+    "file": "gorilla.png",
+    "project": "https://github.com/gorilla",
+    "source": "https://avatars.githubusercontent.com/u/489566?v=4?s=96"
+  },
+  {
+    "file": "echo.png",
+    "project": "https://github.com/labstack",
+    "source": "https://avatars.githubusercontent.com/u/2624634?v=4?s=96"
+  },
+  {
+    "file": "memcached-banner.jpg",
+    "project": "https://memcached.org/",
+    "source": "https://www.memcached.org/images/memcached_banner75.jpg",
+    "display": "The chart displays the M mark using an SVG viewport over the original, unchanged banner."
+  },
+  {
+    "file": "cache-logo.png",
+    "project": "https://github.com/goforj/cache",
+    "source": "https://raw.githubusercontent.com/goforj/cache/main/docs/images/logo.png",
+    "display": "Original README logo, unchanged."
+  },
+  {
+    "file": "queue-logo.png",
+    "project": "https://github.com/goforj/queue",
+    "source": "https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png",
+    "display": "Original README logo, unchanged."
+  },
+  {
+    "file": "events-logo.png",
+    "project": "https://github.com/goforj/events",
+    "source": "https://raw.githubusercontent.com/goforj/events/main/docs/images/logo.png",
+    "display": "Original README logo, unchanged."
+  },
+  {
+    "file": "storage-logo.png",
+    "project": "https://github.com/goforj/storage",
+    "source": "https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png",
+    "display": "Original README logo, unchanged."
+  },
+  {
+    "file": "web-logo.png",
+    "project": "https://github.com/goforj/web",
+    "source": "https://raw.githubusercontent.com/goforj/web/main/docs/assets/logo.png",
+    "display": "Original README logo, unchanged."
+  },
+  {
+    "file": "mail-logo.png",
+    "project": "https://github.com/goforj/mail",
+    "source": "https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png",
+    "display": "Original README logo, unchanged."
+  }
+]

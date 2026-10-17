@@ -6,6 +6,9 @@ import release from './data/release.json'
 import { pageMarkdown, markdownPath } from './page-markdown.mjs'
 
 const lucideIconKeys = [
+  'cpu',
+  'circle-off',
+  'route',
   'activity',
   'app-window',
   'blocks',
@@ -31,6 +34,13 @@ const lucideIconKeys = [
 ]
 
 const simpleIconKeys = [
+  'go',
+  'gin',
+  'mysql',
+  'amazons3',
+  'amazonwebservices',
+  'googlepubsub',
+  'googlecloudstorage',
   'vuedotjs',
   'react',
   'openai',
