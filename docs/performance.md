@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: Choose GoForj drivers and HTTP components using measured latency, throughput, and memory costs, with source benchmarks behind every result.
+description: Benchmarking is a first-class engineering concern at GoForj, alongside coverage and integration testing. Compare published latency, throughput, and allocation measurements with reproducible workloads and source data.
 sidebar: false
 aside: false
 noAutoTitle: true

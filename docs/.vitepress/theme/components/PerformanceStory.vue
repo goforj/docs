@@ -139,11 +139,16 @@ onBeforeUnmount(() => {
       <div class="bench-page-brand">
         <img src="/favicon.svg" alt="" width="25" height="25" /><span>GOFORJ / BENCHMARKS</span>
       </div>
-      <h1>Hard numbers. <em>Better app decisions.</em></h1>
+      <h1>Performance, <em>backed by evidence.</em></h1>
       <p>
-        Compare the latency, throughput, and memory costs of GoForj drivers and HTTP routers
-        before choosing what runs in your app. See the tradeoffs side by side, with source
-        benchmarks behind every result.
+        Benchmarking is a first-class part of how we engineer for performance and stability. We aim for 100% code
+        coverage, test integrations against real services, containers, and emulators, and
+        maintain performance benchmarks alongside our libraries.
+      </p>
+      <p>
+        Compare latency, throughput, and allocation costs before choosing what runs in your
+        app. Published workloads, source data, and environment details let you inspect the
+        conditions behind each result, reproduce the measurements, and test your own workloads.
       </p>
       <nav aria-label="Benchmark primitives">
         <a href="#bench-http" :aria-current="activeBenchmark.startsWith('bench-http') ? 'location' : undefined">
@@ -284,6 +289,9 @@ onBeforeUnmount(() => {
   line-height: 1.85;
   color: var(--gf-ink-2);
   margin: 0;
+}
+.bench-page-header > p + p {
+  margin-top: 10px;
 }
 .bench-page-header > nav {
   display: grid;
