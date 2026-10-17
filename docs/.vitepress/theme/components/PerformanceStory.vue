@@ -190,12 +190,12 @@ const ratio = computed(() =>
     <section id="drivers" class="ps-section ps-rail ps-drivers">
       <div class="ps-heading">
         <div>
-          <p class="ps-kicker">02 / THE COMPLETE DRIVER MATRIX</p>
-          <h2>Every driver.<br /><em>In one place.</em></h2>
+          <p class="ps-kicker">02 / THE DRIVER PROFILES</p>
+          <h2>Find your driver.<br /><em>See the tradeoff.</em></h2>
         </div>
         <p>
-          All six driver families, with every available measurement visible. Missing results are
-          marked explicitly. Compare within a library: each suite measures a different operation.
+          Every recorded result across cache, queue, events, and storage. Start with time, then
+          compare allocation and memory costs. Each column measures one operation.
         </p>
       </div>
       <PerformanceDrivers :coverage="evidence.driverCoverage" :sources="evidence.sources" />
