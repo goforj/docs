@@ -54,7 +54,7 @@ try {
     metadata: {
       captured_at: new Date().toISOString(), go_version: run('go', ['version']), goos: run('go', ['env','GOOS']), goarch: run('go',['env','GOARCH']),
       cpu: os.cpus()[0].model, gomaxprocs: 1, sample_count: 7, benchmark_time: '1s',
-      packages: { gorm: 'v1.30.0', mysql_driver: 'v1.6.0', postgres_driver: 'v1.6.0', sqlite_driver: 'github.com/glebarez/sqlite v1.11.0' },
+      packages: { gorm: 'v1.30.0', mysql_driver: 'v1.6.0', postgres_driver: 'v1.6.0', pgx: 'v5.9.2', sqlite_driver: 'github.com/glebarez/sqlite v1.11.0' },
       fixtures: [mysql,postgres].map(({image,digest})=>({image,digest})),
       harness_sha256: Object.fromEntries(['database_test.go','go.mod','go.sum','run.mjs'].map(file=>[file,hash(file)])),
       database: 'Warm primary-key reads cycling over 1,000 seeded rows through GORM with GoForj database defaults and one pooled connection. MySQL and PostgreSQL run in local Docker containers; SQLite is a temporary file using the pure-Go driver. Migration, seeding, startup, and connection warmup are outside the timer. These are GORM operation fixtures, not a complete generated application or production database comparison.'

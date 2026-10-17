@@ -18,6 +18,6 @@ The artifact check fails when the measured harness changes without a fresh run. 
 
 Each backend executes a warmed GORM primary-key lookup, cycling through 1,000 seeded rows with the same fields. MySQL and PostgreSQL run in local containers. SQLite uses a temporary file and the same pure-Go driver family used by GoForj. One pooled connection is available per backend. The page shows medians and observed ranges across the seven samples.
 
-The GORM version, dialector versions, and configuration match GoForj's database defaults: no default write transaction, no foreign-key creation during migration, silent query logging, and UTC timestamps. This fixture does not include the generated application's connection registry, Inspects, metrics, controllers, authentication, or business logic. It is a GORM operation comparison, not a full GoForj request benchmark or a general database-engine ranking.
+The fixture pins patched pgx v5.9.2. The GORM version, dialector versions, and configuration match GoForj's database defaults: no default write transaction, no foreign-key creation during migration, silent query logging, and UTC timestamps. This fixture does not include the generated application's connection registry, Inspects, metrics, controllers, authentication, or business logic. It is a GORM operation comparison, not a full GoForj request benchmark or a general database-engine ranking.
 
 The benchmark table lives only in the disposable databases created by the runner. Do not point the benchmark environment variables at an application database.
