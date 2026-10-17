@@ -249,8 +249,7 @@ onBeforeUnmount(() => {
 }
 .bench-page-header,
 .bench-content {
-  max-width: 1600px;
-  padding-inline: 28px;
+  padding-inline: 96px;
   margin-inline: auto;
 }
 .bench-page-header {
@@ -386,6 +385,10 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 @media (max-width: 1200px) {
+  .bench-page-header,
+  .bench-content {
+    padding-inline: 48px;
+  }
   .bench-page-header > nav { grid-template-columns:repeat(4,minmax(0,1fr)); }
 }
 @media (max-width: 1000px) {
