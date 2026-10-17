@@ -38,7 +38,6 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
       <div class="bench-chart-heading">
         <img class="bench-library-logo" :src="logo" :alt="`${http ? 'Web' : title} README logo`" width="96" height="96" />
         <div>
-          <span class="bench-chart-category">{{ http ? 'HTTP ROUTING' : 'DRIVER BENCHMARK' }}</span>
           <h2>{{ title }}</h2>
           <p>{{ operation }}</p>
         </div>
@@ -80,8 +79,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
       </div>
     </div>
     <footer>
-      <p>{{ note }}</p>
-      <p class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? 'Bars show medians; whiskers show the observed range of seven runs.' : 'Throughput is calculated from the recorded time per operation.' }}</p>
+      <p>{{ note }} <span class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? 'Bars show medians; whiskers show the observed range of seven runs.' : 'Throughput is calculated from the recorded time per operation.' }}</span></p>
       <div v-if="missing.length" class="bench-missing">
         <span class="bench-missing-title">Not in this snapshot</span>
         <div v-for="row in missing" :key="row.id" class="bench-missing-driver">
@@ -93,12 +91,11 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
   </article>
 </template>
 <style scoped>
-.bench-chart { min-width: 0; padding: 22px; border: 1px solid var(--gf-line); border-radius: 14px; background: var(--gf-ground); scroll-margin-top: 90px; }
-.bench-chart > header { display:flex; justify-content:space-between; align-items:start; gap:20px; margin-bottom:16px; }
+.bench-chart { min-width: 0; padding: 16px 22px; border: 1px solid var(--gf-line); border-radius: 14px; background: var(--gf-ground); scroll-margin-top: 90px; }
+.bench-chart > header { display:flex; justify-content:space-between; align-items:start; gap:20px; margin-bottom:12px; }
 .bench-chart-heading { display:flex; align-items:center; gap:14px; min-width:0; }
-.bench-library-logo { width:80px; height:80px; object-fit:contain; flex-shrink:0; }
-.bench-chart-category { font:9px var(--gf-font-mono); letter-spacing:.08em; color:var(--gf-ink-2); }
-.bench-chart h2 { font:500 30px var(--gf-font-display); letter-spacing:-.04em; color:var(--gf-ink); margin:5px 0 0; border:0; padding:0; }
+.bench-library-logo { width:64px; height:64px; object-fit:contain; flex-shrink:0; }
+.bench-chart h2 { font:500 28px var(--gf-font-display); letter-spacing:-.04em; color:var(--gf-ink); margin:0; border:0; padding:0; }
 .bench-chart-heading p { font:11px var(--gf-font-mono); color:var(--gf-ink-2); margin:5px 0 0; }
 .bench-chart-meta { display:flex; align-items:end; flex-direction:column; gap:8px; font:10px var(--gf-font-mono); color:var(--gf-ink-2); }
 .bench-chart-meta a { color:var(--gf-nav); text-decoration:none; }
@@ -127,9 +124,8 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-dot { position:absolute; top:5px; height:10px; width:3px; border-radius:2px; background:var(--driver-color); transform:translateX(-50%); }
 .bench-range { position:absolute; top:1px; height:18px; border-left:1px solid var(--driver-color); border-right:1px solid var(--driver-color); background:color-mix(in srgb,var(--driver-color) 10%,transparent); }
 .bench-mobile-label { display:none; }
-.bench-chart footer { border-top:1px solid var(--gf-line); padding-top:12px; margin-top:6px; }
-.bench-chart footer p { font-size:11px; line-height:1.8; color:var(--gf-ink-2); margin:0; max-width:100ch; }
-.bench-chart footer .bench-scale-note { font-size:10px; margin-top:8px; }
+.bench-chart footer { border-top:1px solid var(--gf-line); padding-top:8px; margin-top:0; }
+.bench-chart footer p { font-size:10px; line-height:1.6; color:var(--gf-ink-2); margin:0; }
 .bench-missing { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:14px; font-size:10px; color:var(--gf-ink-2); }
 .bench-missing-title { font:9px var(--gf-font-mono); }
 .bench-missing-driver { display:flex; align-items:center; flex-wrap:wrap; gap:4px 12px; }
@@ -144,14 +140,13 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-noop-row strong { font:11px var(--gf-font-mono); color:var(--gf-ink); }
 @media(max-width:1000px) { .bench-page .bench-chart .bench-table th:first-child { width:160px; } .bench-page .bench-chart .bench-table th,.bench-page .bench-chart .bench-table td { padding-right:10px; padding-left:10px; } .bench-noop-row { grid-template-columns:160px repeat(4,minmax(0,1fr)); } .bench-noop-row > span { padding:0 10px; } }
 @media(max-width:650px) {
- .bench-chart { padding:20px 18px; }
- .bench-library-logo { width:72px; height:72px; }
+ .bench-chart { padding:14px 18px; }
+ .bench-library-logo { width:56px; height:56px; }
  .bench-chart-heading { gap:12px; }
  .bench-chart h2 { font-size:25px; }
- .bench-chart-category { font-size:7px; }
  .bench-chart-heading p { font-size:9px; }
  .bench-chart-meta { font-size:8px; gap:8px; }
- .bench-chart > header { gap:8px; margin-bottom:14px; }
+ .bench-chart > header { gap:8px; margin-bottom:10px; }
  .bench-page .bench-chart .bench-table,.bench-page .bench-chart .bench-table tbody { display:block; }
  .bench-page .bench-chart .bench-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
  .bench-page .bench-chart .bench-table .bench-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 22px; padding:12px 0; }
