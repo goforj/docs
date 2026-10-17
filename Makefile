@@ -50,7 +50,7 @@ docs-proof-refresh: ##@documentation Refresh checked-in proof statistics from si
 docs-proof-check: ##@documentation Verify checked-in proof statistics match sibling repositories
 	@cd docs && npm run proof:check
 
-docs-performance-run: ##@documentation Measure local Mail and database fixtures
+docs-performance-run: ##@documentation Measure local database fixtures
 	@node benchmarks/run.mjs
 
 docs-performance-refresh: ##@documentation Refresh checked-in performance statistics

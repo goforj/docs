@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "captured_at": "2026-10-17T21:41:24.224Z",
-    "go_version": "go version go1.27.0 darwin/arm64",
+    "captured_at": "2026-10-17T21:52:09.311Z",
+    "go_version": "go version go1.27.2 darwin/arm64",
     "goos": "darwin",
     "goarch": "arm64",
     "cpu": "Apple M4 Max",
@@ -9,8 +9,6 @@
     "sample_count": 7,
     "benchmark_time": "1s",
     "packages": {
-      "mail": "v0.3.1",
-      "mailses": "v0.3.1",
       "gorm": "v1.30.0",
       "mysql_driver": "v1.6.0",
       "postgres_driver": "v1.6.0",
@@ -24,76 +22,70 @@
       {
         "image": "postgres:16-alpine",
         "digest": "sha256:ef738a34a8651d11b2bace81c55c7e2187f786b484add6c83070884340074368"
-      },
-      {
-        "image": "axllent/mailpit:v1.30.4",
-        "digest": "sha256:e53be71ed6c815012c556aeece6b6446451a84f3e128ce4e7461143d733a4c40"
       }
     ],
     "harness_sha256": {
-      "mail_test.go": "d8f20bf97e47c482f535cf8b19b2a431249ce8f5e3d77c6efd1810f67cb6ac1a",
       "database_test.go": "73fa6c5c5e5c1b28f14679a91f8c8d373e0b6d4a3189271455e48c89a80da0df",
-      "go.mod": "ce5d75ae27feeaa3c3012347a5d86ed7e66c0cc5d3b8f33ce6e8e843346ba5ae",
-      "go.sum": "7465c672feac90a73ddd8de2be1bbbfa1a92269855d920faf069e3cd9b8324df",
-      "run.mjs": "35e4fe98f20e628d7a89926e1c936bdc672fe6a143e475d594cbc54346775025"
+      "go.mod": "911cd9cb816fb8e7da2d209def9b24500562bbbfc090806cb57b19af3e7ab2cb",
+      "go.sum": "77894ded823fd6ec8c4fba45dbbd23eba246b79320df3310f600b9aa0d59d46e",
+      "run.mjs": "1941492ccbbbf4fc9ba0f842322618a4b7a59f32841612e6bf674cd0ab12a029"
     },
-    "mail": "Client send return for one recipient, text and HTML bodies, and a 4 KiB attachment. SMTP uses local plaintext Mailpit. Provider API drivers use local HTTP acceptance fixtures in separate processes with reused connections, no TLS, and dummy credentials. SES includes SDK signing. Log writes JSON to io.Discard; Fake resets every 128 sends, with reset cost included. No real provider calls or inbox delivery.",
     "database": "Warm primary-key reads cycling over 1,000 seeded rows through GORM with GoForj database defaults and one pooled connection. MySQL and PostgreSQL run in local Docker containers; SQLite is a temporary file using the pure-Go driver. Migration, seeding, startup, and connection warmup are outside the timer. These are GORM operation fixtures, not a complete generated application or production database comparison."
   },
   "samples": [
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 6342,
-      "ns_op": 189627,
+      "iterations": 6375,
+      "ns_op": 190151,
+      "bytes_op": 4237,
+      "allocs_op": 68
+    },
+    {
+      "family": "database",
+      "driver": "mysql",
+      "iterations": 7792,
+      "ns_op": 189739,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7888,
-      "ns_op": 189650,
+      "iterations": 7726,
+      "ns_op": 201508,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 8005,
-      "ns_op": 195531,
+      "iterations": 7503,
+      "ns_op": 193176,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7131,
-      "ns_op": 205230,
+      "iterations": 7777,
+      "ns_op": 184469,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7677,
-      "ns_op": 189429,
+      "iterations": 7150,
+      "ns_op": 182578,
       "bytes_op": 4236,
       "allocs_op": 68
     },
     {
       "family": "database",
       "driver": "mysql",
-      "iterations": 7225,
-      "ns_op": 190071,
-      "bytes_op": 4236,
-      "allocs_op": 68
-    },
-    {
-      "family": "database",
-      "driver": "mysql",
-      "iterations": 7424,
-      "ns_op": 193579,
+      "iterations": 7813,
+      "ns_op": 189643,
       "bytes_op": 4236,
       "allocs_op": 68
     },
@@ -101,7 +93,31 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 127069,
+      "ns_op": 108136,
+      "bytes_op": 4357,
+      "allocs_op": 69
+    },
+    {
+      "family": "database",
+      "driver": "postgres",
+      "iterations": 10000,
+      "ns_op": 100659,
+      "bytes_op": 4356,
+      "allocs_op": 69
+    },
+    {
+      "family": "database",
+      "driver": "postgres",
+      "iterations": 12194,
+      "ns_op": 100670,
+      "bytes_op": 4356,
+      "allocs_op": 69
+    },
+    {
+      "family": "database",
+      "driver": "postgres",
+      "iterations": 9214,
+      "ns_op": 118005,
       "bytes_op": 4356,
       "allocs_op": 69
     },
@@ -109,7 +125,7 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 127494,
+      "ns_op": 106147,
       "bytes_op": 4356,
       "allocs_op": 69
     },
@@ -117,7 +133,7 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 127779,
+      "ns_op": 102054,
       "bytes_op": 4356,
       "allocs_op": 69
     },
@@ -125,537 +141,65 @@
       "family": "database",
       "driver": "postgres",
       "iterations": 10000,
-      "ns_op": 129354,
-      "bytes_op": 4356,
-      "allocs_op": 69
-    },
-    {
-      "family": "database",
-      "driver": "postgres",
-      "iterations": 10000,
-      "ns_op": 127578,
-      "bytes_op": 4356,
-      "allocs_op": 69
-    },
-    {
-      "family": "database",
-      "driver": "postgres",
-      "iterations": 10000,
-      "ns_op": 128740,
-      "bytes_op": 4356,
-      "allocs_op": 69
-    },
-    {
-      "family": "database",
-      "driver": "postgres",
-      "iterations": 10000,
-      "ns_op": 129132,
+      "ns_op": 103113,
       "bytes_op": 4356,
       "allocs_op": 69
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 104868,
-      "ns_op": 11234,
+      "iterations": 104806,
+      "ns_op": 11466,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 107742,
-      "ns_op": 11393,
+      "iterations": 100329,
+      "ns_op": 11581,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 107550,
-      "ns_op": 11196,
+      "iterations": 98760,
+      "ns_op": 12004,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 105378,
-      "ns_op": 11578,
+      "iterations": 101470,
+      "ns_op": 11731,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 104251,
-      "ns_op": 11330,
+      "iterations": 102279,
+      "ns_op": 11256,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 106994,
-      "ns_op": 11205,
+      "iterations": 104187,
+      "ns_op": 11277,
       "bytes_op": 4330,
       "allocs_op": 66
     },
     {
       "family": "database",
       "driver": "sqlite",
-      "iterations": 105524,
-      "ns_op": 11255,
+      "iterations": 104272,
+      "ns_op": 11505,
       "bytes_op": 4330,
       "allocs_op": 66
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 288,
-      "ns_op": 3782486,
-      "bytes_op": 58851,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 328,
-      "ns_op": 3905864,
-      "bytes_op": 58851,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 309,
-      "ns_op": 3944995,
-      "bytes_op": 58851,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 266,
-      "ns_op": 4172145,
-      "bytes_op": 58851,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 308,
-      "ns_op": 3817910,
-      "bytes_op": 58850,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 295,
-      "ns_op": 4097633,
-      "bytes_op": 58850,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "smtp",
-      "iterations": 307,
-      "ns_op": 4038289,
-      "bytes_op": 58850,
-      "allocs_op": 316
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 18220,
-      "ns_op": 63139,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 19365,
-      "ns_op": 61798,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 18950,
-      "ns_op": 63034,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 19394,
-      "ns_op": 61201,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 19024,
-      "ns_op": 62266,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 19504,
-      "ns_op": 61359,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "resend",
-      "iterations": 18693,
-      "ns_op": 64551,
-      "bytes_op": 33297,
-      "allocs_op": 112
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 18444,
-      "ns_op": 63939,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 19786,
-      "ns_op": 61221,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 18811,
-      "ns_op": 63211,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 20049,
-      "ns_op": 61570,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 19219,
-      "ns_op": 61511,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 20078,
-      "ns_op": 62339,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "postmark",
-      "iterations": 18880,
-      "ns_op": 63961,
-      "bytes_op": 33425,
-      "allocs_op": 115
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 20896,
-      "ns_op": 56976,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 20934,
-      "ns_op": 57083,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 21400,
-      "ns_op": 56855,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 20725,
-      "ns_op": 57227,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 21222,
-      "ns_op": 56343,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 20772,
-      "ns_op": 57236,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "mailgun",
-      "iterations": 21030,
-      "ns_op": 57768,
-      "bytes_op": 27413,
-      "allocs_op": 222
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 19228,
-      "ns_op": 62380,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 19210,
-      "ns_op": 62095,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 19695,
-      "ns_op": 61400,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 19156,
-      "ns_op": 61147,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 19780,
-      "ns_op": 60384,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 19632,
-      "ns_op": 61444,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "sendgrid",
-      "iterations": 18918,
-      "ns_op": 62462,
-      "bytes_op": 32910,
-      "allocs_op": 103
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 8773,
-      "ns_op": 118708,
-      "bytes_op": 106985,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 8929,
-      "ns_op": 117025,
-      "bytes_op": 106984,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 8918,
-      "ns_op": 116648,
-      "bytes_op": 106985,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 8694,
-      "ns_op": 115953,
-      "bytes_op": 106984,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 9316,
-      "ns_op": 115696,
-      "bytes_op": 106984,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 9139,
-      "ns_op": 115860,
-      "bytes_op": 106984,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "ses",
-      "iterations": 9686,
-      "ns_op": 115764,
-      "bytes_op": 106984,
-      "allocs_op": 630
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 283936,
-      "ns_op": 4207,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 281139,
-      "ns_op": 4180,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 275152,
-      "ns_op": 4485,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 296947,
-      "ns_op": 4189,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 290764,
-      "ns_op": 4247,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 283206,
-      "ns_op": 4283,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "log",
-      "iterations": 275552,
-      "ns_op": 4321,
-      "bytes_op": 10192,
-      "allocs_op": 34
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 400593,
-      "ns_op": 3037,
-      "bytes_op": 9450,
-      "allocs_op": 30
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 414468,
-      "ns_op": 2978,
-      "bytes_op": 9450,
-      "allocs_op": 30
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 418659,
-      "ns_op": 2962,
-      "bytes_op": 9450,
-      "allocs_op": 30
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 396632,
-      "ns_op": 2962,
-      "bytes_op": 9450,
-      "allocs_op": 30
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 412220,
-      "ns_op": 2962,
-      "bytes_op": 9450,
-      "allocs_op": 30
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 402206,
-      "ns_op": 2968,
-      "bytes_op": 9450,
-      "allocs_op": 30
-    },
-    {
-      "family": "mail",
-      "driver": "fake",
-      "iterations": 379484,
-      "ns_op": 2879,
-      "bytes_op": 9450,
-      "allocs_op": 30
     }
   ]
 }

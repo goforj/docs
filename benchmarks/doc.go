@@ -1,2 +1,2 @@
-// Package benchmarks contains local Mail and GORM operation fixtures for the performance page.
+// Package benchmarks measures local GORM database operations for the performance page.
 package benchmarks
