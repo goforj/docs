@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import evidence from '../../data/performance-stats.json'
 import PerformanceChart from './PerformanceChart.vue'
 import PerformanceLogo from './PerformanceLogo.vue'
@@ -76,6 +76,54 @@ const source = (id) => {
   const s = evidence.sources.find((s) => s.repo === id)
   return `https://github.com/goforj/${id}/blob/${s.revision}/${s.path}`
 }
+const activeBenchmark = ref('')
+let scrollFrame = 0
+let benchmarkSections = []
+let disposed = false
+let benchmarkPath = ''
+
+// updateBenchmarkLink replaces the current URL so scrolling does not fill browser history.
+const updateBenchmarkLink = () => {
+  scrollFrame = 0
+  if (disposed || window.location.pathname !== benchmarkPath) return
+  const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2
+  const current = atBottom ? benchmarkSections.at(-1) : benchmarkSections.filter(section => section.getBoundingClientRect().top <= 110).at(-1)
+  const id = current?.id || ''
+  activeBenchmark.value = id
+  if (window.location.hash === (id ? `#${id}` : '')) return
+  if (!id && !window.location.hash.startsWith('#bench-')) return
+  const url = new URL(window.location.href)
+  url.hash = id
+  window.history.replaceState(window.history.state, '', url)
+}
+
+// scheduleBenchmarkLink batches scroll and resize events into one layout read per frame.
+const scheduleBenchmarkLink = () => {
+  if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateBenchmarkLink)
+}
+
+onMounted(async () => {
+  benchmarkPath = window.location.pathname
+  // Let VitePress restore its route and fonts settle before tracking the first position.
+  await document.fonts.ready
+  await new Promise(window.requestAnimationFrame)
+  await new Promise(window.requestAnimationFrame)
+  if (disposed) return
+  const initialHash = window.location.hash
+  benchmarkSections = [...document.querySelectorAll('.bench-chart[id], #bench-http, #bench-other')]
+  const initial = benchmarkSections.find(section => `#${section.id}` === initialHash)
+  if (initial) initial.scrollIntoView({ behavior: 'instant', block: 'start' })
+  window.addEventListener('scroll', scheduleBenchmarkLink, { passive: true })
+  window.addEventListener('resize', scheduleBenchmarkLink)
+  scheduleBenchmarkLink()
+})
+
+onBeforeUnmount(() => {
+  disposed = true
+  window.removeEventListener('scroll', scheduleBenchmarkLink)
+  window.removeEventListener('resize', scheduleBenchmarkLink)
+  window.cancelAnimationFrame(scrollFrame)
+})
 </script>
 <template>
   <main class="bench-page">
@@ -89,7 +137,7 @@ const source = (id) => {
         recorded result, with the drivers and conditions behind it.
       </p>
       <nav aria-label="Benchmark primitives">
-        <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`"
+        <a v-for="chart in charts" :key="chart.id" :href="`#bench-${chart.id}`" :aria-current="activeBenchmark === `bench-${chart.id}` ? 'location' : undefined"
           >{{ chart.title }}
           <span>{{ chart.rows.filter((r) => r.kind !== 'noop').length }}</span></a
         ><a href="#bench-http"
@@ -114,7 +162,7 @@ const source = (id) => {
       </div>
       <section id="bench-http" class="bench-http">
         <div class="bench-http-heading">
-          <div><p>HTTP BENCHMARKS</p><h2>Every workload. Every router.</h2></div>
+          <div><p>HTTP BENCHMARKS</p><h2><a class="bench-section-link" href="#bench-http">Every workload. Every router.<span aria-hidden="true">#</span></a></h2></div>
         </div>
         <div class="bench-gallery">
           <PerformanceChart
@@ -137,7 +185,7 @@ const source = (id) => {
       </section>
       <section id="bench-other" class="bench-other">
         <header>
-          <h2>Drivers awaiting measurements</h2>
+          <h2><a class="bench-section-link" href="#bench-other">Drivers awaiting measurements<span aria-hidden="true">#</span></a></h2>
           <p>Mail delivery and database queries have no comparable snapshots in this dataset.</p>
         </header>
         <div class="bench-other-grid">
@@ -185,6 +233,9 @@ const source = (id) => {
 :global(.VPDoc:has(.bench-page) .VPDocFooter) {
   display: none;
 }
+.bench-section-link { color:inherit; text-decoration:none; }
+.bench-section-link > span { margin-left:10px; font-size:.6em; color:var(--gf-ink-3); }
+.bench-section-link:hover > span { color:var(--gf-nav); }
 .bench-page {
   background: var(--gf-ground-deep);
   color: var(--gf-ink);

@@ -38,7 +38,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
       <div class="bench-chart-heading">
         <img class="bench-library-logo" :src="logo" :alt="`${http ? 'Web' : title} README logo`" width="96" height="96" />
         <div>
-          <h2>{{ title }}</h2>
+          <h2><a class="bench-heading-link" :href="`#bench-${id}`">{{ title }}<span aria-hidden="true">#</span></a></h2>
           <p>{{ operation }}</p>
         </div>
       </div>
@@ -96,6 +96,9 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-chart-heading { display:flex; align-items:center; gap:14px; min-width:0; }
 .bench-library-logo { width:64px; height:64px; object-fit:contain; flex-shrink:0; }
 .bench-chart h2 { font:500 28px var(--gf-font-display); letter-spacing:-.04em; color:var(--gf-ink); margin:0; border:0; padding:0; }
+.bench-heading-link { color:inherit; text-decoration:none; }
+.bench-heading-link > span { display:inline-block; margin-left:10px; font:400 16px var(--gf-font-mono); color:var(--gf-ink-3); vertical-align:middle; }
+.bench-heading-link:hover > span { color:var(--gf-nav); }
 .bench-chart-heading p { font:11px var(--gf-font-mono); color:var(--gf-ink-2); margin:5px 0 0; }
 .bench-chart-meta { display:flex; align-items:end; flex-direction:column; gap:8px; font:10px var(--gf-font-mono); color:var(--gf-ink-2); }
 .bench-chart-meta a { color:var(--gf-nav); text-decoration:none; }
