@@ -159,13 +159,10 @@ onBeforeUnmount(() => {
       </nav>
     </header>
     <div class="bench-content">
-      <div class="bench-reading">
-        <span>Compare the cost of each option.</span>
-        <p>Compare drivers within each chart. Each primitive measures its own operation.</p>
-      </div>
       <section id="bench-http" class="bench-http">
         <div class="bench-http-heading">
-          <div><p>HTTP BENCHMARKS</p><h2><a class="bench-section-link" href="#bench-http">Compare HTTP routers.<span aria-hidden="true">#</span></a></h2></div>
+          <h2><a class="bench-section-link" href="#bench-http">Compare HTTP routers.<span aria-hidden="true">#</span></a></h2>
+          <p>Compare drivers within each chart. Each primitive measures its own operation.</p>
         </div>
         <div class="bench-gallery">
           <PerformanceChart
@@ -253,7 +250,7 @@ onBeforeUnmount(() => {
 }
 .bench-page-header {
   padding-top: 50px;
-  padding-bottom: 28px;
+  padding-bottom: 24px;
 }
 .bench-page-brand {
   display: flex;
@@ -319,23 +316,6 @@ onBeforeUnmount(() => {
 .bench-nav-arrow { margin-left:auto; font:14px var(--gf-font-mono); color:var(--gf-ink-3); }
 .bench-page-header nav > a:hover .bench-nav-arrow { color:var(--gf-accent-hi); }
 
-.bench-reading {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-  padding: 22px 0;
-  font-size: 10px;
-  color: var(--gf-ink-2);
-  line-height: 1.8;
-}
-.bench-reading > span {
-  font: 9px/1.8 var(--gf-font-mono);
-}
-.bench-reading > p {
-  margin: 0;
-  max-width: 570px;
-  text-align: right;
-}
 .bench-gallery {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -349,15 +329,16 @@ onBeforeUnmount(() => {
 .bench-http-heading {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 30px;
-  margin-bottom: 22px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-bottom: 14px;
 }
-.bench-http-heading > div > p {
-  font: 8px var(--gf-font-mono);
-  color: var(--gf-reference);
-  letter-spacing: 0.06em;
-  margin: 0 0 10px;
+.bench-http-heading > p {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--gf-ink-2);
+  margin: 0;
 }
 .bench-http-heading h2 {
   font: 500 27px var(--gf-font-display);
@@ -407,9 +388,6 @@ onBeforeUnmount(() => {
   .bench-gallery {
     gap: 18px;
   }
-  .bench-reading > p {
-    max-width: 420px;
-  }
   .bench-page-footer {
     flex-wrap: wrap;
   }
@@ -421,15 +399,6 @@ onBeforeUnmount(() => {
 @media (max-width: 800px) {
   .bench-gallery {
     grid-template-columns: 1fr;
-  }
-  .bench-reading {
-    gap: 15px;
-    display: block;
-  }
-  .bench-reading > p {
-    text-align: left;
-    max-width: none;
-    margin-top: 8px;
   }
   .bench-http-heading {
     align-items: start;
@@ -447,7 +416,7 @@ onBeforeUnmount(() => {
   }
   .bench-page-header {
     padding-top: 28px;
-    padding-bottom: 23px;
+    padding-bottom: 20px;
   }
   .bench-page h1 {
     font-size: 39px;
@@ -465,19 +434,6 @@ onBeforeUnmount(() => {
   .bench-nav-arrow { display:none; }
   .bench-page-header nav > a:last-child { grid-column:1 / -1; }
 
-  .bench-reading {
-    font-size: 9px;
-    padding-block: 18px;
-  }
-  .bench-reading > span {
-    font-size: 8px;
-  }
-  .bench-http {
-    margin-top: 35px;
-  }
-  .bench-http-heading {
-    display: block;
-  }
   .bench-http-heading h2 {
     font-size: 25px;
   }
