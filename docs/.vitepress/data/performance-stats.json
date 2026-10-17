@@ -41,6 +41,7 @@
       "operation": "GetBytes",
       "rows": [
         {
+          "driver": "memory",
           "label": "Memory",
           "value": 70,
           "bytes": 1,
@@ -48,6 +49,7 @@
           "kind": "process"
         },
         {
+          "driver": "file",
           "label": "File",
           "value": 100977,
           "bytes": 1352,
@@ -55,6 +57,7 @@
           "kind": "local"
         },
         {
+          "driver": "redis",
           "label": "Redis",
           "value": 73175,
           "bytes": 200,
@@ -62,6 +65,7 @@
           "kind": "service"
         },
         {
+          "driver": "memcached",
           "label": "Memcached",
           "value": 70363,
           "bytes": 192,
@@ -69,6 +73,7 @@
           "kind": "service"
         },
         {
+          "driver": "postgres",
           "label": "PostgreSQL",
           "value": 86657,
           "bytes": 1064,
@@ -76,6 +81,7 @@
           "kind": "service"
         },
         {
+          "driver": "mysql",
           "label": "MySQL",
           "value": 81964,
           "bytes": 744,
@@ -83,6 +89,7 @@
           "kind": "service"
         },
         {
+          "driver": "sqlite",
           "label": "SQLite",
           "value": 7494,
           "bytes": 1432,
@@ -90,6 +97,7 @@
           "kind": "local"
         },
         {
+          "driver": "nats",
           "label": "NATS",
           "value": 96450,
           "bytes": 2573,
@@ -97,6 +105,7 @@
           "kind": "service"
         },
         {
+          "driver": "nats",
           "label": "NATS KV + TTL",
           "value": 82872,
           "bytes": 2556,
@@ -111,6 +120,15 @@
       "operation": "Queue",
       "rows": [
         {
+          "driver": "null",
+          "label": "Null",
+          "value": 37.49,
+          "bytes": 128,
+          "allocs": 1,
+          "kind": "noop"
+        },
+        {
+          "driver": "sync",
           "label": "Sync",
           "value": 282.5,
           "bytes": 408,
@@ -118,6 +136,7 @@
           "kind": "process"
         },
         {
+          "driver": "workerpool",
           "label": "Worker pool",
           "value": 650,
           "bytes": 456,
@@ -125,6 +144,7 @@
           "kind": "process"
         },
         {
+          "driver": "redis",
           "label": "Redis",
           "value": 95295,
           "bytes": 2113,
@@ -132,6 +152,7 @@
           "kind": "service"
         },
         {
+          "driver": "nats",
           "label": "NATS",
           "value": 774.1,
           "bytes": 1258,
@@ -139,6 +160,7 @@
           "kind": "service"
         },
         {
+          "driver": "sqs",
           "label": "SQS",
           "value": 1873911,
           "bytes": 94784,
@@ -146,6 +168,7 @@
           "kind": "service"
         },
         {
+          "driver": "rabbitmq",
           "label": "RabbitMQ",
           "value": 165780,
           "bytes": 1882,
@@ -153,6 +176,7 @@
           "kind": "service"
         },
         {
+          "driver": "mysql",
           "label": "MySQL",
           "value": 2286406,
           "bytes": 3303,
@@ -160,6 +184,7 @@
           "kind": "service"
         },
         {
+          "driver": "postgres",
           "label": "PostgreSQL",
           "value": 1056731,
           "bytes": 3809,
@@ -167,6 +192,7 @@
           "kind": "service"
         },
         {
+          "driver": "sqlite",
           "label": "SQLite",
           "value": 202380,
           "bytes": 1931,
@@ -181,6 +207,7 @@
       "operation": "Publish + handle",
       "rows": [
         {
+          "driver": "sync",
           "label": "Synchronous",
           "value": 371.8,
           "bytes": 320,
@@ -188,6 +215,7 @@
           "kind": "process"
         },
         {
+          "driver": "gcppubsub",
           "label": "Google Pub/Sub",
           "value": 52848425,
           "bytes": 21971,
@@ -195,6 +223,7 @@
           "kind": "service"
         },
         {
+          "driver": "kafka",
           "label": "Kafka",
           "value": 499091,
           "bytes": 5040,
@@ -202,6 +231,7 @@
           "kind": "service"
         },
         {
+          "driver": "jetstream",
           "label": "NATS JetStream",
           "value": 127165,
           "bytes": 3609,
@@ -209,6 +239,7 @@
           "kind": "service"
         },
         {
+          "driver": "nats",
           "label": "NATS",
           "value": 73316,
           "bytes": 681,
@@ -216,6 +247,7 @@
           "kind": "service"
         },
         {
+          "driver": "redis",
           "label": "Redis",
           "value": 95149,
           "bytes": 914,
@@ -223,6 +255,7 @@
           "kind": "service"
         },
         {
+          "driver": "sns",
           "label": "SNS",
           "value": 2553117,
           "bytes": 104563,
@@ -237,6 +270,7 @@
       "operation": "Get",
       "rows": [
         {
+          "driver": "local",
           "label": "Local",
           "value": 13811.52516435556,
           "bytes": 1536.2368929893375,
@@ -244,6 +278,7 @@
           "kind": "local"
         },
         {
+          "driver": "memory",
           "label": "Memory",
           "value": 752.9147821215927,
           "bytes": 496.081603888653,
@@ -251,6 +286,7 @@
           "kind": "process"
         },
         {
+          "driver": "gcs",
           "label": "GCS",
           "value": 210780.62913907284,
           "bytes": 201477.99157134257,
@@ -258,6 +294,7 @@
           "kind": "service"
         },
         {
+          "driver": "ftp",
           "label": "FTP",
           "value": 243278.00972222222,
           "bytes": 5429.788888888889,
@@ -265,6 +302,7 @@
           "kind": "service"
         },
         {
+          "driver": "rclone",
           "label": "rclone local",
           "value": 17957.60648504438,
           "bytes": 2168.0258580883483,
@@ -272,6 +310,7 @@
           "kind": "local"
         },
         {
+          "driver": "redis",
           "label": "Redis",
           "value": 79510.93253066788,
           "bytes": 936.0327124034529,
@@ -279,6 +318,7 @@
           "kind": "service"
         },
         {
+          "driver": "s3",
           "label": "S3",
           "value": 382576.1599081867,
           "bytes": 45419.268553940325,
@@ -286,6 +326,7 @@
           "kind": "service"
         },
         {
+          "driver": "sftp",
           "label": "SFTP",
           "value": 429232.65321888414,
           "bytes": 2523.7836909871244,
@@ -867,6 +908,583 @@
       }
     ]
   },
+  "driverCoverage": [
+    {
+      "id": "queue",
+      "drivers": [
+        {
+          "id": "null",
+          "label": "Null",
+          "results": [
+            {
+              "driver": "null",
+              "label": "Null",
+              "value": 37.49,
+              "bytes": 128,
+              "allocs": 1,
+              "kind": "noop"
+            }
+          ]
+        },
+        {
+          "id": "sync",
+          "label": "Synchronous",
+          "results": [
+            {
+              "driver": "sync",
+              "label": "Sync",
+              "value": 282.5,
+              "bytes": 408,
+              "allocs": 6,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "workerpool",
+          "label": "Worker pool",
+          "results": [
+            {
+              "driver": "workerpool",
+              "label": "Worker pool",
+              "value": 650,
+              "bytes": 456,
+              "allocs": 7,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "mysql",
+          "label": "MySQL",
+          "results": [
+            {
+              "driver": "mysql",
+              "label": "MySQL",
+              "value": 2286406,
+              "bytes": 3303,
+              "allocs": 62,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "results": [
+            {
+              "driver": "postgres",
+              "label": "PostgreSQL",
+              "value": 1056731,
+              "bytes": 3809,
+              "allocs": 78,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "results": [
+            {
+              "driver": "sqlite",
+              "label": "SQLite",
+              "value": 202380,
+              "bytes": 1931,
+              "allocs": 47,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 95295,
+              "bytes": 2113,
+              "allocs": 33,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "nats",
+          "label": "NATS",
+          "results": [
+            {
+              "driver": "nats",
+              "label": "NATS",
+              "value": 774.1,
+              "bytes": 1258,
+              "allocs": 13,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sqs",
+          "label": "SQS",
+          "results": [
+            {
+              "driver": "sqs",
+              "label": "SQS",
+              "value": 1873911,
+              "bytes": 94784,
+              "allocs": 1082,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "rabbitmq",
+          "label": "RabbitMQ",
+          "results": [
+            {
+              "driver": "rabbitmq",
+              "label": "RabbitMQ",
+              "value": 165780,
+              "bytes": 1882,
+              "allocs": 57,
+              "kind": "service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "drivers": [
+        {
+          "id": "sync",
+          "label": "Synchronous",
+          "results": [
+            {
+              "driver": "sync",
+              "label": "Synchronous",
+              "value": 371.8,
+              "bytes": 320,
+              "allocs": 9,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "null",
+          "label": "Null",
+          "results": []
+        },
+        {
+          "id": "nats",
+          "label": "NATS",
+          "results": [
+            {
+              "driver": "nats",
+              "label": "NATS",
+              "value": 73316,
+              "bytes": 681,
+              "allocs": 18,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "jetstream",
+          "label": "NATS JetStream",
+          "results": [
+            {
+              "driver": "jetstream",
+              "label": "NATS JetStream",
+              "value": 127165,
+              "bytes": 3609,
+              "allocs": 60,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 95149,
+              "bytes": 914,
+              "allocs": 31,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "kafka",
+          "label": "Kafka",
+          "results": [
+            {
+              "driver": "kafka",
+              "label": "Kafka",
+              "value": 499091,
+              "bytes": 5040,
+              "allocs": 67,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sns",
+          "label": "SNS",
+          "results": [
+            {
+              "driver": "sns",
+              "label": "SNS",
+              "value": 2553117,
+              "bytes": 104563,
+              "allocs": 1271,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "gcppubsub",
+          "label": "Google Pub/Sub",
+          "results": [
+            {
+              "driver": "gcppubsub",
+              "label": "Google Pub/Sub",
+              "value": 52848425,
+              "bytes": 21971,
+              "allocs": 369,
+              "kind": "service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cache",
+      "drivers": [
+        {
+          "id": "null",
+          "label": "Null",
+          "results": []
+        },
+        {
+          "id": "file",
+          "label": "File",
+          "results": [
+            {
+              "driver": "file",
+              "label": "File",
+              "value": 100977,
+              "bytes": 1352,
+              "allocs": 9,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "memory",
+          "label": "Memory",
+          "results": [
+            {
+              "driver": "memory",
+              "label": "Memory",
+              "value": 70,
+              "bytes": 1,
+              "allocs": 1,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "memcached",
+          "label": "Memcached",
+          "results": [
+            {
+              "driver": "memcached",
+              "label": "Memcached",
+              "value": 70363,
+              "bytes": 192,
+              "allocs": 9,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 73175,
+              "bytes": 200,
+              "allocs": 8,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "nats",
+          "label": "NATS",
+          "results": [
+            {
+              "driver": "nats",
+              "label": "NATS",
+              "value": 96450,
+              "bytes": 2573,
+              "allocs": 40,
+              "kind": "service"
+            },
+            {
+              "driver": "nats",
+              "label": "NATS KV + TTL",
+              "value": 82872,
+              "bytes": 2556,
+              "allocs": 40,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "dynamodb",
+          "label": "DynamoDB",
+          "results": []
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "results": [
+            {
+              "driver": "sqlite",
+              "label": "SQLite",
+              "value": 7494,
+              "bytes": 1432,
+              "allocs": 39,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "results": [
+            {
+              "driver": "postgres",
+              "label": "PostgreSQL",
+              "value": 86657,
+              "bytes": 1064,
+              "allocs": 32,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "mysql",
+          "label": "MySQL",
+          "results": [
+            {
+              "driver": "mysql",
+              "label": "MySQL",
+              "value": 81964,
+              "bytes": 744,
+              "allocs": 26,
+              "kind": "service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "drivers": [
+        {
+          "id": "local",
+          "label": "Local",
+          "results": [
+            {
+              "driver": "local",
+              "label": "Local",
+              "value": 13811.52516435556,
+              "bytes": 1536.2368929893375,
+              "allocs": 14.001602121429755,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "memory",
+          "label": "Memory",
+          "results": [
+            {
+              "driver": "memory",
+              "label": "Memory",
+              "value": 752.9147821215927,
+              "bytes": 496.081603888653,
+              "allocs": 9.00039452721485,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 79510.93253066788,
+              "bytes": 936.0327124034529,
+              "allocs": 24.000227169468424,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "ftp",
+          "label": "FTP",
+          "results": [
+            {
+              "driver": "ftp",
+              "label": "FTP",
+              "value": 243278.00972222222,
+              "bytes": 5429.788888888889,
+              "allocs": 99.03194444444445,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sftp",
+          "label": "SFTP",
+          "results": [
+            {
+              "driver": "sftp",
+              "label": "SFTP",
+              "value": 429232.65321888414,
+              "bytes": 2523.7836909871244,
+              "allocs": 47.01030042918455,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "label": "S3",
+          "results": [
+            {
+              "driver": "s3",
+              "label": "S3",
+              "value": 382576.1599081867,
+              "bytes": 45419.268553940325,
+              "allocs": 630.1384850803366,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "gcs",
+          "label": "GCS",
+          "results": [
+            {
+              "driver": "gcs",
+              "label": "GCS",
+              "value": 210780.62913907284,
+              "bytes": 201477.99157134257,
+              "allocs": 6831.402167369055,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "dropbox",
+          "label": "Dropbox",
+          "results": []
+        },
+        {
+          "id": "rclone",
+          "label": "Rclone",
+          "results": [
+            {
+              "driver": "rclone",
+              "label": "rclone local",
+              "value": 17957.60648504438,
+              "bytes": 2168.0258580883483,
+              "allocs": 21.000564363039352,
+              "kind": "local"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mail",
+      "drivers": [
+        {
+          "id": "smtp",
+          "label": "SMTP",
+          "results": []
+        },
+        {
+          "id": "resend",
+          "label": "Resend",
+          "results": []
+        },
+        {
+          "id": "postmark",
+          "label": "Postmark",
+          "results": []
+        },
+        {
+          "id": "mailgun",
+          "label": "Mailgun",
+          "results": []
+        },
+        {
+          "id": "sendgrid",
+          "label": "SendGrid",
+          "results": []
+        },
+        {
+          "id": "ses",
+          "label": "SES",
+          "results": []
+        },
+        {
+          "id": "log",
+          "label": "Log",
+          "results": []
+        },
+        {
+          "id": "fake",
+          "label": "Fake",
+          "results": []
+        }
+      ]
+    },
+    {
+      "id": "database",
+      "drivers": [
+        {
+          "id": "mysql",
+          "label": "MySQL",
+          "results": []
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "results": []
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "results": []
+        }
+      ]
+    }
+  ],
   "benchmarkLibraries": [
     {
       "repo": "cache",

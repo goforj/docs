@@ -3,9 +3,9 @@ import { computed, ref } from 'vue'
 import evidence from '../../data/performance-stats.json'
 import PerformanceLens from './PerformanceLens.vue'
 import PerformanceHTTP from './PerformanceHTTP.vue'
+import PerformanceDrivers from './PerformanceDrivers.vue'
 
 const selectedSuite = ref('cache')
-const selectedRow = ref('Memory')
 const suites = {
   cache: {
     name: 'Cache',
@@ -60,33 +60,10 @@ const suites = {
 }
 const suite = computed(() => suites[selectedSuite.value])
 const story = computed(() => evidence.driverStories.find((s) => s.id === selectedSuite.value))
-const rows = computed(() => [...story.value.rows].sort((a, b) => a.value - b.value))
 const local = computed(() => story.value.rows.find((r) => r.label === suite.value.local))
-const detail = computed(() => rows.value.find((r) => r.label === selectedRow.value) || local.value)
-const source = computed(() => evidence.sources.find((s) => s.repo === selectedSuite.value))
-const decades = computed(() => {
-  const min = Math.floor(Math.log10(Math.min(...rows.value.map((r) => r.value))))
-  const max = Math.max(min + 1, Math.ceil(Math.log10(Math.max(...rows.value.map((r) => r.value)))))
-  return Array.from({ length: max - min + 1 }, (_, i) => 10 ** (min + i))
-})
-const position = (value) =>
-  ((Math.log10(value) - Math.log10(decades.value[0])) /
-    (Math.log10(decades.value.at(-1)) - Math.log10(decades.value[0]))) *
-  100
-const latency = (value) => {
-  if (value < 1000) return { number: Number(value.toFixed(value < 100 ? 0 : 1)), unit: 'ns' }
-  if (value < 1000000)
-    return { number: Number((value / 1000).toFixed(value < 10000 ? 2 : 1)), unit: 'µs' }
-  return { number: Number((value / 1000000).toFixed(2)), unit: 'ms' }
-}
-const time = (value) => `${latency(value).number} ${latency(value).unit}`
-const number = (value) => Number(value.toFixed(1)).toLocaleString('en-US')
-const category = (kind) =>
-  ({ process: 'In process', local: 'Host-local', service: 'Service boundary' })[kind]
 const sourceURL = (s) => `https://github.com/goforj/${s.repo}/blob/${s.revision}/${s.path}`
 const changeSuite = (id) => {
   selectedSuite.value = id
-  selectedRow.value = suites[id].local
 }
 const service = computed(() => story.value.rows.find((row) => row.label === suite.value.service))
 const ratio = computed(() =>
@@ -213,80 +190,15 @@ const ratio = computed(() =>
     <section id="drivers" class="ps-section ps-rail ps-drivers">
       <div class="ps-heading">
         <div>
-          <p class="ps-kicker">02 / NOTHING HIDDEN IN THE AVERAGE</p>
-          <h2>Open the<br /><em>whole picture.</em></h2>
+          <p class="ps-kicker">02 / THE COMPLETE DRIVER MATRIX</p>
+          <h2>Every driver.<br /><em>In one place.</em></h2>
         </div>
         <p>
-          Every measured driver in the selected library. Select a row to see its allocation cost and
-          exact source. Compare within a suite: each one measures a different operation.
+          All six driver families, with every available measurement visible. Missing results are
+          marked explicitly. Compare within a library: each suite measures a different operation.
         </p>
       </div>
-      <div class="ps-driver-toolbar">
-        <label for="ps-library">LIBRARY</label
-        ><select id="ps-library" :value="selectedSuite" @change="changeSuite($event.target.value)">
-          <option v-for="(item, id) in suites" :key="id" :value="id">
-            {{ item.name }} / {{ item.operation }}
-          </option></select
-        ><span>Time per operation · lower is faster</span>
-      </div>
-      <div class="ps-driver-layout">
-        <div class="ps-driver-plot">
-          <div class="ps-log-axis" aria-hidden="true">
-            <span v-for="tick in decades" :key="tick" :style="{ left: `${position(tick)}%` }">{{
-              time(tick)
-            }}</span>
-          </div>
-          <div role="group" :aria-label="`${suite.name} driver measurements`">
-            <button
-              v-for="row in rows"
-              :key="row.label"
-              class="ps-driver-row"
-              :class="[`ps-kind--${row.kind}`, { 'is-selected': detail.label === row.label }]"
-              :aria-pressed="detail.label === row.label"
-              @click="selectedRow = row.label"
-            >
-              <span>{{ row.label }}</span>
-              <div class="ps-driver-track" aria-hidden="true">
-                <i v-for="tick in decades" :key="tick" :style="{ left: `${position(tick)}%` }"></i
-                ><b :style="{ width: `${position(row.value)}%` }"></b
-                ><em :style="{ left: `${position(row.value)}%` }"></em>
-              </div>
-              <strong>{{ time(row.value) }}</strong>
-            </button>
-          </div>
-          <div class="ps-legend">
-            <span class="ps-kind--process"><i></i>In process</span
-            ><span class="ps-kind--local"><i></i>Host-local</span
-            ><span class="ps-kind--service"><i></i>Service boundary</span>
-          </div>
-          <p class="ps-chart-note">
-            Logarithmic time axis. Each grid interval is 10×. Service fixtures run in local
-            containers or emulators.
-          </p>
-        </div>
-        <aside class="ps-inspect" aria-live="polite" aria-atomic="true">
-          <p class="ps-kicker">UNDER THE LENS</p>
-          <h3>{{ detail.label }}</h3>
-          <span class="ps-inspect-kind">{{ category(detail.kind) }}</span>
-          <div class="ps-inspect-value">
-            {{ latency(detail.value).number }}<span>{{ latency(detail.value).unit }} / op</span>
-          </div>
-          <dl>
-            <div>
-              <dt>Allocations / op</dt>
-              <dd>{{ number(detail.allocs) }}</dd>
-            </div>
-            <div>
-              <dt>Bytes / op</dt>
-              <dd>{{ number(detail.bytes) }}</dd>
-            </div>
-          </dl>
-          <p>{{ suite.measurement }}</p>
-          <a :href="sourceURL(source)" target="_blank" rel="noopener noreferrer"
-            >{{ selectedSuite }}/{{ source.revision.slice(0, 8) }} ↗</a
-          >
-        </aside>
-      </div>
+      <PerformanceDrivers :coverage="evidence.driverCoverage" :sources="evidence.sources" />
     </section>
 
     <section id="http" class="ps-section ps-rail ps-http">
@@ -675,17 +587,6 @@ const ratio = computed(() =>
 .ps-drivers {
   background: var(--gf-ground-alt);
 }
-.ps-driver-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding-block: 20px;
-  border-block: 1px solid var(--gf-line-strong);
-}
-.ps-driver-toolbar label {
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
 .ps select {
   border: 1px solid var(--gf-line-strong);
   border-radius: 4px;
@@ -694,186 +595,6 @@ const ratio = computed(() =>
   background: var(--gf-ground-deep);
   font-size: 12px;
   max-width: 100%;
-}
-.ps-driver-toolbar > span {
-  margin-left: auto;
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-driver-layout {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 45px;
-  padding-top: 35px;
-}
-.ps-driver-plot {
-  min-width: 0;
-}
-.ps-log-axis {
-  position: relative;
-  height: 30px;
-  margin-left: 145px;
-  margin-right: 85px;
-  font: 8px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-log-axis > span {
-  position: absolute;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-.ps-log-axis > span:first-child {
-  transform: none;
-}
-.ps-log-axis > span:last-child {
-  transform: translateX(-100%);
-}
-.ps-driver-row {
-  display: grid;
-  grid-template-columns: 135px 1fr 75px;
-  gap: 10px;
-  width: 100%;
-  align-items: center;
-  text-align: left;
-  padding: 12px 0;
-  border-block: 1px solid transparent;
-  cursor: pointer;
-  --dot: var(--ps-service);
-}
-.ps-driver-row:hover {
-  background: color-mix(in srgb, var(--gf-ink) 3%, transparent);
-}
-.ps-kind--process {
-  --dot: var(--ps-process);
-}
-.ps-kind--local {
-  --dot: var(--ps-local);
-}
-.ps-kind--service {
-  --dot: var(--ps-service);
-}
-.ps-driver-row.is-selected {
-  background: color-mix(in srgb, var(--dot) 8%, transparent);
-  border-block-color: color-mix(in srgb, var(--dot) 15%, transparent);
-}
-.ps-driver-row > span {
-  font-size: 11px;
-  padding-left: 10px;
-}
-.ps-driver-row > strong {
-  font: 10px var(--gf-font-mono);
-  text-align: right;
-  padding-right: 6px;
-}
-.ps-driver-track {
-  position: relative;
-  height: 22px;
-}
-.ps-driver-track > i {
-  position: absolute;
-  top: -15px;
-  bottom: -15px;
-  border-left: 1px solid var(--gf-line-strong);
-  opacity: 0.6;
-}
-.ps-driver-track > b {
-  position: absolute;
-  top: 11px;
-  left: 0;
-  height: 1px;
-  background: var(--dot);
-  opacity: 0.5;
-}
-.ps-driver-track > em {
-  position: absolute;
-  top: 8px;
-  width: 6px;
-  height: 6px;
-  background: var(--dot);
-  border-radius: 50%;
-  transform: translateX(-50%);
-}
-.is-selected .ps-driver-track > em {
-  outline: 1px solid var(--dot);
-  outline-offset: 4px;
-}
-.ps-legend {
-  display: flex;
-  gap: 20px;
-  margin-top: 25px;
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-legend > span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.ps-legend i {
-  width: 4px;
-  height: 4px;
-  background: var(--dot);
-  border-radius: 50%;
-}
-.ps-chart-note {
-  font: 9px/1.8 var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  margin-top: 18px !important;
-}
-.ps-inspect {
-  border-left: 1px solid var(--gf-line-strong);
-  padding: 0 0 0 30px;
-}
-.ps-inspect h3 {
-  font-size: 25px;
-  letter-spacing: -0.04em;
-  font-weight: 500;
-  margin-top: 18px;
-}
-.ps-inspect-kind {
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  display: block;
-  margin-top: 6px;
-}
-.ps-inspect-value {
-  font: 500 58px/1.1 var(--gf-font-display);
-  letter-spacing: -0.065em;
-  margin: 30px 0;
-}
-.ps-inspect-value > span {
-  font: 11px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  letter-spacing: 0;
-  margin-left: 8px;
-}
-.ps dl {
-  margin: 0;
-}
-.ps dl > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  border-bottom: 1px solid var(--gf-line-strong);
-  padding: 12px 0;
-  font: 10px var(--gf-font-mono);
-}
-.ps dt {
-  color: var(--gf-ink-2);
-}
-.ps dd {
-  margin: 0;
-}
-.ps-inspect > p:not(.ps-kicker) {
-  font-size: 11px;
-  line-height: 1.85;
-  color: var(--gf-ink-2);
-  margin-top: 20px;
-}
-.ps-inspect > a {
-  display: block;
-  font: 9px var(--gf-font-mono);
-  margin-top: 20px;
 }
 .ps-http {
   background: radial-gradient(
@@ -934,25 +655,8 @@ const ratio = computed(() =>
   .ps-heading {
     gap: 40px;
   }
-  .ps-driver-layout {
-    grid-template-columns: 1fr 230px;
-    gap: 25px;
-  }
-  .ps-driver-row {
-    grid-template-columns: 110px 1fr 70px;
-  }
-  .ps-log-axis {
-    margin-left: 120px;
-    margin-right: 80px;
-  }
   .ps-operation-tabs svg {
     display: none;
-  }
-  .ps-inspect {
-    padding-left: 20px;
-  }
-  .ps-inspect-value {
-    font-size: 48px;
   }
 }
 @media (max-width: 760px) {
@@ -1051,53 +755,6 @@ const ratio = computed(() =>
   }
   .ps-takeaway > div:last-child p {
     font-size: 13px;
-  }
-  .ps-driver-toolbar {
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .ps-driver-toolbar > span {
-    margin-left: 0;
-    width: 100%;
-    font-size: 8px;
-  }
-  .ps-driver-layout {
-    display: block;
-    padding-top: 25px;
-  }
-  .ps-driver-row {
-    grid-template-columns: 95px 1fr 65px;
-    gap: 6px;
-  }
-  .ps-driver-row > span {
-    font-size: 9px;
-    padding-left: 5px;
-  }
-  .ps-driver-row > strong {
-    font-size: 8px;
-    padding-right: 3px;
-  }
-  .ps-log-axis {
-    margin-left: 101px;
-    margin-right: 71px;
-    font-size: 6px;
-  }
-  .ps-legend {
-    font-size: 7px;
-    gap: 12px;
-  }
-  .ps-chart-note {
-    font-size: 8px;
-  }
-  .ps-inspect {
-    border-left: 0;
-    border-top: 1px solid var(--gf-line-strong);
-    padding: 25px 0 0;
-    margin-top: 30px;
-  }
-  .ps-inspect-value {
-    font-size: 60px;
-    margin-block: 20px;
   }
   .ps-closing {
     display: block;

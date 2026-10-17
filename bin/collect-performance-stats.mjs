@@ -24,6 +24,11 @@ const median = (values) => {
   return sorted[Math.floor(sorted.length / 2)]
 }
 const labels = {
+  dynamodb: 'DynamoDB',
+  jetstream: 'NATS JetStream',
+  sendgrid: 'SendGrid',
+  smtp: 'SMTP',
+  ses: 'SES',
   ftp: 'FTP',
   gcppubsub: 'Google Pub/Sub',
   gcs: 'GCS',
@@ -67,6 +72,7 @@ const webRaw = readJSON(benchmarkFile('web'))
 const proof = readJSON(proofFile)
 
 const cacheRows = required(cacheRaw.get_bytes, 'cache get_bytes').map((row) => ({
+  driver: row.Driver === 'nats_bucket_ttl' ? 'nats' : row.Driver.replace(/^sql_/, ''),
   label: title(row.Driver),
   value: row.NsOp,
   bytes: row.BytesOp,
@@ -75,13 +81,13 @@ const cacheRows = required(cacheRaw.get_bytes, 'cache get_bytes').map((row) => (
 }))
 
 const queueRows = queueRaw
-  .filter((row) => row.driver !== 'null')
   .map((row) => ({
+    driver: row.driver,
     label: title(row.driver),
     value: row.ns_op,
     bytes: row.b_op,
     allocs: row.allocs_op,
-    kind: ['sync', 'workerpool'].includes(row.driver) ? 'process' : row.driver === 'sqlite' ? 'local' : 'service'
+    kind: row.driver === 'null' ? 'noop' : ['sync', 'workerpool'].includes(row.driver) ? 'process' : row.driver === 'sqlite' ? 'local' : 'service'
   }))
 
 const eventRows = eventsRaw
@@ -89,6 +95,7 @@ const eventRows = eventsRaw
   .map((row) => {
     const driver = row.name.includes('/') ? row.name.split('/').at(-1) : 'sync'
     return {
+      driver: driver === 'natsjetstream' ? 'jetstream' : driver,
       label: driver === 'sync' ? 'Synchronous' : title(driver),
       value: row.ns_op,
       bytes: row.b_op,
@@ -98,6 +105,7 @@ const eventRows = eventsRaw
   })
 
 const storageRows = required(storageRaw.get_small, 'storage get_small').map((row) => ({
+  driver: row.driver === 'rclone_local' ? 'rclone' : row.driver,
   label: title(row.driver),
   value: row.ns_op,
   bytes: row.bytes_op,
@@ -151,6 +159,17 @@ const stats = {
     metadata: webRaw.metadata,
     scenarios: webScenarios
   },
+  driverCoverage: Object.entries(proof.drivers).map(([id, drivers]) => {
+    const measured = { cache: cacheRows, queue: queueRows, events: eventRows, storage: storageRows }[id] || []
+    return {
+      id,
+      drivers: drivers.map((driver) => ({
+        id: driver,
+        label: driver === 'sync' ? 'Synchronous' : title(driver),
+        results: measured.filter((row) => row.driver === driver)
+      }))
+    }
+  }),
   benchmarkLibraries: proof.repos
     .filter((repo) => repo.benchmarks > 0)
     .map((repo) => ({ repo: repo.repo, benchmarks: repo.benchmarks })),
