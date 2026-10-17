@@ -154,12 +154,12 @@ onBeforeUnmount(() => {
               <div class="foundry__area-picker"><select v-model="selected" aria-label="Explore a framework area"><option v-for="item in FOUNDRY_AREAS" :key="item.id" :value="item.id">{{ item.sceneLabel || item.label }}</option><optgroup label="Infrastructure drivers"><option v-for="item in FOUNDRY_RESOURCES" :key="item.id" :value="item.id">{{ item.label }}</option></optgroup></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></div>
               <h2 class="foundry__sr-only">{{ active.label }}</h2>
               <p aria-live="polite" aria-atomic="true">{{ active.copy }}</p>
+              <button v-if="isResource" class="foundry__all-drivers" @click="selected = 'infrastructure'">← All infrastructure</button>
             </div>
             <div class="foundry__catalog">
-              <div class="foundry__drivers">
+              <div class="foundry__drivers" :class="{ 'is-resource': isResource }">
                 <component :is="choice.resource ? 'button' : 'a'" v-for="choice in choices" :key="choice.id" :href="choice.resource ? undefined : choice.href" :aria-label="choice.title" :class="{ 'is-previewed': isResource && driverPreview?.id === choice.id }" @pointerenter="isResource && $event.pointerType === 'mouse' && (hoveredDriver = choice)" @pointerleave="hoveredDriver = null" @focus="isResource && (focusedDriver = choice)" @blur="focusedDriver = null" @click="choice.resource && (selected = choice.id)"><svg viewBox="0 0 24 24" aria-hidden="true" :class="{ 'is-outline': !simpleIconBodies[BRAND_ICON_KEYS[choice.icon] || choice.icon] }" :style="{ color: `color-mix(in srgb, ${choice.color} 75%, var(--gf-ink))` }" v-html="simpleIconBodies[BRAND_ICON_KEYS[choice.icon] || choice.icon] || lucideIconBodies[choice.icon] || lucideIconBodies['database']"/><span>{{ choice.title.replace(` ${active.label}`, '') }}</span><span class="foundry__driver-arrow" aria-hidden="true">↗</span></component>
               </div>
-              <button v-if="isResource" class="foundry__all-drivers" @click="selected = 'infrastructure'">← All infrastructure</button>
             </div>
           </div>
         </section>
@@ -234,12 +234,13 @@ onBeforeUnmount(() => {
 .foundry__area-picker select { appearance:none; width:100%; padding:0 24px 0 0; border:0; background:transparent; color:var(--gf-ink); font:550 24px var(--gf-font-sans,var(--vp-font-family-base)); letter-spacing:-.03em; cursor:pointer; }
 .foundry__area-picker option,.foundry__area-picker optgroup { color:var(--gf-ink); background:var(--vp-c-bg); font-size:13px; }
 .foundry__area-picker svg { position:absolute; right:0; top:8px; pointer-events:none; color:var(--gf-ink-3); }
-.foundry__detail-body { display:grid; grid-template-columns:minmax(0, .8fr) minmax(0, 1.2fr); gap:24px; align-items:start; }
+.foundry__detail-body { display:grid; grid-template-columns:minmax(0, .7fr) minmax(0, 1.3fr); gap:24px; align-items:start; }
 .foundry__explanation p { font-size:15px; line-height:1.55; color:var(--gf-ink-2); margin:0; }
 .foundry__catalog { min-width:0; margin:0; padding:0; }
-.foundry__all-drivers { margin-top:10px; color:var(--gf-ink-2); font-size:12px; }
+.foundry__all-drivers { margin-top:12px; color:var(--gf-ink-2); font-size:12px; }
 .foundry__all-drivers:hover { color:var(--gf-accent); }
 .foundry__drivers { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:2px 12px; align-content:start; }
+.foundry__drivers.is-resource { grid-template-columns:repeat(2,minmax(0,1fr)); }
 .foundry__drivers :is(a,button) { min-width:0; min-height:36px; display:flex; align-items:center; gap:8px; padding:6px 3px; border:0; border-radius:3px; color:var(--gf-ink-2); font-size:14px; line-height:1.35; text-align:left; }
 .foundry__drivers :is(a,button).is-previewed { background:color-mix(in srgb,var(--detail-accent) 9%,transparent); color:var(--gf-ink); }
 .foundry__drivers :is(a,button):hover { background:color-mix(in srgb,var(--gf-line) 40%,transparent); color:var(--gf-ink); }
