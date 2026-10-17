@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+import { comparablePerformanceData } from './performance-data.mjs'
 
 const docsRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const check = process.argv.includes('--check')
@@ -222,9 +223,7 @@ const output = JSON.stringify(stats, null, 2) + '\n'
 if (check) {
   const current = readJSON(outputFile)
   const expected = JSON.parse(output)
-  delete current.generatedAt
-  delete expected.generatedAt
-  if (JSON.stringify(current) !== JSON.stringify(expected)) {
+  if (JSON.stringify(comparablePerformanceData(current)) !== JSON.stringify(comparablePerformanceData(expected))) {
     throw new Error(`performance statistics are stale; run: node bin/collect-performance-stats.mjs ${reposRoot}`)
   }
   console.log(`performance statistics are current: ${outputFile}`)

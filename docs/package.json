@@ -18,7 +18,7 @@
     "preview": "vitepress preview .",
     "performance:refresh": "node ../bin/collect-performance-stats.mjs",
     "performance:check": "node ../bin/collect-performance-stats.mjs --check",
-    "test:performance": "node --test .vitepress/theme/components/performance-measurements.test.mjs"
+    "test:performance": "node --test .vitepress/theme/components/performance-measurements.test.mjs ../bin/performance-data.test.mjs"
   },
   "devDependencies": {
     "playwright": "^1.64.0",
