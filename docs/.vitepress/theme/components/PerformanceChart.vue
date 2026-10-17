@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { lucideIconBodies } from 'virtual:goforj-icons'
 import PerformanceLogo from './PerformanceLogo.vue'
 import { performanceColors } from './performance-colors.js'
 import { metricValue, measurementAxis } from './performance-measurements.mjs'
@@ -15,10 +16,10 @@ const props = defineProps({
   http: { type: Boolean, default: false },
 })
 const metrics = [
-  { id: 'time', title: 'Time / op', direction: 'Lower is faster', log: true },
-  { id: 'ops', title: 'Operations / sec', direction: 'Higher is faster', log: true },
-  { id: 'allocs', title: 'Allocs / op', direction: 'Lower uses less', log: false },
-  { id: 'bytes', title: 'Bytes / op', direction: 'Lower uses less', log: false },
+  { id: 'time', icon: 'clock', title: 'Time / op', direction: 'Lower is faster', log: true },
+  { id: 'ops', icon: 'activity', title: 'Operations / sec', direction: 'Higher is faster', log: true },
+  { id: 'allocs', icon: 'blocks', title: 'Allocs / op', direction: 'Lower uses less', log: false },
+  { id: 'bytes', icon: 'hard-drive', title: 'Bytes / op', direction: 'Lower uses less', log: false },
 ]
 const active = computed(() => props.rows.filter(r => r.kind !== 'noop').sort((a,b) => a.value - b.value))
 const noop = computed(() => props.rows.filter(r => r.kind === 'noop'))
@@ -49,9 +50,9 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
     </header>
     <table class="bench-table">
       <thead><tr>
-        <th scope="col">{{ http ? 'Router' : 'Driver' }}</th>
+        <th scope="col"><span class="bench-column-title"><svg class="bench-metric-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" v-html="lucideIconBodies[http ? 'route' : 'server']"></svg>{{ http ? 'Router' : 'Driver' }}</span></th>
         <th v-for="metric in metrics" :key="metric.id" scope="col">
-          <strong>{{ metric.title }}</strong><span>{{ metric.direction }}</span>
+          <strong class="bench-column-title"><svg class="bench-metric-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" v-html="lucideIconBodies[metric.icon]"></svg>{{ metric.title }}</strong><span>{{ metric.direction }}</span>
           <div class="bench-axis"><span>{{ format(axes[metric.id].ticks[0], metric.id) }}</span><span>{{ format(axes[metric.id].ticks.at(-1), metric.id) }}</span></div>
         </th>
       </tr></thead>
@@ -59,7 +60,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
         <tr v-for="row in active" :key="row.label" class="bench-row" :class="{'is-forj': row.driver === 'goforj_web'}" :style="{'--driver-color': color(row)}">
           <th scope="row"><PerformanceLogo :id="row.driver" /><span>{{ row.label }}</span></th>
           <td v-for="metric in metrics" :key="metric.id">
-            <span class="bench-mobile-label">{{ metric.title }}</span>
+            <span class="bench-mobile-label"><svg class="bench-metric-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" v-html="lucideIconBodies[metric.icon]"></svg>{{ metric.title }}</span>
             <strong>{{ format(metricValue(row, metric.id), metric.id) }}</strong>
             <span class="bench-track" aria-hidden="true">
               <i v-for="tick in axes[metric.id].ticks" :key="tick" class="bench-gridline" :style="{left: `${position(tick, metric.id)}%`}"></i>
@@ -101,7 +102,9 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-page .bench-chart .bench-table th:last-child,.bench-page .bench-chart .bench-table td:last-child { padding-right:0; }
 .bench-page .bench-chart .bench-table thead th { vertical-align:top; color:var(--gf-ink-2); font-weight:400; padding-top:0; padding-bottom:16px; }
 .bench-page .bench-chart .bench-table thead strong { display:block; color:var(--gf-ink); font-size:12px; font-weight:500; }
-.bench-page .bench-chart .bench-table thead th > span { display:block; margin-top:3px; font-size:10px; }
+.bench-page .bench-chart .bench-table thead th > span:not(.bench-column-title) { display:block; margin-top:3px; font-size:10px; }
+.bench-metric-icon { width:16px; height:16px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:1.65; stroke-linecap:round; stroke-linejoin:round; color:var(--gf-ink-2); }
+.bench-page .bench-chart .bench-table thead .bench-column-title { display:flex; align-items:center; gap:8px; }
 .bench-axis { display:flex; justify-content:space-between; gap:8px; font:8px var(--gf-font-mono); margin-top:15px; color:var(--gf-ink-2); }
 .bench-page .bench-chart .bench-table tbody tr { background:transparent; border:0; border-top:1px solid var(--gf-line); }
 .bench-page .bench-chart .bench-table tbody tr:nth-child(2n) td { background:transparent; }
@@ -146,7 +149,8 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
  .bench-page .bench-chart .bench-table .bench-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 22px; padding:16px 0; }
  .bench-page .bench-chart .bench-table .bench-row th { grid-column:1/-1; width:auto; padding:0; font-size:12px; }
  .bench-page .bench-chart .bench-table .bench-row td { padding:0; }
- .bench-mobile-label { display:block; font-size:9px; color:var(--gf-ink-2); margin-bottom:4px; }
+ .bench-mobile-label { display:flex; align-items:center; gap:5px; font-size:9px; color:var(--gf-ink-2); margin-bottom:4px; }
+ .bench-mobile-label .bench-metric-icon { width:12px; height:12px; }
  .bench-row td > strong { font-size:11px; }
  .bench-noop-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 22px; }
  .bench-noop-row > span { padding:0; }
