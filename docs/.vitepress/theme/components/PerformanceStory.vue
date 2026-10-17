@@ -75,7 +75,7 @@ const workloads = {
 }
 const httpCharts = computed(() => Object.entries(workloads).map(([id, title]) => ({
   id: `http-${id}`,
-  title,
+  title: `HTTP: ${title}`,
   operation: { path_param_json: 'Return the ID in a JSON response', static_text: 'Return fixed text without middleware', middleware_chain: 'Set request state, add a header, validate the request' }[id],
   rows: evidence.web.scenarios.find(s => s.id === id).rows.map(row => ({...row, driver: row.framework, value: row.nsOp, kind: 'router'})),
   note: 'The same in-process router workload, without a socket, network, or application business logic.',
