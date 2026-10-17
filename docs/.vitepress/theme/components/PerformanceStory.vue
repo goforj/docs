@@ -1,882 +1,1466 @@
 <script setup>
 import { computed, ref } from 'vue'
-import performance from '../../data/performance-stats.json'
+import evidence from '../../data/performance-stats.json'
+import PerformanceArchitecture from './PerformanceArchitecture.vue'
 
-const selectedDriverStoryID = ref('cache')
-const selectedWebScenarioID = ref('path_param_json')
-
-const kindOrder = { process: 0, local: 1, service: 2 }
-const driverStory = computed(() => performance.driverStories.find((story) => story.id === selectedDriverStoryID.value))
-const driverNarratives = {
+const selectedSuite = ref('cache')
+const selectedBoundary = ref('local')
+const selectedRow = ref('Memory')
+const selectedHTTP = ref('live_plain_text')
+const suites = {
   cache: {
-    local: 'CACHE_DRIVER=memory',
-    external: 'CACHE_DRIVER=redis',
-    localDriver: 'Memory',
-    externalDriver: 'Redis',
-    buys: 'Shared cache state across App instances.',
-    measurement: 'Seeded GetBytes. Lower is faster.'
+    name: 'Cache',
+    operation: 'GetBytes',
+    local: 'Memory',
+    service: 'Redis',
+    localConfig: 'CACHE_DRIVER=memory',
+    serviceConfig: 'CACHE_DRIVER=redis',
+    limit: 'Memory belongs to one process. Redis adds a network boundary and shared state.',
+    measurement: 'A seeded byte-value read. The result includes the selected driver call.',
+    icon: 'M5 5h14v5H5z M5 14h14v5H5z M8 8h1 M8 17h1',
   },
   queue: {
-    local: 'QUEUE_DRIVER=workerpool',
-    external: 'QUEUE_DRIVER=rabbitmq',
-    localDriver: 'Worker pool',
-    externalDriver: 'RabbitMQ',
-    buys: 'Independent workers and broker-backed delivery.',
-    measurement: 'Producer-side Dispatch return. Job completion is not included.',
-    caveat: 'Core NATS is an ephemeral publish/subscribe adapter. Its Dispatch return does not provide the durability boundary represented by SQL, SQS, or durable brokers.'
+    name: 'Queue',
+    operation: 'Dispatch return',
+    local: 'Worker pool',
+    service: 'RabbitMQ',
+    localConfig: 'QUEUE_DRIVER=workerpool',
+    serviceConfig: 'QUEUE_DRIVER=rabbitmq',
+    limit:
+      'The worker pool runs in this process. A broker lets workers live elsewhere; retries and delivery semantics still depend on the driver and configuration.',
+    measurement:
+      'Producer-side dispatch return, not job completion. Core NATS publish return is an ephemeral boundary, not a durable broker acknowledgement.',
+    icon: 'M4 6h11 M4 12h11 M4 18h11 M17 9l3 3-3 3',
   },
   events: {
-    local: 'EVENTS_DRIVER=inproc',
-    external: 'EVENTS_DRIVER=nats',
-    localDriver: 'In process',
-    externalDriver: 'NATS',
-    buys: 'Event delivery across process boundaries.',
-    measurement: 'Publish plus observed handler delivery round trip.'
+    name: 'Events',
+    operation: 'Publish + handler delivery',
+    local: 'Synchronous',
+    service: 'NATS',
+    localConfig: 'EVENTS_DRIVER=inproc',
+    serviceConfig: 'EVENTS_DRIVER=nats',
+    limit:
+      'Local handlers share a process. Core NATS crosses that boundary without promising durable delivery; use a durable driver when that is required.',
+    measurement:
+      'Publish plus observed handler delivery. This includes the round trip, unlike the queue dispatch suite.',
+    icon: 'M12 9v6 M9 12h6 M5 5l3 3 M16 16l3 3 M5 19l3-3 M16 8l3-3',
   },
   storage: {
-    local: 'STORAGE_PUBLIC_DRIVER=local',
-    external: 'STORAGE_PUBLIC_DRIVER=s3',
-    localDriver: 'Local disk',
-    externalDriver: 'S3',
-    buys: 'Object storage shared beyond one host.',
-    measurement: 'Get a previously written small object.'
-  }
-}
-const driverNarrative = computed(() => driverNarratives[selectedDriverStoryID.value])
-const driverRows = computed(() => [...driverStory.value.rows].sort((left, right) => {
-  const kindDifference = kindOrder[left.kind] - kindOrder[right.kind]
-  return kindDifference || left.value - right.value
-}))
-const webScenario = computed(() => performance.web.scenarios.find((scenario) => scenario.id === selectedWebScenarioID.value))
-const webRows = computed(() => webScenario.value.rows
-  .filter((row) => row.framework !== 'httprouter')
-  .sort((left, right) => right.throughput - left.throughput))
-const goforjWeb = computed(() => webScenario.value.rows.find((row) => row.framework === 'goforj_web'))
-const liveHTTP = computed(() => performance.web.scenarios.find((scenario) => scenario.id === 'live_plain_text'))
-const liveGoforjWeb = computed(() => liveHTTP.value.rows.find((row) => row.framework === 'goforj_web'))
-const liveNetHTTP = computed(() => liveHTTP.value.rows.find((row) => row.framework === 'net_http'))
-const driverRow = (storyID, label) => performance.driverStories
-  .find((story) => story.id === storyID)
-  .rows.find((row) => row.label === label)
-const performancePairs = [
-  {
-    id: 'cache',
-    title: 'Cache',
-    operation: 'Seeded read',
-    local: driverRow('cache', 'Memory'),
-    production: driverRow('cache', 'Redis'),
-    buys: 'Shared cache state across App instances.'
+    name: 'Storage',
+    operation: 'Get small object',
+    local: 'Local',
+    service: 'S3',
+    localConfig: 'STORAGE_PUBLIC_DRIVER=local',
+    serviceConfig: 'STORAGE_PUBLIC_DRIVER=s3',
+    limit:
+      'Local files belong to a host. S3 adds a service boundary. Check driver capabilities and object semantics.',
+    measurement:
+      'Read a previously written small object. Service fixtures use local containers or emulators.',
+    icon: 'M4 7l8-4 8 4-8 4z M4 7v10l8 4 8-4V7 M12 11v10',
   },
-  {
-    id: 'queue',
-    title: 'Queue',
-    operation: 'Dispatch return',
-    local: driverRow('queue', 'Worker pool'),
-    production: driverRow('queue', 'RabbitMQ'),
-    buys: 'Broker-backed delivery to independent workers.'
-  },
-  {
-    id: 'events',
-    title: 'Events',
-    operation: 'Publish + handle',
-    local: driverRow('events', 'Synchronous'),
-    production: driverRow('events', 'NATS JetStream'),
-    buys: 'Durable event delivery across processes.'
-  },
-  {
-    id: 'storage',
-    title: 'Storage',
-    operation: 'Small-object read',
-    local: driverRow('storage', 'Local'),
-    production: driverRow('storage', 'S3'),
-    buys: 'Object storage shared beyond one host.'
-  }
-]
-
-const driverWidth = (value) => {
-  const values = driverRows.value.map((row) => row.value)
-  const minimum = Math.log10(Math.min(...values))
-  const maximum = Math.log10(Math.max(...values))
-  if (maximum === minimum) return 100
-  return 8 + ((Math.log10(value) - minimum) / (maximum - minimum)) * 92
 }
-
-const webWidth = (value) => value / Math.max(...webRows.value.map((row) => row.throughput)) * 100
-const formatLatency = (value) => {
-  if (value < 1_000) return `${Number(value.toFixed(value < 100 ? 0 : 1))} ns`
-  if (value < 1_000_000) return `${Number((value / 1_000).toFixed(value < 10_000 ? 1 : 0))} µs`
-  return `${Number((value / 1_000_000).toFixed(value < 10_000_000 ? 2 : 1))} ms`
+const suite = computed(() => suites[selectedSuite.value])
+const story = computed(() => evidence.driverStories.find((s) => s.id === selectedSuite.value))
+const rows = computed(() => [...story.value.rows].sort((a, b) => a.value - b.value))
+const local = computed(() => story.value.rows.find((r) => r.label === suite.value.local))
+const detail = computed(() => rows.value.find((r) => r.label === selectedRow.value) || local.value)
+const source = computed(() => evidence.sources.find((s) => s.repo === selectedSuite.value))
+const decades = computed(() => {
+  const min = Math.floor(Math.log10(Math.min(...rows.value.map((r) => r.value))))
+  const max = Math.max(min + 1, Math.ceil(Math.log10(Math.max(...rows.value.map((r) => r.value)))))
+  return Array.from({ length: max - min + 1 }, (_, i) => 10 ** (min + i))
+})
+const position = (value) =>
+  ((Math.log10(value) - Math.log10(decades.value[0])) /
+    (Math.log10(decades.value.at(-1)) - Math.log10(decades.value[0]))) *
+  100
+const latency = (value) => {
+  if (value < 1000) return { number: Number(value.toFixed(value < 100 ? 0 : 1)), unit: 'ns' }
+  if (value < 1000000)
+    return { number: Number((value / 1000).toFixed(value < 10000 ? 2 : 1)), unit: 'µs' }
+  return { number: Number((value / 1000000).toFixed(2)), unit: 'ms' }
 }
-const formatRate = (value) => {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `${Math.round(value / 1_000)}K`
-  return Math.round(value).toLocaleString()
+const time = (value) => `${latency(value).number} ${latency(value).unit}`
+const number = (value) => Number(value.toFixed(1)).toLocaleString('en-US')
+const rate = (value) =>
+  value >= 1e6 ? `${(value / 1e6).toFixed(2)}M` : `${Math.round(value / 1000)}K`
+const category = (kind) =>
+  ({ process: 'In process', local: 'Host-local', service: 'Service boundary' })[kind]
+const sourceURL = (s) => `https://github.com/goforj/${s.repo}/blob/${s.revision}/${s.path}`
+const changeSuite = (id) => {
+  selectedSuite.value = id
+  selectedRow.value = suites[id].local
 }
-const kindLabel = (kind) => ({ process: 'In process', local: 'Host-local', service: 'External boundary' })[kind]
-const scenarioLabel = (id) => ({
-  live_plain_text: 'HTTP loopback',
+const httpNames = {
+  live_plain_text: 'HTTP/1.1 loopback',
   static_text: 'Static response',
-  path_param_json: 'Path + JSON',
-  middleware_chain: 'Middleware chain'
-})[id]
-const libraryLink = (repo) => `/${repo === 'str' ? 'strings' : repo}`
+  path_param_json: 'Path parameter + JSON',
+  middleware_chain: 'Middleware chain',
+}
+const httpStory = computed(() => evidence.web.scenarios.find((s) => s.id === selectedHTTP.value))
+const httpRows = computed(() =>
+  [...httpStory.value.rows].sort((a, b) => b.throughput - a.throughput),
+)
+const httpGoForj = computed(() => httpRows.value.find((r) => r.framework === 'goforj_web'))
+const httpStandard = computed(() => httpRows.value.find((r) => r.framework === 'net_http'))
+const httpMax = computed(() => {
+  const maximum = Math.max(...httpRows.value.map((r) => r.throughput))
+  const step = 10 ** Math.floor(Math.log10(maximum)) / 2
+  return Math.ceil(maximum / step) * step
+})
+const httpTicks = computed(() => Array.from({ length: 5 }, (_, i) => (httpMax.value / 4) * i))
+const totalRows = evidence.driverStories.reduce((sum, s) => sum + s.rows.length, 0)
+const architectureResources = computed(() =>
+  Object.entries(suites).map(([id, item]) => ({
+    id,
+    ...item,
+    local: evidence.driverStories.find((s) => s.id === id).rows.find((r) => r.label === item.local),
+    service: evidence.driverStories
+      .find((s) => s.id === id)
+      .rows.find((r) => r.label === item.service),
+  })),
+)
 </script>
 
 <template>
-  <main class="gf-performance-page">
-    <section class="gf-performance-hero">
-      <div class="gf-performance-hero__copy">
-        <p class="gf-performance-eyebrow">Performance by architecture</p>
-        <h1>Start local.<br><em>Scale without a rewrite.</em></h1>
-        <p class="gf-performance-lede">
-          GoForj gives cache, queues, events, and storage fast local implementations behind the
-          same contracts used by shared backends. Keep work in process while that fits. Move to
-          Redis, NATS, SQL, S3, or another service when you need coordination, persistence, or
-          distribution—without rewriting the service that uses it.
-        </p>
-        <div class="gf-performance-actions">
-          <a href="#driver-physics">Compare driver costs</a>
-          <a href="#methodology">See how these were measured</a>
+  <main class="pf">
+    <section class="pf-hero pf-rail">
+      <div class="pf-hero-heading">
+        <div>
+          <p class="pf-kicker">
+            <span class="pf-mark" aria-hidden="true"></span> GoForj / Performance by architecture
+          </p>
+          <h1>Fast starts with<br /><em>less distance.</em></h1>
+        </div>
+        <div class="pf-hero-intro">
+          <p class="pf-lead">
+            Start with one app, local drivers, and no supporting services. Move to shared
+            infrastructure when the workload needs it. Your services keep the same library
+            contracts.
+          </p>
+          <p>
+            Performance changes with the boundary. So do coordination, persistence, and delivery
+            guarantees.
+          </p>
+          <a href="#compare">Explore the measurements <span aria-hidden="true">↓</span></a>
         </div>
       </div>
+      <PerformanceArchitecture
+        v-model:mode="selectedBoundary"
+        :selected="selectedSuite"
+        :resources="architectureResources"
+        @select="changeSuite"
+      />
+    </section>
 
-      <div class="gf-performance-pairs" aria-label="Local and production-oriented driver performance">
-        <div class="gf-performance-pairs__heading">
-          <div><span>Start local</span><strong>Fast feedback</strong></div>
-          <i aria-hidden="true">same contract</i>
-          <div><span>Cross the boundary</span><strong>Production capability</strong></div>
+    <section id="compare" class="pf-section pf-rail">
+      <header class="pf-section-head">
+        <div>
+          <p class="pf-kicker">02 / The cost of a boundary</p>
+          <h2>Same operation.<br />Different distance.</h2>
         </div>
-        <article v-for="pair in performancePairs" :key="pair.id">
-          <div class="gf-performance-pairs__label">
-            <strong>{{ pair.title }}</strong>
-            <span>{{ pair.operation }}</span>
-          </div>
-          <div class="gf-performance-pairs__driver is-local">
-            <span>{{ pair.local.label }}</span>
-            <strong>{{ formatLatency(pair.local.value) }}</strong>
-          </div>
-          <div class="gf-performance-pairs__bridge" aria-hidden="true"><span></span><i>→</i></div>
-          <div class="gf-performance-pairs__driver is-production">
-            <span>{{ pair.production.label }}</span>
-            <strong>{{ formatLatency(pair.production.value) }}</strong>
-          </div>
-          <p>{{ pair.buys }}</p>
-        </article>
-        <small>Measured locally. Each row compares the same library operation; lower is faster.</small>
-      </div>
-    </section>
-
-    <section class="gf-performance-proof" aria-label="Benchmark evidence summary">
-      <div><strong>{{ performance.sources.length }}</strong><span>versioned benchmark datasets</span></div>
-      <div><strong>{{ performance.driverStories.length }}</strong><span>same-operation driver suites</span></div>
-      <div><strong>1</strong><span>shared HTTP harness</span></div>
-      <div><strong>SHA</strong><span>revision and content hash recorded</span></div>
-    </section>
-
-    <section class="gf-performance-section gf-performance-contract">
-      <header class="gf-performance-section__header">
-        <p class="gf-performance-eyebrow">Performance without a fork in the road</p>
-        <h2>Your service code stays put.</h2>
         <p>
-          Local drivers are not toy substitutes. They implement the contracts your App uses in
-          production. Start with fewer processes and faster feedback, then change configuration and
-          wiring when a workload needs shared state, independent workers, durable delivery, or
-          storage beyond one host.
+          Network calls, filesystem access, serialization, and delivery guarantees change the work a
+          driver does. Compare the measured cost inside one library, then choose the behavior your
+          app needs.
         </p>
       </header>
-
-      <div class="gf-performance-contract-map">
-        <div class="gf-performance-contract-map__service">
-          <span>Application service</span>
-          <strong>Business logic</strong>
-          <code>cache.Get(ctx, key)</code>
-          <code>queue.Dispatch(ctx, job)</code>
-          <code>events.Publish(ctx, event)</code>
-          <code>storage.Get(ctx, path)</code>
-          <small>unchanged</small>
-        </div>
-        <div class="gf-performance-contract-map__contracts">
-          <span>GoForj contracts</span>
-          <i aria-hidden="true">→</i>
-          <strong>Cache · Queue · Events · Storage</strong>
-          <i aria-hidden="true">→</i>
-        </div>
-        <div class="gf-performance-contract-map__modes">
-          <div>
-            <span>Local profile</span>
-            <strong>Memory · Worker pool<br>Synchronous · Disk</strong>
-            <small>one command, no supporting services</small>
-          </div>
-          <div>
-            <span>Production profile</span>
-            <strong>Redis · RabbitMQ<br>JetStream · S3</strong>
-            <small>coordination, durability, distribution</small>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="driver-physics" class="gf-performance-section gf-performance-drivers">
-      <div class="gf-performance-drivers__intro">
-        <div>
-          <p class="gf-performance-eyebrow">Same contract. Different boundary.</p>
-          <h2>See the cost. Know what it buys.</h2>
-        </div>
-        <p>
-          Each chart compares one operation inside a GoForj library. Latency changes because the
-          work changes: serialization, filesystem access, broker delivery, database commits,
-          emulator behavior, and network round trips all have a cost. Choose the guarantees the
-          workload needs, then see the local overhead of that choice.
-        </p>
-      </div>
-
-      <div class="gf-performance-tabs" role="tablist" aria-label="Driver benchmark suites">
-        <button
-          v-for="story in performance.driverStories"
-          :key="story.id"
-          type="button"
-          role="tab"
-          :aria-selected="selectedDriverStoryID === story.id"
-          :class="{ 'is-active': selectedDriverStoryID === story.id }"
-          @click="selectedDriverStoryID = story.id"
-        >
-          {{ story.title }}
-        </button>
-      </div>
-
-      <div class="gf-performance-boundary">
-        <div>
-          <span>Start here</span>
-          <code>{{ driverNarrative.local }}</code>
-          <strong>{{ driverNarrative.localDriver }}</strong>
-        </div>
-        <div class="gf-performance-boundary__bridge">
-          <span>same library contract</span>
-          <i aria-hidden="true">→</i>
-          <small>configuration + wiring</small>
-        </div>
-        <div>
-          <span>Cross the boundary when needed</span>
-          <code>{{ driverNarrative.external }}</code>
-          <strong>{{ driverNarrative.externalDriver }}</strong>
-          <p>{{ driverNarrative.buys }}</p>
-        </div>
-      </div>
-
-      <div class="gf-performance-chart">
-        <div class="gf-performance-chart__topline">
-          <div>
-            <span>{{ driverStory.operation }}</span>
-            <strong>{{ driverStory.title }}</strong>
-          </div>
-          <div class="gf-performance-legend" aria-label="Driver types">
-            <span class="is-process">In process</span>
-            <span class="is-local">Host-local</span>
-            <span class="is-service">External boundary</span>
-          </div>
-        </div>
-
-        <div class="gf-performance-driver-rows">
-          <div v-for="row in driverRows" :key="row.label" class="gf-performance-driver-row">
-            <div class="gf-performance-driver-row__label">
-              <strong>{{ row.label }}</strong>
-              <span>{{ kindLabel(row.kind) }}</span>
-            </div>
-            <div class="gf-performance-driver-row__track">
-              <span
-                class="gf-performance-driver-row__bar"
-                :class="`is-${row.kind}`"
-                :style="{ width: `${driverWidth(row.value)}%` }"
-              ></span>
-            </div>
-            <strong class="gf-performance-driver-row__value">{{ formatLatency(row.value) }}</strong>
-          </div>
-        </div>
-        <div class="gf-performance-chart__notes">
-          <p>{{ driverNarrative.measurement }}</p>
-          <p v-if="driverNarrative.caveat">{{ driverNarrative.caveat }}</p>
-          <small>Logarithmic latency scale. Compare rows within this suite only. External fixtures run locally in containers or emulators; they are not managed-service forecasts.</small>
-        </div>
-      </div>
-    </section>
-
-    <section class="gf-performance-section gf-performance-web">
-      <div class="gf-performance-web__copy">
-        <p class="gf-performance-eyebrow">Framework overhead</p>
-        <h2>The App stays close to <code>net/http</code>.</h2>
-        <p>
-          In the shared HTTP/1.1 loopback case, GoForj Web recorded
-          <strong>{{ formatRate(liveGoforjWeb.throughput) }}</strong> requests per second versus
-          <strong>{{ formatRate(liveNetHTTP.throughput) }}</strong> for <code>net/http</code>. In the
-          in-process path-and-JSON case, it recorded <strong>{{ formatRate(goforjWeb.throughput) }}</strong>
-          operations per second with <strong>{{ goforjWeb.allocs }}</strong> allocations per operation.
-          The useful result is not a benchmark trophy: GoForj's routing and App abstractions remain
-          competitive with the underlying Go stack under the same harness.
-        </p>
-        <p class="gf-performance-web__note">
-          Values are medians of {{ performance.web.metadata.sample_count }} samples at
-          {{ performance.web.metadata.benchmark_time }} with GOMAXPROCS={{ performance.web.metadata.gomaxprocs }}.
-          Small differences are not rankings. The loopback case is a warm single-connection ceiling;
-          the other cases measure in-process dispatch. Neither predicts production capacity.
-        </p>
-      </div>
-
-      <div class="gf-performance-web__panel">
-        <div class="gf-performance-tabs gf-performance-tabs--compact" role="tablist" aria-label="HTTP benchmark scenarios">
+      <div class="pf-explorer">
+        <div class="pf-explorer-tabs" role="group" aria-label="Driver measurements">
           <button
-            v-for="scenario in performance.web.scenarios"
-            :key="scenario.id"
-            type="button"
-            role="tab"
-            :aria-selected="selectedWebScenarioID === scenario.id"
-            :class="{ 'is-active': selectedWebScenarioID === scenario.id }"
-            @click="selectedWebScenarioID = scenario.id"
+            v-for="(item, id) in suites"
+            :key="id"
+            :aria-pressed="selectedSuite === id"
+            @click="changeSuite(id)"
           >
-            {{ scenarioLabel(scenario.id) }}
+            <span>0{{ Object.keys(suites).indexOf(id) + 1 }}</span
+            >{{ item.name
+            }}<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path :d="item.icon" /></svg>
           </button>
         </div>
+        <div class="pf-explorer-body">
+          <div class="pf-chart">
+            <div class="pf-chart-title">
+              <div>
+                <h3>{{ suite.operation }}</h3>
+                <p>Time per operation · lower is faster</p>
+              </div>
+              <span class="pf-scale-label">LOG SCALE</span>
+            </div>
+            <div class="pf-axis" aria-hidden="true">
+              <div>
+                <span
+                  v-for="(tick, i) in decades"
+                  :key="tick"
+                  :class="{ 'is-first': i === 0, 'is-last': i === decades.length - 1 }"
+                  :style="{ left: `${position(tick)}%` }"
+                  >{{ time(tick) }}</span
+                >
+              </div>
+            </div>
+            <div
+              class="pf-chart-rows"
+              role="group"
+              :aria-label="`${suite.name} driver latency; select a row for details`"
+            >
+              <button
+                v-for="row in rows"
+                :key="row.label"
+                class="pf-chart-row"
+                :class="[`pf-kind--${row.kind}`, { 'is-selected': detail.label === row.label }]"
+                :aria-pressed="detail.label === row.label"
+                @click="selectedRow = row.label"
+              >
+                <span class="pf-row-name">{{ row.label }}</span
+                ><span class="pf-row-track" aria-hidden="true"
+                  ><i
+                    v-for="tick in decades"
+                    :key="tick"
+                    class="pf-gridline"
+                    :style="{ left: `${position(tick)}%` }"
+                  ></i
+                  ><span class="pf-row-line" :style="{ width: `${position(row.value)}%` }"></span
+                  ><span
+                    class="pf-row-dot"
+                    :style="{ left: `${position(row.value)}%` }"
+                  ></span></span
+                ><strong>{{ time(row.value) }}</strong>
+              </button>
+            </div>
+            <div class="pf-chart-legend">
+              <span class="pf-kind--process"><i></i>In process</span
+              ><span class="pf-kind--local"><i></i>Host-local</span
+              ><span class="pf-kind--service"><i></i>Service boundary</span>
+            </div>
+            <p class="pf-measure-note">
+              Each grid interval is 10×. These are local harness results, including container or
+              emulator fixtures for service drivers.
+            </p>
+          </div>
+          <aside class="pf-detail" aria-live="polite" aria-atomic="true">
+            <span class="pf-mono">Selected measurement</span>
+            <h3>{{ detail.label }}</h3>
+            <span class="pf-detail-kind" :class="`pf-kind--${detail.kind}`"
+              ><i></i>{{ category(detail.kind) }}</span
+            >
+            <div class="pf-detail-time">
+              <strong>{{ latency(detail.value).number }}</strong
+              ><span>{{ latency(detail.value).unit }} / op</span>
+            </div>
+            <dl>
+              <div>
+                <dt>Allocations / op</dt>
+                <dd>{{ number(detail.allocs) }}</dd>
+              </div>
+              <div>
+                <dt>Bytes / op</dt>
+                <dd>{{ number(detail.bytes) }}</dd>
+              </div>
+            </dl>
+            <p>{{ suite.measurement }}</p>
+            <a :href="sourceURL(source)" target="_blank" rel="noopener noreferrer"
+              >{{ selectedSuite }}/{{ source.revision.slice(0, 8) }} ↗</a
+            >
+          </aside>
+        </div>
+        <div class="pf-contract-note">
+          <span class="pf-kicker">What changes</span>
+          <p>{{ suite.limit }}</p>
+          <a href="/drivers">Driver capabilities ↗</a>
+        </div>
+      </div>
+    </section>
 
-        <div class="gf-performance-web-rows">
+    <section id="http" class="pf-section pf-http pf-rail">
+      <header class="pf-section-head">
+        <div>
+          <p class="pf-kicker">03 / HTTP routing overhead</p>
+          <h2>Stay close to<br /><code>net/http.</code></h2>
+        </div>
+        <div>
+          <p>
+            The Web library comparison puts GoForj's HTTP routing in the same harness as other Go
+            routers. Switch scenarios to separate socket overhead from in-process dispatch.
+          </p>
+          <p class="pf-small">
+            These are Web library measurements, not a full generated app with database queries,
+            authentication, and business logic.
+          </p>
+        </div>
+      </header>
+      <div class="pf-http-layout">
+        <div class="pf-http-summary">
+          <label for="pf-http-scenario" class="pf-mono">Choose a workload</label
+          ><select id="pf-http-scenario" v-model="selectedHTTP">
+            <option v-for="s in evidence.web.scenarios" :key="s.id" :value="s.id">
+              {{ httpNames[s.id] }}
+            </option>
+          </select>
+          <div class="pf-http-number">
+            <span>GoForj Web</span
+            ><strong
+              >{{ rate(httpGoForj.throughput)
+              }}<small>{{
+                selectedHTTP === 'live_plain_text' ? 'requests / sec' : 'operations / sec'
+              }}</small></strong
+            >
+          </div>
+          <div class="pf-http-reference">
+            <span>net/http in the same case</span
+            ><strong>{{ rate(httpStandard.throughput) }} / sec</strong>
+          </div>
+          <p>
+            {{
+              selectedHTTP === 'live_plain_text'
+                ? 'Warm HTTP/1.1 loopback over a single connection. Socket and HTTP work dominate this result.'
+                : 'In-process handler dispatch. No socket, real network, or application workload is included.'
+            }}
+          </p>
+          <p class="pf-small">
+            Median of {{ evidence.web.metadata.sample_count }} samples ×
+            {{ evidence.web.metadata.benchmark_time }} each. Small differences are not reliable
+            rankings.
+          </p>
+        </div>
+        <div class="pf-http-chart">
+          <div class="pf-http-axis" aria-hidden="true">
+            <span v-for="(tick, i) in httpTicks" :key="tick" :style="{ left: `${i * 25}%` }">{{
+              tick === 0 ? '0' : rate(tick)
+            }}</span>
+          </div>
           <div
-            v-for="row in webRows"
+            v-for="row in httpRows"
             :key="row.framework"
-            class="gf-performance-web-row"
+            class="pf-http-row"
             :class="{ 'is-goforj': row.framework === 'goforj_web' }"
           >
-            <div><strong>{{ row.label }}</strong><span>{{ row.allocs }} allocs/op</span></div>
-            <div class="gf-performance-web-row__track">
-              <span :style="{ width: `${webWidth(row.throughput)}%` }"></span>
+            <div class="pf-http-row-title">
+              <strong>{{ row.label }}</strong
+              ><span>{{ number(row.allocs) }} allocs / op</span>
             </div>
-            <strong>{{ formatRate(row.throughput) }}/s</strong>
+            <div class="pf-http-track">
+              <span :style="{ width: `${(row.throughput / httpMax) * 100}%` }"></span>
+            </div>
+            <strong class="pf-http-rate">{{ rate(row.throughput) }}</strong>
           </div>
+          <p class="pf-measure-note">
+            Linear throughput scale · higher is faster ·
+            {{ selectedHTTP === 'live_plain_text' ? 'requests' : 'operations' }} / second
+          </p>
         </div>
       </div>
     </section>
 
-    <section id="methodology" class="gf-performance-section gf-performance-methodology">
-      <div class="gf-performance-methodology__copy">
-        <p class="gf-performance-eyebrow">Traceable measurements</p>
-        <h2>Every number points back to a versioned result.</h2>
-        <p>
-          This page is generated from five benchmark snapshots committed in the Cache, Queue,
-          Events, Storage, and Web repositories. The collector records each source revision and
-          SHA-256 hash, normalizes the selected rows, and makes the docs build fail when the
-          checked-in page data drifts from those sources.
-        </p>
-        <p>
-          Container- and emulator-backed results describe those local fixtures on the recorded
-          machine. Production latency depends on network topology, service configuration,
-          contention, payloads, and delivery guarantees. Use these results to compare implementation
-          boundaries and detect regressions, not to forecast deployed throughput.
-        </p>
-      </div>
-
-      <div class="gf-performance-sources">
-        <a
-          v-for="source in performance.sources"
-          :key="source.repo"
-          :href="`https://github.com/goforj/${source.repo}/blob/${source.revision}/${source.path}`"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <span>{{ source.repo }}</span>
-          <strong>benchmark JSON</strong>
-          <small>{{ source.revision.slice(0, 8) }} ↗</small>
-        </a>
-      </div>
-
-      <div class="gf-performance-library-strip">
-        <span>{{ performance.totals.benchmarks }} benchmark functions across {{ performance.benchmarkLibraries.length }} libraries</span>
+    <section id="methodology" class="pf-section pf-method pf-rail">
+      <header class="pf-section-head">
         <div>
-          <a v-for="library in performance.benchmarkLibraries" :key="library.repo" :href="libraryLink(library.repo)">
-            {{ library.repo }} <small>{{ library.benchmarks }}</small>
-          </a>
+          <p class="pf-kicker">04 / Check the evidence</p>
+          <h2>Numbers you<br />can trace.</h2>
+        </div>
+        <p>
+          Five committed benchmark snapshots feed this page. Each retains a source revision and
+          content hash. Open the source to inspect the fixture, result, and measurement conditions.
+        </p>
+      </header>
+      <div class="pf-method-layout">
+        <div class="pf-conditions">
+          <h3>The HTTP environment</h3>
+          <dl>
+            <div>
+              <dt>Go</dt>
+              <dd>{{ evidence.web.metadata.go_version }}</dd>
+            </div>
+            <div>
+              <dt>Platform</dt>
+              <dd>{{ evidence.web.metadata.goos }} / {{ evidence.web.metadata.goarch }}</dd>
+            </div>
+            <div>
+              <dt>GOMAXPROCS</dt>
+              <dd>{{ evidence.web.metadata.gomaxprocs }}</dd>
+            </div>
+            <div>
+              <dt>Sampling</dt>
+              <dd>
+                {{ evidence.web.metadata.sample_count }} ×
+                {{ evidence.web.metadata.benchmark_time }}
+              </dd>
+            </div>
+          </dl>
+          <p>
+            Driver suites have their own fixtures and run conditions. Compare within a suite, not by
+            adding up results across libraries.
+          </p>
+          <a href="/operations/performance-benchmarks">Run a workload against your app ↗</a>
+        </div>
+        <div class="pf-source-list">
+          <a
+            v-for="s in evidence.sources"
+            :key="s.repo"
+            :href="sourceURL(s)"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="pf-source-name">{{ s.repo }}</span
+            ><span class="pf-source-path">{{ s.path }}</span
+            ><code>{{ s.revision.slice(0, 8) }}</code
+            ><span aria-hidden="true">↗</span></a
+          >
+          <details>
+            <summary>View source fingerprints</summary>
+            <div v-for="s in evidence.sources" :key="s.repo">
+              <strong>{{ s.repo }}</strong
+              ><code>{{ s.sha256 }}</code>
+            </div>
+          </details>
         </div>
       </div>
+      <div class="pf-limits">
+        <span class="pf-mono">What this does not measure</span>
+        <p>
+          Your production network, service configuration, workload mix, payload sizes, contention,
+          and durability requirements. Use these results to understand boundaries and spot
+          regressions, then measure your app under representative load.
+        </p>
+      </div>
     </section>
-
-    <section class="gf-performance-closing">
-      <p class="gf-performance-eyebrow">Change the boundary, not the service</p>
-      <h2>Keep the contract.<br>Add infrastructure deliberately.</h2>
-      <p>
-        Run in process or on local storage while those semantics fit. Move to shared, durable, or
-        distributed drivers when coordination, persistence, and scale require them. GoForj keeps
-        that decision in wiring and configuration instead of spreading it through business logic.
-      </p>
-      <div class="gf-performance-actions gf-performance-actions--center">
-        <a href="/drivers">Compare all {{ performance.totals.drivers }} drivers</a>
-        <a href="/getting-started/quickstart">Build a local-first App</a>
+    <section class="pf-closing pf-rail">
+      <div>
+        <p class="pf-kicker">Build local. Add infrastructure deliberately.</p>
+        <h2>Keep the code.<br />Move the boundary.</h2>
+      </div>
+      <div>
+        <p>
+          Choose shared state, durable delivery, or independent workers when you need them. Keep
+          business logic behind the same contracts, and review the guarantees of each driver.
+        </p>
+        <div class="pf-actions">
+          <a class="pf-primary" href="/getting-started/quickstart"
+            >Get started <span aria-hidden="true">↗</span></a
+          ><a href="/drivers">Explore the drivers ↗</a>
+        </div>
       </div>
     </section>
   </main>
 </template>
 
 <style scoped>
-:global(.VPDoc:has(.gf-performance-page)) {
+:global(.VPDoc:has(.pf)) {
   padding: 0 !important;
 }
-
-:global(.VPDoc:has(.gf-performance-page) .container),
-:global(.VPDoc:has(.gf-performance-page) .content),
-:global(.VPDoc:has(.gf-performance-page) .content-container),
-:global(.VPDoc:has(.gf-performance-page) .main),
-:global(.VPDoc:has(.gf-performance-page) .vp-doc) {
+:global(.VPDoc:has(.pf) .container),
+:global(.VPDoc:has(.pf) .content),
+:global(.VPDoc:has(.pf) .content-container),
+:global(.VPDoc:has(.pf) .main),
+:global(.VPDoc:has(.pf) .vp-doc) {
   width: 100% !important;
   max-width: none !important;
 }
-
-:global(.VPDoc:has(.gf-performance-page) .container),
-:global(.VPDoc:has(.gf-performance-page) .content) {
+:global(.VPDoc:has(.pf) .container),
+:global(.VPDoc:has(.pf) .content) {
   padding: 0 !important;
 }
-
-:global(.VPDoc .content-container:has(.gf-performance-page) .VPDocFooter) {
+:global(.VPDoc:has(.pf) .VPDocFooter) {
   display: none;
 }
-
-.gf-performance-page {
-  --perf-coral: #ff6a3d;
-  --perf-gold: #ffc24d;
-  --perf-mint: #73e2c4;
-  --perf-violet: #b7a4ff;
-  --perf-cyan: #67c7ff;
-  --perf-faint: rgba(255, 255, 255, 0.06);
-  --perf-panel: rgba(14, 12, 16, 0.65);
-  --perf-track: rgba(255, 255, 255, 0.045);
-  width: 100%;
-  overflow: hidden;
+.pf {
+  --pf-process: var(--gf-nav);
+  --pf-local: #8ebfae;
+  --pf-service: #a89bd4;
+  background: var(--gf-ground-deep);
   color: var(--gf-ink);
-  background:
-    radial-gradient(1000px 760px at 92% 5%, rgba(255, 106, 61, 0.14), transparent 72%),
-    radial-gradient(1100px 780px at 5% 42%, rgba(103, 199, 255, 0.09), transparent 72%),
-    radial-gradient(1200px 800px at 85% 72%, rgba(183, 164, 255, 0.10), transparent 74%),
-    var(--gf-ground-deep);
+  font-family: var(--gf-font-body);
+  overflow: clip;
 }
-
-:global(html:not(.dark) .gf-performance-page) {
-  --perf-faint: rgba(12, 10, 14, 0.07);
-  --perf-panel: rgba(255, 255, 255, 0.66);
-  --perf-track: rgba(12, 10, 14, 0.065);
+:global(html:not(.dark)) .pf {
+  --pf-local: #28745c;
+  --pf-service: #735298;
 }
-
-.gf-performance-hero {
+.pf *,
+.pf *::before,
+.pf *::after {
+  box-sizing: border-box;
+}
+.pf h1,
+.pf h2,
+.pf h3,
+.pf p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.pf h1,
+.pf h2,
+.pf h3 {
+  color: var(--gf-ink);
+  font-family: var(--gf-font-display);
+}
+.pf a {
+  text-decoration: none;
+}
+.pf button,
+.pf select {
+  font: inherit;
+}
+.pf button {
+  cursor: pointer;
+}
+.pf a:focus-visible,
+.pf button:focus-visible,
+.pf select:focus-visible,
+.pf summary:focus-visible {
+  outline: 2px solid var(--gf-nav);
+  outline-offset: 5px;
+}
+.pf-rail {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 0.78fr) minmax(660px, 1.22fr);
-  gap: clamp(30px, 6vw, 110px);
-  align-items: center;
-  min-height: calc(100vh - var(--vp-nav-height));
-  padding: clamp(70px, 8vw, 132px) clamp(28px, 7vw, 132px);
+  border-bottom: 1px solid var(--gf-line);
+  padding-inline: max(28px, calc((100vw - 1240px) / 2));
 }
-
-.gf-performance-hero::before {
+.pf-rail::after {
   position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(rgba(255, 130, 87, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 130, 87, 0.024) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: linear-gradient(180deg, #000, transparent 92%);
-  content: "";
-  pointer-events: none;
+  content: '';
+  width: 5px;
+  height: 5px;
+  background: var(--gf-accent);
+  bottom: -3px;
+  left: max(24px, calc((100vw - 1260px) / 2));
 }
-
-.gf-performance-hero > * {
-  position: relative;
-  z-index: 1;
-}
-
-.gf-performance-eyebrow {
-  margin: 0 0 16px;
-  color: var(--gf-accent-hi);
-  font-size: 0.76rem;
-  font-weight: 850;
-  letter-spacing: 0.14em;
+.pf-kicker,
+.pf-mono {
+  font: 500 10px/1.5 var(--gf-font-mono);
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
-
-.gf-performance-hero h1,
-.gf-performance-section h2,
-.gf-performance-closing h2 {
-  margin: 0;
-  border: 0;
-  padding: 0;
-  color: var(--gf-ink);
-  letter-spacing: -0.06em;
+.pf-kicker {
+  color: var(--gf-nav);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-
-.gf-performance-hero h1 {
-  max-width: 820px;
-  font-size: clamp(4.25rem, 7.3vw, 8.6rem);
-  line-height: 0.9;
+.pf-mark {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--gf-accent);
+  transform: rotate(45deg);
 }
-
-.gf-performance-hero h1 em {
-  color: var(--perf-coral);
+.pf-hero {
+  display: block;
+  padding-top: 55px;
+  padding-bottom: 0;
+  background: radial-gradient(
+    ellipse 50% 70% at 78% 10%,
+    color-mix(in srgb, var(--gf-accent) 7%, transparent),
+    transparent 80%
+  );
+}
+.pf-hero h1 {
+  font-size: clamp(60px, 6.3vw, 88px);
+  line-height: 1.02;
+  font-weight: 600;
+  letter-spacing: -0.065em;
+  margin-top: 24px;
+}
+.pf-hero h1 em {
+  color: var(--gf-accent-hi);
   font-style: normal;
 }
-
-.gf-performance-lede {
-  max-width: 690px;
-  margin: 30px 0 0;
+.pf-lead {
+  margin-top: 27px !important;
+  max-width: 450px;
+  font-size: 16px;
+  line-height: 1.8;
   color: var(--gf-ink-2);
-  font-size: clamp(1.02rem, 1.35vw, 1.2rem);
-  line-height: 1.72;
 }
-
-.gf-performance-actions {
+.pf-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 13px;
-  margin-top: 34px;
+  align-items: center;
+  gap: 24px;
+  margin-top: 28px;
+  font-size: 12px;
+  font-weight: 600;
 }
-
-.gf-performance-actions a {
+.pf-actions a {
+  color: var(--gf-nav);
+  white-space: nowrap;
+}
+.pf-actions a.pf-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 0 21px;
-  border: 1px solid rgba(255, 194, 77, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.045);
-  color: var(--gf-ink);
-  font-weight: 800;
-  text-decoration: none !important;
-  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  gap: 28px;
+  background: var(--gf-accent);
+  color: var(--gf-on-accent);
+  padding: 13px 17px;
+  border-radius: 6px;
 }
-
-.gf-performance-actions a:first-child {
-  border-color: rgba(255, 130, 87, 0.78);
-  background: linear-gradient(180deg, #ff7048, #d53b21);
-  box-shadow: 0 18px 46px rgba(214, 53, 26, 0.22);
+.pf-actions a:hover {
+  filter: brightness(1.12);
 }
-
-.gf-performance-actions a:hover {
-  transform: translateY(-2px);
-  border-color: var(--perf-gold);
+.pf-explorer-tabs svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-
-.gf-performance-pairs {
-  padding: clamp(20px, 2.6vw, 34px);
-  border: 1px solid rgba(255, 130, 87, 0.22);
-  border-radius: 14px;
-  background: linear-gradient(145deg, rgba(255, 106, 61, 0.07), var(--perf-panel) 35%);
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.25);
+.pf-section {
+  padding-block: 76px;
+  scroll-margin-top: 100px;
 }
-
-.gf-performance-pairs__heading,
-.gf-performance-pairs article {
+.pf-section-head {
   display: grid;
-  grid-template-columns: minmax(72px, 0.45fr) minmax(126px, 0.8fr) minmax(74px, 0.48fr) minmax(126px, 0.8fr) minmax(160px, 1.2fr);
-  gap: 14px;
-  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  align-items: end;
+  margin-bottom: 38px;
 }
-
-.gf-performance-pairs__heading {
-  padding: 0 14px 15px;
-  border-bottom: 1px solid rgba(166, 156, 176, 0.16);
+.pf-section h2,
+.pf-closing h2 {
+  font-size: clamp(36px, 4vw, 55px);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+  margin-top: 18px;
 }
-
-.gf-performance-pairs__heading > div:first-child { grid-column: 2; }
-.gf-performance-pairs__heading > i { grid-column: 3; color: var(--gf-ink-2); font-size: 0.64rem; font-style: normal; text-align: center; }
-.gf-performance-pairs__heading > div:last-child { grid-column: 4 / 6; }
-.gf-performance-pairs__heading div { display: grid; gap: 2px; }
-.gf-performance-pairs__heading span,
-.gf-performance-pairs > small { color: var(--gf-ink-2); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.gf-performance-pairs__heading strong { color: var(--gf-ink); font-size: 0.82rem; }
-
-.gf-performance-pairs article {
-  padding: 17px 14px;
-  border-bottom: 1px solid rgba(166, 156, 176, 0.13);
-}
-
-.gf-performance-pairs__label,
-.gf-performance-pairs__driver { display: grid; gap: 3px; }
-.gf-performance-pairs__label strong { color: var(--gf-ink); font-size: 0.88rem; }
-.gf-performance-pairs__label span { color: var(--gf-ink-2); font-size: 0.65rem; }
-.gf-performance-pairs__driver { padding: 11px 12px; border: 1px solid rgba(183, 164, 255, 0.3); border-radius: 7px; background: rgba(183, 164, 255, 0.07); }
-.gf-performance-pairs__driver.is-production { border-color: rgba(103, 199, 255, 0.34); background: rgba(103, 199, 255, 0.07); }
-.gf-performance-pairs__driver span { color: var(--gf-ink-2); font-size: 0.66rem; font-weight: 800; text-transform: uppercase; }
-.gf-performance-pairs__driver strong { color: var(--gf-ink); font-family: var(--vp-font-family-mono); font-size: 1rem; }
-.gf-performance-pairs__bridge { display: flex; align-items: center; color: var(--gf-accent-hi); }
-.gf-performance-pairs__bridge span { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(183, 164, 255, 0.5), rgba(103, 199, 255, 0.5)); }
-.gf-performance-pairs__bridge i { font-style: normal; }
-.gf-performance-pairs article > p { margin: 0; color: var(--gf-ink-2); font-size: 0.72rem; line-height: 1.45; }
-.gf-performance-pairs > small { display: block; padding: 15px 14px 0; line-height: 1.5; text-transform: none; }
-
-.gf-performance-proof {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid rgba(166, 156, 176, 0.2);
-  border-bottom: 1px solid rgba(166, 156, 176, 0.2);
-  background: rgba(255, 255, 255, 0.022);
-}
-
-.gf-performance-proof > div {
-  display: grid;
-  gap: 5px;
-  padding: 28px clamp(18px, 3vw, 44px);
-  border-right: 1px solid rgba(166, 156, 176, 0.16);
-}
-
-.gf-performance-proof > div:last-child { border-right: 0; }
-.gf-performance-proof strong { color: var(--gf-ink); font-size: clamp(1.7rem, 2.8vw, 2.8rem); letter-spacing: -0.045em; }
-.gf-performance-proof span { color: var(--gf-ink-2); font-size: 0.8rem; }
-
-.gf-performance-section,
-.gf-performance-closing {
-  padding: clamp(72px, 9vw, 140px) clamp(28px, 7vw, 132px);
-  border-bottom: 1px solid rgba(166, 156, 176, 0.18);
-}
-
-.gf-performance-section h2,
-.gf-performance-closing h2 {
-  max-width: 940px;
-  font-size: clamp(2.8rem, 5.4vw, 6.4rem);
-  line-height: 0.96;
-}
-
-.gf-performance-section__header > p:last-child,
-.gf-performance-drivers__intro > p,
-.gf-performance-web__copy > p,
-.gf-performance-methodology__copy > p,
-.gf-performance-closing > p:not(.gf-performance-eyebrow) {
-  max-width: 720px;
-  margin: 24px 0 0;
+.pf-section-head > p,
+.pf-section-head > div > p:not(.pf-kicker) {
+  max-width: 480px;
   color: var(--gf-ink-2);
-  font-size: 1.04rem;
-  line-height: 1.72;
+  font-size: 14px;
+  line-height: 1.8;
 }
-
-.gf-performance-contract { display: grid; grid-template-columns: minmax(320px, 0.6fr) minmax(660px, 1.4fr); gap: clamp(44px, 7vw, 110px); align-items: center; }
-.gf-performance-contract h2 { font-size: clamp(2.8rem, 4.7vw, 5.7rem); }
-.gf-performance-contract-map { display: grid; grid-template-columns: minmax(190px, 0.8fr) minmax(180px, 0.7fr) minmax(240px, 1fr); gap: 16px; align-items: stretch; }
-.gf-performance-contract-map__service,
-.gf-performance-contract-map__modes > div { display: grid; gap: 9px; padding: 24px; border: 1px solid rgba(166, 156, 176, 0.2); border-radius: 10px; background: var(--perf-panel); }
-.gf-performance-contract-map__service { position: relative; align-content: center; border-color: rgba(255, 130, 87, 0.38); box-shadow: 0 24px 70px rgba(255, 106, 61, 0.08); }
-.gf-performance-contract-map span { color: var(--gf-ink-2); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.gf-performance-contract-map strong { color: var(--gf-ink); }
-.gf-performance-contract-map__service > strong { margin-bottom: 8px; font-size: 1.25rem; }
-.gf-performance-contract-map__service code { padding: 5px 7px; background: rgba(255, 255, 255, 0.04); color: var(--gf-reference); font-size: 0.7rem; white-space: nowrap; }
-.gf-performance-contract-map__service small { position: absolute; top: 14px; right: 14px; padding: 3px 7px; border: 1px solid rgba(115, 226, 196, 0.3); border-radius: 999px; color: var(--perf-mint); font-size: 0.62rem; font-weight: 800; text-transform: uppercase; }
-.gf-performance-contract-map__contracts { display: grid; place-content: center; gap: 11px; color: var(--gf-ink); text-align: center; }
-.gf-performance-contract-map__contracts strong { font-size: 0.8rem; line-height: 1.7; }
-.gf-performance-contract-map__contracts i { color: var(--gf-accent-hi); font-size: 1.6rem; font-style: normal; line-height: 1; }
-.gf-performance-contract-map__modes { display: grid; gap: 12px; }
-.gf-performance-contract-map__modes > div:first-child { border-color: rgba(183, 164, 255, 0.3); background: linear-gradient(135deg, rgba(183, 164, 255, 0.08), var(--perf-panel)); }
-.gf-performance-contract-map__modes > div:last-child { border-color: rgba(103, 199, 255, 0.34); background: linear-gradient(135deg, rgba(103, 199, 255, 0.08), var(--perf-panel)); }
-.gf-performance-contract-map__modes strong { font-size: 0.9rem; line-height: 1.55; }
-.gf-performance-contract-map__modes small { color: var(--gf-ink-2); font-size: 0.68rem; }
-
-.gf-performance-drivers { background: rgba(255, 255, 255, 0.012); }
-.gf-performance-drivers__intro { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.65fr); gap: 48px; align-items: end; }
-.gf-performance-drivers__intro > p { margin-bottom: 4px; }
-
-.gf-performance-tabs {
+.pf-section-head .pf-small {
+  margin-top: 10px !important;
+  font-size: 11px !important;
+}
+.pf-explorer {
+  border: 1px solid var(--gf-line-strong);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pf-explorer-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--gf-line);
+}
+.pf-explorer-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-right: 1px solid var(--gf-line);
+  padding: 20px 24px;
+  color: var(--gf-ink-2);
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+}
+.pf-explorer-tabs button:last-child {
+  border-right: 0;
+}
+.pf-explorer-tabs button > span {
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.pf-explorer-tabs button svg {
+  margin-left: auto;
+}
+.pf-explorer-tabs button[aria-pressed='true'] {
+  border-bottom-color: var(--gf-accent);
+  color: var(--gf-ink);
+  background: var(--gf-nav-soft);
+}
+.pf-explorer-tabs button[aria-pressed='true'] svg {
+  color: var(--gf-nav);
+}
+.pf-explorer-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+}
+.pf-chart {
+  min-width: 0;
+  padding: 25px 25px 22px;
+}
+.pf-chart-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+}
+.pf-chart-title h3 {
+  font: 500 17px var(--gf-font-display);
+  letter-spacing: -0.02em;
+}
+.pf-chart-title p {
+  color: var(--gf-ink-2);
+  font: 9px var(--gf-font-mono);
+  margin-top: 7px;
+}
+.pf-scale-label {
+  color: var(--gf-ink-2);
+  border: 1px solid var(--gf-line);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font: 8px var(--gf-font-mono);
+}
+.pf-axis {
+  padding: 0 91px 0 126px;
+  height: 38px;
+  margin-top: 15px;
+}
+.pf-axis > div {
+  position: relative;
+  height: 100%;
+}
+.pf-axis span {
+  position: absolute;
+  bottom: 8px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--gf-ink-2);
+  font: 8px var(--gf-font-mono);
+}
+.pf-axis span.is-first {
+  transform: none;
+}
+.pf-axis span.is-last {
+  transform: translateX(-100%);
+}
+.pf-chart-row {
+  display: grid;
+  grid-template-columns: 115px minmax(0, 1fr) 80px;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 43px;
+  text-align: left;
+  padding: 0;
+  border-top: 1px solid color-mix(in srgb, var(--gf-line) 55%, transparent);
+}
+.pf-chart-row.is-selected {
+  background: var(--gf-nav-soft);
+}
+.pf-chart-row:hover {
+  background: color-mix(in srgb, var(--gf-surface) 60%, transparent);
+}
+.pf-row-name {
+  font-size: 11px;
+  padding-left: 8px;
+  color: var(--gf-ink-2);
+}
+.pf-chart-row.is-selected .pf-row-name {
+  color: var(--gf-ink);
+}
+.pf-chart-row > strong {
+  font: 10px var(--gf-font-mono);
+  text-align: right;
+  padding-right: 5px;
+  color: var(--gf-ink);
+  white-space: nowrap;
+}
+.pf-row-track {
+  position: relative;
+  height: 43px;
+}
+.pf-gridline {
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  border-left: 1px dashed var(--gf-line);
+}
+.pf-row-line {
+  position: absolute;
+  height: 2px;
+  left: 0;
+  top: 21px;
+  opacity: 0.4;
+  background: var(--pf-kind);
+}
+.pf-row-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  top: 18.5px;
+  transform: translateX(-50%);
+  background: var(--pf-kind);
+  box-shadow: 0 0 0 3px var(--gf-code-well);
+}
+.pf-chart-row.is-selected .pf-row-dot {
+  width: 9px;
+  height: 9px;
+  top: 17.5px;
+  outline: 1px solid var(--pf-kind);
+  outline-offset: 3px;
+}
+.pf-kind--process {
+  --pf-kind: var(--pf-process);
+}
+.pf-kind--local {
+  --pf-kind: var(--pf-local);
+}
+.pf-kind--service {
+  --pf-kind: var(--pf-service);
+}
+.pf-chart-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 46px 0 18px;
+  gap: 20px;
+  margin-top: 23px;
 }
-
-.gf-performance-tabs button {
-  padding: 10px 15px;
-  border: 1px solid rgba(166, 156, 176, 0.22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.025);
+.pf-chart-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   color: var(--gf-ink-2);
-  font: inherit;
-  font-size: 0.84rem;
-  font-weight: 800;
+  font: 9px var(--gf-font-mono);
+}
+.pf-chart-legend i,
+.pf-detail-kind i {
+  width: 5px;
+  height: 5px;
+  background: var(--pf-kind);
+  border-radius: 50%;
+}
+.pf-measure-note {
+  font: 10px/1.75 var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  margin-top: 16px !important;
+}
+.pf-detail {
+  padding: 27px 25px;
+  border-left: 1px solid var(--gf-line);
+  background: var(--gf-code-chrome);
+}
+.pf-detail > .pf-mono {
+  font-size: 8px;
+  color: var(--gf-ink-2);
+}
+.pf-detail h3 {
+  font: 500 27px var(--gf-font-display);
+  margin-top: 16px;
+  letter-spacing: -0.04em;
+}
+.pf-detail-kind {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+  margin-top: 10px;
+}
+.pf-detail-time {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-block: 24px;
+}
+.pf-detail-time strong {
+  font: 500 46px var(--gf-font-display);
+  letter-spacing: -0.055em;
+}
+.pf-detail-time > span {
+  color: var(--gf-ink-2);
+  font: 10px var(--gf-font-mono);
+}
+.pf dl {
+  margin: 0;
+}
+.pf dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--gf-line);
+  font: 10px/1.5 var(--gf-font-mono);
+}
+.pf dt {
+  color: var(--gf-ink-2);
+}
+.pf dd {
+  margin: 0;
+  color: var(--gf-ink);
+}
+.pf-detail > p {
+  color: var(--gf-ink-2);
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 20px;
+}
+.pf-detail > a {
+  display: inline-block;
+  font: 9px var(--gf-font-mono);
+  color: var(--gf-nav);
+  margin-top: 16px;
+}
+.pf-contract-note {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  border-top: 1px solid var(--gf-line);
+  padding: 19px 24px;
+  background: color-mix(in srgb, var(--gf-ground-alt) 45%, transparent);
+}
+.pf-contract-note .pf-kicker {
+  font-size: 8px;
+}
+.pf-contract-note p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--gf-ink-2);
+}
+.pf-contract-note a {
+  font-size: 10px;
+  color: var(--gf-nav);
+  white-space: nowrap;
+}
+.pf-http {
+  background: var(--gf-code-chrome);
+}
+.pf-http h2 code {
+  font-family: var(--gf-font-mono);
+  font-size: 0.87em;
+  background: none;
+  padding: 0;
+  color: var(--gf-reference);
+}
+.pf-http-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 80px;
+}
+.pf-http-summary select {
+  display: block;
+  width: 100%;
+  padding: 12px 32px 12px 12px;
+  appearance: auto;
+  background: var(--gf-ground-alt);
+  color: var(--gf-ink);
+  border: 1px solid var(--gf-line-strong);
+  border-radius: 6px;
+  margin-top: 12px;
+  font-size: 11px;
+}
+.pf-http-summary > .pf-mono {
+  color: var(--gf-ink-2);
+  font-size: 9px;
+}
+.pf-http-number {
+  margin-top: 28px;
+}
+.pf-http-number > span {
+  font: 10px var(--gf-font-mono);
+  color: var(--gf-nav);
+}
+.pf-http-number strong {
+  display: block;
+  font: 500 65px/1 var(--gf-font-display);
+  letter-spacing: -0.06em;
+  margin-top: 10px;
+}
+.pf-http-number small {
+  display: block;
+  color: var(--gf-ink-2);
+  font: 10px/1.6 var(--gf-font-mono);
+  margin-top: 8px;
+  letter-spacing: 0;
+}
+.pf-http-reference {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font: 10px var(--gf-font-mono);
+  border-block: 1px solid var(--gf-line);
+  padding-block: 15px;
+  margin-top: 24px;
+}
+.pf-http-reference span {
+  color: var(--gf-ink-2);
+}
+.pf-http-summary > p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--gf-ink-2);
+  margin-top: 18px;
+}
+.pf-http-summary > p.pf-small {
+  font-size: 10px;
+}
+.pf-http-chart {
+  padding-top: 24px;
+  min-width: 0;
+}
+.pf-http-axis {
+  height: 24px;
+  position: relative;
+  margin: 0 64px 0 145px;
+}
+.pf-http-axis span {
+  position: absolute;
+  transform: translateX(-50%);
+  color: var(--gf-ink-2);
+  font: 8px var(--gf-font-mono);
+  white-space: nowrap;
+}
+.pf-http-axis span:first-child {
+  transform: none;
+}
+.pf-http-axis span:last-child {
+  transform: translateX(-100%);
+}
+.pf-http-row {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) 50px;
+  gap: 15px;
+  align-items: center;
+  min-height: 55px;
+  border-top: 1px solid var(--gf-line);
+}
+.pf-http-row-title strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gf-ink-2);
+}
+.pf-http-row-title span {
+  font: 8px var(--gf-font-mono);
+  color: var(--gf-ink-2);
+}
+.pf-http-track {
+  height: 5px;
+  background: var(--gf-line);
+}
+.pf-http-track > span {
+  display: block;
+  height: 100%;
+  background: var(--gf-ink-3);
+}
+.pf-http-rate {
+  font: 10px var(--gf-font-mono);
+  text-align: right;
+  color: var(--gf-ink-2);
+}
+.pf-http-row.is-goforj .pf-http-row-title strong,
+.pf-http-row.is-goforj .pf-http-rate {
+  color: var(--gf-nav);
+}
+.pf-http-row.is-goforj .pf-http-track > span {
+  background: var(--gf-accent);
+  box-shadow: 0 0 18px var(--gf-accent-soft);
+}
+.pf-http-chart > .pf-measure-note {
+  margin-top: 24px !important;
+}
+.pf-method-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 80px;
+}
+.pf-conditions h3 {
+  font: 500 16px var(--gf-font-display);
+  margin-bottom: 20px;
+}
+.pf-conditions p {
+  color: var(--gf-ink-2);
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 20px;
+}
+.pf-conditions > a {
+  display: inline-block;
+  color: var(--gf-nav);
+  font-size: 10px;
+  margin-top: 16px;
+}
+.pf-source-list {
+  min-width: 0;
+}
+.pf-source-list > a {
+  display: grid;
+  grid-template-columns: 75px 1fr 66px 12px;
+  gap: 15px;
+  padding: 18px 0;
+  align-items: center;
+  border-bottom: 1px solid var(--gf-line);
+}
+.pf-source-name {
+  color: var(--gf-ink);
+  font: 500 13px var(--gf-font-display);
+  text-transform: capitalize;
+}
+.pf-source-path {
+  color: var(--gf-ink-2);
+  font: 9px var(--gf-font-mono);
+}
+.pf-source-list a code {
+  color: var(--gf-reference);
+  padding: 0;
+  background: none;
+  font-size: 9px;
+}
+.pf-source-list a > span:last-child {
+  color: var(--gf-nav);
+}
+.pf-source-list details {
+  margin-top: 18px;
+}
+.pf-source-list summary {
+  color: var(--gf-ink-2);
+  font: 10px var(--gf-font-mono);
   cursor: pointer;
 }
-
-.gf-performance-tabs button:hover,
-.gf-performance-tabs button.is-active {
-  border-color: rgba(255, 130, 87, 0.58);
-  background: rgba(255, 106, 61, 0.11);
-  color: var(--gf-ink);
+.pf-source-list details > div {
+  margin-top: 16px;
 }
-
-.gf-performance-boundary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(170px, 0.38fr) minmax(0, 1fr);
-  gap: 18px;
-  align-items: stretch;
-  margin-bottom: 18px;
+.pf-source-list details strong {
+  font: 10px var(--gf-font-mono);
 }
-
-.gf-performance-boundary > div:not(.gf-performance-boundary__bridge) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 7px 18px;
-  padding: 20px 22px;
-  border: 1px solid rgba(166, 156, 176, 0.22);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.gf-performance-boundary > div:last-child {
-  border-color: rgba(103, 199, 255, 0.3);
-  background: linear-gradient(135deg, rgba(103, 199, 255, 0.08), rgba(255, 255, 255, 0.02));
-}
-
-.gf-performance-boundary span {
+.pf-source-list details code {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 9px;
+  background: none;
+  padding: 5px 0;
   color: var(--gf-ink-2);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
-
-.gf-performance-boundary code {
-  justify-self: end;
-  padding: 0;
-  background: transparent;
-  color: var(--gf-reference);
-  font-size: 0.72rem;
-}
-
-.gf-performance-boundary strong {
-  color: var(--gf-ink);
-  font-size: 1.16rem;
-}
-
-.gf-performance-boundary p {
-  grid-column: 1 / -1;
-  margin: 2px 0 0;
-  color: var(--gf-ink-2);
-  font-size: 0.8rem;
-}
-
-.gf-performance-boundary__bridge {
+.pf-limits {
   display: grid;
-  place-content: center;
+  grid-template-columns: 300px 1fr;
+  gap: 80px;
+  padding-top: 30px;
+  margin-top: 35px;
+  border-top: 1px solid var(--gf-line);
+}
+.pf-limits > span {
+  color: var(--gf-nav);
+  font-size: 9px;
+}
+.pf-limits p {
   color: var(--gf-ink-2);
-  text-align: center;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.pf-closing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  align-items: center;
+  padding-block: 65px;
+}
+.pf-closing h2 {
+  margin-top: 15px;
+  font-size: 46px;
+}
+.pf-closing > div > p:not(.pf-kicker) {
+  font-size: 13px;
+  line-height: 1.9;
+  max-width: 480px;
+  color: var(--gf-ink-2);
 }
 
-.gf-performance-boundary__bridge i {
-  color: var(--gf-accent-hi);
-  font-size: 1.7rem;
-  font-style: normal;
-  line-height: 1;
+.pf-hero-heading {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 65px;
+  align-items: end;
 }
-
-.gf-performance-boundary__bridge small {
-  font-size: 0.66rem;
+.pf-hero-intro {
+  padding-bottom: 5px;
 }
-
-.gf-performance-chart,
-.gf-performance-web__panel {
-  padding: clamp(22px, 3.2vw, 42px);
-  border: 1px solid rgba(166, 156, 176, 0.22);
-  border-radius: 12px;
-  background: var(--perf-panel);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
+.pf-hero-intro .pf-lead {
+  font-size: 15px;
+  line-height: 1.85;
+  margin-top: 0 !important;
 }
-
-.gf-performance-chart__topline { display: flex; justify-content: space-between; gap: 28px; align-items: end; margin-bottom: 34px; }
-.gf-performance-chart__topline > div:first-child { display: grid; gap: 4px; }
-.gf-performance-chart__topline > div:first-child span { color: var(--gf-accent-hi); font-family: var(--vp-font-family-mono); font-size: 0.76rem; }
-.gf-performance-chart__topline > div:first-child strong { color: var(--gf-ink); font-size: 1.3rem; }
-.gf-performance-legend { display: flex; flex-wrap: wrap; gap: 14px; }
-.gf-performance-legend span { display: inline-flex; align-items: center; gap: 7px; color: var(--gf-ink-2); font-size: 0.74rem; }
-.gf-performance-legend span::before { width: 8px; height: 8px; border-radius: 50%; background: var(--perf-coral); content: ""; }
-.gf-performance-legend .is-local::before { background: var(--perf-violet); }
-.gf-performance-legend .is-service::before { background: var(--perf-cyan); }
-
-.gf-performance-driver-rows { display: grid; gap: 13px; }
-.gf-performance-driver-row { display: grid; grid-template-columns: minmax(116px, 0.17fr) minmax(180px, 1fr) minmax(82px, auto); gap: 18px; align-items: center; }
-.gf-performance-driver-row__label { display: grid; gap: 2px; min-width: 0; }
-.gf-performance-driver-row__label strong { overflow: hidden; color: var(--gf-ink); font-size: 0.85rem; text-overflow: ellipsis; white-space: nowrap; }
-.gf-performance-driver-row__label span { color: var(--gf-ink-2); font-size: 0.68rem; }
-.gf-performance-driver-row__track { height: 16px; overflow: hidden; border-radius: 3px; background: var(--perf-track); }
-.gf-performance-driver-row__bar { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--perf-coral), var(--perf-gold)); box-shadow: 0 0 24px rgba(255, 106, 61, 0.23); transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1); }
-.gf-performance-driver-row__bar.is-local { background: linear-gradient(90deg, #7869d8, var(--perf-violet)); box-shadow: 0 0 24px rgba(183, 164, 255, 0.18); }
-.gf-performance-driver-row__bar.is-service { background: linear-gradient(90deg, #277da8, var(--perf-cyan)); box-shadow: 0 0 24px rgba(103, 199, 255, 0.18); }
-.gf-performance-driver-row__value { color: var(--gf-ink); font-family: var(--vp-font-family-mono); font-size: 0.78rem; text-align: right; }
-.gf-performance-chart__notes { display: grid; gap: 7px; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(166, 156, 176, 0.16); }
-.gf-performance-chart__notes p { max-width: 920px; margin: 0; color: var(--gf-ink); font-size: 0.76rem; line-height: 1.55; }
-.gf-performance-chart__notes p + p { color: var(--gf-ink-2); }
-.gf-performance-chart__notes small { color: var(--gf-ink-2); font-size: 0.68rem; line-height: 1.55; }
-
-.gf-performance-web { display: grid; grid-template-columns: minmax(360px, 0.65fr) minmax(560px, 1.1fr); gap: clamp(44px, 7vw, 110px); align-items: center; }
-.gf-performance-web__copy code { color: var(--gf-ink); }
-.gf-performance-web__copy h2 code { padding: 0; background: transparent; color: var(--gf-reference); font-size: 0.82em; }
-.gf-performance-web__note { font-size: 0.84rem !important; }
-.gf-performance-tabs--compact { margin: 0 0 30px; }
-.gf-performance-tabs--compact button { padding: 8px 12px; font-size: 0.74rem; }
-.gf-performance-web-rows { display: grid; gap: 12px; }
-.gf-performance-web-row { display: grid; grid-template-columns: minmax(104px, 0.22fr) minmax(180px, 1fr) minmax(74px, auto); gap: 14px; align-items: center; padding: 8px 10px; border: 1px solid transparent; border-radius: 7px; }
-.gf-performance-web-row.is-goforj { border-color: rgba(255, 130, 87, 0.32); background: rgba(255, 106, 61, 0.07); }
-.gf-performance-web-row > div:first-child { display: grid; gap: 2px; }
-.gf-performance-web-row > div:first-child strong { color: var(--gf-ink); font-size: 0.78rem; }
-.gf-performance-web-row > div:first-child span { color: var(--gf-ink-2); font-size: 0.65rem; }
-.gf-performance-web-row__track { height: 13px; overflow: hidden; border-radius: 3px; background: var(--perf-track); }
-.gf-performance-web-row__track span { display: block; height: 100%; border-radius: 3px; background: rgba(166, 156, 176, 0.5); transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1); }
-.gf-performance-web-row.is-goforj .gf-performance-web-row__track span { background: linear-gradient(90deg, var(--perf-coral), var(--perf-gold)); box-shadow: 0 0 20px rgba(255, 106, 61, 0.22); }
-.gf-performance-web-row > strong { color: var(--gf-ink); font-family: var(--vp-font-family-mono); font-size: 0.72rem; text-align: right; }
-
-.gf-performance-methodology { background: rgba(255, 255, 255, 0.014); }
-.gf-performance-methodology { display: grid; grid-template-columns: minmax(360px, 0.72fr) minmax(520px, 1fr); gap: clamp(46px, 8vw, 120px); }
-.gf-performance-methodology__copy h2 { font-size: clamp(2.7rem, 4.7vw, 5.7rem); }
-.gf-performance-sources { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-content: start; }
-.gf-performance-sources a { display: grid; gap: 5px; padding: 18px 20px; border: 1px solid rgba(166, 156, 176, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.025); text-decoration: none !important; transition: border-color 160ms ease, transform 160ms ease; }
-.gf-performance-sources a:hover { transform: translateY(-2px); border-color: rgba(255, 130, 87, 0.5); }
-.gf-performance-sources span { color: var(--gf-accent-hi); font-size: 0.72rem; font-weight: 850; text-transform: uppercase; }
-.gf-performance-sources strong { color: var(--gf-ink); }
-.gf-performance-sources small { color: var(--gf-ink-2); font-family: var(--vp-font-family-mono); }
-.gf-performance-library-strip { grid-column: 1 / -1; display: grid; gap: 16px; margin-top: 24px; padding-top: 28px; border-top: 1px solid rgba(166, 156, 176, 0.18); }
-.gf-performance-library-strip > span { color: var(--gf-ink-2); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.gf-performance-library-strip > div { display: flex; flex-wrap: wrap; gap: 8px; }
-.gf-performance-library-strip a { padding: 7px 10px; border: 1px solid rgba(166, 156, 176, 0.18); border-radius: 5px; color: var(--gf-ink); font-family: var(--vp-font-family-mono); font-size: 0.72rem; text-decoration: none !important; }
-.gf-performance-library-strip small { margin-left: 5px; color: var(--gf-accent-hi); }
-
-.gf-performance-closing { display: grid; justify-items: center; padding-top: clamp(90px, 11vw, 170px); padding-bottom: clamp(100px, 13vw, 190px); text-align: center; background: radial-gradient(900px 420px at 50% 100%, rgba(255, 106, 61, 0.15), transparent 72%); }
-.gf-performance-closing h2 { max-width: 1000px; }
-.gf-performance-closing > p:not(.gf-performance-eyebrow) { margin-right: auto; margin-left: auto; }
-.gf-performance-actions--center { justify-content: center; }
-
+.pf-hero-intro > p:not(.pf-lead) {
+  color: var(--gf-ink-2);
+  font-size: 12px;
+  line-height: 1.85;
+  margin-top: 15px;
+}
+.pf-hero-intro > a {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--gf-nav);
+}
+.pf-hero-intro > a span {
+  margin-left: 20px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :global(html:not([data-gf-motion='reduced'])) .pf-row-dot,
+  :global(html:not([data-gf-motion='reduced'])) .pf-row-line {
+    transition:
+      left 0.25s,
+      width 0.25s;
+  }
+}
+:global(html[data-gf-motion='on']) .pf-row-dot,
+:global(html[data-gf-motion='on']) .pf-row-line {
+  transition:
+    left 0.25s,
+    width 0.25s;
+}
 @media (max-width: 1100px) {
-  .gf-performance-hero { grid-template-columns: 1fr; min-height: auto; }
-  .gf-performance-pairs { width: 100%; }
-  .gf-performance-contract { grid-template-columns: 1fr; }
-  .gf-performance-web,
-  .gf-performance-methodology { grid-template-columns: 1fr; }
+  .pf-hero {
+    gap: 30px;
+  }
+  .pf-hero h1 {
+    font-size: 65px;
+  }
+  .pf-explorer-body {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+  .pf-http-layout,
+  .pf-method-layout,
+  .pf-limits {
+    gap: 45px;
+    grid-template-columns: 270px 1fr;
+  }
+  .pf-explorer-tabs button {
+    padding: 18px;
+  }
+  .pf-source-path {
+    display: none;
+  }
+  .pf-source-list > a {
+    grid-template-columns: 1fr 80px 12px;
+  }
+}
+@media (max-width: 800px) {
+  .pf-hero {
+    grid-template-columns: 1fr;
+    padding-top: 42px;
+    padding-bottom: 40px;
+  }
+  .pf-hero h1 {
+    font-size: 64px;
+  }
+  .pf-lead {
+    max-width: 540px;
+  }
+  .pf-section {
+    padding-block: 48px;
+  }
+  .pf-section-head {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  .pf-section-head > p,
+  .pf-section-head > div > p:not(.pf-kicker) {
+    max-width: 600px;
+  }
+  .pf-explorer-body {
+    grid-template-columns: 1fr;
+  }
+  .pf-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 30px;
+    padding: 25px;
+    border-left: 0;
+    border-top: 1px solid var(--gf-line);
+  }
+  .pf-detail > .pf-mono,
+  .pf-detail > p,
+  .pf-detail > a {
+    grid-column: 1 / -1;
+  }
+  .pf-detail > h3,
+  .pf-detail > .pf-detail-kind {
+    grid-column: 1;
+  }
+  .pf-detail-time {
+    grid-column: 2;
+    grid-row: 2 / 4;
+    margin: 15px 0 0;
+  }
+  .pf-detail dl {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+  }
+  .pf-detail-time strong {
+    font-size: 40px;
+  }
+  .pf-contract-note {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+  .pf-http-layout,
+  .pf-method-layout,
+  .pf-limits {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .pf-http-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 35px;
+  }
+  .pf-http-summary > label,
+  .pf-http-summary > select,
+  .pf-http-summary > p {
+    grid-column: 1 / -1;
+  }
+  .pf-http-reference {
+    display: block;
+    align-self: center;
+  }
+  .pf-http-reference strong {
+    display: block;
+    margin-top: 10px;
+  }
+  .pf-http-chart {
+    padding-top: 5px;
+  }
+  .pf-source-path {
+    display: inline;
+  }
+  .pf-source-list > a {
+    grid-template-columns: 75px 1fr 66px 12px;
+  }
+  .pf-closing {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding-block: 45px;
+  }
+}
+@media (max-width: 480px) {
+  .pf-rail {
+    padding-inline: 20px;
+  }
+  .pf-rail::after {
+    left: 17px;
+  }
+  .pf-hero h1 {
+    font-size: 55px;
+  }
+  .pf-lead {
+    font-size: 14px;
+  }
+  .pf-hero .pf-actions {
+    gap: 18px;
+    font-size: 11px;
+  }
+  .pf-hero .pf-primary {
+    gap: 15px;
+  }
+  .pf-section h2 {
+    font-size: 38px;
+  }
+  .pf-explorer-tabs button {
+    font-size: 12px;
+    gap: 6px;
+    padding: 15px 10px;
+  }
+  .pf-explorer-tabs button > span {
+    font-size: 8px;
+  }
+  .pf-explorer-tabs svg {
+    display: none;
+  }
+  .pf-chart {
+    padding: 20px 12px;
+  }
+  .pf-chart-row {
+    grid-template-columns: 88px minmax(0, 1fr) 65px;
+    gap: 7px;
+    min-height: 45px;
+  }
+  .pf-row-name {
+    font-size: 10px;
+    padding-left: 4px;
+  }
+  .pf-chart-row > strong {
+    font-size: 9px;
+  }
+  .pf-axis {
+    padding-left: 95px;
+    padding-right: 72px;
+  }
+  .pf-axis span {
+    font-size: 7px;
+  }
+  .pf-axis span:nth-child(even):not(:last-child) {
+    visibility: hidden;
+  }
+  .pf-chart-title h3 {
+    font-size: 15px;
+  }
+  .pf-chart-legend {
+    gap: 12px;
+  }
+  .pf-chart-legend > span {
+    font-size: 8px;
+  }
+  .pf-detail {
+    padding: 22px 18px;
+  }
+  .pf-http-summary {
+    column-gap: 20px;
+  }
+  .pf-http-number strong {
+    font-size: 54px;
+  }
+  .pf-http-reference {
+    font-size: 9px;
+  }
+  .pf-http-row {
+    grid-template-columns: 96px minmax(0, 1fr) 45px;
+    gap: 10px;
+  }
+  .pf-http-row-title strong {
+    font-size: 10px;
+  }
+  .pf-http-row-title span {
+    font-size: 7px;
+  }
+  .pf-http-rate {
+    font-size: 9px;
+  }
+  .pf-http-axis {
+    margin-left: 106px;
+    margin-right: 55px;
+  }
+  .pf-http-axis span {
+    font-size: 7px;
+  }
+  .pf-source-path {
+    display: none;
+  }
+  .pf-source-list > a {
+    grid-template-columns: 1fr 80px 12px;
+  }
+  .pf-closing h2 {
+    font-size: 38px;
+  }
 }
 
-@media (max-width: 760px) {
-  .gf-performance-hero { padding-top: 56px; }
-  .gf-performance-hero h1 { font-size: clamp(3.5rem, 17vw, 5.4rem); }
-  .gf-performance-pairs__heading { display: none; }
-  .gf-performance-pairs article { grid-template-columns: minmax(80px, 0.65fr) minmax(102px, 1fr) 28px minmax(102px, 1fr); gap: 8px; padding-right: 0; padding-left: 0; }
-  .gf-performance-pairs article > p { grid-column: 2 / -1; }
-  .gf-performance-pairs__driver { padding: 9px; }
-  .gf-performance-pairs__driver strong { font-size: 0.82rem; }
-  .gf-performance-pairs__bridge span { display: none; }
-  .gf-performance-pairs__bridge { justify-content: center; }
-  .gf-performance-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gf-performance-proof > div:nth-child(2) { border-right: 0; }
-  .gf-performance-proof > div:nth-child(-n + 2) { border-bottom: 1px solid rgba(166, 156, 176, 0.16); }
-  .gf-performance-contract-map { grid-template-columns: 1fr; }
-  .gf-performance-contract-map__contracts { min-height: 110px; }
-  .gf-performance-contract-map__contracts i { transform: rotate(90deg); }
-  .gf-performance-drivers__intro { grid-template-columns: 1fr; gap: 8px; }
-  .gf-performance-boundary { grid-template-columns: 1fr; }
-  .gf-performance-boundary__bridge { min-height: 82px; }
-  .gf-performance-boundary__bridge i { transform: rotate(90deg); }
-  .gf-performance-chart__topline { display: grid; align-items: start; }
-  .gf-performance-driver-row { grid-template-columns: 90px minmax(100px, 1fr) 70px; gap: 9px; }
-  .gf-performance-driver-row__label span { display: none; }
-  .gf-performance-web-row { grid-template-columns: 94px minmax(80px, 1fr) 65px; gap: 8px; padding: 6px 0; }
-  .gf-performance-web-row > div:first-child span { display: none; }
-  .gf-performance-sources { grid-template-columns: 1fr; }
+@media (max-width: 800px) {
+  .pf-hero {
+    padding-bottom: 0;
+  }
+  .pf-hero-heading {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .pf-hero h1 {
+    font-size: 64px;
+  }
+  .pf-hero-intro {
+    max-width: 560px;
+  }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .gf-performance-driver-row__bar,
-  .gf-performance-web-row__track span { transition: none; }
+@media (max-width: 480px) {
+  .pf-hero {
+    padding-top: 32px;
+  }
+  .pf-hero h1 {
+    font-size: 54px;
+  }
+  .pf-hero-intro .pf-lead {
+    font-size: 14px;
+  }
 }
 </style>

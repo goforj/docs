@@ -1,6 +1,6 @@
 ---
 title: Performance
-description: Source-backed GoForj library benchmarks across local and service-backed drivers.
+description: Explore measured GoForj performance, compare local and service-backed drivers, and inspect HTTP routing overhead against net/http.
 sidebar: false
 aside: false
 noAutoTitle: true

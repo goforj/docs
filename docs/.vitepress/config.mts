@@ -1039,7 +1039,8 @@ const operationsSidebar = sectionSidebar('Operations', [
   { text: 'Metrics', link: '/operations/metrics' },
   { text: 'Inspects', link: '/operations/inspects' },
   { text: 'Lighthouse', link: '/operations/lighthouse' },
-  { text: 'Performance', link: '/performance' },
+  { text: 'Library Performance', link: '/performance' },
+  { text: 'Performance Benchmarks', link: '/operations/performance-benchmarks' },
   { text: 'Backup and Restore', link: '/operations/backups' }
 ])
 
