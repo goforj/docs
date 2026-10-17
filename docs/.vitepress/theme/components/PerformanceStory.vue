@@ -283,7 +283,6 @@ onBeforeUnmount(() => {
   color: var(--gf-accent-hi);
 }
 .bench-page-header > p {
-  max-width: 800px;
   font-size: 14px;
   line-height: 1.85;
   color: var(--gf-ink-2);
