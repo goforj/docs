@@ -376,6 +376,15 @@
             "label": "GoForj Web",
             "framework": "goforj_web",
             "throughput": 118993,
+            "throughputSamples": [
+              119090,
+              118487,
+              119297,
+              118990,
+              118993,
+              119636,
+              118333
+            ],
             "nsOp": 8404,
             "bytes": 4891,
             "allocs": 60
@@ -384,6 +393,15 @@
             "label": "net/http",
             "framework": "net_http",
             "throughput": 117923,
+            "throughputSamples": [
+              118331,
+              115769,
+              118251,
+              117675,
+              118561,
+              117259,
+              117923
+            ],
             "nsOp": 8480,
             "bytes": 4891,
             "allocs": 60
@@ -392,6 +410,15 @@
             "label": "Echo",
             "framework": "echo",
             "throughput": 117586,
+            "throughputSamples": [
+              118416,
+              117586,
+              117927,
+              117438,
+              117223,
+              111902,
+              118164
+            ],
             "nsOp": 8504,
             "bytes": 4915,
             "allocs": 61
@@ -400,6 +427,15 @@
             "label": "Gin",
             "framework": "gin",
             "throughput": 118609,
+            "throughputSamples": [
+              118060,
+              118547,
+              118718,
+              118684,
+              118570,
+              118609,
+              119182
+            ],
             "nsOp": 8431,
             "bytes": 4923,
             "allocs": 60
@@ -408,6 +444,15 @@
             "label": "Chi",
             "framework": "chi",
             "throughput": 116782,
+            "throughputSamples": [
+              117287,
+              115771,
+              117162,
+              113337,
+              116667,
+              116841,
+              116782
+            ],
             "nsOp": 8563,
             "bytes": 5259,
             "allocs": 62
@@ -416,6 +461,15 @@
             "label": "Gorilla Mux",
             "framework": "gorilla_mux",
             "throughput": 113899,
+            "throughputSamples": [
+              113914,
+              113270,
+              112606,
+              113258,
+              113899,
+              113900,
+              114033
+            ],
             "nsOp": 8780,
             "bytes": 5739,
             "allocs": 67
@@ -424,6 +478,15 @@
             "label": "httprouter",
             "framework": "httprouter",
             "throughput": 120078,
+            "throughputSamples": [
+              120078,
+              119489,
+              120589,
+              119355,
+              120134,
+              119522,
+              122227
+            ],
             "nsOp": 8328,
             "bytes": 4891,
             "allocs": 60
@@ -437,6 +500,15 @@
             "label": "GoForj Web",
             "framework": "goforj_web",
             "throughput": 11047264,
+            "throughputSamples": [
+              10901635,
+              11093936,
+              11210801,
+              11492090,
+              11047264,
+              11046793,
+              10952693
+            ],
             "nsOp": 90.52,
             "bytes": 16,
             "allocs": 1
@@ -445,6 +517,15 @@
             "label": "net/http",
             "framework": "net_http",
             "throughput": 8105840,
+            "throughputSamples": [
+              8083448,
+              8105840,
+              8155580,
+              8231423,
+              7895893,
+              7718207,
+              8179585
+            ],
             "nsOp": 123.4,
             "bytes": 16,
             "allocs": 1
@@ -453,6 +534,15 @@
             "label": "Echo",
             "framework": "echo",
             "throughput": 7490212,
+            "throughputSamples": [
+              7490212,
+              7553907,
+              7466688,
+              7526064,
+              7449493,
+              7438210,
+              7516849
+            ],
             "nsOp": 133.5,
             "bytes": 40,
             "allocs": 2
@@ -461,6 +551,15 @@
             "label": "Gin",
             "framework": "gin",
             "throughput": 9447802,
+            "throughputSamples": [
+              9428288,
+              9487604,
+              9609076,
+              9388337,
+              9418926,
+              9485652,
+              9447802
+            ],
             "nsOp": 105.8,
             "bytes": 48,
             "allocs": 1
@@ -469,6 +568,15 @@
             "label": "Chi",
             "framework": "chi",
             "throughput": 4079741,
+            "throughputSamples": [
+              4070432,
+              4087195,
+              4064323,
+              4079741,
+              4083691,
+              4085588,
+              4078309
+            ],
             "nsOp": 245.1,
             "bytes": 384,
             "allocs": 3
@@ -477,6 +585,15 @@
             "label": "Gorilla Mux",
             "framework": "gorilla_mux",
             "throughput": 2210706,
+            "throughputSamples": [
+              2210706,
+              2222987,
+              2229238,
+              2170084,
+              2196371,
+              2205459,
+              2216897
+            ],
             "nsOp": 452.3,
             "bytes": 864,
             "allocs": 8
@@ -485,6 +602,15 @@
             "label": "httprouter",
             "framework": "httprouter",
             "throughput": 15683540,
+            "throughputSamples": [
+              15312577,
+              15793778,
+              15683540,
+              15764965,
+              15644524,
+              15542715,
+              15715619
+            ],
             "nsOp": 63.76,
             "bytes": 16,
             "allocs": 1
@@ -498,6 +624,15 @@
             "label": "GoForj Web",
             "framework": "goforj_web",
             "throughput": 5937455,
+            "throughputSamples": [
+              5966514,
+              6002693,
+              5937455,
+              5999848,
+              5918679,
+              5888079,
+              5870681
+            ],
             "nsOp": 168.4,
             "bytes": 32,
             "allocs": 2
@@ -506,6 +641,15 @@
             "label": "net/http",
             "framework": "net_http",
             "throughput": 4358405,
+            "throughputSamples": [
+              4423400,
+              4326167,
+              4381698,
+              4356125,
+              4352593,
+              4358405,
+              4415889
+            ],
             "nsOp": 229.4,
             "bytes": 48,
             "allocs": 3
@@ -514,6 +658,15 @@
             "label": "Echo",
             "framework": "echo",
             "throughput": 5351530,
+            "throughputSamples": [
+              5361832,
+              5322796,
+              5375743,
+              5351530,
+              5320459,
+              5310397,
+              5379389
+            ],
             "nsOp": 186.9,
             "bytes": 32,
             "allocs": 2
@@ -522,6 +675,15 @@
             "label": "Gin",
             "framework": "gin",
             "throughput": 5302719,
+            "throughputSamples": [
+              5274168,
+              5302719,
+              5322519,
+              5319275,
+              5317516,
+              5246790,
+              5291101
+            ],
             "nsOp": 188.6,
             "bytes": 48,
             "allocs": 3
@@ -530,6 +692,15 @@
             "label": "Chi",
             "framework": "chi",
             "throughput": 2257553,
+            "throughputSamples": [
+              2256276,
+              2257722,
+              2258549,
+              2247949,
+              2257553,
+              2245209,
+              2261643
+            ],
             "nsOp": 443,
             "bytes": 736,
             "allocs": 6
@@ -538,6 +709,15 @@
             "label": "Gorilla Mux",
             "framework": "gorilla_mux",
             "throughput": 1548628,
+            "throughputSamples": [
+              1552879,
+              1548901,
+              1548628,
+              1522428,
+              1540311,
+              1543078,
+              1560066
+            ],
             "nsOp": 645.7,
             "bytes": 1184,
             "allocs": 10
@@ -546,6 +726,15 @@
             "label": "httprouter",
             "framework": "httprouter",
             "throughput": 6261053,
+            "throughputSamples": [
+              6251502,
+              6252192,
+              6364261,
+              6261053,
+              6318373,
+              6232606,
+              6269985
+            ],
             "nsOp": 159.7,
             "bytes": 64,
             "allocs": 3
@@ -559,6 +748,15 @@
             "label": "GoForj Web",
             "framework": "goforj_web",
             "throughput": 5834930,
+            "throughputSamples": [
+              5786971,
+              5880547,
+              5861497,
+              5839789,
+              5834930,
+              5822611,
+              5820076
+            ],
             "nsOp": 171.4,
             "bytes": 32,
             "allocs": 2
@@ -567,6 +765,15 @@
             "label": "net/http",
             "framework": "net_http",
             "throughput": 3375985,
+            "throughputSamples": [
+              3375985,
+              3405673,
+              3327542,
+              3364932,
+              3385872,
+              3370822,
+              3387616
+            ],
             "nsOp": 296.2,
             "bytes": 400,
             "allocs": 4
@@ -575,6 +782,15 @@
             "label": "Echo",
             "framework": "echo",
             "throughput": 2674599,
+            "throughputSamples": [
+              2679592,
+              2690582,
+              2667279,
+              2674474,
+              2659276,
+              2674599,
+              2707811
+            ],
             "nsOp": 373.9,
             "bytes": 440,
             "allocs": 8
@@ -583,6 +799,15 @@
             "label": "Gin",
             "framework": "gin",
             "throughput": 3559858,
+            "throughputSamples": [
+              3565386,
+              3559858,
+              3559472,
+              3530152,
+              3571094,
+              3538972,
+              3572023
+            ],
             "nsOp": 280.9,
             "bytes": 400,
             "allocs": 4
@@ -591,6 +816,15 @@
             "label": "Chi",
             "framework": "chi",
             "throughput": 2456688,
+            "throughputSamples": [
+              2470853,
+              2463531,
+              2452801,
+              2456688,
+              2453550,
+              2427267,
+              2475553
+            ],
             "nsOp": 407.1,
             "bytes": 768,
             "allocs": 6
@@ -599,6 +833,15 @@
             "label": "Gorilla Mux",
             "framework": "gorilla_mux",
             "throughput": 1428773,
+            "throughputSamples": [
+              1433067,
+              1371526,
+              1439839,
+              1428773,
+              1427876,
+              1417385,
+              1449062
+            ],
             "nsOp": 699.9,
             "bytes": 1320,
             "allocs": 14
@@ -607,6 +850,15 @@
             "label": "httprouter",
             "framework": "httprouter",
             "throughput": 4359708,
+            "throughputSamples": [
+              4357465,
+              4368000,
+              4367425,
+              4347468,
+              4396444,
+              4333424,
+              4359708
+            ],
             "nsOp": 229.4,
             "bytes": 400,
             "allocs": 4

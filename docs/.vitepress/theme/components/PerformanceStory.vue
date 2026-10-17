@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue'
 import evidence from '../../data/performance-stats.json'
 import PerformanceLens from './PerformanceLens.vue'
+import PerformanceHTTP from './PerformanceHTTP.vue'
 
 const selectedSuite = ref('cache')
 const selectedRow = ref('Memory')
-const selectedHTTP = ref('live_plain_text')
 const suites = {
   cache: {
     name: 'Cache',
@@ -81,8 +81,6 @@ const latency = (value) => {
 }
 const time = (value) => `${latency(value).number} ${latency(value).unit}`
 const number = (value) => Number(value.toFixed(1)).toLocaleString('en-US')
-const rate = (value) =>
-  value >= 1e6 ? `${(value / 1e6).toFixed(2)}M` : `${Math.round(value / 1000)}K`
 const category = (kind) =>
   ({ process: 'In process', local: 'Host-local', service: 'Service boundary' })[kind]
 const sourceURL = (s) => `https://github.com/goforj/${s.repo}/blob/${s.revision}/${s.path}`
@@ -90,24 +88,6 @@ const changeSuite = (id) => {
   selectedSuite.value = id
   selectedRow.value = suites[id].local
 }
-const httpNames = {
-  live_plain_text: 'HTTP/1.1 loopback',
-  static_text: 'Static response',
-  path_param_json: 'Path parameter + JSON',
-  middleware_chain: 'Middleware chain',
-}
-const httpStory = computed(() => evidence.web.scenarios.find((s) => s.id === selectedHTTP.value))
-const httpRows = computed(() =>
-  [...httpStory.value.rows].sort((a, b) => b.throughput - a.throughput),
-)
-const httpGoForj = computed(() => httpRows.value.find((r) => r.framework === 'goforj_web'))
-const httpStandard = computed(() => httpRows.value.find((r) => r.framework === 'net_http'))
-const httpMax = computed(() => {
-  const maximum = Math.max(...httpRows.value.map((r) => r.throughput))
-  const step = 10 ** Math.floor(Math.log10(maximum)) / 2
-  return Math.ceil(maximum / step) * step
-})
-const httpTicks = computed(() => Array.from({ length: 5 }, (_, i) => (httpMax.value / 4) * i))
 const service = computed(() => story.value.rows.find((row) => row.label === suite.value.service))
 const ratio = computed(() =>
   Math.round(service.value.value / local.value.value).toLocaleString('en-US'),
@@ -174,8 +154,7 @@ const ratio = computed(() =>
     <nav class="ps-chapters ps-rail" aria-label="Performance chapters">
       <a href="#latency"><span>01</span> Feel the difference</a
       ><a href="#drivers"><span>02</span> Inspect the tradeoff</a
-      ><a href="#http"><span>03</span> Follow the request</a
-      ><a href="#evidence"><span>04</span> Check the evidence</a>
+      ><a href="#http"><span>03</span> Follow the request</a>
     </nav>
 
     <section id="latency" class="ps-section ps-rail">
@@ -327,134 +306,12 @@ const ratio = computed(() =>
           </p>
         </div>
       </div>
-      <div class="ps-http-layout">
-        <div class="ps-http-readout">
-          <label for="ps-http-scenario">CHOOSE THE WORKLOAD</label
-          ><select id="ps-http-scenario" v-model="selectedHTTP">
-            <option v-for="s in evidence.web.scenarios" :key="s.id" :value="s.id">
-              {{ httpNames[s.id] }}
-            </option></select
-          ><span class="ps-http-brand">GOFORJ WEB</span
-          ><strong>{{ rate(httpGoForj.throughput) }}</strong
-          ><span
-            >{{ selectedHTTP === 'live_plain_text' ? 'requests' : 'operations' }} per second</span
-          >
-          <div class="ps-http-baseline">
-            <span>net/http, same workload</span><b>{{ rate(httpStandard.throughput) }} / sec</b>
-          </div>
-          <p>
-            {{
-              selectedHTTP === 'live_plain_text'
-                ? 'Warm HTTP/1.1 loopback over a single connection. Socket and HTTP work dominate this result.'
-                : 'In-process handler dispatch. No socket, network, or application workload is included.'
-            }}
-          </p>
-          <p>
-            Median of {{ evidence.web.metadata.sample_count }} samples ×
-            {{ evidence.web.metadata.benchmark_time }} each. Small differences are not reliable
-            rankings.
-          </p>
-        </div>
-        <div class="ps-http-plot">
-          <div class="ps-http-axis" aria-hidden="true">
-            <span v-for="(tick, i) in httpTicks" :key="tick" :style="{ left: `${i * 25}%` }">{{
-              tick === 0 ? '0' : rate(tick)
-            }}</span>
-          </div>
-          <div
-            v-for="row in httpRows"
-            :key="row.framework"
-            class="ps-http-row"
-            :class="{ 'is-goforj': row.framework === 'goforj_web' }"
-          >
-            <div>
-              <strong>{{ row.label }}</strong
-              ><span>{{ number(row.allocs) }} allocs / op</span>
-            </div>
-            <div class="ps-http-track">
-              <i :style="{ width: `${(row.throughput / httpMax) * 100}%` }"></i>
-            </div>
-            <b>{{ rate(row.throughput) }}</b>
-          </div>
-          <p class="ps-chart-note">
-            Linear throughput scale · higher is faster ·
-            {{ selectedHTTP === 'live_plain_text' ? 'requests' : 'operations' }} / second
-          </p>
-        </div>
-      </div>
+      <PerformanceHTTP
+        :web="evidence.web"
+        :source="sourceURL(evidence.sources.find((s) => s.repo === 'web'))"
+      />
     </section>
 
-    <section id="evidence" class="ps-section ps-rail">
-      <div class="ps-heading">
-        <div>
-          <p class="ps-kicker">04 / SHOW YOUR WORK</p>
-          <h2>Don't take<br /><em>our word for it.</em></h2>
-        </div>
-        <p>
-          Five committed benchmark snapshots. Exact revisions. Content hashes. Open the artifacts
-          and inspect what ran, what was measured, and what the numbers mean.
-        </p>
-      </div>
-      <div class="ps-evidence-layout">
-        <div class="ps-environment">
-          <span class="ps-kicker">HTTP HARNESS</span>
-          <dl>
-            <div>
-              <dt>Go</dt>
-              <dd>{{ evidence.web.metadata.go_version }}</dd>
-            </div>
-            <div>
-              <dt>Platform</dt>
-              <dd>{{ evidence.web.metadata.goos }} / {{ evidence.web.metadata.goarch }}</dd>
-            </div>
-            <div>
-              <dt>GOMAXPROCS</dt>
-              <dd>{{ evidence.web.metadata.gomaxprocs }}</dd>
-            </div>
-            <div>
-              <dt>Sampling</dt>
-              <dd>
-                {{ evidence.web.metadata.sample_count }} ×
-                {{ evidence.web.metadata.benchmark_time }}
-              </dd>
-            </div>
-          </dl>
-          <p>
-            Driver suites retain their own fixtures and run conditions. Results are not combined
-            across libraries.
-          </p>
-        </div>
-        <div class="ps-sources">
-          <a
-            v-for="(s, i) in evidence.sources"
-            :key="s.repo"
-            :href="sourceURL(s)"
-            target="_blank"
-            rel="noopener noreferrer"
-            ><span>0{{ i + 1 }}</span
-            ><strong>{{ s.repo }}</strong
-            ><code>{{ s.revision.slice(0, 8) }}</code
-            ><span>↗</span></a
-          >
-          <details>
-            <summary>Inspect artifact fingerprints</summary>
-            <div v-for="s in evidence.sources" :key="s.repo">
-              <strong>{{ s.repo }}</strong
-              ><code>{{ s.sha256 }}</code>
-            </div>
-          </details>
-        </div>
-      </div>
-      <div class="ps-caveat">
-        <span>THE PART ONLY YOU CAN MEASURE</span>
-        <p>
-          Your production network, service configuration, payloads, contention, and durability
-          requirements. Use these results to understand the boundaries. Then run a representative
-          workload against your app.
-        </p>
-        <a href="/operations/performance-benchmarks">Measure your application ↗</a>
-      </div>
-    </section>
     <section class="ps-closing ps-rail">
       <p class="ps-kicker">LESS INFRASTRUCTURE UNTIL YOU NEED MORE</p>
       <h2>Start close.<br /><em>Go further.</em></h2>
@@ -660,7 +517,7 @@ const ratio = computed(() =>
 }
 .ps-chapters {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   padding-block: 22px;
   gap: 20px;
 }
@@ -825,8 +682,7 @@ const ratio = computed(() =>
   padding-block: 20px;
   border-block: 1px solid var(--gf-line-strong);
 }
-.ps-driver-toolbar label,
-.ps-http-readout label {
+.ps-driver-toolbar label {
   font: 9px var(--gf-font-mono);
   color: var(--gf-ink-2);
 }
@@ -1026,197 +882,6 @@ const ratio = computed(() =>
     transparent 60%
   );
 }
-.ps-http-layout {
-  display: grid;
-  grid-template-columns: 310px 1fr;
-  gap: 100px;
-  padding-top: 20px;
-}
-.ps-http-readout > label {
-  display: block;
-  margin-bottom: 12px;
-}
-.ps-http-readout > select {
-  width: 100%;
-}
-.ps-http-brand {
-  display: block;
-  margin-top: 40px;
-  font: 10px var(--gf-font-mono);
-  color: var(--gf-accent-hi);
-}
-.ps-http-readout > strong {
-  display: block;
-  font: 500 112px/1.1 var(--gf-font-display);
-  letter-spacing: -0.085em;
-  margin-top: 10px;
-}
-.ps-http-readout > span:last-of-type {
-  font: 11px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-http-baseline {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  border-block: 1px solid var(--gf-line);
-  padding: 18px 0;
-  margin-top: 30px;
-  font: 10px var(--gf-font-mono);
-}
-.ps-http-baseline > span {
-  color: var(--gf-ink-2);
-}
-.ps-http-readout > p {
-  font-size: 11px;
-  line-height: 1.9;
-  color: var(--gf-ink-2);
-  margin-top: 20px;
-}
-.ps-http-plot {
-  padding-top: 15px;
-  min-width: 0;
-}
-.ps-http-axis {
-  height: 30px;
-  position: relative;
-  margin-left: 140px;
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-http-axis span {
-  position: absolute;
-  transform: translateX(-50%);
-}
-.ps-http-axis span:first-child {
-  transform: none;
-}
-.ps-http-axis span:last-child {
-  transform: translateX(-100%);
-}
-.ps-http-row {
-  display: grid;
-  grid-template-columns: 125px 1fr;
-  gap: 10px 15px;
-  position: relative;
-  align-items: center;
-  border-top: 1px solid var(--gf-line);
-  padding: 23px 0;
-}
-.ps-http-row > div:first-child > strong {
-  font-size: 12px;
-  font-weight: 500;
-  display: block;
-}
-.ps-http-row > div:first-child > span {
-  font: 8px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  display: block;
-  margin-top: 6px;
-}
-.ps-http-track {
-  height: 3px;
-  background: var(--gf-line-strong);
-  position: relative;
-}
-.ps-http-track > i {
-  display: block;
-  height: 3px;
-  background: var(--gf-ink-3);
-}
-.ps-http-row > b {
-  position: absolute;
-  right: 0;
-  top: 8px;
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-http-row.is-goforj {
-  color: var(--gf-accent-hi);
-}
-.ps-http-row.is-goforj .ps-http-track > i {
-  background: var(--gf-accent);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--gf-accent) 25%, transparent);
-}
-.ps-http-row.is-goforj > b {
-  color: var(--gf-accent-hi);
-}
-.ps-evidence-layout {
-  display: grid;
-  grid-template-columns: 310px 1fr;
-  gap: 100px;
-  margin-top: 60px;
-}
-.ps-environment dl {
-  margin-top: 15px;
-}
-.ps-environment > p {
-  font-size: 11px;
-  line-height: 1.85;
-  color: var(--gf-ink-2);
-  margin-top: 20px;
-}
-.ps-sources > a {
-  display: grid;
-  grid-template-columns: 40px 1fr 100px 20px;
-  gap: 15px;
-  align-items: center;
-  border-top: 1px solid var(--gf-line-strong);
-  padding: 22px 0;
-}
-.ps-sources > a > span:first-child {
-  font: 9px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-sources > a > strong {
-  font: 500 20px var(--gf-font-display);
-  color: var(--gf-ink);
-}
-.ps-sources > a > code {
-  font: 10px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-sources details {
-  margin-top: 20px;
-  font: 10px var(--gf-font-mono);
-  color: var(--gf-ink-2);
-}
-.ps-sources summary {
-  cursor: pointer;
-  padding-block: 12px;
-}
-.ps-sources details > div {
-  padding: 15px 0;
-  border-top: 1px solid var(--gf-line);
-}
-.ps-sources details code {
-  display: block;
-  overflow-wrap: anywhere;
-  font-size: 9px;
-  line-height: 1.8;
-  margin-top: 7px;
-}
-.ps-caveat {
-  display: grid;
-  grid-template-columns: 310px 1fr;
-  gap: 20px 100px;
-  margin-top: 60px;
-  padding-top: 25px;
-  border-top: 1px solid var(--gf-line);
-}
-.ps-caveat > span {
-  font: 9px/1.8 var(--gf-font-mono);
-  color: var(--gf-reference);
-}
-.ps-caveat > p {
-  font-size: 12px;
-  line-height: 1.9;
-  color: var(--gf-ink-2);
-}
-.ps-caveat > a {
-  grid-column: 2;
-  font-size: 11px;
-}
 .ps-closing {
   padding-block: 80px 90px;
   display: grid;
@@ -1268,12 +933,6 @@ const ratio = computed(() =>
   }
   .ps-heading {
     gap: 40px;
-  }
-  .ps-http-layout,
-  .ps-evidence-layout,
-  .ps-caveat {
-    gap: 50px;
-    grid-template-columns: 270px 1fr;
   }
   .ps-driver-layout {
     grid-template-columns: 1fr 230px;
@@ -1439,62 +1098,6 @@ const ratio = computed(() =>
   .ps-inspect-value {
     font-size: 60px;
     margin-block: 20px;
-  }
-  .ps-http-layout,
-  .ps-evidence-layout {
-    display: block;
-    padding-top: 0;
-  }
-  .ps-http-readout > select {
-    max-width: 320px;
-  }
-  .ps-http-brand {
-    margin-top: 30px;
-  }
-  .ps-http-readout > strong {
-    font-size: 100px;
-  }
-  .ps-http-plot {
-    margin-top: 45px;
-  }
-  .ps-http-row {
-    grid-template-columns: 100px 1fr;
-    gap: 10px;
-  }
-  .ps-http-axis {
-    margin-left: 110px;
-    font-size: 8px;
-  }
-  .ps-http-row > div:first-child > strong {
-    font-size: 11px;
-  }
-  .ps-http-row > div:first-child > span {
-    font-size: 7px;
-  }
-  .ps-sources {
-    margin-top: 35px;
-  }
-  .ps-sources > a {
-    grid-template-columns: 25px 1fr 75px 15px;
-    gap: 10px;
-  }
-  .ps-sources > a > strong {
-    font-size: 18px;
-  }
-  .ps-sources > a > code {
-    font-size: 9px;
-  }
-  .ps-caveat {
-    display: block;
-    margin-top: 40px;
-    padding-top: 20px;
-  }
-  .ps-caveat > p {
-    margin-top: 15px;
-  }
-  .ps-caveat > a {
-    display: inline-block;
-    margin-top: 20px;
   }
   .ps-closing {
     display: block;

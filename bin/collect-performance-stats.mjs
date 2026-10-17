@@ -121,6 +121,7 @@ const webScenarios = ['live_plain_text', 'static_text', 'path_param_json', 'midd
         }[framework] || title(framework),
         framework,
         throughput: median(rows.map((row) => row.throughput_per_second)),
+        throughputSamples: rows.map((row) => row.throughput_per_second),
         nsOp: median(rows.map((row) => row.nanoseconds_per_op)),
         bytes: median(rows.map((row) => row.bytes_per_op)),
         allocs: median(rows.map((row) => row.allocs_per_op))
