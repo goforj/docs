@@ -15,7 +15,9 @@
     "postbuild": "node .vitepress/scripts/audit-built-links.mjs && node .vitepress/scripts/audit-search-quality.mjs && node --test .vitepress/scripts/library-social-metadata.test.mjs",
     "test:library-metadata": "node --test .vitepress/scripts/library-social-metadata.test.mjs",
     "test:page-markdown": "node --test .vitepress/scripts/page-markdown.test.mjs",
-    "preview": "vitepress preview ."
+    "preview": "vitepress preview .",
+    "performance:refresh": "node ../bin/collect-performance-stats.mjs",
+    "performance:check": "node ../bin/collect-performance-stats.mjs --check"
   },
   "devDependencies": {
     "playwright": "^1.64.0",

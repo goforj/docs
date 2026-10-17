@@ -1,0 +1,1566 @@
+{
+  "generatedAt": "2026-10-17",
+  "totals": {
+    "unitTests": 1461,
+    "integrationTests": 952,
+    "testFunctions": 3401,
+    "benchmarks": 85,
+    "drivers": 48,
+    "libraries": 18
+  },
+  "highlights": [
+    {
+      "library": "Cache",
+      "label": "Memory GetBytes",
+      "value": 70,
+      "unit": "ns/op"
+    },
+    {
+      "library": "Queue",
+      "label": "Synchronous Dispatch return",
+      "value": 282.5,
+      "unit": "ns/op"
+    },
+    {
+      "library": "Events",
+      "label": "Publish + handler round trip",
+      "value": 371.8,
+      "unit": "ns/op"
+    },
+    {
+      "library": "Storage",
+      "label": "Memory small-object Get",
+      "value": 752.9147821215927,
+      "unit": "ns/op"
+    }
+  ],
+  "driverStories": [
+    {
+      "id": "cache",
+      "title": "Cache reads",
+      "operation": "GetBytes",
+      "rows": [
+        {
+          "driver": "memory",
+          "label": "Memory",
+          "value": 70,
+          "bytes": 1,
+          "allocs": 1,
+          "kind": "process"
+        },
+        {
+          "driver": "file",
+          "label": "File",
+          "value": 100977,
+          "bytes": 1352,
+          "allocs": 9,
+          "kind": "local"
+        },
+        {
+          "driver": "redis",
+          "label": "Redis",
+          "value": 73175,
+          "bytes": 200,
+          "allocs": 8,
+          "kind": "service"
+        },
+        {
+          "driver": "memcached",
+          "label": "Memcached",
+          "value": 70363,
+          "bytes": 192,
+          "allocs": 9,
+          "kind": "service"
+        },
+        {
+          "driver": "postgres",
+          "label": "PostgreSQL",
+          "value": 86657,
+          "bytes": 1064,
+          "allocs": 32,
+          "kind": "service"
+        },
+        {
+          "driver": "mysql",
+          "label": "MySQL",
+          "value": 81964,
+          "bytes": 744,
+          "allocs": 26,
+          "kind": "service"
+        },
+        {
+          "driver": "sqlite",
+          "label": "SQLite",
+          "value": 7494,
+          "bytes": 1432,
+          "allocs": 39,
+          "kind": "local"
+        },
+        {
+          "driver": "nats",
+          "label": "NATS",
+          "value": 96450,
+          "bytes": 2573,
+          "allocs": 40,
+          "kind": "service"
+        },
+        {
+          "driver": "nats",
+          "label": "NATS KV + TTL",
+          "value": 82872,
+          "bytes": 2556,
+          "allocs": 40,
+          "kind": "service"
+        }
+      ]
+    },
+    {
+      "id": "queue",
+      "title": "Queue dispatch",
+      "operation": "Queue",
+      "rows": [
+        {
+          "driver": "null",
+          "label": "Null",
+          "value": 37.49,
+          "bytes": 128,
+          "allocs": 1,
+          "kind": "noop"
+        },
+        {
+          "driver": "sync",
+          "label": "Sync",
+          "value": 282.5,
+          "bytes": 408,
+          "allocs": 6,
+          "kind": "process"
+        },
+        {
+          "driver": "workerpool",
+          "label": "Worker pool",
+          "value": 650,
+          "bytes": 456,
+          "allocs": 7,
+          "kind": "process"
+        },
+        {
+          "driver": "redis",
+          "label": "Redis",
+          "value": 95295,
+          "bytes": 2113,
+          "allocs": 33,
+          "kind": "service"
+        },
+        {
+          "driver": "nats",
+          "label": "NATS",
+          "value": 774.1,
+          "bytes": 1258,
+          "allocs": 13,
+          "kind": "service"
+        },
+        {
+          "driver": "sqs",
+          "label": "SQS",
+          "value": 1873911,
+          "bytes": 94784,
+          "allocs": 1082,
+          "kind": "service"
+        },
+        {
+          "driver": "rabbitmq",
+          "label": "RabbitMQ",
+          "value": 165780,
+          "bytes": 1882,
+          "allocs": 57,
+          "kind": "service"
+        },
+        {
+          "driver": "mysql",
+          "label": "MySQL",
+          "value": 2286406,
+          "bytes": 3303,
+          "allocs": 62,
+          "kind": "service"
+        },
+        {
+          "driver": "postgres",
+          "label": "PostgreSQL",
+          "value": 1056731,
+          "bytes": 3809,
+          "allocs": 78,
+          "kind": "service"
+        },
+        {
+          "driver": "sqlite",
+          "label": "SQLite",
+          "value": 202380,
+          "bytes": 1931,
+          "allocs": 47,
+          "kind": "local"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Event round trips",
+      "operation": "Publish + handle",
+      "rows": [
+        {
+          "driver": "sync",
+          "label": "Synchronous",
+          "value": 371.8,
+          "bytes": 320,
+          "allocs": 9,
+          "kind": "process"
+        },
+        {
+          "driver": "gcppubsub",
+          "label": "Google Pub/Sub",
+          "value": 52848425,
+          "bytes": 21971,
+          "allocs": 369,
+          "kind": "service"
+        },
+        {
+          "driver": "kafka",
+          "label": "Kafka",
+          "value": 499091,
+          "bytes": 5040,
+          "allocs": 67,
+          "kind": "service"
+        },
+        {
+          "driver": "jetstream",
+          "label": "NATS JetStream",
+          "value": 127165,
+          "bytes": 3609,
+          "allocs": 60,
+          "kind": "service"
+        },
+        {
+          "driver": "nats",
+          "label": "NATS",
+          "value": 73316,
+          "bytes": 681,
+          "allocs": 18,
+          "kind": "service"
+        },
+        {
+          "driver": "redis",
+          "label": "Redis",
+          "value": 95149,
+          "bytes": 914,
+          "allocs": 31,
+          "kind": "service"
+        },
+        {
+          "driver": "sns",
+          "label": "SNS",
+          "value": 2553117,
+          "bytes": 104563,
+          "allocs": 1271,
+          "kind": "service"
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "title": "Small-file reads",
+      "operation": "Get",
+      "rows": [
+        {
+          "driver": "local",
+          "label": "Local",
+          "value": 13811.52516435556,
+          "bytes": 1536.2368929893375,
+          "allocs": 14.001602121429755,
+          "kind": "local"
+        },
+        {
+          "driver": "memory",
+          "label": "Memory",
+          "value": 752.9147821215927,
+          "bytes": 496.081603888653,
+          "allocs": 9.00039452721485,
+          "kind": "process"
+        },
+        {
+          "driver": "gcs",
+          "label": "GCS",
+          "value": 210780.62913907284,
+          "bytes": 201477.99157134257,
+          "allocs": 6831.402167369055,
+          "kind": "service"
+        },
+        {
+          "driver": "ftp",
+          "label": "FTP",
+          "value": 243278.00972222222,
+          "bytes": 5429.788888888889,
+          "allocs": 99.03194444444445,
+          "kind": "service"
+        },
+        {
+          "driver": "rclone",
+          "label": "rclone local",
+          "value": 17957.60648504438,
+          "bytes": 2168.0258580883483,
+          "allocs": 21.000564363039352,
+          "kind": "local"
+        },
+        {
+          "driver": "redis",
+          "label": "Redis",
+          "value": 79510.93253066788,
+          "bytes": 936.0327124034529,
+          "allocs": 24.000227169468424,
+          "kind": "service"
+        },
+        {
+          "driver": "s3",
+          "label": "S3",
+          "value": 382576.1599081867,
+          "bytes": 45419.268553940325,
+          "allocs": 630.1384850803366,
+          "kind": "service"
+        },
+        {
+          "driver": "sftp",
+          "label": "SFTP",
+          "value": 429232.65321888414,
+          "bytes": 2523.7836909871244,
+          "allocs": 47.01030042918455,
+          "kind": "service"
+        }
+      ]
+    }
+  ],
+  "web": {
+    "metadata": {
+      "go_version": "go1.26.1",
+      "goos": "linux",
+      "goarch": "arm64",
+      "cpu": "arm64 (CPU model unavailable)",
+      "kernel": "Linux 7.0.11-orbstack-00360-gc9bc4d96ac70",
+      "gomaxprocs": 1,
+      "sample_count": 7,
+      "benchmark_time": "1s",
+      "repository_revision": "df4a3d1f75f6",
+      "repository_dirty": false,
+      "benchmark_input_fingerprint": "sha256:34d8f1b557a3681b44748966456fee27d79c89111d49b01fa6da04ae6b6323c2",
+      "build_settings": [
+        {
+          "name": "CGO_ENABLED",
+          "value": "1"
+        },
+        {
+          "name": "GOARM64",
+          "value": "v8.0"
+        },
+        {
+          "name": "GODEBUG",
+          "value": ""
+        },
+        {
+          "name": "GOEXPERIMENT",
+          "value": ""
+        },
+        {
+          "name": "GOFLAGS",
+          "value": ""
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "net/http",
+          "module": "standard library",
+          "version": "go1.26.1"
+        },
+        {
+          "name": "GoForj Web",
+          "module": "github.com/goforj/web",
+          "version": "local checkout"
+        },
+        {
+          "name": "Echo",
+          "module": "github.com/labstack/echo/v5",
+          "version": "v5.1.0"
+        },
+        {
+          "name": "Gin",
+          "module": "github.com/gin-gonic/gin",
+          "version": "v1.12.0"
+        },
+        {
+          "name": "Chi",
+          "module": "github.com/go-chi/chi/v5",
+          "version": "v5.3.1"
+        },
+        {
+          "name": "Gorilla Mux",
+          "module": "github.com/gorilla/mux",
+          "version": "v1.8.1"
+        },
+        {
+          "name": "httprouter",
+          "module": "github.com/julienschmidt/httprouter",
+          "version": "v1.3.0"
+        }
+      ]
+    },
+    "scenarios": [
+      {
+        "id": "live_plain_text",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 118993,
+            "throughputSamples": [
+              119090,
+              118487,
+              119297,
+              118990,
+              118993,
+              119636,
+              118333
+            ],
+            "nsOp": 8404,
+            "bytes": 4891,
+            "allocs": 60
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 117923,
+            "throughputSamples": [
+              118331,
+              115769,
+              118251,
+              117675,
+              118561,
+              117259,
+              117923
+            ],
+            "nsOp": 8480,
+            "bytes": 4891,
+            "allocs": 60
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 117586,
+            "throughputSamples": [
+              118416,
+              117586,
+              117927,
+              117438,
+              117223,
+              111902,
+              118164
+            ],
+            "nsOp": 8504,
+            "bytes": 4915,
+            "allocs": 61
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 118609,
+            "throughputSamples": [
+              118060,
+              118547,
+              118718,
+              118684,
+              118570,
+              118609,
+              119182
+            ],
+            "nsOp": 8431,
+            "bytes": 4923,
+            "allocs": 60
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 116782,
+            "throughputSamples": [
+              117287,
+              115771,
+              117162,
+              113337,
+              116667,
+              116841,
+              116782
+            ],
+            "nsOp": 8563,
+            "bytes": 5259,
+            "allocs": 62
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 113899,
+            "throughputSamples": [
+              113914,
+              113270,
+              112606,
+              113258,
+              113899,
+              113900,
+              114033
+            ],
+            "nsOp": 8780,
+            "bytes": 5739,
+            "allocs": 67
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 120078,
+            "throughputSamples": [
+              120078,
+              119489,
+              120589,
+              119355,
+              120134,
+              119522,
+              122227
+            ],
+            "nsOp": 8328,
+            "bytes": 4891,
+            "allocs": 60
+          }
+        ]
+      },
+      {
+        "id": "static_text",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 11047264,
+            "throughputSamples": [
+              10901635,
+              11093936,
+              11210801,
+              11492090,
+              11047264,
+              11046793,
+              10952693
+            ],
+            "nsOp": 90.52,
+            "bytes": 16,
+            "allocs": 1
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 8105840,
+            "throughputSamples": [
+              8083448,
+              8105840,
+              8155580,
+              8231423,
+              7895893,
+              7718207,
+              8179585
+            ],
+            "nsOp": 123.4,
+            "bytes": 16,
+            "allocs": 1
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 7490212,
+            "throughputSamples": [
+              7490212,
+              7553907,
+              7466688,
+              7526064,
+              7449493,
+              7438210,
+              7516849
+            ],
+            "nsOp": 133.5,
+            "bytes": 40,
+            "allocs": 2
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 9447802,
+            "throughputSamples": [
+              9428288,
+              9487604,
+              9609076,
+              9388337,
+              9418926,
+              9485652,
+              9447802
+            ],
+            "nsOp": 105.8,
+            "bytes": 48,
+            "allocs": 1
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 4079741,
+            "throughputSamples": [
+              4070432,
+              4087195,
+              4064323,
+              4079741,
+              4083691,
+              4085588,
+              4078309
+            ],
+            "nsOp": 245.1,
+            "bytes": 384,
+            "allocs": 3
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 2210706,
+            "throughputSamples": [
+              2210706,
+              2222987,
+              2229238,
+              2170084,
+              2196371,
+              2205459,
+              2216897
+            ],
+            "nsOp": 452.3,
+            "bytes": 864,
+            "allocs": 8
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 15683540,
+            "throughputSamples": [
+              15312577,
+              15793778,
+              15683540,
+              15764965,
+              15644524,
+              15542715,
+              15715619
+            ],
+            "nsOp": 63.76,
+            "bytes": 16,
+            "allocs": 1
+          }
+        ]
+      },
+      {
+        "id": "path_param_json",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 5937455,
+            "throughputSamples": [
+              5966514,
+              6002693,
+              5937455,
+              5999848,
+              5918679,
+              5888079,
+              5870681
+            ],
+            "nsOp": 168.4,
+            "bytes": 32,
+            "allocs": 2
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 4358405,
+            "throughputSamples": [
+              4423400,
+              4326167,
+              4381698,
+              4356125,
+              4352593,
+              4358405,
+              4415889
+            ],
+            "nsOp": 229.4,
+            "bytes": 48,
+            "allocs": 3
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 5351530,
+            "throughputSamples": [
+              5361832,
+              5322796,
+              5375743,
+              5351530,
+              5320459,
+              5310397,
+              5379389
+            ],
+            "nsOp": 186.9,
+            "bytes": 32,
+            "allocs": 2
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 5302719,
+            "throughputSamples": [
+              5274168,
+              5302719,
+              5322519,
+              5319275,
+              5317516,
+              5246790,
+              5291101
+            ],
+            "nsOp": 188.6,
+            "bytes": 48,
+            "allocs": 3
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 2257553,
+            "throughputSamples": [
+              2256276,
+              2257722,
+              2258549,
+              2247949,
+              2257553,
+              2245209,
+              2261643
+            ],
+            "nsOp": 443,
+            "bytes": 736,
+            "allocs": 6
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 1548628,
+            "throughputSamples": [
+              1552879,
+              1548901,
+              1548628,
+              1522428,
+              1540311,
+              1543078,
+              1560066
+            ],
+            "nsOp": 645.7,
+            "bytes": 1184,
+            "allocs": 10
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 6261053,
+            "throughputSamples": [
+              6251502,
+              6252192,
+              6364261,
+              6261053,
+              6318373,
+              6232606,
+              6269985
+            ],
+            "nsOp": 159.7,
+            "bytes": 64,
+            "allocs": 3
+          }
+        ]
+      },
+      {
+        "id": "middleware_chain",
+        "rows": [
+          {
+            "label": "GoForj Web",
+            "framework": "goforj_web",
+            "throughput": 5834930,
+            "throughputSamples": [
+              5786971,
+              5880547,
+              5861497,
+              5839789,
+              5834930,
+              5822611,
+              5820076
+            ],
+            "nsOp": 171.4,
+            "bytes": 32,
+            "allocs": 2
+          },
+          {
+            "label": "net/http",
+            "framework": "net_http",
+            "throughput": 3375985,
+            "throughputSamples": [
+              3375985,
+              3405673,
+              3327542,
+              3364932,
+              3385872,
+              3370822,
+              3387616
+            ],
+            "nsOp": 296.2,
+            "bytes": 400,
+            "allocs": 4
+          },
+          {
+            "label": "Echo",
+            "framework": "echo",
+            "throughput": 2674599,
+            "throughputSamples": [
+              2679592,
+              2690582,
+              2667279,
+              2674474,
+              2659276,
+              2674599,
+              2707811
+            ],
+            "nsOp": 373.9,
+            "bytes": 440,
+            "allocs": 8
+          },
+          {
+            "label": "Gin",
+            "framework": "gin",
+            "throughput": 3559858,
+            "throughputSamples": [
+              3565386,
+              3559858,
+              3559472,
+              3530152,
+              3571094,
+              3538972,
+              3572023
+            ],
+            "nsOp": 280.9,
+            "bytes": 400,
+            "allocs": 4
+          },
+          {
+            "label": "Chi",
+            "framework": "chi",
+            "throughput": 2456688,
+            "throughputSamples": [
+              2470853,
+              2463531,
+              2452801,
+              2456688,
+              2453550,
+              2427267,
+              2475553
+            ],
+            "nsOp": 407.1,
+            "bytes": 768,
+            "allocs": 6
+          },
+          {
+            "label": "Gorilla Mux",
+            "framework": "gorilla_mux",
+            "throughput": 1428773,
+            "throughputSamples": [
+              1433067,
+              1371526,
+              1439839,
+              1428773,
+              1427876,
+              1417385,
+              1449062
+            ],
+            "nsOp": 699.9,
+            "bytes": 1320,
+            "allocs": 14
+          },
+          {
+            "label": "httprouter",
+            "framework": "httprouter",
+            "throughput": 4359708,
+            "throughputSamples": [
+              4357465,
+              4368000,
+              4367425,
+              4347468,
+              4396444,
+              4333424,
+              4359708
+            ],
+            "nsOp": 229.4,
+            "bytes": 400,
+            "allocs": 4
+          }
+        ]
+      }
+    ]
+  },
+  "driverCoverage": [
+    {
+      "id": "queue",
+      "drivers": [
+        {
+          "id": "null",
+          "label": "Null",
+          "results": [
+            {
+              "driver": "null",
+              "label": "Null",
+              "value": 37.49,
+              "bytes": 128,
+              "allocs": 1,
+              "kind": "noop"
+            }
+          ]
+        },
+        {
+          "id": "sync",
+          "label": "Synchronous",
+          "results": [
+            {
+              "driver": "sync",
+              "label": "Sync",
+              "value": 282.5,
+              "bytes": 408,
+              "allocs": 6,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "workerpool",
+          "label": "Worker pool",
+          "results": [
+            {
+              "driver": "workerpool",
+              "label": "Worker pool",
+              "value": 650,
+              "bytes": 456,
+              "allocs": 7,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "mysql",
+          "label": "MySQL",
+          "results": [
+            {
+              "driver": "mysql",
+              "label": "MySQL",
+              "value": 2286406,
+              "bytes": 3303,
+              "allocs": 62,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "results": [
+            {
+              "driver": "postgres",
+              "label": "PostgreSQL",
+              "value": 1056731,
+              "bytes": 3809,
+              "allocs": 78,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "results": [
+            {
+              "driver": "sqlite",
+              "label": "SQLite",
+              "value": 202380,
+              "bytes": 1931,
+              "allocs": 47,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 95295,
+              "bytes": 2113,
+              "allocs": 33,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "nats",
+          "label": "NATS",
+          "results": [
+            {
+              "driver": "nats",
+              "label": "NATS",
+              "value": 774.1,
+              "bytes": 1258,
+              "allocs": 13,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sqs",
+          "label": "SQS",
+          "results": [
+            {
+              "driver": "sqs",
+              "label": "SQS",
+              "value": 1873911,
+              "bytes": 94784,
+              "allocs": 1082,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "rabbitmq",
+          "label": "RabbitMQ",
+          "results": [
+            {
+              "driver": "rabbitmq",
+              "label": "RabbitMQ",
+              "value": 165780,
+              "bytes": 1882,
+              "allocs": 57,
+              "kind": "service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "drivers": [
+        {
+          "id": "sync",
+          "label": "Synchronous",
+          "results": [
+            {
+              "driver": "sync",
+              "label": "Synchronous",
+              "value": 371.8,
+              "bytes": 320,
+              "allocs": 9,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "null",
+          "label": "Null",
+          "results": []
+        },
+        {
+          "id": "nats",
+          "label": "NATS",
+          "results": [
+            {
+              "driver": "nats",
+              "label": "NATS",
+              "value": 73316,
+              "bytes": 681,
+              "allocs": 18,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "jetstream",
+          "label": "NATS JetStream",
+          "results": [
+            {
+              "driver": "jetstream",
+              "label": "NATS JetStream",
+              "value": 127165,
+              "bytes": 3609,
+              "allocs": 60,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 95149,
+              "bytes": 914,
+              "allocs": 31,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "kafka",
+          "label": "Kafka",
+          "results": [
+            {
+              "driver": "kafka",
+              "label": "Kafka",
+              "value": 499091,
+              "bytes": 5040,
+              "allocs": 67,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sns",
+          "label": "SNS",
+          "results": [
+            {
+              "driver": "sns",
+              "label": "SNS",
+              "value": 2553117,
+              "bytes": 104563,
+              "allocs": 1271,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "gcppubsub",
+          "label": "Google Pub/Sub",
+          "results": [
+            {
+              "driver": "gcppubsub",
+              "label": "Google Pub/Sub",
+              "value": 52848425,
+              "bytes": 21971,
+              "allocs": 369,
+              "kind": "service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cache",
+      "drivers": [
+        {
+          "id": "null",
+          "label": "Null",
+          "results": []
+        },
+        {
+          "id": "file",
+          "label": "File",
+          "results": [
+            {
+              "driver": "file",
+              "label": "File",
+              "value": 100977,
+              "bytes": 1352,
+              "allocs": 9,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "memory",
+          "label": "Memory",
+          "results": [
+            {
+              "driver": "memory",
+              "label": "Memory",
+              "value": 70,
+              "bytes": 1,
+              "allocs": 1,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "memcached",
+          "label": "Memcached",
+          "results": [
+            {
+              "driver": "memcached",
+              "label": "Memcached",
+              "value": 70363,
+              "bytes": 192,
+              "allocs": 9,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 73175,
+              "bytes": 200,
+              "allocs": 8,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "nats",
+          "label": "NATS",
+          "results": [
+            {
+              "driver": "nats",
+              "label": "NATS",
+              "value": 96450,
+              "bytes": 2573,
+              "allocs": 40,
+              "kind": "service"
+            },
+            {
+              "driver": "nats",
+              "label": "NATS KV + TTL",
+              "value": 82872,
+              "bytes": 2556,
+              "allocs": 40,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "dynamodb",
+          "label": "DynamoDB",
+          "results": []
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "results": [
+            {
+              "driver": "sqlite",
+              "label": "SQLite",
+              "value": 7494,
+              "bytes": 1432,
+              "allocs": 39,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "results": [
+            {
+              "driver": "postgres",
+              "label": "PostgreSQL",
+              "value": 86657,
+              "bytes": 1064,
+              "allocs": 32,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "mysql",
+          "label": "MySQL",
+          "results": [
+            {
+              "driver": "mysql",
+              "label": "MySQL",
+              "value": 81964,
+              "bytes": 744,
+              "allocs": 26,
+              "kind": "service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "drivers": [
+        {
+          "id": "local",
+          "label": "Local",
+          "results": [
+            {
+              "driver": "local",
+              "label": "Local",
+              "value": 13811.52516435556,
+              "bytes": 1536.2368929893375,
+              "allocs": 14.001602121429755,
+              "kind": "local"
+            }
+          ]
+        },
+        {
+          "id": "memory",
+          "label": "Memory",
+          "results": [
+            {
+              "driver": "memory",
+              "label": "Memory",
+              "value": 752.9147821215927,
+              "bytes": 496.081603888653,
+              "allocs": 9.00039452721485,
+              "kind": "process"
+            }
+          ]
+        },
+        {
+          "id": "redis",
+          "label": "Redis",
+          "results": [
+            {
+              "driver": "redis",
+              "label": "Redis",
+              "value": 79510.93253066788,
+              "bytes": 936.0327124034529,
+              "allocs": 24.000227169468424,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "ftp",
+          "label": "FTP",
+          "results": [
+            {
+              "driver": "ftp",
+              "label": "FTP",
+              "value": 243278.00972222222,
+              "bytes": 5429.788888888889,
+              "allocs": 99.03194444444445,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "sftp",
+          "label": "SFTP",
+          "results": [
+            {
+              "driver": "sftp",
+              "label": "SFTP",
+              "value": 429232.65321888414,
+              "bytes": 2523.7836909871244,
+              "allocs": 47.01030042918455,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "label": "S3",
+          "results": [
+            {
+              "driver": "s3",
+              "label": "S3",
+              "value": 382576.1599081867,
+              "bytes": 45419.268553940325,
+              "allocs": 630.1384850803366,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "gcs",
+          "label": "GCS",
+          "results": [
+            {
+              "driver": "gcs",
+              "label": "GCS",
+              "value": 210780.62913907284,
+              "bytes": 201477.99157134257,
+              "allocs": 6831.402167369055,
+              "kind": "service"
+            }
+          ]
+        },
+        {
+          "id": "dropbox",
+          "label": "Dropbox",
+          "results": []
+        },
+        {
+          "id": "rclone",
+          "label": "Rclone",
+          "results": [
+            {
+              "driver": "rclone",
+              "label": "rclone local",
+              "value": 17957.60648504438,
+              "bytes": 2168.0258580883483,
+              "allocs": 21.000564363039352,
+              "kind": "local"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mail",
+      "drivers": [
+        {
+          "id": "smtp",
+          "label": "SMTP",
+          "results": []
+        },
+        {
+          "id": "resend",
+          "label": "Resend",
+          "results": []
+        },
+        {
+          "id": "postmark",
+          "label": "Postmark",
+          "results": []
+        },
+        {
+          "id": "mailgun",
+          "label": "Mailgun",
+          "results": []
+        },
+        {
+          "id": "sendgrid",
+          "label": "SendGrid",
+          "results": []
+        },
+        {
+          "id": "ses",
+          "label": "SES",
+          "results": []
+        },
+        {
+          "id": "log",
+          "label": "Log",
+          "results": []
+        },
+        {
+          "id": "fake",
+          "label": "Fake",
+          "results": []
+        }
+      ]
+    },
+    {
+      "id": "database",
+      "drivers": [
+        {
+          "id": "mysql",
+          "label": "MySQL",
+          "results": []
+        },
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "results": []
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "results": []
+        }
+      ]
+    }
+  ],
+  "benchmarkLibraries": [
+    {
+      "repo": "cache",
+      "benchmarks": 5
+    },
+    {
+      "repo": "crypt",
+      "benchmarks": 3
+    },
+    {
+      "repo": "events",
+      "benchmarks": 7
+    },
+    {
+      "repo": "execx",
+      "benchmarks": 2
+    },
+    {
+      "repo": "mail",
+      "benchmarks": 3
+    },
+    {
+      "repo": "metrics",
+      "benchmarks": 10
+    },
+    {
+      "repo": "queue",
+      "benchmarks": 6
+    },
+    {
+      "repo": "storage",
+      "benchmarks": 1
+    },
+    {
+      "repo": "str",
+      "benchmarks": 10
+    },
+    {
+      "repo": "web",
+      "benchmarks": 36
+    },
+    {
+      "repo": "wire",
+      "benchmarks": 2
+    }
+  ],
+  "sources": [
+    {
+      "repo": "cache",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "5e5d0f26e54b2e014e86630caa2ab72e6c8b0fe1",
+      "sha256": "560cbd0e2847840efe83a7dc474c6d77bb41585d305ee5878a287497fa630507"
+    },
+    {
+      "repo": "events",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "21c6e503c3e99f4b95efa47c603daf87433e5af9",
+      "sha256": "3ca9808d2e0b5ab2796854e6c7d99bfa509e721a06ed4cddde929a71799ee679"
+    },
+    {
+      "repo": "queue",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "439da9bbc0436f3ab8251dde0b296a1c3cf8a954",
+      "sha256": "ed230e76699758a15b044aad71038511888af093ca89377ab1e61703afb1b883"
+    },
+    {
+      "repo": "storage",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "1ba3e4ca4bbdf19c4203c02413468dc934430c55",
+      "sha256": "b324cc04e5cb4d6fd9d7518c6e9b4400ac0c8fdb2ce7a10696e20669bb8a4391"
+    },
+    {
+      "repo": "web",
+      "path": "docs/bench/benchmarks_rows.json",
+      "revision": "8ae67c788fbf8c8ac3c0d0c6ca73d5df221b3b2e",
+      "sha256": "2f4567eaef1f4246c60ed735e112172abb9c16e231c931b05c0a3281747f1eea"
+    }
+  ]
+}

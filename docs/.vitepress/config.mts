@@ -431,6 +431,7 @@ const llmsSectionOrder = [
   'security/',
   'frontend/',
   'starter-kits.md',
+  'performance.md',
   'testing/',
   'scenarios/',
   'operations/',
@@ -453,6 +454,7 @@ const llmsSectionTitles: Record<string, string> = {
   'security/': 'Security',
   'frontend/': 'Frontend',
   'starter-kits.md': 'Starter Kits',
+  'performance.md': 'Performance',
   'testing/': 'Testing',
   'scenarios/': 'Verified Scenarios',
   'operations/': 'Operations',
@@ -1037,6 +1039,7 @@ const operationsSidebar = sectionSidebar('Operations', [
   { text: 'Metrics', link: '/operations/metrics' },
   { text: 'Inspects', link: '/operations/inspects' },
   { text: 'Lighthouse', link: '/operations/lighthouse' },
+  { text: 'Library Performance', link: '/performance' },
   { text: 'Performance Benchmarks', link: '/operations/performance-benchmarks' },
   { text: 'Backup and Restore', link: '/operations/backups' }
 ])
@@ -1441,6 +1444,7 @@ export default defineConfig({
         ]
       },
       { text: 'Starter Kits', link: '/starter-kits' },
+      { text: 'Performance', link: '/performance' },
       {
         text: 'Guides',
         items: [
