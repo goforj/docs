@@ -12,6 +12,7 @@ const props = defineProps({
   rows: { type: Array, required: true },
   missing: { type: Array, default: () => [] },
   source: { type: String, required: true },
+  reproduce: { type: String, required: true },
   note: { type: String, required: true },
   http: { type: Boolean, default: false },
   environment: { type: String, default: '' },
@@ -46,7 +47,10 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
       </div>
       <div class="bench-chart-meta">
         <span>{{ active.length }} {{ http ? 'routers' : 'results' }}</span>
-        <a :href="source" target="_blank" rel="noopener noreferrer">Source ↗</a>
+        <div class="bench-chart-links">
+          <a :href="source" target="_blank" rel="noopener noreferrer">Source ↗</a>
+          <a :href="reproduce" target="_blank" rel="noopener noreferrer">Reproduce ↗</a>
+        </div>
       </div>
     </header>
     <table class="bench-table">
@@ -81,7 +85,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
       </div>
     </div>
     <footer>
-      <p>{{ note }} <span class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? '' : 'Throughput is calculated from the recorded time per operation.' }} {{ sampled ? 'Bars show medians; whiskers show the observed range of seven runs.' : '' }}</span></p>
+      <p>{{ note }} <span class="bench-scale-note">Time and throughput use logarithmic axes (each interval is 10×). Allocations and bytes use linear axes from zero. {{ http ? 'Rates describe serial handler dispatch, not a concurrent HTTP load test.' : 'Rates are calculated from time per operation, not a concurrent load test.' }} {{ sampled ? 'Time is the median of seven run averages; whiskers show run-to-run ranges, not request percentiles.' : 'Recorded per-operation averages; repeated-run samples are unavailable.' }}</span></p>
       <p v-if="environment" class="bench-environment">{{ environment }}</p>
       <div v-if="missing.length" class="bench-missing">
         <span class="bench-missing-title">Not in this snapshot</span>
@@ -105,6 +109,7 @@ const color = row => performanceColors[row.driver] || '#B3AEC0'
 .bench-chart-heading p { font:11px var(--gf-font-mono); color:var(--gf-ink-2); margin:5px 0 0; }
 .bench-chart-meta { display:flex; align-items:end; flex-direction:column; gap:8px; font:10px var(--gf-font-mono); color:var(--gf-ink-2); }
 .bench-chart-meta a { color:var(--gf-nav); text-decoration:none; }
+.bench-chart-links { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px 12px; }
 .bench-page .bench-chart .bench-table { display:table; width:100%; margin:0; border-collapse:collapse; table-layout:fixed; font-size:12px; overflow:visible; border:0; border-radius:0; box-shadow:none; background:transparent; }
 .bench-page .bench-chart .bench-table th,.bench-page .bench-chart .bench-table td { text-transform:none; letter-spacing:normal; background:transparent; border:0; border-radius:0; box-shadow:none; font-size:12px; font-weight:400; text-align:left; padding:8px 16px; }
 .bench-page .bench-chart .bench-table th:first-child { width:190px; padding-left:0; }

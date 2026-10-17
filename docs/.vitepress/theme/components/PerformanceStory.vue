@@ -8,45 +8,50 @@ import eventsLogo from '../../../assets/performance/events-logo.png'
 import storageLogo from '../../../assets/performance/storage-logo.png'
 import webLogo from '../../../assets/performance/web-logo.png'
 import mailLogo from '../../../assets/performance/mail-logo.png'
-const environmentFor = metadata => `${metadata.go_version.replace('go version ', '')} · ${metadata.cpu} · GOMAXPROCS=${metadata.gomaxprocs} · ${metadata.sample_count} samples × ${metadata.benchmark_time}`
+const environmentFor = id => {
+  const snapshot = evidence.sources.find(source => source.repo === id)
+  const metadata = { web: evidence.web.metadata, mail: evidence.mail.metadata, database: evidence.local.metadata }[id]
+  const revision = `Snapshot ${snapshot.revision.slice(0, 7)}`
+  if (!metadata) return `${revision} · Capture date, environment, and repeated-run details were not recorded.`
+  const date = metadata.captured_at?.slice(0, 10) || 'Capture date not recorded'
+  return `${revision} · ${date} · ${metadata.go_version.replace('go version ', '')} · ${metadata.goos}/${metadata.goarch} · ${metadata.cpu} · GOMAXPROCS=${metadata.gomaxprocs} · ${metadata.sample_count} runs × ${metadata.benchmark_time}`
+}
 const info = {
   cache: {
     logo: cacheLogo,
     title: 'Cache',
     operation: 'GetBytes',
-    note: 'Seeded byte-value reads. NATS KV + TTL is a second configuration of the NATS driver.',
+    note: 'Seeded byte-value reads across in-process, filesystem, and local service fixtures. NATS KV + TTL is a second configuration of the NATS driver.',
   },
   queue: {
     logo: queueLogo,
     title: 'Queue',
     operation: 'Dispatch return',
-    note: 'Producer-side dispatch return, not job completion. Core NATS publish return is not durable acknowledgement.',
+    note: 'Producer-side dispatch return across local fixtures, not job completion. Core NATS publish return is not durable acknowledgement.',
   },
   events: {
     logo: eventsLogo,
     title: 'Events',
     operation: 'Publish + handler delivery',
-    note: 'Publish plus observed handler delivery, including the service round trip.',
+    note: 'Publish plus observed handler delivery across in-process and local service fixtures, including the service round trip.',
   },
   storage: {
     logo: storageLogo,
     title: 'Storage',
     operation: 'Get small object',
-    note: 'Read a previously written object. rclone is measured with a local filesystem remote.',
+    note: 'Read a previously written object across in-process, filesystem, and local service fixtures. rclone uses a local filesystem remote.',
   },
   mail: {
     logo: mailLogo,
     title: 'Mail',
     operation: 'Client send return · one recipient + 4 KiB attachment',
     note: 'Local client costs, not real provider latency or inbox delivery. API drivers use HTTP acceptance fixtures in separate processes without TLS; SMTP uses Mailpit. Log writes to io.Discard; Fake resets every 128 sends.',
-    environment: environmentFor(evidence.mail.metadata),
   },
   database: {
     logo: '/favicon.svg',
     title: 'Database',
     operation: 'Read one row by primary key · GORM',
     note: 'Warm lookups across 1,000 rows with one pooled connection and GoForj database defaults. MySQL and PostgreSQL use local containers; SQLite uses a temporary file. Measures the GORM operation, without generated-app instrumentation.',
-    environment: environmentFor(evidence.local.metadata),
   },
 }
 const missingReasons = {
@@ -61,6 +66,7 @@ const charts = computed(() =>
   Object.entries(info).map(([id, meta]) => ({
     id,
     ...meta,
+    environment: environmentFor(id),
     rows: evidence.driverStories.find((s) => s.id === id).rows,
     missing: evidence.driverCoverage
       .find((f) => f.id === id)
@@ -79,10 +85,12 @@ const httpCharts = computed(() => Object.entries(workloads).map(([id, title]) =>
   operation: { path_param_json: 'Return the ID in a JSON response', static_text: 'Return fixed text without middleware', middleware_chain: 'Set request state, add a header, validate the request' }[id],
   rows: evidence.web.scenarios.find(s => s.id === id).rows.map(row => ({...row, driver: row.framework, value: row.nsOp, kind: 'router'})),
   note: 'The same in-process router workload, without a socket, network, or application business logic.',
+  environment: environmentFor('web'),
 })))
-const source = (id) => {
+const source = (id, reproduce = false) => {
   const s = evidence.sources.find((s) => s.repo === id)
-  return `https://github.com/${s.repository || `goforj/${id}`}/blob/${s.revision}/${s.path}`
+  const instructions = id === 'database' ? 'benchmarks/README.md' : ['mail', 'web'].includes(id) ? 'docs/bench/README.md' : 'README.md#benchmarks'
+  return `https://github.com/${s.repository || `goforj/${id}`}/blob/${s.revision}/${reproduce ? instructions : s.path}`
 }
 const activeBenchmark = ref('')
 let scrollFrame = 0
@@ -176,17 +184,10 @@ onBeforeUnmount(() => {
             v-bind="chart"
             :logo="webLogo"
             :source="source('web')"
+            :reproduce="source('web', true)"
             http
           />
         </div>
-        <p class="bench-http-environment">
-          {{ evidence.web.metadata.go_version }} · {{ evidence.web.metadata.goos }}/{{
-            evidence.web.metadata.goarch
-          }}
-          · GOMAXPROCS={{ evidence.web.metadata.gomaxprocs }} ·
-          {{ evidence.web.metadata.sample_count }} samples ×
-          {{ evidence.web.metadata.benchmark_time }} each
-        </p>
       </section>
       <div class="bench-gallery">
         <PerformanceChart
@@ -194,11 +195,13 @@ onBeforeUnmount(() => {
           :key="chart.id"
           v-bind="chart"
           :source="source(chart.id)"
+          :reproduce="source(chart.id, true)"
         />
       </div>
       <footer class="bench-page-footer">
         <p>
-          These results describe library harnesses and local service fixtures. Measure your own
+          These results describe library harnesses and local service fixtures. Allocations measure
+          the benchmarked Go process, not backend memory usage. Measure your own
           payloads, network, concurrency, and delivery requirements before making capacity
           decisions.
         </p>
@@ -356,11 +359,6 @@ onBeforeUnmount(() => {
 }
 
 
-.bench-http-environment {
-  font: 9px/1.9 var(--gf-font-mono);
-  color: var(--gf-ink-2);
-  margin: 15px 0 0;
-}
 .bench-page-footer {
   border-top: 1px solid var(--gf-line-strong);
   margin-top: 35px;
@@ -449,9 +447,6 @@ onBeforeUnmount(() => {
   }
 
 
-  .bench-http-environment {
-    font-size: 8px;
-  }
   .bench-page-footer {
     gap: 18px;
   }
