@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
       <section id="bench-http" class="bench-http">
         <div class="bench-http-heading">
           <h2><a class="bench-section-link" href="#bench-http">Compare HTTP routers.<span aria-hidden="true">#</span></a></h2>
-          <p>Compare drivers within each chart. Each primitive measures its own operation.</p>
+          <p>Same endpoint workload, different request pipelines. httprouter focuses on routing; GoForj Web includes Echo's context and response handling plus a bridge for Web middleware.</p>
         </div>
         <div class="bench-gallery">
           <PerformanceChart
@@ -344,7 +344,8 @@ onBeforeUnmount(() => {
   margin-bottom: 14px;
 }
 .bench-http-heading > p {
-  font-size: 10px;
+  flex-basis: 100%;
+  font-size: 12px;
   line-height: 1.6;
   color: var(--gf-ink-2);
   margin: 0;
