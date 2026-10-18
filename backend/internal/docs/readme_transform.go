@@ -273,6 +273,7 @@ func claimHeadingAnchor(anchor string, used map[string]struct{}, reserved map[st
 // defaultAnchor mirrors the simple heading normalization used by the imported README pages.
 func defaultAnchor(title string) string {
 	lower := strings.ToLower(strings.TrimSpace(title))
+	lower = strings.ReplaceAll(lower, "?", "")
 	lower = strings.ReplaceAll(lower, "·", "")
 	lower = strings.ReplaceAll(lower, "—", "")
 	lower = strings.ReplaceAll(lower, "–", "")
