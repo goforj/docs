@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url'
 const docsRoot = fileURLToPath(new URL('../..', import.meta.url))
 const origin = process.argv.slice(2).find(argument => /^https?:/.test(argument)) || 'http://localhost:5190'
 const refreshArt = process.argv.includes('--refresh-art')
-const captures = [
+const captures = process.argv.includes('--performance') ? [
+  { route: '/performance-preview', selector: '.gf-performance-preview', width: 1200, height: 630, scale: 2, output: 'public/assets/goforj-performance-og-20261017.png' }
+] : [
   { route: '/site-preview', selector: '.gf-foundry-preview', width: 1200, height: 630, scale: 2, output: 'public/assets/goforj-og-20261016.png' },
   { route: '/twitter-banner.html', selector: '.banner', width: 1500, height: 500, scale: 2, output: 'public/twitter-banner.png' }
 ]
