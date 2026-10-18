@@ -200,10 +200,10 @@ onBeforeUnmount(() => {
 .foundry__actions { display:flex; gap:12px; }
 .foundry__actions a { display:flex; align-items:center; gap:22px; padding:13px 18px; font-size:13px; font-weight:550; border:1px solid var(--gf-line); border-radius:5px; white-space:nowrap; }
 .foundry__actions .foundry__primary { background:var(--gf-accent); color:var(--gf-on-accent,#fff); border-color:transparent; }
-.foundry__install { display:flex; align-items:center; gap:10px; max-width:480px; padding:11px 12px; margin-top:17px; border:1px solid var(--gf-line); border-radius:5px; background:color-mix(in srgb,var(--gf-line) 20%,transparent); font:10px var(--gf-font-mono,monospace); }
-.foundry__install > span { color:var(--gf-accent); }
-.foundry__install code { min-width:0; overflow:auto; white-space:nowrap; color:var(--gf-ink-3); font:inherit; scrollbar-width:none; }
-.foundry__install button { margin-left:auto; padding-left:10px; border-left:1px solid var(--gf-line); font-size:9px; color:var(--gf-ink-2); text-transform:uppercase; }
+.foundry__install { display:flex; align-items:center; gap:10px; max-width:100%; padding:12px 14px; margin-top:17px; border:1px solid var(--gf-line); border-radius:5px; background:color-mix(in srgb,var(--gf-line) 20%,transparent); font:16px/1.5 var(--gf-font-mono,monospace); }
+.foundry__install > span { flex-shrink:0; color:var(--gf-accent); }
+.foundry__install code { min-width:0; white-space:normal; overflow-wrap:anywhere; color:var(--gf-ink); font:inherit; }
+.foundry__install button { flex-shrink:0; margin-left:auto; padding-left:10px; border-left:1px solid var(--gf-line); font-size:11px; color:var(--gf-ink-2); text-transform:uppercase; }
 .foundry__principles { display:flex; align-items:center; flex-wrap:wrap; gap:9px; margin:24px 0 0; color:var(--gf-ink-3); font:9px var(--gf-font-mono,monospace); }
 .foundry__principles i { width:3px; height:3px; border-radius:50%; background:var(--gf-ink-3); }
 .foundry__sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
