@@ -708,6 +708,7 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <div class="gf-home-proof__stats">
 <div v-for="stat in PROOF" :key="stat.label" class="gf-home-proof__stat"><strong :data-count="stat.count" :data-suffix="stat.suffix">{{ fmt(stat.count) }}{{ stat.suffix }}</strong><span>{{ stat.label }}</span></div>
 </div>
+<a class="gf-home-text-link" href="/performance">Explore the benchmarks →</a>
 <a class="gf-home-text-link" href="https://github.com/goforj/docs/blob/main/bin/collect-proof-stats.mjs" target="_blank" rel="noreferrer noopener">How these numbers are counted →</a>
 </div>
 </div>

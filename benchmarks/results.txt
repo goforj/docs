@@ -1,0 +1,27 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/goforj/docs/benchmarks
+cpu: Apple M4 Max
+BenchmarkDatabaseRead/mysql         	    6250	    191345 ns/op	    4237 B/op	      68 allocs/op
+BenchmarkDatabaseRead/mysql         	    6276	    187311 ns/op	    4236 B/op	      68 allocs/op
+BenchmarkDatabaseRead/mysql         	    7776	    186702 ns/op	    4236 B/op	      68 allocs/op
+BenchmarkDatabaseRead/mysql         	    6962	    188104 ns/op	    4236 B/op	      68 allocs/op
+BenchmarkDatabaseRead/mysql         	    7962	    189266 ns/op	    4236 B/op	      68 allocs/op
+BenchmarkDatabaseRead/mysql         	    6870	    187648 ns/op	    4236 B/op	      68 allocs/op
+BenchmarkDatabaseRead/mysql         	    8125	    188934 ns/op	    4236 B/op	      68 allocs/op
+BenchmarkDatabaseRead/postgres      	   12090	     99535 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/postgres      	   10000	    112619 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/postgres      	   10000	    119528 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/postgres      	   10000	    124821 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/postgres      	   10000	    124906 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/postgres      	   10000	    110873 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/postgres      	   10000	    117754 ns/op	    4324 B/op	      65 allocs/op
+BenchmarkDatabaseRead/sqlite        	  107144	     11111 ns/op	    4330 B/op	      66 allocs/op
+BenchmarkDatabaseRead/sqlite        	  107074	     11028 ns/op	    4330 B/op	      66 allocs/op
+BenchmarkDatabaseRead/sqlite        	  107950	     11047 ns/op	    4330 B/op	      66 allocs/op
+BenchmarkDatabaseRead/sqlite        	  109023	     11058 ns/op	    4330 B/op	      66 allocs/op
+BenchmarkDatabaseRead/sqlite        	  108781	     11117 ns/op	    4330 B/op	      66 allocs/op
+BenchmarkDatabaseRead/sqlite        	  108652	     11026 ns/op	    4330 B/op	      66 allocs/op
+BenchmarkDatabaseRead/sqlite        	  108201	     11005 ns/op	    4330 B/op	      66 allocs/op
+PASS
+ok  	github.com/goforj/docs/benchmarks	27.197s

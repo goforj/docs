@@ -84,7 +84,7 @@ jobs:
             fi
             output="$sbom_dir/go-$generated.cdx.json"
             module_path=$(cd "$module_dir" && GOWORK=off go list -m -f '{{.Path}}')
-            cyclonedx-gomod mod -json -output "$output" "$module_dir"
+            cyclonedx-gomod mod -test -json -output "$output" "$module_dir"
             jq -e --arg module_path "$module_path" '
               .bomFormat == "CycloneDX" and
               .metadata.component.type == "application" and
