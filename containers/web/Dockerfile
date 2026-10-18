@@ -30,6 +30,8 @@ RUN --mount=type=cache,id=goforj-npm-cache,target=/root/.npm \
   npm ci --include=dev
 COPY --from=docs-generate /app/docs/ ./
 COPY --from=docs-generate /app/ai/ /app/ai/
+COPY bin/ /app/bin/
+COPY benchmarks/ /app/benchmarks/
 RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
   NODE_ENV=production npm run build
