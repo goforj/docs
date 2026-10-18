@@ -5,7 +5,11 @@ import { fileURLToPath } from 'node:url'
 const docsRoot = fileURLToPath(new URL('../..', import.meta.url))
 const origin = process.argv.slice(2).find(argument => /^https?:/.test(argument)) || 'http://localhost:5190'
 const refreshArt = process.argv.includes('--refresh-art')
-const captures = process.argv.includes('--performance') ? [
+const postName = process.argv.find(argument => argument.startsWith('--post='))?.slice('--post='.length)
+if (postName && !/^[a-z0-9][a-z0-9.-]*$/.test(postName)) throw new Error('Invalid post name')
+const captures = postName ? [
+  { route: `/social-posts/${postName}.html`, selector: '.social-post', width: 1200, height: 1050, scale: 2, output: `public/social-posts/${postName}.png` }
+] : process.argv.includes('--performance') ? [
   { route: '/performance-preview', selector: '.gf-performance-preview', width: 1200, height: 630, scale: 2, output: 'public/assets/goforj-performance-og-20261017-r2.png' }
 ] : [
   { route: '/site-preview', selector: '.gf-foundry-preview', width: 1200, height: 630, scale: 2, output: 'public/assets/goforj-og-20261016.png' },
