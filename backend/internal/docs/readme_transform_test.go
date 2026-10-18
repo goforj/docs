@@ -227,3 +227,12 @@ func TestTransformReadmeSuppressesDuplicateSearchTitle(t *testing.T) {
 		t.Fatalf("transformReadme() kept a conflicting automatic title:\n%s", got)
 	}
 }
+
+// TestRewriteHeadingAnchorsMatchesQuestionLinks keeps README links to question headings valid after import.
+func TestRewriteHeadingAnchorsMatchesQuestionLinks(t *testing.T) {
+	input := "[what the fork adds](#why-goforj-wire)\n\n## Why GoForj Wire?\n\n## Explicit question? {#source-owned}"
+	want := "[what the fork adds](#why-goforj-wire)\n\n## Why GoForj Wire? {#why-goforj-wire}\n\n## Explicit question? {#source-owned}"
+	if got := rewriteHeadingAnchors(input); got != want {
+		t.Fatalf("rewriteHeadingAnchors() = %q, want %q", got, want)
+	}
+}

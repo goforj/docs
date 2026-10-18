@@ -382,7 +382,7 @@ func resolveLocalSource(repoSlug, source string) (string, error) {
 // fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
 func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
 	sum := sha256.New()
-	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v6\n"))
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v7\n"))
 	for _, value := range []string{
 		repo.Slug,
 		repo.Title,
