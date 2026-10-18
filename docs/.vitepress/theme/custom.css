@@ -7432,3 +7432,17 @@ html:not(.dark) .gf-blog-visual {
     --gf-ink:         #FFFFFF;
     --gf-ink-2:       #A9A1B3;
 }
+
+/* Navigation menus use the darker product surface ladder to sit above the page without competing with it. */
+.VPNavBar .VPFlyout .VPMenu {
+    --vp-c-bg-elv: var(--gf-app-panel);
+    --vp-c-default-soft: var(--gf-app-hover);
+    box-shadow: var(--gf-app-shadow-raised);
+}
+
+.VPNavBar .VPFlyout .VPMenu .VPMenuLink .link:focus-visible {
+    color: var(--gf-nav);
+    background-color: var(--gf-app-hover);
+    outline: 2px solid var(--gf-nav);
+    outline-offset: -2px;
+}
