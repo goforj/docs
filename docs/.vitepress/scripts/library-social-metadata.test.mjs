@@ -55,3 +55,19 @@ for (const name of libraryFiles) {
     assert.equal(metaContent(html, 'name', 'twitter:image'), expectedLogo)
   })
 }
+
+test('performance publishes its dedicated benchmark card instead of the first library logo', () => {
+  const html = fs.readFileSync(path.join(distRoot, 'performance.html'), 'utf8')
+  const imagePath = '/assets/goforj-performance-og-20261017.png'
+  const expected = `https://goforj.dev${imagePath}`
+  assert.equal(metaContent(html, 'property', 'og:image'), expected)
+  assert.equal(metaContent(html, 'property', 'og:image:secure_url'), expected)
+  assert.equal(metaContent(html, 'name', 'twitter:image'), expected)
+  assert.equal(metaContent(html, 'name', 'twitter:card'), 'summary_large_image')
+  assert.equal(metaContent(html, 'property', 'og:image:width'), '2400')
+  assert.equal(metaContent(html, 'property', 'og:image:height'), '1260')
+  assert.ok(metaContent(html, 'property', 'og:image:alt').includes('performance benchmarks'))
+  const png = fs.readFileSync(path.join(distRoot, imagePath.slice(1)))
+  assert.equal(png.readUInt32BE(16), 2400)
+  assert.equal(png.readUInt32BE(20), 1260)
+})

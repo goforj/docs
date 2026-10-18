@@ -6,6 +6,7 @@
       ["**/index.md", "landing"],
       ["starter-kits.md", "landing"],
       ["performance.md", "landing"],
+      ["performance-preview.md", "landing"],
       ["site-preview.md", "landing"],
       ["site-preview-original.md", "landing"],
       ["hero-*.md", "landing"],
