@@ -258,6 +258,10 @@
 }
 
 .gf-home .gf-home-swap__code .gf-home-swap__tabs button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     flex: 1;
     min-height: 40px;
     padding-inline: 8px;
@@ -268,6 +272,12 @@
     background: color-mix(in srgb, var(--gf-code-chrome) 45%, transparent);
     border-color: color-mix(in srgb, var(--gf-line) 55%, transparent);
     transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.gf-home .gf-home-swap__code .gf-home-swap__tabs button svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
 }
 
 .gf-home .gf-home-swap__code .gf-home-swap__tabs button:hover {
@@ -832,7 +842,7 @@
     .gf-home .gf-home-card p { margin-top: 0 !important; }
     .gf-home .gf-home-card__more { display: none; }
     .gf-home .gf-home-swap__code .gf-home-swap__tabs { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; margin-bottom: 20px; }
-    .gf-home .gf-home-swap__code .gf-home-swap__tabs button { flex: 0 0 auto; padding-inline: 14px; }
+    .gf-home .gf-home-swap__code .gf-home-swap__tabs button { flex: 0 0 auto; gap: 6px; padding-inline: 4px; }
     .gf-home .gf-home-demo__file { padding-inline: 18px; font-size: 11px; }
     .gf-home .gf-home-swap__code pre code { padding-inline: 18px; font-size: 12.5px; }
     .gf-home .gf-home-env { font-size: 12.5px; }

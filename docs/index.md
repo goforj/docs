@@ -73,16 +73,16 @@ function setSwapMode(mode) {
 }
 
 const SWAP_TABS = [
-  { id: 'http', label: 'HTTP', file: 'internal/photos/controller.go', href: '/applications/controllers', guide: 'Write a controller' },
-  { id: 'database', label: 'Database', file: 'internal/photos/repository.go', env: 'DB_DRIVER', href: '/data/database-strategy', guide: 'Connect a database' },
-  { id: 'cache', label: 'Cache', file: 'internal/photos/feed.go', env: 'CACHE_DRIVER', href: '/data/cache-patterns', guide: 'Cache a result' },
-  { id: 'queue', label: 'Jobs', file: 'internal/photos/thumbnail_job.go', env: 'QUEUE_DRIVER', href: '/async/jobs', guide: 'Write a queue job' },
-  { id: 'events', label: 'Events', file: 'internal/photos/uploaded_subscriber.go', env: 'EVENTS_DRIVER', href: '/async/events', guide: 'Handle an event' },
-  { id: 'schedule', label: 'Schedules', file: 'internal/photos/cleanup_schedule.go', href: '/async/scheduler', guide: 'Schedule recurring work' },
-  { id: 'command', label: 'Commands', file: 'internal/photos/show_cmd.go', href: '/applications/commands', guide: 'Write an app command' },
-  { id: 'storage', label: 'Storage', file: 'internal/photos/service.go', env: 'STORAGE_PHOTOS_DRIVER', href: '/data/storage-patterns', guide: 'Store a file' },
-  { id: 'mail', label: 'Mail', file: 'internal/photos/welcome.go', env: 'MAIL_DRIVER', href: '/applications/mail', guide: 'Send a message' },
-  { id: 'testing', label: 'Testing', file: 'internal/photos/controller_test.go', href: '/testing/http-tests', guide: 'Test a controller' }
+  { id: 'http', icon: 'globe', label: 'HTTP', file: 'internal/photos/controller.go', href: '/applications/controllers', guide: 'Write a controller' },
+  { id: 'database', icon: 'database', label: 'Database', file: 'internal/photos/repository.go', env: 'DB_DRIVER', href: '/data/database-strategy', guide: 'Connect a database' },
+  { id: 'cache', icon: 'zap', label: 'Cache', file: 'internal/photos/feed.go', env: 'CACHE_DRIVER', href: '/data/cache-patterns', guide: 'Cache a result' },
+  { id: 'queue', icon: 'rows-3', label: 'Jobs', file: 'internal/photos/thumbnail_job.go', env: 'QUEUE_DRIVER', href: '/async/jobs', guide: 'Write a queue job' },
+  { id: 'events', icon: 'radio', label: 'Events', file: 'internal/photos/uploaded_subscriber.go', env: 'EVENTS_DRIVER', href: '/async/events', guide: 'Handle an event' },
+  { id: 'schedule', icon: 'clock', label: 'Schedules', file: 'internal/photos/cleanup_schedule.go', href: '/async/scheduler', guide: 'Schedule recurring work' },
+  { id: 'command', icon: 'terminal', label: 'Commands', file: 'internal/photos/show_cmd.go', href: '/applications/commands', guide: 'Write an app command' },
+  { id: 'storage', icon: 'hard-drive', label: 'Storage', file: 'internal/photos/service.go', env: 'STORAGE_PHOTOS_DRIVER', href: '/data/storage-patterns', guide: 'Store a file' },
+  { id: 'mail', icon: 'mail', label: 'Mail', file: 'internal/photos/welcome.go', env: 'MAIL_DRIVER', href: '/applications/mail', guide: 'Send a message' },
+  { id: 'testing', icon: 'shield-check', label: 'Testing', file: 'internal/photos/controller_test.go', href: '/testing/http-tests', guide: 'Test a controller' }
 ]
 
 const EXAMPLE_DETAILS = {
@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
   :aria-selected="swapTab === tab.id"
   :class="{ 'is-active': swapTab === tab.id }"
   @click="setSwapTab(tab.id)"
->{{ tab.label }}</button>
+><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="iconBody(tab.icon)"></svg><span>{{ tab.label }}</span></button>
 </div>
 <div class="gf-home-demo__window">
 <div v-if="swapTab === 'events'" class="gf-home-code-header gf-home-code-header--files" role="tablist" aria-label="Event example files" @keydown="onEventFileKeydown">
