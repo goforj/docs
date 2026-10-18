@@ -58,7 +58,7 @@ for (const name of libraryFiles) {
 
 test('performance publishes its dedicated benchmark card instead of the first library logo', () => {
   const html = fs.readFileSync(path.join(distRoot, 'performance.html'), 'utf8')
-  const imagePath = '/assets/goforj-performance-og-20261017.png'
+  const imagePath = '/assets/goforj-performance-og-20261017-r2.png'
   const expected = `https://goforj.dev${imagePath}`
   assert.equal(metaContent(html, 'property', 'og:image'), expected)
   assert.equal(metaContent(html, 'property', 'og:image:secure_url'), expected)

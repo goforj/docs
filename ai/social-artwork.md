@@ -15,7 +15,7 @@ Paths below are relative to the repository root.
 | Foundry scene | `docs/.vitepress/theme/components/goforj-foundry-scene.js`, `GoForjHeroFoundry.vue` | `/hero-foundry` |
 | Shared transparent artwork | Capture script with `--refresh-art` | `docs/public/assets/foundry-social.png`, 3000 by 2490 |
 | Social preview | `docs/.vitepress/theme/components/SitePreview.vue` | `/site-preview`; `docs/public/assets/goforj-og-20261016.png`, 2400 by 1260 |
-| Performance preview | `docs/.vitepress/theme/components/PerformancePreview.vue`, recorded `performance-stats.json` | `/performance-preview`; `docs/public/assets/goforj-performance-og-20261017.png`, 2400 by 1260 |
+| Performance preview | `docs/.vitepress/theme/components/PerformancePreview.vue`, recorded `performance-stats.json` | `/performance-preview`; `docs/public/assets/goforj-performance-og-20261017-r2.png`, 2400 by 1260 |
 | Profile banner | `docs/public/twitter-banner.html` | `docs/public/twitter-banner.png`, 3000 by 1000 |
 | Comparison page | `docs/public/social-preview-comparison.html` | `/social-preview-comparison.html` |
 
@@ -43,7 +43,7 @@ To regenerate only the performance page's preview, without changing the shared p
 node docs/.vitepress/scripts/capture-social-previews.mjs http://localhost:5190 --performance
 ```
 
-This composition uses original library logos, Foundry typography and colors, and the recorded HTTP URL-ID workload. Its bars use a linear scale and show the same median timings as the page. After refreshing benchmark data, regenerate this export too. The performance page sets its own `ogImage`, alt text, and dimensions in `docs/performance.md`; update those and the capture output together when changing its filename. Keep this dedicated image separate from library-logo previews and the global site fallback.
+This composition uses original library logos, Foundry typography and colors, and the recorded HTTP URL-ID workload. Its bars use a linear scale and show the same median timings as the page. After refreshing benchmark data, regenerate this export too. The performance page sets its own `ogImage`, alt text, and dimensions in `docs/performance.md`; update those and the capture output together when changing its filename. Keep this dedicated image separate from library-logo previews and the global site fallback. Retain earlier performance exports so existing shared image URLs remain available.
 
 The refresh step loads `/hero-foundry`, selects reduced motion for a stable scene, renders it at 3000 by 2490, and captures transparency before composing the preview and banner. Playwright and Chrome must be available. The script waits for scene readiness, canvas dimensions, image decoding, and fonts.
 
