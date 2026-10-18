@@ -200,9 +200,9 @@ onBeforeUnmount(() => {
 .foundry__actions { display:flex; gap:12px; }
 .foundry__actions a { display:flex; align-items:center; gap:22px; padding:13px 18px; font-size:13px; font-weight:550; border:1px solid var(--gf-line); border-radius:5px; white-space:nowrap; }
 .foundry__actions .foundry__primary { background:var(--gf-accent); color:var(--gf-on-accent,#fff); border-color:transparent; }
-.foundry__install { display:flex; align-items:center; gap:8px; max-width:100%; padding:12px; margin-top:17px; border:1px solid var(--gf-line); border-radius:5px; background:color-mix(in srgb,var(--gf-line) 20%,transparent); font:15px/1.5 var(--gf-font-mono,monospace); }
+.foundry__install { display:flex; align-items:center; gap:8px; width:max-content; max-width:calc(100vw - 96px); padding:12px; margin-top:17px; border:1px solid var(--gf-line); border-radius:5px; background:color-mix(in srgb,var(--gf-line) 20%,transparent); font:15px/1.5 var(--gf-font-mono,monospace); }
 .foundry__install > span { flex-shrink:0; color:var(--gf-accent); }
-.foundry__install code { min-width:0; white-space:normal; overflow-wrap:anywhere; color:var(--gf-ink); font:inherit; }
+.foundry__install code { min-width:0; white-space:nowrap; overflow-x:auto; color:var(--gf-ink); font:inherit; }
 .foundry__install button { flex-shrink:0; margin-left:auto; padding-left:10px; border-left:1px solid var(--gf-line); font-size:11px; color:var(--gf-ink-2); text-transform:uppercase; }
 .foundry__principles { display:flex; align-items:center; flex-wrap:wrap; gap:9px; margin:24px 0 0; color:var(--gf-ink-3); font:9px var(--gf-font-mono,monospace); }
 .foundry__principles i { width:3px; height:3px; border-radius:50%; background:var(--gf-ink-3); }
@@ -263,6 +263,7 @@ onBeforeUnmount(() => {
   .foundry__principles { margin-top:20px; }
 }
 @media (max-width:1100px) and (min-width:801px) {
+  .foundry__install { max-width:100%; }
   .foundry__hero { grid-template-columns:38% minmax(0,1fr); }
   .foundry__sidebar { padding-left:28px; padding-right:12px; }
   .foundry h1 { font-size:clamp(28px,3.45vw,38px); }
