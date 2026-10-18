@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Wire v1.3.0: less manual wiring</title>
+<link rel="stylesheet" href="/design-system.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}
+.social-post{width:1200px;height:1050px;padding:48px 64px;position:relative;background:var(--gf-ground-deep);color:var(--gf-ink);font-family:var(--gf-font-body);overflow:hidden}
+.brand{display:flex;align-items:center;gap:14px;font-family:var(--gf-font-display);font-size:29px;font-weight:600}.brand img{width:34px;height:34px}.version{margin-left:auto;color:#ff8257;font:22px var(--gf-font-mono)}
+h1{font-family:var(--gf-font-display);font-size:68px;line-height:1.04;letter-spacing:-.045em;font-weight:600;margin:31px 0 22px}h1 span{color:#ff8257}.context{font-size:27px;color:var(--gf-ink-2);margin:0;line-height:1.5}
+.scene{position:relative;height:469px;margin:24px -15px 0;isolation:isolate}.scene:before{content:"";position:absolute;inset:24px 230px 0;background:radial-gradient(ellipse,#ff825715,transparent 65%);z-index:-1}.connections{position:absolute;inset:0;width:1102px;height:469px;z-index:-1}.connections path{stroke:#332838;stroke-width:13;fill:none}.connections .signal{stroke:#ff8257;stroke-width:3}.connections .out{stroke:#9bd7c4}
+.file{position:absolute;border:1px solid #4c3b4f;border-radius:12px;background:linear-gradient(145deg,#231b29,#17121c);box-shadow:8px 9px 0 #100c14,9px 10px 0 #332838,0 24px 40px #0004;overflow:hidden}.manual{left:15px;top:35px;width:455px;transform:rotate(-2deg)}.filehead{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid #3d3349;color:#ffab8f;font-size:24px;font-weight:500}.filehead svg{flex-shrink:0;width:22px;height:26px}.manual pre{margin:0;padding:24px 22px;font:21px/1.85 var(--gf-font-mono);color:#e4dde8}.fn{color:#ffc24d}.kw{color:#ff8a6b}
+.wire{position:absolute;top:109px;left:480px;width:245px;text-align:center}.wire img{width:245px;height:245px;object-fit:contain;filter:drop-shadow(0 15px 18px #0005)}.tool{font:18px var(--gf-font-mono);color:#a9a1b3;margin-top:9px}
+.generated{right:15px;top:49px;width:333px;transform:rotate(2deg);border-color:#416452;box-shadow:8px 9px 0 #100f14,9px 10px 0 #253b33,0 24px 40px #0004}.generated .filehead{color:#9bd7c4}.generated pre{margin:0;padding:24px 19px;font:24px/1.6 var(--gf-font-mono);color:#e4dde8}.generated .fn{color:#9bd7c4}.providers{padding:16px 19px 22px;border-top:1px solid #3d3349;color:#a9a1b3;font-size:18px;line-height:1.5}.providers code{white-space:pre;display:block;margin-top:12px;color:#e4dde8;font:16px/1.7 var(--gf-font-mono)}.phase{position:absolute;bottom:0;font-size:21px;color:#a9a1b3}.phase.one{left:35px}.phase.two{right:43px}
+.result{border-top:1px solid #3d3349;margin-top:20px;padding-top:24px;display:flex;align-items:flex-start;gap:24px}.result svg{flex-shrink:0;width:33px;height:33px;color:#9bd7c4;margin-top:2px}.result h2{font:500 27px var(--gf-font-display);margin:0 0 7px;color:#fff}.result p{font-size:22px;color:#a9a1b3;margin:0;line-height:1.45}.release{display:flex;gap:20px;align-items:center;margin-top:16px;color:#a9a1b3;font-size:21px;line-height:1.4}.release strong{color:#ff8257;font:20px var(--gf-font-mono);white-space:nowrap}
+footer{position:absolute;bottom:35px;left:64px;right:64px;display:flex;justify-content:space-between;font:19px var(--gf-font-mono);color:var(--gf-ink-2)}
+</style>
+</head>
+<body>
+<main class="social-post">
+<div class="brand"><img src="/favicon-seam-dark.svg" alt=""><span>GoForj</span><span class="version">Wire v1.3.0</span></div>
+<h1>More dependencies.<br><span>Less manual wiring.</span></h1>
+<p class="context">Declare the providers. Let Wire generate the constructor calls.</p>
+<div class="scene" role="img" aria-label="Seven lines of manual constructor calls become a two-line Wire injector, using a provider set that registers the same six constructors.">
+<svg class="connections" viewBox="0 0 1102 469" aria-hidden="true"><path d="M440 241 H469 Q482 241 496 222 L515 200"/><path class="signal" d="M440 241 H469 Q482 241 496 222 L515 200"/><path d="M709 226 H725 Q743 226 743 208 V182 Q743 169 768 169"/><path class="signal out" d="M709 226 H725 Q743 226 743 208 V182 Q743 169 768 169"/></svg>
+<section class="manual file"><div class="filehead"><svg viewBox="0 0 22 26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 1h12l6 6v18H2zM14 1v7h6"/></svg>Manual injector</div><pre>db := <span class="fn">NewDB</span>(cfg)
+cache := <span class="fn">NewCache</span>(cfg)
+repo := <span class="fn">NewRepo</span>(db)
+svc := <span class="fn">NewService</span>(repo, cache)
+api := <span class="fn">NewAPI</span>(svc, logger)
+app := <span class="fn">NewApp</span>(api, logger)
+<span class="kw">return</span> app</pre></section>
+<div class="wire"><img src="/social-posts/wire-logo.png" alt="Original Wire gopher connecting components"><div class="tool">Code generation</div></div>
+<section class="generated file"><div class="filehead"><svg viewBox="0 0 22 26" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 1h12l6 6v18H2zM14 1v7h6"/></svg>Wire injector</div><pre>wire.<span class="fn">Build</span>(AppSet)
+<span class="kw">return</span> nil</pre><div class="providers">Providers registered once:<code>wire.NewSet(
+  NewDB, NewCache, NewRepo,
+  NewService, NewAPI, NewApp,
+)</code></div></section>
+<div class="phase one">Constructor calls you keep in sync</div><div class="phase two">Provider graph Wire resolves</div>
+</div>
+<section class="result"><svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 18 8 8 16-18"/></svg><div><h2>Same constructors. Plain generated Go.</h2><p>Wire writes the calls. Your application runs ordinary Go.</p></div></section>
+<div class="release"><strong>NEW IN v1.3.0</strong><span>Workspace cache fixes and project-owned go tool wire generation.</span></div>
+<footer><span>github.com/goforj/wire</span><span>Go 1.25+ / goforj.dev</span></footer>
+</main>
+</body>
+</html>

@@ -86,3 +86,21 @@ Open the comparison page and inspect the actual exported PNGs. Confirm transpare
 Run `npm run build` from `docs/`, then inspect the built homepage and starter-kit Open Graph and Twitter metadata. The built-link and search audits run through the normal build hooks. Report any unrelated build blocker rather than silently treating a partial build as a complete pass.
 
 Local capture does not publish the assets, deploy the site, or upload a banner to a social account. Carry out those actions only within the user's requested scope. Report which files were prepared and whether they are committed, deployed, or uploaded.
+
+## Library Release Posts
+
+Library posts can use a focused code comparison instead of the Foundry scene.
+The source lives in `docs/public/social-posts/<name>.html`, with a `.social-post`
+root at 1200 by 1050 CSS pixels. Use the live design-system CSS, its display/body/mono
+fonts, and the original library logo. Preserve the logo file unchanged.
+
+Capture a post without regenerating the site preview or banner:
+
+```bash
+node docs/.vitepress/scripts/capture-social-previews.mjs http://localhost:5190 --post=wire-v1.3.0
+```
+
+This launches a separate headless browser, waits for fonts and images, and exports
+`docs/public/social-posts/wire-v1.3.0.png` at 2400 by 2100. Inspect the complete
+export and a 375px-wide rendering before attaching it. Keep post copy, source
+links, schedule, and alt text in `ai/social-posts.md`.

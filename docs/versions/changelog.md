@@ -37,6 +37,16 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.29.0
+
+Released October 18, 2026.
+
+- Added MySQL and PostgreSQL development Compose profiles, preserving existing service selection on the first rerender of older projects.
+- Adopted Web v0.6.4 with Echo 5.4 security fixes and fewer middleware allocations, updated library and frontend dependencies, and fixed zstd decoder crashes.
+- Stabilized Wire parallelism and Lighthouse command-routing tests.
+
+Requires Go 1.26 or newer. Review the [release notes and upgrade guidance](https://github.com/goforj/goforj/releases/tag/v0.29.0), especially HTTP proxy trust and database profile behavior, before upgrading.
+
 ## v0.27.1
 
 Released September 3, 2026.
