@@ -70,7 +70,10 @@ docs-embed: ##@documentation Copy built docs into backend embed folder
 	@mkdir -p backend/frontend/dist
 	@cp -R docs/.vitepress/dist/. backend/frontend/dist/
 
-docs-package: ##@documentation Generate + build docs and stage for backend
+docs-release-refresh: ##@documentation Refresh latest published framework version
+	@node bin/refresh-release.mjs
+
+docs-package: docs-release-refresh ##@documentation Generate + build docs and stage for backend
 	@$(MAKE) docs-generate
 	@$(MAKE) docs-build
 	@$(MAKE) docs-embed
@@ -86,6 +89,7 @@ docker-build-prod: ##@docker Build the production web image
 	@docker buildx build \
 		-f containers/web/Dockerfile \
 		--build-arg GA_MEASUREMENT_ID=$(GA_MEASUREMENT_ID) \
+		--build-arg RELEASE_METADATA_REFRESH=$(shell date -u +%Y%m%d%H%M%S) \
 		-t $(DOCKER_PROD_IMAGE) \
 		$(if $(filter 1 true yes,$(DOCKER_PROD_PUSH)),--push,--load) \
 		.

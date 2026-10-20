@@ -2,12 +2,12 @@
 import evidence from '../../data/performance-stats.json'
 import PerformanceLogo from './PerformanceLogo.vue'
 import { performanceColors } from './performance-colors.js'
-import web from '../../../assets/performance/web-logo.png'
-import cache from '../../../assets/performance/cache-logo.png'
-import queue from '../../../assets/performance/queue-logo.png'
-import events from '../../../assets/performance/events-logo.png'
-import storage from '../../../assets/performance/storage-logo.png'
-import mail from '../../../assets/performance/mail-logo.png'
+import web from '../../../assets/performance/web-logo.webp'
+import cache from '../../../assets/performance/cache-logo.webp'
+import queue from '../../../assets/performance/queue-logo.webp'
+import events from '../../../assets/performance/events-logo.webp'
+import storage from '../../../assets/performance/storage-logo.webp'
+import mail from '../../../assets/performance/mail-logo.webp'
 
 const rows = [...evidence.web.scenarios.find(scenario => scenario.id === 'path_param_json').rows]
   .sort((a, b) => a.nsOp - b.nsOp)

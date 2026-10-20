@@ -2,12 +2,12 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import evidence from '../../data/performance-stats.json'
 import PerformanceChart from './PerformanceChart.vue'
-import cacheLogo from '../../../assets/performance/cache-logo.png'
-import queueLogo from '../../../assets/performance/queue-logo.png'
-import eventsLogo from '../../../assets/performance/events-logo.png'
-import storageLogo from '../../../assets/performance/storage-logo.png'
-import webLogo from '../../../assets/performance/web-logo.png'
-import mailLogo from '../../../assets/performance/mail-logo.png'
+import cacheLogo from '../../../assets/performance/cache-logo.webp'
+import queueLogo from '../../../assets/performance/queue-logo.webp'
+import eventsLogo from '../../../assets/performance/events-logo.webp'
+import storageLogo from '../../../assets/performance/storage-logo.webp'
+import webLogo from '../../../assets/performance/web-logo.webp'
+import mailLogo from '../../../assets/performance/mail-logo.webp'
 const environmentFor = id => {
   const snapshot = evidence.sources.find(source => source.repo === id)
   const metadata = { web: evidence.web.metadata, mail: evidence.mail.metadata, database: evidence.local.metadata }[id]

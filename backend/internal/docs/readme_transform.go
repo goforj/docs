@@ -22,8 +22,45 @@ func transformReadme(readme string, repo RepoConfig, rawBase string) string {
 	updated := rewriteImageLinks(readme, rawBase)
 	updated = rewriteMarkdownLinks(updated, repo)
 	updated = appendFrameworkGuide(updated, repo.FrameworkGuide)
+	updated = libraryPageHeading(updated, repo)
 	updated = rewriteHeadingAnchors(updated)
 	return withFrontmatter(repo, updated)
+}
+
+// libraryPageHeading gives standalone references one primary heading while retaining README section anchors.
+func libraryPageHeading(content string, repo RepoConfig) string {
+	title := repo.Title
+	if title == "" {
+		title = repo.Slug
+	}
+	lines := strings.Split(content, "\n")
+	fence := ""
+	primary := false
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			marker := trimmed[:len(trimmed)-len(strings.TrimLeft(trimmed, string(trimmed[0])))]
+			if fence == "" {
+				fence = marker
+			} else if marker[0] == fence[0] && len(marker) >= len(fence) && strings.TrimSpace(trimmed[len(marker):]) == "" {
+				fence = ""
+			}
+			continue
+		}
+		if fence == "" && strings.HasPrefix(line, "# ") {
+			heading := strings.TrimSpace(strings.TrimPrefix(line, "# "))
+			if !primary && (strings.EqualFold(heading, title) || strings.EqualFold(heading, "GoForj "+title)) {
+				lines[i] = "# " + title + " Library for Go {#" + defaultAnchor(heading) + "}"
+				primary = true
+			} else {
+				lines[i] = "#" + line
+			}
+		}
+	}
+	if primary {
+		return strings.Join(lines, "\n")
+	}
+	return "# " + title + " Library for Go\n\n" + strings.Join(lines, "\n")
 }
 
 // appendFrameworkGuide keeps framework-specific guidance out of standalone source READMEs while preserving navigation in the docs projection.
@@ -200,7 +237,21 @@ func rewriteHeadingAnchors(content string) string {
 	lines := strings.Split(content, "\n")
 	explicitAnchors := explicitHeadingAnchorCounts(lines)
 	used := map[string]struct{}{}
+	fence := ""
 	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			marker := trimmed[:len(trimmed)-len(strings.TrimLeft(trimmed, string(trimmed[0])))]
+			if fence == "" {
+				fence = marker
+			} else if marker[0] == fence[0] && len(marker) >= len(fence) && strings.TrimSpace(trimmed[len(marker):]) == "" {
+				fence = ""
+			}
+			continue
+		}
+		if fence != "" {
+			continue
+		}
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
 			level := matches[1]
 			anchor := normalizeHeadingAnchor(matches[2])
@@ -283,38 +334,21 @@ func defaultAnchor(title string) string {
 	return strings.Trim(lower, "-")
 }
 
-// withFrontmatter suppresses the synthetic search title when imported content already owns that anchor.
+// withFrontmatter identifies standalone references and lets the primary heading own the search title.
 func withFrontmatter(repo RepoConfig, content string) string {
 	title := repo.Title
 	if title == "" {
 		title = repo.Slug
 	}
 	repoURL := strings.TrimSuffix(repo.CloneURL, ".git")
-	autoTitle := ""
-	if hasHeadingAnchor(content, defaultAnchor(title)) {
-		autoTitle = "noAutoTitle: true\n"
-	}
+	autoTitle := "noAutoTitle: true\n"
 	frontmatter := fmt.Sprintf(
 		"---\ntitle: %s\ndescription: %s\nrepoSlug: %s\nrepoUrl: %s\n%s---\n\n",
-		title,
+		title+" Library for Go",
 		strconv.Quote(repo.Description),
 		repo.Slug,
 		repoURL,
 		autoTitle,
 	)
 	return frontmatter + content
-}
-
-// hasHeadingAnchor detects title ownership after heading IDs have been normalized for VitePress.
-func hasHeadingAnchor(content string, anchor string) bool {
-	if anchor == "" {
-		return false
-	}
-	for _, line := range strings.Split(content, "\n") {
-		matches := headingWithIDRegex.FindStringSubmatch(line)
-		if len(matches) == 4 && matches[3] == anchor {
-			return true
-		}
-	}
-	return false
 }

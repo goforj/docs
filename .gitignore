@@ -13,6 +13,9 @@
 
 backend/frontend/dist/
 /bin/*
+!/bin/refresh-release.mjs
+!/bin/refresh-release.test.mjs
+!/bin/export-performance-logos.sh
 !/bin/collect-proof-stats.mjs
 !/bin/collect-performance-stats.mjs
 !/bin/performance-data.mjs

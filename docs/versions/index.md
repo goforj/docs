@@ -13,7 +13,7 @@ GoForj is still pre-`v1.0`, but the project has a real development history. The 
 
 `%%LATEST_RELEASE%%` is the latest tagged framework release. The root documentation follows `main` and may describe work that has not reached a tagged release yet.
 
-Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [%%LATEST_RELEASE%%](/versions/changelog#%%LATEST_RELEASE_ANCHOR%%) for the released behavior.
+Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [%%LATEST_RELEASE%%](https://github.com/goforj/goforj/releases/tag/%%LATEST_RELEASE%%) for the released behavior.
 
 ## Historical Milestones
 

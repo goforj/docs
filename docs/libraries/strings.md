@@ -1,9 +1,12 @@
 ---
-title: Strings
+title: Strings Library for Go
 description: "Rune-safe string construction, matching, transformation, and inflection helpers."
 repoSlug: str
 repoUrl: https://github.com/goforj/str
+noAutoTitle: true
 ---
+
+# Strings Library for Go {#strings-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/str/main/docs/images/logo.png" width="300" alt="str logo">
@@ -14,25 +17,25 @@ repoUrl: https://github.com/goforj/str
 </p>
 
 <p align="center">
-    <a href="https://pkg.go.dev/github.com/goforj/str/v2"><img src="https://pkg.go.dev/badge/github.com/goforj/str/v2.svg" alt="Go Reference"></a>
+    <a href="https://pkg.go.dev/github.com/goforj/str/v3"><img src="https://pkg.go.dev/badge/github.com/goforj/str/v3.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/str/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/str/actions"><img src="https://github.com/goforj/str/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
     <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.24%2B-blue?logo=go" alt="Go 1.24 or newer"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/str?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/str"><img src="https://codecov.io/github/goforj/str/graph/badge.svg?token=9KT46ZORP3" alt="Coverage"></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-281-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-417-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
 </p>
 
-`str` wraps a Go string so cleanup and transformation steps can be chained from left to right. Method names follow the standard library where possible, and operations that count, slice, or pad text work in runes rather than bytes.
+`str` wraps a Go string so cleanup and transformation steps can be chained from left to right. Standard-named operations follow Go's `strings` contracts, including byte indexes, empty searches, and iterators. Application helpers such as `Slice`, `Take`, and padding remain rune-based.
 
 ## Installation {#installation}
 
-Requires Go 1.24 or newer.
+Requires Go 1.24 or newer. Version 3 changes existing signatures and behavior; see the [v2 to v3 migration guide](https://github.com/goforj/str/blob/main/MIGRATING.md).
 
 ```sh
-go get github.com/goforj/str/v2
+go get github.com/goforj/str/v3
 ```
 
 ## Quick start {#quick-start}
@@ -43,11 +46,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/goforj/str/v2"
+	"github.com/goforj/str/v3"
 )
 
 func main() {
-	result := str.Of("  welcome_to_go  ").Trim().Headline().String()
+	result := str.Of("  welcome_to_go  ").TrimSpace().Headline().String()
 	fmt.Println(result) // Welcome to Go
 }
 ```
@@ -56,15 +59,15 @@ func main() {
 
 `str` keeps the API deliberately small. These rules decide what belongs:
 
-- **Chains come first.** Start with `str.Of`. Methods that change text return a new `str.String`, so the chain can continue. Checks, counts, parsers, and splits return ordinary Go values.
+- **Chains come first.** Start with `str.Of` or `str.Join`. Methods that change text return a new `str.String`, so the chain can continue. Checks, counts, parsers, and splits return ordinary Go values.
 - **One job, one name.** There are no aliases or compatibility shims. If two names mean the same thing, keep the clearer one.
-- **Use Go's words.** When the standard library already names an operation, use the same name and argument order.
-- **Work in runes.** Character positions, counts, slices, padding, and case changes handle Unicode text instead of UTF-8 bytes unless the method says otherwise.
-- **Do not hide edge cases.** Empty searches do not match, replacing an empty search does nothing, and parsing or pattern errors are returned to the caller.
-- **Every method earns its place.** It must solve a common application problem or make a chain meaningfully clearer. Narrow, project-specific rules belong elsewhere.
+- **Preserve Go's contracts.** Standard-named operations retain argument order and behavior. The source string becomes the receiver and a single string result becomes `String`; multiple results, slices, and iterators retain their standard types. `Join(elements, sep)` starts a chain.
+- **Keep units explicit.** `Index`, `LastIndex`, and the other standard index operations return byte offsets. Application helpers such as `Slice`, `Take`, and padding use runes. Never pass a byte index directly to a rune-based helper.
+- **Preserve edge cases.** Standard searches match empty strings, empty replacement searches insert at UTF-8 boundaries, and negative `Repeat` counts panic. Parsers and pattern operations return errors as documented.
+- **Keep the scope clear.** The Go 1.27 string-function surface is available on Go 1.24, including a `CutLast` backport. Stateful `strings.Builder`, `strings.Reader`, and `strings.Replacer` remain in the standard library. Additional helpers solve common application problems.
 - **Examples must keep working.** Every public operation has a generated example, and the test suite runs each one and checks its output.
 
-## Why not just the standard library? {#why-not-just-the-standard-library?}
+## Why not just the standard library? {#why-not-just-the-standard-library}
 
 Often, you should. Go's `strings`, `unicode`, `strconv`, and `regexp` packages are the right choice when you only need one or two operations. This is already clear:
 
@@ -76,7 +79,7 @@ username := strings.ToLower(strings.TrimSpace("  GoForj_Admin  "))
 The same cleanup with `str` reads from left to right:
 
 ```go
-username := str.Of("  GoForj_Admin  ").Trim().ToLower().String()
+username := str.Of("  GoForj_Admin  ").TrimSpace().ToLower().String()
 // goforj_admin
 ```
 
@@ -104,10 +107,10 @@ Using `str`:
 ```go
 func configKey(name string) string {
 	return str.Of(name).
-		Trim().
+		TrimSpace().
 		ToUpper().
 		ReplaceAll("-", "_").
-		TrimChars("_").
+		Trim("_").
 		EnsurePrefix("APP_").
 		String()
 }
@@ -123,13 +126,13 @@ func exportFilename(reportTitle string) string {
 		ReplaceAll("&", "and").
 		Slug().
 		Take(64).
-		TrimChars("-").
+		Trim("-").
 		EnsurePrefix("report-").
 		EnsureSuffix(".csv").
 		String()
 }
 
-filename := exportFilename("Q3 Sales & Returns — North America")
+filename := exportFilename("Q3 Sales & Returns - North America")
 // report-q3-sales-and-returns-north-america.csv
 ```
 
@@ -141,15 +144,15 @@ filename := exportFilename("Q3 Sales & Returns — North America")
 
 These comparisons measure equivalent standard-library and `str` operations. Each cell reports the median of 10 samples as `ns/op · B/op · allocs/op`.
 
-Recorded with `go1.26.1` on `linux/arm64` using `-cpu=1` (`GOMAXPROCS=1`).
+Recorded with `go1.27.0` on `linux/arm64` using `-cpu=1` (`GOMAXPROCS=1`).
 
 | Workload | Standard library | `str` chain |
 | --- | ---: | ---: |
-| Trim | 3.2 ns/op · 0 B/op · 0 allocs/op | 3.2 ns/op · 0 B/op · 0 allocs/op |
-| ToLower | 61.2 ns/op · 32 B/op · 1 allocs/op | 63.0 ns/op · 32 B/op · 1 allocs/op |
-| NormalizeSpace (Fields + Join) | 191.6 ns/op · 208 B/op · 2 allocs/op | 185.2 ns/op · 80 B/op · 1 allocs/op |
-| Trim → ToLower | 71.8 ns/op · 32 B/op · 1 allocs/op | 69.3 ns/op · 32 B/op · 1 allocs/op |
-| ReplaceAll × 3 | 136.6 ns/op · 96 B/op · 3 allocs/op | 133.1 ns/op · 96 B/op · 3 allocs/op |
+| TrimSpace | 3.2 ns/op · 0 B/op · 0 allocs/op | 3.2 ns/op · 0 B/op · 0 allocs/op |
+| ToLower | 64.4 ns/op · 32 B/op · 1 allocs/op | 65.6 ns/op · 32 B/op · 1 allocs/op |
+| NormalizeSpace (Fields + Join) | 208.8 ns/op · 208 B/op · 2 allocs/op | 188.1 ns/op · 80 B/op · 1 allocs/op |
+| TrimSpace → ToLower | 66.9 ns/op · 32 B/op · 1 allocs/op | 69.2 ns/op · 32 B/op · 1 allocs/op |
+| ReplaceAll × 3 | 131.6 ns/op · 96 B/op · 3 allocs/op | 144.1 ns/op · 96 B/op · 3 allocs/op |
 
 Timing is machine-specific; use it to understand the scale of these operations, not as a universal speed claim. Treat small timing differences within the raw sample spread as noise. Allocation counts are less sensitive to machine speed and show how much heap work each composition performs. In these workloads, wrapping and unwrapping added no heap allocations; allocations came from transformations that produced new text. `NormalizeSpace` is algorithmically different: the standard-library composition builds a field slice before joining it, while `str` uses one builder pass.
 
@@ -160,14 +163,14 @@ The [benchmark source](https://github.com/goforj/str/blob/main/string_benchmark_
 
 ## API index {#api-index}
 
-The full API and these examples are also available on [pkg.go.dev](https://pkg.go.dev/github.com/goforj/str/v2).
+The full API and these examples are also available on [pkg.go.dev](https://pkg.go.dev/github.com/goforj/str/v3).
 
 | Group | API |
 | --- | --- |
 | Affixes | [EnsurePrefix](#ensureprefix) · [EnsureSuffix](#ensuresuffix) · [TrimPrefix](#trimprefix) · [TrimSuffix](#trimsuffix) · [Unwrap](#unwrap) · [Wrap](#wrap) |
-| Case | [Camel](#camel) · [Headline](#headline) · [Kebab](#kebab) · [LcFirst](#lcfirst) · [Pascal](#pascal) · [Snake](#snake) · [Title](#title) · [ToLower](#tolower) · [ToUpper](#toupper) · [UcFirst](#ucfirst) |
+| Case | [Camel](#camel) · [Headline](#headline) · [Kebab](#kebab) · [LcFirst](#lcfirst) · [Pascal](#pascal) · [Snake](#snake) · [Title](#title) · [ToLower](#tolower) · [ToLowerSpecial](#tolowerspecial) · [ToTitle](#totitle) · [ToTitleSpecial](#totitlespecial) · [ToUpper](#toupper) · [ToUpperSpecial](#toupperspecial) · [UcFirst](#ucfirst) |
 | Checks | [IsASCII](#isascii) · [IsAlnum](#isalnum) · [IsAlpha](#isalpha) · [IsBlank](#isblank) · [IsEmpty](#isempty) · [IsNumeric](#isnumeric) |
-| Cleanup | [Deduplicate](#deduplicate) · [NormalizeNewlines](#normalizenewlines) · [NormalizeSpace](#normalizespace) · [Trim](#trim) · [TrimChars](#trimchars) · [TrimLeft](#trimleft) · [TrimRight](#trimright) |
+| Cleanup | [Deduplicate](#deduplicate) · [NormalizeNewlines](#normalizenewlines) · [NormalizeSpace](#normalizespace) · [Trim](#trim) · [TrimFunc](#trimfunc) · [TrimLeft](#trimleft) · [TrimLeftFunc](#trimleftfunc) · [TrimRight](#trimright) · [TrimRightFunc](#trimrightfunc) · [TrimSpace](#trimspace) |
 | Comparison | [EqualFold](#equalfold) |
 | Compose | [Append](#append) · [Prepend](#prepend) |
 | Constructor | [Of](#of) |
@@ -179,13 +182,13 @@ The full API and these examples are also available on [pkg.go.dev](https://pkg.g
 | Match | [Match](#match) |
 | Padding | [PadBoth](#padboth) · [PadLeft](#padleft) · [PadRight](#padright) |
 | Pluralize | [Plural](#plural) · [Singular](#singular) |
-| Replace | [Remove](#remove) · [ReplaceAll](#replaceall) · [ReplaceArray](#replacearray) · [ReplaceFirst](#replacefirst) · [ReplaceFold](#replacefold) · [ReplaceLast](#replacelast) · [ReplacePrefix](#replaceprefix) · [ReplaceSuffix](#replacesuffix) · [Swap](#swap) |
-| Search | [Contains](#contains) · [ContainsFold](#containsfold) · [Count](#count) · [HasPrefix](#hasprefix) · [HasPrefixFold](#hasprefixfold) · [HasSuffix](#hassuffix) · [HasSuffixFold](#hassuffixfold) · [Index](#index) · [LastIndex](#lastindex) |
+| Replace | [Remove](#remove) · [Replace](#replace) · [ReplaceAll](#replaceall) · [ReplaceArray](#replacearray) · [ReplaceFirst](#replacefirst) · [ReplaceFold](#replacefold) · [ReplaceLast](#replacelast) · [ReplacePrefix](#replaceprefix) · [ReplaceSuffix](#replacesuffix) · [Swap](#swap) |
+| Search | [Compare](#compare) · [Contains](#contains) · [ContainsAny](#containsany) · [ContainsFold](#containsfold) · [ContainsFunc](#containsfunc) · [ContainsRune](#containsrune) · [Count](#count) · [HasPrefix](#hasprefix) · [HasPrefixFold](#hasprefixfold) · [HasSuffix](#hassuffix) · [HasSuffixFold](#hassuffixfold) · [Index](#index) · [IndexAny](#indexany) · [IndexByte](#indexbyte) · [IndexFunc](#indexfunc) · [IndexRune](#indexrune) · [LastIndex](#lastindex) · [LastIndexAny](#lastindexany) · [LastIndexByte](#lastindexbyte) · [LastIndexFunc](#lastindexfunc) |
 | Slug | [Slug](#slug) |
 | Snippet | [Excerpt](#excerpt) |
-| Split | [Lines](#lines) · [Split](#split) |
-| Substrings | [After](#after) · [AfterLast](#afterlast) · [Before](#before) · [BeforeLast](#beforelast) · [Between](#between) · [CharAt](#charat) · [CommonPrefix](#commonprefix) · [CommonSuffix](#commonsuffix) · [Limit](#limit) · [Slice](#slice) · [SubstrReplace](#substrreplace) · [Take](#take) · [TakeLast](#takelast) |
-| Transform | [Repeat](#repeat) · [Reverse](#reverse) |
+| Split | [Fields](#fields) · [FieldsFunc](#fieldsfunc) · [FieldsFuncSeq](#fieldsfuncseq) · [FieldsSeq](#fieldsseq) · [Lines](#lines) · [Split](#split) · [SplitAfter](#splitafter) · [SplitAfterN](#splitaftern) · [SplitAfterSeq](#splitafterseq) · [SplitN](#splitn) · [SplitSeq](#splitseq) |
+| Substrings | [After](#after) · [AfterLast](#afterlast) · [Before](#before) · [BeforeLast](#beforelast) · [Between](#between) · [CharAt](#charat) · [CommonPrefix](#commonprefix) · [CommonSuffix](#commonsuffix) · [Cut](#cut) · [CutLast](#cutlast) · [CutPrefix](#cutprefix) · [CutSuffix](#cutsuffix) · [Limit](#limit) · [Slice](#slice) · [SubstrReplace](#substrreplace) · [Take](#take) · [TakeLast](#takelast) |
+| Transform | [Clone](#clone) · [Map](#map) · [Repeat](#repeat) · [Reverse](#reverse) · [ToValidUTF8](#tovalidutf8) |
 | Words | [FirstWord](#firstword) · [Initials](#initials) · [Join](#join) · [LastWord](#lastword) · [SplitWords](#splitwords) · [WordCount](#wordcount) · [Words](#words) · [WrapWords](#wrapwords) |
 
 ## API examples {#api-examples}
@@ -331,13 +334,15 @@ println(v)
 
 #### Title {#title}
 
-Title converts the string to title case (first letter of each word upper, rest lower) using Unicode rules.
-Similar: Headline.
+Title title-cases word-initial letters using strings.Title, preserving other letters.
+
+Deprecated: Like strings.Title, its word boundaries do not handle Unicode
+punctuation properly. Use golang.org/x/text/cases for linguistic title casing.
 
 ```go
-v := str.Of("a nice title uses the correct case").Title().String()
+v := str.Of("hello WORLD").Title().String()
 println(v)
-// #string A Nice Title Uses The Correct Case
+// #string Hello WORLD
 ```
 
 #### ToLower {#tolower}
@@ -351,6 +356,36 @@ println(v)
 // #string golang
 ```
 
+#### ToLowerSpecial {#tolowerspecial}
+
+ToLowerSpecial maps every rune to lowercase using c's language-specific case rules.
+
+```go
+v := str.Of("I").ToLowerSpecial(unicode.TurkishCase).String()
+println(v)
+// #string ı
+```
+
+#### ToTitle {#totitle}
+
+ToTitle maps every rune to Unicode titlecase.
+
+```go
+v := str.Of("go").ToTitle().String()
+println(v)
+// #string GO
+```
+
+#### ToTitleSpecial {#totitlespecial}
+
+ToTitleSpecial maps every rune to Unicode titlecase using c's language-specific case rules.
+
+```go
+v := str.Of("i").ToTitleSpecial(unicode.TurkishCase).String()
+println(v)
+// #string İ
+```
+
 #### ToUpper {#toupper}
 
 ToUpper returns an uppercase copy of the string using Unicode rules.
@@ -360,6 +395,16 @@ Similar: ToLower and UcFirst.
 v := str.Of("GoLang").ToUpper().String()
 println(v)
 // #string GOLANG
+```
+
+#### ToUpperSpecial {#toupperspecial}
+
+ToUpperSpecial maps every rune to uppercase using c's language-specific case rules.
+
+```go
+v := str.Of("i").ToUpperSpecial(unicode.TurkishCase).String()
+println(v)
+// #string İ
 ```
 
 #### UcFirst {#ucfirst}
@@ -465,7 +510,7 @@ println(v)
 #### NormalizeSpace {#normalizespace}
 
 NormalizeSpace removes surrounding whitespace and collapses internal whitespace to single spaces.
-Similar: Trim.
+Similar: TrimSpace.
 
 ```go
 v := str.Of("  go   forj  ").NormalizeSpace().String()
@@ -475,46 +520,72 @@ println(v)
 
 #### Trim {#trim}
 
-Trim removes leading and trailing Unicode whitespace.
-Similar: TrimLeft, TrimRight, and TrimChars.
+Trim removes leading and trailing runes contained in cutset.
 
 ```go
-v := str.Of("  GoForj  ").Trim().String()
+v := str.Of("..GoForj!!").Trim(".!").String()
 println(v)
 // #string GoForj
 ```
 
-#### TrimChars {#trimchars}
+#### TrimFunc {#trimfunc}
 
-TrimChars removes leading and trailing runes contained in cutset.
-Similar: Trim.
+TrimFunc removes leading and trailing runes satisfying f.
 
 ```go
-v := str.Of("..GoForj!!").TrimChars(".!").String()
+v := str.Of("12Go34").TrimFunc(unicode.IsDigit).String()
 println(v)
-// #string GoForj
+// #string Go
 ```
 
 #### TrimLeft {#trimleft}
 
-TrimLeft removes leading Unicode whitespace.
-Similar: Trim and TrimRight.
+TrimLeft removes leading runes contained in cutset.
 
 ```go
-v := str.Of("  GoForj  ").TrimLeft().String()
+v := str.Of("..GoForj!!").TrimLeft(".!").String()
 println(v)
-// #string GoForj\u0020\u0020
+// #string GoForj!!
+```
+
+#### TrimLeftFunc {#trimleftfunc}
+
+TrimLeftFunc removes leading runes satisfying f.
+
+```go
+v := str.Of("12Go34").TrimLeftFunc(unicode.IsDigit).String()
+println(v)
+// #string Go34
 ```
 
 #### TrimRight {#trimright}
 
-TrimRight removes trailing Unicode whitespace.
-Similar: Trim and TrimLeft.
+TrimRight removes trailing runes contained in cutset.
 
 ```go
-v := str.Of("  GoForj  ").TrimRight().String()
+v := str.Of("..GoForj!!").TrimRight(".!").String()
 println(v)
-// #string \u0020\u0020GoForj
+// #string ..GoForj
+```
+
+#### TrimRightFunc {#trimrightfunc}
+
+TrimRightFunc removes trailing runes satisfying f.
+
+```go
+v := str.Of("12Go34").TrimRightFunc(unicode.IsDigit).String()
+println(v)
+// #string 12Go
+```
+
+#### TrimSpace {#trimspace}
+
+TrimSpace removes leading and trailing Unicode whitespace.
+
+```go
+v := str.Of("  GoForj  ").TrimSpace().String()
+println(v)
+// #string GoForj
 ```
 
 ### Comparison {#comparison}
@@ -756,7 +827,7 @@ println(v)
 // #string person
 ```
 
-### Replace {#replace}
+### Replace {#replace-2}
 
 #### Remove {#remove}
 
@@ -768,10 +839,22 @@ println(v)
 // #string The Toolkit
 ```
 
+#### Replace {#replace}
+
+Replace replaces the first n non-overlapping occurrences of old with new.
+A negative n replaces all matches; zero leaves the string unchanged.
+An empty old matches at the beginning and after each UTF-8 sequence.
+
+```go
+v := str.Of("go go go").Replace("go", "Go", 2).String()
+println(v)
+// #string Go Go go
+```
+
 #### ReplaceAll {#replaceall}
 
-ReplaceAll replaces all occurrences of old with new in the string.
-If old is empty, the original string is returned unchanged.
+ReplaceAll replaces all non-overlapping occurrences of old with new.
+An empty old matches at the beginning and after each UTF-8 sequence.
 
 ```go
 v := str.Of("go gopher go").ReplaceAll("go", "Go").String()
@@ -782,6 +865,8 @@ println(v)
 #### ReplaceArray {#replacearray}
 
 ReplaceArray replaces all occurrences of each old in olds with repl.
+Entries are applied sequentially, including replacements produced by earlier entries.
+Empty entries insert repl at UTF-8 boundaries, like ReplaceAll.
 Similar: ReplaceAll and Swap.
 
 ```go
@@ -793,6 +878,7 @@ println(v.ReplaceArray([]string{"---"}, "-").String())
 #### ReplaceFirst {#replacefirst}
 
 ReplaceFirst replaces the first occurrence of old with repl.
+An empty old inserts repl at the beginning.
 Similar: ReplaceLast and ReplaceAll.
 
 ```go
@@ -804,7 +890,7 @@ println(v)
 #### ReplaceFold {#replacefold}
 
 ReplaceFold replaces all non-overlapping occurrences of old with repl using Unicode simple case folding.
-An empty old string leaves the receiver unchanged.
+An empty old inserts repl at UTF-8 boundaries, like ReplaceAll.
 Similar: ReplaceAll.
 
 ```go
@@ -816,6 +902,7 @@ println(v)
 #### ReplaceLast {#replacelast}
 
 ReplaceLast replaces the last occurrence of old with repl.
+An empty old inserts repl at the end.
 Similar: ReplaceFirst and ReplaceAll.
 
 ```go
@@ -827,6 +914,7 @@ println(v)
 #### ReplacePrefix {#replaceprefix}
 
 ReplacePrefix replaces old with repl when old is a prefix of the string.
+An empty old inserts repl at the beginning.
 Similar: ReplaceSuffix and TrimPrefix.
 
 ```go
@@ -838,6 +926,7 @@ println(v)
 #### ReplaceSuffix {#replacesuffix}
 
 ReplaceSuffix replaces old with repl when old is a suffix of the string.
+An empty old inserts repl at the end.
 Similar: ReplacePrefix and TrimSuffix.
 
 ```go
@@ -848,7 +937,10 @@ println(v)
 
 #### Swap {#swap}
 
-Swap replaces multiple values using strings.Replacer built from a map.
+Swap replaces multiple values in one pass using strings.Replacer built from a map.
+Longer keys take priority at the same position; replacements are not rescanned.
+Empty keys follow strings.Replacer byte boundaries and can split a multibyte UTF-8 rune.
+Use ReplaceAll for empty-search insertion at UTF-8 sequence boundaries.
 Similar: ReplaceArray.
 
 ```go
@@ -860,10 +952,20 @@ println(v)
 
 ### Search {#search}
 
+#### Compare {#compare}
+
+Compare returns -1, 0, or 1 according to lexicographic byte order.
+
+```go
+v := str.Of("go").Compare("rust")
+println(v)
+// #int -1
+```
+
 #### Contains {#contains}
 
 Contains reports whether the string contains sub using a case-sensitive comparison.
-An empty substring is not a match.
+An empty substring always matches.
 Similar: ContainsFold.
 
 ```go
@@ -872,10 +974,20 @@ println(v)
 // #bool true
 ```
 
+#### ContainsAny {#containsany}
+
+ContainsAny reports whether any rune in chars occurs in the string.
+
+```go
+v := str.Of("gopher").ContainsAny("aeiou")
+println(v)
+// #bool true
+```
+
 #### ContainsFold {#containsfold}
 
 ContainsFold reports whether the string contains sub using Unicode simple case folding.
-An empty substring is not a match.
+An empty substring always matches.
 Similar: Contains.
 
 ```go
@@ -884,9 +996,30 @@ println(v)
 // #bool true
 ```
 
+#### ContainsFunc {#containsfunc}
+
+ContainsFunc reports whether any rune satisfies f.
+
+```go
+v := str.Of("go2").ContainsFunc(unicode.IsDigit)
+println(v)
+// #bool true
+```
+
+#### ContainsRune {#containsrune}
+
+ContainsRune reports whether r occurs in the string.
+
+```go
+v := str.Of("café").ContainsRune('é')
+println(v)
+// #bool true
+```
+
 #### Count {#count}
 
-Count returns the number of non-overlapping occurrences of sub.
+Count counts non-overlapping occurrences of sub.
+An empty sub matches at the beginning and after each UTF-8 sequence.
 
 ```go
 v := str.Of("gogophergo").Count("go")
@@ -897,7 +1030,7 @@ println(v)
 #### HasPrefix {#hasprefix}
 
 HasPrefix reports whether the string starts with prefix using a case-sensitive comparison.
-An empty prefix is not a match.
+An empty prefix always matches.
 Similar: HasPrefixFold and HasSuffix.
 
 ```go
@@ -909,7 +1042,7 @@ println(v)
 #### HasPrefixFold {#hasprefixfold}
 
 HasPrefixFold reports whether the string starts with prefix using Unicode simple case folding.
-An empty prefix is not a match.
+An empty prefix always matches.
 Similar: HasPrefix and HasSuffixFold.
 
 ```go
@@ -921,7 +1054,7 @@ println(v)
 #### HasSuffix {#hassuffix}
 
 HasSuffix reports whether the string ends with suffix using a case-sensitive comparison.
-An empty suffix is not a match.
+An empty suffix always matches.
 Similar: HasSuffixFold and HasPrefix.
 
 ```go
@@ -933,7 +1066,7 @@ println(v)
 #### HasSuffixFold {#hassuffixfold}
 
 HasSuffixFold reports whether the string ends with suffix using Unicode simple case folding.
-An empty suffix is not a match.
+An empty suffix always matches.
 Similar: HasSuffix and HasPrefixFold.
 
 ```go
@@ -944,24 +1077,94 @@ println(v)
 
 #### Index {#index}
 
-Index returns the rune index of the first occurrence of sub, or -1 if not found.
+Index returns the byte index of the first occurrence of sub, or -1 if not found.
 Similar: LastIndex.
 
 ```go
 v := str.Of("héllo").Index("llo")
 println(v)
+// #int 3
+```
+
+#### IndexAny {#indexany}
+
+IndexAny returns the byte offset of the first rune in chars, or -1 if absent.
+
+```go
+v := str.Of("go").IndexAny("o")
+println(v)
+// #int 1
+```
+
+#### IndexByte {#indexbyte}
+
+IndexByte returns the byte offset of the first byte equal to c, or -1 if absent.
+
+```go
+v := str.Of("go").IndexByte('o')
+println(v)
+// #int 1
+```
+
+#### IndexFunc {#indexfunc}
+
+IndexFunc returns the byte offset of the first rune satisfying f, or -1 if absent.
+
+```go
+v := str.Of("go2").IndexFunc(unicode.IsDigit)
+println(v)
 // #int 2
+```
+
+#### IndexRune {#indexrune}
+
+IndexRune returns the byte offset of the first rune equal to r, or -1 if absent.
+
+```go
+v := str.Of("go").IndexRune('o')
+println(v)
+// #int 1
 ```
 
 #### LastIndex {#lastindex}
 
-LastIndex returns the rune index of the last occurrence of sub, or -1 if not found.
+LastIndex returns the byte index of the last occurrence of sub, or -1 if not found.
 Similar: Index.
 
 ```go
 v := str.Of("go gophers go").LastIndex("go")
 println(v)
 // #int 11
+```
+
+#### LastIndexAny {#lastindexany}
+
+LastIndexAny returns the byte offset of the last rune in chars, or -1 if absent.
+
+```go
+v := str.Of("go").LastIndexAny("o")
+println(v)
+// #int 1
+```
+
+#### LastIndexByte {#lastindexbyte}
+
+LastIndexByte returns the byte offset of the last byte equal to c, or -1 if absent.
+
+```go
+v := str.Of("go").LastIndexByte('o')
+println(v)
+// #int 1
+```
+
+#### LastIndexFunc {#lastindexfunc}
+
+LastIndexFunc returns the byte offset of the last rune satisfying f, or -1 if absent.
+
+```go
+v := str.Of("go2").LastIndexFunc(unicode.IsDigit)
+println(v)
+// #int 2
 ```
 
 ### Slug {#slug-2}
@@ -995,15 +1198,65 @@ println(v.String())
 
 ### Split {#split-2}
 
-#### Lines {#lines}
+#### Fields {#fields}
 
-Lines splits the string into lines after normalizing newline variants.
-Similar: NormalizeNewlines.
+Fields splits the string into fields separated by Unicode whitespace.
+Consecutive separators are combined; empty or separator-only input yields no fields.
 
 ```go
-v := str.Of("a\r\nb\nc").Lines()
+v := str.Of("a b c").Fields()
 fmt.Println(v)
 // #[]string [a b c]
+```
+
+#### FieldsFunc {#fieldsfunc}
+
+FieldsFunc splits the string into fields separated by runes satisfying f.
+The predicate must return the same result for a given rune; its call order is unspecified.
+Consecutive separators are combined; empty or separator-only input yields no fields.
+
+```go
+v := str.Of("a b c").FieldsFunc(unicode.IsSpace)
+fmt.Println(v)
+// #[]string [a b c]
+```
+
+#### FieldsFuncSeq {#fieldsfuncseq}
+
+FieldsFuncSeq returns an iterator over fields separated by runes satisfying f.
+Each iteration starts again from the beginning of the string.
+The predicate must return the same result for a given rune; its call order is unspecified.
+Consecutive separators are combined; empty or separator-only input yields no fields.
+
+```go
+v := slices.Collect(str.Of("a b c").FieldsFuncSeq(unicode.IsSpace))
+fmt.Println(v)
+// #[]string [a b c]
+```
+
+#### FieldsSeq {#fieldsseq}
+
+FieldsSeq returns an iterator over fields separated by Unicode whitespace.
+Each iteration starts again from the beginning of the string.
+Consecutive separators are combined; empty or separator-only input yields no fields.
+
+```go
+v := slices.Collect(str.Of("a b c").FieldsSeq())
+fmt.Println(v)
+// #[]string [a b c]
+```
+
+#### Lines {#lines}
+
+Lines returns a single-use iterator over newline-terminated lines.
+Newline bytes are retained; empty input yields no lines and a trailing newline
+does not produce an extra empty line. Use NormalizeNewlines().Split("\n")
+when normalized, delimiter-free fields are wanted.
+
+```go
+v := slices.Collect(str.Of("a\nb").Lines())
+fmt.Printf("%q\n", v)
+// #[]string ["a\\n" "b"]
 ```
 
 #### Split {#split}
@@ -1012,6 +1265,63 @@ Split splits the string by the given separator.
 
 ```go
 v := str.Of("a,b,c").Split(",")
+fmt.Println(v)
+// #[]string [a b c]
+```
+
+#### SplitAfter {#splitafter}
+
+SplitAfter returns substrings including their trailing separator.
+An empty sep splits after each UTF-8 sequence.
+
+```go
+v := str.Of("a,b,c").SplitAfter(",")
+fmt.Println(v)
+// #[]string [a, b, c]
+```
+
+#### SplitAfterN {#splitaftern}
+
+SplitAfterN returns substrings including their trailing separator.
+A positive n limits the result to n substrings; zero returns nil and negative n has no limit.
+An empty sep splits after each UTF-8 sequence.
+
+```go
+v := str.Of("a,b,c").SplitAfterN(",", 2)
+fmt.Println(v)
+// #[]string [a, b,c]
+```
+
+#### SplitAfterSeq {#splitafterseq}
+
+SplitAfterSeq returns a single-use iterator over substrings including their trailing separator.
+An empty sep splits after each UTF-8 sequence.
+
+```go
+v := slices.Collect(str.Of("a,b,c").SplitAfterSeq(","))
+fmt.Println(v)
+// #[]string [a, b, c]
+```
+
+#### SplitN {#splitn}
+
+SplitN returns substrings separated by sep.
+A positive n limits the result to n substrings; zero returns nil and negative n has no limit.
+An empty sep splits after each UTF-8 sequence.
+
+```go
+v := str.Of("a,b,c").SplitN(",", 2)
+fmt.Println(v)
+// #[]string [a b,c]
+```
+
+#### SplitSeq {#splitseq}
+
+SplitSeq returns a single-use iterator over substrings separated by sep.
+An empty sep splits after each UTF-8 sequence.
+
+```go
+v := slices.Collect(str.Of("a,b,c").SplitSeq(","))
 fmt.Println(v)
 // #[]string [a b c]
 ```
@@ -1113,6 +1423,51 @@ println(v)
 // #string _test.go
 ```
 
+#### Cut {#cut}
+
+Cut splits around the first occurrence of sep.
+An empty sep is a match. On no match it returns the original string, "", false.
+
+```go
+before, after, found := str.Of("go:forj").Cut(":")
+fmt.Println(before, after, found)
+// #string go forj true
+```
+
+#### CutLast {#cutlast}
+
+CutLast splits around the last occurrence of sep.
+An empty sep is a match. On no match it returns the original string, "", false.
+CutLast preserves the Go 1.27 contract without raising the Go 1.24 minimum.
+
+```go
+before, after, found := str.Of("go:forj").CutLast(":")
+fmt.Println(before, after, found)
+// #string go forj true
+```
+
+#### CutPrefix {#cutprefix}
+
+CutPrefix removes prefix and reports whether it was present.
+An empty prefix is a match.
+
+```go
+value, found := str.Of("go:forj").CutPrefix("go:")
+fmt.Println(value, found)
+// #string forj true
+```
+
+#### CutSuffix {#cutsuffix}
+
+CutSuffix removes suffix and reports whether it was present.
+An empty suffix is a match.
+
+```go
+value, found := str.Of("go:forj").CutSuffix(":forj")
+fmt.Println(value, found)
+// #string go true
+```
+
 #### Limit {#limit}
 
 Limit truncates the string to length runes, appending suffix if truncation occurs.
@@ -1126,6 +1481,7 @@ println(v)
 #### Slice {#slice}
 
 Slice returns the substring between rune offsets [start:end).
+Index and LastIndex return bytes, which must not be passed directly here.
 Indices are clamped; if start >= end the result is empty.
 
 ```go
@@ -1168,9 +1524,32 @@ println(v)
 
 ### Transform {#transform}
 
+#### Clone {#clone}
+
+Clone copies the underlying bytes into a fresh allocation.
+Use it to release a large backing string retained by a small substring.
+Empty input returns an empty string without allocating.
+
+```go
+v := str.Of("gopher").Clone().String()
+println(v)
+// #string gopher
+```
+
+#### Map {#map}
+
+Map maps each rune using mapping, dropping runes mapped to a negative value.
+
+```go
+v := str.Of("go").Map(unicode.ToUpper).String()
+println(v)
+// #string GO
+```
+
 #### Repeat {#repeat}
 
-Repeat repeats the string count times (non-negative).
+Repeat repeats the string count times.
+It panics if count is negative or the result length overflows int.
 
 ```go
 v := str.Of("go").Repeat(3).String()
@@ -1186,6 +1565,16 @@ Reverse returns a rune-safe reversed string.
 v := str.Of("naïve").Reverse().String()
 println(v)
 // #string evïan
+```
+
+#### ToValidUTF8 {#tovalidutf8}
+
+ToValidUTF8 replaces each run of invalid UTF-8 bytes with replacement.
+
+```go
+v := str.Of("a\xff\xfeb").ToValidUTF8("?").String()
+println(v)
+// #string a?b
 ```
 
 ### Words {#words-2}
@@ -1216,11 +1605,11 @@ println(v)
 #### Join {#join}
 
 Join concatenates elements with sep and returns the result to the fluent chain.
-The receiver provides fluent access and is not included in elements.
+Join starts a chain from a slice without discarding an existing receiver.
 Similar: Split.
 
 ```go
-v := str.Of("").Join([]string{"foo", "bar"}, "-").String()
+v := str.Join([]string{"foo", "bar"}, "-").String()
 println(v)
 // #string foo-bar
 ```
@@ -1285,8 +1674,10 @@ println(v)
 
 ## Documentation {#documentation}
 
-- [API documentation and examples](https://pkg.go.dev/github.com/goforj/str/v2)
-- [v1 to v2 migration guide](https://github.com/goforj/str/blob/main/MIGRATING.md)
+- [API documentation and examples](https://pkg.go.dev/github.com/goforj/str/v3)
+- [v2 to v3 migration guide](https://github.com/goforj/str/blob/main/MIGRATING.md)
+- [Standard API contract](https://github.com/goforj/str/blob/main/docs/standard-api.md)
+- [Historical v1 to v2 migration guide](https://github.com/goforj/str/blob/main/docs/migrating-v2.md)
 - [Report a bug or request a feature](https://github.com/goforj/str/issues)
 
 ## Development {#development}

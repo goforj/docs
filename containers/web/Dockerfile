@@ -32,9 +32,11 @@ COPY --from=docs-generate /app/docs/ ./
 COPY --from=docs-generate /app/ai/ /app/ai/
 COPY bin/ /app/bin/
 COPY benchmarks/ /app/benchmarks/
+# Packaging supplies a fresh value so a new framework release cannot reuse stale version metadata.
+ARG RELEASE_METADATA_REFRESH=manual
 RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
-  NODE_ENV=production npm run build
+  test -n "${RELEASE_METADATA_REFRESH}" && node ../bin/refresh-release.mjs && NODE_ENV=production npm run build
 
 FROM golang:1.23-bookworm AS backend-build
 WORKDIR /app

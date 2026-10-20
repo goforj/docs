@@ -1,9 +1,12 @@
 ---
-title: GoDump
+title: GoDump Library for Go
 description: "Readable, configurable value dumps for debugging Go programs."
 repoSlug: godump
 repoUrl: https://github.com/goforj/godump
+noAutoTitle: true
 ---
+
+# GoDump Library for Go {#godump-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/godump/main/docs/godump.png" width="350" alt="godump logo – Go pretty printer and Laravel-style dump/dd debugging tool">
@@ -17,7 +20,7 @@ repoUrl: https://github.com/goforj/godump
     <img src="https://img.shields.io/github/v/tag/goforj/godump?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/godump" ><img src="https://codecov.io/gh/goforj/godump/graph/badge.svg?token=ULUTXL03XC"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-130-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-194-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
     <a href="https://github.com/avelino/awesome-go?tab=readme-ov-file#parsersencodersdecoders"><img src="https://awesome.re/mentioned-badge-flat.svg" alt="Mentioned in Awesome Go"></a>
 </p>
@@ -242,7 +245,7 @@ If a pointer has already been printed:
 | **Dump** | [Dd](#dd) · [Dump](#dump) · [DumpStr](#dumpstr) · [Fdump](#fdump) |
 | **HTML** | [DumpHTML](#dumphtml) |
 | **JSON** | [DumpJSON](#dumpjson) · [DumpJSONStr](#dumpjsonstr) |
-| **Options** | [WithDisableStringer](#withdisablestringer) · [WithExcludeFields](#withexcludefields) · [WithFieldMatchMode](#withfieldmatchmode) · [WithMaxDepth](#withmaxdepth) · [WithMaxItems](#withmaxitems) · [WithMaxStringLen](#withmaxstringlen) · [WithOnlyFields](#withonlyfields) · [WithRedactFields](#withredactfields) · [WithRedactMatchMode](#withredactmatchmode) · [WithRedactSensitive](#withredactsensitive) · [WithSkipStackFrames](#withskipstackframes) · [WithWriter](#withwriter) · [WithoutColor](#withoutcolor) · [WithoutHeader](#withoutheader) |
+| **Options** | [WithDisableStringer](#withdisablestringer) · [WithExcludeFields](#withexcludefields) · [WithFieldMatchMode](#withfieldmatchmode) · [WithMaxDepth](#withmaxdepth) · [WithMaxItems](#withmaxitems) · [WithMaxStringLen](#withmaxstringlen) · [WithOnlyFields](#withonlyfields) · [WithRedactFields](#withredactfields) · [WithRedactMatchMode](#withredactmatchmode) · [WithRedactSensitive](#withredactsensitive) · [WithRedactTags](#withredacttags) · [WithSkipStackFrames](#withskipstackframes) · [WithWriter](#withwriter) · [WithoutColor](#withoutcolor) · [WithoutHeader](#withoutheader) · [WithoutTypes](#withouttypes) |
 
 
 ## Builder {#builder}
@@ -706,6 +709,28 @@ d.Dump(User{Password: "secret", Token: "abc"})
 // }
 ```
 
+### WithRedactTags {#withredacttags}
+
+WithRedactTags redacts struct fields whose selected tag values equal "-".
+With no keys, or with "*", it checks all tag keys. Calls accumulate selected keys.
+Matching is case-sensitive and does not treat "-,omitempty" as "-".
+It applies as text, HTML, and diff output traverse nested and embedded structs.
+JSON helpers retain encoding/json behavior. Structs rendered through fmt.Stringer
+are not traversed; use WithDisableStringer(true) to inspect their fields instead.
+
+```go
+type User struct {
+	Name string
+	Credential string `json:"-"`
+}
+d := godump.NewDumper(godump.WithRedactTags("json"), godump.WithoutHeader())
+d.Dump(User{Name: "Alice", Credential: "secret"})
+// #godump.User {
+//   +Name       => "Alice" #string
+//   +Credential => <redacted> #string
+// }
+```
+
 ### WithSkipStackFrames {#withskipstackframes}
 
 WithSkipStackFrames skips additional stack frames for header reporting.
@@ -761,6 +786,22 @@ WithoutHeader disables printing the source location header.
 d := godump.NewDumper(godump.WithoutHeader())
 d.Dump("hello")
 // "hello" #string
+```
+
+### WithoutTypes {#withouttypes}
+
+WithoutTypes omits type annotations while preserving value colors and structure.
+It applies to text, HTML, and diff output. JSON output is unchanged.
+
+```go
+type User struct {
+	Name string
+}
+d := godump.NewDumper(godump.WithoutTypes(), godump.WithoutHeader())
+d.Dump(User{Name: "Alice"})
+// {
+//   +Name => "Alice"
+// }
 ```
 <!-- api:embed:end -->
 

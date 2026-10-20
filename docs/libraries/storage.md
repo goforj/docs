@@ -1,10 +1,12 @@
 ---
-title: Storage
+title: Storage Library for Go
 description: "Named file and object-storage disks with local and remote drivers."
 repoSlug: storage
 repoUrl: https://github.com/goforj/storage
 noAutoTitle: true
 ---
+
+# Storage Library for Go {#storage-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png" width="300" alt="storage logo">
@@ -18,11 +20,11 @@ noAutoTitle: true
   <a href="https://pkg.go.dev/github.com/goforj/storage"><img src="https://pkg.go.dev/badge/github.com/goforj/storage.svg" alt="Go Reference"></a>
   <a href="https://github.com/goforj/storage/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://github.com/goforj/storage/actions/workflows/ci.yml"><img src="https://github.com/goforj/storage/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
+  <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24%2F1.25%2F1.26+-blue?logo=go" alt="Go version"></a>
   <a href="https://codecov.io/gh/goforj/storage"><img src="https://codecov.io/gh/goforj/storage/graph/badge.svg?token=BPR5IIC5F9"/></a>
   <img src="https://img.shields.io/github/v/tag/goforj/storage?label=version&sort=semver&filter=%21driver%2A" alt="Latest tag">
 <!-- test-count:embed:start -->
-  <img src="https://img.shields.io/badge/unit_tests-32-brightgreen" alt="Unit tests (executed count)">
+  <img src="https://img.shields.io/badge/unit_tests-46-brightgreen" alt="Unit tests (executed count)">
   <img src="https://img.shields.io/badge/integration_tests-130-blue" alt="Integration tests (executed count)">
 <!-- test-count:embed:end -->
 </p>
@@ -78,6 +80,16 @@ go get github.com/goforj/storage/driver/dropboxstorage
 go get github.com/goforj/storage/driver/rclonestorage
 ```
 
+## Go compatibility {#go-compatibility}
+
+| Modules | Minimum Go version |
+| --- | --- |
+| Root, storagecore, Dropbox, FTP, local, memory, Redis, and S3 drivers | 1.24.4 |
+| GCS driver and storagetest | 1.25 |
+| Rclone and SFTP drivers, examples, integration, and benchmark modules | 1.26 |
+
+The security fixes raise only the modules whose fixed dependencies require a newer toolchain. Upgrade applications that import Rclone or SFTP to Go 1.26, and applications using GCS or storagetest to Go 1.25. Applications using the remaining modules can stay on Go 1.24.4.
+
 ## Usage {#usage}
 
 Choose the construction style that fits your application:
@@ -86,6 +98,31 @@ Choose the construction style that fits your application:
 - Use `storage.New(...)` when you want multiple named disks managed from config.
 
 All storage operations also expose `*Context` equivalents for deadlines and cancellation. The default methods use `context.Background()`.
+
+### Streaming objects {#streaming-objects}
+
+`storage.Objects(disk)` discovers the optional `storagecore.ObjectStorage`
+capability. The S3 driver supports paged object walking, streaming reads and
+writes, metadata preservation, version-pinned reads, and conditional reads using
+an observed ETag. Unsupported drivers return `storage.ErrUnsupported`; there is
+no implicit fallback that buffers whole objects in memory.
+
+Object keys are opaque and relative to the configured disk prefix. Unlike the
+existing file API, these methods preserve dot segments and repeated slashes.
+Each operation takes an explicit context. Close every returned `ObjectReader`.
+Writes declare an exact size and leave ownership of the input reader with the
+caller; provide a seekable reader when provider retries are required.
+For non-seekable S3 uploads, HTTPS retains the SDK's streaming checksums. Plain
+HTTP requires explicit `s3storage.Config.UnsignedPayload` opt-in; only that case
+skips optional SDK checksum precomputation. Signed HTTP uploads require a seekable
+reader. The library never silently disables configured payload signing or spools
+whole objects to disk. Cancellation stops subsequent source reads, including SDK
+prehashing; a reader that blocks inside its own `Read` must honor cancellation or
+be unblocked by its owner.
+
+Bucket creation remains explicit through `s3storage.PrepareBucketContext`.
+Ordinary storage construction and object reads never provision provider resources.
+Existing buffered methods, driver interfaces, and minimum Go versions are unchanged.
 
 ### Common operations {#common-operations}
 

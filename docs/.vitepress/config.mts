@@ -236,6 +236,8 @@ gtag('config', '${gaMeasurementId}');`]
 const deferredHashHead: [string, Record<string, string>, string] = ['script', {}, `(function(){try{if(!location.hash)return;var key='__goforjDeferredHash';var path=location.pathname+location.search;sessionStorage.setItem(key,JSON.stringify({path:path,hash:location.hash}));history.replaceState(history.state||{},'',path);}catch(e){}})();`]
 const searchHydrationHead: [string, Record<string, string>, string] = ['style', {}, `html:not(.gf-search-ready) .VPNavBarSearch{opacity:0}html.gf-search-ready .VPNavBarSearch{opacity:1;transition:opacity .12s ease}`]
 
+const noindexPages = new Set<string>()
+
 const pageUrl = (page: string) => {
   const cleanPath = page
     .replace(/(^|\/)index\.md$/, '$1')
@@ -1101,7 +1103,7 @@ const referenceSidebar = sectionSidebar('Reference', [
 
 const versionsSidebar = sectionSidebar('Versions', [
   { text: 'Active development', link: '/versions/' },
-  { text: `Latest tag ${release.latest}`, link: `/versions/changelog#${releaseAnchor}` },
+  { text: `Latest tag ${release.latest}`, link: `https://github.com/goforj/goforj/releases/tag/${release.latest}` },
   { text: 'Changelog', link: '/versions/changelog' }
 ])
 
@@ -1191,6 +1193,10 @@ export default defineConfig({
   // the entire html:not(.dark) token layer was dead code.
   appearance: 'dark',
   transformPageData(pageData) {
+    const robots = pageData.frontmatter.head?.filter((entry: any[]) => entry[0] === 'meta' && entry[1]?.name?.toLowerCase() === 'robots') || []
+    if (robots.some((entry: any[]) => /\bnoindex\b/i.test(entry[1]?.content || ''))) {
+      noindexPages.add(new URL(pageUrl(libraryRewrites[pageData.filePath] || pageData.filePath)).pathname)
+    }
     const relativePath = libraryRewrites[pageData.filePath] || pageData.filePath
     return { markdownUrl: `/${markdownPath(relativePath)}`, canonicalUrl: pageUrl(relativePath) }
   },
@@ -1266,7 +1272,11 @@ export default defineConfig({
   rewrites: libraryRewrites,
 
   sitemap: {
-    hostname: siteUrl
+    hostname: siteUrl,
+    transformItems(items) {
+      return items.map((item) => ({ ...item, url: item.url === '/' ? '/' : item.url.replace(/\/+$/, '') }))
+        .filter((item) => !noindexPages.has(new URL(item.url, siteUrl).pathname))
+    }
   },
 
   buildEnd: finishBuild,

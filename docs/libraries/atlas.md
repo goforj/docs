@@ -1,11 +1,12 @@
 ---
-title: Atlas
+title: Atlas Library for Go
 description: "Project context, skills, diagnostics, and MCP tooling for GoForj coding agents."
 repoSlug: atlas
 repoUrl: https://github.com/goforj/atlas
+noAutoTitle: true
 ---
 
-# GoForj Atlas {#goforj-atlas}
+# Atlas Library for Go {#goforj-atlas}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/atlas/main/docs/assets/banner.png" alt="Atlas Banner">

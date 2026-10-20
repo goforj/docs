@@ -9,7 +9,7 @@ Follow this page from top to bottom to generate a small HTTP app, start it, make
 
 ## Prerequisites
 
-- Go 1.25 or newer. [Install Go](https://go.dev/doc/install) if needed.
+- Go 1.26 or newer. [Install Go](https://go.dev/doc/install) if needed.
 - A shell with `$(go env GOPATH)/bin` on its `PATH`.
 
 This path uses only the CLI and Web API components, so it does not require Docker.

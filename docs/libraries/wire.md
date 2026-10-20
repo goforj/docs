@@ -1,9 +1,12 @@
 ---
-title: Wire
+title: Wire Library for Go
 description: "Fast, explicit compile-time dependency injection for Go."
 repoSlug: wire
 repoUrl: https://github.com/goforj/wire
+noAutoTitle: true
 ---
+
+# Wire Library for Go {#wire-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/wire/main/docs/assets/logo-v2.png" width="300" alt="goforj/wire logo">

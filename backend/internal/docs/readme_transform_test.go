@@ -198,8 +198,8 @@ func TestTransformReadmeNormalizesDottedAnchors(t *testing.T) {
 	}
 }
 
-// TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed verifies ordinary library pages retain their configured search title.
-func TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed(t *testing.T) {
+// TestTransformReadmeUsesPrimaryHeadingForSearch verifies the real primary heading owns the search title.
+func TestTransformReadmeUsesPrimaryHeadingForSearch(t *testing.T) {
 	repo := RepoConfig{
 		Slug:     "str",
 		Title:    "Strings",
@@ -208,8 +208,8 @@ func TestTransformReadmeKeepsAutomaticSearchTitleWhenUnclaimed(t *testing.T) {
 	}
 
 	got := transformReadme("## Usage\n", repo, "https://raw.githubusercontent.com/goforj/str/main/")
-	if strings.Contains(got, "noAutoTitle: true") {
-		t.Fatalf("transformReadme() disabled the unclaimed automatic title:\n%s", got)
+	if !strings.Contains(got, "noAutoTitle: true") {
+		t.Fatalf("transformReadme() retained a duplicate automatic title:\n%s", got)
 	}
 }
 
@@ -234,5 +234,37 @@ func TestRewriteHeadingAnchorsMatchesQuestionLinks(t *testing.T) {
 	want := "[what the fork adds](#why-goforj-wire)\n\n## Why GoForj Wire? {#why-goforj-wire}\n\n## Explicit question? {#source-owned}"
 	if got := rewriteHeadingAnchors(input); got != want {
 		t.Fatalf("rewriteHeadingAnchors() = %q, want %q", got, want)
+	}
+}
+
+// TestLibraryPageHeadingPreservesExamplesAndAnchors covers mixed README headings without rewriting fenced examples.
+func TestLibraryPageHeadingPreservesExamplesAndAnchors(t *testing.T) {
+	repo := RepoConfig{Slug: "example", Title: "Example"}
+	input := "# Install\n\n[Install](#install)\n\n# API {#api}\n\n```md\n# Code sample\n```\n\n~~~md\n# Another sample\n~~~\n"
+	got := transformReadme(input, repo, "https://example.com/")
+	for _, want := range []string{"title: Example Library for Go", "# Example Library for Go {#example-library-for-go}", "## Install {#install}", "[Install](#install)", "## API {#api}", "```md\n# Code sample", "~~~md\n# Another sample"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %q in %s", want, got)
+		}
+	}
+	if got := libraryPageHeading("Content", RepoConfig{Slug: "fallback"}); !strings.HasPrefix(got, "# fallback Library for Go\n") {
+		t.Fatal(got)
+	}
+}
+
+// TestLibraryPageHeadingReusesProductHeading preserves existing links without adding a duplicate product section.
+func TestLibraryPageHeadingReusesProductHeading(t *testing.T) {
+	got := transformReadme("# GoForj Atlas\n\n<img src=\"logo.png\">\n", RepoConfig{Slug: "atlas", Title: "Atlas"}, "https://example.com/")
+	if !strings.Contains(got, "# Atlas Library for Go {#goforj-atlas}") || strings.Contains(got, "## GoForj Atlas") {
+		t.Fatal(got)
+	}
+}
+
+// TestLibraryHeadingLongFences keeps literal Markdown inside nested fence examples unchanged.
+func TestLibraryHeadingLongFences(t *testing.T) {
+	input := "````md\n```md\n# Literal heading\n```\n````\n\n# Installation\n"
+	got := transformReadme(input, RepoConfig{Slug: "sample", Title: "Sample"}, "https://example.com/")
+	if !strings.Contains(got, "````md\n```md\n# Literal heading\n```\n````") || !strings.Contains(got, "## Installation {#installation}") {
+		t.Fatal(got)
 	}
 }

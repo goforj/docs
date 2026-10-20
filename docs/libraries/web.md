@@ -1,9 +1,12 @@
 ---
-title: Web
+title: Web Library for Go
 description: "Server-side HTTP contracts, routing, middleware, testing, and an Echo-backed runtime."
 repoSlug: web
 repoUrl: https://github.com/goforj/web
+noAutoTitle: true
 ---
+
+# Web Library for Go {#web-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/web/main/docs/assets/logo.png" width="300" alt="goforj/web logo">
@@ -17,7 +20,7 @@ repoUrl: https://github.com/goforj/web
   <a href="https://pkg.go.dev/github.com/goforj/web"><img src="https://pkg.go.dev/badge/github.com/goforj/web.svg" alt="Go Reference"></a>
   <a href="https://github.com/goforj/web/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://github.com/goforj/web/actions/workflows/ci.yml"><img src="https://github.com/goforj/web/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.25%2B-blue?logo=go" alt="Go 1.25 or newer"></a>
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.26%2B-blue?logo=go" alt="Go 1.26 or newer"></a>
   <a href="https://github.com/goforj/web/releases"><img src="https://img.shields.io/github/v/tag/goforj/web?label=version&sort=semver" alt="Latest release"></a>
   <a href="https://codecov.io/gh/goforj/web"><img src="https://codecov.io/gh/goforj/web/graph/badge.svg?token=Q0S6BVOM7R" alt="Coverage"></a>
 </p>
@@ -28,7 +31,7 @@ The contracts deliberately expose less than Echo. Applications can stay on the s
 
 ## Installation {#installation}
 
-Requires Go 1.25 or newer.
+Requires Go 1.26 or newer.
 
 ```sh
 go get github.com/goforj/web
@@ -280,6 +283,24 @@ adapter.Echo().IPExtractor = echo.ExtractIPDirect()
 
 Behind a trusted proxy, configure `echo.ExtractIPFromXFFHeader` or `echo.ExtractIPFromRealIPHeader` with trust options that match the deployment, and ensure the edge proxy removes client-supplied forwarding headers before adding its own.
 
+## Request scheme and proxy trust {#request-scheme-and-proxy-trust}
+
+Echo 5.4 accepts scheme headers only from trusted peers. By default, loopback, link-local, private addresses and Unix sockets are trusted. Public clients cannot bypass `HTTPSRedirect` by claiming to use HTTPS.
+
+A proxy connecting from a public address or `100.64.0.0/10` now needs explicit trust. Without it, TLS termination can cause redirect loops and suppress HSTS. Configure the actual proxy ranges through the underlying engine:
+
+```go
+// Replace this documentation range with the proxy's actual network.
+_, proxyRange, err := net.ParseCIDR("203.0.113.0/24")
+if err != nil {
+    return err
+}
+adapter := echoweb.New()
+adapter.Echo().SchemeExtractor = echo.ExtractSchemeFromHeaders(echo.TrustIPRange(proxyRange))
+```
+
+The proxy must overwrite client-supplied `X-Forwarded-Proto`. Scheme trust is independent of `IPExtractor`. For other security behavior changes, including static paths, JSONP callbacks and method overrides, review the [Echo 5.4 migration notes](https://github.com/labstack/echo/releases/tag/v5.4.0).
+
 ## Performance {#performance}
 
 <!-- bench:embed:start -->
@@ -291,7 +312,7 @@ Whiskers in every panel show the observed sample minimum and maximum. The first 
 
 Bars are scaled independently within each panel, and small differences should not be treated as rankings. These are microbenchmarks and loopback ceilings, not production capacity forecasts.
 
-Measured with `go1.26.1` on `linux/arm64` (arm64 (CPU model unavailable)), kernel `Linux 7.0.11-orbstack-00360-gc9bc4d96ac70`, revision `d29d29af01ea`. Build settings: `CGO_ENABLED=1`, `GOARM64=v8.0`, `GODEBUG=(unset)`, `GOEXPERIMENT=(unset)`, `GOFLAGS=(unset)`. Benchmark inputs: `sha256:b0dc11f44fd0a2f7c12ddbca4f5f6b379fd7b661261242978a2dd8380f76fca5`. Dependencies: net/http go1.26.1, GoForj Web local checkout, Echo v5.1.0, Gin v1.12.0, Chi v5.3.1, Gorilla Mux v1.8.1, httprouter v1.3.0.
+Measured with `go1.27.2` on `linux/arm64` (arm64 (CPU model unavailable)), kernel `Linux 7.0.14-orbstack-00380-ga7e0a2dc9535`, revision `bed58056e1d6`. Build settings: `CGO_ENABLED=1`, `GOARM64=v8.0`, `GODEBUG=(unset)`, `GOEXPERIMENT=(unset)`, `GOFLAGS=(unset)`. Benchmark inputs: `sha256:1ddaf5f9fc8ff99221947f6a5630a3c4138ad88b3502f3a5c6c5e468ae7afcf5`. Dependencies: net/http go1.27.2, GoForj Web local checkout, Echo v5.4.0, Gin v1.12.0, Chi v5.3.2, Gorilla Mux v1.8.1, httprouter v1.3.0.
 
 Fiber is omitted because its `fasthttp` engine is not directly comparable in this shared `net/http` suite. See the [benchmark methodology](https://github.com/goforj/web/blob/main/docs/bench/README.md) and [recorded sample rows](https://github.com/goforj/web/blob/main/docs/bench/benchmarks_rows.json).
 
@@ -1305,8 +1326,11 @@ router.GET("/healthz", func(c web.Context) error {
 #### webmiddleware.TimeoutWithConfig {#webmiddleware-timeoutwithconfig}
 
 TimeoutWithConfig returns a response-timeout middleware with config.
-Timed work may run on an isolated native adapter context; request state that
-must cross the timeout boundary should use web.Context.Set and web.Context.Get.
+Timed work may run on an isolated native adapter context. With the Echo adapter,
+native echo.Context.Set and echo.Context.Get values do not cross that timeout
+detachment boundary because sharing Echo's pooled store would permit post-timeout
+request races. Store middleware values that must cross the boundary with
+web.Context.Set and web.Context.Get instead.
 
 ```go
 router := echoweb.New().Router()

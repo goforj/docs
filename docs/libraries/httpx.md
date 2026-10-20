@@ -1,9 +1,12 @@
 ---
-title: HTTPX
+title: HTTPX Library for Go
 description: "HTTP client helpers for typed requests, authentication, retries, and diagnostics."
 repoSlug: httpx
 repoUrl: https://github.com/goforj/httpx
+noAutoTitle: true
 ---
+
+# HTTPX Library for Go {#httpx-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/httpx/main/docs/images/logo.png" width="250" alt="httpx Logo">
@@ -16,15 +19,15 @@ It keeps req's power and escape hatches, while making the 90% use case feel effo
     <a href="https://pkg.go.dev/github.com/goforj/httpx/v2"><img src="https://pkg.go.dev/badge/github.com/goforj/httpx/v2.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/httpx/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/httpx/actions"><img src="https://github.com/goforj/httpx/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.18+-blue?logo=go" alt="Go version"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.27+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/httpx?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/httpx" ><img src="https://codecov.io/gh/goforj/httpx/graph/badge.svg?token=R5O7LYAD4B"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-203-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-268-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
 </p>
 
-## What is httpx? {#what-is-httpx?}
+## What is httpx? {#what-is-httpx}
 
 **httpx** is a modern, ergonomic HTTP client for Go.
 
@@ -40,7 +43,8 @@ type Request struct {
 }
 
 // request, binds result to Request
-res, _ := httpx.Get[Request](httpx.New(), "https://httpbin.org/uuid")
+c := httpx.New()
+res, _ := c.Get[Request]("https://httpbin.org/uuid")
 
 httpx.Dump(res)
 // #main.Request {
@@ -53,6 +57,8 @@ httpx.Dump(res)
 ```bash
 go get github.com/goforj/httpx/v2
 ```
+
+The generic method API requires Go 1.27 or newer. Projects on older Go releases can pin the v2.0 release line.
 
 ## Design Principles {#design-principles}
 
@@ -103,15 +109,15 @@ Use `make test` for the test suite, `make vet` for static checks, and `make gene
 |------:|:-----------|
 | **Auth** | [Auth](#auth) · [Basic](#basic) · [Bearer](#bearer) |
 | **Browser Profiles** | [AsChrome](#aschrome) · [AsFirefox](#asfirefox) · [AsMobile](#asmobile) · [AsSafari](#assafari) |
-| **Client** | [Default](#default) · [New](#new) · [Raw](#raw) · [Req](#req) |
+| **Client** | [Client.Raw](#client-raw) · [Client.Req](#client-req) · [Default](#default) · [New](#new) |
 | **Client Options** | [BaseURL](#baseurl) · [CookieJar](#cookiejar) · [ErrorMapper](#errormapper) · [Middleware](#middleware) · [Proxy](#proxy) · [ProxyFunc](#proxyfunc) · [Redirect](#redirect) · [Transport](#transport) |
 | **Debugging** | [Dump](#dump) · [DumpAll](#dumpall) · [DumpEachRequest](#dumpeachrequest) · [DumpEachRequestTo](#dumpeachrequestto) · [DumpTo](#dumpto) · [DumpToFile](#dumptofile) · [EnableDump](#enabledump) · [Trace](#trace) · [TraceAll](#traceall) |
 | **Download Options** | [OutputFile](#outputfile) |
-| **Errors** | [Error](#error) |
+| **Errors** | [HTTPError.Error](#httperror-error) |
 | **Request Composition** | [Body](#body) · [Form](#form) · [Header](#header) · [Headers](#headers) · [JSON](#json) · [Path](#path) · [Paths](#paths) · [Queries](#queries) · [Query](#query) · [UserAgent](#useragent) |
 | **Request Control** | [Before](#before) · [Timeout](#timeout) |
-| **Requests** | [Delete](#delete) · [Do](#do) · [Get](#get) · [Head](#head) · [Options](#options) · [Patch](#patch) · [Post](#post) · [Put](#put) |
-| **Requests (Context)** | [DeleteCtx](#deletectx) · [GetCtx](#getctx) · [HeadCtx](#headctx) · [OptionsCtx](#optionsctx) · [PatchCtx](#patchctx) · [PostCtx](#postctx) · [PutCtx](#putctx) |
+| **Requests** | [Client.Delete](#client-delete) · [Client.Get](#client-get) · [Client.Head](#client-head) · [Client.Options](#client-options) · [Client.Patch](#client-patch) · [Client.Post](#client-post) · [Client.Put](#client-put) · [Delete](#delete) · [Do](#do) · [Get](#get) · [Head](#head) · [Options](#options) · [Patch](#patch) · [Post](#post) · [Put](#put) |
+| **Requests (Context)** | [Client.DeleteCtx](#client-deletectx) · [Client.GetCtx](#client-getctx) · [Client.HeadCtx](#client-headctx) · [Client.OptionsCtx](#client-optionsctx) · [Client.PatchCtx](#client-patchctx) · [Client.PostCtx](#client-postctx) · [Client.PutCtx](#client-putctx) · [DeleteCtx](#deletectx) · [GetCtx](#getctx) · [HeadCtx](#headctx) · [OptionsCtx](#optionsctx) · [PatchCtx](#patchctx) · [PostCtx](#postctx) · [PutCtx](#putctx) |
 | **Retry** | [RetryBackoff](#retrybackoff) · [RetryCondition](#retrycondition) · [RetryCount](#retrycount) · [RetryFixedInterval](#retryfixedinterval) · [RetryHook](#retryhook) · [RetryInterval](#retryinterval) |
 | **Retry (Client)** | [Retry](#retry) |
 | **Upload Options** | [File](#file) · [FileBytes](#filebytes) · [FileReader](#filereader) · [Files](#files) · [UploadCallback](#uploadcallback) · [UploadCallbackWithInterval](#uploadcallbackwithinterval) · [UploadProgress](#uploadprogress) |
@@ -238,6 +244,14 @@ _ = httpx.New(httpx.AsSafari())
 
 ## Client {#client}
 
+### Client.Raw {#client-raw}
+
+Raw returns the underlying req client for chaining raw requests.
+
+### Client.Req {#client-req}
+
+Req returns the underlying req client for advanced usage.
+
 ### Default {#default}
 
 Default returns the shared default client.
@@ -280,15 +294,7 @@ _ = httpx.New(httpx.
 )
 ```
 
-### Raw {#raw}
-
-Raw returns the underlying req client for chaining raw requests.
-
-### Req {#req}
-
-Req returns the underlying req client for advanced usage.
-
-## Client Options {#client-options}
+## Client Options {#client-options-2}
 
 ### BaseURL {#baseurl}
 
@@ -538,7 +544,7 @@ httpx.Dump(res) // dumps map[string]any
 
 ## Errors {#errors}
 
-### Error {#error}
+### HTTPError.Error {#httperror-error}
 
 Error returns a short, human-friendly summary of the HTTP error.
 
@@ -800,9 +806,114 @@ httpx.Dump(res) // dumps map[string]any
 
 ## Requests {#requests}
 
+### Client.Delete {#client-delete}
+
+Delete issues a DELETE request and decodes its response.
+
+```go
+type DeleteResponse struct { URL string `json:"url"` }
+
+c := httpx.New()
+res, err := c.Delete[DeleteResponse]("https://httpbin.org/delete")
+if err != nil {
+	return
+}
+fmt.Println(res.URL)
+// https://httpbin.org/delete
+```
+
+### Client.Get {#client-get}
+
+Get issues a GET request and decodes its response.
+
+```go
+type GetResponse struct {
+	URL string `json:"url"`
+}
+
+c := httpx.New()
+res, err := c.Get[GetResponse]("https://httpbin.org/get")
+fmt.Println(err == nil, res.URL)
+// true https://httpbin.org/get
+```
+
+### Client.Head {#client-head}
+
+Head issues a HEAD request and decodes its response using the established response contract.
+
+```go
+c := httpx.New()
+_, err := c.Head[[]byte]("https://httpbin.org/get")
+fmt.Println(err == nil)
+// true
+```
+
+### Client.Options {#client-options}
+
+Options issues an OPTIONS request and decodes its response.
+
+```go
+c := httpx.New()
+_, err := c.Options[[]byte]("https://httpbin.org/get")
+fmt.Println(err == nil)
+// true
+```
+
+### Client.Patch {#client-patch}
+
+Patch issues a PATCH request and decodes its response.
+
+```go
+type UpdateUser struct { Name string `json:"name"` }
+type UpdateUserResponse struct { JSON UpdateUser `json:"json"` }
+
+c := httpx.New()
+res, err := c.Patch[UpdateUserResponse]("https://httpbin.org/patch", UpdateUser{Name: "Ana"})
+if err != nil {
+	return
+}
+fmt.Println(res.JSON.Name)
+// Ana
+```
+
+### Client.Post {#client-post}
+
+Post issues a POST request and decodes its response.
+
+```go
+type CreateUser struct { Name string `json:"name"` }
+type CreateUserResponse struct { JSON CreateUser `json:"json"` }
+
+c := httpx.New()
+res, err := c.Post[CreateUserResponse]("https://httpbin.org/post", CreateUser{Name: "Ana"})
+if err != nil {
+	return
+}
+fmt.Println(res.JSON.Name)
+// Ana
+```
+
+### Client.Put {#client-put}
+
+Put issues a PUT request and decodes its response.
+
+```go
+type UpdateUser struct { Name string `json:"name"` }
+type UpdateUserResponse struct { JSON UpdateUser `json:"json"` }
+
+c := httpx.New()
+res, err := c.Put[UpdateUserResponse]("https://httpbin.org/put", UpdateUser{Name: "Ana"})
+if err != nil {
+	return
+}
+fmt.Println(res.JSON.Name)
+// Ana
+```
+
 ### Delete {#delete}
 
 Delete issues a DELETE request using the provided client.
+It remains available for compatibility; new code can use Client.Delete.
 
 ```go
 type DeleteResponse struct {
@@ -846,6 +957,7 @@ println(rawResp.StatusCode)
 ### Get {#get}
 
 Get issues a GET request using the provided client.
+It remains available for compatibility; new code can use Client.Get.
 
 _Example: bind to a struct_
 
@@ -875,6 +987,7 @@ println(resString) // dumps string
 ### Head {#head}
 
 Head issues a HEAD request using the provided client.
+It remains available for compatibility; new code can use Client.Head.
 
 ```go
 c := httpx.New()
@@ -887,6 +1000,7 @@ if err != nil {
 ### Options {#options}
 
 Options issues an OPTIONS request using the provided client.
+It remains available for compatibility; new code can use Client.Options.
 
 ```go
 c := httpx.New()
@@ -899,6 +1013,7 @@ if err != nil {
 ### Patch {#patch}
 
 Patch issues a PATCH request using the provided client.
+It remains available for compatibility; new code can use Client.Patch.
 
 ```go
 type UpdateUser struct {
@@ -924,6 +1039,7 @@ httpx.Dump(res) // dumps UpdateUserResponse
 ### Post {#post}
 
 Post issues a POST request using the provided client.
+It remains available for compatibility; new code can use Client.Post.
 
 ```go
 type CreateUser struct {
@@ -949,6 +1065,7 @@ httpx.Dump(res) // dumps CreateUserResponse
 ### Put {#put}
 
 Put issues a PUT request using the provided client.
+It remains available for compatibility; new code can use Client.Put.
 
 ```go
 type UpdateUser struct {
@@ -973,9 +1090,118 @@ httpx.Dump(res) // dumps UpdateUserResponse
 
 ## Requests (Context) {#requests-(context)}
 
+### Client.DeleteCtx {#client-deletectx}
+
+DeleteCtx issues a context-aware DELETE request and decodes its response.
+
+```go
+type DeleteResponse struct {
+	URL string `json:"url"`
+}
+ctx := context.Background()
+c := httpx.New()
+res, err := c.DeleteCtx[DeleteResponse](ctx, "https://httpbin.org/delete")
+if err != nil {
+	return
+}
+fmt.Println(res.URL)
+// https://httpbin.org/delete
+```
+
+### Client.GetCtx {#client-getctx}
+
+GetCtx issues a context-aware GET request and decodes its response.
+
+```go
+type GetResponse struct {
+	URL string `json:"url"`
+}
+ctx := context.Background()
+c := httpx.New()
+res, err := c.GetCtx[GetResponse](ctx, "https://httpbin.org/get")
+fmt.Println(err == nil, res.URL)
+// true https://httpbin.org/get
+```
+
+### Client.HeadCtx {#client-headctx}
+
+HeadCtx issues a context-aware HEAD request and decodes its response using the established response contract.
+
+```go
+ctx := context.Background()
+c := httpx.New()
+_, err := c.HeadCtx[[]byte](ctx, "https://httpbin.org/get")
+fmt.Println(err == nil)
+// true
+```
+
+### Client.OptionsCtx {#client-optionsctx}
+
+OptionsCtx issues a context-aware OPTIONS request and decodes its response.
+
+```go
+ctx := context.Background()
+c := httpx.New()
+_, err := c.OptionsCtx[[]byte](ctx, "https://httpbin.org/get")
+fmt.Println(err == nil)
+// true
+```
+
+### Client.PatchCtx {#client-patchctx}
+
+PatchCtx issues a context-aware PATCH request and decodes its response.
+
+```go
+type UpdateUser struct { Name string `json:"name"` }
+type UpdateUserResponse struct { JSON UpdateUser `json:"json"` }
+ctx := context.Background()
+c := httpx.New()
+res, err := c.PatchCtx[UpdateUserResponse](ctx, "https://httpbin.org/patch", UpdateUser{Name: "Ana"})
+if err != nil {
+	return
+}
+fmt.Println(res.JSON.Name)
+// Ana
+```
+
+### Client.PostCtx {#client-postctx}
+
+PostCtx issues a context-aware POST request and decodes its response.
+
+```go
+type CreateUser struct { Name string `json:"name"` }
+type CreateUserResponse struct { JSON CreateUser `json:"json"` }
+ctx := context.Background()
+c := httpx.New()
+res, err := c.PostCtx[CreateUserResponse](ctx, "https://httpbin.org/post", CreateUser{Name: "Ana"})
+if err != nil {
+	return
+}
+fmt.Println(res.JSON.Name)
+// Ana
+```
+
+### Client.PutCtx {#client-putctx}
+
+PutCtx issues a context-aware PUT request and decodes its response.
+
+```go
+type UpdateUser struct { Name string `json:"name"` }
+type UpdateUserResponse struct { JSON UpdateUser `json:"json"` }
+ctx := context.Background()
+c := httpx.New()
+res, err := c.PutCtx[UpdateUserResponse](ctx, "https://httpbin.org/put", UpdateUser{Name: "Ana"})
+if err != nil {
+	return
+}
+fmt.Println(res.JSON.Name)
+// Ana
+```
+
 ### DeleteCtx {#deletectx}
 
 DeleteCtx issues a DELETE request using the provided client and context.
+It remains available for compatibility; new code can use Client.DeleteCtx.
 
 ```go
 type DeleteResponse struct {
@@ -997,6 +1223,7 @@ httpx.Dump(res) // dumps DeleteResponse
 ### GetCtx {#getctx}
 
 GetCtx issues a GET request using the provided client and context.
+It remains available for compatibility; new code can use Client.GetCtx.
 
 ```go
 type GetResponse struct {
@@ -1018,6 +1245,7 @@ httpx.Dump(res) // dumps GetResponse
 ### HeadCtx {#headctx}
 
 HeadCtx issues a HEAD request using the provided client and context.
+It remains available for compatibility; new code can use Client.HeadCtx.
 
 ```go
 ctx := context.Background()
@@ -1031,6 +1259,7 @@ if err != nil {
 ### OptionsCtx {#optionsctx}
 
 OptionsCtx issues an OPTIONS request using the provided client and context.
+It remains available for compatibility; new code can use Client.OptionsCtx.
 
 ```go
 ctx := context.Background()
@@ -1044,6 +1273,7 @@ if err != nil {
 ### PatchCtx {#patchctx}
 
 PatchCtx issues a PATCH request using the provided client and context.
+It remains available for compatibility; new code can use Client.PatchCtx.
 
 ```go
 type UpdateUser struct {
@@ -1070,6 +1300,7 @@ httpx.Dump(res) // dumps UpdateUserResponse
 ### PostCtx {#postctx}
 
 PostCtx issues a POST request using the provided client and context.
+It remains available for compatibility; new code can use Client.PostCtx.
 
 ```go
 type CreateUser struct {
@@ -1096,6 +1327,7 @@ httpx.Dump(res) // dumps CreateUserResponse
 ### PutCtx {#putctx}
 
 PutCtx issues a PUT request using the provided client and context.
+It remains available for compatibility; new code can use Client.PutCtx.
 
 ```go
 type UpdateUser struct {
