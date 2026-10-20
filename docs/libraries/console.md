@@ -1,10 +1,12 @@
 ---
-title: Console
+title: Console Library for Go
 description: "Semantic CLI output, ANSI-aware layout, prompts, loaders, and progress."
 repoSlug: console
 repoUrl: https://github.com/goforj/console
 noAutoTitle: true
 ---
+
+# Console Library for Go {#console-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/console/main/docs/assets/logo.png" width="300" alt="console logo">
@@ -18,7 +20,7 @@ noAutoTitle: true
   <a href="https://pkg.go.dev/github.com/goforj/console"><img src="https://pkg.go.dev/badge/github.com/goforj/console.svg" alt="Go Reference"></a>
   <a href="https://github.com/goforj/console/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://github.com/goforj/console/actions"><img src="https://github.com/goforj/console/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.24%2B-blue?logo=go" alt="Go 1.24 or newer"></a>
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.25%2B-blue?logo=go" alt="Go 1.25 or newer"></a>
   <img src="https://img.shields.io/github/v/tag/goforj/console?label=version&sort=semver" alt="Latest tag">
   <a href="https://codecov.io/gh/goforj/console"><img src="https://codecov.io/github/goforj/console/graph/badge.svg" alt="Coverage"></a>
 </p>
@@ -27,7 +29,7 @@ noAutoTitle: true
 
 ## Installation {#installation}
 
-Requires Go 1.24 or newer.
+Requires Go 1.25 or newer.
 
 ```sh
 go get github.com/goforj/console
@@ -93,6 +95,7 @@ fmt.Printf("%q\n", strings.TrimSuffix(output.String(), "\n"))
 - Bordered tables by default, plus one compact form, fixed widths, alignment, wrapping, and ASCII fallbacks.
 - Line-oriented questions, defaults, confirmation, numbered choices, and non-echoed secret input.
 - Concurrency-safe loaders and determinate progress that become stable semantic lines when redirected.
+- Optional terminal-owned progress indicators for terminal tabs, windows, and taskbars that support OSC 9;4.
 - Configurable writers, input, marks, terminal hooks, environment lookup, and exit behavior.
 
 ## Design principles {#design-principles}
@@ -163,6 +166,8 @@ fmt.Print(output.String())
 ```
 
 On a terminal a loader animates in place, while progress uses one adaptive bar with a percentage. Narrow terminals fall back to message and percentage. With automatic policy, redirected output and conventional truthy `CI` environments use only a start line and the final success or error, so captured logs stay useful. `AnimationsEnabled` can explicitly opt a terminal back into animation.
+
+Set `TerminalProgressEnabled` to `true` to mirror loader and progress lifecycles through the OSC 9;4 terminal progress protocol. Loaders publish indeterminate activity, determinate progress publishes its current percentage, and every terminal outcome clears the indicator. Supporting terminal emulators decide whether that appears in a tab, window edge, or operating-system taskbar; unsupported terminals ignore the sequence. The option is independent of `AnimationsEnabled`, still requires terminal output with ANSI support, and never writes control sequences to redirected output.
 
 Representative terminal snapshots are shown below; each display redraws one physical line rather than appending these frames. The last line is the exact Unicode rendering at a width of 14 cells.
 
@@ -579,7 +584,7 @@ if err := loader.Start(); err != nil {
 }
 // · Uploading release
 loader.Fail("Registry refused upload")
-// ERROR Registry refused upload
+// ✖ Registry refused upload
 ```
 
 #### Loader.Start {#loader-start}
@@ -712,7 +717,7 @@ ErrorMark returns the default console's error indicator.
 
 ```go
 fmt.Println(console.ErrorMark())
-// ERROR
+// ✖
 ```
 
 #### InfoMark {#infomark}
@@ -791,7 +796,7 @@ Error prints an error message through the default console.
 
 ```go
 console.Error("deployment failed")
-// ERROR deployment failed
+// ✖ deployment failed
 ```
 
 #### Errorf {#errorf}
@@ -800,7 +805,7 @@ Errorf prints a formatted error message through the default console.
 
 ```go
 console.Errorf("deployment failed: %s", "timeout")
-// ERROR deployment failed: timeout
+// ✖ deployment failed: timeout
 ```
 
 #### Fatal {#fatal}
@@ -812,7 +817,7 @@ console.SetDefault(console.New(console.Config{
 	Exit: func(code int) { fmt.Println("exit", code) },
 }))
 console.Fatal("invalid configuration")
-// ERROR invalid configuration
+// ✖ invalid configuration
 // exit 1
 ```
 
@@ -825,7 +830,7 @@ console.SetDefault(console.New(console.Config{
 	Exit: func(code int) { fmt.Println("exit", code) },
 }))
 console.Fatalf("invalid port: %d", 0)
-// ERROR invalid port: 0
+// ✖ invalid port: 0
 // exit 1
 ```
 
@@ -1065,7 +1070,7 @@ if err := progress.Start(); err != nil {
 }
 // · Publishing release
 progress.Fail("Registry refused upload")
-// ERROR Registry refused upload
+// ✖ Registry refused upload
 ```
 
 #### Progress.Set {#progress-set}
@@ -1329,12 +1334,12 @@ fmt.Println(errors.Is(err, console.ErrNonInteractive))
 
 #### ASCIIMarks {#asciimarks}
 
-ASCIIMarks returns marks suitable for constrained terminals and plain logs.
+ASCIIMarks returns symbols suitable for constrained terminals and plain logs.
 
 ```go
 marks := console.ASCIIMarks()
 fmt.Println(marks.Success, marks.Warn, marks.Error)
-// + ! ERROR
+// + ! x
 ```
 
 #### Config {#config}
@@ -1373,12 +1378,12 @@ fmt.Println(console.Default() != nil)
 
 #### DefaultMarks {#defaultmarks}
 
-DefaultMarks returns the semantic marks used by a default console.
+DefaultMarks returns the Unicode symbols used by a default console.
 
 ```go
 marks := console.DefaultMarks()
 fmt.Println(marks.Success, marks.Warn, marks.Error)
-// ✔ ! ERROR
+// ✔ ! ✖
 ```
 
 #### Marks {#marks}
@@ -1962,7 +1967,7 @@ console.Success("API ready\nWorker ready")
 console.Warn("Configuration is incomplete")
 // ! Configuration is incomplete
 console.Error("Port already in use")
-// ERROR Port already in use
+// ✖ Port already in use
 ```
 
 ### Plain output and coordinated writers {#plain-output-and-coordinated-writers}
@@ -1980,7 +1985,7 @@ fmt.Fprintln(console.StderrWriter(), "diagnostic output")
 
 ```go
 fmt.Println(console.ActionMark(), console.SuccessMark(), console.ErrorMark())
-// · ✔ ERROR
+// · ✔ ✖
 fmt.Println(console.Style("release ready", console.StyleBold, console.ColorGreen))
 // release ready
 ```
@@ -2111,7 +2116,7 @@ if err := publish.Start(); err != nil {
 // · Publishing release
 defer publish.Stop()
 publish.Fail("Registry refused upload")
-// ERROR Registry refused upload
+// ✖ Registry refused upload
 ```
 
 ### Determinate progress {#determinate-progress}
@@ -2269,7 +2274,7 @@ console.List("DATABASE_URL is missing", "PORT must be between 1 and 65535")
 // • DATABASE_URL is missing
 // • PORT must be between 1 and 65535
 console.Error("Validation failed")
-// ERROR Validation failed
+// ✖ Validation failed
 ```
 
 ### Recipe: machine stdout and status stderr {#recipe:-machine-stdout-and-status-stderr}
@@ -2318,9 +2323,18 @@ fmt.Print(output.String())
 
 ## Development {#development}
 
-`docs` and `examples` are separate Go modules so release archives contain only the library.
+```sh
+go test ./...
+go test -race ./...
+go -C docs test ./...
+go -C examples test ./...
+go generate .
+go vet ./...
+go -C docs vet ./...
+go -C examples vet ./...
+```
 
-Use `make test`, `make test-race`, `make vet`, and `make generate`. The test and vet targets cover all three modules; generation rebuilds the README from its verified GoDoc examples.
+The docs and examples are separate Go modules so release archives contain only the library. The README API index uses a generator-owned grouping manifest, while each local API target and code sample is generated from the declaration's GoDoc `Example:` block. Focused workflow examples come from standard Go example tests that execute and verify their inline output. Generation validates its marker pair and every example target before writing, so malformed documentation fails without partially changing the README.
 
 ## Documentation {#documentation}
 
@@ -2332,8 +2346,8 @@ Use `make test`, `make test-race`, `make vet`, and `make generate`. The test and
 
 Before tagging a release:
 
-- Run `make test`, `make test-race`, and `make vet`.
-- Run `make generate` and confirm the working tree has no generated or module-file diff.
+- Run the root, docs, and examples tests and vet commands above, including the race suite.
+- Run `go generate .` and confirm the working tree has no generated or module-file diff.
 - Choose the next semantic version and review the public API and README output one final time.
 - Create an annotated tag with `git tag -a vX.Y.Z -m "vX.Y.Z"`, then push it with `git push origin vX.Y.Z`.
 

@@ -1,9 +1,12 @@
 ---
-title: Scheduler
+title: Scheduler Library for Go
 description: "Recurring work primitives with cron, intervals, overlap protection, and runtime controls."
 repoSlug: scheduler
 repoUrl: https://github.com/goforj/scheduler
+noAutoTitle: true
 ---
+
+# Scheduler Library for Go {#scheduler-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/scheduler/main/docs/images/logo.png" width="300" alt="scheduler logo">
@@ -17,7 +20,7 @@ repoUrl: https://github.com/goforj/scheduler
     <a href="https://pkg.go.dev/github.com/goforj/scheduler/v2"><img src="https://pkg.go.dev/badge/github.com/goforj/scheduler/v2.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/scheduler/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/scheduler/actions"><img src="https://github.com/goforj/scheduler/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.18+-blue?logo=go" alt="Go version"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.25+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/scheduler?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/scheduler" ><img src="https://codecov.io/github/goforj/scheduler/graph/badge.svg?token=9KT46ZORP3"/></a>
 <!-- test-count:embed:start -->
@@ -33,7 +36,7 @@ repoUrl: https://github.com/goforj/scheduler
 - Command execution helper for running CLI tasks with background mode and env-aware tagging.
 - Auto-generated, compile-tested examples ensure docs and behavior stay in sync.
 
-## Why scheduler? {#why-scheduler?}
+## Why scheduler? {#why-scheduler}
 
 Go has excellent low-level scheduling libraries, but defining real-world schedules often turns into a maze of cron strings, conditionals, and glue code.
 

@@ -5,6 +5,7 @@ import (
 	"github.com/goforj/docs/internal/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"io/fs"
 	"net/http"
 	"path"
 	"strings"
@@ -122,7 +123,7 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 						return next(c)
 					}
 					htmlPath := path.Join(spa.FileRoot(), cleanPath+".html")
-					if _, err := spa.Filesystem().Open(htmlPath); err == nil {
+					if info, err := fs.Stat(spa.Filesystem(), htmlPath); err == nil && !info.IsDir() {
 						s.logger.Info().Str("path", requestPath).Str("rewrite", "/"+cleanPath+".html").Msg("SPA rewrite")
 						rewritten := "/" + cleanPath + ".html"
 						c.Request().URL.Path = rewritten
@@ -132,7 +133,7 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 						return next(c)
 					}
 					indexPath := path.Join(spa.FileRoot(), cleanPath, "index.html")
-					if _, err := spa.Filesystem().Open(indexPath); err == nil {
+					if info, err := fs.Stat(spa.Filesystem(), indexPath); err == nil && !info.IsDir() {
 						rewritten := path.Join(requestPath, "index.html")
 						s.logger.Info().Str("path", requestPath).Str("rewrite", rewritten).Msg("SPA rewrite")
 						c.Request().URL.Path = rewritten
@@ -145,25 +146,11 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 			}
 		})
 		g.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-			HTML5:      true,
+			// VitePress emits every valid route. Unknown paths must not fall back to the homepage.
+			HTML5:      false,
 			Root:       spa.FileRoot(),
 			Filesystem: http.FS(spa.Filesystem()),
 			Index:      "index.html",
-			Skipper: func(c echo.Context) bool {
-				requestPath := strings.TrimPrefix(c.Request().URL.Path, "/")
-				// Inline check for file extension (treat anything with a dot as an asset)
-				if ext := path.Ext(requestPath); ext != "" {
-					// Check if file exists in the embedded FS
-					if _, err := spa.Filesystem().Open(path.Join(spa.FileRoot(), requestPath)); err != nil {
-						// File not found, respond with 404 and skip middleware
-						c.Error(echo.NewHTTPError(http.StatusNotFound, "File not found"))
-						return true
-					}
-				}
-
-				// Continue to Static middleware for SPA fallback or valid files
-				return false
-			},
 		}))
 	}
 }

@@ -1,9 +1,12 @@
 ---
-title: Metrics
+title: Metrics Library for Go
 description: "Counters, gauges, histograms, snapshots, and Prometheus-compatible export."
 repoSlug: metrics
 repoUrl: https://github.com/goforj/metrics
+noAutoTitle: true
 ---
+
+# Metrics Library for Go {#metrics-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/metrics/main/docs/assets/logo.png" width="300" alt="metrics logo">

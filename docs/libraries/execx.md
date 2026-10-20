@@ -1,9 +1,12 @@
 ---
-title: ExecX
+title: ExecX Library for Go
 description: "Command execution helpers with streaming, decoding, and TTY support."
 repoSlug: execx
 repoUrl: https://github.com/goforj/execx
+noAutoTitle: true
 ---
+
+# ExecX Library for Go {#execx-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/execx/main/docs/images/logo.png" width="300" alt="execx logo">
@@ -17,11 +20,11 @@ repoUrl: https://github.com/goforj/execx
     <a href="https://pkg.go.dev/github.com/goforj/execx"><img src="https://pkg.go.dev/badge/github.com/goforj/execx.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/execx/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/execx/actions"><img src="https://github.com/goforj/execx/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.24.4+-blue?logo=go" alt="Go version"></a>
+    <a href="https://go.dev"><img src="https://img.shields.io/badge/go-1.27+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/execx?label=version&sort=semver" alt="Latest tag"> 
     <a href="https://codecov.io/gh/goforj/execx" ><img src="https://codecov.io/github/goforj/execx/graph/badge.svg?token=RBB8T6WQ0U"/></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/tests-123-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-125-brightgreen" alt="Tests">
 <!-- test-count:embed:end -->
 </p>
 
@@ -41,7 +44,7 @@ The core contract is deliberately narrow:
 
 ## Installation {#installation}
 
-execx requires Go 1.24.4 or newer.
+execx requires Go 1.27 or newer. Projects on older Go releases can pin the v1.1 release line.
 
 ```bash
 go get github.com/goforj/execx
@@ -256,7 +259,7 @@ All public APIs are covered by runnable examples under `./examples`, and the tes
 | **Construction** | [Command](#command) |
 | **Context** | [WithContext](#withcontext) · [WithDeadline](#withdeadline) · [WithTimeout](#withtimeout) |
 | **Debugging** | [Args](#args) · [ShellEscaped](#shellescaped) · [String](#string) |
-| **Decoding** | [Decode](#decode) · [DecodeJSON](#decodejson) · [DecodeWith](#decodewith) · [DecodeYAML](#decodeyaml) · [FromCombined](#fromcombined) · [FromStderr](#fromstderr) · [FromStdout](#fromstdout) · [Into](#into) · [Trim](#trim) |
+| **Decoding** | [As](#as) · [Decode](#decode) · [DecodeJSON](#decodejson) · [DecodeWith](#decodewith) · [DecodeYAML](#decodeyaml) · [FromCombined](#fromcombined) · [FromStderr](#fromstderr) · [FromStdout](#fromstdout) · [Into](#into) · [Trim](#trim) |
 | **Environment** | [Env](#env) · [EnvAppend](#envappend) · [EnvInherit](#envinherit) · [EnvList](#envlist) · [EnvOnly](#envonly) |
 | **Errors** | [Error](#error) · [Unwrap](#unwrap) |
 | **Execution** | [CombinedOutput](#combinedoutput) · [OnExecCmd](#onexeccmd) · [Output](#output) · [OutputBytes](#outputbytes) · [OutputTrimmed](#outputtrimmed) · [Run](#run) · [Start](#start) |
@@ -366,6 +369,21 @@ fmt.Println(cmd.String())
 ```
 
 ## Decoding {#decoding}
+
+### As {#as}
+
+As executes the command and decodes its selected output into T.
+
+```go
+type payload struct {
+	Name string `json:"name"`
+}
+out, err := execx.Command("printf", `{"name":"gopher"}`).
+	DecodeJSON().
+	As[payload]()
+fmt.Println(err == nil, out.Name)
+// true gopher
+```
 
 ### Decode {#decode}
 

@@ -1,9 +1,12 @@
 ---
-title: Events
+title: Events Library for Go
 description: "Typed event publication and subscription with local and distributed transports."
 repoSlug: events
 repoUrl: https://github.com/goforj/events
+noAutoTitle: true
 ---
+
+# Events Library for Go {#events-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/events/main/docs/images/logo.png" width="300" alt="events logo">
@@ -17,12 +20,12 @@ repoUrl: https://github.com/goforj/events
     <a href="https://pkg.go.dev/github.com/goforj/events"><img src="https://pkg.go.dev/badge/github.com/goforj/events.svg" alt="Go Reference"></a>
     <a href="https://github.com/goforj/events/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://github.com/goforj/events/actions"><img src="https://github.com/goforj/events/actions/workflows/test.yml/badge.svg" alt="Go Test"></a>
-    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24+-blue?logo=go" alt="Go version"></a>
+    <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.24%2F1.25%2F1.26+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/events?label=version&sort=semver" alt="Latest tag">
     <a href="https://codecov.io/gh/goforj/events"><img src="https://codecov.io/gh/goforj/events/graph/badge.svg?token=07N6F71OXM" alt="Codecov"></a>
 <!-- test-count:embed:start -->
-  <img src="https://img.shields.io/badge/unit_tests-25-brightgreen" alt="Unit tests (executed count)">
-  <img src="https://img.shields.io/badge/integration_tests-86-blue" alt="Integration tests (executed count)">
+  <img src="https://img.shields.io/badge/unit_tests-37-brightgreen" alt="Unit tests (executed count)">
+  <img src="https://img.shields.io/badge/integration_tests-98-blue" alt="Integration tests (executed count)">
 <!-- test-count:embed:end -->
 </p>
 
@@ -38,7 +41,15 @@ It lets applications publish and subscribe to events using normal Go types, with
 go get github.com/goforj/events
 ```
 
-All published modules support Go 1.24 and newer.
+## Go compatibility {#go-compatibility}
+
+| Modules | Minimum Go version |
+| --- | --- |
+| Root, docs, eventscore, eventsfake, eventstest, Redis, and SNS | 1.24 |
+| Kafka driver | 1.25 |
+| Google Pub/Sub, NATS, JetStream, examples, and integration | 1.26 |
+
+Kafka applications upgrading from Go 1.24 must use Go 1.25 or newer for the fixed compression dependency. The other module minimums are unchanged; use a toolchain that satisfies every module your application imports.
 
 ## Quick Start {#quick-start}
 

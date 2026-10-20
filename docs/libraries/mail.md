@@ -1,9 +1,12 @@
 ---
-title: Mail
+title: Mail Library for Go
 description: "Portable message composition with local, SMTP, and provider delivery drivers."
 repoSlug: mail
 repoUrl: https://github.com/goforj/mail
+noAutoTitle: true
 ---
+
+# Mail Library for Go {#mail-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png" width="300" alt="mail logo">
@@ -156,6 +159,52 @@ This quality pass deliberately tightens the pre-v1 contract:
 - The root module and `mailses` are staged as a coordinated v0.3.0 release; publish the root tag before `mailses/v0.3.0` so the SES module never depends on a local replacement. The checksum-staging sequence is documented in [scripts/RELEASE.md](https://github.com/goforj/mail/blob/main/scripts/RELEASE.md).
 
 GoForj-generated mailers already configure `WithDefaultFrom`, so their normal send shape is unchanged.
+
+## Benchmarks {#benchmarks}
+
+Run `make bench` to measure all eight Mail drivers against local acceptance fixtures. Run `make bench-check` to verify source fingerprints, raw samples, and generated README medians.
+
+<!-- benchmarks:start -->
+Median of seven one-second samples, go1.27.2 darwin/arm64, Apple M4 Max, GOMAXPROCS=1. One recipient, text and HTML bodies, and a 4 KiB attachment.
+
+These are local client costs, not a ranking of real provider latency or inbox delivery. API drivers use HTTP acceptance fixtures in separate processes without TLS; SMTP uses local Mailpit. Log serializes to `io.Discard`; Fake resets every 128 sends, with reset cost included. Fixture-server allocations stay outside the client measurements.
+
+### Send return latency {#send-return-latency}
+
+![Mail Client Send Latency chart](https://raw.githubusercontent.com/goforj/mail/main/docs/bench/benchmarks_ns.svg)
+
+### Serial send throughput {#serial-send-throughput}
+
+![Mail Client Send Throughput chart](https://raw.githubusercontent.com/goforj/mail/main/docs/bench/benchmarks_ops.svg)
+
+### Allocated bytes {#allocated-bytes}
+
+![Mail Client Allocated Bytes chart](https://raw.githubusercontent.com/goforj/mail/main/docs/bench/benchmarks_bytes.svg)
+
+### Allocations {#allocations}
+
+![Mail Client Allocations chart](https://raw.githubusercontent.com/goforj/mail/main/docs/bench/benchmarks_allocs.svg)
+
+Throughput is the reciprocal of median send latency for a serial client, not a concurrent load test. All charts use linear bars; very small values have a minimum visible width. Driver colors stay consistent across metrics.
+
+<details>
+<summary>Recorded medians</summary>
+
+| Driver | Send return | Bytes/op | Allocs/op |
+| :-- | --: | --: | --: |
+| Fake | 2.69 µs | 9,450 | 30 |
+| Log | 3.88 µs | 10,192 | 34 |
+| Mailgun | 48.05 µs | 27,414 | 223 |
+| Resend | 52.99 µs | 33,298 | 113 |
+| Postmark | 53.52 µs | 33,426 | 116 |
+| SendGrid | 53.60 µs | 32,911 | 103 |
+| SES | 103.72 µs | 106,222 | 610 |
+| SMTP | 3.71 ms | 58,850 | 316 |
+
+</details>
+
+[Raw samples](https://github.com/goforj/mail/blob/main/docs/bench/benchmarks_rows.json) · [Original Go output](https://github.com/goforj/mail/blob/main/docs/bench/benchmarks.txt) · [Workload and reproduction](https://github.com/goforj/mail/blob/main/docs/bench/README.md)
+<!-- benchmarks:end -->
 
 ## API {#api}
 

@@ -16,9 +16,7 @@ const decodeHtmlEntities = (value) => value
   .replace(/&gt;/g, '>')
 
 const imageSrc = (source) => {
-  const introEnd = source.search(/^##\s/m)
-  const intro = introEnd === -1 ? source : source.slice(0, introEnd)
-  const htmlImage = intro.match(/<img\b[^>]*\bsrc=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i)
+  const htmlImage = source.match(/<img\b[^>]*\bsrc=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i)
   return decodeHtmlEntities(htmlImage?.slice(1).find(Boolean)?.trim() || '')
 }
 

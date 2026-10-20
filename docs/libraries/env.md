@@ -1,9 +1,12 @@
 ---
-title: Env
+title: Env Library for Go
 description: "Layered environment loading and typed configuration helpers for Go."
 repoSlug: env
 repoUrl: https://github.com/goforj/env
+noAutoTitle: true
 ---
+
+# Env Library for Go {#env-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/env/main/docs/images/logo.png" width="250" alt="goforj/env logo">
@@ -22,7 +25,7 @@ repoUrl: https://github.com/goforj/env
     <a href="https://codecov.io/gh/goforj/env" ><img src="https://codecov.io/github/goforj/env/graph/badge.svg?token=M7EFUVV1XW"/></a>
 </p>
 
-# Features {#features}
+## Features {#features}
 
 **env** provides strongly-typed access to environment variables with predictable fallbacks. Eliminate string parsing, centralize app environment checks, and keep configuration boring. Designed to feel native to Go - and invisible when things are working.
 
@@ -35,7 +38,7 @@ repoUrl: https://github.com/goforj/env
 - **Transactional env loading** - discovery, parsing, and process updates succeed together or leave the prior environment intact
 - **Composable building block** - ideal for config structs and startup wiring
 
-## Why env? {#why-env?}
+## Why env? {#why-env}
 
 Accessing environment variables in Go often leads to:
 

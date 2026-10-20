@@ -1,9 +1,12 @@
 ---
-title: Crypt
+title: Crypt Library for Go
 description: "Encryption helpers with key generation and rotation support."
 repoSlug: crypt
 repoUrl: https://github.com/goforj/crypt
+noAutoTitle: true
 ---
+
+# Crypt Library for Go {#crypt-library-for-go}
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/goforj/crypt/main/docs/images/logo.png" width="300" alt="crypt logo">
@@ -28,7 +31,7 @@ repoUrl: https://github.com/goforj/crypt
 go get github.com/goforj/crypt
 ```
 
-# Features {#features}
+## Features {#features}
 
 **crypt** provides authenticated AES-CBC encryption for Go services and graceful key rotation through **APP_PREVIOUS_KEYS**. `Encrypt` uses one current wire format, while `Decrypt` remains backward-compatible with ciphertext written by earlier releases.
 
@@ -41,7 +44,7 @@ go get github.com/goforj/crypt
 - Instanced and global usage styles
 - Stable error identities for invalid keys, malformed payloads, and authentication failures
 
-## Why crypt? {#why-crypt?}
+## Why crypt? {#why-crypt}
 
 **crypt** exists to solve one problem well: encrypting small application payloads with safe defaults and painless key rotation.
 

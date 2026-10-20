@@ -24,36 +24,42 @@
     "file": "cache-logo.png",
     "project": "https://github.com/goforj/cache",
     "source": "https://raw.githubusercontent.com/goforj/cache/main/docs/images/logo.png",
-    "display": "Original README logo, unchanged."
+    "display": "192px-wide WebP derivative for charts and navigation. Original README artwork retained unchanged. Regenerate with sh bin/export-performance-logos.sh (requires cwebp).",
+    "derivative": "cache-logo.webp"
   },
   {
     "file": "queue-logo.png",
     "project": "https://github.com/goforj/queue",
     "source": "https://raw.githubusercontent.com/goforj/queue/main/docs/images/logo.png",
-    "display": "Original README logo, unchanged."
+    "display": "192px-wide WebP derivative for charts and navigation. Original README artwork retained unchanged. Regenerate with sh bin/export-performance-logos.sh (requires cwebp).",
+    "derivative": "queue-logo.webp"
   },
   {
     "file": "events-logo.png",
     "project": "https://github.com/goforj/events",
     "source": "https://raw.githubusercontent.com/goforj/events/main/docs/images/logo.png",
-    "display": "Original README logo, unchanged."
+    "display": "192px-wide WebP derivative for charts and navigation. Original README artwork retained unchanged. Regenerate with sh bin/export-performance-logos.sh (requires cwebp).",
+    "derivative": "events-logo.webp"
   },
   {
     "file": "storage-logo.png",
     "project": "https://github.com/goforj/storage",
     "source": "https://raw.githubusercontent.com/goforj/storage/main/docs/images/logo.png",
-    "display": "Original README logo, unchanged."
+    "display": "192px-wide WebP derivative for charts and navigation. Original README artwork retained unchanged. Regenerate with sh bin/export-performance-logos.sh (requires cwebp).",
+    "derivative": "storage-logo.webp"
   },
   {
     "file": "web-logo.png",
     "project": "https://github.com/goforj/web",
     "source": "https://raw.githubusercontent.com/goforj/web/main/docs/assets/logo.png",
-    "display": "Original README logo, unchanged."
+    "display": "192px-wide WebP derivative for charts and navigation. Original README artwork retained unchanged. Regenerate with sh bin/export-performance-logos.sh (requires cwebp).",
+    "derivative": "web-logo.webp"
   },
   {
     "file": "mail-logo.png",
     "project": "https://github.com/goforj/mail",
     "source": "https://raw.githubusercontent.com/goforj/mail/main/docs/assets/logo.png",
-    "display": "Original README logo, unchanged."
+    "display": "192px-wide WebP derivative for charts and navigation. Original README artwork retained unchanged. Regenerate with sh bin/export-performance-logos.sh (requires cwebp).",
+    "derivative": "mail-logo.webp"
   }
 ]
