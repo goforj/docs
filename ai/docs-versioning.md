@@ -8,6 +8,8 @@ The checked-in release metadata at `docs/.vitepress/data/release.json` is the cu
 
 The root site is the active documentation line. It should be treated as current source behavior until the project needs multiple simultaneously published documentation lines.
 
+The navigation badge says "Public beta" and links to `/versions/#public-beta`. It communicates framework maturity, not the documentation branch or a library's stability. Keep the public beta policy, early-adopter invitation, and upgrade expectations on the Versions page. The homepage and getting-started pages should invite self-service adoption and link to that policy. Keep `Unreleased` for changelog entries that have not shipped.
+
 The version label must be checked against the latest framework release before publication. Internal plans, the VitePress navigation, `/versions/`, and the changelog must not carry different current-version values.
 
 ## Versioning Principle

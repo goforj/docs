@@ -1,19 +1,33 @@
 ---
 title: Versions
-description: Version policy and historical milestone model for GoForj.
+description: Public beta status, release versions, and upgrade guidance for GoForj.
 ---
 
 # Versions
 
-These docs follow GoForj's active development line.
+GoForj is in public beta. Install the CLI, build an application, or use the standalone libraries. No invitation is required.
 
-GoForj is still pre-`v1.0`, but the project has a real development history. The version line is used to mark meaningful framework milestones: App structure, CLI behavior, runtime lifecycle, starter kits, observability, local development, and first-party library integration.
+## Public Beta
+
+The framework is available to use while we refine it before `v1.0`. Public beta is an invitation to build with GoForj and share feedback; it is not a promise of stable framework APIs or automatic upgrades.
+
+Before `v1.0`, commands, configuration, generated files, and runtime behavior may change between releases. Read the release notes for the version you are adopting and test upgrades on a branch before applying them to a deployed application. Review render diffs carefully: rendering framework-managed files is not a general merge of application customizations.
+
+For production use, evaluate the drivers, durability, failure behavior, and upgrade requirements your application depends on. Standalone libraries have their own versions and release notes; the framework's beta label does not replace those contracts.
+
+### Build with Us
+
+We are looking for a small group of early adopters to work closely with the maintainer and help shape GoForj. [Tell us what you are building](mailto:chris@milestech.co?subject=GoForj%20early%20adopter). You can also [report a bug or share feedback on GitHub](https://github.com/goforj/goforj/issues).
+
+Start independently with the [Quickstart](/getting-started/quickstart), or explore the [standalone libraries](/libraries/).
 
 ## Current Version
 
 `%%LATEST_RELEASE%%` is the latest tagged framework release. The root documentation follows `main` and may describe work that has not reached a tagged release yet.
 
 Use these docs when you are building against the current GoForj framework source. If you use the latest tag instead, see [%%LATEST_RELEASE%%](https://github.com/goforj/goforj/releases/tag/%%LATEST_RELEASE%%) for the released behavior.
+
+Installations using `@latest` select the latest tagged release, not `main`. The [Changelog](/versions/changelog#%%LATEST_RELEASE_ANCHOR%%) summarizes the latest release; its Unreleased section describes development work. The public beta badge describes framework maturity, while this documentation follows the active development line.
 
 ## Historical Milestones
 

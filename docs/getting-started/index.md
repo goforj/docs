@@ -9,6 +9,8 @@ This section takes you from an empty directory to a running Go application.
 
 Start here to create a project, run it locally, and learn where routes, services, configuration, and dependency wiring belong.
 
+GoForj is in [public beta](/versions/#public-beta). You can install it and start building today. Review the release notes before upgrading an existing project.
+
 ## Recommended Path
 
 1. [Quickstart](/getting-started/quickstart) creates, builds, runs, and verifies a local app.

@@ -725,7 +725,8 @@ func (w *Welcome) Greet(ctx context.Context, user User) error {
 <p class="gf-home-lead">Choose your stack, run your app, and start building what matters to you.</p>
 <pre class="gf-home-close__cmd"><code><span class="t-prompt">$</span> go install github.com/goforj/goforj/cmd/forj@latest
 <span class="t-prompt">$</span> forj new</code></pre>
-<p class="gf-home-close__version"><a href="/versions/">Unreleased documentation</a><span aria-hidden="true"> · </span><code>@latest</code> installs the latest tagged release.</p>
+<p class="gf-home-close__version"><a href="/versions/#public-beta">Public beta</a><span aria-hidden="true"> · </span><code>@latest</code> installs the latest tagged release.</p>
+<p class="gf-home-close__version">Building something with GoForj? <a href="mailto:chris@milestech.co?subject=GoForj%20early%20adopter">Work with the maintainer</a> and help shape the framework before 1.0.</p>
 <div class="gf-home-close__actions"><a class="gf-home-btn gf-home-btn--primary" href="/getting-started/quickstart">Create your app →</a><a class="gf-home-close__github" href="https://github.com/goforj" target="_blank" rel="noreferrer noopener">Explore on GitHub ↗</a></div>
 </div>
 <nav class="gf-home-close__next" aria-label="Start building with GoForj" data-reveal>

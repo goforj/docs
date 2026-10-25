@@ -37,6 +37,15 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.35.1
+
+Released October 20, 2026.
+
+- Fixed first-boot MySQL and MariaDB development database preparation by waiting for the authenticated permanent server before provisioning.
+- Preserved the existing preparation budget, custom hooks, and configuration. Existing projects do not need to be regenerated for this CLI fix.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.35.1) for database compatibility coverage and installation instructions. For releases between `v0.29.0` and this version, see the [complete release history](https://github.com/goforj/goforj/releases).
+
 ## v0.29.0
 
 Released October 18, 2026.

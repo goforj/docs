@@ -12,6 +12,8 @@ Use VitePress as the unified public site until the marketing surface clearly exc
 
 Lead with "the composable application stack for Go" as the primary positioning. Present the standalone libraries as the second adoption path into the same ecosystem, not as a competing description of what GoForj is.
 
+GoForj is in public beta. Keep "Get started" as the primary action and offer direct maintainer collaboration to a small group of early adopters as a secondary invitation. Participation does not gate installation or documentation access. Link the beta badge to the release status and upgrade expectations on `/versions/#public-beta`; do not describe the public framework as unreleased or private beta.
+
 VitePress should own:
 
 - documentation

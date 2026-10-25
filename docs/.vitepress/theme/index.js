@@ -727,7 +727,7 @@ export default {
   },
   Layout: () => {
     const { theme, frontmatter } = useData()
-    const docsVersion = theme.value.docsVersion || 'Unreleased'
+    const docsVersion = theme.value.docsVersion || 'Public beta'
 
     return h(DefaultTheme.Layout, null, {
       'not-found': () => h('div', { class: 'gf-notfound' }, [
@@ -739,7 +739,11 @@ export default {
           h('a', { class: 'gf-notfound__link', href: '/getting-started/quickstart' }, 'Start the quickstart')
         ])
       ]),
-      'nav-bar-title-after': () => h('span', { class: 'gf-docs-version' }, docsVersion),
+      'nav-bar-title-after': () => h('a', {
+        class: 'gf-docs-version',
+        href: '/versions/#public-beta',
+        'aria-label': 'Public beta: release status and upgrade guidance'
+      }, docsVersion),
       'home-hero-before': () => frontmatter.value.heroVariant === 'original'
         ? h(GoForjHeroStack)
         : h(GoForjHeroFoundry, { standalone: false }),

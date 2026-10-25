@@ -7,6 +7,8 @@ description: Create, run, request, and test a new GoForj Project.
 
 Follow this page from top to bottom to generate a small HTTP app, start it, make a request, and run its tests.
 
+GoForj is in [public beta](/versions/#public-beta). No invitation is required to get started.
+
 ## Prerequisites
 
 - Go 1.26 or newer. [Install Go](https://go.dev/doc/install) if needed.
