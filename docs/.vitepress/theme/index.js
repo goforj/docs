@@ -739,7 +739,8 @@ export default {
           h('a', { class: 'gf-notfound__link', href: '/getting-started/quickstart' }, 'Start the quickstart')
         ])
       ]),
-      'nav-bar-title-after': () => h('a', {
+      // VitePress renders title slots inside the logo link, so the badge needs a sibling slot.
+      'nav-bar-content-before': () => h('a', {
         class: 'gf-docs-version',
         href: '/versions/#public-beta',
         'aria-label': 'Public beta: release status and upgrade guidance'

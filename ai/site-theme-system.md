@@ -19,6 +19,8 @@ For the latest landing and starter showcase decisions, screenshot capture workfl
 
 ## Landing Page Story
 
+The public beta badge uses the `nav-bar-content-before` slot so its link is a sibling of the logo link. VitePress places both title slots inside its logo anchor; adding a link there creates invalid nested anchors and a visible position change during hydration. Verify navbar changes with JavaScript disabled as well as after hydration.
+
 Keep the primary sequence: forge hero, code explorer, starter kits, development and Lighthouse, capabilities and evidence, then getting started. The full first-run transcript is optional; multi-app guidance belongs alongside deployment. Use the same primary action label, `Get started`, throughout.
 
 The hero uses a static 48px background grid, masked toward the forge and away from the copy. Keep it low contrast in both color modes and behind the content.

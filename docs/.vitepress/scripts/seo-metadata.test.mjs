@@ -8,6 +8,23 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'd
 const decode = (s) => s.replaceAll('&amp;', '&').replaceAll('&quot;', '"')
 const urls = [...fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => decode(m[1]))
 
+test('navbar links are not nested in the server-rendered HTML', () => {
+  for (const route of ['index.html', 'versions/index.html', 'getting-started/quickstart.html']) {
+    const html = fs.readFileSync(path.join(root, route), 'utf8')
+    const navbar = html.match(/<header\b[^>]*class="VPNav"[\s\S]*?<\/header>/)?.[0]
+    assert.ok(navbar, route)
+    assert.match(navbar, /class="gf-docs-version"/, route)
+    let insideLink = false
+    for (const [tag] of navbar.matchAll(/<\/?a\b[^>]*>/g)) {
+      if (tag.startsWith('</')) insideLink = false
+      else {
+        assert.equal(insideLink, false, `${route}: nested navbar link`)
+        insideLink = true
+      }
+    }
+  }
+})
+
 test('every sitemap URL matches its canonical and is indexable', () => {
   assert.ok(urls.length > 100)
   for (const url of urls) {
