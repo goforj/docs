@@ -1,0 +1,420 @@
+{
+  "auditedOn": "2026-10-24",
+  "scope": "18 libraries in the documentation generator plus the null compatibility fork; numbered root tags and independently tagged modules",
+  "libraries": {
+    "atlas": {
+      "repository": "https://github.com/goforj/atlas",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "d1782f41937e833fa42e03e31a85e5bcf4d42d19", "date": "2026-06-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.1", "sha": "3a76e8bb652306d38ac4ca7f544d19b12144a8a6", "date": "2026-06-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.2", "sha": "25470958790d001d7a3c84d1e80c765903afee90", "date": "2026-06-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "24abe2aa6b4961bb07f1b6d17aaf1b73128609d0", "date": "2026-06-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.2", "sha": "b6c817c84988bd52c6491731540753487948bff5", "date": "2026-06-21", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.0", "sha": "e5479de6c20edf9bfbce06140ba3de90dab3d046", "date": "2026-06-24", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.1", "sha": "69b8dcb4a5e85876239215dc82b8af9f51b45201", "date": "2026-08-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.0", "sha": "f896ba808619bdcf1694b7dbdb3ab91527c3b001", "date": "2026-08-17", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.1", "sha": "3204326226a432933b67bd415f7d4ed40c490b2a", "date": "2026-08-17", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.2", "sha": "0cbf8a89f01c7ea6ffd6e5ab9f9ce9d3a74cd027", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.3", "sha": "69d2aad401976a0f64b03048cfdde12eb3fc8c2f", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.4", "sha": "3be174745951e35d0a6fac35850161bca5de12ee", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.5", "sha": "a2327cd37014a423dd996fa3af22460928b51aea", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.6", "sha": "3e75e12c7e2385bf2a685449a87eb4b341c33c7c", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.7", "sha": "8dcab984a79f9abed05b0d99ae7b1e632d9d6b51", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.8", "sha": "39f68465edc616fed369f18977701ff2f16cf91c", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.9", "sha": "cd8f58a85f1994a25497d2b2cabb4720e3581371", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.10", "sha": "68de7b827e2371c1056cc97a0c3d87403eea452e", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.11", "sha": "22200a118b512101a6dbba3203af1321005f3f19", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.12", "sha": "18fc1dfd52fc7e18f9f47d6ef47f8a0d0774fc71", "date": "2026-08-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.13", "sha": "5c9fe023b2a6405e7ddae0e67bc6b805d00389bc", "date": "2026-08-20", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "go.mod", "module": "github.com/goforj/atlas", "go": "1.25.0", "tag": "v0.4.13", "sha": "5c9fe023b2a6405e7ddae0e67bc6b805d00389bc"}
+      ]
+    },
+    "cache": {
+      "repository": "https://github.com/goforj/cache",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "2dd6c87105b65c07d0dbd0a09ff6615be059d717", "date": "2026-02-23", "date_source": "release", "release_url": "https://github.com/goforj/cache/releases/tag/v0.1.0"},
+        {"tag": "v0.1.1", "sha": "763b3e65f32ef4540f94ae42d3f94ac2a032c96e", "date": "2026-02-25", "date_source": "release", "release_url": "https://github.com/goforj/cache/releases/tag/v0.1.1"},
+        {"tag": "v0.1.2", "sha": "b9b2d9bdeab920a27c43cd73a61bf983455dcbb1", "date": "2026-02-25", "date_source": "release", "release_url": "https://github.com/goforj/cache/releases/tag/v0.1.2"},
+        {"tag": "v0.1.3", "sha": "b8e6d6a2456b50d9285cdf423df183031c550db9", "date": "2026-02-26", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.4", "sha": "10afcf5fd5fb23b989c59f9985e3e7da5fc8161f", "date": "2026-03-01", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.5", "sha": "0ee9853626244427988faf116e1924156f774985", "date": "2026-03-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "397a0b1af0f63a4bd1fb0f3b4447793f5802e1e7", "date": "2026-04-08", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.1", "sha": "208ff8973034bb8977250ee079f571257d49d93a", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.2", "sha": "173d940ede50edf88e8daecaec946cce58b20af0", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.0", "sha": "59820949b424e6a4d0d7f473982715e67b44ed40", "date": "2026-05-20", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.0", "sha": "fdc02207f1ae1879c167122aad883234868835de", "date": "2026-07-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.1", "sha": "d0809f100fc1eb9917b714f91f301f7db31e6ccc", "date": "2026-08-31", "date_source": "release", "release_url": "https://github.com/goforj/cache/releases/tag/v0.4.1"},
+        {"tag": "v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/cache/releases/tag/v0.4.2"}
+      ],
+      "latestModules": [
+        {"path": "cachecore/go.mod", "module": "github.com/goforj/cache/cachecore", "go": "1.24.4", "tag": "cachecore/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "cachetest/go.mod", "module": "github.com/goforj/cache/cachetest", "go": "1.24.4", "tag": "cachetest/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "docs/go.mod", "module": "github.com/goforj/cache/docs", "go": "1.27.0", "tag": null},
+        {"path": "driver/dynamocache/go.mod", "module": "github.com/goforj/cache/driver/dynamocache", "go": "1.24.4", "tag": "driver/dynamocache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/memcachedcache/go.mod", "module": "github.com/goforj/cache/driver/memcachedcache", "go": "1.24.4", "tag": "driver/memcachedcache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/mysqlcache/go.mod", "module": "github.com/goforj/cache/driver/mysqlcache", "go": "1.24.4", "tag": "driver/mysqlcache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/natscache/go.mod", "module": "github.com/goforj/cache/driver/natscache", "go": "1.26.0", "tag": "driver/natscache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/postgrescache/go.mod", "module": "github.com/goforj/cache/driver/postgrescache", "go": "1.25.0", "tag": "driver/postgrescache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/rediscache/go.mod", "module": "github.com/goforj/cache/driver/rediscache", "go": "1.24.4", "tag": "driver/rediscache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/sqlcore/go.mod", "module": "github.com/goforj/cache/driver/sqlcore", "go": "1.24.4", "tag": "driver/sqlcore/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "driver/sqlitecache/go.mod", "module": "github.com/goforj/cache/driver/sqlitecache", "go": "1.25.0", "tag": "driver/sqlitecache/v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "examples/go.mod", "module": "github.com/goforj/cache/examples", "go": "1.27.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/cache", "go": "1.27.0", "tag": "v0.4.2", "sha": "c19f04bbb47e20881c26e12306b49db66326a823"},
+        {"path": "integration/go.mod", "module": "github.com/goforj/cache/integration", "go": "1.27.0", "tag": null}
+      ]
+    },
+    "collection": {
+      "repository": "https://github.com/goforj/collection",
+      "rootVersions": [
+        {"tag": "v1.0.0", "sha": "fd51bcfd233c07ccd81bd4fffdf1df783057b26f", "date": "2025-12-16", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v1.0.0"},
+        {"tag": "v1.1.0", "sha": "6b51ab22eea483f080182384ae14b8186e987237", "date": "2025-12-20", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v1.1.0"},
+        {"tag": "v1.2.0", "sha": "6b51ab22eea483f080182384ae14b8186e987237", "date": "2025-12-30", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v1.2.0"},
+        {"tag": "v1.3.0", "sha": "d8a9e837b9d86ca483034c42066e35326047a55f", "date": "2026-01-01", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v1.3.0"},
+        {"tag": "v2.0.0", "sha": "b638ff17a33a2d6696f3d25c8b724c5e22264546", "date": "2026-01-02", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v2.0.0"},
+        {"tag": "v2.0.1", "sha": "b4c80eb1f258d944199cd2bcbd50af7af2559586", "date": "2026-05-26", "date_source": "commit", "release_url": null},
+        {"tag": "v2.0.2", "sha": "e429f88f4b29a352701523272575ff6eae79323e", "date": "2026-05-26", "date_source": "commit", "release_url": null},
+        {"tag": "v3.0.0", "sha": "c3bb2d012250ba0cd9d094845952e14412fd36c6", "date": "2026-08-23", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v3.0.0"},
+        {"tag": "v4.0.0", "sha": "e6e3d1849c21d0dd432c80ca50b260dcc213edc7", "date": "2026-08-23", "date_source": "release", "release_url": "https://github.com/goforj/collection/releases/tag/v4.0.0"}
+      ],
+      "latestModules": [
+        {"path": "docs/bench/go.mod", "module": "github.com/goforj/collection/bench", "go": "1.27.0", "tag": null},
+        {"path": "docs/go.mod", "module": "github.com/goforj/collection/docs", "go": "1.24.4", "tag": null},
+        {"path": "docs/regression/go.mod", "module": "github.com/goforj/collection/regression", "go": "1.27.0", "tag": null},
+        {"path": "examples/go.mod", "module": "github.com/goforj/collection/examples", "go": "1.27.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/collection/v4", "go": "1.27.0", "tag": "v4.0.0", "sha": "e6e3d1849c21d0dd432c80ca50b260dcc213edc7"}
+      ]
+    },
+    "console": {
+      "repository": "https://github.com/goforj/console",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "e329d1ff6cb624ffe2f2265212911de7998d604e", "date": "2026-07-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.1", "sha": "0ff3573d4141a1287280097934fbb7da63051703", "date": "2026-07-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "a85d97dd2c81ed4032af582a894b818392343a2d", "date": "2026-08-08", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/console/docs", "go": "1.24.0", "tag": null},
+        {"path": "examples/go.mod", "module": "github.com/goforj/console/examples", "go": "1.24.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/console", "go": "1.24.0", "tag": "v0.2.0", "sha": "a85d97dd2c81ed4032af582a894b818392343a2d"}
+      ]
+    },
+    "crypt": {
+      "repository": "https://github.com/goforj/crypt",
+      "rootVersions": [
+        {"tag": "v1.0.0", "sha": "d480ad276b36d2d272ff3b796b8f72c70a612cba", "date": "2025-12-16", "date_source": "release", "release_url": "https://github.com/goforj/crypt/releases/tag/v1.0.0"},
+        {"tag": "v1.1.0", "sha": "a9d744c44a4a6d7578c1d81798b8a66e1647d401", "date": "2026-02-26", "date_source": "release", "release_url": "https://github.com/goforj/crypt/releases/tag/v1.1.0"},
+        {"tag": "v1.2.0", "sha": "8f596b8563eaca0860dcbfde9e80a40158c54bb9", "date": "2026-07-15", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "examples/go.mod", "module": "github.com/goforj/crypt/examples", "go": "1.24.4", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/crypt", "go": "1.24.4", "tag": "v1.2.0", "sha": "8f596b8563eaca0860dcbfde9e80a40158c54bb9"}
+      ]
+    },
+    "env": {
+      "repository": "https://github.com/goforj/env",
+      "rootVersions": [
+        {"tag": "v0.0.1", "sha": "61b353a11d73b42ebd6c56c360966f12452a17d4", "date": "2025-12-15", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v0.0.1"},
+        {"tag": "v1.0.0", "sha": "7cdb7812253be54159d5d44a0f8500c8b6c180c5", "date": "2025-12-16", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v1.0.0"},
+        {"tag": "v1.0.1", "sha": "a3bca384c05feaf286ba9500171845bcb4b19e99", "date": "2026-01-12", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v1.0.1"},
+        {"tag": "v1.1.0", "sha": "713c4a8f5af926b44dceba90412c3239f5df603e", "date": "2026-01-13", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v1.1.0"},
+        {"tag": "v2.0.1", "sha": "a89fbcd26af4702526bfab0534b13bea335530a6", "date": "2026-01-14", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v2.0.1"},
+        {"tag": "v2.0.2", "sha": "dda357b27dbb8474796a5883e48c1991cfcc3d0c", "date": "2026-01-14", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v2.0.2"},
+        {"tag": "v2.0.3", "sha": "f93712c2001cd46fe46ecd471c8f05ebe542d338", "date": "2026-02-10", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v2.0.3"},
+        {"tag": "v2.0.4", "sha": "336c69a67301d07ddcf65cf57c20704f0f9b24f3", "date": "2026-02-26", "date_source": "release", "release_url": "https://github.com/goforj/env/releases/tag/v2.0.4"},
+        {"tag": "v2.1.0", "sha": "f1d082d2ef8a5e6d96c4575b21352b7b4d873d5b", "date": "2026-03-06", "date_source": "commit", "release_url": null},
+        {"tag": "v2.2.0", "sha": "16cc0ea77ae3806331f1410f1a90141c8d9b97aa", "date": "2026-03-10", "date_source": "commit", "release_url": null},
+        {"tag": "v2.3.0", "sha": "5a31bab59c7e23bedb3af659558ff300bca5e71e", "date": "2026-03-11", "date_source": "commit", "release_url": null},
+        {"tag": "v2.3.1", "sha": "cf2b9b4ab7a7ba09fd834e69b9bda21f77587eb9", "date": "2026-03-13", "date_source": "commit", "release_url": null},
+        {"tag": "v2.4.0", "sha": "9cea4d54e06fd2d1a02bc9daca90e306b74b3deb", "date": "2026-04-03", "date_source": "commit", "release_url": null},
+        {"tag": "v2.5.0", "sha": "ba74c7713d763763a50bdde6d8fb5ea0dc52acf7", "date": "2026-07-16", "date_source": "commit", "release_url": null},
+        {"tag": "v2.6.0", "sha": "8039b0ce2c4a971af18028aad1f82acd0708313a", "date": "2026-07-23", "date_source": "commit", "release_url": null},
+        {"tag": "v2.6.1", "sha": "68e3c680f63f9caf4d85c9223e1ddd96dff092f8", "date": "2026-08-12", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "examples/go.mod", "module": "github.com/goforj/env/v2/examples", "go": "1.24.4", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/env/v2", "go": "1.24.4", "tag": "v2.6.1", "sha": "68e3c680f63f9caf4d85c9223e1ddd96dff092f8"}
+      ]
+    },
+    "events": {
+      "repository": "https://github.com/goforj/events",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "21c6e503c3e99f4b95efa47c603daf87433e5af9", "date": "2026-03-10", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.1", "sha": "85a17271b586e82e244429c49ad1bd9ed152f172", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.2", "sha": "99dc600761a2c770d98bfa18344c8e9ae435d283", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.3", "sha": "98de3012f8fb150bd42e297dd52dea675f217143", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "94bf8b9dabb6a3dba40517388db30bbcb0d464df", "date": "2026-07-15", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/events/releases/tag/v0.2.1"}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/events/docs", "go": "1.24.0", "tag": null},
+        {"path": "driver/gcppubsubevents/go.mod", "module": "github.com/goforj/events/driver/gcppubsubevents", "go": "1.26.0", "tag": "driver/gcppubsubevents/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "driver/kafkaevents/go.mod", "module": "github.com/goforj/events/driver/kafkaevents", "go": "1.25.0", "tag": "driver/kafkaevents/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "driver/natsevents/go.mod", "module": "github.com/goforj/events/driver/natsevents", "go": "1.26.0", "tag": "driver/natsevents/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "driver/natsjetstreamevents/go.mod", "module": "github.com/goforj/events/driver/natsjetstreamevents", "go": "1.26.0", "tag": "driver/natsjetstreamevents/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "driver/redisevents/go.mod", "module": "github.com/goforj/events/driver/redisevents", "go": "1.24.0", "tag": "driver/redisevents/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "driver/snsevents/go.mod", "module": "github.com/goforj/events/driver/snsevents", "go": "1.24.0", "tag": "driver/snsevents/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "eventscore/go.mod", "module": "github.com/goforj/events/eventscore", "go": "1.24.0", "tag": "eventscore/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "eventsfake/go.mod", "module": "github.com/goforj/events/eventsfake", "go": "1.24.0", "tag": "eventsfake/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "eventstest/go.mod", "module": "github.com/goforj/events/eventstest", "go": "1.24.0", "tag": "eventstest/v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "examples/go.mod", "module": "github.com/goforj/events/examples", "go": "1.26.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/events", "go": "1.24.0", "tag": "v0.2.1", "sha": "a29ebe36f9fbd55da34a9d4e3c5f94e9e993e528"},
+        {"path": "integration/go.mod", "module": "github.com/goforj/events/integration", "go": "1.26.0", "tag": null}
+      ]
+    },
+    "execx": {
+      "repository": "https://github.com/goforj/execx",
+      "rootVersions": [
+        {"tag": "v0.0.1", "sha": "1d60da01affba2962ac92125ff6d663b440056e6", "date": "2025-12-31", "date_source": "release", "release_url": "https://github.com/goforj/execx/releases/tag/v0.0.1"},
+        {"tag": "v0.1.0", "sha": "96694b861dc4a87c55f8d27524f2e294662a7423", "date": "2026-01-03", "date_source": "release", "release_url": "https://github.com/goforj/execx/releases/tag/v0.1.0"},
+        {"tag": "v1.0.0", "sha": "d7f3e40686d9b1c18a482309c568edd4ae75596d", "date": "2026-01-03", "date_source": "release", "release_url": "https://github.com/goforj/execx/releases/tag/v1.0.0"},
+        {"tag": "v1.0.1", "sha": "fd32601be92c6fef0d118256e2180cc3486e2bcb", "date": "2026-01-09", "date_source": "release", "release_url": "https://github.com/goforj/execx/releases/tag/v1.0.1"},
+        {"tag": "v1.1.0", "sha": "d19b7f4c6071e38e6ee5d668a1c82be6b7f4ee37", "date": "2026-01-09", "date_source": "release", "release_url": "https://github.com/goforj/execx/releases/tag/v1.1.0"},
+        {"tag": "v1.1.1", "sha": "9efc2e3872f47008360772aa743f2ea694a711be", "date": "2026-07-13", "date_source": "commit", "release_url": null},
+        {"tag": "v1.1.2", "sha": "7bbe63d9f147c3b44c37686002c45cba81f9ca1c", "date": "2026-07-15", "date_source": "commit", "release_url": null},
+        {"tag": "v1.1.3", "sha": "2116e6ea87c293655b15c84bf2544e2a9c2b8b2b", "date": "2026-07-16", "date_source": "commit", "release_url": null},
+        {"tag": "v1.1.4", "sha": "b9caba0c079fd45bd35b9b95b5e0531426f0a523", "date": "2026-07-28", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/execx/docs", "go": "1.24.4", "tag": null},
+        {"path": "examples/go.mod", "module": "github.com/goforj/execx/examples", "go": "1.24.4", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/execx", "go": "1.24.4", "tag": "v1.1.4", "sha": "b9caba0c079fd45bd35b9b95b5e0531426f0a523"}
+      ]
+    },
+    "godump": {
+      "repository": "https://github.com/goforj/godump",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "aa8ce1a2c1af404e9a9fbb287bd1412aa31e65c3", "date": "2025-05-26", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.1", "sha": "9baaa1a7133f949af4a79310dea1140c1ca21330", "date": "2025-05-26", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.2", "sha": "e41efc3666787a268be28c23e5d73cb51543c03e", "date": "2025-05-26", "date_source": "commit", "release_url": null},
+        {"tag": "v1.0.0", "sha": "ae18e46acae3a395a36d0f46ac90ab0db0d5781d", "date": "2025-05-26", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.0.0"},
+        {"tag": "v1.0.1", "sha": "54001c91d468c0e069af59170cc50e695492f0ab", "date": "2025-05-28", "date_source": "commit", "release_url": null},
+        {"tag": "v1.0.2", "sha": "8b57af8653a5e358ac83eb515b49f2e71941102d", "date": "2025-05-29", "date_source": "commit", "release_url": null},
+        {"tag": "v1.0.3", "sha": "450c0d1742f8523ac5e259bea67319da2a47adad", "date": "2025-05-30", "date_source": "commit", "release_url": null},
+        {"tag": "v1.0.4", "sha": "645122fff29021237a281732bbf9fec966b1236c", "date": "2025-05-30", "date_source": "commit", "release_url": null},
+        {"tag": "v1.0.5", "sha": "c23242c89372dcc7c12d168de4e97f598774fd78", "date": "2025-05-31", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.0.5"},
+        {"tag": "v1.0.6", "sha": "9d59ba2d8d3f0a340d7bbdcf9174010c5fc215d5", "date": "2025-06-01", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.0.6"},
+        {"tag": "v1.0.7", "sha": "588e5642ccb71b78092a53d6375d2ce924dab562", "date": "2025-06-01", "date_source": "commit", "release_url": null},
+        {"tag": "v1.1.0", "sha": "787cad806a0e9e0fa897c6f85001e6763469f6c6", "date": "2025-06-01", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.1.0"},
+        {"tag": "v1.2.0", "sha": "49ecb4f5a91ba05cb28e364d2672937500f65f2c", "date": "2025-06-20", "date_source": "commit", "release_url": null},
+        {"tag": "v1.3.0", "sha": "1c50abfa9a4a6c9172523bf7e220d2f4cb59371b", "date": "2025-06-29", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.3.0"},
+        {"tag": "v1.4.0", "sha": "b009608c8498924ab92c5bda85c049fd36b7d380", "date": "2025-06-30", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.4.0"},
+        {"tag": "v1.5.0", "sha": "dcde64328273a89dd691c59d8c0c8201781e0876", "date": "2025-07-04", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.5.0"},
+        {"tag": "v1.6.0", "sha": "4f0dbb82751f1d65e21f077c09701f5b5a875719", "date": "2025-08-11", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.6.0"},
+        {"tag": "v1.7.0", "sha": "86d289001e943c8dbd15c86f6fea843513f4be68", "date": "2025-12-02", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.7.0"},
+        {"tag": "v1.7.1", "sha": "47ba3cc3697a00dc1e8b242a1118e39a056fe5a5", "date": "2025-12-07", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.7.1"},
+        {"tag": "v1.8.0", "sha": "c7ad293e0f2b0d82ed9248d93017f0453c033e33", "date": "2025-12-20", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.8.0"},
+        {"tag": "v1.9.0", "sha": "306734dde68322570a639426e1a08d6fa5b8d1f6", "date": "2025-12-24", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.9.0"},
+        {"tag": "v1.9.1", "sha": "e318536047831cc4242dc7aef03d4f995ae14e64", "date": "2026-02-27", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.9.1"},
+        {"tag": "v1.10.0", "sha": "7bb3368ddd8be456ace89ef2134202fc317f0e92", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/godump/releases/tag/v1.10.0"}
+      ],
+      "latestModules": [
+        {"path": "examples/go.mod", "module": "github.com/goforj/godump/examples", "go": "1.18", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/godump", "go": "1.18", "tag": "v1.10.0", "sha": "7bb3368ddd8be456ace89ef2134202fc317f0e92"}
+      ]
+    },
+    "httpx": {
+      "repository": "https://github.com/goforj/httpx",
+      "rootVersions": [
+        {"tag": "v1.0.0", "sha": "c1a09ae1597b7fad6b80dfd5760bc3604e227e8a", "date": "2025-12-26", "date_source": "release", "release_url": "https://github.com/goforj/httpx/releases/tag/v1.0.0"},
+        {"tag": "v1.1.0", "sha": "1698ed9f1b5b7f70cfbaf51f62d2037acfbb173c", "date": "2025-12-28", "date_source": "commit", "release_url": null},
+        {"tag": "v2.0.0", "sha": "7f3e56bbeb02447c3073cd9969b957b74f6bf4ab", "date": "2025-12-29", "date_source": "release", "release_url": "https://github.com/goforj/httpx/releases/tag/v2.0.0"},
+        {"tag": "v2.0.1", "sha": "04225d9438dabae3e12c34a95fe66e03aeed87c4", "date": "2026-03-08", "date_source": "commit", "release_url": null},
+        {"tag": "v2.1.0", "sha": "43fad7dc0ba900e3a3e822717465f6c0460c458c", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/httpx/releases/tag/v2.1.0"}
+      ],
+      "latestModules": [
+        {"path": "go.mod", "module": "github.com/goforj/httpx/v2", "go": "1.27.0", "tag": "v2.1.0", "sha": "43fad7dc0ba900e3a3e822717465f6c0460c458c"}
+      ]
+    },
+    "mail": {
+      "repository": "https://github.com/goforj/mail",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "c219ef435f7ca781d4a52cadb30c4b3915a00e32", "date": "2026-04-19", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "8b84108ae06c148838d08bca15b2a698f5953da5", "date": "2026-04-21", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.0", "sha": "2f4f80495f33f083d8203ead167ba444e3df6550", "date": "2026-07-15", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.1", "sha": "e4ac2ec905db00d637156a05e2c94d59aa257566", "date": "2026-07-16", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/mail/docs", "go": "1.24.0", "tag": null},
+        {"path": "examples/go.mod", "module": "github.com/goforj/mail/examples", "go": "1.24.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/mail", "go": "1.24.0", "tag": "v0.3.1", "sha": "e4ac2ec905db00d637156a05e2c94d59aa257566"},
+        {"path": "mailses/go.mod", "module": "github.com/goforj/mail/mailses", "go": "1.24.0", "tag": "mailses/v0.3.1", "sha": "4e1c7745601ea7a1fcb2951090b624081b82bff4"}
+      ]
+    },
+    "metrics": {
+      "repository": "https://github.com/goforj/metrics",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "e284b348e8cf95740c502255639612d29ee40c71", "date": "2026-04-27", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "5e98011c6df79755f9049a0d5fa9e4a6937ccfda", "date": "2026-07-16", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "go.mod", "module": "github.com/goforj/metrics", "go": "1.24.0", "tag": "v0.2.0", "sha": "5e98011c6df79755f9049a0d5fa9e4a6937ccfda"}
+      ]
+    },
+    "null": {
+      "repository": "https://github.com/goforj/null",
+      "rootVersions": [
+        {"tag": "v6.0.1", "sha": "b9ab600e84fdcc0baec825419fee8c70ec44d48d", "date": "2025-07-16", "date_source": "release", "release_url": "https://github.com/goforj/null/releases/tag/v6.0.1"},
+        {"tag": "v6.0.2", "sha": "b9ab600e84fdcc0baec825419fee8c70ec44d48d", "date": "2025-07-15", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "go.mod", "module": "github.com/goforj/null/v6", "go": "1.22.12", "tag": "v6.0.2", "sha": "b9ab600e84fdcc0baec825419fee8c70ec44d48d"}
+      ]
+    },
+    "queue": {
+      "repository": "https://github.com/goforj/queue",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "03791014a2430b48e4ee713e0c2d885b8ed33be6", "date": "2026-02-25", "date_source": "release", "release_url": "https://github.com/goforj/queue/releases/tag/v0.1.0"},
+        {"tag": "v0.1.1", "sha": "66a14cacd3596e215a634c75440b9dda7e7bb898", "date": "2026-02-26", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.2", "sha": "654dc4a10ec90e4789da89180eb87d6addc83b8b", "date": "2026-02-27", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.3", "sha": "3ce1dea560e096e2a2681200b0515f3f94bf6417", "date": "2026-02-27", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.4", "sha": "0c14b5ddf95b8f72db9ce6608ce09a04a432c5f8", "date": "2026-03-01", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.5", "sha": "7ab65f89634ec2f1fce071046335746b2f96c169", "date": "2026-03-02", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.6", "sha": "53058bf555da9e07b048d6bd591224a13cf8e23e", "date": "2026-03-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.7", "sha": "36824985f298a6a325aa737a9d1c51c41ac603ef", "date": "2026-04-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.8", "sha": "fefc79718a7b16b18c9eee97a371e29e0025f669", "date": "2026-04-22", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.9", "sha": "2c3ad22136fb72e9bd19fcefeb5a1645ff4303d3", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.10", "sha": "4f9cd935f2049caa1aa8e8eb923d78412d801e00", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.11", "sha": "7a66260004f2164516ad1878a19a8ac83117a8fe", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.12", "sha": "84a31223c56565fd0b9f1d73a0d5d2f1b8ebdb64", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.13", "sha": "d9af68f82cd0d8d9180738d630a8830cac8db124", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.14", "sha": "ac16c94e1ec3a60300eef4c7c77c10b6e2d1d115", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.15", "sha": "0b390cad8128e19b8c92beb1f8720a8806420b99", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.16", "sha": "7122a1e3b0ae3daa622fb07525a4cf063ac1c523", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.17", "sha": "29db7e6d4df720605324bd71d8dbbdb88dd8fd86", "date": "2026-06-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "29db7e6d4df720605324bd71d8dbbdb88dd8fd86", "date": "2026-06-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc", "date": "2026-06-07", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/queue/docs", "go": "1.24.4", "tag": "docs/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/mysqlqueue/go.mod", "module": "github.com/goforj/queue/driver/mysqlqueue", "go": "1.24.4", "tag": "driver/mysqlqueue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/natsqueue/go.mod", "module": "github.com/goforj/queue/driver/natsqueue", "go": "1.24.4", "tag": "driver/natsqueue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/postgresqueue/go.mod", "module": "github.com/goforj/queue/driver/postgresqueue", "go": "1.24.4", "tag": "driver/postgresqueue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/rabbitmqqueue/go.mod", "module": "github.com/goforj/queue/driver/rabbitmqqueue", "go": "1.24.4", "tag": "driver/rabbitmqqueue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/redisqueue/go.mod", "module": "github.com/goforj/queue/driver/redisqueue", "go": "1.24.4", "tag": "driver/redisqueue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/sqlitequeue/go.mod", "module": "github.com/goforj/queue/driver/sqlitequeue", "go": "1.24.4", "tag": "driver/sqlitequeue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/sqlqueuecore/go.mod", "module": "github.com/goforj/queue/driver/sqlqueuecore", "go": "1.24.4", "tag": "driver/sqlqueuecore/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "driver/sqsqueue/go.mod", "module": "github.com/goforj/queue/driver/sqsqueue", "go": "1.24.4", "tag": "driver/sqsqueue/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "examples/go.mod", "module": "github.com/goforj/queue/examples", "go": "1.24.4", "tag": "examples/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "go.mod", "module": "github.com/goforj/queue", "go": "1.24.4", "tag": "v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"},
+        {"path": "integration/go.mod", "module": "github.com/goforj/queue/integration", "go": "1.24.4", "tag": "integration/v0.2.1", "sha": "d4152bbbefd6d526ba661f32c8294365fae0bfcc"}
+      ]
+    },
+    "scheduler": {
+      "repository": "https://github.com/goforj/scheduler",
+      "rootVersions": [
+        {"tag": "v1.0.0", "sha": "62b529e97b89a601fa8c9eca4693795b28f957bc", "date": "2025-12-17", "date_source": "release", "release_url": "https://github.com/goforj/scheduler/releases/tag/v1.0.0"},
+        {"tag": "v1.1.0", "sha": "78bb99a0f9aa5e4442babd4143a05a447a25b468", "date": "2026-02-27", "date_source": "commit", "release_url": null},
+        {"tag": "v1.1.1", "sha": "13f4e63de5260c0927341399929f3ae2a173366f", "date": "2026-02-27", "date_source": "commit", "release_url": null},
+        {"tag": "v1.2.0", "sha": "2456b8a3a33bc7655afc9ac509b2fefd28f3e08b", "date": "2026-03-03", "date_source": "commit", "release_url": null},
+        {"tag": "v1.3.0", "sha": "ea3461d8db835362eb27c3a7c57645fbf906469c", "date": "2026-03-03", "date_source": "commit", "release_url": null},
+        {"tag": "v1.4.0", "sha": "783028e8df96dcadb86212d66f455db4fe2fa104", "date": "2026-03-06", "date_source": "commit", "release_url": null},
+        {"tag": "v2.0.0", "sha": "a6c3b8b9b81371747b197c5af3ef3dbb214bab88", "date": "2026-04-10", "date_source": "commit", "release_url": null},
+        {"tag": "v2.1.0", "sha": "a019b6f8b985733a29b841acfa4d3354d26134cd", "date": "2026-04-10", "date_source": "commit", "release_url": null},
+        {"tag": "v2.1.1", "sha": "14d80c0cc49e33e26da17cca2478dd816f68f82c", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v2.1.2", "sha": "3b2d6cc28932edb08ace850ea3951a5375775c74", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v2.1.3", "sha": "adbda11c66c239ab789f0a5a4ba6ded37fcf457d", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v2.1.4", "sha": "354cbe3c0e374593a168a8ad8eb2e25e3762bba2", "date": "2026-07-17", "date_source": "commit", "release_url": null}
+      ],
+      "latestModules": [
+        {"path": "go.mod", "module": "github.com/goforj/scheduler/v2", "go": "1.24.4", "tag": "v2.1.4", "sha": "354cbe3c0e374593a168a8ad8eb2e25e3762bba2"}
+      ]
+    },
+    "storage": {
+      "repository": "https://github.com/goforj/storage",
+      "rootVersions": [
+        {"tag": "v0.0.1", "sha": "221845d2f80c30c2966508b3bb7318bb6f67d7be", "date": "2025-12-21", "date_source": "commit", "release_url": null},
+        {"tag": "v0.1.0", "sha": "852882c605a9ce58e57bccd5d2f084fbe613ad94", "date": "2026-03-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "d12a5a6c2dfe2676b79d28c889a247d4dee64323", "date": "2026-03-08", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.1", "sha": "5fc93f825db7ce16b31e27488f34d7b2787a78be", "date": "2026-03-08", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.2", "sha": "1abbd074b77ded320c35ad2c843b8f0dc6b7328c", "date": "2026-03-11", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.3", "sha": "acc35fbbde0621977a7351291a88c6a3f273c27b", "date": "2026-03-11", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.4", "sha": "39da84c94cbb24eaa508f97136ea46430fb7af1e", "date": "2026-03-11", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.5", "sha": "a5779296ca2369d8ff86c893bdbcb9094f65ceab", "date": "2026-03-11", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.0", "sha": "5a63a4694a206c2e0802ddd264087ef85b4535a1", "date": "2026-04-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.2", "sha": "5236ec231fa2bdab215afd95701bff7475e0d573", "date": "2026-04-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.3", "sha": "b09aa8898b4acb9147f1edbc3baeb1dc1bf79164", "date": "2026-04-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.4", "sha": "19dd25fd4de1faf9e1706da07d913309197a90eb", "date": "2026-04-07", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.5", "sha": "ead789487bc87aa5fdfa893d27ef70e19a122d58", "date": "2026-05-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.6", "sha": "69639d176677a6237c267fb96b5c787c7a29b8e9", "date": "2026-05-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.5.0", "sha": "3d2661cc63d36f46598ebce3d29ca70d3cde4b1c", "date": "2026-07-16", "date_source": "commit", "release_url": null},
+        {"tag": "v0.5.1", "sha": "c2127876d3958f2c5d76550d651769265b318618", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/storage/releases/tag/v0.5.1"},
+        {"tag": "v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154", "date": "2026-10-18", "date_source": "release", "release_url": "https://github.com/goforj/storage/releases/tag/v0.6.0"}
+      ],
+      "latestModules": [
+        {"path": "docs/bench/go.mod", "module": "github.com/goforj/storage/docs/bench", "go": "1.26.0", "tag": null},
+        {"path": "driver/dropboxstorage/go.mod", "module": "github.com/goforj/storage/driver/dropboxstorage", "go": "1.25.0", "tag": "driver/dropboxstorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/ftpstorage/go.mod", "module": "github.com/goforj/storage/driver/ftpstorage", "go": "1.24.4", "tag": "driver/ftpstorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/gcsstorage/go.mod", "module": "github.com/goforj/storage/driver/gcsstorage", "go": "1.26.0", "tag": "driver/gcsstorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/localstorage/go.mod", "module": "github.com/goforj/storage/driver/localstorage", "go": "1.25.0", "tag": "driver/localstorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/memorystorage/go.mod", "module": "github.com/goforj/storage/driver/memorystorage", "go": "1.24.4", "tag": "driver/memorystorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/rclonestorage/go.mod", "module": "github.com/goforj/storage/driver/rclonestorage", "go": "1.26.0", "tag": "driver/rclonestorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/redisstorage/go.mod", "module": "github.com/goforj/storage/driver/redisstorage", "go": "1.26.0", "tag": "driver/redisstorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/s3storage/go.mod", "module": "github.com/goforj/storage/driver/s3storage", "go": "1.24.4", "tag": "driver/s3storage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "driver/sftpstorage/go.mod", "module": "github.com/goforj/storage/driver/sftpstorage", "go": "1.26.0", "tag": "driver/sftpstorage/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "examples/go.mod", "module": "github.com/goforj/storage/examples", "go": "1.26.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/storage", "go": "1.24.4", "tag": "v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "integration/go.mod", "module": "github.com/goforj/storage/integration", "go": "1.26.0", "tag": null},
+        {"path": "storagecore/go.mod", "module": "github.com/goforj/storage/storagecore", "go": "1.24.4", "tag": "storagecore/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"},
+        {"path": "storagetest/go.mod", "module": "github.com/goforj/storage/storagetest", "go": "1.26.0", "tag": "storagetest/v0.6.0", "sha": "6327678d1a3144f762263bcc3c3a4b1a121d1154"}
+      ]
+    },
+    "str": {
+      "repository": "https://github.com/goforj/str",
+      "rootVersions": [
+        {"tag": "v1.0.0", "sha": "ce564f15b1e431dab176653a2470d8ef8ef927da", "date": "2025-12-18", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v1.0.0"},
+        {"tag": "v1.1.0", "sha": "cae219f47261ff8120faa327818a5e945e534790", "date": "2025-12-28", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v1.1.0"},
+        {"tag": "v1.1.1", "sha": "b9fdc28147da8aa60b89b4210833c7aad2c876d6", "date": "2025-12-28", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v1.1.1"},
+        {"tag": "v1.1.2", "sha": "eccc1d4c995683b2c16db07d9c6da8afc436b99a", "date": "2025-12-28", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v1.1.2"},
+        {"tag": "v1.2.0", "sha": "d66269a9e5ac0f8f99a6cab5ad0c76c2f4e23013", "date": "2025-12-28", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v1.2.0"},
+        {"tag": "v1.3.0", "sha": "23f9af811aa4d64fd47bb050636e56804eb642e5", "date": "2026-03-10", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v1.3.0"},
+        {"tag": "v2.0.0", "sha": "9f4b623e1f3f9e2d79d7ba240d4402a144604251", "date": "2026-07-13", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v2.0.0"},
+        {"tag": "v2.0.1", "sha": "fdc8eea38b3425372c2c7be8e18580f25b5fb349", "date": "2026-07-13", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v2.0.1"},
+        {"tag": "v3.0.0", "sha": "bbaa4054eabec9be01010345b34bcacebe47342b", "date": "2026-09-12", "date_source": "release", "release_url": "https://github.com/goforj/str/releases/tag/v3.0.0"}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/str/docs", "go": "1.24.0", "tag": null},
+        {"path": "examples/go.mod", "module": "github.com/goforj/str/examples", "go": "1.24.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/str/v3", "go": "1.24.0", "tag": "v3.0.0", "sha": "bbaa4054eabec9be01010345b34bcacebe47342b"}
+      ]
+    },
+    "web": {
+      "repository": "https://github.com/goforj/web",
+      "rootVersions": [
+        {"tag": "v0.1.0", "sha": "5f0da2ac11edeb412a29564b4a3eaca83c41e51f", "date": "2026-04-06", "date_source": "commit", "release_url": null},
+        {"tag": "v0.2.0", "sha": "7d3ff61c8fbf2c93a8980d6660af8839eb60a4db", "date": "2026-04-08", "date_source": "commit", "release_url": null},
+        {"tag": "v0.3.0", "sha": "33dc67b4f7e338ca5ed0960e57961b32a713f0ed", "date": "2026-04-09", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.0", "sha": "425364ebba774c51b348ca6f71740a0e3610b9ea", "date": "2026-04-20", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.1", "sha": "44742c9c7e256e0bb6b9542ecb55cce2c8168a79", "date": "2026-05-22", "date_source": "commit", "release_url": null},
+        {"tag": "v0.4.2", "sha": "31096403b16548e788a54260798e15a2f6661d43", "date": "2026-06-04", "date_source": "commit", "release_url": null},
+        {"tag": "v0.5.0", "sha": "b31cee01966e9f455d047a84b5101fbdff776b3e", "date": "2026-06-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.5.1", "sha": "f231db9bc16221246161371b5d466f9a97c1ea8f", "date": "2026-06-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.5.2", "sha": "ecf4d56ac8193a59f03553f32abe2d7672b72e96", "date": "2026-06-05", "date_source": "commit", "release_url": null},
+        {"tag": "v0.5.3", "sha": "2625d6fb20cfb0e9d9d2d0b79f5fc42bf7a6177e", "date": "2026-06-20", "date_source": "commit", "release_url": null},
+        {"tag": "v0.6.0", "sha": "4f83d68f2c35619be4ed4ac5f8afc525c373ba68", "date": "2026-07-13", "date_source": "commit", "release_url": null},
+        {"tag": "v0.6.1", "sha": "3c472472e554c1621f5269fa536e430da3e402a7", "date": "2026-07-18", "date_source": "commit", "release_url": null},
+        {"tag": "v0.6.2", "sha": "b71879cd12c0994beedac474677a6e10baf071be", "date": "2026-07-21", "date_source": "commit", "release_url": null},
+        {"tag": "v0.6.3", "sha": "dead104e4d6c28f3c6fdbeaf7f51600b27e1ad27", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/web/releases/tag/v0.6.3"},
+        {"tag": "v0.6.4", "sha": "2a5b8982c53fa152349477d7b72abe01c2b04326", "date": "2026-10-18", "date_source": "release", "release_url": "https://github.com/goforj/web/releases/tag/v0.6.4"}
+      ],
+      "latestModules": [
+        {"path": "docs/go.mod", "module": "github.com/goforj/web/docs", "go": "1.26.0", "tag": null},
+        {"path": "examples/go.mod", "module": "github.com/goforj/web/examples", "go": "1.26.0", "tag": null},
+        {"path": "go.mod", "module": "github.com/goforj/web", "go": "1.26.0", "tag": "v0.6.4", "sha": "2a5b8982c53fa152349477d7b72abe01c2b04326"}
+      ]
+    },
+    "wire": {
+      "repository": "https://github.com/goforj/wire",
+      "rootVersions": [
+        {"tag": "v1.0.0", "sha": "ec34a6cf9abac80615e26df639d8747ff2e49146", "date": "2026-01-08", "date_source": "release", "release_url": "https://github.com/goforj/wire/releases/tag/v1.0.0"},
+        {"tag": "v1.1.0", "sha": "902bedf6a6af952496fa2e08aa64b7b10ceec5c5", "date": "2026-01-08", "date_source": "release", "release_url": "https://github.com/goforj/wire/releases/tag/v1.1.0"},
+        {"tag": "v1.2.0", "sha": "a64b6147462d563640d769c527176ed3edf14d05", "date": "2026-04-28", "date_source": "commit", "release_url": null},
+        {"tag": "v1.3.0", "sha": "2367f18afe9990c379d49864e1efc8be85ed5c65", "date": "2026-10-17", "date_source": "release", "release_url": "https://github.com/goforj/wire/releases/tag/v1.3.0"},
+        {"tag": "v1.3.1", "sha": "0cfa4a8968d424dea315356f8293a66c6d467476", "date": "2026-10-21", "date_source": "release", "release_url": "https://github.com/goforj/wire/releases/tag/v1.3.1"}
+      ],
+      "latestModules": [
+        {"path": "go.mod", "module": "github.com/goforj/wire", "go": "1.25.0", "tag": "v1.3.1", "sha": "0cfa4a8968d424dea315356f8293a66c6d467476"}
+      ]
+    }
+  }
+}

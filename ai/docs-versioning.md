@@ -12,6 +12,12 @@ The navigation badge says "Public beta" and links to `/versions/#public-beta`. I
 
 The version label must be checked against the latest framework release before publication. Internal plans, the VitePress navigation, `/versions/`, and the changelog must not carry different current-version values.
 
+## Library Release History
+
+The library section of `docs/versions/changelog.md` is maintained separately from framework versions. Its October 24, 2026 backfill is supported by `ai/library-release-audit.json`, a dated evidence snapshot of 19 repositories, 194 numbered root tags, tagged commit identities, date provenance, and module manifests. The snapshot records that audit, not a live release feed or an instruction to update framework pins.
+
+When adding library releases, check published release notes and remote tags. Some libraries publish module tags without GitHub release pages. Label tagged-commit dates as source dates instead of inventing publication dates, preserve same-source and superseded tags honestly, and check each independently published driver or helper module at its own tag. Record minimum Go requirements, concrete API or behavior changes, and operational or persisted-data migrations separately. Changelog prose remains the authoritative editorial source; the library README generator does not own this history.
+
 ## Versioning Principle
 
 Version docs around user-visible behavior, not internal implementation churn.
