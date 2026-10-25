@@ -1102,8 +1102,8 @@ const referenceSidebar = sectionSidebar('Reference', [
 ])
 
 const versionsSidebar = sectionSidebar('Versions', [
-  { text: 'Active development', link: '/versions/' },
-  { text: `Latest tag ${release.latest}`, link: `https://github.com/goforj/goforj/releases/tag/${release.latest}` },
+  { text: 'Public beta', link: '/versions/' },
+  { text: `Release ${release.latest}`, link: `https://github.com/goforj/goforj/releases/tag/${release.latest}` },
   { text: 'Changelog', link: '/versions/changelog' }
 ])
 

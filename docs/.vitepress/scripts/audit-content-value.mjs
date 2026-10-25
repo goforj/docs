@@ -779,7 +779,7 @@ function auditLatestFrameworkTag() {
   }
   if (
     !config.includes("import release from './data/release.json'") ||
-    !config.includes('Latest tag ${release.latest}') ||
+    !config.includes('Release ${release.latest}') ||
     !config.includes('expandReleaseTokens') ||
     !config.includes('const releaseAnchor = release.latest')
   ) {

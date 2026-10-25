@@ -5960,7 +5960,8 @@ html.dark {
    active state reads as a marked row rather than a full-bleed
    plate running into the content area. */
 .VPSidebarItem .item > .link {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 5px 14px 5px 14px;
     border-left: 2px solid transparent;
     border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
