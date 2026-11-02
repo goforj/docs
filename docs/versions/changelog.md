@@ -37,6 +37,32 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.35.5
+
+Released November 2, 2026.
+
+- Updated App dependencies to Storage v0.6.1, Cache drivers v0.4.3, and Web v0.6.5, including Echo and Go JOSE security fixes.
+- Refreshed Go and starter frontend dependencies while retaining Go 1.26 support.
+- Fixed concurrent stderr access in Atlas MCP readiness diagnostics.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.35.5) for upgrade instructions.
+
+## v0.35.3
+
+Released October 25, 2026.
+
+- Added matching light/dark favicons and Apple touch icons to Vue, React, and templ + htmx starter kits. Favicons follow the saved theme or the system theme.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.35.3) for upgrade instructions.
+
+## v0.35.2
+
+Released October 25, 2026.
+
+- Aligned the React and templ + htmx starter logos with Vue, centered login branding, and updated Zod to address its security advisory.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.35.2) for upgrade instructions.
+
 ## v0.35.1
 
 Released October 20, 2026.
@@ -127,16 +153,16 @@ Released July 22, 2026.
 
 ## First-Party Library Ecosystem
 
-GoForj's libraries are versioned independently and can be used outside the framework. The history below covers all 19 libraries, including the `null` compatibility fork, through October 24, 2026.
+GoForj's libraries are versioned independently and can be used outside the framework. The history below covers all 19 libraries, including the `null` compatibility fork, through November 2, 2026.
 
 ### Library Release Lines
 
-The versions below are current as of October 24, 2026. Framework releases may select earlier library versions. Minimum Go versions come from the root module at each listed tag; separately published drivers and helpers can require newer compilers.
+The versions below are current as of November 2, 2026. Framework releases may select earlier library versions. Minimum Go versions come from the root module at each listed tag; separately published drivers and helpers can require newer compilers.
 
 | Library | Version | Minimum Go | What it provides |
 | --- | --- | --- | --- |
 | [Atlas](#atlas) | [v0.4.13](https://github.com/goforj/atlas/tree/v0.4.13) | 1.25.0 | Project guidance, skills, MCP tools, and agent evaluations. |
-| [Cache](#cache) | [v0.4.2](https://github.com/goforj/cache/releases/tag/v0.4.2) | 1.27.0 | Cache helpers, locks, inspectors, and local, distributed, and SQL drivers. |
+| [Cache](#cache) | [v0.4.3](https://github.com/goforj/cache/releases/tag/v0.4.3) | 1.27.0 | Cache helpers, locks, inspectors, and local, distributed, and SQL drivers. |
 | [Collection](#collection) | [v4.0.0](https://github.com/goforj/collection/releases/tag/v4.0.0) | 1.27.0 | Slice-backed collections, fluent transformations, and explicit mutation. |
 | [Console](#console) | [v0.2.0](https://github.com/goforj/console/tree/v0.2.0) | 1.24.0 | Semantic CLI output, layouts, prompts, loaders, and progress. |
 | [Crypt](#crypt) | [v1.2.0](https://github.com/goforj/crypt/tree/v1.2.0) | 1.24.4 | Authenticated CBC encryption, compatible envelopes, and key rotation. |
@@ -144,15 +170,15 @@ The versions below are current as of October 24, 2026. Framework releases may se
 | [Events](#events) | [v0.2.1](https://github.com/goforj/events/releases/tag/v0.2.1) | 1.24.0 | Typed event delivery with local and distributed transports. |
 | [Execx](#execx) | [v1.1.4](https://github.com/goforj/execx/tree/v1.1.4) | 1.24.4 | Subprocess execution, output decoding, and TTY and PTY support. |
 | [GoDump](#godump) | [v1.10.0](https://github.com/goforj/godump/releases/tag/v1.10.0) | 1.18 | Debug dumps, diffs, type controls, and field redaction. |
-| [HTTPX](#httpx) | [v2.1.0](https://github.com/goforj/httpx/releases/tag/v2.1.0) | 1.27.0 | HTTP client helpers, typed responses, authentication, and diagnostics. |
+| [HTTPX](#httpx) | [v2.1.1](https://github.com/goforj/httpx/releases/tag/v2.1.1) | 1.27.0 | HTTP client helpers, typed responses, authentication, and diagnostics. |
 | [Mail](#mail) | [v0.3.1](https://github.com/goforj/mail/tree/v0.3.1) | 1.24.0 | Message building, attachments, and mail delivery transports. |
 | [Metrics](#metrics) | [v0.2.0](https://github.com/goforj/metrics/tree/v0.2.0) | 1.24.0 | Registries, counters, gauges, histograms, and Prometheus exposition. |
 | [Null](#null) | [v6.0.2](https://github.com/goforj/null/tree/v6.0.2) | 1.22.12 | Compatibility fork for nullable SQL and JSON values. |
 | [Queue](#queue) | [v0.2.1](https://github.com/goforj/queue/tree/v0.2.1) | 1.24.4 | Job dispatch, workers, retries, workflows, and backend drivers. |
 | [Scheduler](#scheduler) | [v2.1.4](https://github.com/goforj/scheduler/tree/v2.1.4) | 1.24.4 | Recurring work, locks, execution controls, and task contexts. |
-| [Storage](#storage) | [v0.6.0](https://github.com/goforj/storage/releases/tag/v0.6.0) | 1.24.4 | File and object storage, driver capabilities, and streaming S3 operations. |
+| [Storage](#storage) | [v0.6.1](https://github.com/goforj/storage/releases/tag/v0.6.1) | 1.24.4 | File and object storage, driver capabilities, and streaming S3 operations. |
 | [Str](#str) | [v3.0.0](https://github.com/goforj/str/releases/tag/v3.0.0) | 1.24.0 | Fluent string operations with standard-library contracts and application helpers. |
-| [Web](#web) | [v0.6.4](https://github.com/goforj/web/releases/tag/v0.6.4) | 1.26.0 | HTTP contracts, the Echo adapter, middleware, testing, and API indexing. |
+| [Web](#web) | [v0.6.5](https://github.com/goforj/web/releases/tag/v0.6.5) | 1.26.0 | HTTP contracts, the Echo adapter, middleware, testing, and API indexing. |
 | [Wire](#wire) | [v1.3.1](https://github.com/goforj/wire/releases/tag/v1.3.1) | 1.25.0 | Compile-time dependency generation, caching, and watch mode. |
 
 ### Reading the History
@@ -191,10 +217,11 @@ These are tagged library versions, not a record of every change currently on `ma
 
 ### Cache {#cache}
 
-The root module requires Go 1.27 from v0.4.1 onward. In v0.4.2, `cachecore`, `cachetest`, and most driver modules retain Go 1.24.4; PostgreSQL and SQLite require Go 1.25, and NATS requires Go 1.26. Applications retaining Go 1.26 can keep the root at v0.4.0 and select newer core and driver modules as documented in the [v0.4.2 release](https://github.com/goforj/cache/releases/tag/v0.4.2). For ownership-safe locks, drain older binaries with unconditional unlock behavior before relying on the new release semantics. Direct lock acquisition and release must use the same Cache instance.
+The root module requires Go 1.27 from v0.4.1 onward. In v0.4.3, `cachecore`, `cachetest`, and most driver modules retain Go 1.24.4; PostgreSQL and SQLite require Go 1.25, and NATS requires Go 1.26. Applications retaining Go 1.26 can keep the root at v0.4.0 and select newer core and driver modules as documented in the [v0.4.3 release](https://github.com/goforj/cache/releases/tag/v0.4.3). For ownership-safe locks, drain older binaries with unconditional unlock behavior before relying on the new release semantics. Direct lock acquisition and release must use the same Cache instance.
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| [v0.4.3](https://github.com/goforj/cache/releases/tag/v0.4.3) | 2026-11-02 (release) | Updated DynamoDB, NATS, PostgreSQL, SQLite, and compression dependencies across eleven modules, preserving their Go requirements. |
 | [v0.4.2](https://github.com/goforj/cache/releases/tag/v0.4.2) | 2026-10-17 (release) | Coordinated dependency updates across eleven published modules, preserving Redis timing defaults. Compiler requirements vary by module. |
 | [v0.4.1](https://github.com/goforj/cache/releases/tag/v0.4.1) | 2026-08-31 (release) | Added ownership-safe lock release and Go 1.27 generic Cache methods; retained package-level helpers. |
 | [v0.4.0](https://github.com/goforj/cache/commits/v0.4.0) | 2026-07-16 (source) | Unified Cache shaping and cross-driver behavior, with coordinated module publication. |
@@ -327,6 +354,7 @@ v2.1.0 raises the minimum from Go 1.24.4 to Go 1.27 for generic client methods; 
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| [v2.1.1](https://github.com/goforj/httpx/releases/tag/v2.1.1) | 2026-11-02 (release) | Updated GoDump and compression dependencies. Requires Go 1.27, unchanged. |
 | [v2.1.0](https://github.com/goforj/httpx/releases/tag/v2.1.0) | 2026-10-17 (release) | Added generic client methods, fixed named string and byte-slice response decoding, and updated compression and network dependencies. Requires Go 1.27. |
 | [v2.0.1](https://github.com/goforj/httpx/commits/v2.0.1) | 2026-03-08 (source) | Refreshed v2 tagging guidance, API documentation, and examples. |
 | [v2.0.0](https://github.com/goforj/httpx/releases/tag/v2.0.0) | 2025-12-29 (release) | Introduced the v2 request API and refreshed its executable documentation. |
@@ -408,10 +436,11 @@ v2 makes handlers and hooks error-aware and uses the `github.com/goforj/schedule
 
 ### Storage {#storage}
 
-v0.6.0 publishes twelve runtime and helper modules. The root, core, FTP, memory, and S3 modules require Go 1.24.4; Dropbox and local storage require Go 1.25; GCS, rclone, Redis, SFTP, and `storagetest` require Go 1.26. These differences were introduced by v0.5.1, not the streaming addition. Streaming is an optional capability: existing `Storage`, buffered operations, and stored objects remain compatible. See [v0.5.1 upgrade requirements](https://github.com/goforj/storage/releases/tag/v0.5.1) and [v0.6.0 streaming contracts](https://github.com/goforj/storage/releases/tag/v0.6.0).
+v0.6.1 publishes twelve runtime and helper modules. The root, core, FTP, memory, and S3 modules require Go 1.24.4; Dropbox and local storage require Go 1.25; GCS, rclone, Redis, SFTP, and `storagetest` require Go 1.26. These differences were introduced by v0.5.1, not the streaming addition. Streaming is an optional capability: existing `Storage`, buffered operations, and stored objects remain compatible. See [v0.5.1 upgrade requirements](https://github.com/goforj/storage/releases/tag/v0.5.1) and [v0.6.0 streaming contracts](https://github.com/goforj/storage/releases/tag/v0.6.0).
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| [v0.6.1](https://github.com/goforj/storage/releases/tag/v0.6.1) | 2026-11-02 (release) | Patched Go JOSE and Chi security issues while preserving each module's Go requirement. |
 | [v0.6.0](https://github.com/goforj/storage/releases/tag/v0.6.0) | 2026-10-18 (release) | Added optional streaming object storage, S3 pagination, metadata, conditional operations, and explicit bucket preparation across twelve coordinated module tags. |
 | [v0.5.1](https://github.com/goforj/storage/releases/tag/v0.5.1) | 2026-10-17 (release) | Updated driver dependencies and compression, preserved Redis timing defaults, and clarified optional paging tests. Compiler requirements vary by module. |
 | [v0.5.0](https://github.com/goforj/storage/commits/v0.5.0) | 2026-07-16 (source) | Hardened storage driver contracts and lifecycle behavior. |
@@ -448,10 +477,11 @@ v3 retains Go 1.24 as its minimum, but requires `/v3` imports and behavior revie
 
 ### Web {#web}
 
-v0.6.3 raises the minimum from Go 1.25 to Go 1.26. Review TLS-terminating proxies before adopting v0.6.3 or later: forwarded scheme headers now depend on trusted proxy configuration. Public-address proxies and `100.64.0.0/10` need explicit trusted CIDRs where applicable. Client-IP extraction is a separate setting. See the [tagged proxy guidance](https://github.com/goforj/web/blob/v0.6.3/README.md#request-scheme-and-proxy-trust). v0.6.4 preserves the API and minimum compiler version.
+v0.6.3 raises the minimum from Go 1.25 to Go 1.26. Review TLS-terminating proxies before adopting v0.6.3 or later: forwarded scheme headers now depend on trusted proxy configuration. Public-address proxies and `100.64.0.0/10` need explicit trusted CIDRs where applicable. Client-IP extraction is a separate setting. See the [tagged proxy guidance](https://github.com/goforj/web/blob/v0.6.3/README.md#request-scheme-and-proxy-trust). v0.6.5 preserves the Web API and minimum compiler version. Applications using the Prometheus query client directly should review the [v0.6.5 release notes](https://github.com/goforj/web/releases/tag/v0.6.5) for its query API changes.
 
 | Version | Date | Changes |
 | --- | --- | --- |
+| [v0.6.5](https://github.com/goforj/web/releases/tag/v0.6.5) | 2026-11-02 (release) | Updated Echo security fixes and HTTP dependencies. Requires Go 1.26; direct Prometheus query-client users should review the release notes. |
 | [v0.6.4](https://github.com/goforj/web/releases/tag/v0.6.4) | 2026-10-18 (release) | Reused middleware dispatch continuations to remove one allocation per benchmarked middleware operation. |
 | [v0.6.3](https://github.com/goforj/web/releases/tag/v0.6.3) | 2026-10-17 (release) | Adopted Echo 5.4 security fixes and repaired Go 1.27 API indexing. Requires Go 1.26 and a review of forwarded-scheme proxy trust. |
 | [v0.6.2](https://github.com/goforj/web/commits/v0.6.2) | 2026-07-21 (source) | Added and hardened incremental API-index caching and target-specific cache reads. |
@@ -486,11 +516,11 @@ A root tag does not publish a nested Go module. The following driver and helper 
 
 | Library | Coordinated version | Independently tagged modules |
 | --- | --- | --- |
-| Cache | v0.4.2 | [`cachecore`](https://github.com/goforj/cache/tree/cachecore/v0.4.2), [`cachetest`](https://github.com/goforj/cache/tree/cachetest/v0.4.2), [`driver/dynamocache`](https://github.com/goforj/cache/tree/driver/dynamocache/v0.4.2), [`driver/memcachedcache`](https://github.com/goforj/cache/tree/driver/memcachedcache/v0.4.2), [`driver/mysqlcache`](https://github.com/goforj/cache/tree/driver/mysqlcache/v0.4.2), [`driver/natscache`](https://github.com/goforj/cache/tree/driver/natscache/v0.4.2), [`driver/postgrescache`](https://github.com/goforj/cache/tree/driver/postgrescache/v0.4.2), [`driver/rediscache`](https://github.com/goforj/cache/tree/driver/rediscache/v0.4.2), [`driver/sqlcore`](https://github.com/goforj/cache/tree/driver/sqlcore/v0.4.2), [`driver/sqlitecache`](https://github.com/goforj/cache/tree/driver/sqlitecache/v0.4.2) |
+| Cache | v0.4.3 | [`cachecore`](https://github.com/goforj/cache/tree/cachecore/v0.4.3), [`cachetest`](https://github.com/goforj/cache/tree/cachetest/v0.4.3), [`driver/dynamocache`](https://github.com/goforj/cache/tree/driver/dynamocache/v0.4.3), [`driver/memcachedcache`](https://github.com/goforj/cache/tree/driver/memcachedcache/v0.4.3), [`driver/mysqlcache`](https://github.com/goforj/cache/tree/driver/mysqlcache/v0.4.3), [`driver/natscache`](https://github.com/goforj/cache/tree/driver/natscache/v0.4.3), [`driver/postgrescache`](https://github.com/goforj/cache/tree/driver/postgrescache/v0.4.3), [`driver/rediscache`](https://github.com/goforj/cache/tree/driver/rediscache/v0.4.3), [`driver/sqlcore`](https://github.com/goforj/cache/tree/driver/sqlcore/v0.4.3), [`driver/sqlitecache`](https://github.com/goforj/cache/tree/driver/sqlitecache/v0.4.3) |
 | Events | v0.2.1 | [`driver/gcppubsubevents`](https://github.com/goforj/events/tree/driver/gcppubsubevents/v0.2.1), [`driver/kafkaevents`](https://github.com/goforj/events/tree/driver/kafkaevents/v0.2.1), [`driver/natsevents`](https://github.com/goforj/events/tree/driver/natsevents/v0.2.1), [`driver/natsjetstreamevents`](https://github.com/goforj/events/tree/driver/natsjetstreamevents/v0.2.1), [`driver/redisevents`](https://github.com/goforj/events/tree/driver/redisevents/v0.2.1), [`driver/snsevents`](https://github.com/goforj/events/tree/driver/snsevents/v0.2.1), [`eventscore`](https://github.com/goforj/events/tree/eventscore/v0.2.1), [`eventsfake`](https://github.com/goforj/events/tree/eventsfake/v0.2.1), [`eventstest`](https://github.com/goforj/events/tree/eventstest/v0.2.1) |
 | Mail | v0.3.1 | [`mailses`](https://github.com/goforj/mail/tree/mailses/v0.3.1) |
 | Queue | v0.2.1 | [`driver/mysqlqueue`](https://github.com/goforj/queue/tree/driver/mysqlqueue/v0.2.1), [`driver/natsqueue`](https://github.com/goforj/queue/tree/driver/natsqueue/v0.2.1), [`driver/postgresqueue`](https://github.com/goforj/queue/tree/driver/postgresqueue/v0.2.1), [`driver/rabbitmqqueue`](https://github.com/goforj/queue/tree/driver/rabbitmqqueue/v0.2.1), [`driver/redisqueue`](https://github.com/goforj/queue/tree/driver/redisqueue/v0.2.1), [`driver/sqlitequeue`](https://github.com/goforj/queue/tree/driver/sqlitequeue/v0.2.1), [`driver/sqlqueuecore`](https://github.com/goforj/queue/tree/driver/sqlqueuecore/v0.2.1), [`driver/sqsqueue`](https://github.com/goforj/queue/tree/driver/sqsqueue/v0.2.1) |
-| Storage | v0.6.0 | [`driver/dropboxstorage`](https://github.com/goforj/storage/tree/driver/dropboxstorage/v0.6.0), [`driver/ftpstorage`](https://github.com/goforj/storage/tree/driver/ftpstorage/v0.6.0), [`driver/gcsstorage`](https://github.com/goforj/storage/tree/driver/gcsstorage/v0.6.0), [`driver/localstorage`](https://github.com/goforj/storage/tree/driver/localstorage/v0.6.0), [`driver/memorystorage`](https://github.com/goforj/storage/tree/driver/memorystorage/v0.6.0), [`driver/rclonestorage`](https://github.com/goforj/storage/tree/driver/rclonestorage/v0.6.0), [`driver/redisstorage`](https://github.com/goforj/storage/tree/driver/redisstorage/v0.6.0), [`driver/s3storage`](https://github.com/goforj/storage/tree/driver/s3storage/v0.6.0), [`driver/sftpstorage`](https://github.com/goforj/storage/tree/driver/sftpstorage/v0.6.0), [`storagecore`](https://github.com/goforj/storage/tree/storagecore/v0.6.0), [`storagetest`](https://github.com/goforj/storage/tree/storagetest/v0.6.0) |
+| Storage | v0.6.1 | [`driver/dropboxstorage`](https://github.com/goforj/storage/tree/driver/dropboxstorage/v0.6.1), [`driver/ftpstorage`](https://github.com/goforj/storage/tree/driver/ftpstorage/v0.6.1), [`driver/gcsstorage`](https://github.com/goforj/storage/tree/driver/gcsstorage/v0.6.1), [`driver/localstorage`](https://github.com/goforj/storage/tree/driver/localstorage/v0.6.1), [`driver/memorystorage`](https://github.com/goforj/storage/tree/driver/memorystorage/v0.6.1), [`driver/rclonestorage`](https://github.com/goforj/storage/tree/driver/rclonestorage/v0.6.1), [`driver/redisstorage`](https://github.com/goforj/storage/tree/driver/redisstorage/v0.6.1), [`driver/s3storage`](https://github.com/goforj/storage/tree/driver/s3storage/v0.6.1), [`driver/sftpstorage`](https://github.com/goforj/storage/tree/driver/sftpstorage/v0.6.1), [`storagecore`](https://github.com/goforj/storage/tree/storagecore/v0.6.1), [`storagetest`](https://github.com/goforj/storage/tree/storagetest/v0.6.1) |
 
 Queue also has historical `docs`, `examples`, and `integration` tags through v0.2.1. Cache, Events, and Storage have older support-module tags that do not advance with their latest runtime releases. Do not infer a new documentation, benchmark, or integration module version from a root release. Other libraries can contain nested tooling modules without publishing them separately.
 
