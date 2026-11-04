@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "playwright": "^1.64.1",
-    "vitepress": "^2.0.0-alpha.20"
+    "vitepress": "^2.0.0-alpha.21"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.150",
