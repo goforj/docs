@@ -13,6 +13,7 @@ description: Build APIs, workers, CLIs, and full web products in Go. Explicit wi
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { lucideIconBodies } from 'virtual:goforj-icons'
 import FrameworkBlockIcon from './.vitepress/theme/components/FrameworkBlockIcon.vue'
+import HomeExamplePanel from './.vitepress/theme/components/HomeExamplePanel.vue'
 import RuntimeTopology from './.vitepress/theme/components/RuntimeTopology.vue'
 import ProjectAppsDiagram from './.vitepress/theme/components/ProjectAppsDiagram.vue'
 import DevTerminalPreview from './.vitepress/theme/components/DevTerminalPreview.vue'
@@ -368,7 +369,7 @@ onBeforeUnmount(() => {
 
 <div class="gf-home-swap__panels">
 
-<div id="home-example-panel-http" v-if="swapTab === 'http'" :aria-hidden="swapTab !== 'http'" role="tabpanel" aria-labelledby="home-example-tab-http" tabindex="0">
+<div id="home-example-panel-http" v-show="swapTab === 'http'" :aria-hidden="swapTab !== 'http'" role="tabpanel" aria-labelledby="home-example-tab-http" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -385,7 +386,7 @@ func (c *Controller) Show(ctx web.Context) error {
 </div>
 
 
-<div id="home-example-panel-storage" v-if="swapTab === 'storage'" :aria-hidden="swapTab !== 'storage'" role="tabpanel" aria-labelledby="home-example-tab-storage" tabindex="0">
+<div id="home-example-panel-storage" v-show="swapTab === 'storage'" :aria-hidden="swapTab !== 'storage'" role="tabpanel" aria-labelledby="home-example-tab-storage" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -397,7 +398,7 @@ func (s *Service) Store(ctx context.Context, path string, body []byte) error {
 
 </div>
 
-<div id="home-example-panel-database" v-if="swapTab === 'database'" :aria-hidden="swapTab !== 'database'" role="tabpanel" aria-labelledby="home-example-tab-database" tabindex="0">
+<div id="home-example-panel-database" v-show="swapTab === 'database'" :aria-hidden="swapTab !== 'database'" role="tabpanel" aria-labelledby="home-example-tab-database" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -412,7 +413,7 @@ func (r *Repository) Recent(ctx context.Context, limit int) ([]Photo, error) {
 
 </div>
 
-<div id="home-example-panel-cache" v-if="swapTab === 'cache'" :aria-hidden="swapTab !== 'cache'" role="tabpanel" aria-labelledby="home-example-tab-cache" tabindex="0">
+<div id="home-example-panel-cache" v-show="swapTab === 'cache'" :aria-hidden="swapTab !== 'cache'" role="tabpanel" aria-labelledby="home-example-tab-cache" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -426,7 +427,7 @@ func (f *Feed) Recent(ctx context.Context) ([]Photo, error) {
 
 </div>
 
-<div id="home-example-panel-queue" v-if="swapTab === 'queue'" :aria-hidden="swapTab !== 'queue'" role="tabpanel" aria-labelledby="home-example-tab-queue" tabindex="0">
+<div id="home-example-panel-queue" v-show="swapTab === 'queue'" :aria-hidden="swapTab !== 'queue'" role="tabpanel" aria-labelledby="home-example-tab-queue" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -450,8 +451,8 @@ func (t *ThumbnailJob) HandleTask(ctx context.Context, msg queue.Message) error 
 
 </div>
 
-<div id="home-example-panel-events" v-if="swapTab === 'events'" :aria-hidden="swapTab !== 'events'" role="tabpanel" aria-labelledby="home-example-tab-events" tabindex="0">
-<div v-if="eventFile === 'event'" id="home-event-code-event" role="tabpanel" aria-labelledby="home-event-file-event" tabindex="0">
+<div id="home-example-panel-events" v-show="swapTab === 'events'" :aria-hidden="swapTab !== 'events'" role="tabpanel" aria-labelledby="home-example-tab-events" tabindex="0">
+<HomeExamplePanel :active="eventFile === 'event'" id="home-event-code-event" role="tabpanel" aria-labelledby="home-event-file-event" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -469,8 +470,8 @@ func (UploadedEvent) Topic() string {
 }
 ```
 
-</div>
-<div v-else id="home-event-code-subscriber" role="tabpanel" aria-labelledby="home-event-file-subscriber" tabindex="0">
+</HomeExamplePanel>
+<HomeExamplePanel :active="eventFile === 'subscriber'" id="home-event-code-subscriber" role="tabpanel" aria-labelledby="home-event-file-subscriber" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -480,10 +481,10 @@ func (s *UploadedSubscriber) Handle(ctx context.Context, event UploadedEvent) er
 }
 ```
 
-</div>
+</HomeExamplePanel>
 </div>
 
-<div id="home-example-panel-schedule" v-if="swapTab === 'schedule'" :aria-hidden="swapTab !== 'schedule'" role="tabpanel" aria-labelledby="home-example-tab-schedule" tabindex="0">
+<div id="home-example-panel-schedule" v-show="swapTab === 'schedule'" :aria-hidden="swapTab !== 'schedule'" role="tabpanel" aria-labelledby="home-example-tab-schedule" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -500,7 +501,7 @@ func (s *CleanupSchedule) Handle(ctx context.Context) error {
 
 </div>
 
-<div id="home-example-panel-command" v-if="swapTab === 'command'" :aria-hidden="swapTab !== 'command'" role="tabpanel" aria-labelledby="home-example-tab-command" tabindex="0">
+<div id="home-example-panel-command" v-show="swapTab === 'command'" :aria-hidden="swapTab !== 'command'" role="tabpanel" aria-labelledby="home-example-tab-command" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -529,7 +530,7 @@ func (c *ShowCmd) Run(ctx context.Context) error {
 
 </div>
 
-<div id="home-example-panel-testing" v-if="swapTab === 'testing'" :aria-hidden="swapTab !== 'testing'" role="tabpanel" aria-labelledby="home-example-tab-testing" tabindex="0">
+<div id="home-example-panel-testing" v-show="swapTab === 'testing'" :aria-hidden="swapTab !== 'testing'" role="tabpanel" aria-labelledby="home-example-tab-testing" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -555,7 +556,7 @@ func TestControllerShow(t *testing.T) {
 
 </div>
 
-<div id="home-example-panel-mail" v-if="swapTab === 'mail'" :aria-hidden="swapTab !== 'mail'" role="tabpanel" aria-labelledby="home-example-tab-mail" tabindex="0">
+<div id="home-example-panel-mail" v-show="swapTab === 'mail'" :aria-hidden="swapTab !== 'mail'" role="tabpanel" aria-labelledby="home-example-tab-mail" tabindex="0">
 
 <!-- go-example: illustrative-fragment -->
 ```go
