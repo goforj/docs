@@ -3,12 +3,12 @@ module github.com/goforj/docs
 go 1.26.0
 
 require (
-	github.com/alecthomas/kong v1.16.1
+	github.com/alecthomas/kong v1.17.0
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/gammazero/workerpool v1.3.0
 	github.com/goforj/env v1.1.0
 	github.com/google/wire v0.7.0
-	github.com/labstack/echo/v4 v4.16.2
+	github.com/labstack/echo/v4 v4.16.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rs/zerolog v1.35.1
 	github.com/stretchr/testify v1.12.1
