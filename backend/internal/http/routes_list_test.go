@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -102,14 +102,14 @@ func TestFriendlyMiddlewareCodeReadable(t *testing.T) {
 
 // Helpers
 
-func testHandler(c echo.Context) error { return nil }
+func testHandler(c *echo.Context) error { return nil }
 
 func mwGroup(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error { return next(c) }
+	return func(c *echo.Context) error { return next(c) }
 }
 
 func mwRoute(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error { return next(c) }
+	return func(c *echo.Context) error { return next(c) }
 }
 
 func stripANSI(s string) string {

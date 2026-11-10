@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM golang:1.23-bookworm AS docs-generate
+FROM golang:1.26.11-bookworm AS docs-generate
 WORKDIR /app
 ENV GOTOOLCHAIN=auto
 RUN apt-get update && apt-get install -y --no-install-recommends git \
@@ -38,7 +38,7 @@ RUN --mount=type=cache,id=goforj-go-mod,target=/go/pkg/mod \
   --mount=type=cache,id=goforj-go-build,target=/root/.cache/go-build \
   test -n "${RELEASE_METADATA_REFRESH}" && node ../bin/refresh-release.mjs && NODE_ENV=production npm run build
 
-FROM golang:1.23-bookworm AS backend-build
+FROM golang:1.26.11-bookworm AS backend-build
 WORKDIR /app
 ENV GOTOOLCHAIN=auto
 COPY backend/go.mod backend/go.sum ./backend/

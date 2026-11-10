@@ -1,9 +1,10 @@
 package http
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
+
+	"github.com/labstack/echo/v5"
 )
 
 // responseBodyWriter is a custom http.ResponseWriter that captures the response body.
@@ -27,18 +28,24 @@ func (w *responseBodyWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// Unwrap preserves access to Echo's response metadata and optional writer capabilities.
+func (w *responseBodyWriter) Unwrap() http.ResponseWriter {
+	return w.ResponseWriter
+}
+
 // logNon200ResponseBodyMiddleware captures response body for non-200 statuses.
 func (s *Server) logNon200ResponseBodyMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			// Wrap the underlying http.ResponseWriter, not echo.ResponseWriter
-			originalWriter := c.Response().Writer
+		return func(c *echo.Context) error {
+			// Preserve the response wrapper chain used by Echo middleware.
+			originalWriter := c.Response()
 			writer := &responseBodyWriter{
 				ResponseWriter: originalWriter,
 				body:           new(strings.Builder),
 				status:         http.StatusOK,
 			}
-			c.Response().Writer = writer
+			c.SetResponse(writer)
+			defer c.SetResponse(originalWriter)
 
 			err := next(c)
 

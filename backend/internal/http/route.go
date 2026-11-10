@@ -1,6 +1,6 @@
 package http
 
-import "github.com/labstack/echo/v4"
+import "github.com/labstack/echo/v5"
 
 // NewRoute creates a new route with the specified method, route, handler, and middlewares.
 func NewRoute(
