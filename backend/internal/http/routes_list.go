@@ -2,9 +2,6 @@ package http
 
 import (
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
-	"github.com/labstack/echo/v4"
 	"hash/fnv"
 	"path/filepath"
 	"reflect"
@@ -13,6 +10,10 @@ import (
 	"sort"
 	"strings"
 	"unicode"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
+	"github.com/labstack/echo/v5"
 )
 
 const maxMiddlewareColumnWidth = 50

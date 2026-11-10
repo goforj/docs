@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/goforj/docs/internal/logger"
-	"github.com/labstack/echo/v4"
 )
 
 // staticTestSite provides flat pages, directory indexes, and assets in the production filesystem format.
@@ -22,8 +21,7 @@ func TestStaticDocumentationRoutes(t *testing.T) {
 	spas = nil
 	RegisterSpa("/*", "testdata/site", &staticTestSite)
 	server := NewServer(logger.NewSilentLogger(), nil)
-	e := echo.New()
-	server.registerSinglePageApplications(e)
+	e := server.bootstrap()
 	for _, tc := range []struct {
 		path   string
 		status int

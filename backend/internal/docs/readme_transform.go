@@ -163,10 +163,11 @@ func rewriteLineLinks(line string, base string, branch string) string {
 			start = open + 1
 			continue
 		}
-		closeBracket := strings.Index(line[open:], "](")
+		closeBracket := linkLabelEnd(line[open:])
 		if closeBracket == -1 {
-			out.WriteString(line[start:])
-			break
+			out.WriteString(line[start : open+1])
+			start = open + 1
+			continue
 		}
 		closeBracket += open
 		closeParen := strings.Index(line[closeBracket+2:], ")")
@@ -182,6 +183,28 @@ func rewriteLineLinks(line string, base string, branch string) string {
 		start = closeParen + 1
 	}
 	return out.String()
+}
+
+// linkLabelEnd balances nested image labels so linked badges retain their outer repository target.
+func linkLabelEnd(label string) int {
+	depth := 0
+	for i := 0; i < len(label); i++ {
+		switch label[i] {
+		case '\\':
+			i++
+		case '[':
+			depth++
+		case ']':
+			depth--
+			if depth == 0 {
+				if i+1 < len(label) && label[i+1] == '(' {
+					return i
+				}
+				return -1
+			}
+		}
+	}
+	return -1
 }
 
 func rewriteLinkURL(url string, base string, branch string) string {
@@ -274,6 +297,11 @@ func rewriteHeadingAnchors(content string) string {
 			level := matches[1]
 			title := strings.TrimSpace(matches[2])
 			anchor := defaultAnchor(title)
+			// GitHub omits periods in implicit IDs; honor source links while preserving existing unreferenced IDs.
+			linkedAnchor := strings.ReplaceAll(anchor, ".", "")
+			if strings.Contains(content, "(#"+linkedAnchor+")") || strings.Contains(content, `href="#`+linkedAnchor+`"`) || strings.Contains(content, "href='#"+linkedAnchor+"'") {
+				anchor = linkedAnchor
+			}
 			unique := claimHeadingAnchor(anchor, used, explicitAnchors, false)
 			lines[i] = fmt.Sprintf("%s %s {#%s}", level, title, unique)
 		}

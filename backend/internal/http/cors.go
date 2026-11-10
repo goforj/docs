@@ -1,11 +1,13 @@
 package http
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/goforj/env"
 	"net/http"
+	"slices"
 	"strings"
+
+	"github.com/goforj/env"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 )
 
 // registerCors registers the CORS middleware.
@@ -29,6 +31,9 @@ func (s *Server) registerCors(e *echo.Echo) {
 			"http://localhost:5174",
 		}
 	}
+	if len(endpoints) == 0 {
+		endpoints = []string{"*"}
+	}
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: endpoints,
@@ -41,6 +46,7 @@ func (s *Server) registerCors(e *echo.Echo) {
 			http.MethodPost,
 			http.MethodDelete,
 		},
-		AllowCredentials: true,
+		// Public origins remain readable, but only explicit origins may use credentials.
+		AllowCredentials: !slices.Contains(endpoints, "*"),
 	}))
 }

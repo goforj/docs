@@ -617,6 +617,17 @@ body:has(.VPDoc.has-sidebar) .VPSidebar {
     display: inline-flex;
 }
 
+/* README badges and table icons share a line with their surrounding content. */
+.VPDoc .vp-doc p[align="center"]:has(img) img,
+.VPDoc .vp-doc :is(td, th) img {
+    margin: 0;
+    vertical-align: middle;
+}
+
+.VPDoc .vp-doc :is(td, th) img {
+    display: inline-block;
+}
+
 .vp-doc p[align="center"] code {
     display: inline;
     margin: 0;

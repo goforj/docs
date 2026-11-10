@@ -37,6 +37,16 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.36.0
+
+Released November 10, 2026.
+
+- Added OpenTelemetry tracing with optional OTLP export, HTTP context propagation, and correlated Lighthouse timelines.
+- Kept framework-captured request bodies, raw SQL, cache keys, and job payloads local to Lighthouse.
+- Preserved Go 1.26 support. Existing apps retain their `.env` files and can enable export with a collector endpoint after reviewing the upgrade notes.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.36.0) for configuration, sampling behavior, and upgrade instructions.
+
 ## v0.35.5
 
 Released November 2, 2026.

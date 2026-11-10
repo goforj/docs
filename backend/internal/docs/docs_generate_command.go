@@ -105,6 +105,38 @@ func (c *GenerateCommand) Run() error {
 			OutputPath:  filepath.Join("libraries", "env.md"),
 		},
 		{
+			Slug:        "notification",
+			Title:       "Notification",
+			Description: "Notifications through chat, email, SMS, push, and on-call drivers with fanout and fallback.",
+			CloneURL:    "https://github.com/goforj/notification.git",
+			Branch:      "main",
+			OutputPath:  filepath.Join("libraries", "notification.md"),
+		},
+		{
+			Slug:        "search",
+			Title:       "Search",
+			Description: "Portable lexical search with typed filters, facets, highlights, and interchangeable drivers.",
+			CloneURL:    "https://github.com/goforj/search.git",
+			Branch:      "main",
+			OutputPath:  filepath.Join("libraries", "search.md"),
+		},
+		{
+			Slug:        "secret",
+			Title:       "Secret",
+			Description: "Read, replace, and delete bound secrets across encrypted local files and managed providers.",
+			CloneURL:    "https://github.com/goforj/secret.git",
+			Branch:      "main",
+			OutputPath:  filepath.Join("libraries", "secret.md"),
+		},
+		{
+			Slug:        "validation",
+			Title:       "Validation",
+			Description: "Typed fluent validation with reusable rules, presence-aware inputs, and structured field errors.",
+			CloneURL:    "https://github.com/goforj/validation.git",
+			Branch:      "main",
+			OutputPath:  filepath.Join("libraries", "validation.md"),
+		},
+		{
 			Slug:        "scheduler",
 			Title:       "Scheduler",
 			Description: "Recurring work primitives with cron, intervals, overlap protection, and runtime controls.",
@@ -382,7 +414,7 @@ func resolveLocalSource(repoSlug, source string) (string, error) {
 // fingerprintRepoReadme includes a transform version so importer fixes refresh unchanged upstream READMEs.
 func fingerprintRepoReadme(repo RepoConfig, rawBase string, readme []byte) string {
 	sum := sha256.New()
-	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v8\n"))
+	_, _ = sum.Write([]byte("docs-generate-readme-fingerprint:v9\n"))
 	for _, value := range []string{
 		repo.Slug,
 		repo.Title,

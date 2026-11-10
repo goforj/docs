@@ -2,14 +2,14 @@ package http
 
 import (
 	"fmt"
-	"github.com/goforj/docs/internal/logger"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"io/fs"
-	"net/http"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/goforj/docs/internal/logger"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 )
 
 // Server is a struct that represents an HTTP server.
@@ -41,10 +41,6 @@ func (s *Server) bootstrap() *echo.Echo {
 	// register routes
 	s.registerRoutes(e)
 
-	// hide banner / port from echo
-	e.HideBanner = true
-	e.HidePort = true
-
 	// Cross Origin Resource Sharing (CORS)
 	s.registerCors(e)
 
@@ -58,7 +54,6 @@ func (s *Server) bootstrap() *echo.Echo {
 		LogMethod:     true,
 		LogLatency:    true,
 		LogValuesFunc: s.Log,
-		LogError:      true,
 	}))
 
 	return e
@@ -76,13 +71,7 @@ func (s *Server) Serve(port string) error {
 	s.logger.Info().Any("port", port).Msg("Starting HTTP server")
 
 	// start
-	e.Logger.Fatal(
-		e.Start(
-			fmt.Sprintf(":%s", port),
-		),
-	)
-
-	return nil
+	return e.Start(fmt.Sprintf(":%s", port))
 }
 
 // GetRoutes returns all registered routes in the server.
@@ -92,7 +81,7 @@ func (s *Server) GetRoutes() []RouteGroup {
 }
 
 // Log is a middleware function that logs HTTP requests.
-func (s *Server) Log(c echo.Context, v middleware.RequestLoggerValues) error {
+func (s *Server) Log(c *echo.Context, v middleware.RequestLoggerValues) error {
 	l := s.logger.Info().
 		Any("uri", v.URI).
 		Any("status", v.Status).
@@ -114,7 +103,7 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 	for _, spa := range GetSpas() {
 		g := e.Group(spa.BaseUri())
 		g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-			return func(c echo.Context) error {
+			return func(c *echo.Context) error {
 				requestPath := c.Request().URL.Path
 				if requestPath != "/" && path.Ext(requestPath) == "" {
 					cleanPath := strings.TrimPrefix(requestPath, "/")
@@ -149,7 +138,7 @@ func (s *Server) registerSinglePageApplications(e *echo.Echo) {
 			// VitePress emits every valid route. Unknown paths must not fall back to the homepage.
 			HTML5:      false,
 			Root:       spa.FileRoot(),
-			Filesystem: http.FS(spa.Filesystem()),
+			Filesystem: spa.Filesystem(),
 			Index:      "index.html",
 		}))
 	}
