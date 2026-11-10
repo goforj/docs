@@ -9,7 +9,7 @@ GoForj Libraries are first-party Go packages that can be used on their own or co
 
 Each library page remains useful for standalone package users. Framework guides should link here for primitive APIs, driver details, constructors, and direct package usage.
 
-Use the [Driver Catalog](/drivers) to compare every available backend before opening a library page for its constructors and package-level behavior.
+Use the [Driver Catalog](/drivers) to compare framework backends. Standalone library pages document their own drivers, constructors, and package-level behavior.
 
 ## Application Infrastructure
 
@@ -19,6 +19,8 @@ Use the [Driver Catalog](/drivers) to compare every available backend before ope
 - [Queue](/queue) provides queueing, workers, and workflow primitives.
 - [Events](/events) provides event dispatch and subscription primitives.
 - [Mail](/mail) provides message composition and pluggable delivery primitives.
+- [Notification](/notification) sends notifications through chat, email, SMS, push, and on-call drivers.
+- [Search](/search) provides portable lexical search with typed filters, facets, and highlights.
 - [Scheduler](/scheduler) provides scheduled work primitives.
 - [Metrics](/metrics) provides in-memory metrics primitives and Prometheus-compatible export.
 - [Wire](/wire) supports explicit dependency wiring.
@@ -28,6 +30,8 @@ Use the [Driver Catalog](/drivers) to compare every available backend before ope
 
 - [Env](/env) handles environment loading and configuration helpers.
 - [Crypt](/crypt) provides encryption and key rotation utilities.
+- [Secret](/secret) reads, replaces, and deletes bound secrets through encrypted local files and managed providers.
+- [Validation](/validation) provides typed fluent rules, presence-aware inputs, and structured field errors.
 - [HTTPX](/httpx) provides lower-level HTTP client and utility helpers.
 - [ExecX](/execx) provides command execution utilities.
 

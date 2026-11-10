@@ -5,6 +5,61 @@ import (
 	"testing"
 )
 
+// TestTransformReadmePreservesConstructorLinks verifies GitHub-style implicit anchors survive README import.
+func TestTransformReadmePreservesConstructorLinks(t *testing.T) {
+	t.Parallel()
+	repo := RepoConfig{Slug: "notification", Title: "Notification"}
+	input := "[slack.New](#slacknew)\n\n### slack.New\n\n### explicit.New {#explicit.New}\n\n### v2.6 behavior notes\n"
+	got := transformReadme(input, repo, "")
+	for _, want := range []string{"[slack.New](#slacknew)", "### slack.New {#slacknew}", "### explicit.New {#explicit-New}", "### v2.6 behavior notes {#v2.6-behavior-notes}"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("transformReadme() missing %q in:\n%s", want, got)
+		}
+	}
+}
+
+// TestRewriteLineLinksHandlesNestedLabels verifies linked badges preserve images while their targets resolve upstream.
+func TestRewriteLineLinksHandlesNestedLabels(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "linked image",
+			input: `[![Bleve](https://example.com/bleve.svg)](driver/blevesearch)`,
+			want:  `[![Bleve](https://example.com/bleve.svg)](https://github.com/goforj/search/tree/main/driver/blevesearch)`,
+		},
+		{
+			name:  "nested text and following link",
+			input: `[driver [embedded]](driver/blevesearch) [Docs](docs/contracts.md)`,
+			want:  `[driver [embedded]](https://github.com/goforj/search/tree/main/driver/blevesearch) [Docs](https://github.com/goforj/search/blob/main/docs/contracts.md)`,
+		},
+		{
+			name:  "escaped bracket",
+			input: `[driver \]](driver/blevesearch)`,
+			want:  `[driver \]](https://github.com/goforj/search/tree/main/driver/blevesearch)`,
+		},
+		{
+			name:  "plain brackets before link",
+			input: `[note] [Docs](docs/contracts.md)`,
+			want:  `[note] [Docs](https://github.com/goforj/search/blob/main/docs/contracts.md)`,
+		},
+		{name: "unclosed label", input: `[unfinished`, want: `[unfinished`},
+		{name: "unclosed target", input: `[unfinished](docs/`, want: `[unfinished](docs/`},
+		{name: "standalone image", input: `![Bleve](docs/bleve.svg)`, want: `![Bleve](docs/bleve.svg)`},
+		{name: "external target", input: `[![Go](go.svg)](https://go.dev)`, want: `[![Go](go.svg)](https://go.dev)`},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := rewriteLineLinks(test.input, "https://github.com/goforj/search/", "main"); got != test.want {
+				t.Fatalf("rewriteLineLinks() = %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
 // TestRewriteMarkdownLinksRewritesRawHTMLAnchors verifies generated pages keep repository links outside the docs site.
 func TestRewriteMarkdownLinksRewritesRawHTMLAnchors(t *testing.T) {
 	repo := RepoConfig{

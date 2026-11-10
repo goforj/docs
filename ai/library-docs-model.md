@@ -34,6 +34,10 @@ Examples:
 - `web`
 - `metrics`
 - `mail`
+- `notification`
+- `search`
+- `secret`
+- `validation`
 - `env`
 - `crypt`
 - `collection`
@@ -139,8 +143,8 @@ Libraries should be a top-level navigation section.
 
 Recommended groups:
 
-- Application primitives: `web`, `queue`, `events`, `scheduler`, `cache`, `storage`, `metrics`, `mail`
-- Foundation utilities: `env`, `crypt`, `wire`
+- Application primitives: `web`, `queue`, `events`, `scheduler`, `cache`, `storage`, `metrics`, `mail`, `notification`, `search`
+- Foundation utilities: `env`, `crypt`, `secret`, `validation`, `wire`
 - Go utility libraries: `collection`, `str`, `httpx`, `execx`, `console`, `godump`
 - Developer tooling: `atlas`
 
