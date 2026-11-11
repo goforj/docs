@@ -21,13 +21,13 @@
     "test:performance": "node --test .vitepress/theme/components/performance-measurements.test.mjs ../bin/performance-data.test.mjs"
   },
   "devDependencies": {
-    "playwright": "^1.64.1",
+    "playwright": "^1.65.0",
     "vitepress": "^2.0.0-alpha.21"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.150",
+    "@iconify-json/lucide": "^1.2.152",
     "@iconify-json/simple-icons": "^1.2.101",
-    "mermaid": "^12.2.0",
+    "mermaid": "^12.3.0",
     "three": "0.187.0"
   }
 }
