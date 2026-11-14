@@ -281,7 +281,7 @@ The optional development-line `feature` component uses `FEATURE_<SUFFIX>` for th
 | `FEATURE_DOCUMENT` | Empty flag document | Optional startup override for memory sources in tests or small fixtures. Omitted from the generated environment; keep normal definitions in a file selected by `FEATURE_PATH`. |
 | `FEATURE_PATH` | Empty | Required definition file for a file source. |
 | `FEATURE_REFRESH_INTERVAL` | `30s` | Optional fallback polling and watch-retry interval, at least `10ms`. Used only while a watch is unavailable and omitted from the rendered environment. Healthy watches refresh on file notifications without polling. |
-| `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Positive initial source-load budget. |
+| `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Optional positive initial source-load budget. Omitted from the rendered environment; the internal default is `5s`. |
 
 Named evaluators default to memory unless their own source is selected. Failed refreshes retain a valid revision; the manager exposes freshness/error status while readiness remains usable. See [Feature Resources](/applications/library-resources#configure-a-feature-evaluator).
 
