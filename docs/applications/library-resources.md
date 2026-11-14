@@ -72,7 +72,24 @@ forj build
 
 Expected result: `internal/features/accessors_gen.go` exposes `Checkout()`, and the app builds. Startup loads the source synchronously; an invalid initial document fails initialization. The lifecycle starts the file refresh loop and cancels and joins it on shutdown.
 
-In a service that receives `*features.Manager`, capture one snapshot for related request decisions:
+In a service that receives `*features.Manager`, a simple boolean check is:
+
+<!-- go-example: illustrative-fragment -->
+```go
+enabled := manager.Checkout().Enabled(ctx, "checkout-v2")
+```
+
+For tenant targeting, bind a stable identity:
+
+<!-- go-example: illustrative-fragment -->
+```go
+flags := manager.Checkout().For(feature.Target{Key: tenantID})
+enabled := flags.Enabled(ctx, "checkout-v2")
+```
+
+`Enabled` returns a boolean with a false fallback. Use `Evaluate(ctx, key, fallback)` for an explicit fallback or full decision metadata. Ordinary checks can observe configuration updates independently.
+
+**When related decisions must agree:** capture one snapshot so they share the same configuration revision and evaluation time:
 
 <!-- go-example: illustrative-fragment -->
 ```go
@@ -81,8 +98,8 @@ if err != nil {
 	return err
 }
 flags := snapshot.For(feature.Target{Key: tenantID})
-checkout := flags.Evaluate(ctx, "checkout-v2", false)
-receipt := flags.Evaluate(ctx, "receipt-v2", false)
+checkout := flags.Enabled(ctx, "checkout-v2")
+receipt := flags.Enabled(ctx, "receipt-v2")
 ```
 
 `For` alone captures targeting data, not a configuration revision. A snapshot keeps both decisions on one revision and evaluation time. A failed refresh retains valid decisions and keeps readiness usable; `Instances()` exposes refresh status for diagnostics. Feature flags do not replace authorization.
