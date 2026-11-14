@@ -37,7 +37,7 @@ Expected result: the Project includes the enabled `internal/features`, `internal
 | Search index | `app.Searches().Catalog()` | Schema declarations, indexing, backfill, and visibility policy |
 | Notification sender | `app.Notifications().Alerts()` | Message content and deliberate channel or fallback policy |
 
-The example named accessors appear only after declaring those resources and running generation. Inject the relevant manager through the owning app's service Wire set. Use `app/wire/inject_services_app.go` for the default app or `app/<name>/wire/inject_services_app.go` for an additional app.
+The example named accessors appear only after declaring those resources and running generation. Creating or removing an app reconciles its feature evaluator registrations and app-only accessors automatically. Inject the relevant manager through the owning app's service Wire set. Use `app/wire/inject_services_app.go` for the default app or `app/<name>/wire/inject_services_app.go` for an additional app.
 
 ## Configure a Feature Evaluator
 
