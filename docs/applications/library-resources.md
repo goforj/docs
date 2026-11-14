@@ -49,7 +49,6 @@ For a local file-backed checkout evaluator, put these settings in the app enviro
 FEATURE_SUPPORTED_DRIVERS=memory,file
 FEATURE_CHECKOUT_DRIVER=file
 FEATURE_CHECKOUT_PATH=storage/flags/checkout.json
-FEATURE_CHECKOUT_REFRESH_INTERVAL=2s
 ```
 
 Create `storage/flags/checkout.json`:
@@ -70,7 +69,7 @@ Generate the typed accessor and rebuild:
 forj build
 ```
 
-Expected result: `internal/features/accessors_gen.go` exposes `Checkout()`, and the app builds. Startup loads the source synchronously; an invalid initial document fails initialization. The lifecycle watches the parent directory and debounces file changes for 50ms, including atomic replacement. A periodic refresh, every 30s by default, covers missed notifications and filesystems without watch support. Failed watches are retried on that interval. Memory sources start no background workers. Shutdown cancels and joins file workers.
+Expected result: `internal/features/accessors_gen.go` exposes `Checkout()`, and the app builds. Startup loads the source synchronously; an invalid initial document fails initialization. The lifecycle watches the parent directory and debounces file changes for 50ms, including atomic replacement. Healthy watches do not poll. If a watch cannot be established or becomes unavailable, polling and watch retries run every 30s until watching recovers. Notification overflow triggers an immediate refresh while keeping the watch active. The optional `FEATURE_REFRESH_INTERVAL` override changes the fallback interval and is omitted from the rendered environment. Memory sources start no background workers. Shutdown cancels and joins file workers.
 
 In a service that receives `*features.Manager`, a simple boolean check is:
 
