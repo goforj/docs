@@ -53,6 +53,8 @@ The examples are intentionally local-first. Production drivers, distributed back
 
 ## Focused Workflows
 
+[Customer Settings Validation](/scenarios/customer-settings-validation) implements a reusable PATCH policy that distinguishes omitted, null, zero, and false values. It keeps stable client field errors separate from cancellation and operational policy failures.
+
 [Add a Database-Backed Resource](/scenarios/create-photo-data-resource) is a focused, verified workflow for adding a new persistence boundary. It uses photos as a concrete example while keeping the reusable schema-first order explicit: add and apply the migration, generate the model and repository from the live schema, then extend the App-owned repository package.
 
 ## After the Path

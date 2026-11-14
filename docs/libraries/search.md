@@ -749,3 +749,9 @@ fmt.Printf("%s | $%.2f | in stock: %t\n", hit.Value.Category, float64(hit.Value.
 // kitchen | $24.95 | in stock: true
 ```
 <!-- api:embed:end -->
+
+## Using with GoForj {#using-with-goforj}
+
+Use the optional search component for named index accessors and backend ownership. App-owned Go definitions provide schemas, and explicit provisioning precedes startup validation.
+
+For the App workflow, see [Feature Search and Notification Resources](/applications/library-resources).

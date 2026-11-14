@@ -111,6 +111,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:    "https://github.com/goforj/notification.git",
 			Branch:      "main",
 			OutputPath:  filepath.Join("libraries", "notification.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Feature Search and Notification Resources",
+				Path:    "/applications/library-resources",
+				Summary: "Use the optional notification component for App-owned driver configuration, named sender accessors, and transport cleanup. Durable delivery and fallback policy remain explicit.",
+			},
 		},
 		{
 			Slug:        "search",
@@ -119,6 +124,11 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:    "https://github.com/goforj/search.git",
 			Branch:      "main",
 			OutputPath:  filepath.Join("libraries", "search.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Feature Search and Notification Resources",
+				Path:    "/applications/library-resources",
+				Summary: "Use the optional search component for named index accessors and backend ownership. App-owned Go definitions provide schemas, and explicit provisioning precedes startup validation.",
+			},
 		},
 		{
 			Slug:        "secret",
@@ -135,6 +145,19 @@ func (c *GenerateCommand) Run() error {
 			CloneURL:    "https://github.com/goforj/validation.git",
 			Branch:      "main",
 			OutputPath:  filepath.Join("libraries", "validation.md"),
+		},
+		{
+			Slug:        "feature",
+			Title:       "Feature",
+			Description: "Typed flags with stable targeting, explicit fallbacks, live refresh, and request snapshots.",
+			CloneURL:    "https://github.com/goforj/feature.git",
+			Branch:      "main",
+			OutputPath:  filepath.Join("libraries", "feature.md"),
+			FrameworkGuide: FrameworkGuide{
+				Title:   "Feature Search and Notification Resources",
+				Path:    "/applications/library-resources",
+				Summary: "Use the optional feature component for named evaluators and App-owned refresh lifecycle. Services capture a request snapshot when related decisions need one revision.",
+			},
 		},
 		{
 			Slug:        "scheduler",
