@@ -137,6 +137,8 @@ func SearchDefinitions() map[string]search.Definition {
 }
 ```
 
+Definition names retain their SDK identity and physical index paths. Environment keys and generated accessors resolve case-insensitive aliases, with hyphens represented as underscores. Names that produce the same alias are rejected before any backend opens.
+
 For a declared `catalog` index:
 
 ```dotenv
