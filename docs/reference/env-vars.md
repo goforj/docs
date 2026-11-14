@@ -280,7 +280,7 @@ The optional development-line `feature` component uses `FEATURE_<SUFFIX>` for th
 | `FEATURE_SUPPORTED_DRIVERS` | `memory,file` | Native sources compiled into the app. Both are baseline implementations in this initial integration. |
 | `FEATURE_DOCUMENT` | Empty flag document | Optional startup override for memory sources in tests or small fixtures. Omitted from the generated environment; keep normal definitions in a file selected by `FEATURE_PATH`. |
 | `FEATURE_PATH` | Empty | Required definition file for a file source. |
-| `FEATURE_REFRESH_INTERVAL` | `30s` | File refresh interval, at least `10ms`. |
+| `FEATURE_REFRESH_INTERVAL` | `30s` | Safety refresh and watch-retry interval, at least `10ms`. File notifications also trigger debounced refresh. |
 | `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Positive initial source-load budget. |
 
 Named evaluators default to memory unless their own source is selected. Failed refreshes retain a valid revision; the manager exposes freshness/error status while readiness remains usable. See [Feature Resources](/applications/library-resources#configure-a-feature-evaluator).
