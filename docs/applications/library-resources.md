@@ -41,6 +41,8 @@ The example named accessors appear only after declaring those resources and runn
 
 ## Configure a Feature Evaluator
 
+The generated environment starts with an empty memory evaluator and no inline JSON definition. Use a file source for normal flag definitions. `FEATURE_DOCUMENT` remains an optional memory-source override for tests or small fixtures.
+
 For a local file-backed checkout evaluator, put these settings in the app environment:
 
 ```dotenv
@@ -53,7 +55,13 @@ FEATURE_CHECKOUT_REFRESH_INTERVAL=2s
 Create `storage/flags/checkout.json`:
 
 ```json
-{"schema":1,"flags":{"checkout-v2":{"default":false},"receipt-v2":{"default":false}}}
+{
+  "schema": 1,
+  "flags": {
+    "checkout-v2": {"default": false},
+    "receipt-v2": {"default": false}
+  }
+}
 ```
 
 Generate the typed accessor and rebuild:
