@@ -36,8 +36,10 @@ Examples:
 - `mail`
 - `notification`
 - `search`
+- `feature`
 - `secret`
 - `validation`
+- `null`
 - `env`
 - `crypt`
 - `collection`

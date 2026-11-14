@@ -39,11 +39,16 @@ forj generate --events
 forj generate --db
 forj generate --mail
 forj generate --observability
+forj generate --feature
+forj generate --search
+forj generate --notification
 ```
 
 Running `forj generate` without flags refreshes available generators for the current App.
 
 Availability comes from the selected components in `.goforj.yml`. Cache, Storage, Events, and Queue generation run only when Cache, File Storage, Events, and Background Jobs are enabled. An explicit flag for a disabled component returns an error rather than recreating a package outside that selection.
+
+The development-line Feature, Search, and Notification integrations follow the same selection rule. Their focused flags refresh configured evaluator, index, and sender accessors. See [Feature Search and Notification Resources](/applications/library-resources) for the configuration and lifecycle workflow; check installed CLI support before using these flags in an older Project.
 
 `forj build:api-index` is the focused API contract command. It publishes the API index, diagnostics, and OpenAPI document together. Use `--strict` in CI and prefix the command with the app name:
 
@@ -71,6 +76,7 @@ Generated code should be refreshed after changing:
 
 - supported driver lists
 - named caches, disks, queues, event buses, mailers, or DB connections
+- named feature evaluators, search indexes, or notification senders when their optional components are enabled
 - provider sets or Wire inputs
 - generated component selection
 - app and runtime observability configuration

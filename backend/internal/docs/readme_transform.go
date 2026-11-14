@@ -12,6 +12,7 @@ var markdownImageRegex = regexp.MustCompile(`!\[[^\]]*\]\(([^)]+)\)`)
 var htmlImageRegex = regexp.MustCompile(`(?i)<img[^>]+src=["']([^"']+)["']`)
 var htmlAnchorLinkRegex = regexp.MustCompile(`(?i)(<a\b[^>]*\bhref\s*=\s*["'])([^"']+)(["'])`)
 var headingAnchorRegex = regexp.MustCompile(`^(#{1,6}) <a id="([^"]+)"></a>\s*(.+)$`)
+var standaloneAnchorRegex = regexp.MustCompile(`^(\s*<a\s+id=["'])([^"']+)(["']></a>\s*)$`)
 var headingIDRegex = regexp.MustCompile(`\{#([^}]+)\}`)
 var headingWithIDRegex = regexp.MustCompile(`^(#{1,6})\s+(.+?)\s+\{#([^}]+)\}\s*$`)
 var frameworkGuideHeadingRegex = regexp.MustCompile(`(?m)^## Using [Ww]ith GoForj(?:\s|$)`)
@@ -275,6 +276,13 @@ func rewriteHeadingAnchors(content string) string {
 		if fence != "" {
 			continue
 		}
+		if matches := standaloneAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
+			anchor := normalizeHeadingAnchor(matches[2])
+			explicitAnchors[anchor]--
+			unique := claimHeadingAnchor(anchor, used, explicitAnchors, true)
+			lines[i] = matches[1] + unique + matches[3]
+			continue
+		}
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
 			level := matches[1]
 			anchor := normalizeHeadingAnchor(matches[2])
@@ -312,7 +320,25 @@ func rewriteHeadingAnchors(content string) string {
 // explicitHeadingAnchorCounts reserves source-owned IDs before implicit Markdown headings are assigned their anchors.
 func explicitHeadingAnchorCounts(lines []string) map[string]int {
 	counts := map[string]int{}
+	fence := ""
 	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			marker := trimmed[:len(trimmed)-len(strings.TrimLeft(trimmed, string(trimmed[0])))]
+			if fence == "" {
+				fence = marker
+			} else if marker[0] == fence[0] && len(marker) >= len(fence) && strings.TrimSpace(trimmed[len(marker):]) == "" {
+				fence = ""
+			}
+			continue
+		}
+		if fence != "" {
+			continue
+		}
+		if matches := standaloneAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
+			counts[normalizeHeadingAnchor(matches[2])]++
+			continue
+		}
 		if matches := headingAnchorRegex.FindStringSubmatch(line); len(matches) == 4 {
 			counts[normalizeHeadingAnchor(matches[2])]++
 			continue

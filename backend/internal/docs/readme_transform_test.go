@@ -253,6 +253,27 @@ func TestTransformReadmeNormalizesDottedAnchors(t *testing.T) {
 	}
 }
 
+// TestTransformReadmeNormalizesStandaloneAnchors keeps imported method links aligned with explicit source-owned IDs.
+func TestTransformReadmeNormalizesStandaloneAnchors(t *testing.T) {
+	repo := RepoConfig{Slug: "feature", Title: "Feature", CloneURL: "https://github.com/goforj/feature.git", Branch: "main"}
+	input := "## API Features Snapshot\n[Snapshot](#api-features.snapshot)\n<a id=\"api-features.snapshot\"></a>\n<a href=\"#api-features.snapshot\">Snapshot</a>\n## Example Anchor\n~~~html\n<a id=\"example.anchor\"></a>\n~~~\n[Target](#api-target.key)\n<a id='api-target.key'></a>\n"
+	got := transformReadme(input, repo, "https://raw.githubusercontent.com/goforj/feature/main/")
+	for _, want := range []string{
+		"## API Features Snapshot {#api-features-snapshot-2}",
+		"[Snapshot](#api-features-snapshot)",
+		`<a id="api-features-snapshot"></a>`,
+		`<a href="#api-features-snapshot">Snapshot</a>`,
+		"## Example Anchor {#example-anchor}",
+		`<a id="example.anchor"></a>`,
+		"[Target](#api-target-key)",
+		"<a id='api-target-key'></a>",
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("transformReadme() missing %q in:\n%s", want, got)
+		}
+	}
+}
+
 // TestTransformReadmeUsesPrimaryHeadingForSearch verifies the real primary heading owns the search title.
 func TestTransformReadmeUsesPrimaryHeadingForSearch(t *testing.T) {
 	repo := RepoConfig{
