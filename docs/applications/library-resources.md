@@ -70,7 +70,7 @@ Generate the typed accessor and rebuild:
 forj build
 ```
 
-Expected result: `internal/features/accessors_gen.go` exposes `Checkout()`, and the app builds. Startup loads the source synchronously; an invalid initial document fails initialization. The lifecycle starts the file refresh loop and cancels and joins it on shutdown.
+Expected result: `internal/features/accessors_gen.go` exposes `Checkout()`, and the app builds. Startup loads the source synchronously; an invalid initial document fails initialization. The lifecycle watches the parent directory and debounces file changes for 50ms, including atomic replacement. A periodic refresh, every 30s by default, covers missed notifications and filesystems without watch support. Failed watches are retried on that interval. Memory sources start no background workers. Shutdown cancels and joins file workers.
 
 In a service that receives `*features.Manager`, a simple boolean check is:
 
