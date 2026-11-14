@@ -1,9 +1,9 @@
 ---
-title: Feature Search and Notification Resources
+title: Feature, Search, and Notification Resources
 description: Configure named feature evaluators, search indexes, and notification senders through app-owned framework resources.
 ---
 
-# Feature Search and Notification Resources
+# Feature, Search, and Notification Resources
 
 Use named framework resources to configure feature evaluators, search indexes, and notification senders once, then inject their managers into application services. The app owns driver selection and lifecycle; services use generated accessors.
 

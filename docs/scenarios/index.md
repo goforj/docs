@@ -66,6 +66,8 @@ Additional focused workflows cover the application boundaries below:
 | [Catalog Search](/scenarios/catalog-search) | App-owned schemas, explicit provisioning, tenant filters, and index visibility. |
 | [Incident Notifications](/scenarios/incident-notification) | Named notification senders and explicit delivery policy. |
 | [Partner Payload Rotation](/scenarios/partner-payload-rotation) | Authenticated encryption and compatibility during key rotation. |
+| [Tenant Request Rate Limits](/scenarios/tenant-request-rate-limits) | Trusted tenant identity, atomic shared counters, and route-local failure policy. |
+| [Checkout Business Metrics](/scenarios/checkout-business-metrics) | Counters and duration histograms in the App registry, with bounded labels. |
 | [Resilient Tax Rate HTTP](/scenarios/resilient-tax-rate-http) | Bounded retries and deliberate HTTP status handling. |
 
 ## After the Path

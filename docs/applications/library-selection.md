@@ -9,7 +9,7 @@ Start with the libraries and contracts already used by your app. Add a library w
 
 Inside a GoForj Project, business behavior belongs in cohesive packages under `internal/`. Use the owning app's supported generators and named resource managers. Keep infrastructure construction, credentials, and lifecycle in providers and app setup. A standalone package and its framework integration are separate contracts: inspect the Project version before assuming a component or accessor exists.
 
-[Feature Search and Notification Resources](/applications/library-resources) shows the framework configuration and accessor workflow for those optional integrations.
+[Feature, Search, and Notification Resources](/applications/library-resources) shows the framework configuration and accessor workflow for those optional integrations.
 
 ## Match the Application Requirement
 
@@ -67,19 +67,19 @@ Register application services in `app/wire/inject_services_app.go`, or `app/<nam
 
 Test the behavior the library provides and its relevant failures. Observe filtered results after indexing, explicit missing-flag fallback, or rate limits for separate identities. Imports and a passing build do not establish those behaviors.
 
-From the Project root:
-
-```bash
-go test ./...
-```
-
-Expected result: tests exercise the integration and its failure cases. For provider or registration changes, also run:
+For provider or registration changes, regenerate wiring and build from the Project root before running tests:
 
 ```bash
 forj build
 ```
 
-Expected result: generated wiring and the binary build with the selected dependencies. These commands use the Project's pinned versions; they do not upgrade a library automatically.
+Expected result: generated wiring and the binary build with the selected dependencies. Then run:
+
+```bash
+go test ./...
+```
+
+Expected result: tests exercise the integration and its failure cases. These commands use the Project's pinned versions; they do not upgrade a library automatically.
 
 ## Next Steps
 
