@@ -21,6 +21,8 @@ render:
     notification: true
 ```
 
+Declare `*_SUPPORTED_DRIVERS` manifests at Project scope. App-prefixed driver settings select active resources, while the Project manifest controls which drivers are compiled.
+
 Render the selected components:
 
 ```bash
@@ -116,6 +118,8 @@ forj generate --search
 ```
 
 Expected result: `internal/searches/accessors_gen.go` contains the named accessor. A configured index without a matching app definition is an error. An enabled search component with no definitions and no named configuration is inert; there is no implicit default schema.
+
+For an additional App, use its own definitions with `searches.ProvisionForApp(ctx, "ADMIN", admin.SearchDefinitions())`. The prefix must match the App environment prefix; provisioning one App does not require another App's schema.
 
 Before first startup, explicitly provision the declared schemas with `searches.Provision(ctx, app.SearchDefinitions())` from a bounded, application-owned bootstrap program. The generated `internal/searches/README.md` contains a complete `cmd/search-provision/main.go` example that loads configuration without initializing the runtime graph.
 

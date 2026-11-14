@@ -270,6 +270,52 @@ Redis-backed Cache, Storage, Events, and Queue resources share the host, port, a
 | `REDIS_DB` | `0` | Shared Redis database number. |
 | `NATS_URL` | `nats://127.0.0.1:4222` | Fallback URL for the NATS cache driver. Other NATS-backed resource families use their scoped `URL` setting. |
 
+## Feature Evaluators
+
+The optional development-line `feature` component uses `FEATURE_<SUFFIX>` for the default evaluator and `FEATURE_<NAME>_<SUFFIX>` for named evaluators. Additional apps use the established app prefix, such as `ADMIN_FEATURE_CHECKOUT_PATH`. Resource names identify configured evaluators; flag keys remain in the definition document.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `FEATURE_DRIVER` | `memory` | Active native source: `memory` or `file`. |
+| `FEATURE_SUPPORTED_DRIVERS` | `memory,file` | Native sources compiled into the app. Both are baseline implementations in this initial integration. |
+| `FEATURE_DOCUMENT` | Empty flag document | Startup definition for a memory source, using the library's versioned JSON format. |
+| `FEATURE_PATH` | Empty | Required definition file for a file source. |
+| `FEATURE_REFRESH_INTERVAL` | `30s` | File refresh interval, at least `10ms`. |
+| `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Positive initial source-load budget. |
+
+Named evaluators default to memory unless their own source is selected. Failed refreshes retain a valid revision; the manager exposes freshness/error status while readiness remains usable. See [Feature Resources](/applications/library-resources#configure-a-feature-evaluator).
+
+## Search Indexes
+
+The optional development-line `search` component selects backends with `SEARCH_<SUFFIX>` and `SEARCH_<NAME>_<SUFFIX>`. App-owned Go definitions declare schemas. An app opens only its declared indexes; environment settings cannot supply schema fields.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `SEARCH_DRIVER` | `bleve` | Active backend: `bleve` or compiled `meilisearch`. |
+| `SEARCH_SUPPORTED_DRIVERS` | `bleve` | Build capability; include `meilisearch` before selecting that backend and rebuild. Bleve remains the local baseline. |
+| `SEARCH_PATH` | `storage/search` | Root local directory; a named index defaults to a directory beneath it. |
+| `SEARCH_URL` | Empty | Required Meilisearch endpoint. |
+| `SEARCH_API_KEY` | Empty | Optional Meilisearch authentication credential. |
+| `SEARCH_PREFIX` | Empty | Physical Meilisearch index namespace. Give independent app owners independent prefixes. |
+
+Named drivers inherit the root driver unless overridden. Use app overlays such as `ADMIN_SEARCH_ARCHIVE_DRIVER` and `ADMIN_SEARCH_PATH` for additional apps. Startup validates schemas; [Search Resources](/applications/library-resources#declare-and-provision-a-search-index) explains explicit provisioning and single-owner local paths.
+
+## Notification Senders
+
+The optional development-line `notification` component uses `NOTIFICATION_<SUFFIX>` and `NOTIFICATION_<NAME>_<SUFFIX>`. Root-declared named resources can be inherited by an additional app; a resource declared only under an app prefix is initialized and advertised only by that app.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `NOTIFICATION_DRIVER` | `log` | Synchronous local capture or a compiled webhook sender. |
+| `NOTIFICATION_SUPPORTED_DRIVERS` | `log` | Build capability; add `webhook` and regenerate before selecting it. |
+| `NOTIFICATION_WEBHOOK_URL` | Empty | Required trusted destination for a webhook sender. |
+| `NOTIFICATION_WEBHOOK_FORMAT` | `generic` | `generic` or `slack` payload format. |
+| `NOTIFICATION_WEBHOOK_TIMEOUT` | `5s` | Positive outbound request timeout. |
+| `NOTIFICATION_WEBHOOK_BEARER_TOKEN` | Empty | Optional destination credential, owned by deployment configuration. |
+| `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE` | `false` | Explicit opt-in for private destinations, including local test servers. |
+
+Named senders default to log unless their own driver is selected. Their settings use prefixes such as `NOTIFICATION_ALERTS_WEBHOOK_URL`; an additional app can use `ADMIN_NOTIFICATION_ALERTS_WEBHOOK_URL`. Sending performs no hidden queuing or retries. See [Notification Resources](/applications/library-resources#configure-a-notification-sender).
+
 ## Cache
 
 Available drivers: `memory`, `file`, `null`, `redis`, `memcached`, `dynamodb`, `sqlite`, `postgres`, `mysql`, `nats`.

@@ -57,6 +57,17 @@ The examples are intentionally local-first. Production drivers, distributed back
 
 [Add a Database-Backed Resource](/scenarios/create-photo-data-resource) is a focused, verified workflow for adding a new persistence boundary. It uses photos as a concrete example while keeping the reusable schema-first order explicit: add and apply the migration, generate the model and repository from the live schema, then extend the App-owned repository package.
 
+Additional focused workflows cover the application boundaries below:
+
+| Workflow | What it teaches |
+| --- | --- |
+| [Startup Configuration](/scenarios/dispatch-startup-config) | Typed defaults, required secrets, and a frozen configuration snapshot. |
+| [Tenant Checkout Rollout](/scenarios/tenant-checkout-rollout) | Named feature resources, stable targeting, and consistent request decisions. |
+| [Catalog Search](/scenarios/catalog-search) | App-owned schemas, explicit provisioning, tenant filters, and index visibility. |
+| [Incident Notifications](/scenarios/incident-notification) | Named notification senders and explicit delivery policy. |
+| [Partner Payload Rotation](/scenarios/partner-payload-rotation) | Authenticated encryption and compatibility during key rotation. |
+| [Resilient Tax Rate HTTP](/scenarios/resilient-tax-rate-http) | Bounded retries and deliberate HTTP status handling. |
+
 ## After the Path
 
 Finishing all seven leaves you with the App this whole documentation set describes. From there:
