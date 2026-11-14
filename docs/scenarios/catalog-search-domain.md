@@ -29,6 +29,7 @@ This scenario edits or creates:
 internal/catalog/product.go
 app/search.go
 internal/searches/accessors_gen.go
+tools/search-provision/main.go
 ```
 
 ## Step 1: Define the product projection
@@ -90,7 +91,7 @@ forj generate --search
 
 ## Step 6: Add explicit provisioning without initializing the App graph
 
-Create or replace `cmd/search-provision/main.go`:
+Create or replace `tools/search-provision/main.go`:
 
 ```go
 // Package main provisions the App's explicitly declared search projection.
@@ -121,7 +122,7 @@ func main() {
 ## Step 7: Provision the declared schema before runtime validation
 
 ```bash
-go run ./cmd/search-provision
+go run ./tools/search-provision
 ```
 
 ## Build and Verify
