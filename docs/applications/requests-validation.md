@@ -314,6 +314,8 @@ Expected result: all three controller paths pass, and the service receives norma
 
 ## Validation Boundary
 
+For reusable rules, structured issues, or PATCH fields that distinguish omitted, null, and supplied zero values, use the [Validation library](/validation). Preserve the public response contract when replacing handwritten checks. Keep unexpected rule or dependency failures in the application error path rather than returning them as client validation failures.
+
 Validate transport-level requirements such as required fields, basic shapes, allowed values, and path or query parameter presence before calling the service. Leave rules that require persistence, permissions, workflows, or domain decisions to the service.
 
 Limit payload size before binding by following the [body-limit middleware guidance](/applications/middleware#common-middleware-needs). Keeping admission control with route setup avoids duplicating body-reading policy in controllers.

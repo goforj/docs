@@ -13,6 +13,11 @@ GoForj is in public beta. Some early framework versions were assigned retrospect
 
 The current documentation follows `main`. Changes remain in this section until they are included in a tagged framework release.
 
+### Named Library Resources
+
+- Added optional feature, search, and notification components with named accessors and app-owned configuration and cleanup.
+- Kept feature refresh and request snapshots distinct, search schemas and provisioning explicit, and notification delivery synchronous unless application code dispatches a job.
+
 ### Maintenance Mode
 
 - Added live `maintenance:enable` and `maintenance:disable` commands that use an authenticated, loopback-only control endpoint to gate HTTP traffic while queue workers and scheduled tasks continue normally.
@@ -36,6 +41,17 @@ The current documentation follows `main`. Changes remain in this section until t
 - Added a default-on component-library choice for Vue, React, and templ + htmx starter kits, with a smaller working shell when the showcase is disabled.
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
+
+## v0.37.0
+
+Released November 12, 2026.
+
+- Added Gopher Eats, a runnable Vue example spanning three independent apps, queue retries, and service events.
+- Added local Tempo, Loki, and Alloy configuration for Projects with Grafana, Observability, and Docker, including cross-service traces and contextual logs.
+- Added experimental read-only upgrade inspection with `forj render --plan`.
+- Preserved Go 1.26 support and existing `.env` files. Redis event deployments should upgrade subscribers before enabling publisher context propagation.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.37.0) for the example, local export defaults, and event rollout guidance.
 
 ## v0.36.0
 

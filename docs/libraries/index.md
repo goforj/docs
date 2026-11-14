@@ -11,6 +11,8 @@ Each library page remains useful for standalone package users. Framework guides 
 
 Use the [Driver Catalog](/drivers) to compare framework backends. Standalone library pages document their own drivers, constructors, and package-level behavior.
 
+Start with [Choosing Libraries](/applications/library-selection) when you have an application requirement and need to select a package. Keep existing dependencies and standard-library code when they already meet the requirement.
+
 ## Application Infrastructure
 
 - [Web](/web) provides server-side HTTP abstractions, middleware, route indexing, and testing helpers.
@@ -21,6 +23,7 @@ Use the [Driver Catalog](/drivers) to compare framework backends. Standalone lib
 - [Mail](/mail) provides message composition and pluggable delivery primitives.
 - [Notification](/notification) sends notifications through chat, email, SMS, push, and on-call drivers.
 - [Search](/search) provides portable lexical search with typed filters, facets, and highlights.
+- [Feature](/feature) provides typed flags, stable targeted rollouts, and consistent request snapshots.
 - [Scheduler](/scheduler) provides scheduled work primitives.
 - [Metrics](/metrics) provides in-memory metrics primitives and Prometheus-compatible export.
 - [Wire](/wire) supports explicit dependency wiring.
@@ -32,6 +35,7 @@ Use the [Driver Catalog](/drivers) to compare framework backends. Standalone lib
 - [Crypt](/crypt) provides encryption and key rotation utilities.
 - [Secret](/secret) reads, replaces, and deletes bound secrets through encrypted local files and managed providers.
 - [Validation](/validation) provides typed fluent rules, presence-aware inputs, and structured field errors.
+- [Null](https://github.com/goforj/null) provides nullable SQL and JSON values with explicit null and zero-value behavior.
 - [HTTPX](/httpx) provides lower-level HTTP client and utility helpers.
 - [ExecX](/execx) provides command execution utilities.
 
