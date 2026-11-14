@@ -1,6 +1,6 @@
 ---
 title: Drivers
-description: Every interchangeable driver across GoForj's six swap primitives, in one place.
+description: Compare GoForj infrastructure drivers and the initial drivers for optional library resources.
 ---
 
 <script setup>
@@ -11,7 +11,7 @@ const eventDriverCount = proofStats.drivers.events.length
 
 # Drivers
 
-One contract per primitive, {{ driverCount }} interchangeable backends. Configuration selects the driver; your code depends on the contract. This page is the full matrix. Each library's page documents constructors, configuration, and tradeoffs per driver.
+The six established infrastructure families below account for {{ driverCount }} recorded drivers. Configuration selects the driver while application code depends on the contract. The optional feature, search, and notification sections list their initial framework implementations; standalone references describe the broader library inventories.
 
 ## Queue
 
@@ -114,6 +114,39 @@ Three drivers behind generated connections and the ORM. Dialect differences live
 | `mysql` | Production relational database and the current `forj new` default |
 
 Details: [database connections](/data/database-strategy) · [migrations](/data/migrations)
+
+## Feature Evaluators
+
+The optional development-line `feature` component compiles both native sources:
+
+| Driver | What it is for |
+| --- | --- |
+| `memory` | A startup definition with explicit fallbacks, the default |
+| `file` | A validated local definition with lifecycle-owned refresh |
+
+Vendor SDK adapters remain standalone library integrations. Details: [Feature library](/feature) and [named resource workflow](/applications/library-resources).
+
+## Search Indexes
+
+The optional development-line `search` component keeps schema definitions app-owned and provisioning explicit:
+
+| Driver | What it is for |
+| --- | --- |
+| `bleve` | Embedded local indexes with one process owner per physical path |
+| `meilisearch` | An explicitly configured external service for shared deployments |
+
+Bleve is the local baseline; compile Meilisearch through `SEARCH_SUPPORTED_DRIVERS` before switching it at runtime. Other library backends are outside this first framework integration. Details: [Search library](/search) and [named resource workflow](/applications/library-resources).
+
+## Notification Senders
+
+The optional development-line `notification` component supports:
+
+| Driver | What it is for |
+| --- | --- |
+| `log` | Redacted local capture, the default |
+| `webhook` | Synchronous delivery to a trusted configured generic or Slack-compatible destination |
+
+Add webhook support to `NOTIFICATION_SUPPORTED_DRIVERS` and rebuild before selecting it. The manager adds no implicit fallback or queue; other notification drivers remain available through the standalone library. Details: [Notification library](/notification) and [named resource workflow](/applications/library-resources).
 
 ## How Selection Works
 
