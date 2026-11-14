@@ -49,6 +49,7 @@ go test ./internal/requests
 Create or replace `internal/requests/limiter.go`:
 
 ```go
+// Package requests owns authenticated request identity and route policy.
 package requests
 
 import (
@@ -100,6 +101,7 @@ func (limiter *Limiter) Middleware(next web.Handler) web.Handler {
 Create or replace `internal/requests/limiter_test.go`:
 
 ```go
+// Package requests owns authenticated request identity and route policy.
 package requests
 
 import (

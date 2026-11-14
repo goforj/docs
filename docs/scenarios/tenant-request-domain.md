@@ -96,6 +96,7 @@ func Authenticate(next web.Handler) web.Handler {
 Create or replace `internal/requests/limiter.go`:
 
 ```go
+// Package requests owns authenticated request identity and route policy.
 package requests
 
 import (
@@ -130,6 +131,7 @@ forj make:controller requests
 Create or replace `internal/requests/controller.go`:
 
 ```go
+// Package requests owns authenticated request identity and route policy.
 package requests
 
 import (
