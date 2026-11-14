@@ -37,7 +37,9 @@ Expected result: the Project includes the enabled `internal/features`, `internal
 | Search index | `app.Searches().Catalog()` | Schema declarations, indexing, backfill, and visibility policy |
 | Notification sender | `app.Notifications().Alerts()` | Message content and deliberate channel or fallback policy |
 
-The example named accessors appear only after declaring those resources and running generation. Creating or removing an app reconciles its feature evaluator registrations and app-only accessors automatically. Inject the relevant manager through the owning app's service Wire set. Use `app/wire/inject_services_app.go` for the default app or `app/<name>/wire/inject_services_app.go` for an additional app.
+The example named accessors appear only after declaring those resources and running generation. Creating or removing an app reconciles its feature evaluators, search indexes, notification senders, and app-only accessors automatically. It preserves root settings and other apps' overlays. Inject the relevant manager through the owning app's service Wire set. Use `app/wire/inject_services_app.go` for the default app or `app/<name>/wire/inject_services_app.go` for an additional app.
+
+Environment keys belong to the longest configured App prefix. For an App named `billing-feature`, its checkout evaluator key is `BILLING_FEATURE_FEATURE_CHECKOUT_DRIVER`: the first `FEATURE` is part of the App name, and the second identifies the resource. Keep this prefix when adding or editing an App's resource settings.
 
 ## Configure a Feature Evaluator
 
@@ -153,12 +155,12 @@ Expected result: `internal/searches/accessors_gen.go` contains the named accesso
 
 For an additional App, use its own definitions with `searches.ProvisionForApp(ctx, "ADMIN", admin.SearchDefinitions())`. The prefix must match the App environment prefix; provisioning one App does not require another App's schema.
 
-Before first startup, explicitly provision the declared schemas with `searches.Provision(ctx, app.SearchDefinitions())` from a bounded, application-owned bootstrap program. The generated `internal/searches/README.md` contains a complete `cmd/search-provision/main.go` example that loads configuration without initializing the runtime graph.
+Before first startup, explicitly provision the declared schemas with `searches.Provision(ctx, app.SearchDefinitions())` from a bounded, application-owned bootstrap program. The generated `internal/searches/README.md` contains a complete `tools/search-provision/main.go` example that loads configuration without initializing the runtime graph. Keep this utility under `tools/`, because `cmd/` directories belong to runtime Apps.
 
 Stop any app owning the same Bleve path, then run the bootstrap:
 
 ```bash
-go run ./cmd/search-provision
+go run ./tools/search-provision
 ```
 
 Expected result: compatible schemas are provisioned and the program releases its backend handles. Ordinary app startup validates schemas; it does not destroy and recreate incompatible indexes. For schema changes, provision a new path or service prefix, rebuild from durable records, and switch deliberately.
