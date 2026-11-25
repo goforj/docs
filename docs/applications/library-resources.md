@@ -81,18 +81,18 @@ Symlinked paths use polling on macOS/BSD, whose watcher cannot reliably report l
 
 Memory sources start no background workers. Shutdown cancels and joins file workers.
 
-In a service that receives `*features.Manager`, a simple boolean check is:
+Inject `*features.Manager` as `features` into the service. A simple boolean check is:
 
 <!-- go-example: illustrative-fragment -->
 ```go
-enabled := manager.Checkout().Enabled(ctx, "checkout-v2")
+enabled := features.Checkout().Enabled(ctx, "checkout-v2")
 ```
 
 For tenant targeting, bind a stable identity:
 
 <!-- go-example: illustrative-fragment -->
 ```go
-flags := manager.Checkout().For(feature.Target{Key: tenantID})
+flags := features.Checkout().For(feature.Target{Key: tenantID})
 enabled := flags.Enabled(ctx, "checkout-v2")
 ```
 
@@ -102,7 +102,7 @@ enabled := flags.Enabled(ctx, "checkout-v2")
 
 <!-- go-example: illustrative-fragment -->
 ```go
-snapshot, err := manager.Checkout().Snapshot()
+snapshot, err := features.Checkout().Snapshot()
 if err != nil {
 	return err
 }

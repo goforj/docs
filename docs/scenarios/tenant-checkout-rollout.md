@@ -69,7 +69,7 @@ import (
 type Service struct{ flags *feature.Features }
 
 // NewService resolves the generated evaluator accessor once without owning its source lifecycle.
-func NewService(manager *features.Manager) *Service { return &Service{flags: manager.Checkout()} }
+func NewService(features *features.Manager) *Service { return &Service{flags: features.Checkout()} }
 
 // Request retains one tenant's captured configuration for related decisions.
 type Request struct{ flags *feature.Scope }
@@ -123,7 +123,7 @@ import (
 type Service struct{ flags *feature.Features }
 
 // NewService resolves the generated evaluator accessor once without owning its source lifecycle.
-func NewService(manager *features.Manager) *Service { return &Service{flags: manager.Checkout()} }
+func NewService(features *features.Manager) *Service { return &Service{flags: features.Checkout()} }
 
 // Request retains one tenant's captured configuration for related decisions.
 type Request struct{ flags *feature.Scope }
