@@ -157,6 +157,8 @@ onBeforeUnmount(() => {
 .gf-page-actions__status { position: absolute; top: 100%; right: 0; margin-top: 3px; color: var(--vp-c-text-2); font-size: 11px; }
 @media (max-width: 640px) {
 
+  .gf-page-actions { position: relative; top: auto; right: auto; justify-content: flex-end; margin: 0 0 8px; }
+  .gf-page-actions--library { top: auto; }
   .gf-page-actions__copy > span { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .gf-page-actions__copy { padding: 9px 10px; }
 }
