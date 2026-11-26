@@ -7,7 +7,7 @@ description: Configure named feature evaluators, search indexes, and notificatio
 
 Use named framework resources to configure feature evaluators, search indexes, and notification senders once, then inject their managers into application services. The app owns driver selection and lifecycle; services use generated accessors.
 
-These optional integrations follow the development line. Check your CLI and Project version before adding their component keys to a released Project. Standalone package APIs remain available independently.
+Feature resources are available starting with GoForj v0.38.0. Search and Notification resources are available starting with v0.39.0. Check the installed CLI and Project version before adding a component key. Standalone package APIs remain available independently.
 
 ## Enable the Resources You Need
 

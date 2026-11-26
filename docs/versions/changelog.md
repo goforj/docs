@@ -13,11 +13,6 @@ GoForj is in public beta. Some early framework versions were assigned retrospect
 
 The current documentation follows `main`. Changes remain in this section until they are included in a tagged framework release.
 
-### Named Library Resources
-
-- Added optional feature, search, and notification components with named accessors and app-owned configuration and cleanup.
-- Kept feature refresh and request snapshots distinct, search schemas and provisioning explicit, and notification delivery synchronous unless application code dispatches a job.
-
 ### Maintenance Mode
 
 - Added live `maintenance:enable` and `maintenance:disable` commands that use an authenticated, loopback-only control endpoint to gate HTTP traffic while queue workers and scheduled tasks continue normally.
@@ -41,6 +36,26 @@ The current documentation follows `main`. Changes remain in this section until t
 - Added a default-on component-library choice for Vue, React, and templ + htmx starter kits, with a smaller working shell when the showcase is disabled.
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
+
+## v0.38.0
+
+Released November 26, 2026.
+
+- Added optional App-owned feature evaluators with named accessors, file refresh, stable tenant checks, snapshots, and portable defaults.
+- Hardened WebSocket client masking with cryptographic randomness.
+- Preserved existing Projects and the Go 1.26 minimum; the default memory evaluator needs no file or background worker.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.38.0) for feature configuration and upgrade details.
+
+## v0.39.0
+
+Released November 26, 2026.
+
+- Added optional App-owned notification senders and search indexes with named accessors and managed cleanup.
+- Kept search schemas explicit, provisioning separate from startup, and notification sends synchronous without implicit retries or fallback.
+- Preserved existing resource configuration and the Go 1.26 minimum.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.39.0) for search, notification, and upgrade details.
 
 ## v0.37.0
 
