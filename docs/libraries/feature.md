@@ -121,14 +121,14 @@ Use a file or HTTP source with the same engine to load external definitions. Ref
 The root package requires Go 1.24 or newer and has no external runtime dependencies. The complete example catalog includes optional SDK drivers and uses Go 1.26 or newer. Install the root module:
 
 ```sh
-go get github.com/goforj/feature@v0.1.0
+go get github.com/goforj/feature
 ```
 
 Optional SDK modules are independently versioned:
 
 ```sh
-go get github.com/goforj/feature/driver/launchdarklyfeature@v0.1.0
-go get github.com/goforj/feature/driver/openfeaturefeature@v0.1.0
+go get github.com/goforj/feature/driver/launchdarklyfeature
+go get github.com/goforj/feature/driver/openfeaturefeature
 ```
 
 Clone and run the complete example:
@@ -149,6 +149,8 @@ Native sources are included in the root module:
 | FileSource | A regular local JSON file or symlink | Read the path on refresh, including atomic file replacement. |
 | HTTPSource | An explicit HTTP endpoint | Bounded complete-document retrieval with caller-owned refresh. |
 | SourceFunc | Storage services or another configuration model | Application-owned complete-document retrieval and conversion. |
+
+Native documents hold shared flag policies and bounded targeting exceptions, not a record of every user's settings. Supply user attributes at evaluation time; keep individual preferences in application-owned storage.
 
 Source configuration is explicit. The library does not read or modify `.env`, start a global client, or require a flag-management service. See the [versioned JSON contract](https://github.com/goforj/feature/blob/main/docs/contract.md) for targeting rules, limits, failure behavior, and multi-process consistency.
 
