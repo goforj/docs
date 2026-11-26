@@ -37,6 +37,37 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.38.0
+
+Released November 26, 2026.
+
+- Added optional App-owned feature evaluators with named accessors, file refresh, stable tenant checks, snapshots, and portable defaults.
+- Hardened WebSocket client masking with cryptographic randomness.
+- Preserved existing Projects and the Go 1.26 minimum; the default memory evaluator needs no file or background worker.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.38.0) for feature configuration and upgrade details.
+
+## v0.39.0
+
+Released November 26, 2026.
+
+- Added optional App-owned notification senders and search indexes with named accessors and managed cleanup.
+- Kept search schemas explicit, provisioning separate from startup, and notification sends synchronous without implicit retries or fallback.
+- Preserved existing resource configuration and the Go 1.26 minimum.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.39.0) for search, notification, and upgrade details.
+
+## v0.37.0
+
+Released November 12, 2026.
+
+- Added Gopher Eats, a runnable Vue example spanning three independent apps, queue retries, and service events.
+- Added local Tempo, Loki, and Alloy configuration for Projects with Grafana, Observability, and Docker, including cross-service traces and contextual logs.
+- Added experimental read-only upgrade inspection with `forj render --plan`.
+- Preserved Go 1.26 support and existing `.env` files. Redis event deployments should upgrade subscribers before enabling publisher context propagation.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.37.0) for the example, local export defaults, and event rollout guidance.
+
 ## v0.36.0
 
 Released November 10, 2026.
