@@ -37,6 +37,16 @@ The current documentation follows `main`. Changes remain in this section until t
 - Refreshed the Web UI placeholder used when a Project does not select a first-party starter kit.
 - Built a missing conventional App binary before displaying source-aware root command help.
 
+## v0.39.1
+
+Released November 27, 2026.
+
+- Updated Atlas guidance for enabling Feature Flags, Search, and Notifications in existing Apps. Run `forj atlas:update` to refresh installed guidance.
+- Moved Search provisioning into a standalone tool that survives rerendering. The new-project wizard now preselects Feature Flags, Search, and Notifications.
+- Made Gopher Eats start a local NATS broker when no external broker is configured and shortened the OpenTelemetry environment template for new Projects.
+
+See the [release notes](https://github.com/goforj/goforj/releases/tag/v0.39.1) for details and installation instructions.
+
 ## v0.39.0
 
 Released November 26, 2026.
