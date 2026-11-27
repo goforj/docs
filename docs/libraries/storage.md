@@ -55,6 +55,7 @@ func main() {
         log.Fatal(err)
     }
 
+    // Give the write and read one deadline so a slow backend can't keep us waiting indefinitely.
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
     disk = disk.WithContext(ctx)
@@ -70,8 +71,6 @@ func main() {
     // Output: hello from storage
 }
 ```
-
-The write and read share the same five-second deadline.
 
 ### Use S3 with the same operations {#use-s3-with-the-same-operations}
 
