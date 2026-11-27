@@ -57,116 +57,6 @@ Variables for components that are not selected are not rendered and have no gene
 | `APP_MODE` | Empty | Optional runtime mode used in generated log labels. Runtime commands normally set their own context. |
 | `APP_LOG_PREFIX` | Empty | Optional log-label prefix. Generated runtime commands set this when they need a source label. |
 
-## Logging
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `APP_LOG_FORMAT` | `console` | Output format: `console` or `json`. |
-| `APP_LOG_TIME` | Disabled; rendered `.env` enables it | Include timestamps in App logs. Values `0`, `false`, `off`, and `no` disable it. |
-| `APP_LOG_CALLER` | Disabled | Include caller metadata. Values `0`, `false`, `off`, and `no` disable it. |
-| `APP_LOG_DEDUPE_ENABLED` | `true` | Coalesce repeated similar log messages. |
-| `APP_LOG_DEDUPE_WINDOW_MS` | `1200` | Dedupe window in milliseconds. |
-| `APP_LOG_DEDUPE_BURST` | `2` | Matching messages emitted before suppression begins within a window. |
-| `APP_LOG_DEDUPE_SUMMARY_EVERY` | `1000` | Suppressed occurrences between summary messages. |
-| `APP_LOG_REDACT_KEYS` | Empty | Comma-separated application-specific field names to redact in addition to mandatory secret-bearing names. |
-| `APP_LOG_REDACT_MESSAGE_PATTERNS` | Empty | JSON array of regular expressions replaced with `[REDACTED]` before output and sink delivery. Invalid JSON or expressions fail during logger construction. |
-
-See [Logging](/operations/logging) for event shape, output modes, and sensitive-data guidance.
-
-## OpenTelemetry
-
-These app-wide settings configure trace and application log export and do not use the named-resource pattern above. New `.env` files show only the common overrides; add the settings below when you need to change a default. [Metrics](/operations/metrics) use the app's Prometheus-compatible endpoints independently.
-
-### Local Defaults and Remote Export
-
-Projects with Grafana, Observability, and Docker export traces and logs through Alloy to Tempo and Loki automatically when `APP_ENV=local` and the `grafana` Compose profile is active. Host processes use `http://127.0.0.1:14318` for HTTP/protobuf or port `14317` for gRPC. Containers use `http://alloy:4318` or `http://alloy:4317`. The host address follows `IP_ADDRESS`, with wildcard bind addresses resolved to loopback; the published ports follow `TEMPO_OTLP_HTTP_PORT` and `TEMPO_OTLP_GRPC_PORT`.
-
-Staging, production, and test processes have no automatic destination. To send traces and logs to an external HTTP/protobuf collector, add:
-
-```dotenv
-OTEL_EXPORTER_OTLP_ENDPOINT=https://collector.example.com:4318
-OTEL_LOGS_EXPORTER=otlp
-```
-
-A generic endpoint enables trace export, but does not enable remote application logs by itself. Logs require `OTEL_LOGS_EXPORTER=otlp` or a log-specific endpoint. Explicit endpoints override the local receiver for their signal. Set `OTEL_TRACES_EXPORTER=none` or `OTEL_LOGS_EXPORTER=none` to disable that signal's export.
-
-Restart the app after changing these settings. Request an HTTP route with access logging enabled, then check the collector for a request span and a request log carrying the same trace ID. Application logs use the active execution's identity when written through `appLogger.WithContext(ctx)`.
-
-### Identity and Signal Selection
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `OTEL_SERVICE_NAME` | Go module path followed by `/` and the current app name | Service identity shared by traces and logs. |
-| `OTEL_RESOURCE_ATTRIBUTES` | Empty | Comma-separated `key=value` resource attributes, such as `service.version=1.2.0,service.namespace=orders`. `OTEL_SERVICE_NAME` takes precedence over a `service.name` attribute. |
-| `OTEL_TRACES_EXPORTER` | `otlp` when an endpoint or the local Grafana default selects it; otherwise `none` | Supports `otlp` and `none`. Disabling external trace export does not disable Lighthouse inspect capture. |
-| `OTEL_LOGS_EXPORTER` | `otlp` for the local Grafana default or a log-specific endpoint; otherwise `none` | Supports `otlp` and `none`. Explicit `otlp` enables logs at the configured generic endpoint. Console and Lighthouse log outputs remain independent. |
-| `OTEL_SDK_DISABLED` | `false` | Disable OTel span recording and OTLP log export. Console logging remains available. |
-
-### Endpoints, Protocols, and Headers
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | Unset; local Grafana supplies a receiver when eligible | Shared collector base URL. For HTTP/protobuf, exporters append `/v1/traces` and `/v1/logs` for enabled signals. |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Generic endpoint or local receiver | Trace-specific destination. For HTTP/protobuf, provide the complete URL, including `/v1/traces`. Setting this endpoint enables traces unless explicitly disabled. |
-| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Generic endpoint or local receiver when logs are enabled | Log-specific destination. For HTTP/protobuf, provide the complete URL, including `/v1/logs`. Setting this endpoint enables logs unless explicitly disabled. |
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | Shared transport: `http/protobuf` or `grpc`. |
-| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | `OTEL_EXPORTER_OTLP_PROTOCOL` | Override the trace transport. |
-| `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL` | `OTEL_EXPORTER_OTLP_PROTOCOL` | Override the log transport. |
-| `OTEL_EXPORTER_OTLP_HEADERS` | Empty | Comma-separated `name=value` authentication or collector headers. Percent-encode reserved characters in values, such as `Authorization=Bearer%20example-token`. |
-| `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | `OTEL_EXPORTER_OTLP_HEADERS` | Replace the generic headers for trace export. |
-| `OTEL_EXPORTER_OTLP_LOGS_HEADERS` | `OTEL_EXPORTER_OTLP_HEADERS` | Replace the generic headers for log export. |
-
-Use absolute `http://` or `https://` endpoint URLs. For gRPC, use the collector's gRPC port without an HTTP signal path. For example, `https://collector.example.com:4317` with `OTEL_EXPORTER_OTLP_PROTOCOL=grpc` selects gRPC for both enabled signals. Invalid endpoints, headers, exporter selections, and unsupported protocols fail during app construction. Keep credentials in the deployment environment or secret manager, and use HTTPS for remote collectors.
-
-### Export Transport Overrides
-
-The Go OTel exporters consume these settings. Each generic variable also accepts a signal-specific form by inserting `TRACES_` or `LOGS_` after `OTEL_EXPORTER_OTLP_`. For example, `OTEL_EXPORTER_OTLP_TRACES_TIMEOUT` overrides `OTEL_EXPORTER_OTLP_TIMEOUT` for traces. A signal-specific value takes precedence over the generic value for that signal.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `OTEL_EXPORTER_OTLP_TIMEOUT` | `10000` | Exporter request timeout in milliseconds. |
-| `OTEL_EXPORTER_OTLP_COMPRESSION` | None | Set `gzip` to compress exported payloads. |
-| `OTEL_EXPORTER_OTLP_CERTIFICATE` | System trust roots | Path to a PEM certificate file used to verify the collector's TLS certificate. |
-| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Empty | Path to the client PEM certificate chain for mutual TLS. Configure it with the matching client key. |
-| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Empty | Path to the PEM private key for mutual TLS. |
-| `OTEL_EXPORTER_OTLP_INSECURE` | `false` | Exporter transport-security switch. An explicit endpoint URL's `http` or `https` scheme takes precedence; use the URL scheme to select transport security. |
-
-### Trace Sampling and Limits
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `OTEL_TRACES_SAMPLER` | `parentbased_always_on` when trace export or Lighthouse inspect capture is enabled; otherwise `always_off` | Head sampler used by the app's trace provider. |
-| `OTEL_TRACES_SAMPLER_ARG` | `1.0` | Ratio between `0` and `1`, used by `traceidratio` and `parentbased_traceidratio`. |
-| `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span. |
-| `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited | Maximum string attribute value length on a span. |
-| `OTEL_ATTRIBUTE_COUNT_LIMIT` | `128` | Fallback when `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` is unset. |
-| `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited | Fallback when `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` is unset. |
-| `OTEL_SPAN_EVENT_COUNT_LIMIT` | `128` | Maximum events retained on a span. |
-| `OTEL_SPAN_LINK_COUNT_LIMIT` | `128` | Maximum links retained on a span. |
-| `OTEL_EVENT_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span event. |
-| `OTEL_LINK_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span link. |
-
-Supported samplers are `always_on`, `always_off`, `parentbased_always_on`, `parentbased_always_off`, `traceidratio`, and `parentbased_traceidratio`. Ratio values outside `0` through `1` and unsupported sampler names fail during app construction. For example, `parentbased_traceidratio` with an argument of `0.1` samples approximately 10% of new root traces while respecting an incoming parent's sampling decision.
-
-OTel sampling controls span recording for external export and Lighthouse projection. `LIGHTHOUSE_INSPECT_SAMPLE_RATE` can further reduce Lighthouse detail capture without reducing external export. Log export is independent of trace sampling, so an exported log can refer to an unsampled trace that is absent from the trace backend.
-
-### Batch Delivery
-
-Queues are bounded and telemetry delivery is best effort. Trace batches use the SDK defaults below; the framework overrides the log batch size and log batch timeout to `256` records and `5000` milliseconds. Explicit batch environment settings take precedence. All delay and timeout values in this table are **milliseconds**, not Go duration strings.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `OTEL_BSP_MAX_QUEUE_SIZE` | `2048` | Maximum queued spans awaiting export. |
-| `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` | `512` | Maximum spans per export batch, bounded by queue capacity. |
-| `OTEL_BSP_SCHEDULE_DELAY` | `5000` | Maximum interval between trace batch exports. |
-| `OTEL_BSP_EXPORT_TIMEOUT` | `30000` | Trace processor's export deadline. The transport timeout applies separately. |
-| `OTEL_BLRP_MAX_QUEUE_SIZE` | `2048` | Maximum queued log records. A full log queue drops its oldest records. |
-| `OTEL_BLRP_MAX_EXPORT_BATCH_SIZE` | `256` | Maximum log records per export batch, bounded by queue capacity. |
-| `OTEL_BLRP_SCHEDULE_DELAY` | `1000` | Maximum interval between log batch exports. |
-| `OTEL_BLRP_EXPORT_TIMEOUT` | `5000` | Log processor's export deadline. The transport timeout applies separately. |
-
-Shutdown flushes telemetry within the app's shutdown context. Collector failures affect telemetry delivery rather than app readiness. Application log contents can be exported; review logged messages and fields before enabling a remote destination. See [Logging](/operations/logging) for application logging and [Inspects](/operations/inspects) for bounded Lighthouse capture.
-
 ## HTTP and OpenAPI
 
 | Variable | Default | Purpose |
@@ -180,6 +70,26 @@ Shutdown flushes telemetry within the app's shutdown context. Collector failures
 | `API_SWAGGER_ENABLED` | `true` | Enable generated API reference routes. |
 | `SWAGGER_ENABLED` | `true` | Compatibility fallback for `API_SWAGGER_ENABLED`. Prefer `API_SWAGGER_ENABLED`. |
 | `OPENAPI_SPEC_PATH` | `build/openapi.json`; additional apps use `build/<app>/openapi.json` | Path to the OpenAPI artifact served by the generated API reference routes. |
+
+## Frontend
+
+Only values with an explicit frontend prefix are exposed to generated browser code. Treat every frontend value as public.
+
+| Variable Pattern | Purpose |
+| --- | --- |
+| `FRONTEND_<KEY>` | Exposes `VITE_<KEY>` to every generated frontend. |
+| `<APP>_FRONTEND_<KEY>` | Overrides one App frontend, such as `ADMIN_FRONTEND_BACKEND_URL`. |
+| `VITE_BACKEND_URL` | Compatibility fallback for `FRONTEND_BACKEND_URL`. Prefer the GoForj frontend prefix in shared environment files. |
+| `FRONTEND_BACKEND_URL` | Backend proxy target. Resolution falls back to `<APP>_APP_URL`, `APP_URL`, then the App HTTP port. |
+| `FRONTEND_AUTH_PASSWORD_MIN_LENGTH` | Vue password guidance matching `AUTH_PASSWORD_MIN_LENGTH`. |
+| `FRONTEND_AUTH_PASSWORD_REQUIRE_UPPER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_UPPER`. |
+| `FRONTEND_AUTH_PASSWORD_REQUIRE_LOWER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_LOWER`. |
+| `FRONTEND_AUTH_PASSWORD_REQUIRE_NUMBER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_NUMBER`. |
+| `FRONTEND_AUTH_PASSWORD_REQUIRE_SYMBOL` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_SYMBOL`. |
+
+The backend auth policy remains authoritative. The password-policy frontend values are consumed only by the Vue starter.
+
+Generated frontends expose the selected App's `<APP>_APP_ENV`, or the global `APP_ENV`, as `VITE_APP_ENV`.
 
 ## Auth
 
@@ -247,81 +157,6 @@ Common and advanced provider settings:
 
 Endpoint overrides are primarily for provider-compatible gateways, controlled testing, and private identity infrastructure. See [OAuth](/security/oauth) for account-linking and callback behavior.
 
-## Frontend
-
-Only values with an explicit frontend prefix are exposed to generated browser code. Treat every frontend value as public.
-
-| Variable Pattern | Purpose |
-| --- | --- |
-| `FRONTEND_<KEY>` | Exposes `VITE_<KEY>` to every generated frontend. |
-| `<APP>_FRONTEND_<KEY>` | Overrides one App frontend, such as `ADMIN_FRONTEND_BACKEND_URL`. |
-| `VITE_BACKEND_URL` | Compatibility fallback for `FRONTEND_BACKEND_URL`. Prefer the GoForj frontend prefix in shared environment files. |
-| `FRONTEND_BACKEND_URL` | Backend proxy target. Resolution falls back to `<APP>_APP_URL`, `APP_URL`, then the App HTTP port. |
-| `FRONTEND_AUTH_PASSWORD_MIN_LENGTH` | Vue password guidance matching `AUTH_PASSWORD_MIN_LENGTH`. |
-| `FRONTEND_AUTH_PASSWORD_REQUIRE_UPPER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_UPPER`. |
-| `FRONTEND_AUTH_PASSWORD_REQUIRE_LOWER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_LOWER`. |
-| `FRONTEND_AUTH_PASSWORD_REQUIRE_NUMBER` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_NUMBER`. |
-| `FRONTEND_AUTH_PASSWORD_REQUIRE_SYMBOL` | Vue password guidance matching `AUTH_PASSWORD_REQUIRE_SYMBOL`. |
-
-The backend auth policy remains authoritative. The password-policy frontend values are consumed only by the Vue starter.
-
-Generated frontends expose the selected App's `<APP>_APP_ENV`, or the global `APP_ENV`, as `VITE_APP_ENV`.
-
-## Metrics and Runtime Ports
-
-Generated runtime metadata assigns the default App ports `3000`, `10000`, `10001`, and `10002`. Each additional app receives the next non-conflicting block.
-
-| Variable | Default App Default | Purpose |
-| --- | ---: | --- |
-| `METRICS_PORT` | `10000` | Shared App metrics port and canonical HTTP metrics port. |
-| `API_METRICS_PORT` | `METRICS_PORT` | Accepted HTTP metrics alias. |
-| `METRICS_API_PORT` | `METRICS_PORT` | Compatibility HTTP metrics alias. |
-| `SCHEDULER_METRICS_PORT` | `10001` | Accepted scheduler metrics alias. |
-| `METRICS_SCHEDULER_PORT` | `10001` | Canonical generated scheduler metrics port. |
-| `WORKER_METRICS_PORT` | `10002` | Accepted worker metrics alias. |
-| `JOBS_METRICS_PORT` | `10002` | Accepted jobs metrics alias. |
-| `METRICS_JOBS_PORT` | `10002` | Canonical generated jobs metrics port. |
-
-Every port key accepts the `<APP>_` overlay. For example, the first additional app can use `ADMIN_METRICS_PORT=10010`, `ADMIN_METRICS_SCHEDULER_PORT=10011`, and `ADMIN_METRICS_JOBS_PORT=10012`.
-
-Framework-owned instrumentation toggles all default to `true` when their component exists:
-
-| Variable | Surface |
-| --- | --- |
-| `METRICS_HTTP_ENABLED` | HTTP requests. |
-| `METRICS_CACHE_ENABLED` | Cache operations. |
-| `METRICS_STORAGE_ENABLED` | Storage operations. |
-| `METRICS_EVENTS_ENABLED` | Event operations. |
-| `METRICS_MAIL_ENABLED` | Mail sends. |
-| `METRICS_QUEUE_ENABLED` | Queue operations. |
-| `METRICS_DATABASE_ENABLED` | Database operations. |
-| `METRICS_AUTH_ENABLED` | Auth flows. |
-| `METRICS_SCHEDULER_ENABLED` | Scheduler operations. |
-| `METRICS_MONITORING_ENABLED` | Monitoring metrics in the demo App. |
-
-See [Metrics](/operations/metrics) for endpoints, labels, and scrape topology.
-
-## Lighthouse and Inspects
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `LIGHTHOUSE_ENABLED` | `true` | Enable Lighthouse runtime integration. |
-| `LIGHTHOUSE_URL` | `ws://localhost:3000/lighthouse/ws/agent` | Lighthouse agent websocket URL. |
-| `LIGHTHOUSE_SECRET` | Empty; generated locally | Shared agent/server authentication secret. |
-| `LIGHTHOUSE_DEBUG` | Disabled | Enable Lighthouse debug output. |
-| `LIGHTHOUSE_VSCODE_CMD` | `code` | VS Code command used by Lighthouse source links. |
-| `LIGHTHOUSE_GOLAND_CMD` | `goland` | GoLand command used by Lighthouse source links. |
-| `LIGHTHOUSE_INSPECT_ENABLED` | `false`; `.env.local` sets `true` | Enable inspect capture. |
-| `LIGHTHOUSE_INSPECT_MAX_TOTAL` | `250`; `.env.local` sets `1000` | Maximum retained inspect records. |
-| `LIGHTHOUSE_INSPECT_MAX_INFLIGHT` | `100`; `.env.local` sets `250` | Maximum in-flight inspect records. |
-| `LIGHTHOUSE_INSPECT_MAX_EVENTS` | `200`; `.env.local` sets `500` | Maximum events recorded per inspect. |
-| `LIGHTHOUSE_INSPECT_SAMPLE_RATE` | `1.0` | Capture rate from `0.0` through `1.0`. |
-| `LIGHTHOUSE_INSPECT_BUFFER_SIZE` | `4096` | Finished-inspect delivery buffer size. |
-| `LIGHTHOUSE_INSPECT_FLUSH_BATCH_SIZE` | `100` | Maximum records per Lighthouse delivery batch. |
-| `LIGHTHOUSE_INSPECT_FLUSH_INTERVAL` | `1s` | Maximum delay between delivery flushes. |
-
-See [Lighthouse](/operations/lighthouse) and [Inspects](/operations/inspects).
-
 ## Database
 
 Available drivers: `sqlite`, `mysql`, `postgres`.
@@ -363,60 +198,6 @@ Redis-backed Cache, Storage, Events, and Queue resources share the host, port, a
 | `REDIS_PASSWORD` | Empty | Shared Redis password. |
 | `REDIS_DB` | `0` | Shared Redis database number. |
 | `NATS_URL` | `nats://127.0.0.1:4222` | Fallback URL for the NATS cache driver. Other NATS-backed resource families use their scoped `URL` setting. |
-
-## Search
-
-Search is optional. Enable the `search` component in the owning App. The framework supports `bleve` for a local, single-process index and `meilisearch` for an externally managed service. Bleve is always compiled as the local baseline.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `SEARCH_DRIVER` | `bleve` | Active backend for indexes without a named driver override. |
-| `SEARCH_SUPPORTED_DRIVERS` | `bleve` when rendered; active drivers plus `bleve` when unset | Root build manifest. Add `meilisearch` before generating and building an App that uses it. |
-| `SEARCH_PATH` | `storage/search`; additional Apps render `storage/search/<app>` | Root directory for Bleve indexes. Each index defaults to a child directory named after its exact logical name. |
-| `SEARCH_URL` | Empty | Required Meilisearch endpoint when that driver is active. The framework does not provision the service. |
-| `SEARCH_API_KEY` | Empty | Meilisearch API key. Supply deployment credentials outside committed files. |
-| `SEARCH_PREFIX` | Empty | Meilisearch physical index-name prefix. Use distinct prefixes for independently owned App indexes. |
-
-Define index schemas in `app/search.go` or `app/<app>/search.go`. Environment variables select backends and locations; they do not declare schemas or create an implicit default index. After declaring a `catalog` index, its local configuration can be:
-
-```dotenv
-SEARCH_DRIVER=bleve
-SEARCH_SUPPORTED_DRIVERS=bleve
-SEARCH_PATH=storage/search
-SEARCH_CATALOG_PATH=storage/search/catalog
-```
-
-Named overrides use `SEARCH_<NAME>_DRIVER`, `SEARCH_<NAME>_PATH`, `SEARCH_<NAME>_URL`, `SEARCH_<NAME>_API_KEY`, and `SEARCH_<NAME>_PREFIX`. A named path is the complete physical index path, not a root directory. Driver and remote-service settings inherit root defaults before more-specific named settings apply. `SEARCH_SUPPORTED_DRIVERS` remains a root build setting.
-
-App overrides use forms such as `ADMIN_SEARCH_PATH` and `ADMIN_SEARCH_CATALOG_URL`. Resolution proceeds from global root to App root to global named to App named settings. Index aliases ignore case and replace hyphens with underscores, so `catalog-v2` uses `SEARCH_CATALOG_V2_*`; the logical name and default physical path keep their original spelling. Alias collisions are rejected. Known App prefixes take precedence over ambiguous index prefixes.
-
-Run `forj generate --search` after changing the build manifest or named index configuration, then `forj build`. A declared `catalog` index gets `manager.Catalog()`. Provision schemas explicitly before first startup; startup validates existing schemas and rejects incompatible definitions. Stop the owner process before provisioning the same Bleve path, and use a separate path or service prefix when rebuilding a schema. See the [Search library](https://github.com/goforj/search) for the portable index API.
-
-## Feature Flags
-
-Feature flags are optional. Enable the `feature` component in the owning App. The framework supports native `memory` and `file` sources; both are always compiled. A resource names an evaluator configuration, not an individual flag.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `FEATURE_DRIVER` | `memory` | Active source: `memory` or `file`. Vendor SDK adapters are not part of this integration. |
-| `FEATURE_SUPPORTED_DRIVERS` | `memory,file` | Root build manifest for the two native sources. |
-| `FEATURE_DOCUMENT` | `{"schema":1,"flags":{}}` | Startup JSON document for a memory source. Optional for tests and small fixtures; an empty source needs no override. |
-| `FEATURE_PATH` | Empty | Required definition-file path for a file source. Relative paths resolve from the process working directory. |
-| `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Positive Go duration bounding initial source loading. Invalid or unavailable initial configuration fails startup. |
-| `FEATURE_REFRESH_INTERVAL` | `30s` | Fallback polling and source-read retry interval. Go duration of at least `10ms`. Healthy watched files do not poll at this interval. |
-
-For a file-backed `checkout` evaluator, create the definition file before starting the App and configure:
-
-```dotenv
-FEATURE_CHECKOUT_DRIVER=file
-FEATURE_CHECKOUT_PATH=storage/flags/checkout.json
-```
-
-Run `forj generate --feature` and `forj build`; the named evaluator is then available through `manager.Checkout()`. Named settings use `FEATURE_<NAME>_DRIVER`, `FEATURE_<NAME>_DOCUMENT`, `FEATURE_<NAME>_PATH`, `FEATURE_<NAME>_INITIALIZATION_TIMEOUT`, and `FEATURE_<NAME>_REFRESH_INTERVAL`. Named evaluators have their own runtime defaults rather than inheriting the default evaluator's settings. `FEATURE_SUPPORTED_DRIVERS` remains a root build setting.
-
-App overlays use the same names with an App prefix, such as `BILLING_FEATURE_CHECKOUT_PATH`. Root-declared evaluators are inherited by participating Apps; an evaluator declared only for one App is not initialized by another App.
-
-Flag keys, values, targeting, and rollout rules belong in the definition document. Memory sources start empty by default, and undefined boolean checks return false. File sources refresh through filesystem notifications, with polling when notifications are unavailable. Invalid updates retain the last valid decisions; shutdown stops the file workers. Keep authorization policy separate from flag-controlled presentation or rollout decisions.
 
 ## Cache
 
@@ -527,6 +308,60 @@ Driver settings:
 
 See [Storage Patterns](/data/storage-patterns) for path and durability guidance.
 
+## Search
+
+Search is optional. Enable the `search` component in the owning App. The framework supports `bleve` for a local, single-process index and `meilisearch` for an externally managed service. Bleve is always compiled as the local baseline.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `SEARCH_DRIVER` | `bleve` | Active backend for indexes without a named driver override. |
+| `SEARCH_SUPPORTED_DRIVERS` | `bleve` when rendered; active drivers plus `bleve` when unset | Root build manifest. Add `meilisearch` before generating and building an App that uses it. |
+| `SEARCH_PATH` | `storage/search`; additional Apps render `storage/search/<app>` | Root directory for Bleve indexes. Each index defaults to a child directory named after its exact logical name. |
+| `SEARCH_URL` | Empty | Required Meilisearch endpoint when that driver is active. The framework does not provision the service. |
+| `SEARCH_API_KEY` | Empty | Meilisearch API key. Supply deployment credentials outside committed files. |
+| `SEARCH_PREFIX` | Empty | Meilisearch physical index-name prefix. Use distinct prefixes for independently owned App indexes. |
+
+Define index schemas in `app/search.go` or `app/<app>/search.go`. Environment variables select backends and locations; they do not declare schemas or create an implicit default index. After declaring a `catalog` index, its local configuration can be:
+
+```dotenv
+SEARCH_DRIVER=bleve
+SEARCH_SUPPORTED_DRIVERS=bleve
+SEARCH_PATH=storage/search
+SEARCH_CATALOG_PATH=storage/search/catalog
+```
+
+Named overrides use `SEARCH_<NAME>_DRIVER`, `SEARCH_<NAME>_PATH`, `SEARCH_<NAME>_URL`, `SEARCH_<NAME>_API_KEY`, and `SEARCH_<NAME>_PREFIX`. A named path is the complete physical index path, not a root directory. Driver and remote-service settings inherit root defaults before more-specific named settings apply. `SEARCH_SUPPORTED_DRIVERS` remains a root build setting.
+
+App overrides use forms such as `ADMIN_SEARCH_PATH` and `ADMIN_SEARCH_CATALOG_URL`. Resolution proceeds from global root to App root to global named to App named settings. Index aliases ignore case and replace hyphens with underscores, so `catalog-v2` uses `SEARCH_CATALOG_V2_*`; the logical name and default physical path keep their original spelling. Alias collisions are rejected. Known App prefixes take precedence over ambiguous index prefixes.
+
+Run `forj generate --search` after changing the build manifest or named index configuration, then `forj build`. A declared `catalog` index gets `manager.Catalog()`. Provision schemas explicitly before first startup; startup validates existing schemas and rejects incompatible definitions. Stop the owner process before provisioning the same Bleve path, and use a separate path or service prefix when rebuilding a schema. See the [Search library](https://github.com/goforj/search) for the portable index API.
+
+## Feature Flags
+
+Feature flags are optional. Enable the `feature` component in the owning App. The framework supports native `memory` and `file` sources; both are always compiled. A resource names an evaluator configuration, not an individual flag.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FEATURE_DRIVER` | `memory` | Active source: `memory` or `file`. Vendor SDK adapters are not part of this integration. |
+| `FEATURE_SUPPORTED_DRIVERS` | `memory,file` | Root build manifest for the two native sources. |
+| `FEATURE_DOCUMENT` | `{"schema":1,"flags":{}}` | Startup JSON document for a memory source. Optional for tests and small fixtures; an empty source needs no override. |
+| `FEATURE_PATH` | Empty | Required definition-file path for a file source. Relative paths resolve from the process working directory. |
+| `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Positive Go duration bounding initial source loading. Invalid or unavailable initial configuration fails startup. |
+| `FEATURE_REFRESH_INTERVAL` | `30s` | Fallback polling and source-read retry interval. Go duration of at least `10ms`. Healthy watched files do not poll at this interval. |
+
+For a file-backed `checkout` evaluator, create the definition file before starting the App and configure:
+
+```dotenv
+FEATURE_CHECKOUT_DRIVER=file
+FEATURE_CHECKOUT_PATH=storage/flags/checkout.json
+```
+
+Run `forj generate --feature` and `forj build`; the named evaluator is then available through `manager.Checkout()`. Named settings use `FEATURE_<NAME>_DRIVER`, `FEATURE_<NAME>_DOCUMENT`, `FEATURE_<NAME>_PATH`, `FEATURE_<NAME>_INITIALIZATION_TIMEOUT`, and `FEATURE_<NAME>_REFRESH_INTERVAL`. Named evaluators have their own runtime defaults rather than inheriting the default evaluator's settings. `FEATURE_SUPPORTED_DRIVERS` remains a root build setting.
+
+App overlays use the same names with an App prefix, such as `BILLING_FEATURE_CHECKOUT_PATH`. Root-declared evaluators are inherited by participating Apps; an evaluator declared only for one App is not initialized by another App.
+
+Flag keys, values, targeting, and rollout rules belong in the definition document. Memory sources start empty by default, and undefined boolean checks return false. File sources refresh through filesystem notifications, with polling when notifications are unavailable. Invalid updates retain the last valid decisions; shutdown stops the file workers. Keep authorization policy separate from flag-controlled presentation or rollout decisions.
+
 ## Events
 
 Available drivers: `inproc`, `null`, `redis`, `nats`, `natsjetstream`, `kafka`, `gcppubsub`, `sns`.
@@ -598,34 +433,13 @@ Driver settings:
 
 See [Queues](/async/queues) for selection and dispatch, and [Queue Workers](/operations/queue-workers) for lifecycle and scaling.
 
-## Notifications
-
-Notifications are optional. Enable the `notification` component in the owning App. The framework manager supports synchronous `log` capture and `webhook` delivery. It does not add background workers, retries, fallback, or fanout automatically.
+## Scheduler and Process Shutdown
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `NOTIFICATION_DRIVER` | `log` | Active sender: `log` for redacted local capture or `webhook` for a configured destination. |
-| `NOTIFICATION_SUPPORTED_DRIVERS` | `log` when rendered; active drivers plus `log` when unset | Root build manifest. Include `webhook` before generating and building an App that uses it. The local `log` driver remains available. |
-| `NOTIFICATION_WEBHOOK_URL` | Empty | Required destination URL when `webhook` is active. Use a trusted deployment-controlled endpoint. |
-| `NOTIFICATION_WEBHOOK_FORMAT` | `generic` | Payload format: `generic` or `slack`. |
-| `NOTIFICATION_WEBHOOK_TIMEOUT` | `5s` | Positive Go duration for the webhook request timeout. |
-| `NOTIFICATION_WEBHOOK_BEARER_TOKEN` | Empty | Optional bearer authentication token. Keep it in the deployment environment or secret manager. |
-| `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE` | `false` | Allow private and loopback destinations when explicitly required by the deployment, such as a local test receiver. |
-
-Keep local capture as the default while adding a named webhook sender:
-
-```dotenv
-NOTIFICATION_DRIVER=log
-NOTIFICATION_SUPPORTED_DRIVERS=log,webhook
-NOTIFICATION_ALERTS_DRIVER=webhook
-NOTIFICATION_ALERTS_WEBHOOK_URL=https://hooks.example.com/alerts
-```
-
-Run `forj generate --notification` and `forj build`; the named sender is then available through `manager.Alerts()`. Named senders accept `NOTIFICATION_<NAME>_DRIVER` and every `NOTIFICATION_<NAME>_WEBHOOK_*` setting above. Each sender has its own runtime defaults; an unset named driver uses `log`, and a named webhook needs its own URL. `NOTIFICATION_SUPPORTED_DRIVERS` remains a root build setting.
-
-App overlays include forms such as `REPORTS_NOTIFICATION_DRIVER` and `REPORTS_NOTIFICATION_ALERTS_WEBHOOK_URL`. Root-declared named senders are inherited by participating Apps; a sender declared only for one App is not initialized by another App. Changing an active driver already in the build manifest requires configuration and restart; adding a driver requires regeneration and a rebuild.
-
-Successful send completion means local capture or provider acceptance, not confirmed recipient receipt. Construction makes no network requests, and shutdown closes owned transport resources. Use queues for durable deferred work and [Mail](/applications/mail) for email composition. The standalone [Notification library](https://github.com/goforj/notification) supports additional drivers that are not exposed by this framework manager.
+| `SCHEDULER_COMMAND_TIMEOUT` | `10m` | Maximum runtime for a command launched by a scheduled task. |
+| `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` | `APP_SHUTDOWN_TIMEOUT` | Grace period for scheduler-owned subprocesses. Defaults to the App timeout; explicit values are not capped to that timeout. |
+| `QUEUE_SHUTDOWN_TIMEOUT` | `10s` | Queue shutdown budget, resolved independently of the App timeout and also listed with Queue settings. |
 
 ## Mail
 
@@ -660,13 +474,199 @@ Use `MAIL_<SUFFIX>` for the default mailer and `MAIL_<NAME>_<SUFFIX>` for named 
 
 See [Mail](/applications/mail) for local delivery, named mailers, and production guidance.
 
-## Scheduler and Process Shutdown
+## Notifications
+
+Notifications are optional. Enable the `notification` component in the owning App. The framework manager supports synchronous `log` capture and `webhook` delivery. It does not add background workers, retries, fallback, or fanout automatically.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `SCHEDULER_COMMAND_TIMEOUT` | `10m` | Maximum runtime for a command launched by a scheduled task. |
-| `SCHEDULER_SUBPROCESS_SHUTDOWN_TIMEOUT` | `APP_SHUTDOWN_TIMEOUT` | Grace period for scheduler-owned subprocesses. Defaults to the App timeout; explicit values are not capped to that timeout. |
-| `QUEUE_SHUTDOWN_TIMEOUT` | `10s` | Queue shutdown budget, resolved independently of the App timeout and also listed with Queue settings. |
+| `NOTIFICATION_DRIVER` | `log` | Active sender: `log` for redacted local capture or `webhook` for a configured destination. |
+| `NOTIFICATION_SUPPORTED_DRIVERS` | `log` when rendered; active drivers plus `log` when unset | Root build manifest. Include `webhook` before generating and building an App that uses it. The local `log` driver remains available. |
+| `NOTIFICATION_WEBHOOK_URL` | Empty | Required destination URL when `webhook` is active. Use a trusted deployment-controlled endpoint. |
+| `NOTIFICATION_WEBHOOK_FORMAT` | `generic` | Payload format: `generic` or `slack`. |
+| `NOTIFICATION_WEBHOOK_TIMEOUT` | `5s` | Positive Go duration for the webhook request timeout. |
+| `NOTIFICATION_WEBHOOK_BEARER_TOKEN` | Empty | Optional bearer authentication token. Keep it in the deployment environment or secret manager. |
+| `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE` | `false` | Allow private and loopback destinations when explicitly required by the deployment, such as a local test receiver. |
+
+Keep local capture as the default while adding a named webhook sender:
+
+```dotenv
+NOTIFICATION_DRIVER=log
+NOTIFICATION_SUPPORTED_DRIVERS=log,webhook
+NOTIFICATION_ALERTS_DRIVER=webhook
+NOTIFICATION_ALERTS_WEBHOOK_URL=https://hooks.example.com/alerts
+```
+
+Run `forj generate --notification` and `forj build`; the named sender is then available through `manager.Alerts()`. Named senders accept `NOTIFICATION_<NAME>_DRIVER` and every `NOTIFICATION_<NAME>_WEBHOOK_*` setting above. Each sender has its own runtime defaults; an unset named driver uses `log`, and a named webhook needs its own URL. `NOTIFICATION_SUPPORTED_DRIVERS` remains a root build setting.
+
+App overlays include forms such as `REPORTS_NOTIFICATION_DRIVER` and `REPORTS_NOTIFICATION_ALERTS_WEBHOOK_URL`. Root-declared named senders are inherited by participating Apps; a sender declared only for one App is not initialized by another App. Changing an active driver already in the build manifest requires configuration and restart; adding a driver requires regeneration and a rebuild.
+
+Successful send completion means local capture or provider acceptance, not confirmed recipient receipt. Construction makes no network requests, and shutdown closes owned transport resources. Use queues for durable deferred work and [Mail](/applications/mail) for email composition. The standalone [Notification library](https://github.com/goforj/notification) supports additional drivers that are not exposed by this framework manager.
+
+## Logging
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `APP_LOG_FORMAT` | `console` | Output format: `console` or `json`. |
+| `APP_LOG_TIME` | Disabled; rendered `.env` enables it | Include timestamps in App logs. Values `0`, `false`, `off`, and `no` disable it. |
+| `APP_LOG_CALLER` | Disabled | Include caller metadata. Values `0`, `false`, `off`, and `no` disable it. |
+| `APP_LOG_DEDUPE_ENABLED` | `true` | Coalesce repeated similar log messages. |
+| `APP_LOG_DEDUPE_WINDOW_MS` | `1200` | Dedupe window in milliseconds. |
+| `APP_LOG_DEDUPE_BURST` | `2` | Matching messages emitted before suppression begins within a window. |
+| `APP_LOG_DEDUPE_SUMMARY_EVERY` | `1000` | Suppressed occurrences between summary messages. |
+| `APP_LOG_REDACT_KEYS` | Empty | Comma-separated application-specific field names to redact in addition to mandatory secret-bearing names. |
+| `APP_LOG_REDACT_MESSAGE_PATTERNS` | Empty | JSON array of regular expressions replaced with `[REDACTED]` before output and sink delivery. Invalid JSON or expressions fail during logger construction. |
+
+See [Logging](/operations/logging) for event shape, output modes, and sensitive-data guidance.
+
+## Metrics and Runtime Ports
+
+Generated runtime metadata assigns the default App ports `3000`, `10000`, `10001`, and `10002`. Each additional app receives the next non-conflicting block.
+
+| Variable | Default App Default | Purpose |
+| --- | ---: | --- |
+| `METRICS_PORT` | `10000` | Shared App metrics port and canonical HTTP metrics port. |
+| `API_METRICS_PORT` | `METRICS_PORT` | Accepted HTTP metrics alias. |
+| `METRICS_API_PORT` | `METRICS_PORT` | Compatibility HTTP metrics alias. |
+| `SCHEDULER_METRICS_PORT` | `10001` | Accepted scheduler metrics alias. |
+| `METRICS_SCHEDULER_PORT` | `10001` | Canonical generated scheduler metrics port. |
+| `WORKER_METRICS_PORT` | `10002` | Accepted worker metrics alias. |
+| `JOBS_METRICS_PORT` | `10002` | Accepted jobs metrics alias. |
+| `METRICS_JOBS_PORT` | `10002` | Canonical generated jobs metrics port. |
+
+Every port key accepts the `<APP>_` overlay. For example, the first additional app can use `ADMIN_METRICS_PORT=10010`, `ADMIN_METRICS_SCHEDULER_PORT=10011`, and `ADMIN_METRICS_JOBS_PORT=10012`.
+
+Framework-owned instrumentation toggles all default to `true` when their component exists:
+
+| Variable | Surface |
+| --- | --- |
+| `METRICS_HTTP_ENABLED` | HTTP requests. |
+| `METRICS_CACHE_ENABLED` | Cache operations. |
+| `METRICS_STORAGE_ENABLED` | Storage operations. |
+| `METRICS_EVENTS_ENABLED` | Event operations. |
+| `METRICS_MAIL_ENABLED` | Mail sends. |
+| `METRICS_QUEUE_ENABLED` | Queue operations. |
+| `METRICS_DATABASE_ENABLED` | Database operations. |
+| `METRICS_AUTH_ENABLED` | Auth flows. |
+| `METRICS_SCHEDULER_ENABLED` | Scheduler operations. |
+| `METRICS_MONITORING_ENABLED` | Monitoring metrics in the demo App. |
+
+See [Metrics](/operations/metrics) for endpoints, labels, and scrape topology.
+
+## OpenTelemetry
+
+These app-wide settings configure trace and application log export and do not use the named-resource pattern above. New `.env` files show only the common overrides; add the settings below when you need to change a default. [Metrics](/operations/metrics) use the app's Prometheus-compatible endpoints independently.
+
+### Local Defaults and Remote Export
+
+Projects with Grafana, Observability, and Docker export traces and logs through Alloy to Tempo and Loki automatically when `APP_ENV=local` and the `grafana` Compose profile is active. Host processes use `http://127.0.0.1:14318` for HTTP/protobuf or port `14317` for gRPC. Containers use `http://alloy:4318` or `http://alloy:4317`. The host address follows `IP_ADDRESS`, with wildcard bind addresses resolved to loopback; the published ports follow `TEMPO_OTLP_HTTP_PORT` and `TEMPO_OTLP_GRPC_PORT`.
+
+Staging, production, and test processes have no automatic destination. To send traces and logs to an external HTTP/protobuf collector, add:
+
+```dotenv
+OTEL_EXPORTER_OTLP_ENDPOINT=https://collector.example.com:4318
+OTEL_LOGS_EXPORTER=otlp
+```
+
+A generic endpoint enables trace export, but does not enable remote application logs by itself. Logs require `OTEL_LOGS_EXPORTER=otlp` or a log-specific endpoint. Explicit endpoints override the local receiver for their signal. Set `OTEL_TRACES_EXPORTER=none` or `OTEL_LOGS_EXPORTER=none` to disable that signal's export.
+
+Restart the app after changing these settings. Request an HTTP route with access logging enabled, then check the collector for a request span and a request log carrying the same trace ID. Application logs use the active execution's identity when written through `appLogger.WithContext(ctx)`.
+
+### Identity and Signal Selection
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_SERVICE_NAME` | Go module path followed by `/` and the current app name | Service identity shared by traces and logs. |
+| `OTEL_RESOURCE_ATTRIBUTES` | Empty | Comma-separated `key=value` resource attributes, such as `service.version=1.2.0,service.namespace=orders`. `OTEL_SERVICE_NAME` takes precedence over a `service.name` attribute. |
+| `OTEL_TRACES_EXPORTER` | `otlp` when an endpoint or the local Grafana default selects it; otherwise `none` | Supports `otlp` and `none`. Disabling external trace export does not disable Lighthouse inspect capture. |
+| `OTEL_LOGS_EXPORTER` | `otlp` for the local Grafana default or a log-specific endpoint; otherwise `none` | Supports `otlp` and `none`. Explicit `otlp` enables logs at the configured generic endpoint. Console and Lighthouse log outputs remain independent. |
+| `OTEL_SDK_DISABLED` | `false` | Disable OTel span recording and OTLP log export. Console logging remains available. |
+
+### Endpoints, Protocols, and Headers
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Unset; local Grafana supplies a receiver when eligible | Shared collector base URL. For HTTP/protobuf, exporters append `/v1/traces` and `/v1/logs` for enabled signals. |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Generic endpoint or local receiver | Trace-specific destination. For HTTP/protobuf, provide the complete URL, including `/v1/traces`. Setting this endpoint enables traces unless explicitly disabled. |
+| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Generic endpoint or local receiver when logs are enabled | Log-specific destination. For HTTP/protobuf, provide the complete URL, including `/v1/logs`. Setting this endpoint enables logs unless explicitly disabled. |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | Shared transport: `http/protobuf` or `grpc`. |
+| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | `OTEL_EXPORTER_OTLP_PROTOCOL` | Override the trace transport. |
+| `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL` | `OTEL_EXPORTER_OTLP_PROTOCOL` | Override the log transport. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | Empty | Comma-separated `name=value` authentication or collector headers. Percent-encode reserved characters in values, such as `Authorization=Bearer%20example-token`. |
+| `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | `OTEL_EXPORTER_OTLP_HEADERS` | Replace the generic headers for trace export. |
+| `OTEL_EXPORTER_OTLP_LOGS_HEADERS` | `OTEL_EXPORTER_OTLP_HEADERS` | Replace the generic headers for log export. |
+
+Use absolute `http://` or `https://` endpoint URLs. For gRPC, use the collector's gRPC port without an HTTP signal path. For example, `https://collector.example.com:4317` with `OTEL_EXPORTER_OTLP_PROTOCOL=grpc` selects gRPC for both enabled signals. Invalid endpoints, headers, exporter selections, and unsupported protocols fail during app construction. Keep credentials in the deployment environment or secret manager, and use HTTPS for remote collectors.
+
+### Export Transport Overrides
+
+The Go OTel exporters consume these settings. Each generic variable also accepts a signal-specific form by inserting `TRACES_` or `LOGS_` after `OTEL_EXPORTER_OTLP_`. For example, `OTEL_EXPORTER_OTLP_TRACES_TIMEOUT` overrides `OTEL_EXPORTER_OTLP_TIMEOUT` for traces. A signal-specific value takes precedence over the generic value for that signal.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_EXPORTER_OTLP_TIMEOUT` | `10000` | Exporter request timeout in milliseconds. |
+| `OTEL_EXPORTER_OTLP_COMPRESSION` | None | Set `gzip` to compress exported payloads. |
+| `OTEL_EXPORTER_OTLP_CERTIFICATE` | System trust roots | Path to a PEM certificate file used to verify the collector's TLS certificate. |
+| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Empty | Path to the client PEM certificate chain for mutual TLS. Configure it with the matching client key. |
+| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Empty | Path to the PEM private key for mutual TLS. |
+| `OTEL_EXPORTER_OTLP_INSECURE` | `false` | Exporter transport-security switch. An explicit endpoint URL's `http` or `https` scheme takes precedence; use the URL scheme to select transport security. |
+
+### Trace Sampling and Limits
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_TRACES_SAMPLER` | `parentbased_always_on` when trace export or Lighthouse inspect capture is enabled; otherwise `always_off` | Head sampler used by the app's trace provider. |
+| `OTEL_TRACES_SAMPLER_ARG` | `1.0` | Ratio between `0` and `1`, used by `traceidratio` and `parentbased_traceidratio`. |
+| `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span. |
+| `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited | Maximum string attribute value length on a span. |
+| `OTEL_ATTRIBUTE_COUNT_LIMIT` | `128` | Fallback when `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` is unset. |
+| `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited | Fallback when `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` is unset. |
+| `OTEL_SPAN_EVENT_COUNT_LIMIT` | `128` | Maximum events retained on a span. |
+| `OTEL_SPAN_LINK_COUNT_LIMIT` | `128` | Maximum links retained on a span. |
+| `OTEL_EVENT_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span event. |
+| `OTEL_LINK_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span link. |
+
+Supported samplers are `always_on`, `always_off`, `parentbased_always_on`, `parentbased_always_off`, `traceidratio`, and `parentbased_traceidratio`. Ratio values outside `0` through `1` and unsupported sampler names fail during app construction. For example, `parentbased_traceidratio` with an argument of `0.1` samples approximately 10% of new root traces while respecting an incoming parent's sampling decision.
+
+OTel sampling controls span recording for external export and Lighthouse projection. `LIGHTHOUSE_INSPECT_SAMPLE_RATE` can further reduce Lighthouse detail capture without reducing external export. Log export is independent of trace sampling, so an exported log can refer to an unsampled trace that is absent from the trace backend.
+
+### Batch Delivery
+
+Queues are bounded and telemetry delivery is best effort. Trace batches use the SDK defaults below; the framework overrides the log batch size and log batch timeout to `256` records and `5000` milliseconds. Explicit batch environment settings take precedence. All delay and timeout values in this table are **milliseconds**, not Go duration strings.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_BSP_MAX_QUEUE_SIZE` | `2048` | Maximum queued spans awaiting export. |
+| `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` | `512` | Maximum spans per export batch, bounded by queue capacity. |
+| `OTEL_BSP_SCHEDULE_DELAY` | `5000` | Maximum interval between trace batch exports. |
+| `OTEL_BSP_EXPORT_TIMEOUT` | `30000` | Trace processor's export deadline. The transport timeout applies separately. |
+| `OTEL_BLRP_MAX_QUEUE_SIZE` | `2048` | Maximum queued log records. A full log queue drops its oldest records. |
+| `OTEL_BLRP_MAX_EXPORT_BATCH_SIZE` | `256` | Maximum log records per export batch, bounded by queue capacity. |
+| `OTEL_BLRP_SCHEDULE_DELAY` | `1000` | Maximum interval between log batch exports. |
+| `OTEL_BLRP_EXPORT_TIMEOUT` | `5000` | Log processor's export deadline. The transport timeout applies separately. |
+
+Shutdown flushes telemetry within the app's shutdown context. Collector failures affect telemetry delivery rather than app readiness. Application log contents can be exported; review logged messages and fields before enabling a remote destination. See [Logging](/operations/logging) for application logging and [Inspects](/operations/inspects) for bounded Lighthouse capture.
+
+## Lighthouse and Inspects
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `LIGHTHOUSE_ENABLED` | `true` | Enable Lighthouse runtime integration. |
+| `LIGHTHOUSE_URL` | `ws://localhost:3000/lighthouse/ws/agent` | Lighthouse agent websocket URL. |
+| `LIGHTHOUSE_SECRET` | Empty; generated locally | Shared agent/server authentication secret. |
+| `LIGHTHOUSE_DEBUG` | Disabled | Enable Lighthouse debug output. |
+| `LIGHTHOUSE_VSCODE_CMD` | `code` | VS Code command used by Lighthouse source links. |
+| `LIGHTHOUSE_GOLAND_CMD` | `goland` | GoLand command used by Lighthouse source links. |
+| `LIGHTHOUSE_INSPECT_ENABLED` | `false`; `.env.local` sets `true` | Enable inspect capture. |
+| `LIGHTHOUSE_INSPECT_MAX_TOTAL` | `250`; `.env.local` sets `1000` | Maximum retained inspect records. |
+| `LIGHTHOUSE_INSPECT_MAX_INFLIGHT` | `100`; `.env.local` sets `250` | Maximum in-flight inspect records. |
+| `LIGHTHOUSE_INSPECT_MAX_EVENTS` | `200`; `.env.local` sets `500` | Maximum events recorded per inspect. |
+| `LIGHTHOUSE_INSPECT_SAMPLE_RATE` | `1.0` | Capture rate from `0.0` through `1.0`. |
+| `LIGHTHOUSE_INSPECT_BUFFER_SIZE` | `4096` | Finished-inspect delivery buffer size. |
+| `LIGHTHOUSE_INSPECT_FLUSH_BATCH_SIZE` | `100` | Maximum records per Lighthouse delivery batch. |
+| `LIGHTHOUSE_INSPECT_FLUSH_INTERVAL` | `1s` | Maximum delay between delivery flushes. |
+
+See [Lighthouse](/operations/lighthouse) and [Inspects](/operations/inspects).
 
 ## Local Observability
 
@@ -687,6 +687,25 @@ These values configure generated local VictoriaMetrics and Grafana infrastructur
 | `OBSERVABILITY_API_METRICS_HOST` | `api` | HTTP role host in `compose` mode. Empty omits the role target. |
 | `OBSERVABILITY_JOBS_METRICS_HOST` | `jobs` | Jobs role host in `compose` mode. Empty omits the role target. |
 | `OBSERVABILITY_SCHEDULER_METRICS_HOST` | `scheduler` | Scheduler role host in `compose` mode. Empty omits the role target. |
+
+## Backups
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `BACKUP_PATH` | `.goforj/backups` | Default local backup root. |
+| `APP_BACKUP_DRIVER` | `local` | Backup repository driver: `local`, `s3`, or `b2-s3`. |
+| `APP_BACKUP_S3_BUCKET` | Empty | S3-compatible repository bucket. |
+| `APP_BACKUP_S3_ENDPOINT` | Empty | S3-compatible endpoint override. |
+| `APP_BACKUP_S3_REGION` | Empty | S3-compatible region. |
+| `APP_BACKUP_S3_ACCESS_KEY_ID` | Empty | Repository access key. |
+| `APP_BACKUP_S3_SECRET_ACCESS_KEY` | Empty | Repository secret key. |
+| `APP_BACKUP_S3_USE_PATH_STYLE` | `false` | Enable path-style S3 addressing. |
+| `APP_BACKUP_S3_PREFIX` | Empty | Object prefix for completed backup sets. |
+| `APP_BACKUP_KEEP_DAILY` | `14` | Completed sets retained in recent daily buckets when calendar retention is enabled. |
+| `APP_BACKUP_KEEP_WEEKLY` | `4` | Completed sets retained in weekly buckets when calendar retention is enabled. |
+| `APP_BACKUP_KEEP_MONTHLY` | `6` | Completed sets retained in monthly buckets when calendar retention is enabled. |
+
+S3-backed `STORAGE_<NAME>_*` resources can be inventoried as backup inputs, but they are separate from the `APP_BACKUP_S3_*` repository that stores completed backup sets. See [Backup and Restore](/operations/backups).
 
 ## Local Services and Docker
 
@@ -769,25 +788,6 @@ the catalog services. Redis, Mailpit, VictoriaMetrics, and Grafana retain the
 | `CLICKHOUSE_USERNAME` | `goforj` | Local ClickHouse username. |
 | `CLICKHOUSE_PASSWORD` | `goforj-local` | Local ClickHouse password. |
 | `MEILISEARCH_PORT` | `7700` | Published Meilisearch HTTP port. |
-
-## Backups
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `BACKUP_PATH` | `.goforj/backups` | Default local backup root. |
-| `APP_BACKUP_DRIVER` | `local` | Backup repository driver: `local`, `s3`, or `b2-s3`. |
-| `APP_BACKUP_S3_BUCKET` | Empty | S3-compatible repository bucket. |
-| `APP_BACKUP_S3_ENDPOINT` | Empty | S3-compatible endpoint override. |
-| `APP_BACKUP_S3_REGION` | Empty | S3-compatible region. |
-| `APP_BACKUP_S3_ACCESS_KEY_ID` | Empty | Repository access key. |
-| `APP_BACKUP_S3_SECRET_ACCESS_KEY` | Empty | Repository secret key. |
-| `APP_BACKUP_S3_USE_PATH_STYLE` | `false` | Enable path-style S3 addressing. |
-| `APP_BACKUP_S3_PREFIX` | Empty | Object prefix for completed backup sets. |
-| `APP_BACKUP_KEEP_DAILY` | `14` | Completed sets retained in recent daily buckets when calendar retention is enabled. |
-| `APP_BACKUP_KEEP_WEEKLY` | `4` | Completed sets retained in weekly buckets when calendar retention is enabled. |
-| `APP_BACKUP_KEEP_MONTHLY` | `6` | Completed sets retained in monthly buckets when calendar retention is enabled. |
-
-S3-backed `STORAGE_<NAME>_*` resources can be inventoried as backup inputs, but they are separate from the `APP_BACKUP_S3_*` repository that stores completed backup sets. See [Backup and Restore](/operations/backups).
 
 ## Forj Developer Tools
 
