@@ -13,7 +13,7 @@ noAutoTitle: true
 </p>
 
 <p align="center">
-    cache gives your services one cache API with multiple backend options. Swap drivers without refactoring.
+    One cache API for Go, from in-process memory to shared backends.
 </p>
 
 <p align="center">
@@ -21,72 +21,31 @@ noAutoTitle: true
     <a href="https://github.com/goforj/cache/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
     <a href="https://golang.org"><img src="https://img.shields.io/badge/go-1.27+-blue?logo=go" alt="Go version"></a>
     <img src="https://img.shields.io/github/v/tag/goforj/cache?label=version&sort=semver" alt="Latest tag">
-    <a href="https://codecov.io/gh/goforj/cache"><img src="https://codecov.io/gh/goforj/cache/graph/badge.svg?token=B6ROULLKWU"/></a>
+    <a href="https://codecov.io/gh/goforj/cache"><img src="https://codecov.io/gh/goforj/cache/graph/badge.svg" alt="Codecov"></a>
 <!-- test-count:embed:start -->
-    <img src="https://img.shields.io/badge/unit_tests-388-brightgreen" alt="Unit tests (executed count)">
-    <img src="https://img.shields.io/badge/integration_tests-118-blue" alt="Integration tests (executed count)">
+    <img src="https://img.shields.io/badge/unit_tests-447-brightgreen" alt="Unit tests (passing count)">
+    <img src="https://img.shields.io/badge/local_integration_tests-109-blue" alt="Local integration tests (passing count)">
 <!-- test-count:embed:end -->
 </p>
 
-## What cache is {#what-cache-is}
- 
-An explicit cache abstraction with a minimal Store interface and ergonomic Cache helpers. Drivers are chosen when you construct the store, so swapping backends is a dependency-injection change instead of a refactor.
+<p align="center">
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#drivers">Drivers</a> ·
+  <a href="#behavior-semantics">Behavior</a> ·
+  <a href="#api-index">API</a>
+</p>
 
-## Installation {#installation}
+## Quick Start {#quick-start}
 
-```bash
-go get github.com/goforj/cache
+<a id="installation"></a>
+
+In a Go 1.27+ module, install cache, save the example as `main.go`, and run `go run .`.
+
+```sh
+go get github.com/goforj/cache@latest
 ```
 
-The generic method API requires Go 1.27 or newer. Projects on Go 1.26 or earlier can keep the root module at v0.4.0 and update independently versioned core, test, and driver modules that support their Go version.
-
-Optional backends are separate modules. Install only what you use:
-
-```bash
-go get github.com/goforj/cache/driver/rediscache
-go get github.com/goforj/cache/driver/memcachedcache
-go get github.com/goforj/cache/driver/natscache
-go get github.com/goforj/cache/driver/dynamocache
-go get github.com/goforj/cache/driver/sqlitecache
-go get github.com/goforj/cache/driver/postgrescache
-go get github.com/goforj/cache/driver/mysqlcache
-```
-
-The PostgreSQL and SQLite drivers require Go 1.25 or newer. PostgreSQL uses pgx v5.11.0. The pgx update also discards pooled connections left in transactions during reset and uses the operating-system user when a PostgreSQL DSN omits a database user. Use an explicit DSN user when that default is not intended.
- 
-## Supported Go versions {#supported-go-versions}
-
-| Modules | Minimum Go version |
-| --- | --- |
-| Root `cache` module | 1.27.0 |
-| `cachecore`, `cachetest`, `driver/sqlcore` | 1.24.4 |
-| DynamoDB, Memcached, MySQL, and Redis drivers | 1.24.4 |
-| PostgreSQL and SQLite drivers | 1.25.0 |
-| NATS driver | 1.26.0 |
-
-Documentation, examples, and integration tooling use Go 1.27 and can select newer dependency versions than the independently published drivers. Their dependency graph does not change a driver's published minimum.
-
-## Drivers {#drivers}
-
-Each driver is thoroughly tested against the shared test suite using [testcontainers](https://testcontainers.com/) or emulators where appropriate.
-
-|                                                                                             Driver / Backend | Mode | Shared | Durable | TTL | Counters | Locks | RateLimit | Prefix | Batch | Shaping | Notes |
-|-------------------------------------------------------------------------------------------------------------:| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-|                  <img src="https://img.shields.io/badge/null-9e9e9e?logo=probot&logoColor=white" alt="Null"> | No-op | - | - | - | - | No-op | No-op | ✓ | ✓ | ✓ | Great for tests: cache calls are no-ops and never persist. |
-|                   <img src="https://img.shields.io/badge/file-3f51b5?logo=files&logoColor=white" alt="File"> | Local filesystem | - | ✓ | ✓ | ✓ | Local | Local | - | ✓ | ✓ | Simple durability on a single host; set `StoreConfig.FileDir` (or use `NewFileStore`). |
-|              <img src="https://img.shields.io/badge/memory-5c5c5c?logo=cachet&logoColor=white" alt="Memory"> | In-process | - | - | ✓ | ✓ | Local | Local | - | ✓ | ✓ | Fastest; per-process only, best for single-node or short-lived data. |
-|        <img src="https://img.shields.io/badge/memcached-0198c4?logo=buffer&logoColor=white" alt="Memcached"> | Networked | ✓ | - | ✓ | ✓ | Shared | Shared | ✓ | ✓ | ✓ | TTL resolution is 1s; configure addresses via `memcachedcache.Config.Addresses`. |
-|              <img src="https://img.shields.io/badge/redis-%23DC382D?logo=redis&logoColor=white" alt="Redis"> | Networked | ✓ | - | ✓ | ✓ | Shared | Shared | ✓ | ✓ | ✓ | Full feature set; counters refresh TTL (Redis counter TTL granularity currently 1s). |
-|                <img src="https://img.shields.io/badge/nats-27AAE1?logo=natsdotio&logoColor=white" alt="NATS"> | Networked | ✓ | - | ✓ | ✓ | Shared | Shared | ✓ | ✓ | ✓ | JetStream KV-backed driver; inject an existing bucket via `natscache.Config.KeyValue`. |
-| <img src="https://img.shields.io/badge/dynamodb-4053D6?logo=amazon-dynamodb&logoColor=white" alt="DynamoDB"> | Networked | ✓ | ✓ | ✓ | ✓ | Shared | Shared | ✓ | ✓ | ✓ | Backed by DynamoDB (supports localstack/dynamodb-local). |
-|    <img src="https://img.shields.io/badge/sqlite-003B57?logo=sqlite&logoColor=white" alt="SQLite"> | Local / file | - | ✓ | ✓ | ✓ | Local | Local | ✓ | ✓ | ✓ | `sqlitecache` (via `sqlcore`); great for embedded/local durable cache. |
-|    <img src="https://img.shields.io/badge/postgres-336791?logo=postgresql&logoColor=white" alt="Postgres"> | Networked | ✓ | ✓ | ✓ | ✓ | Shared | Shared | ✓ | ✓ | ✓ | `postgrescache` (via `sqlcore`); good shared durable backend. |
-|    <img src="https://img.shields.io/badge/mysql-4479A1?logo=mysql&logoColor=white" alt="MySQL"> | Networked | ✓ | ✓ | ✓ | ✓ | Shared | Shared | ✓ | ✓ | ✓ | `mysqlcache` (via `sqlcore`); good shared durable backend. |
-
-## Driver constructor quick examples {#driver-constructor-quick-examples}
-
-Use root constructors for in-process backends, and driver-module constructors for external backends.
-Driver backends live in separate modules so applications only import/link the optional backend dependencies they actually use.
+<!-- quick-start:embed:start -->
 
 ```go
 package main
@@ -94,142 +53,80 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/goforj/cache"
-	"github.com/goforj/cache/cachecore"
-	"github.com/goforj/cache/driver/dynamocache"
-	"github.com/goforj/cache/driver/memcachedcache"
-	"github.com/goforj/cache/driver/mysqlcache"
-	"github.com/goforj/cache/driver/natscache"
-	"github.com/goforj/cache/driver/postgrescache"
-	"github.com/goforj/cache/driver/rediscache"
-	"github.com/goforj/cache/driver/sqlitecache"
 )
 
+// Product is the catalog value cached in the example.
+type Product struct {
+	Name       string
+	PriceCents int
+}
+
+// main caches a product lookup in memory without requiring a backend service.
 func main() {
 	ctx := context.Background()
-	base := cachecore.BaseConfig{DefaultTTL: 5 * time.Minute, Prefix: "app"}
+	c := cache.NewCache(cache.NewMemoryStore(ctx))
 
-	cache.NewMemoryStore(ctx)               // in-process memory
-	cache.NewFileStore(ctx, "./cache-data") // local file-backed
-	cache.NewNullStore(ctx)                 // disabled / drop-only
+	loadProduct := func() (Product, error) {
+		return Product{Name: "Desk lamp", PriceCents: 4900}, nil
+	}
+	product, err := c.Remember("product:42", time.Minute, loadProduct)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// Redis (driver-owned connection config; no direct redis client required)
-	redisStore := rediscache.New(rediscache.Config{BaseConfig: base, Addr: "127.0.0.1:6379"})
-	_ = redisStore
-
-	// Memcached (one or more server addresses)
-	memcachedStore := memcachedcache.New(memcachedcache.Config{
-		BaseConfig: base,
-		Addresses:  []string{"127.0.0.1:11211"},
-	})
-	_ = memcachedStore
-
-	// NATS JetStream KV (inject a bucket from your NATS setup)
-	var kv natscache.KeyValue // create via your NATS JetStream setup
-	natsStore := natscache.New(natscache.Config{BaseConfig: base, KeyValue: kv})
-	_ = natsStore
-
-	// DynamoDB (auto-creates client when Client is nil)
-	dynamoStore, err := dynamocache.New(ctx, dynamocache.Config{
-		BaseConfig: base,
-		Region:     "us-east-1",
-		Table:      "cache_entries",
-	})
-	fmt.Println(dynamoStore, err)
-
-	// SQLite (via sqlcore)
-	sqliteStore, err := sqlitecache.New(sqlitecache.Config{
-		BaseConfig: base,
-		DSN:        "file::memory:?cache=shared",
-		Table:      "cache_entries",
-	})
-	fmt.Println(sqliteStore, err)
-
-	// Postgres (via sqlcore)
-	postgresStore, err := postgrescache.New(postgrescache.Config{
-		BaseConfig: base,
-		DSN:        "postgres://user:pass@127.0.0.1:5432/app?sslmode=disable",
-		Table:      "cache_entries",
-	})
-	fmt.Println(postgresStore, err)
-
-	// MySQL (via sqlcore)
-	mysqlStore, err := mysqlcache.New(mysqlcache.Config{
-		BaseConfig: base,
-		DSN:        "user:pass@tcp(127.0.0.1:3306)/app?parseTime=true",
-		Table:      "cache_entries",
-	})
-	fmt.Println(mysqlStore, err)
+	fmt.Printf("%s costs %d cents\n", product.Name, product.PriceCents)
+	// Output: Desk lamp costs 4900 cents
 }
 ```
 
-## Module Layout {#module-layout}
+<!-- quick-start:embed:end -->
 
-| Category | Module | Purpose |
-| --- | --- | --- |
-| Core | [github.com/goforj/cache](https://github.com/goforj/cache/tree/main) | Cache API and root-backed stores (memory, file, null) |
-| Core | [github.com/goforj/cache/cachecore](https://github.com/goforj/cache/tree/main/cachecore) | Shared contracts, types, and base config |
-| Core | [github.com/goforj/cache/cachetest](https://github.com/goforj/cache/tree/main/cachetest) | Shared store contract test harness |
-| Optional drivers | [github.com/goforj/cache/driver/*cache](https://github.com/goforj/cache/tree/main/driver) | Backend driver modules |
-| Optional drivers | [github.com/goforj/cache/driver/sqlcore](https://github.com/goforj/cache/tree/main/driver/sqlcore) | Shared SQL implementation for dialect wrappers |
-| Repository tooling (not published) | [integration](https://github.com/goforj/cache/tree/main/integration) | Integration suites (root, all) |
-| Repository tooling (not published) | [docs](https://github.com/goforj/cache/tree/main/docs) | Docs + benchmark tooling |
-| Repository tooling (not published) | [examples](https://github.com/goforj/cache/tree/main/examples) | Compile-checked examples generated from API docs |
+## Drivers {#drivers}
 
-## Quick Start {#quick-start}
+Memory, file, and null are included in the root module. Install only the additional driver modules you use.
 
-```go
-import (
-    "context"
-    "fmt"
-    "time"
+| Backend | Use and limits |
+| :--- | :--- |
+| <a href="#newmemorystore"><img src="https://img.shields.io/badge/memory-5c5c5c?logo=cachet&logoColor=white" alt="Memory"></a> | In-process cache. Values, locks, and counters are local to each process. |
+| <a href="#newfilestore"><img src="https://img.shields.io/badge/file-3f51b5?logo=files&logoColor=white" alt="File"></a> | Local files that survive restarts. Use a dedicated directory. Locks are process-local. |
+| <a href="#newnullstore"><img src="https://img.shields.io/badge/null-9e9e9e?logo=probot&logoColor=white" alt="Null"></a> | Disable caching. Drops writes and admits every lock. |
+| <a href="#driver-config-rediscache"><img src="https://img.shields.io/badge/redis-%23DC382D?logo=redis&logoColor=white" alt="Redis"></a> | Shared cache with native counters. Counter expiry has one-second resolution. |
+| <a href="#driver-config-memcachedcache"><img src="https://img.shields.io/badge/memcached-0198c4?logo=buffer&logoColor=white" alt="Memcached"></a> | Shared, ephemeral cache. Keys route to a stable peer. TTL resolution is one second. |
+| <a href="#driver-config-natscache"><img src="https://img.shields.io/badge/nats-27AAE1?logo=natsdotio&logoColor=white" alt="NATS JetStream KV"></a> | Uses an existing JetStream KV bucket with per-key or bucket-wide TTL. |
+| <a href="#driver-config-dynamocache"><img src="https://img.shields.io/badge/dynamodb-4053D6?logo=amazon-dynamodb&logoColor=white" alt="DynamoDB"></a> | Shared cache using a DynamoDB table. Item limits include encoded values and metadata. |
+| <a href="#driver-config-sqlitecache"><img src="https://img.shields.io/badge/sqlite-003B57?logo=sqlite&logoColor=white" alt="SQLite"></a> | Embedded SQL cache. Use a dedicated file or database. |
+| <a href="#driver-config-postgrescache"><img src="https://img.shields.io/badge/postgres-336791?logo=postgresql&logoColor=white" alt="PostgreSQL"></a> | Shared SQL cache backed by PostgreSQL. Requires access to a cache table. |
+| <a href="#driver-config-mysqlcache"><img src="https://img.shields.io/badge/mysql-4479A1?logo=mysql&logoColor=white" alt="MySQL"></a> | Shared SQL cache backed by MySQL. Requires access to a cache table. |
 
-    "github.com/goforj/cache"
-    "github.com/goforj/cache/cachecore"
-    "github.com/goforj/cache/driver/rediscache"
-)
-
-func main() {
-    ctx := context.Background()
-
-    store := cache.NewMemoryStoreWithConfig(ctx, cache.StoreConfig{
-        BaseConfig: cachecore.BaseConfig{DefaultTTL: 5 * time.Minute},
-    })
-    c := cache.NewCache(store)
-
-    type Profile struct { Name string `json:"name"` }
-
-    // Typed lifecycle (generic helpers): set -> get -> delete
-    _ = cache.Set(c, "user:42:profile", Profile{Name: "Ada"}, time.Minute)
-    profile, ok, err := cache.Get[Profile](c, "user:42:profile")
-    fmt.Println(err == nil, ok, profile.Name) // true true Ada
-    _ = c.Delete("user:42:profile")
-
-    // String lifecycle: set -> get -> delete
-    _ = c.SetString("settings:mode", "dark", time.Minute)
-    mode, ok, err := c.GetString("settings:mode")
-    fmt.Println(err == nil, ok, mode) // true true dark
-    _ = c.Delete("settings:mode")
-
-    // Remember pattern.
-    profile, err := cache.Remember[Profile](c, "user:42:profile", time.Minute, func() (Profile, error) {
-        return Profile{Name: "Ada"}, nil
-    })
-    fmt.Println(profile.Name) // Ada
-
-    // Switch to Redis (dependency injection, no code changes below).
-    store = rediscache.New(rediscache.Config{
-        BaseConfig: cachecore.BaseConfig{
-            Prefix:     "app",
-            DefaultTTL: 5 * time.Minute,
-        },
-        Addr: "127.0.0.1:6379",
-    })
-    c = cache.NewCache(store)
-}
+```sh
+go get github.com/goforj/cache/driver/rediscache@latest
+go get github.com/goforj/cache/driver/memcachedcache@latest
+go get github.com/goforj/cache/driver/natscache@latest
+go get github.com/goforj/cache/driver/dynamocache@latest
+go get github.com/goforj/cache/driver/sqlitecache@latest
+go get github.com/goforj/cache/driver/postgrescache@latest
+go get github.com/goforj/cache/driver/mysqlcache@latest
 ```
+
+<a id="driver-constructor-quick-examples"></a>
+
+See [Driver Configs](#driver-configs) for construction examples and the [Production Guide](https://github.com/goforj/cache/blob/main/docs/production-guide.md#driver-connections-and-rollout) for connection ownership and rollout.
+
+## Supported Go versions {#supported-go-versions}
+
+| Modules | Minimum Go version |
+| :--- | :--- |
+| Root `cache` | 1.27.0 |
+| `cachecore`, `cachetest`, `driver/sqlcore` | 1.24.4 |
+| DynamoDB, Memcached, MySQL, and Redis drivers | 1.24.4 |
+| PostgreSQL and SQLite drivers | 1.25.0 |
+| NATS driver | 1.26.0 |
+
+The generic method API requires Go 1.27 or newer. Projects on Go 1.26 can pin the root at v0.4.0 and select independently published drivers that support their toolchain. Documentation, examples, and integration tooling use Go 1.27.
 
 ## Config Options {#config-options}
 
@@ -321,27 +218,36 @@ For precise runtime semantics, see [Behavior Semantics](https://github.com/gofor
 
 ## Production Guidance {#production-guidance}
 
+<a id="payload-size-caps-effective-bytes-written"></a>
+
 For deployment defaults and operational patterns, see [Production Guide](https://github.com/goforj/cache/blob/main/docs/production-guide.md):
 
 - recommended defaults and tuning
 - key naming/versioning conventions
+- [payload size limits by backend](https://github.com/goforj/cache/blob/main/docs/production-guide.md#payload-size-limits)
 - TTL jitter and miss-storm mitigation
 - observability instrumentation patterns
 
 ## Memoized reads {#memoized-reads}
 
-Wrap any store with `NewMemoStore` to memoize reads within the process; cache is invalidated automatically on write paths.
+Create a `NewMemoStore` per request when a short-lived read snapshot is useful.
 
 ```go
 memoStore := cache.NewMemoStore(store)
 memoRepo := cache.NewCache(memoStore)
 ```
 
-**Staleness note:** memoization is per-process only. Writes that happen in *other* processes (or outside your app) will not invalidate this memo cache. Use it when local staleness is acceptable, or scope it narrowly (e.g., per-request) if multiple writers exist.
+Memoization holds up to 256 hits or misses for up to one second. Use the backing store directly when you need its exact TTL or immediate visibility of writes made through another handle.
+
+<a id="module-layout"></a>
 
 ## Testing {#testing}
 
-Unit tests cover the public helpers. Shared cross-driver integration coverage runs from the `integration` module (with `testcontainers-go` for container-backed backends):
+<a id="integration-coverage"></a>
+
+For contributors, the [module manifest](https://github.com/goforj/cache/blob/main/scripts/module-manifest.txt) lists the published drivers and repository tooling.
+
+Unit tests cover the public helpers. See [Integration coverage](https://github.com/goforj/cache/blob/main/docs/integration-coverage.md) for the shared store contract, driver-specific checks, and suite scope. Run the cross-driver suite from the `integration` module:
 
 ```bash
 cd integration
@@ -355,10 +261,11 @@ bash scripts/test-all-modules.sh
 ```
 
 `scripts/check-quality.sh` runs tidy-diff, vet, and tests independently in every module. CI also
-enforces the 89.5% statement-coverage floor for the root package with `scripts/check-coverage.sh`,
-locking in the quality-pass baseline without pretending every adapter module has identical targets.
+enforces a 97.0% root package statement-coverage floor with `scripts/check-coverage.sh`. The quick start runs in CI and its output is checked.
 
 ## Benchmarks {#benchmarks}
+
+The charts show a recorded benchmark snapshot. Rerun the benchmarks on the release and backend versions you plan to deploy.
 
 ```bash
 cd docs
@@ -375,7 +282,7 @@ Note: DynamoDB is intentionally omitted from these local charts because emulator
 NATS variants in these charts:
 
 - `nats`: per-key TTL semantics using a binary envelope (`magic/expiresAt/value`). This preserves per-key expiry parity with other drivers, with modest metadata overhead.
-- `nats_bucket_ttl`: bucket-level TTL mode (`WithNATSBucketTTL(true)`), raw value path; faster but different expiry semantics.
+- `nats_bucket_ttl`: bucket-level TTL mode (`natscache.Config.BucketTTL`), raw value path; faster but different expiry semantics.
 
 ### Latency (ns/op) {#latency-(ns/op)}
 
@@ -398,7 +305,7 @@ NATS variants in these charts:
 ## API reference {#api-reference}
 
 The API section below is autogenerated; do not edit between the markers.
-Many functions also provide `...Context` variants that accept an explicit `context.Context`.
+Bind request context with `c.WithContext(ctx)`. Package-level typed helpers remain available alongside generic Cache methods.
 
 <!-- api:embed:start -->
 
@@ -409,17 +316,17 @@ Many functions also provide `...Context` variants that accept an explicit `conte
 | **Constructors** | [NewFileStore](#newfilestore) · [NewFileStoreWithConfig](#newfilestorewithconfig) · [NewMemoryStore](#newmemorystore) · [NewMemoryStoreWithConfig](#newmemorystorewithconfig) · [NewNullStore](#newnullstore) · [NewNullStoreWithConfig](#newnullstorewithconfig) |
 | **Core** | [Cache.WithContext](#cache-withcontext) · [Driver](#cache-driver) · [Inspector](#cache-inspector) · [NewCache](#newcache) · [NewCacheWithTTL](#newcachewithttl) · [Ready](#cache-ready) · [Store](#cache-store) |
 | **Driver Configs** | [Shared BaseConfig](#driver-configs-shared-baseconfig) · [DynamoDB Config](#driver-config-dynamocache) · [Memcached Config](#driver-config-memcachedcache) · [MySQL Config](#driver-config-mysqlcache) · [NATS Config](#driver-config-natscache) · [Postgres Config](#driver-config-postgrescache) · [Redis Config](#driver-config-rediscache) · [SQL Core Config](#driver-config-sqlcore) · [SQLite Config](#driver-config-sqlitecache) |
-| **Invalidation** | [Cache.Pull](#cache-pull) · [Delete](#cache-delete) · [DeleteMany](#cache-deletemany) · [Flush](#cache-flush) · [Pull](#pull) · [PullBytes](#cache-pullbytes) |
-| **Locking** | [Acquire](#lockhandle-acquire) · [Block](#lockhandle-block) · [Lock](#cache-lock) · [LockHandle.Get](#lockhandle-get) · [NewLockHandle](#cache-newlockhandle) · [Release](#lockhandle-release) · [TryLock](#cache-trylock) · [Unlock](#cache-unlock) |
+| **Invalidation** | [Cache.Pull](#cache-pull) · [Delete](#cache-delete) · [DeleteMany](#cache-deletemany) · [Flush](#cache-flush) · [PullBytes](#cache-pullbytes) |
+| **Locking** | [Acquire](#lockhandle-acquire) · [Block](#lockhandle-block) · [Lock](#cache-lock) · [NewLockHandle](#cache-newlockhandle) · [Release](#lockhandle-release) · [TryLock](#cache-trylock) · [Unlock](#cache-unlock) |
 | **Memoization** | [NewMemoStore](#newmemostore) |
 | **Observability** | [OnCacheOp](#observerfunc-oncacheop) · [WithObserver](#cache-withobserver) |
-| **Other** | [LockHandle.WithContext](#lockhandle-withcontext) |
+| **Other** |  |
 | **Rate Limiting** | [RateLimit](#cache-ratelimit) |
-| **Read Through** | [Cache.Remember](#cache-remember) · [Cache.RememberStale](#cache-rememberstale) · [Remember](#remember) · [RememberBytes](#cache-rememberbytes) · [RememberStale](#rememberstale) · [RememberStaleBytes](#cache-rememberstalebytes) |
-| **Reads** | [BatchGetBytes](#cache-batchgetbytes) · [Cache.Get](#cache-get) · [Cache.GetJSON](#cache-getjson) · [Get](#get) · [GetBytes](#cache-getbytes) · [GetJSON](#getjson) · [GetString](#cache-getstring) · [ListPage](#listpage) |
-| **Refresh Ahead** | [Cache.RefreshAhead](#cache-refreshahead) · [Cache.RefreshAheadValueWithCodec](#cache-refreshaheadvaluewithcodec) · [RefreshAhead](#refreshahead) · [RefreshAheadBytes](#cache-refreshaheadbytes) · [RefreshAheadValueWithCodec](#refreshaheadvaluewithcodec) |
+| **Read Through** | [Cache.Remember](#cache-remember) · [Cache.RememberStale](#cache-rememberstale) · [RememberBytes](#cache-rememberbytes) · [RememberStaleBytes](#cache-rememberstalebytes) |
+| **Reads** | [BatchGetBytes](#cache-batchgetbytes) · [Cache.Get](#cache-get) · [Cache.GetJSON](#cache-getjson) · [GetBytes](#cache-getbytes) · [GetString](#cache-getstring) · [ListPage](#listpage) |
+| **Refresh Ahead** | [Cache.RefreshAhead](#cache-refreshahead) · [Cache.RefreshAheadValueWithCodec](#cache-refreshaheadvaluewithcodec) · [RefreshAheadBytes](#cache-refreshaheadbytes) |
 | **Testing Helpers** | [AssertCalled](#fake-assertcalled) · [AssertNotCalled](#fake-assertnotcalled) · [AssertTotal](#fake-asserttotal) · [Cache](#fake-cache) · [Count](#fake-count) · [New](#new) · [Reset](#fake-reset) · [Total](#fake-total) |
-| **Writes** | [Add](#cache-add) · [BatchSetBytes](#cache-batchsetbytes) · [Cache.Set](#cache-set) · [Cache.SetJSON](#cache-setjson) · [Decrement](#cache-decrement) · [Increment](#cache-increment) · [Set](#set) · [SetBytes](#cache-setbytes) · [SetJSON](#setjson) · [SetString](#cache-setstring) |
+| **Writes** | [Add](#cache-add) · [BatchSetBytes](#cache-batchsetbytes) · [Cache.Set](#cache-set) · [Cache.SetJSON](#cache-setjson) · [Decrement](#cache-decrement) · [Increment](#cache-increment) · [SetBytes](#cache-setbytes) · [SetString](#cache-setstring) |
 
 
 _Examples assume `ctx := context.Background()` and `c := cache.NewCache(cache.NewMemoryStore(ctx))` unless shown otherwise._
@@ -612,10 +519,14 @@ fmt.Println(store.Driver()) // dynamo
 
 ### Memcached {#driver-config-memcachedcache}
 
+release them through io.Closer. Addresses are treated as a fixed peer set.
+A failed peer returns an error for its keys so locks never fail over to another peer.
+
 Defaults:
 - Addresses: []string{"127.0.0.1:11211"} when empty
 - DefaultTTL: 5*time.Minute when zero
 - Prefix: "app" when empty
+- AllowServerFlush: false, unless every server is dedicated to this cache
 
 ```go
 store := memcachedcache.New(memcachedcache.Config{
@@ -718,6 +629,8 @@ fmt.Println(store.Driver()) // redis
 
 ### SQL Core (advanced/shared implementation) {#driver-config-sqlcore}
 
+the store and can release its database pool through io.Closer.
+
 Defaults:
 - Table: "cache_entries" when empty
 - DefaultTTL: 5*time.Minute when zero
@@ -769,14 +682,14 @@ fmt.Println(store.Driver()) // sql
 
 ### Cache.Pull {#cache-pull}
 
-Pull returns a typed value for key and removes it, using the default codec (JSON).
+Pull reads a typed JSON value and then deletes its key. The operations are separate.
 
 ```go
 type Token struct { Value string `json:"value"` }
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
-_ = c.Set("reset:token:42", Token{Value: "abc"}, time.Minute)
-tok, ok, err := c.Pull[Token]("reset:token:42")
+_ = c.Set("preview:banner:42", Token{Value: "abc"}, time.Minute)
+tok, ok, err := c.Pull[Token]("preview:banner:42")
 fmt.Println(err == nil, ok, tok.Value) // true true abc
 ```
 
@@ -814,18 +727,19 @@ fmt.Println(c.Flush() == nil) // true
 
 ### Pull {#pull}
 
-Pull returns a typed value for key and removes it, using the default codec (JSON).
+Pull reads a typed JSON value and then deletes its key. The operations are separate.
 It remains available for compatibility; new code can use Cache.Pull.
 
 ### PullBytes {#cache-pullbytes}
 
-PullBytes returns value and removes it from cache.
+PullBytes reads a value and then deletes its key. The operations are separate.
+Concurrent readers can receive the same value.
 
 ```go
 ctx := context.Background()
 c := cache.NewCache(cache.NewMemoryStore(ctx))
-_ = c.SetString("reset:token:42", "abc", time.Minute)
-body, ok, _ := c.PullBytes("reset:token:42")
+_ = c.SetString("preview:banner:42", "abc", time.Minute)
+body, ok, _ := c.PullBytes("preview:banner:42")
 fmt.Println(ok, string(body)) // true abc
 ```
 
@@ -952,18 +866,13 @@ if locked {
 
 ### NewMemoStore {#newmemostore}
 
-NewMemoStore decorates store with per-process read memoization.
-
-Behavior:
-- First Get hits the backing store, clones the value, and memoizes it in-process.
-- Subsequent Get for the same key returns the memoized clone (no backend call).
-- Any write/delete/flush invalidates the memo entry so local reads stay in sync
-with changes made through this process.
-- Successful mutations advance one bounded process generation. This can prevent an
-unrelated in-flight read from being memoized, but it does not evict unrelated hits.
-- Memo data is per-process only; other processes or external writers will not
-invalidate it. Use only when that staleness window is acceptable.
-- NewMemoStore panics when store is nil because the backing store is required.
+NewMemoStore decorates a backing store with a short-lived local read snapshot.
+Create one per request or unit of work. It holds up to 256 hits or misses, each
+for at most one second from the start of its backing read. Those reads can
+outlive the value's backing TTL or miss a write made through another handle.
+Use the backing store directly when you need backend TTL or immediate visibility.
+Writes through the decorator invalidate the memoized keys. The caller retains
+ownership of the backing store. NewMemoStore panics when the store is nil.
 
 ```go
 ctx := context.Background()
@@ -1064,7 +973,8 @@ It remains available for compatibility; new code can use Cache.Remember.
 
 ### RememberBytes {#cache-rememberbytes}
 
-RememberBytes returns key value or computes/stores it when missing.
+RememberBytes returns a cached value or computes and stores it on a miss.
+Concurrent misses can each run the callback.
 
 ```go
 ctx := context.Background()
@@ -1100,7 +1010,7 @@ fmt.Println(err == nil, usedStale, len(body) > 0)
 ### BatchGetBytes {#cache-batchgetbytes}
 
 BatchGetBytes returns all found values for the provided keys.
-Missing keys are omitted from the returned map.
+Missing keys are omitted from the returned map. Reads run individually.
 
 ```go
 ctx := context.Background()
@@ -1355,7 +1265,8 @@ fmt.Println(created) // true
 
 ### BatchSetBytes {#cache-batchsetbytes}
 
-BatchSetBytes writes many key/value pairs using a shared ttl.
+BatchSetBytes writes each key individually using a shared TTL.
+A write failure can leave an arbitrary subset of keys updated.
 
 ```go
 ctx := context.Background()
@@ -1445,45 +1356,6 @@ fmt.Println(c.SetString("user:42:name", "Ada", time.Minute) == nil) // true
 ```
 <!-- api:embed:end -->
 
-### Payload size caps (effective bytes written) {#payload-size-caps-(effective-bytes-written)}
-
-| Driver | Hard / default cap | Configurable | Notes |
-| ---: | :--- | :---: | :--- |
-| **Null** | N/A | N/A | No persistence. |
-| **Memory** | Process memory | - | No backend hard cap. |
-| **File** | Disk / filesystem | - | No backend hard cap. |
-| **Redis** | Backend practical (memory/SLO) | Server-side | No commonly hit low per-value hard cap in app use. |
-| **NATS** | Server/bucket payload limits | Server-side | Depends on NATS/JetStream config. |
-| **Memcached** | ~1 MiB per item (default) | ✓ (server `-I`) | Backend-enforced item limit. |
-| **DynamoDB** | 400 KB item hard cap | No | Includes key/metadata overhead, so usable value bytes are lower. |
-| **SQL** | DB/engine config dependent | Server-side | Blob/row/packet limits vary by engine and deployment. |
-
-`StoreConfig.MaxValueBytes` (root-backed stores) is the uniform application-level cap, and it applies to post-shaping bytes (after compression/encryption overhead).
-
-## Integration Coverage {#integration-coverage}
-
-| **Area** | What is validated | Scope |
-| ---: | :--- | :--- |
-| Core store contract | `Set/Get`, TTL expiry, `Add`, counters, `Delete/DeleteMany`, `Flush`, typed `Remember` | All drivers |
-| Option contracts | `prefix`, `compression`, `encryption`, `prefix+compression+encryption`, `max_value_bytes`, `default_ttl` | All drivers (per option case) |
-| Locking | single-winner contention, timeout/cancel, TTL expiry reacquire, unlock safety | All drivers |
-| Rate limiting | monotonic counts, `remaining >= 0`, window rollover reset | All drivers |
-| Refresh-ahead | miss/hit behavior, async refresh success/error, malformed metadata handling | All drivers |
-| Remember stale | stale fallback semantics, TTL interactions, stale/fresh independent expiry, joined errors | All drivers |
-| Batch ops | partial misses, empty input behavior, default TTL application | All drivers |
-| Counter semantics | signed deltas, zero delta, TTL refresh extension | All drivers |
-| Context cancellation | `GetContext/SetContext/LockContext/RefreshAheadContext/Remember*Ctx` prompt return + driver-aware cancel semantics | All drivers (driver-aware assertions) |
-| Latency / transient faults | injected slow `Get/Add/Increment`, timeout propagation, no hidden retries for `RefreshAhead/Remember*/LockContext/RateLimit*` | All drivers (integration wrappers over real stores) |
-| Prefix isolation | `Delete/Flush` isolation + helper-generated keys (`__lock:`, `:__refresh_exp`, `:__stale`, rate-limit buckets) | Shared/prefixed backends |
-| Payload shaping / corruption | compression+encryption round-trips, corrupted compressed/encrypted payload errors | Shared/persistent backends |
-| Payload size limits | large binary payload round-trips; backend-specific near/over-limit checks (Memcached, DynamoDB) | Driver-specific where meaningful |
-| Cross-store scope | shared vs local semantics across store instances (e.g. rate-limit counters) | Driver-specific expectations |
-| Backend fault / recovery | backend restart mid-suite, outage errors, post-recovery round-trip/lock/refresh/stale flows | Container-backed drivers (runs automatically when container-backed fixtures are selected) |
-| Observer metadata | op names, hit/miss flags, propagated errors, driver labels | Unit contract tests (integration helper paths exercise emissions indirectly) |
-| Memo store caveats | per-process memoization, local-only invalidation, cross-process staleness behavior | Unit tests |
-
-Default integration runs cover the contract suite above. Fault/recovery restart tests run automatically when the selected integration suite includes container-backed fixtures.
-
 ## Development {#development}
 
 Use `make test` for root-module tests, `make vet` for static checks, `make generate` to refresh generated documentation, and `make test-integration` for the separate integration module. Pass a driver such as `make test-integration sqlitecache` to narrow the matrix. Integration tests may require local services. Driver, docs, examples, and integration directories are independent Go modules; test each changed module from its directory.
@@ -1494,7 +1366,7 @@ README content is a mix of generated sections and manual sections.
 
 - API reference (`<!-- api:embed:start --> ... <!-- api:embed:end -->`) is generated.
 - Test badges are updated separately.
-- Sections like driver notes and the integration coverage table are manual.
+- Driver notes are maintained in the README.
 
 ### Update generated API docs {#update-generated-api-docs}
 
@@ -1529,7 +1401,6 @@ make docs-watch
 Notes:
 
 - The badge watcher runs real tests, so it is slower than API/example regeneration.
-- Fault/recovery integration tests run with the integration suite when container-backed fixtures are selected.
 
 ## Using with GoForj {#using-with-goforj}
 

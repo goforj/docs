@@ -194,7 +194,7 @@ or hard CI performance gates.
 | **Construction** | [New](#events-new) · [NewNull](#events-newnull) · [NewSync](#events-newsync) |
 | **Driver Constructors** | [gcppubsubevents.New](#gcppubsubevents-new) · [kafkaevents.New](#kafkaevents-new) · [natsevents.New](#natsevents-new) · [natsjetstreamevents.New](#natsjetstreamevents-new) · [redisevents.New](#redisevents-new) · [snsevents.New](#snsevents-new) |
 | **Lifecycle** | [Close](#driver-close) |
-| **Options** | [Option](#events-option) · [WithCodec](#events-withcodec) |
+| **Options** | [ContextPropagator](#events-contextpropagator) · [ContextPropagator.Extract](#contextpropagator-extract) · [ContextPropagator.Inject](#contextpropagator-inject) · [Option](#events-option) · [WithCodec](#events-withcodec) · [WithContextPropagator](#events-withcontextpropagator) |
 | **Publish** | [Publish](#bus-publish) · [TopicEvent](#events-topicevent) · [TopicEvent.Topic](#topicevent-topic) |
 | **Subscribe** | [Subscribe](#bus-subscribe) · [Subscription](#events-subscription) |
 | **Testing** | [Fake](#events-fake) · [Fake.Bus](#fake-bus) · [Fake.Count](#fake-count) · [Fake.Records](#fake-records) · [Fake.Reset](#fake-reset) · [NewFake](#events-newfake) · [Record](#events-record) |
@@ -351,6 +351,7 @@ _Example: define Redis driver config with all fields_
 cfg := redisevents.Config{
 	Addr:   "127.0.0.1:6379",
 	Client: nil, // default: nil constructs a client from Addr
+	EnableHeaders: false, // opt in after subscribers support metadata envelopes
 }
 ```
 
@@ -482,6 +483,21 @@ driver, _ := redisevents.New(redisevents.Config{Addr: "127.0.0.1:6379"})
 
 ## Options {#options}
 
+### ContextPropagator {#events-contextpropagator}
+
+ContextPropagator transfers explicitly selected context values through message headers.
+Implementations must be safe for concurrent use and preserve receiver cancellation and deadlines.
+Carriers are limited to 10 fields and 8 KiB of both raw key/value bytes and JSON-encoded bytes.
+Oversized carriers and invalid UTF-8 are ignored without rejecting the event payload.
+
+### ContextPropagator.Extract {#contextpropagator-extract}
+
+Extract restores message metadata onto the receiver's context for one handler invocation.
+
+### ContextPropagator.Inject {#contextpropagator-inject}
+
+Inject returns metadata to snapshot before publishing. An empty map leaves the wire payload unchanged.
+
 ### Option {#events-option}
 
 Option configures root bus behavior.
@@ -495,6 +511,10 @@ bus, _ := events.NewSync(events.WithCodec(nil))
 fmt.Println(bus.Driver())
 // Output: sync
 ```
+
+### WithContextPropagator {#events-withcontextpropagator}
+
+WithContextPropagator enables optional message context propagation without adding a tracing dependency.
 
 ## Publish {#publish}
 
