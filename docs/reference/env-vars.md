@@ -364,6 +364,60 @@ Redis-backed Cache, Storage, Events, and Queue resources share the host, port, a
 | `REDIS_DB` | `0` | Shared Redis database number. |
 | `NATS_URL` | `nats://127.0.0.1:4222` | Fallback URL for the NATS cache driver. Other NATS-backed resource families use their scoped `URL` setting. |
 
+## Search
+
+Search is optional. Enable the `search` component in the owning App. The framework supports `bleve` for a local, single-process index and `meilisearch` for an externally managed service. Bleve is always compiled as the local baseline.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `SEARCH_DRIVER` | `bleve` | Active backend for indexes without a named driver override. |
+| `SEARCH_SUPPORTED_DRIVERS` | `bleve` when rendered; active drivers plus `bleve` when unset | Root build manifest. Add `meilisearch` before generating and building an App that uses it. |
+| `SEARCH_PATH` | `storage/search`; additional Apps render `storage/search/<app>` | Root directory for Bleve indexes. Each index defaults to a child directory named after its exact logical name. |
+| `SEARCH_URL` | Empty | Required Meilisearch endpoint when that driver is active. The framework does not provision the service. |
+| `SEARCH_API_KEY` | Empty | Meilisearch API key. Supply deployment credentials outside committed files. |
+| `SEARCH_PREFIX` | Empty | Meilisearch physical index-name prefix. Use distinct prefixes for independently owned App indexes. |
+
+Define index schemas in `app/search.go` or `app/<app>/search.go`. Environment variables select backends and locations; they do not declare schemas or create an implicit default index. After declaring a `catalog` index, its local configuration can be:
+
+```dotenv
+SEARCH_DRIVER=bleve
+SEARCH_SUPPORTED_DRIVERS=bleve
+SEARCH_PATH=storage/search
+SEARCH_CATALOG_PATH=storage/search/catalog
+```
+
+Named overrides use `SEARCH_<NAME>_DRIVER`, `SEARCH_<NAME>_PATH`, `SEARCH_<NAME>_URL`, `SEARCH_<NAME>_API_KEY`, and `SEARCH_<NAME>_PREFIX`. A named path is the complete physical index path, not a root directory. Driver and remote-service settings inherit root defaults before more-specific named settings apply. `SEARCH_SUPPORTED_DRIVERS` remains a root build setting.
+
+App overrides use forms such as `ADMIN_SEARCH_PATH` and `ADMIN_SEARCH_CATALOG_URL`. Resolution proceeds from global root to App root to global named to App named settings. Index aliases ignore case and replace hyphens with underscores, so `catalog-v2` uses `SEARCH_CATALOG_V2_*`; the logical name and default physical path keep their original spelling. Alias collisions are rejected. Known App prefixes take precedence over ambiguous index prefixes.
+
+Run `forj generate --search` after changing the build manifest or named index configuration, then `forj build`. A declared `catalog` index gets `manager.Catalog()`. Provision schemas explicitly before first startup; startup validates existing schemas and rejects incompatible definitions. Stop the owner process before provisioning the same Bleve path, and use a separate path or service prefix when rebuilding a schema. See the [Search library](https://github.com/goforj/search) for the portable index API.
+
+## Feature Flags
+
+Feature flags are optional. Enable the `feature` component in the owning App. The framework supports native `memory` and `file` sources; both are always compiled. A resource names an evaluator configuration, not an individual flag.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FEATURE_DRIVER` | `memory` | Active source: `memory` or `file`. Vendor SDK adapters are not part of this integration. |
+| `FEATURE_SUPPORTED_DRIVERS` | `memory,file` | Root build manifest for the two native sources. |
+| `FEATURE_DOCUMENT` | `{"schema":1,"flags":{}}` | Startup JSON document for a memory source. Optional for tests and small fixtures; an empty source needs no override. |
+| `FEATURE_PATH` | Empty | Required definition-file path for a file source. Relative paths resolve from the process working directory. |
+| `FEATURE_INITIALIZATION_TIMEOUT` | `5s` | Positive Go duration bounding initial source loading. Invalid or unavailable initial configuration fails startup. |
+| `FEATURE_REFRESH_INTERVAL` | `30s` | Fallback polling and source-read retry interval. Go duration of at least `10ms`. Healthy watched files do not poll at this interval. |
+
+For a file-backed `checkout` evaluator, create the definition file before starting the App and configure:
+
+```dotenv
+FEATURE_CHECKOUT_DRIVER=file
+FEATURE_CHECKOUT_PATH=storage/flags/checkout.json
+```
+
+Run `forj generate --feature` and `forj build`; the named evaluator is then available through `manager.Checkout()`. Named settings use `FEATURE_<NAME>_DRIVER`, `FEATURE_<NAME>_DOCUMENT`, `FEATURE_<NAME>_PATH`, `FEATURE_<NAME>_INITIALIZATION_TIMEOUT`, and `FEATURE_<NAME>_REFRESH_INTERVAL`. Named evaluators have their own runtime defaults rather than inheriting the default evaluator's settings. `FEATURE_SUPPORTED_DRIVERS` remains a root build setting.
+
+App overlays use the same names with an App prefix, such as `BILLING_FEATURE_CHECKOUT_PATH`. Root-declared evaluators are inherited by participating Apps; an evaluator declared only for one App is not initialized by another App.
+
+Flag keys, values, targeting, and rollout rules belong in the definition document. Memory sources start empty by default, and undefined boolean checks return false. File sources refresh through filesystem notifications, with polling when notifications are unavailable. Invalid updates retain the last valid decisions; shutdown stops the file workers. Keep authorization policy separate from flag-controlled presentation or rollout decisions.
+
 ## Cache
 
 Available drivers: `memory`, `file`, `null`, `redis`, `memcached`, `dynamodb`, `sqlite`, `postgres`, `mysql`, `nats`.
@@ -543,6 +597,35 @@ Driver settings:
 | `QUEUE_PROCESSING_LEASE_NO_TIMEOUT_SECONDS` | `sqlite`, `postgres`, `mysql` | `300`. |
 
 See [Queues](/async/queues) for selection and dispatch, and [Queue Workers](/operations/queue-workers) for lifecycle and scaling.
+
+## Notifications
+
+Notifications are optional. Enable the `notification` component in the owning App. The framework manager supports synchronous `log` capture and `webhook` delivery. It does not add background workers, retries, fallback, or fanout automatically.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `NOTIFICATION_DRIVER` | `log` | Active sender: `log` for redacted local capture or `webhook` for a configured destination. |
+| `NOTIFICATION_SUPPORTED_DRIVERS` | `log` when rendered; active drivers plus `log` when unset | Root build manifest. Include `webhook` before generating and building an App that uses it. The local `log` driver remains available. |
+| `NOTIFICATION_WEBHOOK_URL` | Empty | Required destination URL when `webhook` is active. Use a trusted deployment-controlled endpoint. |
+| `NOTIFICATION_WEBHOOK_FORMAT` | `generic` | Payload format: `generic` or `slack`. |
+| `NOTIFICATION_WEBHOOK_TIMEOUT` | `5s` | Positive Go duration for the webhook request timeout. |
+| `NOTIFICATION_WEBHOOK_BEARER_TOKEN` | Empty | Optional bearer authentication token. Keep it in the deployment environment or secret manager. |
+| `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE` | `false` | Allow private and loopback destinations when explicitly required by the deployment, such as a local test receiver. |
+
+Keep local capture as the default while adding a named webhook sender:
+
+```dotenv
+NOTIFICATION_DRIVER=log
+NOTIFICATION_SUPPORTED_DRIVERS=log,webhook
+NOTIFICATION_ALERTS_DRIVER=webhook
+NOTIFICATION_ALERTS_WEBHOOK_URL=https://hooks.example.com/alerts
+```
+
+Run `forj generate --notification` and `forj build`; the named sender is then available through `manager.Alerts()`. Named senders accept `NOTIFICATION_<NAME>_DRIVER` and every `NOTIFICATION_<NAME>_WEBHOOK_*` setting above. Each sender has its own runtime defaults; an unset named driver uses `log`, and a named webhook needs its own URL. `NOTIFICATION_SUPPORTED_DRIVERS` remains a root build setting.
+
+App overlays include forms such as `REPORTS_NOTIFICATION_DRIVER` and `REPORTS_NOTIFICATION_ALERTS_WEBHOOK_URL`. Root-declared named senders are inherited by participating Apps; a sender declared only for one App is not initialized by another App. Changing an active driver already in the build manifest requires configuration and restart; adding a driver requires regeneration and a rebuild.
+
+Successful send completion means local capture or provider acceptance, not confirmed recipient receipt. Construction makes no network requests, and shutdown closes owned transport resources. Use queues for durable deferred work and [Mail](/applications/mail) for email composition. The standalone [Notification library](https://github.com/goforj/notification) supports additional drivers that are not exposed by this framework manager.
 
 ## Mail
 
