@@ -73,6 +73,100 @@ Variables for components that are not selected are not rendered and have no gene
 
 See [Logging](/operations/logging) for event shape, output modes, and sensitive-data guidance.
 
+## OpenTelemetry
+
+These app-wide settings configure trace and application log export and do not use the named-resource pattern above. New `.env` files show only the common overrides; add the settings below when you need to change a default. [Metrics](/operations/metrics) use the app's Prometheus-compatible endpoints independently.
+
+### Local Defaults and Remote Export
+
+Projects with Grafana, Observability, and Docker export traces and logs through Alloy to Tempo and Loki automatically when `APP_ENV=local` and the `grafana` Compose profile is active. Host processes use `http://127.0.0.1:14318` for HTTP/protobuf or port `14317` for gRPC. Containers use `http://alloy:4318` or `http://alloy:4317`. The host address follows `IP_ADDRESS`, with wildcard bind addresses resolved to loopback; the published ports follow `TEMPO_OTLP_HTTP_PORT` and `TEMPO_OTLP_GRPC_PORT`.
+
+Staging, production, and test processes have no automatic destination. To send traces and logs to an external HTTP/protobuf collector, add:
+
+```dotenv
+OTEL_EXPORTER_OTLP_ENDPOINT=https://collector.example.com:4318
+OTEL_LOGS_EXPORTER=otlp
+```
+
+A generic endpoint enables trace export, but does not enable remote application logs by itself. Logs require `OTEL_LOGS_EXPORTER=otlp` or a log-specific endpoint. Explicit endpoints override the local receiver for their signal. Set `OTEL_TRACES_EXPORTER=none` or `OTEL_LOGS_EXPORTER=none` to disable that signal's export.
+
+Restart the app after changing these settings. Request an HTTP route with access logging enabled, then check the collector for a request span and a request log carrying the same trace ID. Application logs use the active execution's identity when written through `appLogger.WithContext(ctx)`.
+
+### Identity and Signal Selection
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_SERVICE_NAME` | Go module path followed by `/` and the current app name | Service identity shared by traces and logs. |
+| `OTEL_RESOURCE_ATTRIBUTES` | Empty | Comma-separated `key=value` resource attributes, such as `service.version=1.2.0,service.namespace=orders`. `OTEL_SERVICE_NAME` takes precedence over a `service.name` attribute. |
+| `OTEL_TRACES_EXPORTER` | `otlp` when an endpoint or the local Grafana default selects it; otherwise `none` | Supports `otlp` and `none`. Disabling external trace export does not disable Lighthouse inspect capture. |
+| `OTEL_LOGS_EXPORTER` | `otlp` for the local Grafana default or a log-specific endpoint; otherwise `none` | Supports `otlp` and `none`. Explicit `otlp` enables logs at the configured generic endpoint. Console and Lighthouse log outputs remain independent. |
+| `OTEL_SDK_DISABLED` | `false` | Disable OTel span recording and OTLP log export. Console logging remains available. |
+
+### Endpoints, Protocols, and Headers
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Unset; local Grafana supplies a receiver when eligible | Shared collector base URL. For HTTP/protobuf, exporters append `/v1/traces` and `/v1/logs` for enabled signals. |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Generic endpoint or local receiver | Trace-specific destination. For HTTP/protobuf, provide the complete URL, including `/v1/traces`. Setting this endpoint enables traces unless explicitly disabled. |
+| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Generic endpoint or local receiver when logs are enabled | Log-specific destination. For HTTP/protobuf, provide the complete URL, including `/v1/logs`. Setting this endpoint enables logs unless explicitly disabled. |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | Shared transport: `http/protobuf` or `grpc`. |
+| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | `OTEL_EXPORTER_OTLP_PROTOCOL` | Override the trace transport. |
+| `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL` | `OTEL_EXPORTER_OTLP_PROTOCOL` | Override the log transport. |
+| `OTEL_EXPORTER_OTLP_HEADERS` | Empty | Comma-separated `name=value` authentication or collector headers. Percent-encode reserved characters in values, such as `Authorization=Bearer%20example-token`. |
+| `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | `OTEL_EXPORTER_OTLP_HEADERS` | Replace the generic headers for trace export. |
+| `OTEL_EXPORTER_OTLP_LOGS_HEADERS` | `OTEL_EXPORTER_OTLP_HEADERS` | Replace the generic headers for log export. |
+
+Use absolute `http://` or `https://` endpoint URLs. For gRPC, use the collector's gRPC port without an HTTP signal path. For example, `https://collector.example.com:4317` with `OTEL_EXPORTER_OTLP_PROTOCOL=grpc` selects gRPC for both enabled signals. Invalid endpoints, headers, exporter selections, and unsupported protocols fail during app construction. Keep credentials in the deployment environment or secret manager, and use HTTPS for remote collectors.
+
+### Export Transport Overrides
+
+The Go OTel exporters consume these settings. Each generic variable also accepts a signal-specific form by inserting `TRACES_` or `LOGS_` after `OTEL_EXPORTER_OTLP_`. For example, `OTEL_EXPORTER_OTLP_TRACES_TIMEOUT` overrides `OTEL_EXPORTER_OTLP_TIMEOUT` for traces. A signal-specific value takes precedence over the generic value for that signal.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_EXPORTER_OTLP_TIMEOUT` | `10000` | Exporter request timeout in milliseconds. |
+| `OTEL_EXPORTER_OTLP_COMPRESSION` | None | Set `gzip` to compress exported payloads. |
+| `OTEL_EXPORTER_OTLP_CERTIFICATE` | System trust roots | Path to a PEM certificate file used to verify the collector's TLS certificate. |
+| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Empty | Path to the client PEM certificate chain for mutual TLS. Configure it with the matching client key. |
+| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Empty | Path to the PEM private key for mutual TLS. |
+| `OTEL_EXPORTER_OTLP_INSECURE` | `false` | Exporter transport-security switch. An explicit endpoint URL's `http` or `https` scheme takes precedence; use the URL scheme to select transport security. |
+
+### Trace Sampling and Limits
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_TRACES_SAMPLER` | `parentbased_always_on` when trace export or Lighthouse inspect capture is enabled; otherwise `always_off` | Head sampler used by the app's trace provider. |
+| `OTEL_TRACES_SAMPLER_ARG` | `1.0` | Ratio between `0` and `1`, used by `traceidratio` and `parentbased_traceidratio`. |
+| `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span. |
+| `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited | Maximum string attribute value length on a span. |
+| `OTEL_ATTRIBUTE_COUNT_LIMIT` | `128` | Fallback when `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` is unset. |
+| `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited | Fallback when `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` is unset. |
+| `OTEL_SPAN_EVENT_COUNT_LIMIT` | `128` | Maximum events retained on a span. |
+| `OTEL_SPAN_LINK_COUNT_LIMIT` | `128` | Maximum links retained on a span. |
+| `OTEL_EVENT_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span event. |
+| `OTEL_LINK_ATTRIBUTE_COUNT_LIMIT` | `128` | Maximum attributes per span link. |
+
+Supported samplers are `always_on`, `always_off`, `parentbased_always_on`, `parentbased_always_off`, `traceidratio`, and `parentbased_traceidratio`. Ratio values outside `0` through `1` and unsupported sampler names fail during app construction. For example, `parentbased_traceidratio` with an argument of `0.1` samples approximately 10% of new root traces while respecting an incoming parent's sampling decision.
+
+OTel sampling controls span recording for external export and Lighthouse projection. `LIGHTHOUSE_INSPECT_SAMPLE_RATE` can further reduce Lighthouse detail capture without reducing external export. Log export is independent of trace sampling, so an exported log can refer to an unsampled trace that is absent from the trace backend.
+
+### Batch Delivery
+
+Queues are bounded and telemetry delivery is best effort. Trace batches use the SDK defaults below; the framework overrides the log batch size and log batch timeout to `256` records and `5000` milliseconds. Explicit batch environment settings take precedence. All delay and timeout values in this table are **milliseconds**, not Go duration strings.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OTEL_BSP_MAX_QUEUE_SIZE` | `2048` | Maximum queued spans awaiting export. |
+| `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` | `512` | Maximum spans per export batch, bounded by queue capacity. |
+| `OTEL_BSP_SCHEDULE_DELAY` | `5000` | Maximum interval between trace batch exports. |
+| `OTEL_BSP_EXPORT_TIMEOUT` | `30000` | Trace processor's export deadline. The transport timeout applies separately. |
+| `OTEL_BLRP_MAX_QUEUE_SIZE` | `2048` | Maximum queued log records. A full log queue drops its oldest records. |
+| `OTEL_BLRP_MAX_EXPORT_BATCH_SIZE` | `256` | Maximum log records per export batch, bounded by queue capacity. |
+| `OTEL_BLRP_SCHEDULE_DELAY` | `1000` | Maximum interval between log batch exports. |
+| `OTEL_BLRP_EXPORT_TIMEOUT` | `5000` | Log processor's export deadline. The transport timeout applies separately. |
+
+Shutdown flushes telemetry within the app's shutdown context. Collector failures affect telemetry delivery rather than app readiness. Application log contents can be exported; review logged messages and fields before enabling a remote destination. See [Logging](/operations/logging) for application logging and [Inspects](/operations/inspects) for bounded Lighthouse capture.
+
 ## HTTP and OpenAPI
 
 | Variable | Default | Purpose |
@@ -501,6 +595,10 @@ These values configure generated local VictoriaMetrics and Grafana infrastructur
 | `GRAFANA_PORT` | `13001` | Published Grafana HTTP port. |
 | `GRAFANA_ADMIN_USER` | `admin` | Local Grafana administrator username. |
 | `GRAFANA_ADMIN_PASSWORD` | `admin` | Local Grafana administrator password. Change it before network exposure. |
+| `TEMPO_HTTP_PORT` | `13200` | Published Tempo query API port. |
+| `TEMPO_OTLP_HTTP_PORT` | `14318` | Published Alloy OTLP HTTP/protobuf receiver port for local traces and logs. |
+| `TEMPO_OTLP_GRPC_PORT` | `14317` | Published Alloy OTLP gRPC receiver port for local traces and logs. |
+| `LOKI_HTTP_PORT` | `13100` | Published Loki query API port. |
 | `OBSERVABILITY_METRICS_TARGET_MODE` | `auto`, resolved to `local-single` | Target topology: `auto`, `local-single`, `local-multi`, `compose`, or `disabled`. |
 | `OBSERVABILITY_METRICS_TARGET_HOST` | `host.docker.internal` | Host used by local generated scrape targets. An explicitly empty value preserves the existing target file. |
 | `OBSERVABILITY_API_METRICS_HOST` | `api` | HTTP role host in `compose` mode. Empty omits the role target. |
